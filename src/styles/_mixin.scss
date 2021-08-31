@@ -1,0 +1,71 @@
+// 设置元素宽高
+@mixin wh($width, $height) {
+    width: $width;
+    height: $height;
+}
+// 设置字体大小及颜色
+@mixin fs($fontSize, $color) {
+    font-size: $fontSize;
+    color: $color;
+}
+// 设置高度跟行高
+@mixin lineHeight($height, $lineHeight: $height) {
+    height: $height;
+    line-height: $lineHeight;
+}
+
+@mixin border($color, $borderRadius) {
+    border: 1px solid $color;
+    border-radius: $borderRadius;
+}
+
+@mixin mr($marginRight) {
+    margin-right: $marginRight;
+}
+
+// 设置css3样式过度时长
+@mixin transition($time) {
+    -webkit-transition: $time;
+    transition: $time;
+}
+
+@mixin ulList($liHeight, $liPadding) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: $liPadding;
+        height: $liHeight;
+        line-height: $liHeight;
+        list-style-image: none;
+        list-style-type: none;
+    }
+}
+
+@mixin boxSet($bHeight, $bBorder,$bBackground){
+    height: $bHeight;
+    background-color: $bBackground;
+    border-radius:$bBorder;
+}
+@mixin overviewCardSet($oWidth,$oHeight) {
+	width: $oWidth;
+	height: $oHeight;
+	border: 1px solid #D1D5D9;
+	border-radius: $border-radius-lg;
+	background: $white;
+}
+@mixin text-ellipsis {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+@mixin  alarm-tip {
+	width: 40px;
+	border-radius: $border-radius;
+	font-weight: 400;
+	font-size: $font-size-base;
+	@include lineHeight(22px);
+}

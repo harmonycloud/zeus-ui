@@ -1,0 +1,103 @@
+.filter-wrapper {
+	padding: 8px 0;
+	flex-wrap: wrap;
+}
+.filter-item {
+	margin: 8px 0;
+	width: 50%;
+	label {
+		color: #1A1A1A;
+		line-height: 32px;
+		font-weight: 500;
+	}
+}
+
+.filter-item-search{
+	margin: 8px 0;
+	width: 50%;
+	flex-grow: 2;
+	label {
+		color: #1A1A1A;
+		line-height: 32px;
+		font-weight: 500;
+	}
+}
+@media (min-width: 1600px){
+	.filter-item {
+        width: 33.33%
+	}
+}
+
+.log-display {
+	background-color: #272822;
+	scrollbar-base-color: #aaa;
+	border-radius: $border-radius-lg;
+	overflow: hidden;
+	.title {
+		background: $text-color-title;
+		color: #BFBFBF;
+		padding: 6px 20px;
+		position: relative;
+		.tips {
+			position: absolute;
+			right: 20px;
+			.btn {
+				margin-right: 24px;
+				&:hover{
+					color: #0064C8;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+	.log-codeMirror {
+		width: 100%;
+		height: 650px;
+		overflow: auto;
+		.CodeMirror {
+			height: 650px;
+		}
+		.CodeMirror-scroll{
+			overflow: auto !important;
+			height: 650px;
+		}
+	}
+	.foot {
+		background: $text-color-title;
+		color: #BFBFBF;
+		padding: 6px 20px;
+		text-align: center;
+		.foot-text{
+			cursor: pointer;
+		}
+	}
+}
+.log-file-flex-wrapper{
+	display: flex;
+	flex-wrap: wrap;
+}
+.log-file-box{
+	width: 46%;
+	font-size: $font-size-base;
+	font-weight: 500;
+	color: $text-color-title;
+	text-align: center;
+	margin-right: 32px;
+	margin-top: 8px;
+	cursor: pointer;
+	@include lineHeight(32px);
+	border: 1px solid #C0C6CC;
+	padding: 0 12px;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+.active{
+	background: #DEE9F6 !important;
+	border: 1px solid #B2D4EF !important;
+}
+@media (min-width: 1600px){
+	.log-file-box {
+        width: 31%
+	}
+}

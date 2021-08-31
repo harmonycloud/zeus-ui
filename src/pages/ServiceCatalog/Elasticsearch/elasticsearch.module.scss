@@ -1,0 +1,152 @@
+.basic-info {
+	width: 500px;
+	padding: 8px 0 16px 0;
+}
+
+.input-flex-length {
+	flex: 0 0 376px !important;
+}
+
+.schedule-strategy {
+	width: 620px;
+	padding: 8px 0 16px 0;
+	.host-affinity {
+		.switch {
+			width: 120px;
+			line-height: 32px;
+			.component {
+				margin-left: 16px;
+				vertical-align: middle;
+			}
+		}
+		.input {
+			width: 260px;
+		}
+		.check {
+			width: 120px;
+			line-height: 32px;
+			padding-left: 16px;
+		}
+	}
+}
+
+.foreign-visit {
+	padding: 8px 0 16px 0;
+	.export-way {
+		flex-direction: column;
+		flex: 0 0 562px;
+		.export-content {
+			margin-top: 8px;
+			padding: 12px 44px 12px 30px;
+			background: #EFEFEF;
+		}
+	}
+}
+
+.select-box {
+	.select-box-item {
+		width: 182px;
+		height: 32px;
+		color: $text-color-title;
+		font-weight: 500;
+		margin-right: 8px;
+		border: 1px solid $border-color;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.select-box-item:last-child {
+		margin-right: 0;
+	}
+	.select-box-item.active {
+		background: #DEE9F6;
+		border: 1px solid #B2D4EF;
+	}
+}
+
+.mysql-config {
+	padding: 8px 0 16px 0;
+}
+
+.spec-config {
+	padding: 8px 0 16px 0;
+	.instance-spec-content {
+		flex-direction: column;
+		.spec-custom {
+			width: 562px;
+			margin-top: 8px;
+    		padding: 12px 44px 0 30px;
+			background: #EFEFEF;
+		}
+	}
+}
+
+.es-mode {
+	flex-direction: column;
+	.mode-content {
+		margin-top: 8px;
+		.node-box {
+			width: 182px;
+			border-top: 1px solid #B2D4EF;
+			border-right: 1px solid #B2D4EF;
+			border-bottom: 1px solid #B2D4EF;
+			.node-type {
+				width: 100%;
+				height: 30px;
+				border-bottom: 1px solid #B2D4EF;
+				text-align: center;
+				line-height: 30px;
+				.circle {
+					padding: 0 4px;
+					background-color: #C3D6F0;
+					border-radius: 8px;
+				}
+			}
+			.node-data {
+				width: 100%;
+				height: 138px;
+				padding: 16px;
+				position: relative;
+				.btn {
+					position: absolute;
+					right: 0;
+					bottom: 0;
+				}
+				.not-start {
+					color: $text-color-title;
+				}
+			}
+		}
+		.node-box:first-child {
+			border-left: 1px solid #B2D4EF;
+		}
+		.node-box.disabled {
+			background-color: #EFEFEF;
+		}
+	}
+}
+
+.summit-box {
+	position: fixed;
+	z-index: 999;
+	bottom: 0;
+	width: calc(100% - 256px);
+	padding: 16px 16px 16px 0px;
+	background: $white;
+	border-top: 1px solid $border-color;
+}
+
+.log-collection {
+	padding: 8px 0 8px 0;
+	.file-log, .standard-log {
+		.switch {
+			width: 120px;
+			line-height: 32px;
+		}
+	}
+	.file-log {
+		.input {
+			width: 50%;
+		}
+	}
+}

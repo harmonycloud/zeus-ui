@@ -1,0 +1,28 @@
+.basic-info-event > .next-timeline-item-content {
+	width: calc(100% - 55px);
+}
+.basic-info-event > .next-timeline-item-content > .next-timeline-item-body {
+	margin-top: 0 !important;
+}
+.rocketmq-acl-field-content{
+	.rocketmq-acl-field-title{
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 22px;
+		.rocketmq-acl-left{
+			display: flex;
+			align-items: center;
+			font-size: 14px;
+			.rocketmq-acl-blue-line{
+				width: 1px;
+				height: 14px;
+				border: 1px solid #0064C8;
+				margin-right: 8px;
+			}
+		}
+	}
+}
+.rocketmq-no-acl{
+	text-align: center;
+	color: #666666;
+}

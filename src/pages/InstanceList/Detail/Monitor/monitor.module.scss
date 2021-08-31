@@ -1,0 +1,34 @@
+.monitor {
+	height: 100%;
+	position: relative;
+	.loading-gif {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 1;
+		.loading-icon {
+			position: absolute;
+			left: 50%;
+			top: 20%;
+			transform: translateX(-50%);
+			animation:  icon 2s linear infinite;
+		}
+	}
+}
+
+@keyframes icon{
+	0%{
+    	opacity: 0.8;
+		top: 20%;
+	}
+	50%{
+   		opacity: 1;
+		top: 40%;
+	}
+	100%{
+    	opacity: 0.8;
+		top: 20%;
+	}
+}

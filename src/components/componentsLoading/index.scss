@@ -1,0 +1,28 @@
+.no-data-content{
+	width: 100%;
+	min-height: 368px;
+	max-height: 500px;
+	text-align: center;
+	.no-data-button{
+		margin-top: 24px;
+		& button{
+			margin-right: 8px;
+		}
+	}
+}
+.title-content{
+	display: flex;
+	align-items: center;
+	.blue-line{
+		width: 1px;
+		height: 14px;
+		border: 2px solid #0064C8;
+	}
+	.form-title{
+		@include lineHeight(22px);
+		font-size: $font-size-base;
+		font-weight: 500;
+		color: $text-color-title;
+		margin-left: 5px;
+	}
+}

@@ -1,0 +1,41 @@
+.middleware-box{
+	height: 70px;
+	flex: 0 0 135px;
+	// width: 240px;
+	display: flex;
+	cursor: pointer;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	margin-bottom: 10px;
+	& p{
+		// @include lineHeight(70px);
+		font-size: $font-h2;
+		font-weight: 400;
+		color: #262626;
+		margin-top: 4px;
+		// margin-left: 8px;
+		&:hover{
+			color: #0064C8;
+		}
+	}
+	&:after{
+		content: "";
+		position: absolute;
+		background-color: $border-color;
+		width: 1px;
+		height: 45px;
+		right: 0px;
+		top: 10px;
+	}
+	&:last-child:after{
+		content: "";
+		position: absolute;
+		background-color: $border-color;
+		width: 0px;
+		height: 0px;
+		right:0px;
+		top: 0px;
+	}
+}

@@ -1,0 +1,68 @@
+#time-line-content{
+	width: 100%;
+	height: 660px;
+	overflow-y: auto;
+	.time-line-title{
+		font-size: $font-size-base;
+		font-weight: 500;
+		color: $text-color-title;
+		cursor: pointer;
+		@include lineHeight(18px);
+	}
+	.time-line-time{
+		// width: 118px;
+		height: 20px;
+		font-size: $font-size-base;
+		font-weight: 400;
+		color: rgba(0, 0, 0, 0.45);
+		line-height: 20px;
+	}
+	.details-msg{
+		display: flex;
+		align-items: center;
+		width: 100%;
+		// height: 50px;
+		line-height: 22px;
+		cursor: pointer;
+		.details-summary{
+			max-width: 80%;
+			text-overflow:ellipsis;
+			overflow: hidden;
+			display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+			-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
+			-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+		}
+	}
+	.details-color{
+		color: #0064C8;
+		cursor: pointer;
+		margin-left: 8px;
+	}
+}
+.info-tip{
+	@include alarm-tip;
+	background: #C7ECFF;
+	border: 1px solid #94DBFF;
+	color: #00A7FA;
+}
+.warning-tip{
+	@include alarm-tip;
+	background: #FFECC7;
+	border: 1px solid #FFDB94;
+	color: #FAA700;
+}
+.critical-tip{
+	@include alarm-tip;
+	background: #FFF1F0;
+	border: 1px solid #FFA39E;
+	color: #FF4D4F;
+}
+#time-line-content{
+	.next-timeline-item-done .next-timeline-item-content {
+		margin-left: 55px;
+		width: 80%;
+	}
+}
+.active{
+	color: #0064C8 !important;
+}

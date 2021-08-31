@@ -1,0 +1,42 @@
+#number-range{
+	width: 100%;
+	.number-range-input{
+		height: 32px;
+		text-align: center;
+		width: calc(50% - 26px);
+	}
+	.left{
+		border: 1px solid #C0C6CC;
+		border-right: none !important;
+		border-radius: 2px 0px 0px 2px;
+	}
+	.right{
+		border: 1px solid #C0C6CC;
+		border-left: none !important;
+	}
+	.number-range-connect{
+		height: 32px;
+		width: 22px;
+		text-align: center;
+		line-height: 30px;
+		display: inline-block;
+		box-sizing: border-box;
+		border-top: 1px solid #C0C6CC;
+		border-bottom: 1px solid #C0C6CC;
+		color: #666666;
+	}
+	.number-range-unit{
+		height: 32px;
+		width: 30px;
+		line-height: 30px;
+		box-sizing: border-box;
+		display: inline-block;
+		border-top: 1px solid #C0C6CC;
+		border-bottom: 1px solid #C0C6CC;
+		border-right: 1px solid #C0C6CC;
+		text-align: center;
+		border-radius: 0px 2px 2px 0px;
+		background: #F7F9FA;
+		color: #666666;
+	}
+}

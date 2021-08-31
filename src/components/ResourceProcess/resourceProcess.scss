@@ -1,0 +1,53 @@
+.process-box{
+	display: flex;
+	.process-label{
+		@include lineHeight(20px);
+		width: 40px;
+		font-size: $font-size-base;
+		font-weight: 500;
+		color: $text-color-title;
+		margin-right: 20px;
+	}
+	.process-content{
+		display: flex;
+		height: 12px;
+		width: calc(100% - 154px);
+		background: #F1F1F2;
+		margin-top: 5px;
+		.process-item{
+			height: 12px;
+			cursor: pointer;
+		}
+	}
+	.process-total{
+		@include lineHeight(20px);
+		width: 80px;
+		font-size: $font-size-base;
+		font-weight: 400;
+		color: rgba(0, 0, 0, 0.65);
+		margin-left: 24px;
+	}
+}
+.process-tip{
+	width: 260px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	.process-image{
+		width: 130px;
+		font-size: $font-size-base;
+		font-weight: 400;
+		color: #262626;
+		text-align: center;
+	}
+	.process-content{
+		width: 100px;
+		margin-left: 20px;
+		height: 72px;
+		font-size: $font-size-base;
+		font-weight: 400;
+		color: rgba(0, 0, 0, 0.85);
+		line-height: 24px;
+	}
+
+}
