@@ -1,0 +1,25 @@
+.instance-list {
+	width: 100%;
+	height: 100%;
+	.menu-list {
+		flex: 0 0 160px;
+	}
+	.content-box {
+		flex: 1 1 0;
+		overflow: auto;
+	}
+}
+
+.icon-box {
+	width: 34px;
+	height: 18px;
+	border-radius: 9px;
+	color: $white;
+	padding: 0 7px;
+}
+.icon-box.failed {
+	background: #C80000;
+}
+.icon-box.succeed {
+	background: #6DD400;
+}

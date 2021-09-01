@@ -1,0 +1,14 @@
+.form-block {
+	width: 100%;
+	border-bottom: 1px solid $border-color;
+	margin-bottom: 24px;
+	.title {
+		font-size: $font-h2;
+		font-weight: 500;
+		color: $text-color-title;
+		line-height: 22px;
+		border-left: 2px solid $primary-color;
+		padding: 0 8px;
+		margin: 8px 0;
+	}
+}

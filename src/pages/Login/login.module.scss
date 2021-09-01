@@ -1,0 +1,111 @@
+/* 主版本 */
+.login {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: transparent url('../../assets/images/login_bg.svg') no-repeat center center;
+    background-size: cover;
+}
+
+.login-form {
+    position: absolute;
+    left: 70%;
+    top: 50%;
+    width: 420px;
+    padding: 20px 30px 40px;
+    box-sizing: border-box;
+    border-radius: $border-radius-lg;
+    background: $white;
+    transform: translate(-50%, -50%);
+	overflow: hidden;
+}
+
+.login-header {
+    height: 70px;
+    padding-bottom: 16px;
+	text-align: center;
+    line-height: 70px;
+    font-size: 24px;
+    font-weight: 500;
+    // background: url('../../assets/images/login_logo.png') no-repeat center center;
+}
+
+.login-input-item {
+	width: 85%;
+	margin: 0 auto;
+    padding: 10px;
+    border-bottom: 1px solid #e9e9e9;
+}
+
+.login-input {
+    width: 100%;
+    height: 40px;
+    border: none;
+    text-indent: 10px;
+    font-size: $font-h2;
+    color: #54565E;
+}
+
+.login-message {
+    line-height: 120%;
+    padding-top: 10px;
+    color: #f26d6d;
+    font-size: $font-h2;
+}
+
+.login-submit {
+	width: 85%;
+	margin: 0 auto;
+    margin-top: 24px;
+}
+
+.login-button {
+    display: inline-block;
+    width: 48%;
+    height: 40px;
+    line-height: 40px;
+    border-radius: $border-radius-lg;
+    text-align: center;
+    font-size: $font-h1;
+    color: $white;
+    border: 1px solid #0064C8;
+    background-color: #0064C8;
+    outline: none;
+    cursor: pointer;
+    transition: all .15s ease-in-out;
+}
+
+.login-button:hover {
+    background-color: rgba(0, 100, 200, 0.8);
+}
+
+.shake {
+    animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}

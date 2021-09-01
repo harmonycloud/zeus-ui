@@ -1,0 +1,51 @@
+.select-box {
+	.select-box-item {
+		cursor: pointer;
+		width: 182px;
+		height: 32px;
+		color: $text-color-title;
+		font-weight: 500;
+		margin-right: 8px;
+		border: 1px solid $border-color;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		&:hover{
+			color: #0064C8;
+			border: 1px solid #B2D4EF;
+		}
+	}
+	.select-box-item:last-child {
+		margin-right: 0;
+	}
+	.select-box-item.active {
+		background: #DEE9F6;
+		border: 1px solid #B2D4EF;
+	}
+}
+.select-box-disabled{
+	.select-box-item {
+		cursor: not-allowed;
+		width: 182px;
+		height: 32px;
+		color: #D2D2D2;
+		font-weight: 500;
+		margin-right: 8px;
+		border: 1px solid $border-color;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		&:hover{
+			color: #D2D2D2;
+			border: 1px solid $border-color;
+		}
+	}
+	.select-box-item:last-child {
+		margin-right: 0;
+	}
+	.select-box-item.active {
+		background: #D1D5D9;
+		border: 1px dashed #D1D5D9;
+		color: $white;
+	}
+}

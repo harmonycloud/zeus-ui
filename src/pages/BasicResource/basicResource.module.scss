@@ -1,0 +1,93 @@
+.cluster-wrapper {
+	width: 100%;
+	padding: 25px 29px;
+	background-color: $white;
+	img:first-child {
+		width: 90px;
+		height: 90px;
+		margin-right: $margin;
+	}
+	.cluster-intro {
+		width: calc(100% - 102px);
+		flex-direction: column;
+		justify-content: space-between;
+		h2 {
+			font-size: $font-h2;
+			font-weight: 500;
+			color: #111;
+		}
+	}
+}
+
+.cluster-list {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	height: calc(100% - 140px);
+	padding: 2 * $padding;
+	background-color: #FAFAFA;
+}
+
+.cluster-card {
+	width: 280px;
+	height: fit-content;
+	margin: 0 16px 16px 0;
+	background: $white;
+	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.09);
+	border-radius: $border-radius;
+	.cluster-card-title {
+		display: flex;
+		padding: 2 * $padding-sm 2 * $padding-sm 0 2 * $padding-sm;
+		img:first-child {
+			height: 40px;
+			vertical-align: top;
+		}
+		.title {
+			overflow:hidden;
+			text-overflow:ellipsis;
+			display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+			-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
+			-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+			font-size: 24px;
+			line-height: 24px;
+			color: #000;
+			margin-left: $margin-sm;
+		}
+	}
+	.info {
+		padding: 0 2 * $padding-sm $padding-sm 2 * $padding-sm;
+		margin-top: 14px;
+		border-bottom: 1px solid $border-color;
+		li {
+			margin-bottom: 8px;
+			label {
+				color: rgba(0, 0, 0, 0.5);
+			}
+		}
+	}
+	.btn-group {
+		align-items: center;
+		justify-content: space-around;
+		height: 40px;
+		button {
+			color: rgba(0, 0, 0, 0.5);
+			font-weight: 400;
+		}
+	}
+}
+
+.registry-namespace {
+	width: 100%;
+	.tips-yellow {
+		padding: 8px 16px;
+		background-color: #FFF7D1;
+		border-radius: $border-radius;
+		span {
+			margin-left: 8px;
+		}
+	}
+	.namespace-table {
+		margin-top: 16px;
+		overflow: auto;
+	}
+}

@@ -1,0 +1,82 @@
+.platform_overview-content {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	min-height: 630px;
+	.left-content {
+		height: 100%;
+		width: 72%;
+		display: flex;
+		flex-wrap: wrap;
+		margin-right: 16px;
+		.total {
+			height: calc(100% - 22px);
+			width: 100%;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			.part {
+				height: 58px;
+				width: 25%;
+				display: flex;
+				// flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				.part-icon{
+					width: 40px;
+					height: 40px;
+					border-radius: 20px;
+					text-align: center;
+					line-height: 34px;
+				}
+				.part-detail{
+					margin-left: 8px;
+					.type {
+						font-size: $font-h2;
+						font-family: PingFangSC-Regular, PingFang SC;
+						font-weight: 400;
+						color: rgba(0, 0, 0, 0.45);
+						line-height: 22px;
+					}
+					.value {
+						font-size: 24px;
+						font-family: PingFangSC-Regular, PingFang SC;
+						font-weight: 400;
+						color: rgba(0, 0, 0, 0.85);
+						line-height: 32px;
+					}
+					.error-color {
+						color: #C80000;
+					}
+				}
+				.type {
+					font-size: $font-h2;
+					font-family: PingFangSC-Regular, PingFang SC;
+					font-weight: 400;
+					color: rgba(0, 0, 0, 0.45);
+					line-height: 22px;
+				}
+				.value {
+					font-size: 24px;
+					font-family: PingFangSC-Regular, PingFang SC;
+					font-weight: 400;
+					color: rgba(0, 0, 0, 0.85);
+					line-height: 32px;
+				}
+			}
+			.part-border {
+				border-right: 1px solid #E8E8E8;
+			}
+		}
+		.chart-content {
+			height: calc(100% - 32px);
+		}
+	}
+	.right-content {
+		height: 100%;
+		width: 28%;
+	}
+}
+.instance-table-content {
+	margin-top: 16px;
+}

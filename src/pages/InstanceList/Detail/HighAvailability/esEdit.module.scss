@@ -1,0 +1,56 @@
+.spec-config {
+	padding: 8px 0 16px 0;
+	.instance-spec-content {
+		flex-direction: column;
+		.spec-custom {
+			width: 562px;
+			margin-top: 8px;
+    		padding: 12px 44px 0 30px;
+			background: #EFEFEF;
+		}
+	}
+}
+.es-mode {
+	flex-direction: column;
+	.mode-content {
+		margin-top: 8px;
+		.node-box {
+			width: 182px;
+			border-top: 1px solid #B2D4EF;
+			border-right: 1px solid #B2D4EF;
+			border-bottom: 1px solid #B2D4EF;
+			.node-type {
+				width: 100%;
+				height: 30px;
+				border-bottom: 1px solid #B2D4EF;
+				text-align: center;
+				line-height: 30px;
+				.circle {
+					padding: 0 4px;
+					background-color: #C3D6F0;
+					border-radius: 8px;
+				}
+			}
+			.node-data {
+				width: 100%;
+				height: 138px;
+				padding: 16px;
+				position: relative;
+				.btn {
+					position: absolute;
+					right: 0;
+					bottom: 0;
+				}
+				.not-start {
+					color: $text-color-title;
+				}
+			}
+		}
+		.node-box:first-child {
+			border-left: 1px solid #B2D4EF;
+		}
+		.node-box.disabled {
+			background-color: #EFEFEF;
+		}
+	}
+}

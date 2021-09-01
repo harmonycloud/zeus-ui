@@ -1,0 +1,6 @@
+.md-breadcrumb {
+	padding: 27px 23px 0px 23px;
+	.next-breadcrumb .next-breadcrumb-text:not(.next-breadcrumb-text-ellipsis):hover > a {
+		color: $primary-color;
+	}
+}

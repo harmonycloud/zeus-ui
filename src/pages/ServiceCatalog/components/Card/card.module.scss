@@ -1,0 +1,79 @@
+.store-box{
+    width: calc(25% - 20px);
+    border-radius: $border-radius-lg;
+    padding: 12px 10px;
+    margin: 10px;
+    overflow: hidden;
+	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.09);
+	border-radius: $border-radius;
+	border: 1px solid $border-color;
+}
+@media (min-width: 1600px){
+	.store-box{
+        width: calc(20% - 20px);
+	}
+}
+.store-box .oper{
+    height: 20px;
+    text-align: right;
+    margin-bottom: 8px;
+}
+.store-box .oper > button{
+	cursor: pointer;
+    border: none;
+    font-size: $font-size-base;
+    height: 20px;
+	background-color: transparent;
+    color:#0070cc;
+	outline: none;
+}
+.store-box .icon{
+    height: 80px;
+    line-height: 80px;
+    padding: 0 12px;
+    overflow: hidden;
+    text-align: center;
+}
+.store-box .icon img{
+    max-width: 60px;
+    max-height: 60px;
+}
+.store-box .info{
+    height: 137px;
+    padding: 10px 12px;
+    border-radius: $border-radius;
+    overflow: hidden;
+	background:rgba(248,249,251,0.7);
+}
+.store-box .info .name{
+    font-weight: 700;
+	font-size: $font-h2;
+    text-align: center;
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.store-box .info .type{
+    text-align: center;
+    font-size: 0;
+    margin-bottom: 8px
+}
+.store-box .info .type span{
+    display: inline-block;
+    font-size: $font-size-base;
+    border-radius: 1px;
+    padding: 0 5px;
+	background:#F0F4F7;
+}
+.store-box .info .desc{
+    font-size: $font-size-base;
+    line-height: 150%;
+	color: #909399;
+}
+.store-box .info .desc-null{
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+	color:#D1D3D4
+}
