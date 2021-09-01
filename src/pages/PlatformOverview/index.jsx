@@ -652,7 +652,7 @@ function PlatformOverview(props) {
 								list={eventData}
 								style={{
 									marginTop: 16
-									// height: 'calc(100vh - 152px)'
+									// height: '640px'
 								}}
 								clusters={clusters}
 								type="platform"

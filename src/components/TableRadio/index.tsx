@@ -9,7 +9,7 @@ const { Group: RadioGroup } = Radio;
  */
 interface tableRadioProps {
 	id: string | number | boolean;
-	onCallBack: (value: string | number) => void;
+	onCallBack: (value: string | number | boolean) => void;
 	columns: columnProps[];
 	dataList: any[];
 }

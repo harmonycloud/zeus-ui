@@ -10,13 +10,8 @@ import { setRefreshCluster } from '@/redux/globalVar/var';
 import styles from './basicResource.module.scss';
 
 const RegistryNamespace = (props) => {
-	const {
-		visible,
-		clusterId,
-		updateFn,
-		cancelHandle,
-		setRefreshCluster
-	} = props;
+	const { visible, clusterId, updateFn, cancelHandle, setRefreshCluster } =
+		props;
 	const [dataSource, setDataSource] = useState([]);
 	const [originDataSource, setOriginDataSource] = useState([]);
 	const [primaryKeys, setPrimaryKeys] = useState([]);
@@ -99,7 +94,7 @@ const RegistryNamespace = (props) => {
 			onOk={okHandle}
 			onCancel={cancelHandle}
 			onClose={cancelHandle}
-			isFullScreen={true}
+			// isFullScreen={true}
 		>
 			<div className={styles['registry-namespace']}>
 				<div className={styles['tips-yellow']}>

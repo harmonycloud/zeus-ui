@@ -289,7 +289,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								<RadioGroup
 									name="admin"
 									value={data.admin}
-									onChange={(value: string) =>
+									onChange={(value) =>
 										changeData(value, 'admin')
 									}
 								>

@@ -34,10 +34,8 @@ export default function OperationAudit(): JSX.Element {
 	const [modules, setModules] = useState<string[]>([]); // * 父模块筛选保存内容
 	const [childModules, setChildModules] = useState<string[]>([]); // * 子模块筛选保存内容
 	const [beginTimeNormalOrder, setBeginTimeNormalOrder] = useState<boolean>(); // * 排序
-	const [
-		executeTimeNormalOrder,
-		setExecuteTimeNormalOrder
-	] = useState<boolean>(); // * 排序
+	const [executeTimeNormalOrder, setExecuteTimeNormalOrder] =
+		useState<boolean>(); // * 排序
 	// const [showColumnDialog, setShowColumnDialog] = useState(false); // todo 展示column列表
 	const history = useHistory();
 	useEffect(() => {
@@ -320,6 +318,7 @@ export default function OperationAudit(): JSX.Element {
 					primaryKey="key"
 					onFilter={onFilter}
 					onSort={onSort}
+					hasBorder={false}
 				>
 					<Table.Column
 						title="登录账户"

@@ -10,6 +10,7 @@ export default function TimeSelect(props) {
 	const {
 		timeSelect,
 		align = 'right',
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		onRefresh = () => {},
 		source = 'default',
 		style = {}
@@ -94,7 +95,6 @@ export default function TimeSelect(props) {
 		timeSelect([moment().subtract(number, unit), moment()]);
 	};
 	const onTypeChange = (value) => {
-		console.log(value);
 		setIsSelect(value);
 		if (value === false) {
 			onRefresh();
@@ -103,7 +103,6 @@ export default function TimeSelect(props) {
 		setStartTime(moment().subtract(1, 'hours'));
 		setEndTime(moment());
 	};
-	useEffect(() => {}, []);
 	if (source === 'default') {
 		return (
 			<>
@@ -138,7 +137,7 @@ export default function TimeSelect(props) {
 							showTime
 							onChange={onChange}
 							onOk={onRangeOk}
-							style={{ width: 332 }}
+							style={{ width: 418 }}
 							value={[startTime, endTime]}
 						/>
 					</div>
