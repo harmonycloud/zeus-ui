@@ -61,10 +61,8 @@ const backupStatus = {
 	Unknow: '运行状态未知'
 };
 const MysqlCreate = (props) => {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const {
 		chartName,
 		chartVersion,
@@ -733,11 +731,14 @@ const MysqlCreate = (props) => {
 																setBackupSourceId(
 																	value
 																);
-																const list = backupSources.filter(
-																	(item) =>
-																		item.id ===
-																		value
-																);
+																const list =
+																	backupSources.filter(
+																		(
+																			item
+																		) =>
+																			item.id ===
+																			value
+																	);
 																field.setValue(
 																	'dataSource',
 																	list[0]
@@ -797,6 +798,7 @@ const MysqlCreate = (props) => {
 														dataSource={dataSource}
 														loadData={onLoadData}
 														onChange={handleChange}
+														expandTriggerType="hover"
 													/>
 												</FormItem>
 												{reClusterFlag && (
@@ -1436,7 +1438,9 @@ const MysqlCreate = (props) => {
 										<>
 											<li className="display-flex">
 												<label className="form-name">
-													灾备实例集群
+													<span className="ne-required">
+														灾备实例集群
+													</span>
 												</label>
 												<div className="form-content">
 													<FormItem>
@@ -1453,6 +1457,7 @@ const MysqlCreate = (props) => {
 															onChange={
 																handleChange
 															}
+															expandTriggerType="hover"
 														/>
 													</FormItem>
 													{reClusterFlag && (
@@ -1464,7 +1469,9 @@ const MysqlCreate = (props) => {
 											</li>
 											<li className="display-flex">
 												<label className="form-name">
-													<span>实例名称</span>
+													<span className="ne-required">
+														实例名称
+													</span>
 												</label>
 												<div className="form-content">
 													<FormItem
@@ -1483,7 +1490,9 @@ const MysqlCreate = (props) => {
 											</li>
 											<li className="display-flex">
 												<label className="form-name">
-													<span>显示名称</span>
+													<span className="ne-required">
+														显示名称
+													</span>
 												</label>
 												<div className="form-content">
 													<FormItem

@@ -36,13 +36,8 @@ const formItemParamNoRequired = {
 const { Row, Col } = Grid;
 
 const AddCluster = (props) => {
-	const {
-		visible,
-		clusterId,
-		cancelHandle,
-		updateFn,
-		setRefreshCluster
-	} = props;
+	const { visible, clusterId, cancelHandle, updateFn, setRefreshCluster } =
+		props;
 	const field = Field.useField();
 	const [dcId, setDcId] = useState('');
 	// const [tcpFlag, setTcpFlag] = useState(true);
@@ -199,7 +194,7 @@ const AddCluster = (props) => {
 			onCancel={cancelHandle}
 			onClose={cancelHandle}
 		>
-			<Form {...formItemLayout} field={field} style={{ paddingLeft: 20 }}>
+			<Form {...formItemLayout} field={field} style={{ paddingLeft: 12 }}>
 				<FormItem
 					{...formItemParam}
 					label="英文简称"

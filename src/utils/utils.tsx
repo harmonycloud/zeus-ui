@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon } from '@alicloud/console-components';
 import JSEncrypt from 'jsencrypt';
 
+// * 组件复用
 export const statusRender: (value: string) => JSX.Element = (value: string) => {
 	switch (value) {
 		case 'Creating':
@@ -200,7 +201,14 @@ export const alarmStatusRender: (value: string) => JSX.Element = (
 			);
 	}
 };
+// * 简单表格列为空
+export const nullRender: (value: string | null) => string = (
+	value: string | null
+) => {
+	return value || '/';
+};
 
+// * 函数复用
 // * 判断两个数组中是否含有相同的元素（简单数组）
 export const judgeArrays: (
 	arr1: Array<string>,
@@ -224,19 +232,24 @@ export const judgeObjArrayAttrIsNull: (
 	arr: any[],
 	...argument: any[]
 ) => boolean = (arr: any[] = [], ...argument: any[]) => {
-	console.log(arr);
-	console.log(argument);
 	if (arr.length > 0) {
 		let flag = false;
 		argument.map((key) => {
 			flag = arr.find((item) => item[key] === '');
 		});
-		if (flag) {
-			return true;
-		} else {
-			return false;
-		}
+		if (flag) return true;
+		return false;
 	} else {
 		return true;
 	}
+};
+// * 对象数组属性值重复判断（根据某个字段进行判断）
+export const judgeObjArrayHeavyByAttr: (arr: any[], attr: string) => boolean = (
+	arr: any[],
+	attr: string
+) => {
+	if (arr.length === 0) return false;
+	const values = arr.map((item) => item[attr]);
+	const t = Array.from(new Set(values));
+	return values.length !== t.length;
 };

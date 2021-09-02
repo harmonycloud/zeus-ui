@@ -16,7 +16,6 @@ const ServiceCatalog = (props) => {
 		if (JSON.stringify(globalCluster) !== '{}') {
 			middlewareList(globalCluster.id);
 		}
-		return () => {};
 	}, [globalCluster]);
 
 	async function middlewareList(clusterId) {

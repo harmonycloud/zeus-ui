@@ -40,16 +40,10 @@ const formItemLayout = {
 };
 
 const RocketMQCreate = (props) => {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
-	const {
-		chartName,
-		chartVersion,
-		middlewareName,
-		backupFileName
-	} = useParams();
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
+	const { chartName, chartVersion, middlewareName, backupFileName } =
+		useParams();
 	const field = Field.useField();
 	const history = useHistory();
 

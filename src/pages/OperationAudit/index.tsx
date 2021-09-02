@@ -438,6 +438,7 @@ export default function OperationAudit(): JSX.Element {
 						dataIndex="action"
 						width={100}
 						cell={actionRender}
+						lock="right"
 					/>
 				</Table>
 				<SPagination

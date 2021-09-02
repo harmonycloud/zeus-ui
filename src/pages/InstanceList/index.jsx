@@ -15,10 +15,8 @@ import './instance.scss';
 const { Menu } = Page;
 
 function InstanceList(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const location = useLocation();
 	const [mdList, setMdList] = useState([]);
 	const [currentKey, setCurrentKey] = useState('');

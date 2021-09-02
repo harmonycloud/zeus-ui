@@ -29,7 +29,13 @@ const disabledRoute = [
 ];
 
 // 集群分区不显示路由名单
-const hideRoute = ['/basicResource', '/authManage', '/platformOverview'];
+const hideRoute = [
+	'/basicResource',
+	'/authManage',
+	'/platformOverview',
+	'/operationAudit',
+	'/userManage'
+];
 
 const header = (
 	<div

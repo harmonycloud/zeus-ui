@@ -372,9 +372,7 @@ function BasicInfo(props) {
 						: ''
 			});
 			setAclData({
-				title: `访问权限控制认证(${
-					data?.rocketMQParam?.acl?.enable ? '已开启' : '已关闭'
-				})`,
+				title: '访问权限控制认证',
 				globalIps:
 					data?.rocketMQParam?.acl?.globalWhiteRemoteAddresses || ''
 			});

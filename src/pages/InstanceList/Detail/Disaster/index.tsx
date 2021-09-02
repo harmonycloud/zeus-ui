@@ -306,7 +306,10 @@ export default function Disaster(props: disasterProps): JSX.Element {
 					</>
 				) : (
 					<>
-						<DisasterOriginCard originData={originData} />
+						<DisasterOriginCard
+							originData={originData}
+							toBasicInfo={() => onRefresh('basicInfo')}
+						/>
 						<DisasterBackupCardNone
 							toCreateBackup={toCreateBackup}
 						/>

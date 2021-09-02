@@ -23,6 +23,7 @@ import {
 	setRefreshCluster
 } from '@/redux/globalVar/var';
 import storage from '@/utils/storage';
+import { nullRender } from '@/utils/utils';
 
 const radioList = [
 	{
@@ -192,7 +193,6 @@ function PlatformOverview(props) {
 	}, [type]);
 
 	useEffect(() => {
-		console.log(sourceData);
 		if (sourceData && JSON.stringify(sourceData) !== '{}') {
 			if (Object.keys(sourceData).length) {
 				setTotalData({
@@ -237,7 +237,6 @@ function PlatformOverview(props) {
 					value: item.name
 				};
 			});
-			console.log(list);
 			setNamespaceFilter(list);
 		}
 	}, [props]);
@@ -590,11 +589,13 @@ function PlatformOverview(props) {
 												<Table.Column
 													title="CPU(核)"
 													dataIndex="namespaceCpu"
+													cell={nullRender}
 													sortable={true}
 												/>
 												<Table.Column
 													title="内存(G)"
 													dataIndex="namespaceMemory"
+													cell={nullRender}
 													sortable={true}
 												/>
 											</Table.ColumnGroup>
