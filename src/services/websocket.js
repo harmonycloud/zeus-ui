@@ -31,21 +31,21 @@ export default class webSocket {
 		if ('WebSocket' in window) {
 			this.socket = new WebSocket(
 				// `${wsUrl}${socketUrl}`,
-				`ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				`wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
 				cache.getLocal(TOKEN)
 			);
 		} else if ('MozWebSocket' in window) {
 			// eslint-disable-next-line no-undef
 			this.socket = new MozWebSocket(
 				// `${wsUrl}${socketUrl}`,
-				`ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				`wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
 				cache.getLocal(TOKEN)
 			);
 		} else {
 			// eslint-disable-next-line no-undef
 			this.socket = new SockJS(
 				// `${wsUrl}${socketUrl}`,
-				`ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				`wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
 				cache.getLocal(TOKEN)
 			);
 		}
