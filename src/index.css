@@ -465,3 +465,17 @@ table.table-list tbody tr td {
 	line-height: 24px;
 	margin-right: 4px;
 }
+@font-face {
+	font-family: NextIcon;
+	src: url("./assets/wind-bold.woff2");
+	src: url("./assets/wind-medium.woff2");
+	src: url("./assets/wind-regular.woff2");
+	src: url("./assets/wind.woff2");
+}
+.next-icon {
+	display: inline-block;
+	font-family: NextIcon !important;
+	font-style: normal;
+	font-weight: normal;
+	text-transform: none;
+}
