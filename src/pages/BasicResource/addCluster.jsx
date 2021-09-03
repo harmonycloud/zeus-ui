@@ -451,12 +451,13 @@ const AddCluster = (props) => {
 						</Col>
 					</Row>
 				</FormItem>
-				<FormItem {...formItemParam} label="ingress">
+				<FormItem {...formItemParam} label="负载均衡">
 					<RadioGroup
 						dataSource={[
 							{ value: true, label: '安装' },
 							{ value: false, label: '不安装' }
 						]}
+						shape="button"
 						defaultValue={true}
 						value={isInstallIngress}
 						onChange={(value) => setIsInstallIngress(value)}
@@ -526,12 +527,13 @@ const AddCluster = (props) => {
 						onChange={(value) => setTcpFlag(value)}
 					/>
 				</FormItem> */}
-				<FormItem {...formItemParam} label="logging">
+				<FormItem {...formItemParam} label="ES组件">
 					<RadioGroup
 						dataSource={[
 							{ value: true, label: '安装' },
 							{ value: false, label: '不安装' }
 						]}
+						shape="button"
 						defaultValue={true}
 						value={isInstallLogging}
 						onChange={(value) => setIsInstallLogging(value)}
@@ -629,6 +631,7 @@ const AddCluster = (props) => {
 							{ value: true, label: '安装' },
 							{ value: false, label: '不安装' }
 						]}
+						shape="button"
 						defaultValue={true}
 						value={isInstallAlert}
 						onChange={(value) => setIsInstallAlert(value)}
@@ -681,12 +684,13 @@ const AddCluster = (props) => {
 						</Row>
 					</FormItem>
 				)}
-				<FormItem {...formItemParam} label="grafana">
+				<FormItem {...formItemParam} label="监控面板">
 					<RadioGroup
 						dataSource={[
 							{ value: true, label: '安装' },
 							{ value: false, label: '不安装' }
 						]}
+						shape="button"
 						defaultValue={true}
 						value={isInstallGrafana}
 						onChange={(value) => setIsInstallGrafana(value)}
@@ -739,12 +743,13 @@ const AddCluster = (props) => {
 						</Row>
 					</FormItem>
 				)}
-				<FormItem {...formItemParam} label="prometheus">
+				<FormItem {...formItemParam} label="监控中心">
 					<RadioGroup
 						dataSource={[
 							{ value: true, label: '安装' },
 							{ value: false, label: '不安装' }
 						]}
+						shape="button"
 						defaultValue={true}
 						value={isInstallPrometheus}
 						onChange={(value) => setIsInstallPrometheus(value)}
