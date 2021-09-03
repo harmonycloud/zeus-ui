@@ -15,7 +15,7 @@
 /dist
 
 # src
-/src/setupProxy.js
+# /src/setupProxy.js
 
 # misc
 .DS_Store
