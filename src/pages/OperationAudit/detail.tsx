@@ -139,7 +139,7 @@ export default function OperationAuditDetail(): JSX.Element {
 			plate: data?.moduleChDesc + '/' + data?.childModuleChDesc,
 			url: data?.url || '',
 			requestMethod: data?.requestMethod || '',
-			executeTime: data?.executeTime || 0,
+			executeTime: `${data?.executeTime}ms` || '0ms',
 			status: data?.status || '',
 			phone: data?.phone || '',
 			beginTime: data?.beginTime || ''

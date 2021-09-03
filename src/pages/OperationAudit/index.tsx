@@ -173,9 +173,6 @@ export default function OperationAudit(): JSX.Element {
 			</Actions>
 		);
 	};
-	const executeTimeRender: (value: string) => string = (value: string) => {
-		return `${value}ms`;
-	};
 
 	const handleChange = (current: number) => {
 		setCurrent(current);
@@ -421,7 +418,6 @@ export default function OperationAudit(): JSX.Element {
 					<Table.Column
 						title="耗时（ms）"
 						dataIndex="executeTime"
-						cell={executeTimeRender}
 						width={150}
 						sortable
 					/>
