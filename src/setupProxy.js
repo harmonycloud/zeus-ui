@@ -10,7 +10,8 @@ module.exports = function (app) {
 			changeOrigin: true,
 			pathRewrite: {
 				'^/api': ''
-			}
+			},
+			secure: false
 		})
 	);
 	app.use(
@@ -20,14 +21,16 @@ module.exports = function (app) {
 			changeOrigin: true,
 			pathRewrite: {
 				'^/user': ''
-			}
+			},
+			secure: false
 		})
 	);
 	app.use(
 		createProxyMiddleware('/api/ws', {
 			target: wsUrl,
 			changeOrigin: true,
-			ws: true
+			ws: true,
+			secure: false
 		})
 	);
 };
