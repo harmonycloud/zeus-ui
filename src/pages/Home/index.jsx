@@ -449,7 +449,7 @@ function Home(props) {
 						<HomeCard
 							height={150}
 							width={'100%'}
-							title={'服务情况（当前命名空间）'}
+							title={'服务情况（当前资源分区）'}
 							marginBottom={16}
 						>
 							<div className={styles['node-content']}>
@@ -459,7 +459,7 @@ function Home(props) {
 						<HomeCard
 							height={174}
 							width={'100%'}
-							title={'资源分配情况（当前命名空间）'}
+							title={'资源分配情况（当前资源分区）'}
 							marginBottom={16}
 						>
 							<div className={styles['resource-content']}>
@@ -534,7 +534,7 @@ function Home(props) {
 						<HomeCard
 							height={'100%'}
 							width={'100%'}
-							title={'告警事件（当前命名空间）'}
+							title={'告警事件（当前资源分区）'}
 						>
 							<RadioGroup
 								dataSource={radioList}

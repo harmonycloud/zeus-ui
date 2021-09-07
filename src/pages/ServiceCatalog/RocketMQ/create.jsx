@@ -293,7 +293,7 @@ const RocketMQCreate = (props) => {
 		});
 	};
 
-	// 全局集群更新
+	// 全局资源池更新
 	useEffect(() => {
 		if (JSON.stringify(globalCluster) !== '{}') {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
@@ -559,7 +559,7 @@ const RocketMQCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -657,7 +657,7 @@ const RocketMQCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>

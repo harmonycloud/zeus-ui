@@ -47,23 +47,3 @@ export function setGlobalNamespaceList(namespaceList) {
 		});
 	};
 }
-export function setClusterSync(cluster) {
-	return {
-		type: SET_CLUSTER,
-		data: cluster
-	};
-}
-
-export function setNamespaceSync(namespace) {
-	return {
-		type: SET_NAMESPACE,
-		data: namespace
-	};
-}
-
-export function setRefreshClusterSync(flag) {
-	return {
-		type: SET_REFRESH_CLUSTER,
-		data: flag
-	};
-}

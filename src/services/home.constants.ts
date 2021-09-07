@@ -6,5 +6,5 @@ export const getOverviewEvents = `${api}/platform/overview/alerts`;
 export const getInstances = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/overview/status`;
 // * 获取资源实时用量
 export const getResource = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/overview/monitors`;
-// * 获取集群分区的配额数
+// * 获取资源池分区的配额数
 export const getQuota = `${api}/clusters/{clusterId}/namespaces/{namespace}/quota`;

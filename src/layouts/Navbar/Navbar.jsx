@@ -19,7 +19,7 @@ import {
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 
-// 集群分区不可改变路由名单
+// 资源池、分区不可改变路由名单
 const disabledRoute = [
 	'/serviceCatalog/mysqlCreate',
 	'/serviceCatalog/redisCreate',
@@ -28,7 +28,7 @@ const disabledRoute = [
 	'/instanceList/detail'
 ];
 
-// 集群分区不显示路由名单
+// 资源池、分区不显示路由名单
 const hideRoute = [
 	'/basicResource',
 	'/authManage',
@@ -63,7 +63,7 @@ function Navbar(props) {
 	const [currentNamespace, setCurrentNamespace] = useState({});
 	const [clusterList, setClusterList] = useState([]);
 	const [namespaceList, setNamespaceList] = useState([]);
-	// 控制集群和分区
+	// 控制资源池和分区
 	const [disabled, setDisabled] = useState(false);
 	const [hideFlag, setHideFlag] = useState(false);
 	// * 用户信息

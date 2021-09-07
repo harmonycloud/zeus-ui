@@ -212,7 +212,7 @@ function RedisList(props) {
 				<span style={{ fontWeight: 400 }}>
 					当前Redis中间件是一款兼容Redis
 					协议的缓存数据库，是基于开源的redis
-					在kubernetes容器平台的扩展改造。提供了集群、哨兵、故障自愈、监控告警等能力，版本支持：v5.0.8；详细参见
+					在kubernetes容器平台的扩展改造。提供了资源池、哨兵、故障自愈、监控告警等能力，版本支持：v5.0.8；详细参见
 				</span>
 				<span
 					className="name-link"

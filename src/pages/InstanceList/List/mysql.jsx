@@ -400,7 +400,7 @@ function MysqlList(props) {
 				高可用MySQL使用说明
 				<br />
 				<span style={{ fontWeight: 400 }}>
-					当前Mysql中间件是基于日志构建的主从复制的高可用Mysql 集群,
+					当前Mysql中间件是基于日志构建的主从复制的高可用Mysql 资源池,
 					提供了故障自愈，手动/自动主从切换，备份恢复，监控告警等能力，版本支持：v5.7.21；详细参见
 				</span>
 				<span

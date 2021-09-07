@@ -87,7 +87,7 @@ const RegistryNamespace = (props) => {
 
 	return (
 		<Dialog
-			title="注册命名空间"
+			title="注册资源分区"
 			visible={visible}
 			style={{ width: 640 }}
 			footerAlign="right"
@@ -120,7 +120,7 @@ const RegistryNamespace = (props) => {
 						showJump={false}
 					>
 						<MidTable.Column
-							title="命名空间名称"
+							title="资源分区名称"
 							dataIndex="name"
 						/>
 						<MidTable.Column

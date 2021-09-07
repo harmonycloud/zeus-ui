@@ -7,15 +7,12 @@ import {
 	withRouter
 } from 'react-router-dom';
 import MdBreadcrumb from './Breadcrumb/Breadcrumb';
-import Home from '@/pages/Home/index';
 import ServiceCatalog from '@/pages/ServiceCatalog/index';
 import MysqlCreate from '@/pages/ServiceCatalog/Mysql/create';
 import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
-import InstanceList from '@/pages/InstanceList/index';
 import InstanceDetails from '@/pages/InstanceList/Detail/index';
-import Ingress from '@/pages/Ingress/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
 import BasicResource from '@/pages/BasicResource/index';
 import AuthManage from '@/pages/AuthManage/index';
@@ -23,6 +20,12 @@ import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
 import OperationAudit from '@/pages/OperationAudit/index';
 import UserManage from '@/pages/UserManage';
 import OperationAuditDetail from '@/pages/OperationAudit/detail';
+import ServiceList from '@/pages/serviceList';
+import ServiceAvailable from '@/pages/serviceAvailable';
+// ! 已弃用组件
+import Ingress from '@/pages/Ingress/index';
+import Home from '@/pages/Home/index';
+import InstanceList from '@/pages/InstanceList/index';
 
 const Routes = withRouter((props) => {
 	return (
@@ -95,7 +98,7 @@ const Routes = withRouter((props) => {
 					component={DynamicForm}
 				/>
 				{/* 服务列表 */}
-				<Route path="/serviceList" component={InstanceList} exact />
+				<Route path="/serviceList" component={ServiceList} exact />
 				{/* 服务详情 */}
 				<Route
 					path="/instanceList/detail/:middlewareName/:type/:chartVersion"
@@ -103,7 +106,11 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				{/* 服务暴露 */}
-				<Route path="/serviceAvailable" component={Ingress} exact />
+				<Route
+					path="/serviceAvailable"
+					component={ServiceAvailable}
+					exact
+				/>
 				{/*
 					监控告警——未完成
 					容灾备份——未完成
@@ -118,7 +125,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 用户管理 */}
 				<Route
-					path="/systemManagement/userManage"
+					path="/systemManagement/userManagement"
 					component={UserManage}
 					exact
 				/>

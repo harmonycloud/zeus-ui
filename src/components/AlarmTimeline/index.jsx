@@ -13,7 +13,7 @@ import { setCluster, setNamespace } from '@/redux/globalVar/var';
 	list:[{time:'',message:'',summary:'',level:''}]
 	style:内联样式
 	clusters:
-	type:'default' 在平台管理页面的告警跳转涉及跨集群跳转
+	type:'default' 在平台管理页面的告警跳转涉及跨资源池跳转
 */
 
 function AlarmTimeLine(props) {
@@ -36,7 +36,7 @@ function AlarmTimeLine(props) {
 		);
 	};
 
-	// 跨集群跳转
+	// 跨资源池跳转
 	const getNamespaceList = async (item) => {
 		const clusterData = clusters.filter((c) => c.id === item.clusterId)[0];
 		setCluster(clusterData);

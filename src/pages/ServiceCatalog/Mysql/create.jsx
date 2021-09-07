@@ -417,7 +417,7 @@ const MysqlCreate = (props) => {
 		});
 	};
 
-	// 全局集群更新
+	// 全局资源池更新
 	useEffect(() => {
 		if (JSON.stringify(globalCluster) !== '{}') {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
@@ -675,7 +675,7 @@ const MysqlCreate = (props) => {
 									<ul className="form-layout">
 										<li className="display-flex">
 											<label className="form-name">
-												<span>集群</span>
+												<span>资源池</span>
 											</label>
 											<div className="form-content">
 												<FormItem>
@@ -714,7 +714,7 @@ const MysqlCreate = (props) => {
 											<div className="form-content">
 												<FormItem
 													required
-													requiredMessage="请选择灾备服务集群"
+													requiredMessage="请选择灾备服务资源池"
 												>
 													<div
 														style={{
@@ -783,13 +783,13 @@ const MysqlCreate = (props) => {
 										<li className="display-flex">
 											<label className="form-name">
 												<span className="ne-required">
-													灾备服务集群
+													灾备服务资源池
 												</span>
 											</label>
 											<div className="form-content">
 												<FormItem
 													required
-													requiredMessage="请选择灾备服务集群"
+													requiredMessage="请选择灾备服务资源池"
 												>
 													<CascaderSelect
 														style={{
@@ -803,7 +803,7 @@ const MysqlCreate = (props) => {
 												</FormItem>
 												{reClusterFlag && (
 													<Form.Error>
-														若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
+														若有可用的其它资源池的情况下，不建议将灾备服务和源服务部署在一个资源池
 													</Form.Error>
 												)}
 											</div>
@@ -990,7 +990,7 @@ const MysqlCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -1088,7 +1088,7 @@ const MysqlCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -1404,7 +1404,7 @@ const MysqlCreate = (props) => {
 														lineHeight: '18px'
 													}}
 												>
-													开启该模式，您可在本集群或者其他集群内创建一个同样配置的备用MySQL服务，可在“服务列表→灾备管理”菜单查看详情
+													开启该模式，您可在本资源池或者其他资源池内创建一个同样配置的备用MySQL服务，可在“服务列表→灾备管理”菜单查看详情
 												</span>
 											</Balloon>
 										</label>
@@ -1439,7 +1439,7 @@ const MysqlCreate = (props) => {
 											<li className="display-flex">
 												<label className="form-name">
 													<span className="ne-required">
-														灾备服务集群
+														灾备服务资源池
 													</span>
 												</label>
 												<div className="form-content">
@@ -1462,7 +1462,7 @@ const MysqlCreate = (props) => {
 													</FormItem>
 													{reClusterFlag && (
 														<Form.Error>
-															若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
+															若有可用的其它资源池的情况下，不建议将灾备服务和源服务部署在一个资源池
 														</Form.Error>
 													)}
 												</div>

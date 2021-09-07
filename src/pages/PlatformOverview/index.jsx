@@ -415,7 +415,7 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<p className="type">集群数</p>
+										<p className="type">资源池数</p>
 									</div>
 								</div>
 								<div className="part part-border">
@@ -446,7 +446,7 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<span className="type">总命名空间</span>
+										<span className="type">总资源分区</span>
 									</div>
 								</div>
 								<div className="part part-border">
@@ -574,12 +574,12 @@ function PlatformOverview(props) {
 											onFilter={onFilter}
 										>
 											<Table.Column
-												title="集群名称"
+												title="资源池名称"
 												dataIndex="clusterName"
 												filters={clusterFilter}
 												filterMode="multiple"
 											/>
-											<Table.ColumnGroup title="命名空间">
+											<Table.ColumnGroup title="资源分区">
 												<Table.Column
 													title="名称"
 													dataIndex="namespace"

@@ -78,7 +78,7 @@ export default function IngressForm(props) {
 							/>
 						</FormItem>
 						<FormItem
-							label="命名空间"
+							label="资源分区"
 							required
 							labelTextAlign="left"
 							asterisk={false}
@@ -86,7 +86,7 @@ export default function IngressForm(props) {
 						>
 							<Input
 								name="namespace"
-								placeholder="请输入命名空间"
+								placeholder="请输入资源分区"
 							/>
 						</FormItem>
 					</>

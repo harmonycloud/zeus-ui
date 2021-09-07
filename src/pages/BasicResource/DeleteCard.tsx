@@ -38,7 +38,7 @@ function DeleteCard(props: deleteCardProps): JSX.Element {
 			onClose={onCancel}
 			onOk={onOk}
 		>
-			确认删除该集群？
+			确认删除该资源池？
 		</Dialog>
 	);
 }

@@ -47,7 +47,7 @@ function Card(props) {
 					<div className={styles['info']}>
 						<ul>
 							<li>
-								<label>注册命名空间数：</label>
+								<label>注册资源分区数：</label>
 								<span>{clusterObj.attributes.nsCount}</span>
 							</li>
 							<li>

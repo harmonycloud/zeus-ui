@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@alicloud/console-components';
+import { Icon, Balloon } from '@alicloud/console-components';
 import JSEncrypt from 'jsencrypt';
 
 // * 组件复用
@@ -139,7 +139,7 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 	}
 };
 
-// * 中间件详情中报警阈值中使用
+// * 报警阈值中使用
 export const alarmStatusRender: (value: string) => JSX.Element = (
 	value: string
 ) => {
@@ -206,6 +206,102 @@ export const nullRender: (value: string | null) => string = (
 	value: string | null
 ) => {
 	return value || '/';
+};
+
+export const serviceListStatusRender: (
+	value: string,
+	index: number,
+	record: any
+) => JSX.Element = (value: string, index: number, record: any) => {
+	switch (value) {
+		case 'Creating':
+			return (
+				<>
+					<Icon
+						type="sync-alt"
+						size="xs"
+						style={{ color: '#0091FF' }}
+					/>{' '}
+					启动中
+				</>
+			);
+		case 'Running':
+			return (
+				<>
+					<Icon
+						type="success1"
+						size="xs"
+						style={{ color: '#00A700' }}
+					/>{' '}
+					运行正常
+				</>
+			);
+		case 'Failed':
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="warning1"
+								size="xs"
+								style={{ color: '#C80000' }}
+							/>{' '}
+							运行异常
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						{record.reason}
+					</span>
+				</Balloon>
+			);
+		case 'RunningError':
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="warning1"
+								size="xs"
+								style={{ color: '#C80000' }}
+							/>{' '}
+							运行异常
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						{record.reason}
+					</span>
+				</Balloon>
+			);
+		case '':
+			return <></>;
+		default:
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="warning1"
+								size="xs"
+								style={{ color: '#C80000' }}
+							/>{' '}
+							运行异常
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						{record.reason}
+					</span>
+				</Balloon>
+			);
+	}
 };
 
 // * 函数复用

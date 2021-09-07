@@ -144,7 +144,7 @@ const AddCluster = (props) => {
 						if (res.success) {
 							Message.show(
 								messageConfig('success', '成功', {
-									data: '集群修改成功'
+									data: '资源池修改成功'
 								})
 							);
 							updateFn();
@@ -159,7 +159,7 @@ const AddCluster = (props) => {
 						if (res.success) {
 							Message.show(
 								messageConfig('success', '成功', {
-									data: '集群接入成功'
+									data: '资源池接入成功'
 								})
 							);
 							updateFn();
@@ -264,7 +264,7 @@ const AddCluster = (props) => {
 
 	return (
 		<Dialog
-			title={clusterId ? '编辑集群' : '添加集群'}
+			title={clusterId ? '编辑资源池' : '添加资源池'}
 			visible={visible}
 			style={{ width: 640 }}
 			footerAlign="right"

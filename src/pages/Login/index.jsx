@@ -88,7 +88,7 @@ export default function Login() {
 									submit(event);
 								}
 							}}
-							placeholder="请输入用户名称"
+							placeholder="请输入登录账户"
 						/>
 					</div>
 					<div className={styles['login-input-item']}>
