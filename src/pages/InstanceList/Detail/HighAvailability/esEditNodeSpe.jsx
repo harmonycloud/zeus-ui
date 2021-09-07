@@ -217,7 +217,7 @@ export default function EsEditNodeSpe(props) {
 
 	return (
 		<Dialog
-			title="修改实例规格"
+			title="修改服务规格"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}

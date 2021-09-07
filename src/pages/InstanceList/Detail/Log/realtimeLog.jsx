@@ -162,11 +162,11 @@ const RealtimeLog = (props) => {
 				<div className={styles['filter-item']}>
 					<Row>
 						<Col span={6}>
-							<label>节点列表</label>
+							<label>实例列表</label>
 						</Col>
 						<Col span={16}>
 							<Select
-								placeholder="请选择节点"
+								placeholder="请选择实例"
 								value={pod}
 								onChange={changePod}
 								style={{ width: '100%' }}

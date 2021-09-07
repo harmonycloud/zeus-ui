@@ -216,7 +216,7 @@ function InstanceList(props) {
 
 	return (
 		<Page>
-			<Page.Header title="实例列表" />
+			<Page.Header title="服务列表" />
 			<Page.Content menu={<CustomMenu mdList={mdList} />}>
 				<div>{switchContent(currentKey, currentOfficial)}</div>
 			</Page.Content>

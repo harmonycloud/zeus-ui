@@ -5,9 +5,9 @@ export default {
 	redisCreate: 'Redis创建',
 	elasticsearchCreate: 'Elasticsearch创建',
 	rocketmqCreate: 'RocketMQ创建',
-	instanceList: '实例列表',
-	detail: '实例详情',
+	instanceList: '服务列表',
+	detail: '服务详情',
 	outboundRoute: '对外路由',
 	basicResource: '基础资源',
-	dynamicForm: '发布实例'
+	dynamicForm: '发布服务'
 };

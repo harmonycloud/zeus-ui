@@ -155,16 +155,16 @@ function AddIngress(props) {
 		>
 			<Form {...formItemLayout} field={field}>
 				<FormItem
-					label="映射实例"
+					label="映射服务"
 					required
 					labelTextAlign="left"
-					requiredMessage="请选择实例名称！"
+					requiredMessage="请选择服务名称！"
 					asterisk={false}
 					className="ne-required-ingress"
 				>
 					<Select
 						name="middlewareName"
-						placeholder="请选择要提供对外访问的实例"
+						placeholder="请选择要提供对外访问的服务"
 						onChange={onInstanceChange}
 						style={{ width: '100%' }}
 						value={selectedInstance.name}

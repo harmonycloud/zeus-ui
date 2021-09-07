@@ -54,7 +54,7 @@ export default function Login() {
 				if (res.success) {
 					Storage.setLocal('firstAlert', 0);
 					Storage.setLocal('token', res.data.token);
-					history.push('/spaceOverview');
+					history.push('/dataOverview');
 					window.location.reload();
 				} else {
 					setMessage(res.errorMsg || res.errorDetail);

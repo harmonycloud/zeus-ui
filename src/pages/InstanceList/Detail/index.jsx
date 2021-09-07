@@ -33,7 +33,7 @@ import './detail.scss';
  * 日志管理  log
  * 参数设置  config
  * 阈值告警  alert
- * 灾备实例  disaster(目前mysql中间件特有)
+ * 灾备服务  disaster(目前mysql中间件特有)
  */
 const { Menu } = Page;
 const InstanceDetails = (props) => {
@@ -328,12 +328,12 @@ const InstanceDetails = (props) => {
 					</div>
 				}
 			>
-				该备用实例不在当前集群命名空间，返回源实例页面请点击右上角“返回源实例”按钮
+				该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮
 			</Dialog>
 		);
 	};
 	const toDetail = () => {
-		// * 源示例和备实例在用一个集群时
+		// * 源示例和备服务在用一个集群时
 		if (data.mysqlDTO.relationClusterId === globalVar.cluster.id) {
 			unAcrossCluster();
 		} else {
@@ -378,7 +378,7 @@ const InstanceDetails = (props) => {
 				{data?.mysqlDTO?.openDisasterRecoveryMode &&
 				data?.mysqlDTO?.isSource === false ? (
 					<Button type="primary" onClick={toDetail}>
-						返回源实例
+						返回源服务
 					</Button>
 				) : null}
 			</Page.Header>

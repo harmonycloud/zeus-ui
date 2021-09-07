@@ -140,7 +140,7 @@ function Home(props) {
 			}
 		});
 	};
-	// 获取实例情况
+	// 获取服务情况
 	const getInstanceData = (sendData, startTime, endTime, type) => {
 		getInstanceStatus(sendData).then((res) => {
 			if (res.success) {
@@ -372,7 +372,7 @@ function Home(props) {
 		);
 	};
 
-	// * 获取实例情况
+	// * 获取服务情况
 	async function middlewareList(clusterId, namespace) {
 		let res = await getMiddlewares({ clusterId, namespace });
 		if (res.success) {
@@ -449,7 +449,7 @@ function Home(props) {
 						<HomeCard
 							height={150}
 							width={'100%'}
-							title={'实例情况（当前命名空间）'}
+							title={'服务情况（当前命名空间）'}
 							marginBottom={16}
 						>
 							<div className={styles['node-content']}>
@@ -483,7 +483,7 @@ function Home(props) {
 						<HomeCard
 							height={'calc(100% - 356px)'}
 							width={'100%'}
-							title={'资源实时用量（按实例查看）'}
+							title={'资源实时用量（按服务查看）'}
 							action={
 								<div className={styles['action-content']}>
 									{globalVar.cluster.monitor ===

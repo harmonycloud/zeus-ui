@@ -326,7 +326,7 @@ const RocketMQCreate = (props) => {
 			}
 		});
 		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆实例
+			// 克隆服务
 			if (backupFileName) {
 				getMiddlewareDetail({
 					clusterId: globalCluster.id,
@@ -348,7 +348,7 @@ const RocketMQCreate = (props) => {
 	return (
 		<Page>
 			<Page.Header
-				title="发布RocketMQ实例"
+				title="发布RocketMQ服务"
 				className="page-header"
 				hasBackArrow
 				onBackArrowClick={() => {
@@ -363,13 +363,13 @@ const RocketMQCreate = (props) => {
 								<li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
-											实例名称
+											服务名称
 										</span>
 									</label>
 									<div className="form-content">
 										<FormItem
 											required
-											requiredMessage="请输入实例名称"
+											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>
@@ -474,7 +474,7 @@ const RocketMQCreate = (props) => {
 											}
 											closable={false}
 										>
-											勾选强制亲和时，实例只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
+											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
 										</Balloon>
 									</label>
 									<div
@@ -559,7 +559,7 @@ const RocketMQCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -657,7 +657,7 @@ const RocketMQCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>

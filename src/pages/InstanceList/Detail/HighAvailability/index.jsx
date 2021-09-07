@@ -278,7 +278,7 @@ export default function HighAvailability(props) {
 			}
 		});
 	};
-	// * es 修改实例规格
+	// * es 修改服务规格
 	const editConfiguration = () => {
 		if (data.status === 'Running') {
 			if (customMid) {
@@ -291,7 +291,7 @@ export default function HighAvailability(props) {
 				messageConfig(
 					'error',
 					'失败',
-					'该实例运行异常，无法修改该实例节点规格'
+					'该服务运行异常，无法修改该服务节点规格'
 				)
 			);
 		}
@@ -340,12 +340,11 @@ export default function HighAvailability(props) {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					});
-				},
-				onCancel: () => {}
+				}
 			});
 		} else {
 			Message.show(
-				messageConfig('error', '失败', '该实例运行异常，无法重启该pod')
+				messageConfig('error', '失败', '该服务运行异常，无法重启该实例')
 			);
 		}
 	};
@@ -373,7 +372,7 @@ export default function HighAvailability(props) {
 				messageConfig(
 					'error',
 					'失败',
-					'该实例运行异常，无法进行主备切换'
+					'该服务运行异常，无法进行主备切换'
 				)
 			);
 		}
@@ -384,18 +383,17 @@ export default function HighAvailability(props) {
 			Dialog.show({
 				title: '操作确认',
 				content:
-					'主备实例切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
+					'主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
 				onOk: () => {
 					switchMiddleware(null);
-				},
-				onCancel: () => {}
+				}
 			});
 		} else {
 			Message.show(
 				messageConfig(
 					'error',
 					'失败',
-					'该实例运行异常，无法进行主备切换'
+					'该服务运行异常，无法进行主备切换'
 				)
 			);
 		}
@@ -463,8 +461,7 @@ export default function HighAvailability(props) {
 						Message.show(messageConfig('error', '失败', res));
 					}
 				});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
@@ -649,12 +646,12 @@ export default function HighAvailability(props) {
 						operation={
 							<div className="title-content">
 								<div className="blue-line"></div>
-								<div className="detail-title">pod列表</div>
+								<div className="detail-title">实例列表</div>
 							</div>
 						}
 					>
 						<Table.Column
-							title="Pod名称"
+							title="实例名称"
 							dataIndex="podName"
 							width={150}
 							lock="left"
@@ -665,7 +662,7 @@ export default function HighAvailability(props) {
 							width={120}
 						/>
 						<Table.Column
-							title="Pod IP"
+							title="实例 IP"
 							dataIndex="podIp"
 							width={150}
 						/>

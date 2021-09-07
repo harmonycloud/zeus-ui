@@ -13,10 +13,8 @@ import timerClass from '@/utils/timerClass';
 import { statusRender } from '@/utils/utils';
 
 function RocketMQList(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const { instance, updateList } = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState([]);
@@ -55,7 +53,7 @@ function RocketMQList(props) {
 	const deleteFn = (name) => {
 		Dialog.show({
 			title: '提示',
-			content: '确定删除该RocketMQ实例？',
+			content: '确定删除该RocketMQ服务？',
 			onOk: async () => {
 				let res = await deleteMiddleware({
 					clusterId: globalCluster.id,
@@ -99,7 +97,7 @@ function RocketMQList(props) {
 				}
 				type="primary"
 			>
-				发布实例
+				发布服务
 			</Button>
 		)
 	};
@@ -245,7 +243,7 @@ function RocketMQList(props) {
 				onSort={onSort}
 			>
 				<Table.Column
-					title="实例名称/显示名称"
+					title="服务名称/显示名称"
 					dataIndex="name"
 					resizable
 					cell={nameRender}

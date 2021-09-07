@@ -13,9 +13,212 @@ import { judgeArrays } from '@/utils/utils';
 import styled from 'styled-components';
 import { getMenu } from '@/services/user';
 import './menu.scss';
-import { Icon, Message } from '@alicloud/console-components';
+import { Message } from '@alicloud/console-components';
 import { History } from 'history';
 import messageConfig from '@/components/messageConfig';
+import { Icon } from '@alifd/next';
+
+const CustomIcon = Icon.createFromIconfontCN({
+	scriptUrl: '@/assets/iconfont'
+});
+
+const menus = [
+	{
+		id: 1,
+		name: 'dataOverview',
+		aliasName: '数据总览',
+		weight: 1,
+		parentId: 0,
+		url: 'dataOverview',
+		iconName: 'icon-shujuzonglan',
+		module: null,
+		available: null,
+		subMenu: null
+	},
+	{
+		id: 2,
+		name: 'middlewareRepository',
+		aliasName: '中间件仓库',
+		weight: 2,
+		parentId: 0,
+		url: 'middlewareRepository',
+		iconName: 'icon-cangku',
+		module: null,
+		available: null,
+		subMenu: null
+	},
+	{
+		id: 2,
+		name: 'serviceList',
+		aliasName: '服务列表',
+		weight: 2,
+		parentId: 0,
+		url: 'serviceList',
+		iconName: 'icon-fuwuliebiao',
+		module: null,
+		available: null,
+		subMenu: null
+	},
+	{
+		id: 2,
+		name: 'serviceAvailable',
+		aliasName: '服务暴露',
+		weight: 2,
+		parentId: 0,
+		url: 'serviceAvailable',
+		iconName: 'icon-fuwutiaokuan',
+		module: null,
+		available: null,
+		subMenu: null
+	},
+	{
+		id: 3,
+		name: 'monitorAlarm',
+		aliasName: '监控告警',
+		weight: 3,
+		parentId: 0,
+		url: 'monitoringAlarm',
+		iconName: 'icon-gaojingshijian',
+		module: null,
+		available: null,
+		subMenu: [
+			{
+				id: 8,
+				name: 'dataMonitor',
+				aliasName: '数据监控',
+				weight: 31,
+				parentId: 3,
+				url: 'monitoringAlarm/dataMonitor',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			},
+			{
+				id: 10,
+				name: 'logDetail',
+				aliasName: '日志详情',
+				weight: 33,
+				parentId: 3,
+				url: 'monitoringAlarm/logDetail',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			},
+			{
+				id: 11,
+				name: 'alarmCenter',
+				aliasName: '告警中心',
+				weight: 34,
+				parentId: 3,
+				url: 'monitoringAlarm/alarmCenter',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			}
+		]
+	},
+	{
+		id: 4,
+		name: 'disasterBackup',
+		aliasName: '容灾备份',
+		weight: 3,
+		parentId: 0,
+		url: 'disasterBackup',
+		iconName: 'icon-rongzaibeifen',
+		module: null,
+		available: null,
+		subMenu: [
+			{
+				id: 8,
+				name: 'disasterCenter',
+				aliasName: '灾备中心',
+				weight: 31,
+				parentId: 4,
+				url: 'disasterBackup/disasterCenter',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			},
+			{
+				id: 10,
+				name: 'dataSecurity',
+				aliasName: '数据安全',
+				weight: 33,
+				parentId: 4,
+				url: 'disasterBackup/dataSecurity',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			}
+		]
+	},
+	{
+		id: 5,
+		name: 'systemManagement',
+		aliasName: '系统管理',
+		weight: 3,
+		parentId: 0,
+		url: 'systemManagement',
+		iconName: 'icon-shezhi01',
+		module: null,
+		available: null,
+		subMenu: [
+			{
+				id: 8,
+				name: 'userManagement',
+				aliasName: '用户管理',
+				weight: 31,
+				parentId: 5,
+				url: 'systemManagement/userManagement',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			},
+			{
+				id: 10,
+				name: 'roleManagement',
+				aliasName: '角色管理',
+				weight: 33,
+				parentId: 5,
+				url: 'systemManagement/roleManagement',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			},
+			{
+				id: 10,
+				name: 'operationAudit',
+				aliasName: '操作审计',
+				weight: 33,
+				parentId: 5,
+				url: 'systemManagement/operationAudit',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			},
+			{
+				id: 10,
+				name: 'resourcePoolManagement',
+				aliasName: '资源池管理',
+				weight: 33,
+				parentId: 5,
+				url: 'systemManagement/resourcePoolManagement',
+				iconName: null,
+				module: null,
+				available: null,
+				subMenu: null
+			}
+		]
+	}
+];
 
 const subClick = (
 	openKey: string[],
@@ -23,10 +226,12 @@ const subClick = (
 	history: History,
 	items: IItemDescriptor[]
 ) => {
+	console.log(openKey, openInfo, history, items);
 	if (openKey.length > 0) {
 		const goal = items.filter((item) => item.key === openKey[0])[0];
 		const goalString: string =
-			(goal.items && goal.items[0].key) || 'spaceOverview';
+			(goal.items && goal.items[0].key) || 'dataOverview';
+		console.log(goalString);
 		if (openInfo.open) {
 			history.push(goalString);
 		}
@@ -34,9 +239,10 @@ const subClick = (
 };
 
 const mapLocationToActiveKey = (location: Location) => {
+	console.log(location);
 	const pathArray = location.pathname.split('/');
 	if (!location || !location.pathname || location.pathname === '/') {
-		return '/spaceOverview';
+		return '/dataOverview';
 	} else if (pathArray.includes('instanceList')) return '/instanceList';
 	else if (pathArray.includes('serviceCatalog')) return '/serviceCatalog';
 	else if (pathArray.includes('operationAudit')) return '/operationAudit';
@@ -44,6 +250,7 @@ const mapLocationToActiveKey = (location: Location) => {
 };
 
 const mapLocationToOpenKey = (location: Location) => {
+	console.log(location);
 	const pathArray = location.pathname.split('/');
 	if (!location || !location.pathname || location.pathname === '/')
 		return 'workbench';
@@ -72,27 +279,38 @@ const mapLocationToOpenKey = (location: Location) => {
 function Menu(): JSX.Element {
 	const [items, setItems] = useState<IItemDescriptor[]>([]);
 	const history: History = useHistory();
+	const [defaultOpenKeys] = useState<string[]>([
+		'/monitoringAlarm',
+		'/disasterBackup',
+		'/systemManagement'
+	]);
 	useEffect(() => {
 		getMenus();
 	}, []);
 	function renderAsLink({ key, label }: IItemDescriptor) {
 		return <Link to={`${key}`}>{label}</Link>;
 	}
-	const getMenus = async () => {
-		const res = await getMenu();
-		if (res.success) {
-			const itemsTemp = res.data.map((item: any) => {
+	// const getMenus = async () => {
+	const getMenus = () => {
+		// const res = await getMenu();
+		// if (res.success) {
+		const itemsTemp = menus.map((item: any) => {
+			// const itemsTemp = res.data.map((item: any) => {
+			if (item.subMenu) {
 				return {
-					key: item.url,
+					key: `/${item.url}`,
 					label: item.aliasName,
 					navProps: {
-						className: 'nav-item-select-custom',
+						className: 'test-nav-sub-menu-pros',
 						icon: (
-							<Icon
-								style={{ marginRight: 8 }}
-								size={14}
-								className={`iconfont ${item.iconName}`}
-							/>
+							<span
+								style={{
+									marginRight: 8,
+									lineHeight: '41px'
+								}}
+							>
+								<CustomIcon size={14} type={item.iconName} />
+							</span>
 						)
 					},
 					items: item.subMenu.map((i: any) => {
@@ -103,11 +321,31 @@ function Menu(): JSX.Element {
 						};
 					})
 				};
-			});
-			setItems(itemsTemp);
-		} else {
-			Message.show(messageConfig('error', '失败', res));
-		}
+			} else {
+				return {
+					key: `/${item.url}`,
+					label: item.aliasName,
+					render: renderAsLink,
+					navProps: {
+						className: 'test-nav-item-pros',
+						icon: (
+							<span
+								style={{
+									marginRight: 8,
+									lineHeight: '41px'
+								}}
+							>
+								<CustomIcon size={14} type={item.iconName} />
+							</span>
+						)
+					}
+				};
+			}
+		});
+		setItems(itemsTemp);
+		// } else {
+		// 	Message.show(messageConfig('error', '失败', res));
+		// }
 	};
 	return (
 		<Router>
@@ -115,13 +353,14 @@ function Menu(): JSX.Element {
 				{({ location }: { location: Location }) => (
 					<CustomizedConsoleMenu
 						header="中间件平台"
-						openMode="single"
 						items={items}
-						onOpen={(openKey, openInfo) =>
-							subClick(openKey, openInfo, history, items)
-						}
+						// defaultOpenAll={true}
+						defaultOpenKeys={defaultOpenKeys}
+						// onOpen={(openKey, openInfo) =>
+						// 	subClick(openKey, openInfo, history, items)
+						// }
 						activeKey={mapLocationToActiveKey(location)}
-						openKeys={mapLocationToOpenKey(location)}
+						// openKeys={mapLocationToOpenKey(location)}
 					/>
 				)}
 			</Route>

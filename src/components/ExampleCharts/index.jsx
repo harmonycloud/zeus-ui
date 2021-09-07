@@ -34,7 +34,7 @@ function ExampleCharts(props) {
 							<div style='height: 40px;display:flex; align-items:center;background-color: rgb(245,245,245);padding: 0 16px;font-weight: 500;font-family: PingFangSC-Medium, PingFang SC;'>集群：${params.name}</div>
 							<div style='padding:10px 16px;font-family: PingFangSC-Regular, PingFang SC;font-weight: 400;'>
 								<p>注册命名空间数：${params.data.regNamespaceCount}</p>
-								<p>中间件实例数：${params.data.instanceCount}</p>
+								<p>中间件服务数：${params.data.instanceCount}</p>
 							</div>
 						</div>`;
 						break;
@@ -44,7 +44,7 @@ function ExampleCharts(props) {
 								params.name
 							}</div>
 							<div style='padding:10px 16px;font-family: PingFangSC-Regular, PingFang SC;font-weight: 400;'>
-								<p>实例数：
+								<p>服务数：
 									<span style='color: ${
 										params.data.instanceExceptionCount > 0
 											? 'red'

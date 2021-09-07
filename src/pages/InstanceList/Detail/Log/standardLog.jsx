@@ -294,11 +294,11 @@ export default function StandardLog(props) {
 				<div className={styles['filter-item']}>
 					<Row>
 						<Col span={6}>
-							<label>节点列表</label>
+							<label>实例列表</label>
 						</Col>
 						<Col span={16}>
 							<Select
-								placeholder="请选择节点"
+								placeholder="请选择实例"
 								value={pod}
 								onChange={changePod}
 								style={{ width: '100%' }}
@@ -387,7 +387,7 @@ export default function StandardLog(props) {
 			</div>
 			{logFiles.length > 0 && (
 				<div className="display-flex flex-column">
-					<div>实例节点数：{logFiles.length}</div>
+					<div>服务节点数：{logFiles.length}</div>
 					<div className={styles['log-file-flex-wrapper']}>
 						{logFiles.map((item) => {
 							return (

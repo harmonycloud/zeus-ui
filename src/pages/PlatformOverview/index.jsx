@@ -477,7 +477,7 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<span className="type">总实例数</span>
+										<span className="type">总服务数</span>
 									</div>
 								</div>
 								<div className="part">
@@ -509,13 +509,13 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<span className="type">异常实例数</span>
+										<span className="type">异常服务数</span>
 									</div>
 								</div>
 							</div>
 						</HomeCard>
 						<HomeCard
-							title={'实例情况'}
+							title={'服务情况'}
 							height={'calc(100% - 163px)'}
 							width={'100%'}
 							action={
@@ -599,7 +599,7 @@ function PlatformOverview(props) {
 													sortable={true}
 												/>
 											</Table.ColumnGroup>
-											<Table.ColumnGroup title="实例">
+											<Table.ColumnGroup title="服务">
 												<Table.Column
 													title="类型"
 													dataIndex="type"

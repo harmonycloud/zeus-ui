@@ -32,85 +32,109 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/"
 					exact
-					render={() => <Redirect to="/spaceOverview" />}
+					render={() => <Redirect to="/dataOverview" />}
 				/>
-				{/* 工作台 */}
-				<Route path="/spaceOverview" component={Home} exact />
+				{/* 弓箭总览 ——已废除的一张页面 */}
+				{/* <Route path="/dataOverview" component={Home} exact /> */}
+				{/* 数据总览  */}
 				<Route
-					path="/serviceCatalog"
+					path="/dataOverview"
+					component={PlatformOverview}
+					exact
+				/>
+				{/* 中间件仓库 */}
+				<Route
+					path="/middlewareRepository"
 					component={ServiceCatalog}
 					exact
 				/>
+				{/* 4款中间件发布 + 动态表单的发布*/}
 				<Route
-					path="/serviceCatalog/mysqlCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/mysqlCreate/:chartName/:chartVersion"
 					component={MysqlCreate}
 					exact
 				/>
 				<Route
-					path="/serviceCatalog/mysqlCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					path="/middlewareRepository/mysqlCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
 					component={MysqlCreate}
 					exact
 				/>
 				<Route
-					path="/serviceCatalog/mysqlCreate/:chartName/:chartVersion/:disasterOriginName"
+					path="/middlewareRepository/mysqlCreate/:chartName/:chartVersion/:disasterOriginName"
 					component={MysqlCreate}
 					exact
 				/>
 				<Route
-					path="/serviceCatalog/redisCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/redisCreate/:chartName/:chartVersion"
 					component={RedisCreate}
 					exact
 				/>
 				<Route
-					path="/serviceCatalog/redisCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					path="/middlewareRepository/redisCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
 					component={RedisCreate}
 				/>
 				<Route
-					path="/serviceCatalog/elasticsearchCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/elasticsearchCreate/:chartName/:chartVersion"
 					component={ElasticsearchCreate}
 					exact
 				/>
 				<Route
-					path="/serviceCatalog/elasticsearchCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					path="/middlewareRepository/elasticsearchCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
 					component={ElasticsearchCreate}
 				/>
 				<Route
-					path="/serviceCatalog/rocketmqCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/rocketmqCreate/:chartName/:chartVersion"
 					component={RocketMQCreate}
 				/>
 				<Route
-					path="/serviceCatalog/rocketmqCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					path="/middlewareRepository/rocketmqCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
 					component={RocketMQCreate}
 				/>
 				<Route
-					path="/serviceCatalog/dynamicForm/:chartName/:chartVersion/:version"
+					path="/middlewareRepository/dynamicForm/:chartName/:chartVersion/:version"
 					component={DynamicForm}
 				/>
-				<Route path="/instanceList" component={InstanceList} exact />
+				{/* 服务列表 */}
+				<Route path="/serviceList" component={InstanceList} exact />
+				{/* 服务详情 */}
 				<Route
 					path="/instanceList/detail/:middlewareName/:type/:chartVersion"
 					component={InstanceDetails}
 					exact
 				/>
-				<Route path="/outboundRoute" component={Ingress} exact />
+				{/* 服务暴露 */}
+				<Route path="/serviceAvailable" component={Ingress} exact />
+				{/*
+					监控告警——未完成
+					容灾备份——未完成
+				*/}
+				{/* 基础资源——已废弃 */}
+				<Route path="/basicResource" component={BasicResource} exact />
+				{/* 授权管理——已废弃 */}
 				<Route
-					path="/platformOverview"
-					component={PlatformOverview}
+					path="/systemManagement/authManage"
+					component={AuthManage}
 					exact
 				/>
-				<Route path="/basicResource" component={BasicResource} exact />
-				<Route path="/authManage" component={AuthManage} exact />
+				{/* 用户管理 */}
 				<Route
-					path="/operationAudit"
+					path="/systemManagement/userManage"
+					component={UserManage}
+					exact
+				/>
+				{/* 角色管理——未完成 */}
+				{/* 操作审计 */}
+				<Route
+					path="/systemManagement/operationAudit"
 					component={OperationAudit}
 					exact
 				/>
 				<Route
-					path="/operationAudit/:account"
+					path="/systemManagement/operationAudit/:account"
 					component={OperationAuditDetail}
 					exact
 				/>
-				<Route path="/userManage" component={UserManage} exact />
+				{/* 资源池管理——未完成 */}
 			</Switch>
 		</>
 	);

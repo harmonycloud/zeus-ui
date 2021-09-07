@@ -46,7 +46,7 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'name',
-		label: '实例名称'
+		label: '服务名称'
 	},
 	{
 		dataIndex: 'aliasName',
@@ -225,7 +225,7 @@ function BasicInfo(props) {
 	const { chartVersion } = useParams();
 	const disasterInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
-		label: '备份实例名称',
+		label: '备份服务名称',
 		render: (val) => {
 			return (
 				<span
@@ -235,7 +235,7 @@ function BasicInfo(props) {
 							Dialog.show({
 								title: '提醒',
 								content:
-									'该备用实例不在当前集群命名空间，返回源实例页面请点击右上角“返回源实例”按钮',
+									'该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮',
 								onOk: () => {
 									toDetail();
 								}
@@ -252,7 +252,7 @@ function BasicInfo(props) {
 	};
 	const originInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
-		label: '源实例名称',
+		label: '源服务名称',
 		render: (val) => {
 			return (
 				<span

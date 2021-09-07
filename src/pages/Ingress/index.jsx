@@ -161,8 +161,7 @@ function IngressList(props) {
 									middlewareName
 							  );
 					});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 	const actionRender = (value, index, record) => {
@@ -395,7 +394,7 @@ function IngressList(props) {
 						cell={nameRender}
 					/>
 					<Table.Column
-						title="实例类型"
+						title="服务类型"
 						dataIndex="middlewareType"
 						filters={entry === 'detail' ? null : instanceType}
 						filterMode="single"
@@ -409,7 +408,7 @@ function IngressList(props) {
 					<Table.Column title="协议" dataIndex="protocol" />
 					<Table.Column title="访问地址" cell={addressRender} />
 					<Table.Column
-						title="实例端口"
+						title="服务端口"
 						dataIndex="httpExposePort"
 						cell={portRender}
 					/>

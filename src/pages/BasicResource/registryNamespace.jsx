@@ -103,7 +103,7 @@ const RegistryNamespace = (props) => {
 						size="xs"
 						style={{ color: '#FAC800' }}
 					/>
-					<span>中间件实例数不为0时不能取消勾选</span>
+					<span>中间件服务数不为0时不能取消勾选</span>
 				</div>
 				<div className={styles['namespace-table']}>
 					<MidTable
@@ -124,7 +124,7 @@ const RegistryNamespace = (props) => {
 							dataIndex="name"
 						/>
 						<MidTable.Column
-							title="中间件实例数"
+							title="中间件服务数"
 							dataIndex="middlewareReplicas"
 						/>
 						<MidTable.Column title="CPU配额" dataIndex="cpu" />

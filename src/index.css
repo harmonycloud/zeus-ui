@@ -380,7 +380,7 @@ table.table-list tbody tr td {
 	overflow: auto !important;
 }
 
-/** 实例日志全屏 */
+/** 服务日志全屏 */
 .log-full-screen {
   position: fixed;
   top: 0;
@@ -472,11 +472,4 @@ table.table-list tbody tr td {
 	src: url("./assets/wind-medium.woff2");
 	src: url("./assets/wind-regular.woff2");
 	src: url("./assets/wind.woff2");
-}
-.next-icon {
-	display: inline-block;
-	font-family: NextIcon !important;
-	font-style: normal;
-	font-weight: normal;
-	text-transform: none;
 }

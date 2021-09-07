@@ -277,12 +277,12 @@ const MysqlCreate = (props) => {
 					sendData.quota.mysql.cpu = values.cpu;
 					sendData.quota.mysql.memory = values.memory + 'Gi';
 				}
-				// 克隆实例
+				// 克隆服务
 				if (backupFileName) {
 					sendData.middlewareName = middlewareName;
 					sendData.backupFileName = backupFileName;
 				}
-				// 灾备实例-源实例和备实例同时创建
+				// 灾备服务-源服务和备服务同时创建
 				if (backupFlag) {
 					sendData.mysqlDTO.relationName = values.relationName;
 					sendData.mysqlDTO.relationAliasName =
@@ -312,7 +312,7 @@ const MysqlCreate = (props) => {
 						}
 					};
 				}
-				// 灾备实例-在已有源实例上创建备实例
+				// 灾备服务-在已有源服务上创建备服务
 				if (disasterOriginName) {
 					const sendDataTemp = {
 						chartName: chartName,
@@ -544,7 +544,7 @@ const MysqlCreate = (props) => {
 			}
 		});
 		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆实例
+			// 克隆服务
 			if (backupFileName) {
 				getMiddlewareDetailAndSetForm(middlewareName);
 				// getMiddlewareDetail({
@@ -591,7 +591,7 @@ const MysqlCreate = (props) => {
 			}
 		}
 		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 灾备实例
+			// 灾备服务
 			if (disasterOriginName) {
 				const sendData = {
 					clusterId: globalCluster.id,
@@ -659,7 +659,7 @@ const MysqlCreate = (props) => {
 	return (
 		<Page>
 			<Page.Header
-				title="发布MySQL实例"
+				title="发布MySQL服务"
 				className="page-header"
 				hasBackArrow
 				onBackArrowClick={() => {
@@ -670,7 +670,7 @@ const MysqlCreate = (props) => {
 				<Form {...formItemLayout} field={field}>
 					{disasterOriginName ? (
 						<>
-							<FormBlock title="源实例信息">
+							<FormBlock title="源服务信息">
 								<div className={styles['origin-info']}>
 									<ul className="form-layout">
 										<li className="display-flex">
@@ -691,7 +691,7 @@ const MysqlCreate = (props) => {
 										</li>
 										<li className="display-flex">
 											<label className="form-name">
-												<span>实例名称</span>
+												<span>服务名称</span>
 											</label>
 											<div className="form-content">
 												<FormItem>
@@ -714,7 +714,7 @@ const MysqlCreate = (props) => {
 											<div className="form-content">
 												<FormItem
 													required
-													requiredMessage="请选择灾备实例集群"
+													requiredMessage="请选择灾备服务集群"
 												>
 													<div
 														style={{
@@ -762,7 +762,7 @@ const MysqlCreate = (props) => {
 							<FormBlock
 								title={
 									<span>
-										复用源实例信息
+										复用源服务信息
 										<span className="ml-24">
 											{reuse ? '已开启' : '已关闭'}
 											<Switch
@@ -783,13 +783,13 @@ const MysqlCreate = (props) => {
 										<li className="display-flex">
 											<label className="form-name">
 												<span className="ne-required">
-													灾备实例集群
+													灾备服务集群
 												</span>
 											</label>
 											<div className="form-content">
 												<FormItem
 													required
-													requiredMessage="请选择灾备实例集群"
+													requiredMessage="请选择灾备服务集群"
 												>
 													<CascaderSelect
 														style={{
@@ -803,7 +803,7 @@ const MysqlCreate = (props) => {
 												</FormItem>
 												{reClusterFlag && (
 													<Form.Error>
-														若有可用的其它集群的情况下，不建议将灾备实例和源实例部署在一个集群
+														若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
 													</Form.Error>
 												)}
 											</div>
@@ -819,13 +819,13 @@ const MysqlCreate = (props) => {
 								<li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
-											实例名称
+											服务名称
 										</span>
 									</label>
 									<div className="form-content">
 										<FormItem
 											required
-											requiredMessage="请输入实例名称"
+											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>
@@ -905,7 +905,7 @@ const MysqlCreate = (props) => {
 											}
 											closable={false}
 										>
-											勾选强制亲和时，实例只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
+											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
 										</Balloon>
 									</label>
 									<div
@@ -990,7 +990,7 @@ const MysqlCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -1088,7 +1088,7 @@ const MysqlCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -1379,7 +1379,7 @@ const MysqlCreate = (props) => {
 						</div>
 					</FormBlock>
 					{!disasterOriginName ? (
-						<FormBlock title="灾备实例基础信息">
+						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
 								<ul className="form-layout">
 									<li className="display-flex">
@@ -1404,7 +1404,7 @@ const MysqlCreate = (props) => {
 														lineHeight: '18px'
 													}}
 												>
-													开启该模式，您可在本集群或者其他集群内创建一个同样配置的备用MySQL实例，可在“实例列表→灾备管理”菜单查看详情
+													开启该模式，您可在本集群或者其他集群内创建一个同样配置的备用MySQL服务，可在“服务列表→灾备管理”菜单查看详情
 												</span>
 											</Balloon>
 										</label>
@@ -1439,7 +1439,7 @@ const MysqlCreate = (props) => {
 											<li className="display-flex">
 												<label className="form-name">
 													<span className="ne-required">
-														灾备实例集群
+														灾备服务集群
 													</span>
 												</label>
 												<div className="form-content">
@@ -1462,7 +1462,7 @@ const MysqlCreate = (props) => {
 													</FormItem>
 													{reClusterFlag && (
 														<Form.Error>
-															若有可用的其它集群的情况下，不建议将灾备实例和源实例部署在一个集群
+															若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
 														</Form.Error>
 													)}
 												</div>
@@ -1470,13 +1470,13 @@ const MysqlCreate = (props) => {
 											<li className="display-flex">
 												<label className="form-name">
 													<span className="ne-required">
-														实例名称
+														服务名称
 													</span>
 												</label>
 												<div className="form-content">
 													<FormItem
 														required
-														requiredMessage="请输入实例名称"
+														requiredMessage="请输入服务名称"
 														pattern={pattern.name}
 														patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 													>

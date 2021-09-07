@@ -11,10 +11,8 @@ import timerClass from '@/utils/timerClass';
 import { statusRender } from '@/utils/utils';
 
 function OtherList(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const { instance, updateList } = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState([]);
@@ -55,7 +53,7 @@ function OtherList(props) {
 	const deleteFn = (name) => {
 		Dialog.show({
 			title: '提示',
-			content: `确定删除该${instance.chartName}实例？`,
+			content: `确定删除该${instance.chartName}服务？`,
 			onOk: async () => {
 				let res = await deleteMiddleware({
 					clusterId: globalCluster.id,
@@ -99,7 +97,7 @@ function OtherList(props) {
 				}
 				type="primary"
 			>
-				发布实例
+				发布服务
 			</Button>
 		)
 	};
@@ -225,7 +223,7 @@ function OtherList(props) {
 			onFilter={onFilter}
 		>
 			<Table.Column
-				title="实例名称/显示名称"
+				title="服务名称/显示名称"
 				dataIndex="name"
 				resizable
 				cell={nameRender}

@@ -21,7 +21,7 @@ export const DisasterOriginCard: (props: disasterCardProps) => JSX.Element = (
 		<div className="disaster-card">
 			<div className="disaster-card-title" onClick={toBasicInfo}>
 				<img src={origin} />
-				<span>源实例信息</span>
+				<span>源服务信息</span>
 			</div>
 			<ul className="disaster-card-info">
 				<li>
@@ -31,7 +31,7 @@ export const DisasterOriginCard: (props: disasterCardProps) => JSX.Element = (
 					</span>
 				</li>
 				<li>
-					<label>实例名称 :</label>
+					<label>服务名称 :</label>
 					<span>{originData.name}</span>
 				</li>
 				<li>
@@ -53,25 +53,24 @@ export const DisasterOriginCard: (props: disasterCardProps) => JSX.Element = (
 	);
 };
 
-export const DisasterBackupCardNone: (
-	props: disasterCardProps
-) => JSX.Element = (props: disasterCardProps) => {
-	const { toCreateBackup } = props;
-	return (
-		<div className="disaster-card">
-			<div className="disaster-card-title-backup">
-				<img src={backup} />
-				<span>灾备实例信息</span>
-			</div>
-			<ul className="disaster-card-none">
-				<div className="disaster-card-add" onClick={toCreateBackup}>
-					<Icon type="add" size="small" />
-					<span>添加灾备实例</span>
+export const DisasterBackupCardNone: (props: disasterCardProps) => JSX.Element =
+	(props: disasterCardProps) => {
+		const { toCreateBackup } = props;
+		return (
+			<div className="disaster-card">
+				<div className="disaster-card-title-backup">
+					<img src={backup} />
+					<span>灾备服务信息</span>
 				</div>
-			</ul>
-		</div>
-	);
-};
+				<ul className="disaster-card-none">
+					<div className="disaster-card-add" onClick={toCreateBackup}>
+						<Icon type="add" size="small" />
+						<span>添加灾备服务</span>
+					</div>
+				</ul>
+			</div>
+		);
+	};
 
 export const DisasterBackupCard: (props: disasterCardProps) => JSX.Element = (
 	props: disasterCardProps
@@ -81,7 +80,7 @@ export const DisasterBackupCard: (props: disasterCardProps) => JSX.Element = (
 		<div className="disaster-card">
 			<div className="disaster-card-title-backup" onClick={toDetail}>
 				<img src={backup} />
-				<span>灾备实例信息</span>
+				<span>灾备服务信息</span>
 			</div>
 			<ul className="disaster-card-info">
 				<li>
@@ -91,7 +90,7 @@ export const DisasterBackupCard: (props: disasterCardProps) => JSX.Element = (
 					</span>
 				</li>
 				<li>
-					<label>实例名称 :</label>
+					<label>服务名称 :</label>
 					<span>{backupData.name}</span>
 				</li>
 				<li>

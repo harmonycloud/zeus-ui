@@ -19,7 +19,7 @@ import './index.scss';
 import messageConfig from '@/components/messageConfig';
 
 const clusterInfo = {
-	title: '实例详情'
+	title: '服务详情'
 };
 const runStateInit = {
 	title: '运行状态',
@@ -149,7 +149,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 														messageConfig(
 															'success',
 															'成功',
-															'实例切换成功'
+															'服务切换成功'
 														)
 													);
 													onRefresh();

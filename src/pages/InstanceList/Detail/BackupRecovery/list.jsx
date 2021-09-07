@@ -65,8 +65,7 @@ export default function List(props) {
 					.finally(() => {
 						getData(clusterId, namespace, listData.name);
 					});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
@@ -102,7 +101,7 @@ export default function List(props) {
 			);
 	};
 
-	// 克隆实例
+	// 克隆服务
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
@@ -110,7 +109,7 @@ export default function List(props) {
 					disabled={record.backupFileName === ''}
 					onClick={() => toHandle(record.backupFileName)}
 				>
-					克隆实例
+					克隆服务
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -152,8 +151,7 @@ export default function List(props) {
 											listData.name
 										);
 									});
-							},
-							onCancel: () => {}
+							}
 						});
 					}}
 				>

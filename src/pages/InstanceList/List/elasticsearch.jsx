@@ -13,10 +13,8 @@ import timerClass from '@/utils/timerClass';
 import { statusRender } from '@/utils/utils';
 
 function ElasticsearchList(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const { instance, updateList } = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState([]);
@@ -55,7 +53,7 @@ function ElasticsearchList(props) {
 	const deleteFn = (name) => {
 		Dialog.show({
 			title: '提示',
-			content: '确定删除该Elasticsearch实例？',
+			content: '确定删除该Elasticsearch服务？',
 			onOk: async () => {
 				let res = await deleteMiddleware({
 					clusterId: globalCluster.id,
@@ -99,7 +97,7 @@ function ElasticsearchList(props) {
 				}
 				type="primary"
 			>
-				发布实例
+				发布服务
 			</Button>
 		)
 	};
@@ -244,7 +242,7 @@ function ElasticsearchList(props) {
 				onSort={onSort}
 			>
 				<Table.Column
-					title="实例名称/显示名称"
+					title="服务名称/显示名称"
 					dataIndex="name"
 					resizable
 					cell={nameRender}

@@ -80,7 +80,7 @@ function MysqlList(props) {
 	const deleteFn = (name) => {
 		Dialog.show({
 			title: '提示',
-			content: '确定删除该Mysql实例？',
+			content: '确定删除该Mysql服务？',
 			onOk: async () => {
 				let res = await deleteMiddleware({
 					clusterId: globalCluster.id,
@@ -228,12 +228,12 @@ function MysqlList(props) {
 				}
 				type="primary"
 			>
-				发布实例
+				发布服务
 			</Button>
 		),
 		secondary: (
 			<Checkbox checked={backupCheck} onChange={handleFilterBackup}>
-				灾备实例
+				灾备服务
 			</Checkbox>
 		)
 	};
@@ -433,7 +433,7 @@ function MysqlList(props) {
 				onFilter={onFilter}
 			>
 				<Table.Column
-					title="实例名称/显示名称"
+					title="服务名称/显示名称"
 					dataIndex="name"
 					resizable
 					cell={nameRender}
@@ -447,7 +447,7 @@ function MysqlList(props) {
 				/>
 				<Table.Column title="备注" dataIndex="annotation" />
 				<Table.Column
-					title="关联实例"
+					title="关联服务"
 					dataIndex="associated"
 					cell={associatedRender}
 				/>
