@@ -33,9 +33,11 @@ export default function OperationAudit(): JSX.Element {
 	const [methods, setMethods] = useState<string[]>([]); // * 方法筛选保存内容
 	const [modules, setModules] = useState<string[]>([]); // * 父模块筛选保存内容
 	const [childModules, setChildModules] = useState<string[]>([]); // * 子模块筛选保存内容
-	const [beginTimeNormalOrder, setBeginTimeNormalOrder] = useState<boolean>(); // * 排序
+	const [beginTimeNormalOrder, setBeginTimeNormalOrder] =
+		useState<boolean>(false); // * 排序
 	const [executeTimeNormalOrder, setExecuteTimeNormalOrder] =
 		useState<boolean>(); // * 排序
+	const [statusOrder, setStatusOrder] = useState<boolean>(false);
 	// const [showColumnDialog, setShowColumnDialog] = useState(false); // todo 展示column列表
 	const history = useHistory();
 	useEffect(() => {
@@ -89,7 +91,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAudits(sendData).then((res) => {
 			if (res.success) {
@@ -131,7 +133,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
@@ -184,7 +186,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
@@ -199,7 +201,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		switch (keys[0]) {
 			case 'roleName':
@@ -217,7 +219,6 @@ export default function OperationAudit(): JSX.Element {
 		getAuditLists(sendData);
 	};
 	const onModuleChange = (value: any, data: any, extra: any) => {
-		console.log(value, data, extra);
 		if (data.children) {
 			setModules([value]);
 		} else {
@@ -236,7 +237,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules: [],
 			childModules: [],
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
@@ -249,13 +250,12 @@ export default function OperationAudit(): JSX.Element {
 			roles: roles,
 			requestMethods: methods,
 			modules,
-			childModules
+			childModules,
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		console.log(dataIndex);
-		console.log(order);
 		const sendData = {
 			current: 1,
 			size: 10,
@@ -265,7 +265,8 @@ export default function OperationAudit(): JSX.Element {
 			modules,
 			childModules,
 			beginTimeNormalOrder: beginTimeNormalOrder,
-			executeTimeNormalOrder: executeTimeNormalOrder
+			executeTimeNormalOrder: executeTimeNormalOrder,
+			statusOrder: statusOrder
 		};
 		if (dataIndex === 'executeTime') {
 			if (order === 'desc') {
@@ -275,13 +276,21 @@ export default function OperationAudit(): JSX.Element {
 				setExecuteTimeNormalOrder(true);
 				sendData.executeTimeNormalOrder = true;
 			}
-		} else {
+		} else if (dataIndex === 'beginTime') {
 			if (order === 'desc') {
 				setBeginTimeNormalOrder(false);
 				sendData.beginTimeNormalOrder = false;
 			} else {
 				setBeginTimeNormalOrder(true);
 				sendData.beginTimeNormalOrder = true;
+			}
+		} else if (dataIndex === 'status') {
+			if (order === 'desc') {
+				setStatusOrder(true);
+				sendData.statusOrder = true;
+			} else {
+				setStatusOrder(false);
+				sendData.statusOrder = false;
 			}
 		}
 		setCurrent(1);

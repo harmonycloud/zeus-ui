@@ -63,4 +63,5 @@ export interface sendDataAuditProps {
 	childModules?: string[];
 	beginTimeNormalOrder?: boolean;
 	executeTimeNormalOrder?: boolean;
+	statusOrder?: boolean;
 }
