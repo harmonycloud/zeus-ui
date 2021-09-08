@@ -473,3 +473,8 @@ table.table-list tbody tr td {
 	src: url("./assets/wind-regular.woff2");
 	src: url("./assets/wind.woff2");
 }
+.text-hidden {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}

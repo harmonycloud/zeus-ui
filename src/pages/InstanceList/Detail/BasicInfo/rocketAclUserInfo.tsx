@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Balloon } from '@alicloud/console-components';
 import DataFields from '@alicloud/console-components-data-fields';
+import PasswordDisplay from '@/components/PasswordDisplay';
 
 const Tooltip = Balloon.Tooltip;
 const itemsConfig = [
@@ -10,7 +11,11 @@ const itemsConfig = [
 		label: '是否为Admin',
 		render: (val: boolean) => (val ? '是' : '否')
 	},
-	{ dataIndex: 'secretKey', label: '密码' },
+	{
+		dataIndex: 'secretKey',
+		label: '密码',
+		render: (val: string) => <PasswordDisplay value={val} />
+	},
 	{ dataIndex: 'whiteRemoteAddress', label: '用户IP白名单' },
 	{
 		dataIndex: 'topics',
