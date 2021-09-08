@@ -1,5 +1,4 @@
-import { resProps } from '@/utils/comment';
-
+import { resProps } from '@/types/comment';
 export interface userProps {
 	userName: string;
 	createTime?: string | null;

@@ -34,7 +34,9 @@ const hideRoute = [
 	'/authManage',
 	'/platformOverview',
 	'/operationAudit',
-	'/userManage'
+	'/userManagement',
+	'/resourcePoolManagement',
+	'/roleManagement'
 ];
 
 const header = (

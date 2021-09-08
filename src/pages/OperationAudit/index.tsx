@@ -13,7 +13,7 @@ import {
 } from '@alicloud/console-components';
 import styled from 'styled-components';
 import { auditProps, sendDataAuditProps } from './audit';
-import { filtersProps } from '@/utils/comment';
+import { filtersProps } from '@/types/comment';
 import Storage from '@/utils/storage';
 import { getAudits, getModules } from '@/services/audit';
 import messageConfig from '@/components/messageConfig';
@@ -160,7 +160,7 @@ export default function OperationAudit(): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						history.push({
-							pathname: `/operationAudit/${record.account}`,
+							pathname: `/systemManagement/operationAudit/${record.account}`,
 							state: {
 								...record
 							}

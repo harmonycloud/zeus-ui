@@ -23,7 +23,7 @@ const Monitor = (props) => {
 	const [menuHide, setMenuHide] = useState(false);
 
 	useEffect(() => {
-		if (!customMid || capabilities.includes('ingress')) {
+		if (!customMid || capabilities.includes('monitoring')) {
 			if (type && monitor) {
 				getMiddlewareMonitorUrl({
 					clusterId,
@@ -64,7 +64,7 @@ const Monitor = (props) => {
 		);
 	});
 
-	if (customMid && !capabilities.includes('ingress')) {
+	if (customMid && !capabilities.includes('monitoring')) {
 		return <DefaultPicture />;
 	}
 

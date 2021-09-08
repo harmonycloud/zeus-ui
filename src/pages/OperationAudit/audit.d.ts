@@ -1,4 +1,4 @@
-import { resProps } from '@/utils/comment';
+import { resProps } from '@/types/comment';
 
 export interface auditProps {
 	id: number;

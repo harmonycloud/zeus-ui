@@ -14,18 +14,23 @@ import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
 import InstanceDetails from '@/pages/InstanceList/Detail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
-import BasicResource from '@/pages/BasicResource/index';
-import AuthManage from '@/pages/AuthManage/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
 import OperationAudit from '@/pages/OperationAudit/index';
 import UserManage from '@/pages/UserManage';
 import OperationAuditDetail from '@/pages/OperationAudit/detail';
-import ServiceList from '@/pages/serviceList';
-import ServiceAvailable from '@/pages/serviceAvailable';
+import ServiceList from '@/pages/ServiceList';
+import ServiceAvailable from '@/pages/ServiceAvailable';
+import DataMonitor from '@/pages/DataMonitor';
+import LogDetail from '@/pages/LogDetail';
+import AlarmCenter from '@/pages/AlarmCenter';
+import DisasterCenter from '@/pages/DisasterCenter';
+import DataSecurity from '@/pages/DataSecurity';
 // ! 已弃用组件
-import Ingress from '@/pages/Ingress/index';
-import Home from '@/pages/Home/index';
-import InstanceList from '@/pages/InstanceList/index';
+// import BasicResource from '@/pages/BasicResource/index';
+// import AuthManage from '@/pages/AuthManage/index';
+// import Ingress from '@/pages/Ingress/index';
+// import Home from '@/pages/Home/index';
+// import InstanceList from '@/pages/InstanceList/index';
 
 const Routes = withRouter((props) => {
 	return (
@@ -111,18 +116,44 @@ const Routes = withRouter((props) => {
 					component={ServiceAvailable}
 					exact
 				/>
-				{/*
-					监控告警——未完成
-					容灾备份——未完成
-				*/}
-				{/* 基础资源——已废弃 */}
-				<Route path="/basicResource" component={BasicResource} exact />
-				{/* 授权管理——已废弃 */}
+				{/* 监控告警——数据监控 */}
 				<Route
+					path="/monitorAlarm/dataMonitor"
+					component={DataMonitor}
+					exact
+				/>
+				{/* 监控告警——日志详情 */}
+				<Route
+					path="/monitorAlarm/logDetail"
+					component={LogDetail}
+					exact
+				/>
+				{/* 监控告警——告警中心 */}
+				<Route
+					path="/monitorAlarm/alarmCenter"
+					component={AlarmCenter}
+					exact
+				/>
+				{/* 容灾备份——灾备中心 */}
+				<Route
+					path="/disasterBackup/disasterCenter"
+					component={DisasterCenter}
+					exact
+				/>
+				{/* 容灾备份——数据安全 */}
+				<Route
+					path="/disasterBackup/dataSecurity"
+					component={DataSecurity}
+					exact
+				/>
+				{/* 基础资源——已废弃 */}
+				{/* <Route path="/basicResource" component={BasicResource} exact /> */}
+				{/* 授权管理——已废弃 */}
+				{/* <Route
 					path="/systemManagement/authManage"
 					component={AuthManage}
 					exact
-				/>
+				/> */}
 				{/* 用户管理 */}
 				<Route
 					path="/systemManagement/userManagement"
