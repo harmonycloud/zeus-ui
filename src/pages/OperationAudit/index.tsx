@@ -33,11 +33,13 @@ export default function OperationAudit(): JSX.Element {
 	const [methods, setMethods] = useState<string[]>([]); // * 方法筛选保存内容
 	const [modules, setModules] = useState<string[]>([]); // * 父模块筛选保存内容
 	const [childModules, setChildModules] = useState<string[]>([]); // * 子模块筛选保存内容
-	const [beginTimeNormalOrder, setBeginTimeNormalOrder] =
-		useState<boolean>(false); // * 排序
-	const [executeTimeNormalOrder, setExecuteTimeNormalOrder] =
-		useState<boolean>(); // * 排序
-	const [statusOrder, setStatusOrder] = useState<boolean>(false);
+	const [beginTimeNormalOrder, setBeginTimeNormalOrder] = useState<
+		boolean | null
+	>(false); // * 排序
+	const [executeTimeNormalOrder, setExecuteTimeNormalOrder] = useState<
+		boolean | null
+	>(); // * 排序
+	const [statusOrder, setStatusOrder] = useState<boolean | null>(false);
 	// const [showColumnDialog, setShowColumnDialog] = useState(false); // todo 展示column列表
 	const history = useHistory();
 	useEffect(() => {
@@ -256,7 +258,7 @@ export default function OperationAudit(): JSX.Element {
 		getAuditLists(sendData);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		const sendData = {
+		const sendData: sendDataAuditProps = {
 			current: 1,
 			size: 10,
 			searchKeyWord: keyword,
@@ -271,26 +273,50 @@ export default function OperationAudit(): JSX.Element {
 		if (dataIndex === 'executeTime') {
 			if (order === 'desc') {
 				setExecuteTimeNormalOrder(false);
+				setBeginTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.executeTimeNormalOrder = false;
+				sendData.beginTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			} else {
 				setExecuteTimeNormalOrder(true);
+				setBeginTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.executeTimeNormalOrder = true;
+				sendData.beginTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			}
 		} else if (dataIndex === 'beginTime') {
 			if (order === 'desc') {
 				setBeginTimeNormalOrder(false);
+				setExecuteTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.beginTimeNormalOrder = false;
+				sendData.executeTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			} else {
 				setBeginTimeNormalOrder(true);
+				setExecuteTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.beginTimeNormalOrder = true;
+				sendData.executeTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			}
 		} else if (dataIndex === 'status') {
 			if (order === 'desc') {
 				setStatusOrder(true);
+				setBeginTimeNormalOrder(null);
+				setExecuteTimeNormalOrder(null);
 				sendData.statusOrder = true;
+				sendData.beginTimeNormalOrder = null;
+				sendData.executeTimeNormalOrder = null;
 			} else {
 				setStatusOrder(false);
+				setBeginTimeNormalOrder(null);
+				setExecuteTimeNormalOrder(null);
 				sendData.statusOrder = false;
+				sendData.beginTimeNormalOrder = null;
+				sendData.executeTimeNormalOrder = null;
 			}
 		}
 		setCurrent(1);
