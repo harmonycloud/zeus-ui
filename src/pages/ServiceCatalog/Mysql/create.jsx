@@ -1490,9 +1490,7 @@ const MysqlCreate = (props) => {
 											</li>
 											<li className="display-flex">
 												<label className="form-name">
-													<span className="ne-required">
-														显示名称
-													</span>
+													<span>显示名称</span>
 												</label>
 												<div className="form-content">
 													<FormItem

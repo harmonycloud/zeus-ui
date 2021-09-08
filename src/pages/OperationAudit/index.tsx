@@ -425,6 +425,7 @@ export default function OperationAudit(): JSX.Element {
 						title="状态码"
 						dataIndex="status"
 						width={100}
+						sortable
 					/>
 					<Table.Column
 						title="操作时间"
