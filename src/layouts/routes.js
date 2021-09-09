@@ -25,6 +25,7 @@ import LogDetail from '@/pages/LogDetail';
 import AlarmCenter from '@/pages/AlarmCenter';
 import DisasterCenter from '@/pages/DisasterCenter';
 import DataSecurity from '@/pages/DataSecurity';
+import MiddlewareRepository from '@/pages/MiddlewareRepository';
 // ! 已弃用组件
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
@@ -53,7 +54,7 @@ const Routes = withRouter((props) => {
 				{/* 中间件仓库 */}
 				<Route
 					path="/middlewareRepository"
-					component={ServiceCatalog}
+					component={MiddlewareRepository}
 					exact
 				/>
 				{/* 4款中间件发布 + 动态表单的发布*/}
