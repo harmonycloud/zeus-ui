@@ -226,12 +226,12 @@ const subClick = (
 	history: History,
 	items: IItemDescriptor[]
 ) => {
-	console.log(openKey, openInfo, history, items);
+	// console.log(openKey, openInfo, history, items);
 	if (openKey.length > 0) {
 		const goal = items.filter((item) => item.key === openKey[0])[0];
 		const goalString: string =
 			(goal.items && goal.items[0].key) || 'dataOverview';
-		console.log(goalString);
+		// console.log(goalString);
 		if (openInfo.open) {
 			history.push(goalString);
 		}
@@ -239,7 +239,7 @@ const subClick = (
 };
 
 const mapLocationToActiveKey = (location: Location) => {
-	console.log(location);
+	// console.log(location);
 	const pathArray = location.pathname.split('/');
 	if (!location || !location.pathname || location.pathname === '/') {
 		return '/dataOverview';
@@ -250,7 +250,7 @@ const mapLocationToActiveKey = (location: Location) => {
 };
 
 const mapLocationToOpenKey = (location: Location) => {
-	console.log(location);
+	// console.log(location);
 	const pathArray = location.pathname.split('/');
 	if (!location || !location.pathname || location.pathname === '/')
 		return 'workbench';

@@ -58,7 +58,7 @@ const RegistryNamespace = (props) => {
 				withQuota: true,
 				withMiddleware: true
 			}).then((res) => {
-				console.log(res);
+				// console.log(res);
 				if (res.success) {
 					let temp = res.data.map((item, index) => ({
 						...item,

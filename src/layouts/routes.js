@@ -26,6 +26,7 @@ import AlarmCenter from '@/pages/AlarmCenter';
 import DisasterCenter from '@/pages/DisasterCenter';
 import DataSecurity from '@/pages/DataSecurity';
 import MiddlewareRepository from '@/pages/MiddlewareRepository';
+import MiddlewareVersion from '@/pages/MiddlewareRepository/middlewareVersion';
 // ! 已弃用组件
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
@@ -102,6 +103,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/middlewareRepository/dynamicForm/:chartName/:chartVersion/:version"
 					component={DynamicForm}
+				/>
+				{/* 中间件仓库-版本管理 */}
+				<Route
+					path="/middlewareRepository/versionManagement/:type"
+					component={MiddlewareVersion}
 				/>
 				{/* 服务列表 */}
 				<Route path="/serviceList" component={ServiceList} exact />

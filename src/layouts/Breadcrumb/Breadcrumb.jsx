@@ -15,7 +15,7 @@ export default function MdBreadcrumb(props) {
 		const validPathes = arr.filter((i) =>
 			Object.keys(breadcrumbMap).includes(i)
 		);
-		console.log(validPathes);
+		// console.log(validPathes);
 		setPathList(validPathes);
 	};
 

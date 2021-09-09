@@ -21,10 +21,12 @@ import messageConfig from '@/components/messageConfig';
 
 // 资源池、分区不可改变路由名单
 const disabledRoute = [
-	'/serviceCatalog/mysqlCreate',
-	'/serviceCatalog/redisCreate',
-	'/serviceCatalog/elasticsearchCreate',
-	'/serviceCatalog/rocketmqCreate',
+	'/middlewareRepository/mysqlCreate',
+	'/middlewareRepository/redisCreate',
+	'/middlewareRepository/elasticsearchCreate',
+	'/middlewareRepository/rocketmqCreate',
+	'/middlewareRepository/dynamicForm',
+	'/middlewareRepository/versionManagement',
 	'/instanceList/detail'
 ];
 

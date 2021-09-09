@@ -13,3 +13,26 @@ $component-name: 'middleware-repository';
 	justify-content: space-between;
 	margin-top: 40px;
 }
+.#{$component-name}-list-display {
+	.#{$component-name}-list-item {
+		width: 100%;
+		height: auto;
+		padding: 16px 20px;
+		background-color: $white;
+		margin-bottom: 13px;
+		& > p {
+			font-size: 14px;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: 500;
+			color: $text-color-title;
+			@include lineHeight(24px);
+		}
+		.#{$component-name}-list-content {
+			display: flex;
+			margin-top: 16px;
+		}
+	}
+}
+.middleware-version-content{
+	margin-top: 16px;
+}

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Button, Radio } from '@alicloud/console-components';
+import { Button, Radio, Message } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getMiddlewareRepository } from '@/services/repository';
 import { StoreState, globalVarProps } from '@/types/index';
+import { middlewareProps, middlewareListProps } from './middleware';
+import messageConfig from '@/components/messageConfig';
+import MiddlewareItem from './MiddlewareItem';
+import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import './index.scss';
 
 const RadioGroup = Radio.Group;
@@ -11,11 +15,13 @@ interface middlewareRepositoryProps {
 	globalVar: globalVarProps;
 }
 function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
-	console.log(props);
 	const {
 		globalVar: { cluster, namespace }
 	} = props;
-	const [rule, setRule] = useState<string>('type');
+	const [rule, setRule] = useState<string>('');
+	const [originData, setOriginData] = useState<middlewareProps[]>([]);
+	const [dataSource, setDataSource] = useState<middlewareListProps>({});
+	const [visible, setVisible] = useState<boolean>(false);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -24,12 +30,60 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 				namespace: namespace.name
 			}).then((res) => {
 				console.log(res);
+				if (res.success) {
+					if (mounted) {
+						setOriginData(res.data);
+						setRule('type');
+					}
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
 			});
 		}
 		return () => {
 			mounted = false;
 		};
 	}, [namespace]);
+	useEffect(() => {
+		if (rule === 'type') {
+			const list = Array.from(
+				new Set(originData.map((item) => item.type))
+			);
+			console.log(list);
+			const obj = {};
+			list.forEach((item) => {
+				if (item === null) {
+					obj['其他'] = originData.filter((i) => i.type === item);
+				} else {
+					obj[item] = originData.filter((i) => i.type === item);
+				}
+			});
+			setDataSource(obj);
+		} else if (rule === 'source') {
+			console.log(originData);
+			const obj = {};
+			obj['官方'] = originData.filter((i) => i.official === true);
+			obj['非官方'] = originData.filter((i) => i.official !== true);
+			setDataSource(obj);
+		}
+	}, [rule]);
+	const getData = () => {
+		getMiddlewareRepository({
+			clusterId: cluster.id,
+			namespace: namespace.name
+		}).then((res) => {
+			console.log(res);
+			if (res.success) {
+				setOriginData(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
+	const onCreate = () => {
+		setVisible(false);
+		getData();
+	};
 	return (
 		<Page>
 			<Header
@@ -44,7 +98,9 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					</span>
 				</div>
 				<div className="middleware-repository-action-layout">
-					<Button type="primary">上架中间件</Button>
+					<Button type="primary" onClick={() => setVisible(true)}>
+						上架中间件
+					</Button>
 					<RadioGroup
 						dataSource={[
 							{ value: 'type', label: '类型' },
@@ -56,7 +112,39 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 						onChange={(value) => setRule(value as string)}
 					/>
 				</div>
+				<div className="middleware-repository-list-display">
+					{JSON.stringify(dataSource) !== '{}' &&
+						Object.keys(dataSource).map((key) => {
+							return (
+								<div
+									key={key}
+									className="middleware-repository-list-item"
+								>
+									<p>{key}</p>
+									<div className="middleware-repository-list-content">
+										{dataSource[key].map((item) => {
+											return (
+												<MiddlewareItem
+													key={item.id}
+													{...item}
+													clusterId={cluster.id}
+													onRefresh={getData}
+												/>
+											);
+										})}
+									</div>
+								</div>
+							);
+						})}
+				</div>
 			</Content>
+			{visible && (
+				<UploadMiddlewareForm
+					visible={visible}
+					onCancel={() => setVisible(false)}
+					onCreate={onCreate}
+				/>
+			)}
 		</Page>
 	);
 }

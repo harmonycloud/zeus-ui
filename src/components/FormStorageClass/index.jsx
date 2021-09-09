@@ -28,7 +28,7 @@ export default function FormStorageClass(props) {
 	}, [cluster]);
 
 	function handleChange(value) {
-		console.log(value);
+		// console.log(value);
 		setValue(value);
 		// props.field.setValues({
 		// 	[`${props.label}`]: value

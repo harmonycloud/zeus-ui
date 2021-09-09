@@ -44,7 +44,7 @@ export default function ComponentsLoading(props) {
 	};
 
 	const onCreate = (values) => {
-		console.log(values);
+		// console.log(values);
 		if (type === 'monitor') {
 			const sendData = {
 				url: {

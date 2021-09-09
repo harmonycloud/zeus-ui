@@ -48,7 +48,7 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 			if (error) return;
 			const v: sendDataProps = field.getValues();
 			const rsaPass = encrypt(v.password, publicKey);
-			console.log(rsaPass);
+			// console.log(rsaPass);
 			const newRsaPass = encrypt(v.newPassword, publicKey);
 			const reNewRsaPass = encrypt(v.reNewPassword, publicKey);
 			const sendData = {

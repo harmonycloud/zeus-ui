@@ -66,7 +66,7 @@ function AlarmTimeLine(props) {
 	const toDetail = (item) => {
 		// console.log(item);
 		if (item.chartVersion) {
-			console.log(type);
+			// console.log(type);
 			if (type === 'default') {
 				history.push(
 					`/instanceList/detail/${item.name}/${item.type}/${item.type}/${item.chartVersion}`
