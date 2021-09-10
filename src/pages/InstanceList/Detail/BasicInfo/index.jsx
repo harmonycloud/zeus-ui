@@ -643,7 +643,12 @@ function BasicInfo(props) {
 											<Col fixedSpan={8}>
 												全局IP白名单
 											</Col>
-											<Col>{aclData.globalIps}</Col>
+											<Col
+												title={aclData.globalIps}
+												className="text-hidden"
+											>
+												{aclData.globalIps}
+											</Col>
 										</Row>
 									</div>
 								)}

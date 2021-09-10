@@ -52,6 +52,7 @@ const InstanceDetails = (props) => {
 	const [status, setStatus] = useState();
 	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
 	const [visible, setVisible] = useState(false);
+	const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
 
@@ -91,6 +92,7 @@ const InstanceDetails = (props) => {
 		getMiddlewareDetail(sendData).then((res) => {
 			if (res.success) {
 				setData(res.data);
+				setStorageClassName(res?.data?.quota?.mysql?.storageClassName);
 				setStatus(res.data.status || 'Failed');
 				if (res.data.dynamicValues) {
 					setCustomMid(true);
@@ -112,7 +114,7 @@ const InstanceDetails = (props) => {
 		<Menu id="mid-menu" selectedKeys={selected} onSelect={handleMenu}>
 			<Menu.Item key="basicInfo">基本信息</Menu.Item>
 			<Menu.Item key="highAvailability">高可用性</Menu.Item>
-			{type === 'mysql' ? (
+			{type === 'mysql' && storageClassName !== 'local-path' ? (
 				<Menu.Item key="backupRecovery">备份恢复</Menu.Item>
 			) : null}
 			<Menu.Item key="externalAccess">对外访问</Menu.Item>

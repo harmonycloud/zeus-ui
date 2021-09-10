@@ -361,6 +361,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 											0
 										)
 									}
+									value={topics[0].value}
 									defaultValue="DENY"
 								>
 									<Option value="DENY">DENY</Option>
@@ -503,6 +504,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								/>
 								<span className="acl-equal">=</span>
 								<Select
+									value={groups[0].value}
 									defaultValue="DENY"
 									style={{ width: '22%' }}
 									onChange={(value: string) =>

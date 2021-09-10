@@ -7,6 +7,7 @@ import Table from '@/components/MidTable';
 import { getUserList, deleteUser, resetPassword } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import { userProps } from './user';
+import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
 
 function UserManage(): JSX.Element {
@@ -53,6 +54,12 @@ function UserManage(): JSX.Element {
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
 			onOk: () => {
+				if (record.userName === 'admin') {
+					Message.show(
+						messageConfig('error', '失败', 'admin用户无法删除')
+					);
+					return;
+				}
 				deleteUser({ userName: record.userName }).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -127,7 +134,7 @@ function UserManage(): JSX.Element {
 		);
 	};
 	const createTimeRender = (value: string) => {
-		if (!value) return '';
+		if (!value) return '/';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 	const Operation = {
@@ -172,8 +179,16 @@ function UserManage(): JSX.Element {
 				>
 					<Table.Column title="登录账户" dataIndex="userName" />
 					<Table.Column title="用户名" dataIndex="aliasName" />
-					<Table.Column title="邮箱" dataIndex="email" />
-					<Table.Column title="手机" dataIndex="phone" />
+					<Table.Column
+						title="邮箱"
+						dataIndex="email"
+						cell={nullRender}
+					/>
+					<Table.Column
+						title="手机"
+						dataIndex="phone"
+						cell={nullRender}
+					/>
 					<Table.Column
 						title="创建时间"
 						dataIndex="createTime"
