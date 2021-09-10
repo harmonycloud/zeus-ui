@@ -154,7 +154,7 @@ const MysqlCreate = (props) => {
 	const [storageClassList, setStorageClassList] = useState([]);
 	const [maxCpu, setMaxCpu] = useState({}); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
-	const [replicaCount, setReplicaCount] = useState(1);
+	// const [replicaCount, setReplicaCount] = useState(1);
 	// * 灾备
 	const [backupFlag, setBackupFlag] = useState(false);
 	const [reuse, setReuse] = useState(true);
@@ -225,9 +225,9 @@ const MysqlCreate = (props) => {
 						}
 					},
 					mysqlDTO: {
-						replicaCount: replicaCount,
+						replicaCount: 1,
 						openDisasterRecoveryMode: backupFlag,
-						type: 'master-slave'
+						type: 'master-master'
 					}
 				};
 				// 主机亲和
@@ -289,7 +289,7 @@ const MysqlCreate = (props) => {
 						values.relationAliasName;
 					sendData.mysqlDTO.relationClusterId = relationClusterId;
 					sendData.mysqlDTO.relationNamespace = relationNamespace;
-					sendData.mysqlDTO.type = 'master-slave';
+					sendData.mysqlDTO.type = 'master-master';
 					sendData.mysqlDTO.isSource = true;
 					sendData.relationMiddleware = {
 						chartName: chartName,
@@ -343,7 +343,7 @@ const MysqlCreate = (props) => {
 							}
 						},
 						mysqlDTO: {
-							replicaCount: replicaCount,
+							replicaCount: 1,
 							openDisasterRecoveryMode: true,
 							relationName: values.name,
 							relationAliasName: values.aliasName,
@@ -1215,7 +1215,7 @@ const MysqlCreate = (props) => {
 												setMode(value)
 											}
 										/>
-										<div>
+										{/* <div>
 											<label style={{ margin: '0 16px' }}>
 												自定义从节点数量
 											</label>
@@ -1230,7 +1230,7 @@ const MysqlCreate = (props) => {
 												max={10}
 												min={1}
 											/>
-										</div>
+										</div> */}
 									</div>
 								</li>
 								<li className="display-flex form-li">
