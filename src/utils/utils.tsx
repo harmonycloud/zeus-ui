@@ -1,6 +1,8 @@
 import React from 'react';
 import { Icon, Balloon } from '@alicloud/console-components';
+import { api } from '@/api.json';
 import JSEncrypt from 'jsencrypt';
+import moment from 'moment';
 
 // * 组件复用
 export const statusRender: (value: string) => JSX.Element = (value: string) => {
@@ -302,6 +304,22 @@ export const serviceListStatusRender: (
 				</Balloon>
 			);
 	}
+};
+export const iconTypeRender = (value: string, index: number, record: any) => {
+	return (
+		<div className="icon-type-content">
+			<img
+				width={14}
+				height={14}
+				src={`${api}/images/middleware/${record.imagePath}`}
+				alt={record.chartName}
+			/>
+			{value}
+		</div>
+	);
+};
+export const timeRender = (value: string, index: number, record: any) => {
+	return moment(value).format('YYYY-MM-DD HH:mm:ss');
 };
 
 // * 函数复用

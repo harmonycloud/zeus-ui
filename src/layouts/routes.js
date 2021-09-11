@@ -27,6 +27,7 @@ import DisasterCenter from '@/pages/DisasterCenter';
 import DataSecurity from '@/pages/DataSecurity';
 import MiddlewareRepository from '@/pages/MiddlewareRepository';
 import MiddlewareVersion from '@/pages/MiddlewareRepository/middlewareVersion';
+import ResourcePoolManagement from '@/pages/ResourcePoolManagement';
 // ! 已弃用组件
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
@@ -111,12 +112,17 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务列表 */}
 				<Route path="/serviceList" component={ServiceList} exact />
-				{/* 服务详情 */}
+				{/* 服务详情 - 实例详情*/}
 				<Route
-					path="/instanceList/detail/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:currentTab/:middlewareName/:type/:chartVersion"
 					component={InstanceDetails}
 					exact
 				/>
+				{/* <Route
+					path="/serviceList/highAvailability/:middlewareName/:type/:chartVersion"
+					component={InstanceDetails}
+					exact
+				/> */}
 				{/* 服务暴露 */}
 				<Route
 					path="/serviceAvailable"
@@ -179,7 +185,12 @@ const Routes = withRouter((props) => {
 					component={OperationAuditDetail}
 					exact
 				/>
-				{/* 资源池管理——未完成 */}
+				{/* 资源池管理 */}
+				<Route
+					path="/systemManagement/resourcePoolManagement"
+					component={ResourcePoolManagement}
+					exact
+				/>
 			</Switch>
 		</>
 	);

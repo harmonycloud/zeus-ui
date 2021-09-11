@@ -157,7 +157,12 @@ export default function MiddlewareItem(
 	return (
 		<div className="middleware-item-content">
 			<div className="middleware-item-icon">
-				<img src={`${api}/images/middleware/${imagePath}`} alt={name} />
+				<img
+					height={60}
+					width={60}
+					src={`${api}/images/middleware/${imagePath}`}
+					alt={name}
+				/>
 				<div className="middleware-item-action-content">
 					{status === 2 ? (
 						<div

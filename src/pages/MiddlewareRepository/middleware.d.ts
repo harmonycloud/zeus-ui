@@ -1,6 +1,7 @@
 export interface middlewareProps {
 	chartName: string;
 	chartVersion: string;
+	createTime: string | null;
 	description: string;
 	grafanaId: null;
 	id: number;

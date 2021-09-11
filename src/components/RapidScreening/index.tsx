@@ -3,7 +3,7 @@ import { Icon } from '@alicloud/console-components';
 import Tag from './tag';
 import './index.scss';
 
-interface listProps {
+export interface listProps {
 	name: string;
 	count: number;
 }

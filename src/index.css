@@ -478,3 +478,10 @@ table.table-list tbody tr td {
 	white-space:nowrap;
 	text-overflow:ellipsis;
 }
+.icon-type-content{
+	display: flex;
+	align-items: center;
+}
+.icon-type-content > img {
+	margin-right: 4px;
+}

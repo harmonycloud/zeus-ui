@@ -28,5 +28,7 @@ export default {
 	roleManagement: '角色管理',
 	operationAudit: '操作审计',
 	resourcePoolManagement: '资源池管理',
-	versionManagement: '版本管理'
+	versionManagement: '版本管理',
+	basicInfo: '基本详情',
+	highAvailability: '实例详情'
 };

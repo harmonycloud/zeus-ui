@@ -4,6 +4,7 @@ import * as SERVICE from './serviceList.constants';
 interface listParamsProps {
 	clusterId: string;
 	namespace: string;
+	keyword: string;
 }
 
 export const getList = (params: listParamsProps) => {

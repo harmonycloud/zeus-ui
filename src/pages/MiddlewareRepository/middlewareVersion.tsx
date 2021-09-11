@@ -9,6 +9,8 @@ import { getTypeVersion } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import { middlewareProps } from './middleware';
 import Table from '@/components/MidTable';
+import { iconTypeRender } from '@/utils/utils';
+import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import './index.scss';
 
 interface versionProps {
@@ -16,6 +18,11 @@ interface versionProps {
 }
 interface paramsProps {
 	type: string;
+}
+enum versionStatus {
+	now = '当前版本',
+	future = '可安装升级版本',
+	history = '历史版本'
 }
 function MiddlewareVersion(props: versionProps): JSX.Element {
 	const {
@@ -45,6 +52,25 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 			mounted = false;
 		};
 	}, [props]);
+	const getData = () => {
+		getTypeVersion({
+			clusterId: cluster.id,
+			type: params.type
+		}).then((res) => {
+			if (res.success) {
+				setOriginData(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
+	useEffect(() => {
+		setDataSource([...originData]);
+	}, [originData]);
+	const onCreate = () => {
+		setVisible(false);
+		getData();
+	};
 	const Operation = {
 		primary: (
 			<Button onClick={() => setVisible(true)} type="primary">
@@ -61,15 +87,14 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 			);
 			setDataSource(list);
 		} else {
-			setDataSource(dataSource);
+			setDataSource(originData);
 		}
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
-			const dsTemp = dataSource.sort((a, b) => {
+			const dsTemp = originData.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				console.log(result);
 				return order === 'asc'
 					? result > 0
 						? 1
@@ -80,6 +105,47 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 			});
 			setDataSource([...dsTemp]);
 		}
+	};
+	const versionStatusRender = (
+		value: string,
+		index: number,
+		record: middlewareProps
+	) => {
+		const color =
+			value === 'now'
+				? '#00A7FA'
+				: value === 'future'
+				? '#52C41A'
+				: '#666666';
+		const bgColor =
+			value === 'now'
+				? '#EBF8FF'
+				: value === 'future'
+				? '#F6FFED'
+				: '#F5F5F5';
+		return (
+			<div
+				className="version-status-display"
+				style={{
+					color: color,
+					backgroundColor: bgColor,
+					borderColor: color
+				}}
+			>
+				{versionStatus[value]}
+			</div>
+		);
+	};
+	const actionRender = (
+		value: string,
+		index: number,
+		record: middlewareProps
+	) => {
+		return (
+			record.versionStatus === 'future' && (
+				<span className="name-link">安装升级</span>
+			)
+		);
 	};
 	return (
 		<Page>
@@ -99,25 +165,57 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 						fixedBarExpandWidth={[24]}
 						affixActionBar
 						showRefresh
-						onRefresh={() => console.log('refresh')}
+						onRefresh={getData}
 						primaryKey="key"
 						operation={Operation}
 						onFilter={onFilter}
 						onSort={onSort}
 					>
-						<Table.Column title="类型" dataIndex="userName" />
-						<Table.Column title="描述" dataIndex="userName" />
-						<Table.Column title="版本状态" dataIndex="userName" />
-						<Table.Column title="版本" dataIndex="userName" />
+						<Table.Column
+							title="类型"
+							dataIndex="chartName"
+							cell={iconTypeRender}
+						/>
+						<Table.Column title="描述" dataIndex="description" />
+						<Table.Column
+							title="版本状态"
+							dataIndex="versionStatus"
+							cell={versionStatusRender}
+							filters={[
+								{ label: '当前状态', value: 'now' },
+								{ label: '可安装升级状态', value: 'future' },
+								{ label: '历史状态', value: 'history' }
+							]}
+							filterMode="single"
+							width={200}
+						/>
+						<Table.Column
+							title="版本"
+							dataIndex="version"
+							width={100}
+						/>
 						<Table.Column
 							title="上架时间"
-							dataIndex="userName"
+							dataIndex="createTime"
+							width={200}
 							sortable
 						/>
-						<Table.Column title="操作" dataIndex="userName" />
+						<Table.Column
+							title="操作"
+							dataIndex="action"
+							width={150}
+							cell={actionRender}
+						/>
 					</Table>
 				</div>
 			</Content>
+			{visible && (
+				<UploadMiddlewareForm
+					visible={visible}
+					onCancel={() => setVisible(false)}
+					onCreate={onCreate}
+				/>
+			)}
 		</Page>
 	);
 }

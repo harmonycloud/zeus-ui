@@ -40,14 +40,14 @@ const InstanceDetails = (props) => {
 	const {
 		globalVar,
 		match: {
-			params: { middlewareName, type, chartVersion }
+			params: { middlewareName, type, chartVersion, currentTab }
 		}
 	} = props;
 	const {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = globalVar;
-	const [selectedKey, setSelectedKey] = useState('basicInfo');
+	const [selectedKey, setSelectedKey] = useState(currentTab);
 	const [data, setData] = useState();
 	const [status, setStatus] = useState();
 	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
@@ -55,7 +55,6 @@ const InstanceDetails = (props) => {
 	const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
-
 	useEffect(() => {
 		if (
 			JSON.stringify(globalVar.cluster) !== '{}' &&
@@ -78,9 +77,9 @@ const InstanceDetails = (props) => {
 		}
 	}, [location]);
 
-	const menuSelect = (selectedKeys) => {
-		setSelectedKey(selectedKeys[0]);
-	};
+	// const menuSelect = (selectedKeys) => {
+	// 	setSelectedKey(selectedKeys[0]);
+	// };
 
 	const getData = (clusterId, namespace) => {
 		const sendData = {
@@ -110,23 +109,23 @@ const InstanceDetails = (props) => {
 		setSelectedKey(key);
 	};
 
-	const DetailMenu = ({ selected, handleMenu }) => (
-		<Menu id="mid-menu" selectedKeys={selected} onSelect={handleMenu}>
-			<Menu.Item key="basicInfo">基本信息</Menu.Item>
-			<Menu.Item key="highAvailability">高可用性</Menu.Item>
-			{type === 'mysql' && storageClassName !== 'local-path' ? (
-				<Menu.Item key="backupRecovery">备份恢复</Menu.Item>
-			) : null}
-			<Menu.Item key="externalAccess">对外访问</Menu.Item>
-			<Menu.Item key="monitor">性能监控</Menu.Item>
-			<Menu.Item key="log">日志管理</Menu.Item>
-			<Menu.Item key="paramterSetting">参数设置</Menu.Item>
-			<Menu.Item key="alarm">阈值报警</Menu.Item>
-			{type === 'mysql' ? (
-				<Menu.Item key="disaster">灾备管理</Menu.Item>
-			) : null}
-		</Menu>
-	);
+	// const DetailMenu = ({ selected, handleMenu }) => (
+	// 	<Menu id="mid-menu" selectedKeys={selected} onSelect={handleMenu}>
+	// 		<Menu.Item key="basicInfo">基本信息</Menu.Item>
+	// 		<Menu.Item key="highAvailability">高可用性</Menu.Item>
+	// 		{type === 'mysql' && storageClassName !== 'local-path' ? (
+	// 			<Menu.Item key="backupRecovery">备份恢复</Menu.Item>
+	// 		) : null}
+	// 		<Menu.Item key="externalAccess">对外访问</Menu.Item>
+	// 		<Menu.Item key="monitor">性能监控</Menu.Item>
+	// 		<Menu.Item key="log">日志管理</Menu.Item>
+	// 		<Menu.Item key="paramterSetting">参数设置</Menu.Item>
+	// 		<Menu.Item key="alarm">阈值报警</Menu.Item>
+	// 		{type === 'mysql' ? (
+	// 			<Menu.Item key="disaster">灾备管理</Menu.Item>
+	// 		) : null}
+	// 	</Menu>
+	// );
 
 	const childrenRender = (key) => {
 		switch (key) {
@@ -362,7 +361,7 @@ const InstanceDetails = (props) => {
 				renderBackArrow={(elem) => (
 					<span
 						className="details-go-back"
-						onClick={() => history.push('/instanceList')}
+						onClick={() => window.history.back()}
 					>
 						{elem}
 					</span>
@@ -385,12 +384,12 @@ const InstanceDetails = (props) => {
 				) : null}
 			</Page.Header>
 			<Page.Content
-				menu={
-					<DetailMenu
-						selected={selectedKey}
-						handleMenu={menuSelect}
-					/>
-				}
+			// menu={
+			// 	<DetailMenu
+			// 		selected={selectedKey}
+			// 		handleMenu={menuSelect}
+			// 	/>
+			// }
 			>
 				{childrenRender(selectedKey)}
 			</Page.Content>

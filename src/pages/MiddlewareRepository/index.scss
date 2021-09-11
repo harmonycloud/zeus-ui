@@ -36,3 +36,11 @@ $component-name: 'middleware-repository';
 .middleware-version-content{
 	margin-top: 16px;
 }
+.version-status-display{
+	height: 22px;
+	line-height: 19px;
+	text-align: center;
+	border: 1px solid;
+	display: inline-block;
+	padding: 1px 10px;
+}

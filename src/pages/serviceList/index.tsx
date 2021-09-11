@@ -19,55 +19,118 @@ import messageConfig from '@/components/messageConfig';
 import { serviceListStatusRender } from '@/utils/utils';
 import { states } from '@/utils/const';
 import { StoreState } from '@/types/index';
+import { serviceListItemProps, serviceProps } from './service.list';
+import { listProps } from '@/components/RapidScreening';
+import { iconTypeRender, timeRender } from '@/utils/utils';
 
-const list = [
-	{ name: '全部服务', count: 1000 },
-	{ name: 'mysql', count: 100 },
-	{ name: 'raocketmq', count: 100 },
-	{ name: 'redis', count: 100 }
-];
+// const list = [
+// 	{ name: '全部服务', count: 1000 },
+// 	{ name: 'mysql', count: 100 },
+// 	{ name: 'raocketmq', count: 100 },
+// 	{ name: 'redis', count: 100 }
+// ];
 interface serviceListProps {
 	globalVar: any;
 }
 function ServiceList(props: serviceListProps): JSX.Element {
-	console.log(props);
 	const { cluster, namespace } = props.globalVar;
 	const history = useHistory();
-	const [originData, setOriginData] = useState([]);
-	const [dataSource, setDataSource] = useState([]);
+	const [originData, setOriginData] = useState<serviceListItemProps[]>([]);
+	const [dataSource, setDataSource] = useState<serviceProps[]>([]);
+	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
+	const [list, setList] = useState<listProps[]>([
+		{ name: '全部服务', count: 0 }
+	]);
 	const [selected, setSelected] = useState<string>('全部服务');
 
-	// useEffect(() => {
-	// 	let mounted = false;
-	// 	getList({
-	// 		clusterId: cluster.id,
-	// 		namespace: namespace.name
-	// 	}).then((res) => {
-	// 		console.log(res);
-	// 		setOriginData([]);
-	// 		if (res.success) {
-	// 			if (mounted) {
-	// 				// todo 在这里进行set操作
-	// 			}
-	// 		}
-	// 	});
-	// 	return () => {
-	// 		mounted = false;
-	// 	};
-	// }, []);
-	const getData: (clusterId: string, namespace: string) => void = (
-		clusterId: string,
-		namespace: string
-	) => {
-		const sendData = {
-			clusterId: clusterId,
-			namespace: namespace
+	useEffect(() => {
+		let mounted = true;
+		if (JSON.stringify(namespace) !== '{}') {
+			getList({
+				clusterId: cluster.id,
+				namespace: namespace.name,
+				keyword: keyword
+			}).then((res) => {
+				if (res.success) {
+					if (mounted) {
+						setOriginData(res?.data);
+						const listTemp = [...list];
+						res?.data.forEach((item: serviceListItemProps) => {
+							listTemp.push({
+								name: item.name,
+								count: item.serviceNum
+							});
+						});
+						listTemp[0].count = listTemp.reduce(
+							(pre, cur: listProps) => {
+								return pre + cur.count;
+							},
+							0
+						);
+						setList(listTemp);
+					}
+				}
+			});
+		}
+		return () => {
+			mounted = false;
 		};
-		getList(sendData).then((res) => {
-			console.log(res);
+	}, [props]);
+	useEffect(() => {
+		const allList: serviceProps[] = [];
+		originData.forEach((item) => {
+			item.serviceList.length > 0 &&
+				item.serviceList.forEach((i) => {
+					i.imagePath = item.imagePath;
+					allList.push(i);
+				});
 		});
+		setDataSource(allList);
+		setShowDataSource(allList);
+	}, [originData]);
+	useEffect(() => {
+		if (selected !== '全部服务') {
+			setShowDataSource(
+				originData.filter((item) => item.chartName === selected)[0]
+					.serviceList
+			);
+		} else {
+			setShowDataSource(dataSource);
+		}
+	}, [selected]);
+	useEffect(() => {
+		getData();
+	}, [keyword]);
+	const getData: () => void = () => {
+		if (JSON.stringify(namespace) !== '{}') {
+			const sendData = {
+				clusterId: cluster.id,
+				namespace: namespace.name,
+				keyword
+			};
+			getList(sendData).then((res) => {
+				console.log(res);
+				if (res.success) {
+					setOriginData(res?.data);
+					const listTemp = [{ name: '全部服务', count: 0 }];
+					res?.data.forEach((item: serviceListItemProps) => {
+						listTemp.push({
+							name: item.name,
+							count: item.serviceNum
+						});
+					});
+					listTemp[0].count = listTemp.reduce(
+						(pre, cur: listProps) => {
+							return pre + cur.count;
+						},
+						0
+					);
+					setList(listTemp);
+				}
+			});
+		}
 	};
 	const refreshFn: () => void = () => {
 		console.log('refresh table');
@@ -75,23 +138,21 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const handleFilterBackup = (checked: boolean) => {
 		setBackupCheck(checked);
 		// todo 表格数据刷新问题
-		// if (checked) {
-		// 	const list = originData.filter(
-		// 		(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
-		// 	);
-		// 	setDataSource(list);
-		// } else {
-		// 	setDataSource(originData);
-		// }
+		if (checked) {
+			const list = dataSource.filter(
+				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
+			);
+			setShowDataSource(list);
+		} else {
+			setShowDataSource(dataSource);
+		}
 	};
 	const handleSearch = (value: string) => {
 		setKeyword(value);
-		// todo 表格数据刷新问题
-		// getData(globalCluster.id, globalNamespace.name, value);
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
-			const tempDataSource = originData.sort((a, b) => {
+			const tempDataSource = dataSource.sort((a, b) => {
 				const result = a['createTimeNum'] - b['createTimeNum'];
 				return order === 'asc'
 					? result > 0
@@ -101,7 +162,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					? -1
 					: 1;
 			});
-			setDataSource([...tempDataSource]);
+			setShowDataSource([...tempDataSource]);
 		}
 	};
 	const onFilter = (filterParams: any) => {
@@ -187,13 +248,45 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		// 	}
 		// });
 	};
-
+	const createService = () => {
+		if (selected === '全部服务') {
+			history.push('/middlewareRepository');
+		} else {
+			const { chartVersion, chartName, version } = originData.filter(
+				(item) => item.name === selected
+			)[0];
+			switch (selected) {
+				case 'mysql':
+					history.push(
+						`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}`
+					);
+					break;
+				case 'redis':
+					history.push(
+						`/middlewareRepository/redisCreate/${chartName}/${chartVersion}`
+					);
+					break;
+				case 'elasticsearch':
+					history.push(
+						`/middlewareRepository/elasticsearchCreate/${chartName}/${chartVersion}`
+					);
+					break;
+				case 'rocketmq':
+					history.push(
+						`/middlewareRepository/rocketmqCreate/${chartName}/${chartVersion}`
+					);
+					break;
+				default:
+					history.push(
+						`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
+					);
+					break;
+			}
+		}
+	};
 	const Operation = {
 		primary: (
-			<Button
-				onClick={() => console.log('不同情况下的页面跳转')}
-				type="primary"
-			>
+			<Button onClick={createService} type="primary">
 				发布服务
 			</Button>
 		),
@@ -204,7 +297,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		)
 	};
 
-	const nameRender = (value: string, index: number, record: any) => {
+	const nameRender = (value: string, index: number, record: serviceProps) => {
 		return (
 			<div className="display-flex flex-align">
 				{record.mysqlDTO ? (
@@ -216,12 +309,11 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				<div>
 					<div
 						className="name-link"
-						onClick={
-							() => console.log('前往详情')
-							// history.push(
-							// 	`/instanceList/detail/${record.name}/${record.type}/${instance.chartVersion}`
-							// )
-						}
+						onClick={() => {
+							history.push(
+								`/serviceList/basicInfo/${record.name}/${record.type}/${record.chartVersion}`
+							);
+						}}
 					>
 						{record.name}
 					</div>
@@ -230,7 +322,29 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			</div>
 		);
 	};
-	const associatedRender = (value: string, index: number, record: any) => {
+	const podNumRender = (
+		value: string,
+		index: number,
+		record: serviceProps
+	) => {
+		return (
+			<div
+				className="name-link"
+				onClick={() => {
+					history.push(
+						`/serviceList/highAvailability/${record.name}/${record.type}/${record.chartVersion}`
+					);
+				}}
+			>
+				{value}
+			</div>
+		);
+	};
+	const associatedRender = (
+		value: string,
+		index: number,
+		record: serviceProps
+	) => {
 		return (
 			<div className="display-flex flex-align">
 				{/* 主备标识符 */}
@@ -258,20 +372,22 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			</div>
 		);
 	};
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (
+		value: string,
+		index: number,
+		record: serviceProps
+	) => {
 		return (
 			<Actions>
-				<LinkButton
-					onClick={
-						() => console.log('前往监控')
-						// history.push({
-						// 	pathname: `/instanceList/detail/${record.name}/${record.type}/${instance.chartVersion}`,
-						// 	query: { key: 'monitor' }
-						// })
-					}
-				>
-					监控
-				</LinkButton>
+				<LinkButton>服务暴露</LinkButton>
+				<LinkButton>数据监控</LinkButton>
+				<LinkButton>日志详情</LinkButton>
+				<LinkButton>服务控制台</LinkButton>
+				<LinkButton>灾备服务</LinkButton>
+				<LinkButton>告警规则</LinkButton>
+				<LinkButton>数据安全</LinkButton>
+				<LinkButton>参数设置</LinkButton>
+				<LinkButton>版本管理</LinkButton>
 				<LinkButton onClick={() => deleteFn(record.name)}>
 					删除
 				</LinkButton>
@@ -291,7 +407,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					changeSelected={(value: string) => setSelected(value)}
 				/>
 				<Table
-					dataSource={dataSource}
+					dataSource={showDataSource}
 					exact
 					fixedBarExpandWidth={[24]}
 					affixActionBar
@@ -308,10 +424,16 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					onFilter={onFilter}
 				>
 					<Table.Column
-						title="服务名称/显示名称"
+						title="服务名称/中文别名"
 						dataIndex="name"
 						resizable
 						cell={nameRender}
+					/>
+					<Table.Column
+						title="类型"
+						dataIndex="type"
+						resizable
+						cell={iconTypeRender}
 					/>
 					<Table.Column
 						title="状态"
@@ -320,9 +442,14 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						filters={states}
 						filterMode="single"
 					/>
+					<Table.Column
+						title="实例数"
+						dataIndex="podNum"
+						cell={podNumRender}
+					/>
 					<Table.Column title="备注" dataIndex="annotation" />
 					<Table.Column
-						title="关联服务"
+						title="关联服务名称/中文别名"
 						dataIndex="associated"
 						cell={associatedRender}
 					/>
@@ -330,12 +457,13 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						title="创建时间"
 						dataIndex="createTime"
 						sortable={true}
+						cell={timeRender}
 					/>
 					<Table.Column
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={188}
+						width={300}
 						lock="right"
 					/>
 				</Table>
