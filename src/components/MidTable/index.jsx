@@ -123,6 +123,7 @@ const MidTable = (props) => {
 					tableProps.search ? (
 						<div>
 							<Search
+								defaultValue={tableProps.search.defaultValue}
 								onSearch={tableProps.search.onSearch}
 								placeholder={tableProps.search.placeholder}
 								style={

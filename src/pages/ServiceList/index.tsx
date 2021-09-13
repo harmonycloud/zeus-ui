@@ -369,7 +369,19 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					服务暴露
 				</LinkButton>
 				<LinkButton>数据监控</LinkButton>
-				<LinkButton>日志详情</LinkButton>
+				<LinkButton
+					onClick={() =>
+						history.push({
+							pathname: '/monitorAlarm/logDetail',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						})
+					}
+				>
+					日志详情
+				</LinkButton>
 				<LinkButton>服务控制台</LinkButton>
 				<LinkButton>灾备服务</LinkButton>
 				<LinkButton

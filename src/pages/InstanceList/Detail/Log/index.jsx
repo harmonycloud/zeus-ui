@@ -8,6 +8,7 @@ import LogFile from './logFile';
 
 export default function Log(props) {
 	const { type, data, customMid = false } = props;
+	console.log(props);
 	if (customMid && !(data.capabilities || []).includes('log')) {
 		return <DefaultPicture />;
 	}

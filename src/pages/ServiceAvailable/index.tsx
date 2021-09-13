@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { Location } from 'history';
 import {
 	Button,
 	Message,
@@ -51,8 +52,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [list, setList] = useState<listProps[]>([
 		{ name: '全部服务', count: 0 }
 	]);
-	const [keyword, setKeyword] = useState<string>('');
-	const location = useLocation();
+	const location: Location<stateProps> = useLocation();
+	const [searchText, setSearchText] = useState<string>(
+		location?.state?.middlewareName || ''
+	);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -60,9 +63,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				getIngresses({
 					clusterId: cluster.id,
 					namespace: namespace.name,
-					keyword
+					keyword: searchText
 				}).then((res) => {
-					console.log(res);
 					if (mounted) {
 						setOriginData(res.data);
 						const listTemp = [...list];
@@ -109,7 +111,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		setDataSource(allList);
 		setShowDataSource(allList);
 	}, [originData]);
-	const getData = () => {
+	const getData = (keyword: string = searchText) => {
 		const sendData = {
 			clusterId: cluster.id,
 			namespace: namespace.name,
@@ -124,7 +126,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		});
 	};
 	const handleSearch = (value: string) => {
-		setKeyword(value);
+		setSearchText(value);
+		getData(value);
 		// getData(globalVar.cluster.id, globalVar.namespace.name, value);
 	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
@@ -446,6 +449,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					primaryKey="key"
 					operation={Operation}
 					search={{
+						defaultValue: searchText,
 						onSearch: handleSearch,
 						placeholder: '请输入搜索内容'
 					}}
