@@ -4,6 +4,7 @@ import SecondLayout from '@/components/SecondLayout';
 import ThresholdAlarm from '@/pages/InstanceList/Detail/ThresholdAlarm';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import NoService from '@/components/NoService';
 import { middlewareDetailProps } from '@/types/comment';
 
 interface basicDataProps {
@@ -15,12 +16,14 @@ interface basicDataProps {
 function AlarmCenter(): JSX.Element {
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [basicData, setBasicData] = useState<basicDataProps>();
+	const [isService, setIsService] = useState<boolean>(false);
 	const onChange = (
 		name: string,
 		type: string,
 		clusterId: string,
 		namespace: string
 	) => {
+		console.log(name, type, clusterId, namespace);
 		if (name !== type) {
 			setBasicData({
 				name,
@@ -34,13 +37,15 @@ function AlarmCenter(): JSX.Element {
 				type,
 				middlewareName: name
 			}).then((res) => {
-				console.log(res);
 				if (res.success) {
+					setIsService(true);
 					setData(res.data);
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
 			});
+		} else {
+			setIsService(false);
 		}
 	};
 	return (
@@ -50,7 +55,7 @@ function AlarmCenter(): JSX.Element {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{JSON.stringify(data) !== '{}' && (
+			{isService && JSON.stringify(data) !== '{}' && (
 				<ThresholdAlarm
 					middlewareName={basicData?.name}
 					clusterId={basicData?.clusterId}
@@ -60,6 +65,7 @@ function AlarmCenter(): JSX.Element {
 					capabilities={data?.capabilities || []}
 				/>
 			)}
+			{!isService && <NoService />}
 		</SecondLayout>
 	);
 }

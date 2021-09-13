@@ -352,6 +352,7 @@ export default function HighAvailability(props) {
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
+				<LinkButton onClick={() => reStart(record)}>控制台</LinkButton>
 				<LinkButton onClick={() => reStart(record)}>重启</LinkButton>
 			</Actions>
 		);

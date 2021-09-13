@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router';
+import { Location } from 'history';
 import { CascaderSelect } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { StoreState, globalVarProps } from '@/types/index';
 import { getList } from '@/services/serviceList';
-import {
-	serviceListItemProps,
-	serviceProps
-} from '@/pages/ServiceList/service.list';
+import { serviceListItemProps } from '@/pages/ServiceList/service.list';
 import { filtersProps } from '@/types/comment';
 
+interface stateProps {
+	middlewareName: string;
+	middlewareType: string;
+}
 interface secondLayoutProps {
 	title: string;
 	subTitle: string;
@@ -42,6 +45,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 	const { cluster, namespace } = props.globalVar;
 	const [data, setData] = useState([]);
 	const [current, setCurrent] = useState<string>();
+	const location: Location<stateProps> = useLocation();
+	console.log(location);
 	useEffect(() => {
 		if (JSON.stringify(namespace) !== '{}') {
 			getList({
@@ -65,20 +70,40 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						return result;
 					});
 					setData(list);
-					console.log(list);
-					if (list[0].children.length > 0) {
-						setCurrent(list[0].children[0].value);
+					if (
+						location.state?.middlewareName &&
+						location.state?.middlewareType
+					) {
+						setCurrent(location.state.middlewareName);
 						onChange(
-							list[0].children[0].value,
-							list[0].value,
+							location.state.middlewareName,
+							location.state.middlewareType,
 							cluster.id,
 							namespace.name
 						);
+					} else {
+						if (list[0].children.length > 0) {
+							setCurrent(list[0].children[0].value);
+							onChange(
+								list[0].children[0].value,
+								list[0].value,
+								cluster.id,
+								namespace.name
+							);
+						} else {
+							setCurrent('无服务');
+							onChange(
+								'undefined',
+								'undefined',
+								cluster.id,
+								namespace.name
+							);
+						}
 					}
 				}
 			});
 		}
-	}, [namespace]);
+	}, [namespace, cluster]);
 	const handleChange = (value: string | string[], data: any, extra: any) => {
 		setCurrent(value as string);
 		onChange(

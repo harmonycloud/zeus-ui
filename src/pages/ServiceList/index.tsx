@@ -48,7 +48,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				if (res.success) {
 					if (mounted) {
 						setOriginData(res?.data);
-						const listTemp = [...list];
+						const listTemp = [{ name: '全部服务', count: 0 }];
 						res?.data.forEach((item: serviceListItemProps) => {
 							listTemp.push({
 								name: item.name,
@@ -202,7 +202,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const deleteFn = (name: string) => {
 		Dialog.show({
 			title: '提示',
-			content: '确定删除该Mysql服务？',
+			content: '确定删除该服务？',
 			onOk: () => {
 				return deleteMiddleware({
 					clusterId: cluster.id,
@@ -356,12 +356,35 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	) => {
 		return (
 			<Actions>
-				<LinkButton>服务暴露</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/serviceAvailable',
+							state: {
+								middlewareName: record.name
+							}
+						});
+					}}
+				>
+					服务暴露
+				</LinkButton>
 				<LinkButton>数据监控</LinkButton>
 				<LinkButton>日志详情</LinkButton>
 				<LinkButton>服务控制台</LinkButton>
 				<LinkButton>灾备服务</LinkButton>
-				<LinkButton>告警规则</LinkButton>
+				<LinkButton
+					onClick={() =>
+						history.push({
+							pathname: '/monitorAlarm/alarmCenter',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						})
+					}
+				>
+					告警规则
+				</LinkButton>
 				<LinkButton>数据安全</LinkButton>
 				<LinkButton>参数设置</LinkButton>
 				<LinkButton>版本管理</LinkButton>

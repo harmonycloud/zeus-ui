@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
 	Button,
 	Message,
@@ -31,6 +31,9 @@ import {
 	getIngressMid
 } from '@/services/ingress';
 
+interface stateProps {
+	middlewareName: string;
+}
 interface serviceAvailableProps {
 	globalVar: globalVarProps;
 }
@@ -49,7 +52,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		{ name: '全部服务', count: 0 }
 	]);
 	const [keyword, setKeyword] = useState<string>('');
-
+	const location = useLocation();
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
