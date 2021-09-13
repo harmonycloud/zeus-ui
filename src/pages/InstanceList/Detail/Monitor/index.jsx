@@ -21,7 +21,7 @@ const Monitor = (props) => {
 	} = props;
 	const [url, setUrl] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
-
+	console.log(props);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('monitoring')) {
 			if (type && monitor) {
@@ -40,7 +40,7 @@ const Monitor = (props) => {
 				});
 			}
 		}
-	}, [type]);
+	}, [props]);
 
 	useEffect(() => {
 		if (url) {
@@ -70,7 +70,7 @@ const Monitor = (props) => {
 
 	return (
 		<div className={styles['monitor']}>
-			{monitor === null ? (
+			{monitor.grafana === null ? (
 				<ComponentsLoading type="monitor" />
 			) : (
 				<>

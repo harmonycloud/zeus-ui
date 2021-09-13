@@ -1,10 +1,51 @@
 import React, { useState } from 'react';
 import SecondLayout from '@/components/SecondLayout';
 import Monitor from '../InstanceList/Detail/Monitor';
+import { Message } from '@alicloud/console-components';
+import { getMiddlewareDetail } from '@/services/middleware';
+import messageConfig from '@/components/messageConfig';
+import NoService from '@/components/NoService';
+import {
+	middlewareDetailProps,
+	basicDataProps,
+	monitorProps
+} from '@/types/comment';
 
 function DataMonitor(): JSX.Element {
-	const onChange = (value: string) => {
-		console.log(value);
+	const [data, setData] = useState<middlewareDetailProps>();
+	const [basicData, setBasicData] = useState<basicDataProps>();
+	const [isService, setIsService] = useState<boolean>(false);
+	const onChange = (
+		name: string,
+		type: string,
+		clusterId: string,
+		namespace: string,
+		monitor: monitorProps
+	) => {
+		if (name !== type) {
+			setBasicData({
+				name,
+				type,
+				clusterId,
+				namespace,
+				monitor
+			});
+			getMiddlewareDetail({
+				clusterId,
+				namespace,
+				type,
+				middlewareName: name
+			}).then((res) => {
+				if (res.success) {
+					setIsService(true);
+					setData(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
+		} else {
+			setIsService(false);
+		}
 	};
 	return (
 		<SecondLayout
@@ -13,7 +54,19 @@ function DataMonitor(): JSX.Element {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{/* <Monitor /> */}
+			{isService && JSON.stringify(data) !== '{}' && (
+				<Monitor
+					type={basicData?.type}
+					middlewareName={basicData?.name}
+					monitor={basicData?.monitor}
+					clusterId={basicData?.clusterId}
+					namespace={basicData?.namespace}
+					customMid={data?.dynamicValues !== null}
+					chartVersion={data?.chartVersion}
+					capabilities={(data && data.capabilities) || []}
+				/>
+			)}
+			{!isService && <NoService />}
 		</SecondLayout>
 	);
 }

@@ -53,3 +53,23 @@ export interface middlewareDetailProps {
 	type: string;
 	version: string;
 }
+
+export interface basicDataProps {
+	name: string;
+	type: string;
+	clusterId: string;
+	namespace: string;
+	monitor: monitorProps;
+}
+export interface monitorItemProps {
+	address: string;
+	host: string;
+	port: string;
+	protocol: string;
+	token: string | null;
+}
+export interface monitorProps {
+	alertManager: monitorItemProps | null;
+	grafana: monitorItemProps | null;
+	prometheus: monitorItemProps | null;
+}

@@ -7,7 +7,7 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import { StoreState, globalVarProps } from '@/types/index';
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
-import { filtersProps } from '@/types/comment';
+import { filtersProps, monitorProps } from '@/types/comment';
 
 interface stateProps {
 	middlewareName: string;
@@ -27,7 +27,8 @@ interface secondLayoutProps {
 		name: string,
 		type: string,
 		clusterId: string,
-		namespace: string
+		namespace: string,
+		monitor: monitorProps
 	) => void;
 }
 function SecondLayout(props: secondLayoutProps): JSX.Element {
@@ -46,7 +47,6 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 	const [data, setData] = useState([]);
 	const [current, setCurrent] = useState<string>();
 	const location: Location<stateProps> = useLocation();
-	console.log(location);
 	useEffect(() => {
 		if (JSON.stringify(namespace) !== '{}') {
 			getList({
@@ -79,7 +79,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							location.state.middlewareName,
 							location.state.middlewareType,
 							cluster.id,
-							namespace.name
+							namespace.name,
+							cluster.monitor
 						);
 					} else {
 						if (list[0].children.length > 0) {
@@ -88,7 +89,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 								list[0].children[0].value,
 								list[0].value,
 								cluster.id,
-								namespace.name
+								namespace.name,
+								cluster.monitor
 							);
 						} else {
 							setCurrent('无服务');
@@ -96,7 +98,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 								'undefined',
 								'undefined',
 								cluster.id,
-								namespace.name
+								namespace.name,
+								cluster.monitor
 							);
 						}
 					}
@@ -110,7 +113,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 			value as string,
 			extra.selectedPath[0].value,
 			cluster.id,
-			namespace.name
+			namespace.name,
+			cluster.monitor
 		);
 	};
 	return (
