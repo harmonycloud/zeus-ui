@@ -5,32 +5,24 @@ import {
 	Button,
 	Message,
 	Dialog,
-	Checkbox,
-	Balloon,
-	Icon
+	Checkbox
 } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import moment from 'moment';
 import Table from '@/components/MidTable';
 import RapidScreening from '@/components/RapidScreening';
 import { getList } from '@/services/serviceList';
+import { deleteMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import { serviceListStatusRender } from '@/utils/utils';
 import { states } from '@/utils/const';
-import { StoreState } from '@/types/index';
+import { StoreState, globalVarProps } from '@/types/index';
 import { serviceListItemProps, serviceProps } from './service.list';
 import { listProps } from '@/components/RapidScreening';
 import { iconTypeRender, timeRender } from '@/utils/utils';
 
-// const list = [
-// 	{ name: '全部服务', count: 1000 },
-// 	{ name: 'mysql', count: 100 },
-// 	{ name: 'raocketmq', count: 100 },
-// 	{ name: 'redis', count: 100 }
-// ];
 interface serviceListProps {
-	globalVar: any;
+	globalVar: globalVarProps;
 }
 function ServiceList(props: serviceListProps): JSX.Element {
 	const { cluster, namespace } = props.globalVar;
@@ -132,12 +124,8 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			});
 		}
 	};
-	const refreshFn: () => void = () => {
-		console.log('refresh table');
-	};
 	const handleFilterBackup = (checked: boolean) => {
 		setBackupCheck(checked);
-		// todo 表格数据刷新问题
 		if (checked) {
 			const list = dataSource.filter(
 				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
@@ -166,28 +154,28 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		}
 	};
 	const onFilter = (filterParams: any) => {
-		console.log(filterParams);
-		// let {
-		// 	status: { selectedKeys }
-		// } = filterParams;
-		// if (selectedKeys.length === 0) {
-		// 	setDataSource(originData);
-		// } else {
-		// 	let tempData = null;
-		// 	if (selectedKeys[0] !== 'Other') {
-		// 		tempData = originData.filter((item) => {
-		// 			return item.status === selectedKeys[0];
-		// 		});
-		// 	} else if (selectedKeys[0] === 'Other') {
-		// 		tempData = originData.filter((item) => {
-		// 			return (
-		// 				item.status !== 'Running' && item.status !== 'Creating'
-		// 			);
-		// 		});
-		// 	}
-		// 	setDataSource(tempData);
-		// }
+		const {
+			status: { selectedKeys }
+		} = filterParams;
+		if (selectedKeys.length === 0) {
+			setShowDataSource(dataSource);
+		} else {
+			let tempData: serviceProps[] = [];
+			if (selectedKeys[0] !== 'Other') {
+				tempData = dataSource.filter((item) => {
+					return item.status === selectedKeys[0];
+				});
+			} else if (selectedKeys[0] === 'Other') {
+				tempData = dataSource.filter((item) => {
+					return (
+						item.status !== 'Running' && item.status !== 'Creating'
+					);
+				});
+			}
+			setShowDataSource(tempData);
+		}
 	};
+	// * 关联服务名称的跳转
 	const toDetail = (record: any) => {
 		console.log(record);
 		console.log('to details');
@@ -212,41 +200,30 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		// });
 	};
 	const deleteFn = (name: string) => {
-		console.log(name);
-		// Dialog.show({
-		// 	title: '提示',
-		// 	content: '确定删除该Mysql服务？',
-		// 	onOk: async () => {
-		// 		let res = await deleteMiddleware({
-		// 			clusterId: globalCluster.id,
-		// 			namespace: globalNamespace.name,
-		// 			middlewareName: name,
-		// 			type: 'mysql'
-		// 		});
-		// 		if (res.success) {
-		// 			Message.show({
-		// 				type: 'success',
-		// 				title: <div>成功</div>,
-		// 				content: (
-		// 					<div className="message-box">
-		// 						<p>删除中, 3s 后获取数据</p>
-		// 					</div>
-		// 				),
-		// 				duration: 3000,
-		// 				align: 'tr tr',
-		// 				closeable: true,
-		// 				offset: [-24, 62]
-		// 			});
-		// 			setTimer(
-		// 				timerClass.countdownTimer(() => {
-		// 					refreshFn();
-		// 				}, 3)
-		// 			);
-		// 		} else {
-		// 			Message.show(messageConfig('error', '失败', res));
-		// 		}
-		// 	}
-		// });
+		Dialog.show({
+			title: '提示',
+			content: '确定删除该Mysql服务？',
+			onOk: () => {
+				return deleteMiddleware({
+					clusterId: cluster.id,
+					namespace: namespace.name,
+					middlewareName: name,
+					type: 'mysql'
+				})
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', '删除成功')
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						getData();
+					});
+			}
+		});
 	};
 	const createService = () => {
 		if (selected === '全部服务') {
@@ -413,7 +390,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					affixActionBar
 					showColumnSetting
 					showRefresh
-					onRefresh={refreshFn}
+					onRefresh={getData}
 					primaryKey="key"
 					operation={Operation}
 					search={{

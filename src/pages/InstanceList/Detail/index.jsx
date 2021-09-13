@@ -52,7 +52,7 @@ const InstanceDetails = (props) => {
 	const [status, setStatus] = useState();
 	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
 	const [visible, setVisible] = useState(false);
-	const [storageClassName, setStorageClassName] = useState('');
+	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
 	useEffect(() => {
@@ -91,7 +91,7 @@ const InstanceDetails = (props) => {
 		getMiddlewareDetail(sendData).then((res) => {
 			if (res.success) {
 				setData(res.data);
-				setStorageClassName(res?.data?.quota?.mysql?.storageClassName);
+				// setStorageClassName(res?.data?.quota?.mysql?.storageClassName);
 				setStatus(res.data.status || 'Failed');
 				if (res.data.dynamicValues) {
 					setCustomMid(true);
@@ -291,7 +291,7 @@ const InstanceDetails = (props) => {
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/instanceList/detail/${
+						pathname: `/serviceList/basicInfo/${
 							data.mysqlDTO.relationName
 						}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 						state: {

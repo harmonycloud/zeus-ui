@@ -22,7 +22,7 @@ export default function ThresholdAlarm(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [visible, setVisible] = useState(false);
 	const [searchText, setSearchText] = useState('');
-
+	console.log(props);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('alert')) {
 			getData(clusterId, middlewareName, namespace, searchText);
@@ -87,8 +87,7 @@ export default function ThresholdAlarm(props) {
 						Message.show(messageConfig('error', '失败', res));
 					}
 				});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
