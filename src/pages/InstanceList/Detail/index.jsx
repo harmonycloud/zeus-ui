@@ -340,7 +340,6 @@ const InstanceDetails = (props) => {
 		} else {
 			// across the cluster
 			const flag = storage.getLocal('firstAlert');
-			console.log(flag);
 			if (flag === 0) {
 				setVisible(true);
 			} else {

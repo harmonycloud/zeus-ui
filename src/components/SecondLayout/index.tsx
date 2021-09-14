@@ -4,10 +4,10 @@ import { useLocation } from 'react-router';
 import { Location } from 'history';
 import { CascaderSelect } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import { StoreState, globalVarProps } from '@/types/index';
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
-import { filtersProps, monitorProps } from '@/types/comment';
+import { filtersProps } from '@/types/comment';
+import { StoreState, globalVarProps, clusterType } from '@/types/index';
 
 interface stateProps {
 	middlewareName: string;
@@ -26,9 +26,8 @@ interface secondLayoutProps {
 	onChange: (
 		name: string,
 		type: string,
-		clusterId: string,
 		namespace: string,
-		monitor: monitorProps
+		cluster: clusterType
 	) => void;
 }
 function SecondLayout(props: secondLayoutProps): JSX.Element {
@@ -78,9 +77,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						onChange(
 							location.state.middlewareName,
 							location.state.middlewareType,
-							cluster.id,
 							namespace.name,
-							cluster.monitor
+							cluster
 						);
 					} else {
 						if (list[0].children.length > 0) {
@@ -88,18 +86,16 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							onChange(
 								list[0].children[0].value,
 								list[0].value,
-								cluster.id,
 								namespace.name,
-								cluster.monitor
+								cluster
 							);
 						} else {
 							setCurrent('无服务');
 							onChange(
 								'undefined',
 								'undefined',
-								cluster.id,
 								namespace.name,
-								cluster.monitor
+								cluster
 							);
 						}
 					}
@@ -112,9 +108,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 		onChange(
 			value as string,
 			extra.selectedPath[0].value,
-			cluster.id,
 			namespace.name,
-			cluster.monitor
+			cluster
 		);
 	};
 	return (

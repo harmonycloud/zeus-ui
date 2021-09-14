@@ -38,7 +38,8 @@ const hideRoute = [
 	'/operationAudit',
 	'/userManagement',
 	'/resourcePoolManagement',
-	'/roleManagement'
+	'/roleManagement',
+	'/dataOverview'
 ];
 
 const header = (

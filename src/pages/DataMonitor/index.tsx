@@ -5,11 +5,8 @@ import { Message } from '@alicloud/console-components';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
-import {
-	middlewareDetailProps,
-	basicDataProps,
-	monitorProps
-} from '@/types/comment';
+import { middlewareDetailProps, basicDataProps } from '@/types/comment';
+import { clusterType } from '@/types';
 
 function DataMonitor(): JSX.Element {
 	const [data, setData] = useState<middlewareDetailProps>();
@@ -18,20 +15,19 @@ function DataMonitor(): JSX.Element {
 	const onChange = (
 		name: string,
 		type: string,
-		clusterId: string,
 		namespace: string,
-		monitor: monitorProps
+		cluster: clusterType
 	) => {
 		if (name !== type) {
 			setBasicData({
 				name,
 				type,
-				clusterId,
+				clusterId: cluster.id,
 				namespace,
-				monitor
+				monitor: cluster.monitor
 			});
 			getMiddlewareDetail({
-				clusterId,
+				clusterId: cluster.id,
 				namespace,
 				type,
 				middlewareName: name

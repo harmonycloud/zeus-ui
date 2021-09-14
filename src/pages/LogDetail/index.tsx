@@ -5,11 +5,8 @@ import Log from '@/pages/InstanceList/Detail/Log';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
-import {
-	middlewareDetailProps,
-	basicDataProps,
-	monitorProps
-} from '@/types/comment';
+import { middlewareDetailProps, basicDataProps } from '@/types/comment';
+import { clusterType } from '@/types';
 
 export default function LogDetail(): JSX.Element {
 	const [data, setData] = useState<middlewareDetailProps>();
@@ -18,20 +15,18 @@ export default function LogDetail(): JSX.Element {
 	const onChange = (
 		name: string,
 		type: string,
-		clusterId: string,
 		namespace: string,
-		monitor: monitorProps
+		cluster: clusterType
 	) => {
 		if (name !== type) {
 			setBasicData({
 				name,
 				type,
-				clusterId,
-				namespace,
-				monitor
+				clusterId: cluster.id,
+				namespace
 			});
 			getMiddlewareDetail({
-				clusterId,
+				clusterId: cluster.id,
 				namespace,
 				type,
 				middlewareName: name

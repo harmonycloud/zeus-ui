@@ -59,7 +59,8 @@ export interface basicDataProps {
 	type: string;
 	clusterId: string;
 	namespace: string;
-	monitor: monitorProps;
+	monitor?: monitorProps;
+	storage?: storageProps;
 }
 export interface monitorItemProps {
 	address: string;
@@ -72,4 +73,23 @@ export interface monitorProps {
 	alertManager: monitorItemProps | null;
 	grafana: monitorItemProps | null;
 	prometheus: monitorItemProps | null;
+}
+export interface storageProps {
+	backup: backupProps | null;
+	support: supportProps | null;
+}
+export interface backupProps {
+	type: string;
+	storage: {
+		accessKeyId: string;
+		bucketName: string;
+		endpoint: string;
+		name: string;
+		secretAccessKey: string;
+	};
+}
+export interface supportProps {
+	'CSI-LVM': string;
+	LocalPath: string;
+	NFS: string;
 }

@@ -290,62 +290,68 @@ function Menu(): JSX.Element {
 	function renderAsLink({ key, label }: IItemDescriptor) {
 		return <Link to={`${key}`}>{label}</Link>;
 	}
-	// const getMenus = async () => {
-	const getMenus = () => {
-		// const res = await getMenu();
-		// if (res.success) {
-		const itemsTemp = menus.map((item: any) => {
-			// const itemsTemp = res.data.map((item: any) => {
-			if (item.subMenu) {
-				return {
-					key: `/${item.url}`,
-					label: item.aliasName,
-					navProps: {
-						className: 'test-nav-sub-menu-pros',
-						icon: (
-							<span
-								style={{
-									marginRight: 8,
-									lineHeight: '41px'
-								}}
-							>
-								<CustomIcon size={14} type={item.iconName} />
-							</span>
-						)
-					},
-					items: item.subMenu.map((i: any) => {
-						return {
-							key: `/${i.url}`,
-							label: i.aliasName,
-							render: renderAsLink
-						};
-					})
-				};
-			} else {
-				return {
-					key: `/${item.url}`,
-					label: item.aliasName,
-					render: renderAsLink,
-					navProps: {
-						className: 'test-nav-item-pros',
-						icon: (
-							<span
-								style={{
-									marginRight: 8,
-									lineHeight: '41px'
-								}}
-							>
-								<CustomIcon size={14} type={item.iconName} />
-							</span>
-						)
-					}
-				};
-			}
-		});
-		setItems(itemsTemp);
-		// } else {
-		// 	Message.show(messageConfig('error', '失败', res));
-		// }
+	const getMenus = async () => {
+		// const getMenus = () => {
+		const res = await getMenu();
+		if (res.success) {
+			const itemsTemp = menus.map((item: any) => {
+				// const itemsTemp = res.data.map((item: any) => {
+				if (item.subMenu) {
+					return {
+						key: `/${item.url}`,
+						label: item.aliasName,
+						navProps: {
+							className: 'test-nav-sub-menu-pros',
+							icon: (
+								<span
+									style={{
+										marginRight: 8,
+										lineHeight: '41px'
+									}}
+								>
+									<CustomIcon
+										size={14}
+										type={item.iconName}
+									/>
+								</span>
+							)
+						},
+						items: item.subMenu.map((i: any) => {
+							return {
+								key: `/${i.url}`,
+								label: i.aliasName,
+								render: renderAsLink
+							};
+						})
+					};
+				} else {
+					return {
+						key: `/${item.url}`,
+						label: item.aliasName,
+						render: renderAsLink,
+						navProps: {
+							className: 'test-nav-item-pros',
+							icon: (
+								<span
+									style={{
+										marginRight: 8,
+										lineHeight: '41px'
+									}}
+								>
+									<CustomIcon
+										size={14}
+										type={item.iconName}
+									/>
+								</span>
+							)
+						}
+					};
+				}
+			});
+			setItems(itemsTemp);
+		} else {
+			Message.show(messageConfig('error', '失败', res));
+		}
 	};
 	return (
 		<Router>

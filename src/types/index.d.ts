@@ -1,9 +1,10 @@
-import { monitorProps } from './comment';
+import { monitorProps, storageProps } from './comment';
 export interface clusterType {
 	id: string;
 	name: string;
 	nickname: string;
 	monitor: monitorProps;
+	storage: storageProps;
 	[propsName: string]: any;
 }
 export interface namespaceType {

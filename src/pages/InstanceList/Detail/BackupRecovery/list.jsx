@@ -17,7 +17,6 @@ export default function List(props) {
 	const history = useHistory();
 	const { middlewareName, type, chartName, chartVersion } = useParams();
 	const [backups, setBackups] = useState([]);
-
 	useEffect(() => {
 		if (
 			clusterId !== undefined &&
@@ -27,7 +26,7 @@ export default function List(props) {
 		) {
 			getData(clusterId, namespace, listData.name);
 		}
-	}, []);
+	}, [props]);
 
 	const getData = (clusterId, namespace, mysqlName) => {
 		const sendData = {
@@ -83,22 +82,23 @@ export default function List(props) {
 	};
 
 	const toHandle = (backupFileName) => {
-		if (type === 'mysql')
-			history.push(
-				`/serviceCatalog/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-		if (type === 'redis')
-			history.push(
-				`/serviceCatalog/redisCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-		if (type === 'elasticsearch')
-			history.push(
-				`/serviceCatalog/elasticsearchCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-		if (type === 'rocketmq')
-			history.push(
-				`/serviceCatalog/rocketmqCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
+		console.log(backupFileName);
+		// if (type === 'mysql')
+		// 	history.push(
+		// 		`/serviceCatalog/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
+		// 	);
+		// if (type === 'redis')
+		// 	history.push(
+		// 		`/serviceCatalog/redisCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
+		// 	);
+		// if (type === 'elasticsearch')
+		// 	history.push(
+		// 		`/serviceCatalog/elasticsearchCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
+		// 	);
+		// if (type === 'rocketmq')
+		// 	history.push(
+		// 		`/serviceCatalog/rocketmqCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
+		// 	);
 	};
 
 	// 克隆服务
@@ -109,7 +109,7 @@ export default function List(props) {
 					disabled={record.backupFileName === ''}
 					onClick={() => toHandle(record.backupFileName)}
 				>
-					克隆服务
+					使用备份
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
