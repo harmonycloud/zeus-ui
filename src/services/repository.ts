@@ -26,3 +26,6 @@ export const installMiddleware = (params: installParamsProps) => {
 export const unInstallMiddleware = (params: installParamsProps) => {
 	return Axios.delete(REPOSITORY.unInstallMiddleware, params);
 };
+export const updateMiddleware = (params: installParamsProps) => {
+	return Axios.put(REPOSITORY.updateMiddleware, params);
+};

@@ -8,3 +8,5 @@ export const getMiddlewareVersions = `${api}/middlewares/info/version`;
 export const installMiddleware = `${api}/clusters/{clusterId}/middlewares/install`;
 // * 下架中间件
 export const unInstallMiddleware = `${api}/clusters/{clusterId}/middlewares/delete`;
+// * 中间件更新升级
+export const updateMiddleware = `${api}/clusters/{clusterId}/middlewares/update`;
