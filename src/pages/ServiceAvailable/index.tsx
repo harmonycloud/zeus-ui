@@ -24,13 +24,9 @@ import {
 } from './service.available';
 import { iconTypeRender, timeRender } from '@/utils/utils';
 import CustomIcon from '@/components/CustomIcon';
-import AddIngress from '../Ingress/addIngress';
-import {
-	getIngresses,
-	deleteIngress,
-	addIngress,
-	getIngressMid
-} from '@/services/ingress';
+// import AddIngress from '../Ingress/addIngress';
+import { getIngresses, deleteIngress, addIngress } from '@/services/ingress';
+import AddServiceAvailableForm from './AddServiceAvailableForm';
 
 interface stateProps {
 	middlewareName: string;
@@ -48,7 +44,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [showDataSource, setShowDataSource] = useState<
 		serviceAvailableItemProps[]
 	>([]);
-	const [active, setActive] = useState<boolean>(false);
+	const [visible, setVisible] = useState<boolean>(false);
 	const [list, setList] = useState<listProps[]>([
 		{ name: '全部服务', count: 0 }
 	]);
@@ -128,7 +124,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const handleSearch = (value: string) => {
 		setSearchText(value);
 		getData(value);
-		// getData(globalVar.cluster.id, globalVar.namespace.name, value);
 	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
 		Dialog.show({
@@ -220,7 +215,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				Message.show(
 					messageConfig('success', '成功', '对外路由添加成功')
 				);
-				setActive(false);
+				setVisible(false);
 				getData();
 				// entry !== 'detail'
 				// 	? getData(globalVar.cluster.id, globalVar.namespace.name)
@@ -237,7 +232,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	};
 	const Operation = {
 		primary: (
-			<Button onClick={() => setActive(true)} type="primary">
+			<Button onClick={() => setVisible(true)} type="primary">
 				暴露服务
 			</Button>
 		)
@@ -451,7 +446,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					search={{
 						defaultValue: searchText,
 						onSearch: handleSearch,
-						placeholder: '请输入搜索内容'
+						placeholder:
+							'请输入暴露路由名称、服务名称/中文别名、访问地址搜索'
 					}}
 					onSort={onSort}
 				>
@@ -501,15 +497,16 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					/>
 				</Table>
 			</Content>
-			{/* {active && (
-				<AddIngress
-					active={active}
+			{visible && (
+				<AddServiceAvailableForm
+					visible={visible}
+					onCancel={() => setVisible(false)}
 					onCreate={onCreate}
-					onCancel={() => setActive(false)}
-					entry={entry}
-					middlewareName={middlewareName}
+					cluster={cluster}
+					namespace={namespace.name}
+					middlewareName={location?.state?.middlewareName || ''}
 				/>
-			)} */}
+			)}
 		</Page>
 	);
 }
