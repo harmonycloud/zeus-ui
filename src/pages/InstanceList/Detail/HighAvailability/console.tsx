@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, Form, Field, Select } from '@alicloud/console-components';
 import { filtersProps } from '@/types/comment';
+import MidTerminal from '@/components/MidTerminal/index';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -28,17 +29,18 @@ interface valuesProps {
 }
 export default function Console(props: consoleProps): JSX.Element {
 	const { visible, onCancel, containers, data } = props;
+	const [url, setUrl] = useState('');
 	const field = Field.useField();
 	const onOk = () => {
 		const values: valuesProps = field.getValues();
-		console.log(values);
-		const url = `https://10.1.10.13:31999/api/terminal?scriptType=console&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
-		window.open(
-			url,
-			'_blank',
-			'height=600, width=800, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
-		);
-		onCancel();
+		const url = `wss://10.1.10.13:31999/terminal?terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
+		setUrl(url);
+		// window.open(
+		// 	url,
+		// 	'_blank',
+		// 	'height=600, width=800, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
+		// );
+		// onCancel();
 	};
 	return (
 		<Dialog
@@ -76,6 +78,7 @@ export default function Console(props: consoleProps): JSX.Element {
 					</Select>
 				</FormItem>
 			</Form>
+			{url !== '' && <MidTerminal url={url} />}
 		</Dialog>
 	);
 }

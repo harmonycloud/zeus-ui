@@ -30,8 +30,8 @@ export default class webSocket {
 		// 检测当前浏览器是什么浏览器来决定用什么socket
 		if ('WebSocket' in window) {
 			this.socket = new WebSocket(
-				// `${wsUrl}${socketUrl}`,
-				`wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				`${wsUrl}${socketUrl}`,
+				// `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
 				cache.getLocal(TOKEN)
 			);
 		} else if ('MozWebSocket' in window) {
