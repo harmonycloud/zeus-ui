@@ -339,7 +339,7 @@ const ElasticsearchCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/instanceList',
+							pathname: '/serviceList',
 							query: { key: 'Elasticsearch', timer: true }
 						});
 					} else {

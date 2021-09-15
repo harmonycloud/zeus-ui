@@ -405,7 +405,7 @@ const MysqlCreate = (props) => {
 								})
 							);
 							history.push({
-								pathname: '/instanceList',
+								pathname: '/serviceList',
 								query: { key: 'Mysql', timer: true }
 							});
 						} else {

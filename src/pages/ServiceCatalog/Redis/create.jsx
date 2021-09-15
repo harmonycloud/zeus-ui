@@ -353,7 +353,7 @@ const RedisCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/instanceList',
+							pathname: '/serviceList',
 							query: { key: 'Redis', timer: true }
 						});
 					} else {

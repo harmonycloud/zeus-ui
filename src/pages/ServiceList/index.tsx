@@ -277,9 +277,9 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const nameRender = (value: string, index: number, record: serviceProps) => {
 		return (
 			<div className="display-flex flex-align">
-				{record.mysqlDTO ? (
-					record.mysqlDTO.openDisasterRecoveryMode &&
-					!record.mysqlDTO.isSource ? (
+				{record?.mysqlDTO ? (
+					record?.mysqlDTO.openDisasterRecoveryMode &&
+					!record?.mysqlDTO.isSource ? (
 						<div className="gray-circle">备</div>
 					) : null
 				) : null}
@@ -325,24 +325,24 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		return (
 			<div className="display-flex flex-align">
 				{/* 主备标识符 */}
-				{record.mysqlDTO.openDisasterRecoveryMode === true ? (
-					record.mysqlDTO.isSource ? (
+				{record?.mysqlDTO?.openDisasterRecoveryMode === true ? (
+					record?.mysqlDTO?.isSource ? (
 						<div className="gray-circle">备</div>
 					) : (
 						<div className="blue-circle">源</div>
 					)
 				) : null}
-				{record.mysqlDTO.isSource !== null ? (
+				{record?.mysqlDTO?.isSource !== null ? (
 					<div>
 						<div
 							className="name-link"
 							onClick={() => toDetail(record)}
 						>
-							{record.mysqlDTO.relationName}
+							{record?.mysqlDTO?.relationName}
 						</div>
 						<div>
-							{record.mysqlDTO.relationAliasName ||
-								record.mysqlDTO.relationName}
+							{record?.mysqlDTO?.relationAliasName ||
+								record?.mysqlDTO?.relationName}
 						</div>
 					</div>
 				) : null}
@@ -368,7 +368,19 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					服务暴露
 				</LinkButton>
-				<LinkButton>数据监控</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/monitorAlarm/dataMonitor',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						});
+					}}
+				>
+					数据监控
+				</LinkButton>
 				<LinkButton
 					onClick={() =>
 						history.push({
@@ -383,7 +395,19 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					日志详情
 				</LinkButton>
 				<LinkButton>服务控制台</LinkButton>
-				<LinkButton>灾备服务</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/disasterBackup/disasterCenter',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						});
+					}}
+				>
+					灾备服务
+				</LinkButton>
 				<LinkButton
 					onClick={() =>
 						history.push({
@@ -397,9 +421,29 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					告警规则
 				</LinkButton>
-				<LinkButton>数据安全</LinkButton>
-				<LinkButton>参数设置</LinkButton>
-				<LinkButton>版本管理</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/disasterBackup/dataSecurity',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						});
+					}}
+				>
+					数据安全
+				</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push(
+							`/serviceList/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
+						);
+					}}
+				>
+					参数设置
+				</LinkButton>
+				{/* <LinkButton>版本管理</LinkButton> */}
 				<LinkButton onClick={() => deleteFn(record.name)}>
 					删除
 				</LinkButton>

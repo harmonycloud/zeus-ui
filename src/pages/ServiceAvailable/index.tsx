@@ -440,7 +440,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					affixActionBar
 					showColumnSetting
 					showRefresh
-					onRefresh={() => console.log('refresh data')}
+					onRefresh={() => getData(searchText)}
 					primaryKey="key"
 					operation={Operation}
 					search={{

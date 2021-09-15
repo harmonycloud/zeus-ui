@@ -23,6 +23,7 @@ import EditNodeSpe from './editNodeSpe';
 import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
+import Console from './console';
 
 const { Row, Col } = Grid;
 
@@ -80,6 +81,9 @@ export default function HighAvailability(props) {
 	const [config, setConfig] = useState(specification);
 	const [pods, setPods] = useState([]);
 	const [switchValue, setSwitchValue] = useState(true);
+	const [podVisible, setPodVisible] = useState(false);
+	const [containers, setContainers] = useState([]);
+	const [consoleData, setConsoleData] = useState();
 	// * 其他默认中间件修改阶段规格
 	const [visible, setVisible] = useState(false);
 	// * es中间件修改节点规格
@@ -348,11 +352,23 @@ export default function HighAvailability(props) {
 			);
 		}
 	};
+	const openSSL = (record) => {
+		console.log(record);
+		const strArr = record.containers.map((item) => item.name);
+		const consoleDataTemp = {
+			podName: record.podName,
+			namespace: namespace,
+			clusterId: clusterId
+		};
+		setContainers(strArr);
+		setConsoleData(consoleDataTemp);
+		setPodVisible(true);
+	};
 
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => reStart(record)}>控制台</LinkButton>
+				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
 				<LinkButton onClick={() => reStart(record)}>重启</LinkButton>
 			</Actions>
 		);
@@ -511,7 +527,6 @@ export default function HighAvailability(props) {
 				[data.type]: values
 			}
 		};
-		console.log(sendData);
 		updateMid(sendData);
 	};
 
@@ -733,6 +748,14 @@ export default function HighAvailability(props) {
 					onCreate={onCustomCreate}
 					onCancel={() => setCustomVisible(false)}
 					quota={quotaValue}
+				/>
+			)}
+			{podVisible && (
+				<Console
+					visible={podVisible}
+					data={consoleData}
+					onCancel={() => setPodVisible(false)}
+					containers={containers}
 				/>
 			)}
 		</div>

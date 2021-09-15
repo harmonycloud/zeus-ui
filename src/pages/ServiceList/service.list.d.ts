@@ -16,7 +16,7 @@ export interface serviceProps {
 	managePlatform: any | null;
 	managePlatformAddress: any | null;
 	mode: string;
-	mysqlDTO: any;
+	mysqlDTO?: any;
 	name: string;
 	namespace: string;
 	nodeAffinity: any | null;

@@ -164,7 +164,7 @@ function DynamicForm(props) {
 						messageConfig('success', '成功', '中间件创建成功')
 					);
 					history.push({
-						pathname: '/instanceList',
+						pathname: '/serviceList',
 						query: { key: chartName, timer: true }
 					});
 				} else {
