@@ -9,13 +9,17 @@ import {
 	Select,
 	Button,
 	Switch,
-	Message
+	Message,
+	Upload,
+	Icon
 } from '@alicloud/console-components';
 import FormBlock from '../ServiceCatalog/components/FormBlock';
+import { useParams } from 'react-router';
 import { postCluster, getCluster, putCluster } from '@/services/common.js';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
+import { clusterAddType } from '@/types';
 
 const { Group: RadioGroup } = Radio;
 const FormItem = Form.Item;
@@ -32,6 +36,42 @@ const yesOrNo = [
 	{ value: 'false', label: '不安装' }
 ];
 const { Row, Col } = Grid;
+export interface valuesProps {
+	name: string;
+	nickname: string;
+	protocol: string;
+	host: string;
+	port: number;
+	cert: string;
+	protocolHarbor: string;
+	addressHarbor: string;
+	portHarbor: number;
+	chartRepo: string;
+	user: string;
+	password: string;
+	ingressClassName: string;
+	ingressAddress: string;
+	namespace: string;
+	configMapName: string;
+	protocolEs: string;
+	hostEs: string;
+	portEs: number;
+	userEs: string;
+	passwordEs: string;
+	logCollect: boolean;
+	protocolAlert: string;
+	hostAlert: string;
+	portAlert: string;
+	protocolGrafana: string;
+	hostGrafana: string;
+	portGrafana: string;
+	protocolPrometheus: string;
+	hostPrometheus: string;
+	portPrometheus: string;
+}
+interface paramsProps {
+	clusterId: string;
+}
 export default function AddForm(): JSX.Element {
 	const [isInstallIngress, setIsInstallIngress] = useState<string>('true');
 	const [isInstallLogging, setIsInstallLogging] = useState<string>('true');
@@ -40,7 +80,99 @@ export default function AddForm(): JSX.Element {
 	const [isInstallGrafana, setIsInstallGrafana] = useState<string>('true');
 	const [isInstallPrometheus, setIsInstallPrometheus] =
 		useState<string>('true');
+	const [dcId, setDcId] = useState<string>('');
+	// const [adminConfig, setAdminConfig] = useState<string>('');
 	const field = Field.useField();
+	const params: paramsProps = useParams();
+	useEffect(() => {
+		if (params.clusterId) {
+			getCluster({ clusterId: params.clusterId, visible: true }).then(
+				(res) => {
+					if (res.success) {
+						setDcId(res.data.dcId);
+						field.setValues({
+							name: res.data.name,
+							nickname: res.data.nickname,
+							host: res.data.host,
+							protocol: res.data.protocol,
+							port: res.data.port
+						});
+						if (res.data.cert) {
+							field.setValues({
+								cert: res.data.cert.certificate
+							});
+						}
+						if (res.data.registry) {
+							field.setValues({
+								protocolHarbor: res.data.registry.protocol,
+								addressHarbor: res.data.registry.address,
+								portHarbor: res.data.registry.port,
+								user: res.data.registry.user,
+								password: res.data.registry.password,
+								chartRepo: res.data.registry.chartRepo
+							});
+						}
+						if (res.data.ingress) {
+							setIsInstallIngress('false');
+							field.setValues({
+								ingressAddress: res.data.ingress.address,
+								ingressClassName:
+									res.data.ingress.ingressClassName,
+								namespace: res.data.ingress.tcp.namespace,
+								configMapName:
+									res.data.ingress.tcp.configMapName
+							});
+						}
+						if (
+							res.data.logging &&
+							res.data.logging.elasticSearch
+						) {
+							setIsInstallLogging('false');
+							field.setValues({
+								protocolEs:
+									res.data.logging.elasticSearch.protocol,
+								hostEs: res.data.logging.elasticSearch.host,
+								portEs: res.data.logging.elasticSearch.port,
+								userEs: res.data.logging.elasticSearch.user,
+								passwordEs:
+									res.data.logging.elasticSearch.password,
+								logCollect:
+									res.data.logging.elasticSearch.logCollect
+							});
+						}
+						if (res.data.monitor?.alertManager) {
+							setIsInstallAlert('false');
+							field.setValues({
+								protocolAlert:
+									res.data.monitor.alertManager.protocol,
+								hostAlert: res.data.monitor.alertManager.host,
+								portAlert: res.data.monitor.alertManager.port
+							});
+						}
+						if (res.data.monitor?.grafana) {
+							setIsInstallGrafana('false');
+							field.setValues({
+								protocolGrafana:
+									res.data.monitor.grafana.protocol,
+								hostGrafana: res.data.monitor.grafana.host,
+								portGrafana: res.data.monitor.grafana.port
+							});
+						}
+						if (res.data.monitor?.prometheus) {
+							setIsInstallPrometheus('false');
+							field.setValues({
+								protocolPrometheus:
+									res.data.monitor.prometheus.protocol,
+								hostPrometheus:
+									res.data.monitor.prometheus.host,
+								portPrometheus: res.data.monitor.prometheus.port
+							});
+						}
+					}
+				}
+			);
+		}
+	}, [params.clusterId]);
 	useEffect(() => {
 		field.setValues({
 			protocolEs: 'http',
@@ -49,62 +181,57 @@ export default function AddForm(): JSX.Element {
 			protocolPrometheus: 'http'
 		});
 	}, []);
+	const uploadConf = (e: any) => {
+		const reader = new window.FileReader();
+		reader.onload = function (e) {
+			field.setValue('cert', reader.result);
+		};
+		reader.readAsText(e.target.files[0]);
+	};
 	const onOk = () => {
-		// field.validate((errors, values) => {
-		// 	if (errors) return;
-		// });
-		const values = field.getValues();
-		console.log(values);
-		const sendData = {
+		field.validate((errors) => {
+			if (errors) return;
+		});
+		const values: valuesProps = field.getValues();
+		const sendData: clusterAddType = {
 			cert: {
-				certificate: data.cert
+				certificate: values.cert
 			},
-			name: data.name,
-			nickname: data.nickname,
-			host: data.host,
-			protocol: data.protocol,
-			port: data.port,
+			name: values.name,
+			nickname: values.nickname,
+			host: values.host,
+			protocol: values.protocol,
+			port: values.port,
 			registry: {
-				protocol: data.protocolHarbor,
-				address: data.addressHarbor,
-				port: data.portHarbor,
-				user: data.user,
-				password: data.password,
+				protocol: values.protocolHarbor,
+				address: values.addressHarbor,
+				port: values.portHarbor,
+				user: values.user,
+				password: values.password,
 				type: 'harbor',
-				chartRepo: data.chartRepo
+				chartRepo: values.chartRepo
 			}
 		};
-		// if (tcpFlag) {
-		// 	sendData.ingress.tcp = {
-		// 		enabled: true,
-		// 		namespace: data.namespace,
-		// 		configMapName: data.configMapName
-		// 	};
-		// } else {
-		// 	sendData.ingress.tcp = {
-		// 		enabled: false
-		// 	};
-		// }
 		if (!isInstallIngress) {
 			sendData.ingress = {
-				address: data.ingressAddress,
-				ingressClassName: data.ingressClassName,
+				address: values.ingressAddress,
+				ingressClassName: values.ingressClassName,
 				tcp: {
 					enabled: true,
-					namespace: data.namespace,
-					configMapName: data.configMapName
+					namespace: values.namespace,
+					configMapName: values.configMapName
 				}
 			};
 		}
 		if (!isInstallLogging) {
 			sendData.logging = {
 				elasticSearch: {
-					protocol: data.protocolEs,
-					host: data.hostEs,
-					port: data.portEs,
-					user: data.userEs,
-					password: data.passwordEs,
-					logCollect: data.logCollect
+					protocol: values.protocolEs,
+					host: values.hostEs,
+					port: values.portEs,
+					user: values.userEs,
+					password: values.passwordEs,
+					logCollect: values.logCollect
 				}
 			};
 		}
@@ -112,9 +239,9 @@ export default function AddForm(): JSX.Element {
 			sendData.monitor = {
 				...sendData.monitor,
 				alertManager: {
-					host: data.hostAlert,
-					port: data.portAlert,
-					protocol: data.protocolAlert
+					host: values.hostAlert,
+					port: values.portAlert,
+					protocol: values.protocolAlert
 				}
 			};
 		}
@@ -122,9 +249,9 @@ export default function AddForm(): JSX.Element {
 			sendData.monitor = {
 				...sendData.monitor,
 				grafana: {
-					host: data.hostGrafana,
-					port: data.portGrafana,
-					protocol: data.protocolGrafana
+					host: values.hostGrafana,
+					port: values.portGrafana,
+					protocol: values.protocolGrafana
 				}
 			};
 		}
@@ -132,46 +259,46 @@ export default function AddForm(): JSX.Element {
 			sendData.monitor = {
 				...sendData.monitor,
 				prometheus: {
-					host: data.hostPrometheus,
-					port: data.portPrometheus,
-					protocol: data.protocolPrometheus
+					host: values.hostPrometheus,
+					port: values.portPrometheus,
+					protocol: values.protocolPrometheus
 				}
 			};
 		}
-		console.log(sendData);
-		// if (clusterId) {
-		// 	sendData.clusterId = clusterId;
-		// 	sendData.dcId = dcId;
-		// 	putCluster(sendData).then((res) => {
-		// 		if (res.success) {
-		// 			Message.show(
-		// 				messageConfig('success', '成功', {
-		// 					data: '资源池修改成功'
-		// 				})
-		// 			);
-		// 			updateFn();
-		// 			cancelHandle();
-		// 			setRefreshCluster(true);
-		// 		} else {
-		// 			Message.show(messageConfig('error', '错误', res));
-		// 		}
-		// 	});
-		// } else {
-		// 	postCluster(sendData).then((res) => {
-		// 		if (res.success) {
-		// 			Message.show(
-		// 				messageConfig('success', '成功', {
-		// 					data: '资源池接入成功'
-		// 				})
-		// 			);
-		// 			updateFn();
-		// 			cancelHandle();
-		// 			setRefreshCluster(true);
-		// 		} else {
-		// 			Message.show(messageConfig('error', '错误', res));
-		// 		}
-		// 	});
-		// }
+		// console.log(sendData);
+		if (params.clusterId) {
+			sendData.clusterId = params.clusterId;
+			sendData.dcId = dcId;
+			putCluster(sendData).then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', {
+							data: '资源池修改成功'
+						})
+					);
+					// updateFn();
+					// cancelHandle();
+					setRefreshCluster(true);
+				} else {
+					Message.show(messageConfig('error', '错误', res));
+				}
+			});
+		} else {
+			postCluster(sendData).then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', {
+							data: '资源池接入成功'
+						})
+					);
+					// updateFn();
+					// cancelHandle();
+					setRefreshCluster(true);
+				} else {
+					Message.show(messageConfig('error', '错误', res));
+				}
+			});
+		}
 	};
 	return (
 		<Page>
@@ -200,7 +327,7 @@ export default function AddForm(): JSX.Element {
 							<Input
 								name="name"
 								trim={true}
-								// disabled={clusterId ? true : false}
+								disabled={params.clusterId ? true : false}
 								placeholder="请输入英文简称"
 							/>
 						</FormItem>
@@ -247,7 +374,9 @@ export default function AddForm(): JSX.Element {
 										<Input
 											htmlType="text"
 											name="host"
-											// disabled={clusterId ? true : false}
+											disabled={
+												params.clusterId ? true : false
+											}
 											trim={true}
 											placeholder="请输入主机地址"
 										/>
@@ -261,7 +390,9 @@ export default function AddForm(): JSX.Element {
 										<Input
 											htmlType="number"
 											name="port"
-											// disabled={clusterId ? true : false}
+											disabled={
+												params.clusterId ? true : false
+											}
 											value={6443}
 											trim={true}
 											placeholder="端口"
@@ -274,7 +405,7 @@ export default function AddForm(): JSX.Element {
 							label="AdminConfig"
 							required
 							requiredMessage="请输入AdminConfig"
-							className="ne-required-ingress"
+							className="ne-required-ingress upload-position"
 							labelTextAlign="left"
 							asterisk={false}
 						>
@@ -283,6 +414,20 @@ export default function AddForm(): JSX.Element {
 								rows={4}
 								placeholder="请输入AdminConfig"
 							/>
+							<div className="upload-parse-file">
+								<Icon
+									type="arrow-to-top"
+									size="xs"
+									style={{ marginRight: 4 }}
+								/>
+								上传文件
+								<input
+									id="my-upload-parse"
+									type="file"
+									name="file"
+									onChange={uploadConf}
+								/>
+							</div>
 						</FormItem>
 						<FormItem
 							label="Harbor地址"
@@ -809,7 +954,11 @@ export default function AddForm(): JSX.Element {
 					</Form>
 				</FormBlock>
 				<div>
-					<Button type="primary" onClick={onOk}>
+					<Button
+						type="primary"
+						onClick={onOk}
+						style={{ marginRight: 8 }}
+					>
 						完成
 					</Button>
 					<Button onClick={() => window.history.back()}>取消</Button>

@@ -34,3 +34,28 @@
 	padding: 16px 24px;
 	margin-bottom: 16px;
 }
+.upload-parse-file{
+	width: 100px;
+	height: 32px;
+	background-color: $primary-color;
+	font-size: 12px;
+	font-weight: 500;
+	color: #FFFFFF;
+	line-height: 32px;
+	text-align: center;
+	position: absolute;
+	right: -120px;
+	bottom: 24px;
+}
+#my-upload-parse{
+	width: 100px;
+	height: 32px;
+	opacity: 0;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	cursor: pointer;
+}
+.upload-position{
+	position: relative;
+}

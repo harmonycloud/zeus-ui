@@ -63,16 +63,16 @@ export interface basicDataProps {
 	storage?: storageProps;
 }
 export interface monitorItemProps {
-	address: string;
+	address?: string;
 	host: string;
 	port: string;
 	protocol: string;
-	token: string | null;
+	token?: string | null;
 }
 export interface monitorProps {
-	alertManager: monitorItemProps | null;
-	grafana: monitorItemProps | null;
-	prometheus: monitorItemProps | null;
+	alertManager?: monitorItemProps | null;
+	grafana?: monitorItemProps | null;
+	prometheus?: monitorItemProps | null;
 }
 export interface storageProps {
 	backup: backupProps | null;
@@ -92,4 +92,28 @@ export interface supportProps {
 	'CSI-LVM': string;
 	LocalPath: string;
 	NFS: string;
+}
+
+export interface ingressProps {
+	address: string;
+	ingressClassName: string | null;
+	tcp: {
+		enabled: boolean;
+		configMapName: string;
+		namespace: string;
+	};
+}
+
+export interface registryProps {
+	address: string;
+	chartRepo: string;
+	imageRepo?: string;
+	password: string | null;
+	port: number;
+	protocol: string;
+	registryAddress?: string;
+	registryUrl?: string;
+	type: string;
+	user: string;
+	version?: string;
 }

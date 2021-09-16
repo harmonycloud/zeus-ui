@@ -203,6 +203,11 @@ const Routes = withRouter((props) => {
 					component={AddForm}
 					exact
 				/>
+				<Route
+					path="/systemManagement/addResourcePool/addOther/:clusterId"
+					component={AddForm}
+					exact
+				/>
 			</Switch>
 		</>
 	);
