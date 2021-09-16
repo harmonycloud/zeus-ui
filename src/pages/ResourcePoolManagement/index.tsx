@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@alicloud/console-components';
+import { useHistory } from 'react-router';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import moment from 'moment';
 import Table from '@/components/MidTable';
@@ -7,12 +8,18 @@ import Table from '@/components/MidTable';
 export default function ResourcePoolManagement() {
 	const [originData, setOriginData] = useState([]);
 	const [dataSource, setDataSource] = useState([]);
+	const history = useHistory();
 	const getData = () => {
 		console.log('get list data');
 	};
 	const Operation = {
 		primary: (
-			<Button onClick={() => console.log('aaa')} type="primary">
+			<Button
+				onClick={() =>
+					history.push('/systemManagement/addResourcePool')
+				}
+				type="primary"
+			>
 				添加资源池
 			</Button>
 		)

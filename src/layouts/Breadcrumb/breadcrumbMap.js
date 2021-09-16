@@ -31,5 +31,7 @@ export default {
 	versionManagement: '版本管理',
 	basicInfo: '基本详情',
 	highAvailability: '实例详情',
-	paramterSetting: '参数设置'
+	paramterSetting: '参数设置',
+	addResourcePool: '添加资源池',
+	addOther: '添加其他资源池'
 };

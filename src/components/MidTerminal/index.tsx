@@ -25,7 +25,6 @@ export default function MidTerminal(props: MidTerminalProps): JSX.Element {
 	const { url } = props;
 	const initTerminal = () => {
 		socket = new WebSocket(url, cache.getLocal(TOKEN));
-		console.log(socket);
 		socket.onopen = () => {
 			socket.send(action('TERMINAL_INIT'));
 			socket.send(action('TERMINAL_READY'));
@@ -33,6 +32,9 @@ export default function MidTerminal(props: MidTerminalProps): JSX.Element {
 		};
 		socket.onerror = () => {
 			console.log('连接失败');
+		};
+		socket.onmessage = (msg) => {
+			console.log(msg);
 		};
 		term = new Terminal({
 			cursorBlink: true

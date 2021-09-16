@@ -1,0 +1,36 @@
+.resource-pool-content{
+	width: 361px;
+	height: 120px;
+	// border: 1px dashed #888888;
+	border: 1px solid $primary-color;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 16px 0 32px 0;
+	border-radius: 2px;
+	cursor: pointer;
+	margin-left: 2px;
+	img {
+		margin-left: 37px;
+	}
+	i {
+
+		align-self: flex-end;
+	}
+	div {
+		flex: 1;
+		width: 80px;
+		height: 24px;
+		font-size: 16px;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: 500;
+		color: #40454A;
+		line-height: 24px;
+		margin-left: 40px;
+	}
+}
+.second-form-content{
+	background: #F1F1F2;
+	padding: 16px 24px;
+	margin-bottom: 16px;
+}

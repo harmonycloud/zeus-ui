@@ -33,10 +33,10 @@ export default function Console(props: consoleProps): JSX.Element {
 	const field = Field.useField();
 	const onOk = () => {
 		const values: valuesProps = field.getValues();
-		const url = `wss://10.1.10.13:31999/terminal?terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
+		const url = `wss://10.1.10.13:31999/ws/terminal?terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
 		setUrl(url);
 		// window.open(
-		// 	url,
+		// 	'../../../../utils/terminal/index.html',
 		// 	'_blank',
 		// 	'height=600, width=800, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
 		// );
