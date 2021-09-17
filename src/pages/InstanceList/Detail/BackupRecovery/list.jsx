@@ -2,46 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { Button, Dialog, Message } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { getBackups, addBackup, deleteBackup } from '@/services/middleware';
+// import { getBackups, addBackup, deleteBackup } from '@/services/middleware';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import ComponentsLoading from '@/components/componentsLoading';
+import { getBackups, backupNow } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
 import transTime from '@/utils/transTime';
 
 export default function List(props) {
-	const {
-		data: { clusterId, namespace, data: listData },
-		backup
-	} = props;
-	const history = useHistory();
-	const { middlewareName, type, chartName, chartVersion } = useParams();
+	console.log(props);
+	const { clusterId, namespace, data: listData, storage } = props;
+	// const history = useHistory();
+	// const { middlewareName, type, chartName, chartVersion } = useParams();
 	const [backups, setBackups] = useState([]);
 	useEffect(() => {
 		if (
 			clusterId !== undefined &&
 			namespace !== undefined &&
 			listData !== undefined &&
-			backup
+			storage.backup
 		) {
-			getData(clusterId, namespace, listData.name);
+			getData();
 		}
 	}, [props]);
 
-	const getData = (clusterId, namespace, mysqlName) => {
+	const getData = () => {
 		const sendData = {
 			clusterId,
 			namespace,
-			mysqlName: mysqlName
+			middlewareName: listData.name,
+			type: listData.chartName
 		};
 		getBackups(sendData).then((res) => {
 			if (res.success) {
 				setBackups(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
 
-	const backupNow = () => {
+	const backupOnNow = () => {
 		Dialog.show({
 			title: '操作确认',
 			content: '请确认是否立刻备份？',
@@ -49,9 +51,10 @@ export default function List(props) {
 				const sendData = {
 					clusterId,
 					namespace,
-					mysqlName: listData.name
+					middlewareName: listData.name,
+					type: listData.chartName
 				};
-				addBackup(sendData)
+				backupNow(sendData)
 					.then((res) => {
 						if (res.success) {
 							Message.show(
@@ -62,7 +65,7 @@ export default function List(props) {
 						}
 					})
 					.finally(() => {
-						getData(clusterId, namespace, listData.name);
+						getData();
 					});
 			}
 		});
@@ -113,46 +116,47 @@ export default function List(props) {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						Dialog.show({
-							title: '操作确认',
-							content: '备份删除后将无法恢复，请确认执行',
-							onOk: () => {
-								const sendData = {
-									clusterId,
-									namespace,
-									mysqlName: listData.name,
-									backupName: record.backupName,
-									backupFileName: record.backupFileName
-								};
-								deleteBackup(sendData)
-									.then((res) => {
-										if (res.success) {
-											Message.show(
-												messageConfig(
-													'success',
-													'成功',
-													'备份删除成功'
-												)
-											);
-										} else {
-											Message.show(
-												messageConfig(
-													'error',
-													'失败',
-													res
-												)
-											);
-										}
-									})
-									.finally(() => {
-										getData(
-											clusterId,
-											namespace,
-											listData.name
-										);
-									});
-							}
-						});
+						console.log('delete');
+						// Dialog.show({
+						// 	title: '操作确认',
+						// 	content: '备份删除后将无法恢复，请确认执行',
+						// 	onOk: () => {
+						// 		const sendData = {
+						// 			clusterId,
+						// 			namespace,
+						// 			mysqlName: listData.name,
+						// 			backupName: record.backupName,
+						// 			backupFileName: record.backupFileName
+						// 		};
+						// 		deleteBackup(sendData)
+						// 			.then((res) => {
+						// 				if (res.success) {
+						// 					Message.show(
+						// 						messageConfig(
+						// 							'success',
+						// 							'成功',
+						// 							'备份删除成功'
+						// 						)
+						// 					);
+						// 				} else {
+						// 					Message.show(
+						// 						messageConfig(
+						// 							'error',
+						// 							'失败',
+						// 							res
+						// 						)
+						// 					);
+						// 				}
+						// 			})
+						// 			.finally(() => {
+						// 				getData(
+						// 					clusterId,
+						// 					namespace,
+						// 					listData.name
+						// 				);
+						// 			});
+						// 	}
+						// });
 					}}
 				>
 					删除
@@ -163,24 +167,21 @@ export default function List(props) {
 
 	const Operation = {
 		primary: (
-			<Button onClick={backupNow} type="primary">
+			<Button onClick={backupOnNow} type="primary">
 				立即备份
 			</Button>
 		)
 	};
 
-	const onRefresh = () => {
-		getData(clusterId, namespace, listData.name);
-	};
 	return (
 		<div style={{ marginTop: 16 }}>
-			{backup ? (
+			{storage.backup ? (
 				<Table
 					dataSource={backups}
 					exact
 					fixedBarExpandWidth={[24]}
 					showRefresh
-					onRefresh={onRefresh}
+					onRefresh={getData}
 					affixActionBar
 					primaryKey="key"
 					operation={Operation}

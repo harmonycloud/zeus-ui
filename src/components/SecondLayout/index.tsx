@@ -53,6 +53,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 				namespace: namespace.name,
 				keyword: ''
 			}).then((res) => {
+				console.log(res);
 				if (res.success) {
 					const list = res.data.map((item: serviceListItemProps) => {
 						const result: filtersProps = {
@@ -81,7 +82,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							cluster
 						);
 					} else {
-						if (list[0].children.length > 0) {
+						if (list.length > 0 && list[0].children.length > 0) {
 							setCurrent(list[0].children[0].value);
 							onChange(
 								list[0].children[0].value,

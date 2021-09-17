@@ -72,13 +72,15 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	}, [props]);
 	useEffect(() => {
 		const allList: serviceProps[] = [];
-		originData.forEach((item) => {
-			item.serviceList.length > 0 &&
-				item.serviceList.forEach((i) => {
-					i.imagePath = item.imagePath;
-					allList.push(i);
-				});
-		});
+		if (originData.length > 0) {
+			originData.forEach((item) => {
+				item.serviceList.length > 0 &&
+					item.serviceList.forEach((i) => {
+						i.imagePath = item.imagePath;
+						allList.push(i);
+					});
+			});
+		}
 		setDataSource(allList);
 		setShowDataSource(allList);
 	}, [originData]);

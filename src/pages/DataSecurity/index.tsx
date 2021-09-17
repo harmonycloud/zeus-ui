@@ -54,7 +54,7 @@ export default function DataSecurity(): JSX.Element {
 				<BackupRecovery
 					type={basicData?.type}
 					data={data}
-					backup={basicData?.storage}
+					storage={basicData?.storage}
 					clusterId={basicData?.clusterId}
 					namespace={basicData?.namespace}
 					customMid={data?.dynamicValues !== null}
