@@ -77,6 +77,7 @@ export interface monitorProps {
 export interface storageProps {
 	backup: backupProps | null;
 	support: supportProps | null;
+	resource?: resourceProps | null;
 }
 export interface backupProps {
 	type: string;
@@ -92,6 +93,12 @@ export interface supportProps {
 	'CSI-LVM': string;
 	LocalPath: string;
 	NFS: string;
+}
+export interface resourceProps {
+	cpuTotal: string;
+	cpuUsing: string;
+	memoryTotal: string;
+	memoryUsing: string;
 }
 
 export interface ingressProps {

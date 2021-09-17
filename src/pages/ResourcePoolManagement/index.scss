@@ -59,3 +59,17 @@
 .upload-position{
 	position: relative;
 }
+.cpu-content{
+	display: flex;
+	position: relative;
+	.cpu-content-line{
+		width: 48px;
+		height: 16px;
+		margin-right: 12px;
+		background-color: #F4F6FB;
+	}
+	img {
+		position: absolute;
+		top: 0;
+	}
+}
