@@ -339,7 +339,8 @@ const AddCluster = (props) => {
 									htmlType="number"
 									name="port"
 									disabled={clusterId ? true : false}
-									value={6443}
+									defaultValue={6443}
+									// value={6443}
 									trim={true}
 									placeholder="端口"
 								/>
