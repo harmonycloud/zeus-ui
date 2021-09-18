@@ -55,7 +55,7 @@ const Routes = withRouter((props) => {
 					component={PlatformOverview}
 					exact
 				/>
-				{/* 中间件仓库 */}
+				{/* 中间件市场 */}
 				<Route
 					path="/middlewareRepository"
 					component={MiddlewareRepository}
@@ -107,7 +107,7 @@ const Routes = withRouter((props) => {
 					path="/middlewareRepository/dynamicForm/:chartName/:chartVersion/:version"
 					component={DynamicForm}
 				/>
-				{/* 中间件仓库-版本管理 */}
+				{/* 中间件市场-版本管理 */}
 				<Route
 					path="/middlewareRepository/versionManagement/:type"
 					component={MiddlewareVersion}

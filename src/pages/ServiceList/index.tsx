@@ -20,6 +20,7 @@ import { StoreState, globalVarProps } from '@/types/index';
 import { serviceListItemProps, serviceProps } from './service.list';
 import { listProps } from '@/components/RapidScreening';
 import { iconTypeRender, timeRender } from '@/utils/utils';
+import storage from '@/utils/storage';
 
 interface serviceListProps {
 	globalVar: globalVarProps;
@@ -35,7 +36,9 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const [list, setList] = useState<listProps[]>([
 		{ name: '全部服务', count: 0 }
 	]);
-	const [selected, setSelected] = useState<string>('全部服务');
+	const [selected, setSelected] = useState<string>(
+		storage.getSession('service-list-current') || '全部服务'
+	);
 
 	useEffect(() => {
 		let mounted = true;
@@ -85,15 +88,18 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		setShowDataSource(allList);
 	}, [originData]);
 	useEffect(() => {
-		if (selected !== '全部服务') {
-			setShowDataSource(
-				originData.filter((item) => item.chartName === selected)[0]
-					.serviceList
-			);
-		} else {
-			setShowDataSource(dataSource);
+		console.log(originData);
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.serviceList
+				);
+			} else {
+				setShowDataSource(dataSource);
+			}
 		}
-	}, [selected]);
+	}, [selected, originData]);
 	useEffect(() => {
 		getData();
 	}, [keyword]);
@@ -177,7 +183,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			setShowDataSource(tempData);
 		}
 	};
-	// * 关联服务名称的跳转
+	// todo 关联服务名称的跳转
 	const toDetail = (record: any) => {
 		console.log(record);
 		console.log('to details');
@@ -396,7 +402,18 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					日志详情
 				</LinkButton>
-				<LinkButton>服务控制台</LinkButton>
+				{record.managePlatform ? (
+					<LinkButton
+						onClick={() => {
+							window.open(
+								record.managePlatformAddress as string,
+								'_blank'
+							);
+						}}
+					>
+						服务控制台
+					</LinkButton>
+				) : null}
 				<LinkButton
 					onClick={() => {
 						history.push({
@@ -462,7 +479,10 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				<RapidScreening
 					list={list}
 					selected={selected}
-					changeSelected={(value: string) => setSelected(value)}
+					changeSelected={(value: string) => {
+						setSelected(value);
+						storage.setSession('service-list-current', value);
+					}}
 				/>
 				<Table
 					dataSource={showDataSource}
@@ -472,7 +492,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}
-					primaryKey="key"
+					primaryKey="name"
 					operation={Operation}
 					search={{
 						onSearch: handleSearch,

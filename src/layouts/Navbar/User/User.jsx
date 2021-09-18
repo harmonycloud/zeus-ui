@@ -20,7 +20,9 @@ function User(props) {
 		postLogout().then((res) => {
 			if (res.success) {
 				Storage.removeLocal('token', true);
-				// Storage.removeSession('token', true);
+				Storage.removeSession('service-list-current', true);
+				Storage.removeSession('service-available-current', true);
+				Storage.removeLocal('firstAlert', true);
 				history.push('/login');
 				window.location.reload();
 			} else {

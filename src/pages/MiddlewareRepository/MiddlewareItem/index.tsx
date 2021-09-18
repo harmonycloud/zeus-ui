@@ -194,7 +194,7 @@ export default function MiddlewareItem(
 								onClick={unInstall}
 							>
 								<CustomIcon
-									type="icon-xiajia"
+									type="icon-xiezai1"
 									style={{ color: 'white' }}
 								/>
 								下架

@@ -53,6 +53,8 @@ export default function Login() {
 			.then((res) => {
 				if (res.success) {
 					Storage.setLocal('firstAlert', 0);
+					Storage.setSession('service-list-current', '全部服务');
+					Storage.setSession('service-available-current', '全部服务');
 					Storage.setLocal('token', res.data.token);
 					history.push('/dataOverview');
 					window.location.reload();

@@ -118,7 +118,9 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 			<Header
 				title={title}
 				subTitle={subTitle}
-				hasBackArrow={hasBackArrow}
+				hasBackArrow={
+					location?.state?.middlewareName ? hasBackArrow : false
+				}
 				onBackArrowClick={onBackArrowClick}
 				childrenAlign={childrenAlign}
 				className={className}

@@ -13,8 +13,8 @@ export interface serviceProps {
 	filelogEnabled: any | null;
 	ingresses: any | null;
 	labels: any | null;
-	managePlatform: any | null;
-	managePlatformAddress: any | null;
+	managePlatform: boolean | null;
+	managePlatformAddress: string | null;
 	mode: string;
 	mysqlDTO?: any;
 	name: string;

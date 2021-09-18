@@ -17,6 +17,7 @@ import { Message } from '@alicloud/console-components';
 import { History } from 'history';
 import messageConfig from '@/components/messageConfig';
 import { Icon } from '@alifd/next';
+import storage from '@/utils/storage';
 
 const CustomIcon = Icon.createFromIconfontCN({
 	scriptUrl: '@/assets/iconfont'
@@ -38,7 +39,7 @@ const menus = [
 	{
 		id: 2,
 		name: 'middlewareRepository',
-		aliasName: '中间件仓库',
+		aliasName: '中间件市场',
 		weight: 2,
 		parentId: 0,
 		url: 'middlewareRepository',
@@ -77,7 +78,7 @@ const menus = [
 		aliasName: '监控告警',
 		weight: 3,
 		parentId: 0,
-		url: 'monitoringAlarm',
+		url: 'monitorAlarm',
 		iconName: 'icon-gaojingshijian',
 		module: null,
 		available: null,
@@ -239,7 +240,6 @@ const subClick = (
 };
 
 const mapLocationToActiveKey = (location: Location) => {
-	// console.log(location);
 	const pathArray = location.pathname.split('/');
 	if (!location || !location.pathname || location.pathname === '/') {
 		return '/dataOverview';
@@ -280,7 +280,7 @@ function Menu(): JSX.Element {
 	const [items, setItems] = useState<IItemDescriptor[]>([]);
 	const history: History = useHistory();
 	const [defaultOpenKeys] = useState<string[]>([
-		'/monitoringAlarm',
+		'/monitorAlarm',
 		'/disasterBackup',
 		'/systemManagement'
 	]);
@@ -294,8 +294,8 @@ function Menu(): JSX.Element {
 		// const getMenus = () => {
 		const res = await getMenu();
 		if (res.success) {
-			const itemsTemp = menus.map((item: any) => {
-				// const itemsTemp = res.data.map((item: any) => {
+			// const itemsTemp = menus.map((item: any) => {
+			const itemsTemp = res.data.map((item: any) => {
 				if (item.subMenu) {
 					return {
 						key: `/${item.url}`,

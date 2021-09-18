@@ -87,7 +87,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title="中间件仓库"
+				title="中间件市场"
 				subTitle="不同类型中间件上/下架、升级管理等"
 			/>
 			<Content>

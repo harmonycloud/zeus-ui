@@ -24,9 +24,9 @@ import {
 } from './service.available';
 import { iconTypeRender, timeRender } from '@/utils/utils';
 import CustomIcon from '@/components/CustomIcon';
-// import AddIngress from '../Ingress/addIngress';
 import { getIngresses, deleteIngress, addIngress } from '@/services/ingress';
 import AddServiceAvailableForm from './AddServiceAvailableForm';
+import storage from '@/utils/storage';
 
 interface stateProps {
 	middlewareName: string;
@@ -36,7 +36,9 @@ interface serviceAvailableProps {
 }
 function ServiceAvailable(props: serviceAvailableProps) {
 	const { cluster, namespace } = props.globalVar;
-	const [selected, setSelected] = useState<string>('全部服务');
+	const [selected, setSelected] = useState<string>(
+		storage.getSession('service-available-current') || '全部服务'
+	);
 	const [originData, setOriginData] = useState<serviceAvailablesProps[]>([]);
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
 		[]
@@ -86,16 +88,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		};
 	}, [props]);
 	useEffect(() => {
-		if (selected !== '全部服务') {
-			setShowDataSource(
-				originData.filter((item) => item.chartName === selected)[0]
-					.ingressList
-			);
-		} else {
-			setShowDataSource(dataSource);
-		}
-	}, [selected]);
-	useEffect(() => {
 		const allList: serviceAvailableItemProps[] = [];
 		originData.forEach((item) => {
 			item.ingressList.length > 0 &&
@@ -107,6 +99,18 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		setDataSource(allList);
 		setShowDataSource(allList);
 	}, [originData]);
+	useEffect(() => {
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.ingressList
+				);
+			} else {
+				setShowDataSource(dataSource);
+			}
+		}
+	}, [selected, originData]);
 	const getData = (keyword: string = searchText) => {
 		const sendData = {
 			clusterId: cluster.id,
@@ -153,18 +157,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						}
 					})
 					.finally(() => {
-						console.log('refresh list data');
-						// entry !== 'detail'
-						// 	? getData(
-						// 			globalVar.cluster.id,
-						// 			globalVar.namespace.name
-						// 	  )
-						// 	: getIngressByMid(
-						// 			globalVar.cluster.id,
-						// 			globalVar.namespace.name,
-						// 			type,
-						// 			middlewareName
-						// 	  );
+						getData();
 					});
 			}
 		});
@@ -217,14 +210,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				);
 				setVisible(false);
 				getData();
-				// entry !== 'detail'
-				// 	? getData(globalVar.cluster.id, globalVar.namespace.name)
-				// 	: getIngressByMid(
-				// 			globalVar.cluster.id,
-				// 			globalVar.namespace.name,
-				// 			type,
-				// 			middlewareName
-				// 	  );
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -268,13 +253,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						onClick={() => copyValue(address)}
 					/>
 					{address}
-					{/* <span
-						className="name-link"
-						style={{ marginLeft: 12 }}
-						onClick={() => copyValue(address)}
-					>
-						复制
-					</span> */}
 				</>
 			);
 		} else {
@@ -298,15 +276,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 												}
 											/>
 											{address}
-											{/* <span
-												className="name-link"
-												style={{ marginLeft: 12 }}
-												onClick={() =>
-													copyValue(address)
-												}
-											>
-												复制
-											</span> */}
 										</div>
 									);
 								}
@@ -329,16 +298,14 @@ function ServiceAvailable(props: serviceAvailableProps) {
 											key={index}
 											className="balloon-tips"
 										>
-											{address}
-											<span
-												className="name-link"
-												style={{ marginLeft: 12 }}
+											<CustomIcon
+												type="icon-fuzhi"
+												size="xs"
 												onClick={() =>
 													copyValue(address)
 												}
-											>
-												复制
-											</span>
+											/>
+											{address}
 										</div>
 									);
 								}
@@ -431,7 +398,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				<RapidScreening
 					list={list}
 					selected={selected}
-					changeSelected={(value: string) => setSelected(value)}
+					changeSelected={(value: string) => {
+						setSelected(value);
+						storage.setSession('service-available-current', value);
+					}}
 				/>
 				<Table
 					dataSource={showDataSource}

@@ -64,8 +64,8 @@ export interface basicDataProps {
 }
 export interface monitorItemProps {
 	address?: string;
-	host: string;
-	port: string;
+	host?: string;
+	port?: string;
 	protocol: string;
 	token?: string | null;
 }

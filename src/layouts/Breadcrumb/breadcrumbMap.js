@@ -13,7 +13,7 @@ export default {
 	rocketmqCreate: 'RocketMQ创建',
 	dynamicForm: '发布服务',
 	dataOverview: '数据总览',
-	middlewareRepository: '中间件仓库',
+	middlewareRepository: '中间件市场',
 	serviceList: '服务列表',
 	serviceAvailable: '服务暴露',
 	monitorAlarm: '监控告警',

@@ -33,7 +33,7 @@ const formItemLayout = {
 };
 const yesOrNo = [
 	{ value: 'true', label: '安装' },
-	{ value: 'false', label: '不安装' }
+	{ value: 'false', label: '接入' }
 ];
 const { Row, Col } = Grid;
 export interface valuesProps {
@@ -84,6 +84,7 @@ export default function AddForm(): JSX.Element {
 	// const [adminConfig, setAdminConfig] = useState<string>('');
 	const field = Field.useField();
 	const params: paramsProps = useParams();
+	// console.log(window.location.protocol);
 	useEffect(() => {
 		if (params.clusterId) {
 			getCluster({ clusterId: params.clusterId, visible: true }).then(
@@ -193,6 +194,7 @@ export default function AddForm(): JSX.Element {
 			if (errors) return;
 		});
 		const values: valuesProps = field.getValues();
+		console.log(values);
 		const sendData: clusterAddType = {
 			cert: {
 				certificate: values.cert
@@ -212,7 +214,7 @@ export default function AddForm(): JSX.Element {
 				chartRepo: values.chartRepo
 			}
 		};
-		if (!isInstallIngress) {
+		if (isInstallIngress === 'false') {
 			sendData.ingress = {
 				address: values.ingressAddress,
 				ingressClassName: values.ingressClassName,
@@ -223,7 +225,7 @@ export default function AddForm(): JSX.Element {
 				}
 			};
 		}
-		if (!isInstallLogging) {
+		if (isInstallLogging === 'false') {
 			sendData.logging = {
 				elasticSearch: {
 					protocol: values.protocolEs,
@@ -235,7 +237,7 @@ export default function AddForm(): JSX.Element {
 				}
 			};
 		}
-		if (!isInstallAlert) {
+		if (isInstallAlert === 'false') {
 			sendData.monitor = {
 				...sendData.monitor,
 				alertManager: {
@@ -245,7 +247,7 @@ export default function AddForm(): JSX.Element {
 				}
 			};
 		}
-		if (!isInstallGrafana) {
+		if (isInstallGrafana === 'false') {
 			sendData.monitor = {
 				...sendData.monitor,
 				grafana: {
@@ -254,8 +256,16 @@ export default function AddForm(): JSX.Element {
 					protocol: values.protocolGrafana
 				}
 			};
+		} else {
+			sendData.monitor = {
+				...sendData.monitor,
+				grafana: {
+					protocol:
+						window.location.protocol === 'https:' ? 'https' : 'http'
+				}
+			};
 		}
-		if (!isInstallPrometheus) {
+		if (isInstallPrometheus === 'false') {
 			sendData.monitor = {
 				...sendData.monitor,
 				prometheus: {
@@ -276,8 +286,6 @@ export default function AddForm(): JSX.Element {
 							data: '资源池修改成功'
 						})
 					);
-					// updateFn();
-					// cancelHandle();
 					setRefreshCluster(true);
 				} else {
 					Message.show(messageConfig('error', '错误', res));
@@ -291,8 +299,6 @@ export default function AddForm(): JSX.Element {
 							data: '资源池接入成功'
 						})
 					);
-					// updateFn();
-					// cancelHandle();
 					setRefreshCluster(true);
 				} else {
 					Message.show(messageConfig('error', '错误', res));
@@ -656,6 +662,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={12}>
 											<FormItem
+												required
+												requiredMessage="请输入ip地址"
 												pattern={pattern.ip}
 												patternMessage="请输入正确的ip地址！"
 												style={{ marginLeft: -2 }}
@@ -670,6 +678,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={6}>
 											<FormItem
+												required
+												requiredMessage="请输入端口"
 												style={{ marginLeft: -2 }}
 											>
 												<Input
@@ -775,6 +785,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={12}>
 											<FormItem
+												required
+												requiredMessage="请输入ip地址"
 												pattern={pattern.ip}
 												patternMessage="请输入正确的ip地址！"
 												style={{ marginLeft: -2 }}
@@ -790,6 +802,8 @@ export default function AddForm(): JSX.Element {
 										<Col span={6}>
 											<FormItem
 												style={{ marginLeft: -2 }}
+												required
+												requiredMessage="请输入端口"
 											>
 												<Input
 													htmlType="number"
@@ -849,6 +863,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={12}>
 											<FormItem
+												required
+												requiredMessage="请输入ip地址"
 												pattern={pattern.ip}
 												patternMessage="请输入正确的ip地址！"
 												style={{ marginLeft: -2 }}
@@ -863,6 +879,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={6}>
 											<FormItem
+												required
+												requiredMessage="请输入端口"
 												style={{ marginLeft: -2 }}
 											>
 												<Input
@@ -923,6 +941,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={12}>
 											<FormItem
+												required
+												requiredMessage="请输入ip地址"
 												pattern={pattern.ip}
 												patternMessage="请输入正确的ip地址！"
 												style={{ marginLeft: -2 }}
@@ -937,6 +957,8 @@ export default function AddForm(): JSX.Element {
 										</Col>
 										<Col span={6}>
 											<FormItem
+												required
+												requiredMessage="请输入端口"
 												style={{ marginLeft: -2 }}
 											>
 												<Input
