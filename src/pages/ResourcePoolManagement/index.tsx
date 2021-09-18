@@ -241,7 +241,7 @@ export default function ResourcePoolManagement() {
 						dataIndex="chartName"
 						cell={memoryRender}
 					/>
-					<Table.Column title="状态" dataIndex="chartName" />
+					{/* <Table.Column title="状态" dataIndex="chartName" /> */}
 					<Table.Column
 						title="创建时间"
 						dataIndex="attributes.createTime"

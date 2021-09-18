@@ -8,7 +8,7 @@ import messageConfig from '@/components/messageConfig';
 import ComponentsLoading from '@/components/componentsLoading';
 import { getBackups, backupNow } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
-import transTime from '@/utils/transTime';
+import UseBackupForm from './useBackupForm';
 
 export default function List(props) {
 	console.log(props);
@@ -16,6 +16,8 @@ export default function List(props) {
 	// const history = useHistory();
 	// const { middlewareName, type, chartName, chartVersion } = useParams();
 	const [backups, setBackups] = useState([]);
+	const [backupFileName, setBackupFileName] = useState();
+	const [useVisible, setUseVisible] = useState(false);
 	useEffect(() => {
 		if (
 			clusterId !== undefined &&
@@ -32,7 +34,7 @@ export default function List(props) {
 			clusterId,
 			namespace,
 			middlewareName: listData.name,
-			type: listData.chartName
+			type: listData.type
 		};
 		getBackups(sendData).then((res) => {
 			if (res.success) {
@@ -52,7 +54,7 @@ export default function List(props) {
 					clusterId,
 					namespace,
 					middlewareName: listData.name,
-					type: listData.chartName
+					type: listData.type
 				};
 				backupNow(sendData)
 					.then((res) => {
@@ -71,37 +73,9 @@ export default function List(props) {
 		});
 	};
 
-	const dateRender = (val) => {
-		return transTime.gmt2local(val);
-	};
-
-	const typeRender = (val) => {
-		switch (val) {
-			case 'all':
-				return '全量备份';
-			default:
-				return '全量备份';
-		}
-	};
-
 	const toHandle = (backupFileName) => {
-		console.log(backupFileName);
-		// if (type === 'mysql')
-		// 	history.push(
-		// 		`/serviceCatalog/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-		// 	);
-		// if (type === 'redis')
-		// 	history.push(
-		// 		`/serviceCatalog/redisCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-		// 	);
-		// if (type === 'elasticsearch')
-		// 	history.push(
-		// 		`/serviceCatalog/elasticsearchCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-		// 	);
-		// if (type === 'rocketmq')
-		// 	history.push(
-		// 		`/serviceCatalog/rocketmqCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-		// 	);
+		setBackupFileName(backupFileName);
+		setUseVisible(true);
 	};
 
 	// 克隆服务
@@ -109,8 +83,8 @@ export default function List(props) {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={record.backupFileName === ''}
-					onClick={() => toHandle(record.backupFileName)}
+					disabled={record.backupName === ''}
+					onClick={() => toHandle(record.backupName)}
 				>
 					使用备份
 				</LinkButton>
@@ -188,24 +162,35 @@ export default function List(props) {
 				>
 					<Table.Column
 						title="备份时间"
-						dataIndex="date"
-						cell={dateRender}
+						dataIndex="backupTime"
+						// cell={dateRender}
 					/>
-					<Table.Column
+					{/* <Table.Column
 						title="类型"
 						dataIndex="type"
 						cell={typeRender}
-					/>
+					/> */}
 					<Table.Column
 						title="状态"
 						dataIndex="status"
 						cell={statusBackupRender}
 					/>
-					<Table.Column title="位置" dataIndex="position" />
+					<Table.Column title="位置" dataIndex="backupAddressList" />
 					<Table.Column title="操作" cell={actionRender} />
 				</Table>
 			) : (
 				<ComponentsLoading type="backup" clusterId={clusterId} />
+			)}
+			{useVisible && backupFileName !== '' && (
+				<UseBackupForm
+					visible={useVisible}
+					onCancel={() => setUseVisible(false)}
+					backupFileName={backupFileName}
+					clusterId={clusterId}
+					namespace={namespace}
+					middlewareName={listData.name}
+					type={listData.type}
+				/>
 			)}
 		</div>
 	);

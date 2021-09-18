@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
 	Dialog,
 	Form,
@@ -7,6 +7,7 @@ import {
 	Checkbox,
 	TimePicker
 } from '@alicloud/console-components';
+import moment from 'moment';
 
 const formItemLayout = {
 	labelCol: {
@@ -25,19 +26,19 @@ const list = [
 	{ value: 6, label: '星期六' },
 	{ value: 0, label: '星期日' }
 ];
+const listMap = {
+	星期一: 1,
+	星期二: 2,
+	星期三: 3,
+	星期四: 4,
+	星期五: 5,
+	星期六: 6,
+	星期日: 0
+};
 const { Group: CheckboxGroup } = Checkbox;
-export default function BackupSetting({ visible, onCreate, onCancel }) {
+export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 	const field = Field.useField();
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const onChange = () => {};
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const onCycleChange = () => {};
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const onTimeChange = () => {};
-
+	console.log(data);
 	const onOk = () => {
 		field.validate((error, values) => {
 			if (!error) {
@@ -45,6 +46,18 @@ export default function BackupSetting({ visible, onCreate, onCancel }) {
 			}
 		});
 	};
+	useEffect(() => {
+		const arr = data.time.split(':');
+		const obj = {
+			hour: arr[0],
+			minute: arr[1]
+		};
+		field.setValues({
+			count: data.limitRecord,
+			cycle: data.cycle.split(',').map((item) => listMap[item]),
+			time: moment(obj)
+		});
+	}, [data]);
 
 	return (
 		<Dialog
@@ -61,34 +74,21 @@ export default function BackupSetting({ visible, onCreate, onCancel }) {
 					required
 					requiredMessage="备份保留个数不能为空"
 				>
-					<NumberPicker
-						type="inline"
-						name="count"
-						onChange={onChange}
-					/>
+					<NumberPicker type="inline" name="count" />
 				</Form.Item>
 				<Form.Item
 					label="备份周期"
 					required
 					requiredMessage="备份周期不能为空！"
 				>
-					<CheckboxGroup
-						name="cycle"
-						dataSource={list}
-						onChange={onCycleChange}
-					/>
+					<CheckboxGroup name="cycle" dataSource={list} />
 				</Form.Item>
 				<Form.Item
 					label="备份时间"
 					required
 					requiredMessage="备份时间不能为空"
 				>
-					<TimePicker
-						name="time"
-						onChange={onTimeChange}
-						minuteStep={30}
-						format="HH:mm"
-					/>
+					<TimePicker name="time" minuteStep={30} format="HH:mm" />
 				</Form.Item>
 			</Form>
 		</Dialog>

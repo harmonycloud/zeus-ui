@@ -12,7 +12,7 @@ export default function BackupRecovery(props) {
 					<List {...props} />
 				</Tab.Item>
 				<Tab.Item title="备份设置">
-					<Config data={props} />
+					<Config {...props} />
 				</Tab.Item>
 			</Tab>
 		</div>
