@@ -39,7 +39,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const [selected, setSelected] = useState<string>(
 		storage.getSession('service-list-current') || '全部服务'
 	);
-
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -72,8 +71,9 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		return () => {
 			mounted = false;
 		};
-	}, [props]);
+	}, [props.globalVar]);
 	useEffect(() => {
+		console.log(originData);
 		const allList: serviceProps[] = [];
 		if (originData.length > 0) {
 			originData.forEach((item) => {
@@ -88,7 +88,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		setShowDataSource(allList);
 	}, [originData]);
 	useEffect(() => {
-		console.log(originData);
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
 				setShowDataSource(
@@ -99,7 +98,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				setShowDataSource(dataSource);
 			}
 		}
-	}, [selected, originData]);
+	}, [selected]);
 	useEffect(() => {
 		getData();
 	}, [keyword]);

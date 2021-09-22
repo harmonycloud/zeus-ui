@@ -71,10 +71,59 @@ export default function ResourcePoolManagement() {
 		}
 	};
 	const onSort = (dataIndex: string, order: string) => {
+		console.log(dataIndex, order);
 		if (dataIndex === 'createTime') {
 			const dsTemp = clusterList.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setDataSource([...dsTemp]);
+		} else if (dataIndex === 'attributes.nsCount') {
+			const dsTemp = clusterList.sort((a, b) => {
+				const result = a[dataIndex] - b[dataIndex];
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setDataSource([...dsTemp]);
+		} else if (dataIndex === 'cpu') {
+			const dsTemp = clusterList.sort((a, b) => {
+				const aPer =
+					Number(a.storage?.resource?.cpuUsing) /
+					Number(a.storage?.resource?.cpuTotal);
+				const bPer =
+					Number(b.storage?.resource?.cpuUsing) /
+					Number(b.storage?.resource?.cpuTotal);
+				const result = aPer - bPer;
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setDataSource([...dsTemp]);
+		} else if (dataIndex === 'memory') {
+			const dsTemp = clusterList.sort((a, b) => {
+				const aPer =
+					Number(a.storage?.resource?.memoryUsing) /
+					Number(a.storage?.resource?.memoryTotal);
+				const bPer =
+					Number(b.storage?.resource?.memoryUsing) /
+					Number(b.storage?.resource?.memoryTotal);
+				const result = aPer - bPer;
 				return order === 'asc'
 					? result > 0
 						? 1
@@ -233,15 +282,16 @@ export default function ResourcePoolManagement() {
 					/>
 					<Table.Column
 						title="CPU(核)"
-						dataIndex="chartName"
+						dataIndex="cpu"
 						cell={cpuRender}
+						sortable
 					/>
 					<Table.Column
 						title="内存(GB)"
-						dataIndex="chartName"
+						dataIndex="memory"
 						cell={memoryRender}
+						sortable
 					/>
-					{/* <Table.Column title="状态" dataIndex="chartName" /> */}
 					<Table.Column
 						title="创建时间"
 						dataIndex="attributes.createTime"

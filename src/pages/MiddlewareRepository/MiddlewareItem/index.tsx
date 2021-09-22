@@ -40,7 +40,7 @@ const statusIconRender = (value: number) => {
 					style={{ color: '#FAC800', marginLeft: '6px' }}
 				/>
 			);
-		case 4:
+		case 3:
 			return (
 				<Icon
 					type="error"
