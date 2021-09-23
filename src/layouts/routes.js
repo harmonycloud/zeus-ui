@@ -29,6 +29,8 @@ import DataSecurity from '@/pages/DataSecurity';
 import MiddlewareRepository from '@/pages/MiddlewareRepository';
 import MiddlewareVersion from '@/pages/MiddlewareRepository/middlewareVersion';
 import ResourcePoolManagement from '@/pages/ResourcePoolManagement';
+import AddResourcePool from '@/pages/ResourcePoolManagement/addResourcePool';
+import AddForm from '@/pages/ResourcePoolManagement/addForm';
 // ! 已弃用组件
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
@@ -54,7 +56,7 @@ const Routes = withRouter((props) => {
 					component={PlatformOverview}
 					exact
 				/>
-				{/* 中间件仓库 */}
+				{/* 中间件市场 */}
 				<Route
 					path="/middlewareRepository"
 					component={MiddlewareRepository}
@@ -106,7 +108,7 @@ const Routes = withRouter((props) => {
 					path="/middlewareRepository/dynamicForm/:chartName/:chartVersion/:version"
 					component={DynamicForm}
 				/>
-				{/* 中间件仓库-版本管理 */}
+				{/* 中间件市场-版本管理 */}
 				<Route
 					path="/middlewareRepository/versionManagement/:type"
 					component={MiddlewareVersion}
@@ -195,6 +197,21 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/resourcePoolManagement"
 					component={ResourcePoolManagement}
+					exact
+				/>
+				<Route
+					path="/systemManagement/addResourcePool"
+					component={AddResourcePool}
+					exact
+				/>
+				<Route
+					path="/systemManagement/addResourcePool/addOther"
+					component={AddForm}
+					exact
+				/>
+				<Route
+					path="/systemManagement/addResourcePool/addOther/:clusterId"
+					component={AddForm}
 					exact
 				/>
 			</Switch>

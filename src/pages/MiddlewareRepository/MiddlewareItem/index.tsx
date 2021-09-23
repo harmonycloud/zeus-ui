@@ -40,7 +40,7 @@ const statusIconRender = (value: number) => {
 					style={{ color: '#FAC800', marginLeft: '6px' }}
 				/>
 			);
-		case 4:
+		case 3:
 			return (
 				<Icon
 					type="error"
@@ -195,7 +195,7 @@ export default function MiddlewareItem(
 								onClick={unInstall}
 							>
 								<CustomIcon
-									type="icon-xiajia"
+									type="icon-xiezai1"
 									style={{ color: 'white' }}
 								/>
 								下架
