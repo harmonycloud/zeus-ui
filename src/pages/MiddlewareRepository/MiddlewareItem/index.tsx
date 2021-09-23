@@ -157,6 +157,7 @@ export default function MiddlewareItem(
 	return (
 		<div className="middleware-item-content">
 			<div className="middleware-item-icon">
+				{console.log(`${api}/images/middleware/${imagePath}`)}
 				<img
 					height={60}
 					width={60}
