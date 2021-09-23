@@ -17,6 +17,7 @@
 	}
 }
 .backup-setting{
+	width: 50%;
 	display: flex;
 	color: $text-color-title;
 	margin-bottom: 6px;
@@ -33,12 +34,40 @@
 		color: #0064C8;
 		cursor: pointer;
 	}
-	.backup-label{
-		@include lineHeight(20px);
-		width: 160px;
+}
+.backup-display-content {
+	display: flex;
+	flex-wrap: wrap;
+	.backup-setting{
+		width: 50%;
+		display: flex;
+		color: $text-color-title;
+		margin-bottom: 6px;
 		font-size: $font-size-base;
-		font-weight: 500;
-		color: #666666;
+		.backup-label{
+			@include lineHeight(20px);
+			width: 160px;
+			font-size: $font-size-base;
+			font-weight: 500;
+			color: #666666;
+		}
+		.backup-value{
+			display: flex;
+			align-items: center;
+			span {
+				margin-left: 12px;
+			}
+		}
+	}
+}
+.use-backup-form-title{
+	display: flex;
+	margin-bottom: 12px;
+	.blue-line{
+		width: 1px;
+		height: 14px;
+		border: 1px solid #0064C8;
+		margin-right: 8px;
 	}
 }
 .password-content{

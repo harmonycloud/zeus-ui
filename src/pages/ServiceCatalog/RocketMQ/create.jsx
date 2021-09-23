@@ -282,7 +282,7 @@ const RocketMQCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/instanceList',
+							pathname: '/serviceList',
 							query: { key: 'RocketMQ', timer: true }
 						});
 					} else {

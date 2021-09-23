@@ -13,7 +13,7 @@ export default {
 	rocketmqCreate: 'RocketMQ创建',
 	dynamicForm: '发布服务',
 	dataOverview: '数据总览',
-	middlewareRepository: '中间件仓库',
+	middlewareRepository: '中间件市场',
 	serviceList: '服务列表',
 	serviceAvailable: '服务暴露',
 	monitorAlarm: '监控告警',
@@ -30,5 +30,8 @@ export default {
 	resourcePoolManagement: '资源池管理',
 	versionManagement: '版本管理',
 	basicInfo: '基本详情',
-	highAvailability: '实例详情'
+	highAvailability: '实例详情',
+	paramterSetting: '参数设置',
+	addResourcePool: '添加资源池',
+	addOther: '添加其他资源池'
 };

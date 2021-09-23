@@ -203,13 +203,7 @@ export const alarmStatusRender: (value: string) => JSX.Element = (
 			);
 	}
 };
-// * 简单表格列为空
-export const nullRender: (value: string | null) => string = (
-	value: string | null
-) => {
-	return value || '/';
-};
-
+// * 服务列表中使用
 export const serviceListStatusRender: (
 	value: string,
 	index: number,
@@ -320,6 +314,16 @@ export const iconTypeRender = (value: string, index: number, record: any) => {
 };
 export const timeRender = (value: string, index: number, record: any) => {
 	return moment(value).format('YYYY-MM-DD HH:mm:ss');
+};
+// * 简单表格列为空
+export const nullRender: (value: string | null) => string = (
+	value: string | null
+) => {
+	return value || '/';
+};
+// * 蓝字显示
+export const nameRender = (value: string, index: number, record: any) => {
+	return <span className="name-link">{value}</span>;
 };
 
 // * 函数复用

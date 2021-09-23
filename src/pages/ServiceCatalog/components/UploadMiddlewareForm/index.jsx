@@ -10,6 +10,7 @@ import {
 import messageConfig from '@/components/messageConfig';
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
+import storage from '@/utils/storage';
 
 const formItemLayout = {
 	labelCol: {
@@ -26,6 +27,10 @@ function UploadMiddlewareForm(props) {
 	// const upload = useRef();
 	const upload2 = createRef();
 	const field = Field.useField();
+	const headers = {
+		userToken: storage.getLocal('token'),
+		authType: storage.getLocal('token') ? 1 : 0
+	};
 
 	function beforeUpload(info) {
 		console.log('beforeUpload : ', info);
@@ -87,6 +92,7 @@ function UploadMiddlewareForm(props) {
 						onError={onError}
 						listType="text"
 						ref={upload2}
+						headers={headers}
 					>
 						<Button type="primary" style={{ margin: '0 0 10px' }}>
 							上传文件

@@ -20,6 +20,7 @@ import { StoreState, globalVarProps } from '@/types/index';
 import { serviceListItemProps, serviceProps } from './service.list';
 import { listProps } from '@/components/RapidScreening';
 import { iconTypeRender, timeRender } from '@/utils/utils';
+import storage from '@/utils/storage';
 
 interface serviceListProps {
 	globalVar: globalVarProps;
@@ -35,8 +36,9 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const [list, setList] = useState<listProps[]>([
 		{ name: '全部服务', count: 0 }
 	]);
-	const [selected, setSelected] = useState<string>('全部服务');
-
+	const [selected, setSelected] = useState<string>(
+		storage.getSession('service-list-current') || '全部服务'
+	);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -69,27 +71,32 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		return () => {
 			mounted = false;
 		};
-	}, [props]);
+	}, [props.globalVar]);
 	useEffect(() => {
+		console.log(originData);
 		const allList: serviceProps[] = [];
-		originData.forEach((item) => {
-			item.serviceList.length > 0 &&
-				item.serviceList.forEach((i) => {
-					i.imagePath = item.imagePath;
-					allList.push(i);
-				});
-		});
+		if (originData.length > 0) {
+			originData.forEach((item) => {
+				item.serviceList.length > 0 &&
+					item.serviceList.forEach((i) => {
+						i.imagePath = item.imagePath;
+						allList.push(i);
+					});
+			});
+		}
 		setDataSource(allList);
 		setShowDataSource(allList);
 	}, [originData]);
 	useEffect(() => {
-		if (selected !== '全部服务') {
-			setShowDataSource(
-				originData.filter((item) => item.chartName === selected)[0]
-					.serviceList
-			);
-		} else {
-			setShowDataSource(dataSource);
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.serviceList
+				);
+			} else {
+				setShowDataSource(dataSource);
+			}
 		}
 	}, [selected]);
 	useEffect(() => {
@@ -175,7 +182,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			setShowDataSource(tempData);
 		}
 	};
-	// * 关联服务名称的跳转
+	// todo 关联服务名称的跳转
 	const toDetail = (record: any) => {
 		console.log(record);
 		console.log('to details');
@@ -277,9 +284,9 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const nameRender = (value: string, index: number, record: serviceProps) => {
 		return (
 			<div className="display-flex flex-align">
-				{record.mysqlDTO ? (
-					record.mysqlDTO.openDisasterRecoveryMode &&
-					!record.mysqlDTO.isSource ? (
+				{record?.mysqlDTO ? (
+					record?.mysqlDTO.openDisasterRecoveryMode &&
+					!record?.mysqlDTO.isSource ? (
 						<div className="gray-circle">备</div>
 					) : null
 				) : null}
@@ -325,24 +332,24 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		return (
 			<div className="display-flex flex-align">
 				{/* 主备标识符 */}
-				{record.mysqlDTO.openDisasterRecoveryMode === true ? (
-					record.mysqlDTO.isSource ? (
+				{record?.mysqlDTO?.openDisasterRecoveryMode === true ? (
+					record?.mysqlDTO?.isSource ? (
 						<div className="gray-circle">备</div>
 					) : (
 						<div className="blue-circle">源</div>
 					)
 				) : null}
-				{record.mysqlDTO.isSource !== null ? (
+				{record?.mysqlDTO?.isSource !== null ? (
 					<div>
 						<div
 							className="name-link"
 							onClick={() => toDetail(record)}
 						>
-							{record.mysqlDTO.relationName}
+							{record?.mysqlDTO?.relationName}
 						</div>
 						<div>
-							{record.mysqlDTO.relationAliasName ||
-								record.mysqlDTO.relationName}
+							{record?.mysqlDTO?.relationAliasName ||
+								record?.mysqlDTO?.relationName}
 						</div>
 					</div>
 				) : null}
@@ -368,7 +375,19 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					服务暴露
 				</LinkButton>
-				<LinkButton>数据监控</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/monitorAlarm/dataMonitor',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						});
+					}}
+				>
+					数据监控
+				</LinkButton>
 				<LinkButton
 					onClick={() =>
 						history.push({
@@ -382,8 +401,31 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					日志详情
 				</LinkButton>
-				<LinkButton>服务控制台</LinkButton>
-				<LinkButton>灾备服务</LinkButton>
+				{record.managePlatform ? (
+					<LinkButton
+						onClick={() => {
+							window.open(
+								record.managePlatformAddress as string,
+								'_blank'
+							);
+						}}
+					>
+						服务控制台
+					</LinkButton>
+				) : null}
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/disasterBackup/disasterCenter',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						});
+					}}
+				>
+					灾备服务
+				</LinkButton>
 				<LinkButton
 					onClick={() =>
 						history.push({
@@ -397,9 +439,29 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					告警规则
 				</LinkButton>
-				<LinkButton>数据安全</LinkButton>
-				<LinkButton>参数设置</LinkButton>
-				<LinkButton>版本管理</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push({
+							pathname: '/disasterBackup/dataSecurity',
+							state: {
+								middlewareName: record.name,
+								middlewareType: record.type
+							}
+						});
+					}}
+				>
+					数据安全
+				</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push(
+							`/serviceList/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
+						);
+					}}
+				>
+					参数设置
+				</LinkButton>
+				{/* <LinkButton>版本管理</LinkButton> */}
 				<LinkButton onClick={() => deleteFn(record.name)}>
 					删除
 				</LinkButton>
@@ -416,7 +478,10 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				<RapidScreening
 					list={list}
 					selected={selected}
-					changeSelected={(value: string) => setSelected(value)}
+					changeSelected={(value: string) => {
+						setSelected(value);
+						storage.setSession('service-list-current', value);
+					}}
 				/>
 				<Table
 					dataSource={showDataSource}
@@ -426,7 +491,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}
-					primaryKey="key"
+					primaryKey="name"
 					operation={Operation}
 					search={{
 						onSearch: handleSearch,

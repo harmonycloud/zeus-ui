@@ -119,6 +119,9 @@ axios.interceptors.response.use(
 			cache.removeLocal('token', true);
 			window.location.reload();
 		}
+		if (response.data.code === 404) {
+			Message.show(messageConfig('error', '错误', '接口访问错误'));
+		}
 		return response;
 	},
 	(err) => {
@@ -131,11 +134,7 @@ axios.interceptors.response.use(
 		}
 		console.log(err.response);
 		Message.show(
-			messageConfig(
-				'error',
-				'错误',
-				err.response.data.message || err.response.data
-			)
+			messageConfig('error', '错误', err?.response?.data?.message || '')
 		);
 		return Promise.reject(err.response);
 	}

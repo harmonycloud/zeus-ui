@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Message, Button } from '@alicloud/console-components';
 import { StoreState, globalVarProps } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import { getTypeVersion } from '@/services/repository';
+import { getTypeVersion, updateMiddleware } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import { middlewareProps } from './middleware';
 import Table from '@/components/MidTable';
@@ -143,10 +143,35 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 	) => {
 		return (
 			record.versionStatus === 'future' && (
-				<span className="name-link">安装升级</span>
+				<span
+					className="name-link"
+					onClick={() => installUpdate(record)}
+				>
+					安装升级
+				</span>
 			)
 		);
 	};
+	const installUpdate = (record: middlewareProps) => {
+		updateMiddleware({
+			clusterId: cluster.id,
+			chartName: record.chartName,
+			chartVersion: record.chartVersion
+		})
+			.then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '已升级到该版本')
+					);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			})
+			.finally(() => {
+				getData();
+			});
+	};
+
 	return (
 		<Page>
 			<Header

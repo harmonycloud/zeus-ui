@@ -4,14 +4,15 @@ import List from './list';
 import Config from './config';
 
 export default function BackupRecovery(props) {
+	console.log(props);
 	return (
 		<div>
 			<Tab>
 				<Tab.Item title="备份列表">
-					<List data={props} backup={props.backup} />
+					<List {...props} />
 				</Tab.Item>
 				<Tab.Item title="备份设置">
-					<Config data={props} />
+					<Config {...props} />
 				</Tab.Item>
 			</Tab>
 		</div>
