@@ -3,13 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Page from '@alicloud/console-components-page';
 import HomeCard from '@/components/HomeCard';
-import ReactEcharts from 'echarts-for-react';
 import ExampleCharts from '@/components/ExampleCharts';
 import { connect } from 'react-redux';
 import {
 	Radio,
 	Pagination,
-	Button,
 	Icon,
 	Select,
 	Table,
@@ -25,8 +23,6 @@ import {
 	setRefreshCluster
 } from '@/redux/globalVar/var';
 import storage from '@/utils/storage';
-import { nullRender } from '@/utils/utils';
-import EChartsReact from 'echarts-for-react';
 
 const radioList = [
 	{
@@ -112,44 +108,6 @@ function PlatformOverview(props) {
 	const [namespaceFilter, setNamespaceFilter] = useState([]);
 	const [typeFilter, setTypeFilter] = useState([]);
 	const history = useHistory();
-	const [option, setOption] = useState({
-		tooltip: {
-			trigger: 'item'
-		},
-		legend: {
-			bottom: '5%',
-			left: 'center',
-			borderRadius: 8,
-			itemWidth: 8,
-			itemHeight: 8
-		},
-		series: [
-			{
-				name: '控制器状态',
-				type: 'pie',
-				radius: ['40%', '70%'],
-				avoidLabelOverlap: false,
-				label: {
-					show: false,
-					position: 'center'
-				},
-				emphasis: {
-					label: {
-						show: true,
-						fontSize: '14',
-						fontWeight: 'bold'
-					}
-				},
-				labelLine: {
-					show: false
-				},
-				data: [
-					{ value: 80, name: '运行正常', color: '#d92026' },
-					{ value: 20, name: '运行异常', color: '00a700' }
-				]
-			}
-		]
-	});
 
 	const getClusterList = async () => {
 		let res = await getClusters();
@@ -234,6 +192,7 @@ function PlatformOverview(props) {
 	}, [type]);
 
 	useEffect(() => {
+		console.log(sourceData);
 		if (sourceData && JSON.stringify(sourceData) !== '{}') {
 			if (Object.keys(sourceData).length) {
 				setTotalData({
@@ -278,10 +237,18 @@ function PlatformOverview(props) {
 					value: item.name
 				};
 			});
+			console.log(list);
 			setNamespaceFilter(list);
 		}
 	}, [props]);
-
+	// 选择的数据类型修改
+	const dataTypeChange = (checked) => {
+		getChartData(checked); // 修改图表数据
+		setDataType(checked); // 修改radio绑定数据
+	};
+	const typeChange = (checked) => {
+		setType(checked);
+	};
 	const getEventsData = ({ current, level }) => {
 		const sendData = {
 			current: current,
@@ -309,236 +276,398 @@ function PlatformOverview(props) {
 		};
 		getEventsData(alertData);
 	};
-	// const onRefresh = () => {
+	const onSort = (dataIndex, order) => {
+		const tableList = sourceData.middlewareDTOList.sort(function (a, b) {
+			const result = a[dataIndex] - b[dataIndex];
+			return order === 'asc'
+				? result > 0
+					? 1
+					: -1
+				: result > 0
+				? -1
+				: 1;
+		});
+		setTableSource([...tableList]);
+	};
+	const onFilter = (filterParams) => {
+		let ds = sourceData.middlewareDTOList;
+		Object.keys(filterParams).forEach((key) => {
+			const { selectedKeys } = filterParams[key];
+			if (selectedKeys.length) {
+				ds = ds.filter((record) => {
+					return selectedKeys.some((value) => {
+						return record[key].indexOf(value) > -1;
+					});
+				});
+			}
+		});
+		setTableSource([...ds]);
+	};
 
-	// }
+	const statusRender = (value, index, record) => {
+		return (
+			<span
+				className="name-link"
+				style={{
+					color:
+						value === 'Failed' ||
+						value === 'RunningError' ||
+						value === 'Error'
+							? '#Ef595C'
+							: ''
+				}}
+				onClick={() => toDetail(record)}
+			>
+				{statusMap[value]}
+			</span>
+		);
+	};
+	const nameRender = (value, index, record) => {
+		return (
+			<span className="name-link" onClick={() => toDetail(record)}>
+				{record.source === false ? '(备)' + value : value}
+			</span>
+		);
+	};
+	const onSearch = (value) => {
+		const ds = sourceData.middlewareDTOList;
+		const list = ds.filter((item) => {
+			if (item?.name.includes(value)) {
+				return item;
+			}
+		});
+		setTableSource(list);
+	};
+	const nameTitleRender = () => {
+		return (
+			<div>
+				名称
+				<Balloon
+					trigger={
+						<Icon
+							type="search"
+							size="xs"
+							style={{ marginLeft: 8, cursor: 'pointer' }}
+						/>
+					}
+					closable={false}
+				>
+					<Search onSearch={onSearch} style={{ width: '300px' }} />
+				</Balloon>
+			</div>
+		);
+	};
+	const toDetail = (record) => {
+		const cs = clusters.filter((item) => item.id === record.clusterId);
+		setCluster(cs[0]);
+		storage.setLocal('cluster', JSON.stringify(cs[0]));
+		const ns = props.globalVar.namespaceList.filter(
+			(item) => item.name === record.namespace
+		);
+		setNamespace(ns[0]);
+		storage.setLocal('namespace', JSON.stringify(ns[0]));
+		setRefreshCluster(true);
+		history.push({
+			pathname: `/instanceList/detail/${record.name}/${
+				record.type || 'mysql'
+			}/${record.chartVersion}`,
+			state: {
+				flag: true
+			}
+		});
+	};
 	return (
 		<Page>
 			<Page.Content style={{ paddingBottom: 0 }}>
 				<div className="platform_overview-content">
-					<div className="header">
-						<div className="header-btn">
-							<div>
-								资源池:
-								<Select
-									style={{
-										width: '226px',
-										marginLeft: '10px'
-									}}
-								>
-									<Select.Option value="全部">
-										全部
-									</Select.Option>
-									<Select.Option value="正常">
-										正常
-									</Select.Option>
-									<Select.Option value="异常">
-										异常
-									</Select.Option>
-								</Select>
-							</div>
-							<Button
-								className="refresh-btn"
-								// onClick={onRefresh}
-							>
-								<Icon type="refresh" />
-							</Button>
-						</div>
-						<div className="header-list">
-							<div className="part part-border">
-								<div className="part-detail">
-									<div className="part-circle">
-										<span className="iconfont icon-jiqun1"></span>
+					<div className="left-content">
+						<HomeCard
+							title={'资产统计'}
+							height={'147px'}
+							width={'100%'}
+							marginBottom={'16px'}
+						>
+							<div className="total">
+								<div className="part part-border">
+									<div
+										className="part-icon"
+										style={{ backgroundColor: ' #5CCDBB' }}
+									>
+										<Icon
+											className="iconfont icon-jiqun"
+											size="large"
+											style={{
+												color: '#FFFFFF',
+												textAlign: 'center',
+												lineHeight: '36px'
+											}}
+										/>
 									</div>
-									<div>
+									<div className="part-detail">
 										<p className="value">
-											<span className="num">
-												{totalData.cluster}
+											{totalData.cluster}
+											<span
+												style={{
+													opacity: 0.45,
+													fontSize: 14,
+													marginLeft: 4
+												}}
+											>
+												个
 											</span>
-											<span>个</span>
 										</p>
-										<p className="type">资源池总数</p>
+										<p className="type">集群数</p>
 									</div>
 								</div>
-							</div>
-							<div className="part part-border">
-								<div className="part-detail">
-									<div className="part-circle">
-										<span className="iconfont icon-mingmingkongjian"></span>
+								<div className="part part-border">
+									<div
+										className="part-icon"
+										style={{ backgroundColor: '#A78CF3' }}
+									>
+										<Icon
+											className="iconfont icon-namespace"
+											size="large"
+											style={{
+												color: '#FFFFFF',
+												textAlign: 'center',
+												lineHeight: '36px'
+											}}
+										/>
 									</div>
-									<div>
+									<div className="part-detail">
 										<p className="value">
-											<span className="num">
-												{totalData.namespace}
+											{totalData.namespace}
+											<span
+												style={{
+													opacity: 0.45,
+													fontSize: 14,
+													marginLeft: 4
+												}}
+											>
+												个
 											</span>
-											<span>个</span>
 										</p>
-										<span className="type">
-											总资源分区总数
-										</span>
+										<span className="type">总命名空间</span>
 									</div>
 								</div>
-							</div>
-							<div className="part part-border">
-								<div className="part-detail">
-									<div className="part-circle">
-										<span className="iconfont icon-CPU"></span>
+								<div className="part part-border">
+									<div
+										className="part-icon"
+										style={{ backgroundColor: '#25B3DD' }}
+									>
+										<Icon
+											className="iconfont icon-shili"
+											size="large"
+											style={{
+												color: '#FFFFFF',
+												textAlign: 'center',
+												lineHeight: '36px'
+											}}
+										/>
 									</div>
-									<div>
+									<div className="part-detail">
 										<p className="value">
-											<span className="num">
-												{totalData.node}
+											{totalData.node}
+											<span
+												style={{
+													opacity: 0.45,
+													fontSize: 14,
+													marginLeft: 4
+												}}
+											>
+												个
 											</span>
-											<span>个</span>
 										</p>
-										<span className="type">
-											CPU总量占比
-										</span>
+										<span className="type">总实例数</span>
 									</div>
 								</div>
-							</div>
-							<div className="part">
-								<div className="part-detail">
-									<div className="part-circle">
-										<span className="iconfont icon-memory"></span>
+								<div className="part">
+									<div
+										className="part-icon"
+										style={{ backgroundColor: '#E9737A' }}
+									>
+										<Icon
+											className="iconfont icon-shili"
+											size="large"
+											style={{
+												color: '#FFFFFF',
+												textAlign: 'center',
+												lineHeight: '36px'
+											}}
+										/>
 									</div>
-									<div>
+									<div className="part-detail">
 										<p className="value error-color">
-											<span className="num">
-												{totalData.except}
+											{totalData.except}
+											<span
+												style={{
+													color: '#000000',
+													opacity: 0.45,
+													fontSize: 14,
+													marginLeft: 4
+												}}
+											>
+												个
 											</span>
-											<span>个</span>
 										</p>
-										<span className="type">
-											内存总量占比
-										</span>
+										<span className="type">异常实例数</span>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-					<div className="content">
-						<div className="left-content">
-							<HomeCard
-								title={'服务信息'}
-								height={'174px'}
-								width={'100%'}
-								marginBottom={'20px'}
-							>
-								<div className="serve-info">
-									<div className="info-item">
-										<img
-											height={40}
-											width={40}
-											src="http://10.1.10.13:31088/api/images/middleware/rocketmq-1.5.11.svg"
+						</HomeCard>
+						<HomeCard
+							title={'实例情况'}
+							height={'calc(100% - 163px)'}
+							width={'100%'}
+							action={
+								<div>
+									{type === 'chart' && (
+										<Select
+											shape="button"
+											dataSource={[
+												{
+													value: 'cpu',
+													label: 'cpu配额展示'
+												},
+												{
+													value: 'memory',
+													label: '内存配额展示'
+												}
+											]}
+											onChange={dataTypeChange}
+											value={dataType}
 										/>
-										<p className="info-name"></p>
-										<p className="serve-count"></p>
-									</div>
-									<div className="info-item">
-										<img
-											height={40}
-											width={40}
-											src="http://10.1.10.13:31088/api/images/middleware/rocketmq-1.5.11.svg"
-										/>
-										<p className="info-name"></p>
-										<p className="serve-count"></p>
-									</div>
-									<div className="info-item">
-										<img
-											height={40}
-											width={40}
-											src="http://10.1.10.13:31088/api/images/middleware/rocketmq-1.5.11.svg"
-										/>
-										<p className="info-name"></p>
-										<p className="serve-count"></p>
-									</div>
-									<div className="info-item">
-										<img
-											height={40}
-											width={40}
-											src="http://10.1.10.13:31088/api/images/middleware/rocketmq-1.5.11.svg"
-										/>
-										<p className="info-name"></p>
-										<p className="serve-count"></p>
-									</div>
-									<div className="info-item">
-										<img
-											height={40}
-											width={40}
-											src="http://10.1.10.13:31088/api/images/middleware/rocketmq-1.5.11.svg"
-										/>
-										<p className="info-name"></p>
-										<p className="serve-count"></p>
-									</div>
+									)}
+									<RadioGroup
+										style={{ marginLeft: 8 }}
+										shape="button"
+										dataSource={[
+											{
+												value: 'chart',
+												label: '图形模式'
+											},
+											{
+												value: 'table',
+												label: '列表模式'
+											}
+										]}
+										onChange={typeChange}
+										value={type}
+									/>
 								</div>
-							</HomeCard>
-							<HomeCard
-								title={'控制器状态'}
-								height={'289px'}
-								width={'60%'}
-								marginBottom={'20px'}
-								actio={<div>更多</div>}
-							>
-								<EChartsReact
-									option={option}
-									style={{ height: '100%', width: '132px' }}
-								/>
-							</HomeCard>
-							<HomeCard
-								title={'异常告警'}
-								height={'289px'}
-								width={'38%'}
-								marginLeft={'2%'}
-								marginBottom={'20px'}
-							></HomeCard>
-							<HomeCard
-								title={'审计信息'}
-								height={'331px'}
-								width={'100%'}
-							></HomeCard>
-						</div>
-						<div className="right-content">
-							<HomeCard
-								title={'告警事件（全平台）'}
-								height={'649px'}
-								width={'100%'}
-								marginBottom={'20px'}
-							>
-								<RadioGroup
-									dataSource={radioList}
-									shape="button"
-									size="large"
-									value={level}
-									onChange={onNormalChange}
-									style={{ marginTop: 16 }}
-								/>
-								<AlarmTimeLine
-									list={eventData}
-									style={{
-										marginTop: 16,
-										height: 'calc(100% - 110px)'
-									}}
-									clusters={clusters}
-									type="platform"
-								/>
-								<Pagination
-									style={{ float: 'right' }}
-									current={current}
-									size="small"
-									type="simple"
-									shape="no-border"
-									onChange={paginationChange}
-									total={total}
-									totalRender={(total) => `总数：${total}`}
-								/>
-							</HomeCard>
-							<HomeCard
-								title={'系统信息'}
-								height={'166px'}
-								width={'100%'}
-							></HomeCard>
-						</div>
+							}
+						>
+							<div className="chart-content">
+								{type === 'chart' && (
+									<ExampleCharts
+										chartData={chartData}
+										clusters={clusters}
+									/>
+								)}
+								{type === 'table' && (
+									<div className="instance-table-content">
+										<Table
+											dataSource={tableSource}
+											maxBodyHeight={500}
+											fixedHeader
+											hasBorder={true}
+											onSort={onSort}
+											onFilter={onFilter}
+										>
+											<Table.Column
+												title="集群名称"
+												dataIndex="clusterName"
+												filters={clusterFilter}
+												filterMode="multiple"
+											/>
+											<Table.ColumnGroup title="命名空间">
+												<Table.Column
+													title="名称"
+													dataIndex="namespace"
+													filters={namespaceFilter}
+													filterMode="multiple"
+												/>
+												<Table.Column
+													title="CPU(核)"
+													dataIndex="namespaceCpu"
+													sortable={true}
+												/>
+												<Table.Column
+													title="内存(G)"
+													dataIndex="namespaceMemory"
+													sortable={true}
+												/>
+											</Table.ColumnGroup>
+											<Table.ColumnGroup title="实例">
+												<Table.Column
+													title="类型"
+													dataIndex="type"
+													filters={typeFilter}
+													filterMode="multiple"
+												/>
+												<Table.Column
+													title={nameTitleRender}
+													dataIndex="name"
+													cell={nameRender}
+												/>
+												<Table.Column
+													title="CPU(核)"
+													dataIndex="cpu"
+													sortable={true}
+												/>
+												<Table.Column
+													title="内存(G)"
+													dataIndex="memory"
+													sortable={true}
+												/>
+												<Table.Column
+													title="状态"
+													dataIndex="status"
+													filters={statusFilters}
+													filterMode="single"
+													cell={statusRender}
+												/>
+											</Table.ColumnGroup>
+										</Table>
+									</div>
+								)}
+							</div>
+						</HomeCard>
+					</div>
+					<div className="right-content">
+						<HomeCard
+							title={'告警事件（全平台）'}
+							height={'100%'}
+							width={'100%'}
+						>
+							<RadioGroup
+								dataSource={radioList}
+								shape="button"
+								size="large"
+								value={level}
+								onChange={onNormalChange}
+								style={{ marginTop: 16 }}
+							/>
+							<AlarmTimeLine
+								list={eventData}
+								style={{
+									marginTop: 16
+									// height: 'calc(100vh - 152px)'
+								}}
+								clusters={clusters}
+								type="platform"
+							/>
+							<Pagination
+								style={{ float: 'right' }}
+								current={current}
+								size="small"
+								type="simple"
+								shape="no-border"
+								onChange={paginationChange}
+								total={total}
+								totalRender={(total) => `总数：${total}`}
+							/>
+						</HomeCard>
 					</div>
 				</div>
 			</Page.Content>
