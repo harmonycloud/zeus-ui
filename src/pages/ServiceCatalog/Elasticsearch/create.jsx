@@ -27,6 +27,7 @@ import {
 	getMiddlewareDetail
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import ColumnDialog from '@/components/MidTable/columnDialog';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -140,11 +141,11 @@ const ElasticsearchCreate = (props) => {
 		},
 		{
 			label: 'N主 N数据 N冷',
-			value: 'complex'
+			value: 'complex-cold'
 		},
 		{
 			label: 'N主 N数据 N冷 N协调',
-			value: 'complex'
+			value: 'cold-complex'
 		}
 	];
 	const [nodeObj, setNodeObj] = useState({
@@ -180,6 +181,16 @@ const ElasticsearchCreate = (props) => {
 			disabled: true,
 			title: '协调节点',
 			num: 2,
+			specId: '1',
+			cpu: 1,
+			memory: 2,
+			storageClass: '',
+			storageQuota: 0
+		},
+		cold: {
+			disabled: true,
+			title: '冷数据节点',
+			num: 3,
 			specId: '1',
 			cpu: 1,
 			memory: 2,
@@ -309,7 +320,7 @@ const ElasticsearchCreate = (props) => {
 					password: values.pwd,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode: mode
+					mode: mode.includes('complex') ? 'complex' : mode
 				};
 				if (affinity.flag) {
 					if (affinity.label === '') {
@@ -329,13 +340,26 @@ const ElasticsearchCreate = (props) => {
 				}
 				if (nodeObj) {
 					sendData.quota = {};
+					console.log(nodeObj);
 					for (let key in nodeObj) {
-						if (!nodeObj[key].disabled)
+						if (!nodeObj[key].disabled) {
+							if (nodeObj[key].storageClass === '') {
+								Message.show(
+									messageConfig(
+										'error',
+										'失败',
+										`${key}节点没有选择存储配额`
+									)
+								);
+								modifyQuota(key);
+								return;
+							}
 							sendData.quota[key] = {
 								...nodeObj[key],
 								storageClassName: nodeObj[key].storageClass,
 								storageClassQuota: nodeObj[key].storageQuota
 							};
+						}
 					}
 				}
 				// console.log(sendData);
@@ -412,24 +436,39 @@ const ElasticsearchCreate = (props) => {
 	// 模式变更
 	useEffect(() => {
 		if (mode) {
-			let { master, kibana, data, client } = nodeObj;
+			let { master, kibana, data, client, cold } = nodeObj;
 			if (mode === 'simple') {
 				master.disabled = false;
 				kibana.disabled = false;
 				data.disabled = true;
 				client.disabled = true;
+				cold.disabled = true;
 			} else if (mode === 'regular') {
 				master.disabled = false;
 				kibana.disabled = false;
 				data.disabled = false;
 				client.disabled = true;
+				cold.disabled = true;
 			} else if (mode === 'complex') {
 				master.disabled = false;
 				kibana.disabled = false;
 				data.disabled = false;
 				client.disabled = false;
+				cold.disabled = true;
+			} else if (mode === 'complex-cold') {
+				master.disabled = false;
+				kibana.disabled = false;
+				data.disabled = false;
+				client.disabled = true;
+				cold.disabled = false;
+			} else if (mode === 'cold-complex') {
+				master.disabled = false;
+				kibana.disabled = false;
+				data.disabled = false;
+				client.disabled = false;
+				cold.disabled = false;
 			}
-			setNodeObj({ master, kibana, data, client });
+			setNodeObj({ master, kibana, data, client, cold });
 		}
 	}, [mode]);
 
@@ -1298,7 +1337,9 @@ const ElasticsearchCreate = (props) => {
 										{nodeModify.nodeName !== 'kibana' && (
 											<li className="display-flex mt-8">
 												<label className="form-name">
-													<span>存储配额</span>
+													<span className="ne-required">
+														存储配额
+													</span>
 												</label>
 												<div
 													className={`form-content display-flex`}

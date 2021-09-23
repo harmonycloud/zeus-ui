@@ -44,19 +44,21 @@ export default function EsEditNodeSpe(props) {
 			value: 'Customize'
 		}
 	];
-	const [mode] = useState(data.mode);
+	const [mode, setMode] = useState(data.mode);
 	const [nodeObj, setNodeObj] = useState({});
 
 	useEffect(() => {
-		let { master, kibana, data: dataes, client } = data.quota;
+		let { master, kibana, data: dataes, client, cold } = data.quota;
 		master.title = '主节点';
 		kibana.title = 'Kibana节点';
 		dataes.title = '数据节点';
 		client.title = '协调节点';
+		cold.title = '冷数据节点';
 		master.cpu = Number(master.cpu);
 		kibana.cpu = Number(kibana.cpu);
 		dataes.cpu = Number(dataes.cpu);
 		client.cpu = Number(client.cpu);
+		cold.cpu = Number(cold.cpu);
 		master.memory =
 			typeof master.memory === 'string'
 				? Number(master.memory.substring(0, master.memory.length - 2))
@@ -73,6 +75,10 @@ export default function EsEditNodeSpe(props) {
 			typeof client.memory === 'string'
 				? Number(client.memory.substring(0, client.memory.length - 2))
 				: client.memory;
+		cold.memory =
+			typeof cold.memory === 'string'
+				? Number(cold.memory.substring(0, cold.memory.length - 2))
+				: cold.memory;
 		if (data.mode === 'simple') {
 			master.disabled = false;
 			kibana.disabled = false;
@@ -84,12 +90,26 @@ export default function EsEditNodeSpe(props) {
 			dataes.disabled = false;
 			client.disabled = true;
 		} else if (data.mode === 'complex') {
+			if (cold.num !== 0 && client.num === 0) {
+				setMode('complex-cold');
+				cold.disabled = false;
+				client.disabled = true;
+			}
+			if (client.num !== 0 && cold.num === 0) {
+				setMode('complex');
+				client.disabled = false;
+				cold.disabled = true;
+			}
+			if (cold.num !== 0 && client.num !== 0) {
+				setMode('cold-complex');
+				cold.disabled = false;
+				client.disabled = false;
+			}
 			master.disabled = false;
 			kibana.disabled = false;
 			dataes.disabled = false;
-			client.disabled = false;
 		}
-		setNodeObj({ master, kibana, dataes, client });
+		setNodeObj({ master, kibana, dataes, client, cold });
 	}, []);
 
 	const modeList = [
@@ -104,6 +124,14 @@ export default function EsEditNodeSpe(props) {
 		{
 			label: 'N主 N数据 N协调',
 			value: 'complex'
+		},
+		{
+			label: 'N主 N数据 N冷',
+			value: 'complex-cold'
+		},
+		{
+			label: 'N主 N数据 N冷 N协调',
+			value: 'cold-complex'
 		}
 	];
 
@@ -572,18 +600,22 @@ export default function EsEditNodeSpe(props) {
 											>
 												<Input
 													name="storageClassQuota"
-													value={Number(
-														data.quota[
-															nodeModify.nodeName
-														].storageClassQuota.substring(
-															0,
+													value={
+														Number(
 															data.quota[
 																nodeModify
 																	.nodeName
-															].storageClassQuota
-																.length - 2
-														)
-													)}
+															].storageClassQuota?.substring(
+																0,
+																data.quota[
+																	nodeModify
+																		.nodeName
+																]
+																	.storageClassQuota
+																	.length - 2
+															)
+														) || 0
+													}
 													htmlType="number"
 													min={1}
 													placeholder="请输入存储配额大小"

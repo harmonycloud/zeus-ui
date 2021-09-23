@@ -55,7 +55,8 @@ const esMap = {
 	master: '主节点',
 	data: '数据节点',
 	kibana: 'kibana',
-	client: '协调节点'
+	client: '协调节点',
+	cold: '冷数据节点'
 };
 
 // const redisModeSelects = [
@@ -543,6 +544,8 @@ export default function HighAvailability(props) {
 					return '主节点';
 				} else if (record.podName.includes('data')) {
 					return '数据节点';
+				} else if (record.podName.includes('cold')) {
+					return '冷节点';
 				}
 			} else {
 				switch (value) {
@@ -554,6 +557,8 @@ export default function HighAvailability(props) {
 						return '数据节点';
 					case 'client':
 						return '协调节点';
+					case 'cold':
+						return '冷节点';
 					case 'kibana':
 						return 'kibana';
 					case 'nameserver':
