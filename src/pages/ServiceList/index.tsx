@@ -51,7 +51,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					if (mounted) {
 						setOriginData(res?.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
-						res?.data.forEach((item: serviceListItemProps) => {
+						res.data.forEach((item: serviceListItemProps) => {
 							listTemp.push({
 								name: item.name,
 								count: item.serviceNum
@@ -114,7 +114,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				if (res.success) {
 					setOriginData(res?.data);
 					const listTemp = [{ name: '全部服务', count: 0 }];
-					res?.data.forEach((item: serviceListItemProps) => {
+					res.data.forEach((item: serviceListItemProps) => {
 						listTemp.push({
 							name: item.name,
 							count: item.serviceNum
@@ -206,7 +206,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		// 	}
 		// });
 	};
-	const deleteFn = (name: string) => {
+	const deleteFn = (record: serviceProps) => {
 		Dialog.show({
 			title: '提示',
 			content: '确定删除该服务？',
@@ -214,8 +214,8 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				return deleteMiddleware({
 					clusterId: cluster.id,
 					namespace: namespace.name,
-					middlewareName: name,
-					type: 'mysql'
+					middlewareName: record.name,
+					type: record.type
 				})
 					.then((res) => {
 						if (res.success) {
@@ -401,19 +401,21 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				>
 					日志详情
 				</LinkButton>
-				{record.managePlatform ? (
-					<LinkButton
-						onClick={() => {
-							window.open(
-								record.managePlatformAddress as string,
-								'_blank'
-							);
-						}}
-					>
-						服务控制台
-					</LinkButton>
-				) : null}
 				<LinkButton
+					disabled={!record.managePlatform}
+					onClick={() => {
+						window.open(
+							`${window.location.protocol.toLowerCase()}//${
+								record.managePlatformAddress as string
+							}`,
+							'_blank'
+						);
+					}}
+				>
+					服务控制台
+				</LinkButton>
+				<LinkButton
+					disabled={record.type !== 'mysql'}
 					onClick={() => {
 						history.push({
 							pathname: '/disasterBackup/disasterCenter',
@@ -462,9 +464,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					参数设置
 				</LinkButton>
 				{/* <LinkButton>版本管理</LinkButton> */}
-				<LinkButton onClick={() => deleteFn(record.name)}>
-					删除
-				</LinkButton>
+				<LinkButton onClick={() => deleteFn(record)}>删除</LinkButton>
 			</Actions>
 		);
 	};

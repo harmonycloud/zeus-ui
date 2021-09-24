@@ -66,7 +66,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					if (mounted) {
 						setOriginData(res.data);
 						const listTemp = [...list];
-						res?.data.forEach((item: serviceAvailablesProps) => {
+						res.data.forEach((item: serviceAvailablesProps) => {
 							listTemp.push({
 								name: item.name,
 								count: item.serviceNum

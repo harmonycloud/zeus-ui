@@ -33,7 +33,7 @@ export default function Console(props: consoleProps): JSX.Element {
 	const field = Field.useField();
 	const onOk = () => {
 		const values: valuesProps = field.getValues();
-		const url = `wss://10.1.10.13:31999/ws/terminal?terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
+		const url = `ws://10.1.10.13:31088/ws/terminal?terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
 		setUrl(url);
 		// window.open(
 		// 	'../../../../utils/terminal/index.html',
@@ -49,7 +49,7 @@ export default function Console(props: consoleProps): JSX.Element {
 			onCancel={onCancel}
 			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '500px' }}
+			style={{ width: '800px' }}
 		>
 			<Form {...formItemLayout} field={field}>
 				<FormItem label="选择容器">
