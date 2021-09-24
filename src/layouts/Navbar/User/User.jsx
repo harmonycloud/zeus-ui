@@ -37,6 +37,7 @@ function User(props) {
 	return (
 		<div className={`${styles['nav-user-container']} ${className}`}>
 			<Icon type="user-circle" />
+			<span style={{ marginLeft: '5px' }}>{role.roleName}</span>
 			<ul className={styles['nav-user-operator']}>
 				<li className={styles['nav-user-container-item']}>
 					<p>{nickName}</p>

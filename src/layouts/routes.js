@@ -17,6 +17,7 @@ import PlatformOverview from '@/pages/PlatformOverview/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
 import OperationAudit from '@/pages/OperationAudit/index';
 import UserManage from '@/pages/UserManage';
+import RoleManage from '@/pages/RoleManage';
 import OperationAuditDetail from '@/pages/OperationAudit/detail';
 import ServiceList from '@/pages/ServiceList';
 import ServiceAvailable from '@/pages/ServiceAvailable';
@@ -175,7 +176,12 @@ const Routes = withRouter((props) => {
 					component={UserManage}
 					exact
 				/>
-				{/* 角色管理——未完成 */}
+				{/* 角色管理 */}
+				<Route
+					path="/systemManagement/roleManagement"
+					component={RoleManage}
+					exact
+				/>
 				{/* 操作审计 */}
 				<Route
 					path="/systemManagement/operationAudit"

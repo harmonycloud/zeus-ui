@@ -23,7 +23,6 @@ import {
 	setRefreshCluster
 } from '@/redux/globalVar/var';
 import storage from '@/utils/storage';
-import { nullRender } from '@/utils/utils';
 
 const radioList = [
 	{
@@ -193,6 +192,7 @@ function PlatformOverview(props) {
 	}, [type]);
 
 	useEffect(() => {
+		console.log(sourceData);
 		if (sourceData && JSON.stringify(sourceData) !== '{}') {
 			if (Object.keys(sourceData).length) {
 				setTotalData({
@@ -237,6 +237,7 @@ function PlatformOverview(props) {
 					value: item.name
 				};
 			});
+			console.log(list);
 			setNamespaceFilter(list);
 		}
 	}, [props]);
@@ -415,7 +416,7 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<p className="type">资源池数</p>
+										<p className="type">集群数</p>
 									</div>
 								</div>
 								<div className="part part-border">
@@ -446,7 +447,7 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<span className="type">总资源分区</span>
+										<span className="type">总命名空间</span>
 									</div>
 								</div>
 								<div className="part part-border">
@@ -477,7 +478,7 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<span className="type">总服务数</span>
+										<span className="type">总实例数</span>
 									</div>
 								</div>
 								<div className="part">
@@ -509,13 +510,13 @@ function PlatformOverview(props) {
 												个
 											</span>
 										</p>
-										<span className="type">异常服务数</span>
+										<span className="type">异常实例数</span>
 									</div>
 								</div>
 							</div>
 						</HomeCard>
 						<HomeCard
-							title={'服务情况'}
+							title={'实例情况'}
 							height={'calc(100% - 163px)'}
 							width={'100%'}
 							action={
@@ -574,12 +575,12 @@ function PlatformOverview(props) {
 											onFilter={onFilter}
 										>
 											<Table.Column
-												title="资源池名称"
+												title="集群名称"
 												dataIndex="clusterName"
 												filters={clusterFilter}
 												filterMode="multiple"
 											/>
-											<Table.ColumnGroup title="资源分区">
+											<Table.ColumnGroup title="命名空间">
 												<Table.Column
 													title="名称"
 													dataIndex="namespace"
@@ -589,17 +590,15 @@ function PlatformOverview(props) {
 												<Table.Column
 													title="CPU(核)"
 													dataIndex="namespaceCpu"
-													cell={nullRender}
 													sortable={true}
 												/>
 												<Table.Column
 													title="内存(G)"
 													dataIndex="namespaceMemory"
-													cell={nullRender}
 													sortable={true}
 												/>
 											</Table.ColumnGroup>
-											<Table.ColumnGroup title="服务">
+											<Table.ColumnGroup title="实例">
 												<Table.Column
 													title="类型"
 													dataIndex="type"
@@ -653,7 +652,7 @@ function PlatformOverview(props) {
 								list={eventData}
 								style={{
 									marginTop: 16
-									// height: '640px'
+									// height: 'calc(100vh - 152px)'
 								}}
 								clusters={clusters}
 								type="platform"
