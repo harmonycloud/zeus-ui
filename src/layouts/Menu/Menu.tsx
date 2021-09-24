@@ -245,7 +245,6 @@ const mapLocationToActiveKey = (location: Location) => {
 		return '/dataOverview';
 	} else if (pathArray.includes('instanceList')) return '/instanceList';
 	else if (pathArray.includes('serviceCatalog')) return '/serviceCatalog';
-	else if (pathArray.includes('operationAudit')) return '/operationAudit';
 	return location.pathname;
 };
 
