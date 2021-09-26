@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
+import React, { useEffect } from 'react';
 import 'xterm/css/xterm.css';
 import { Terminal } from 'xterm';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { FitAddon } from 'xterm-addon-fit';
+import { useParams } from 'react-router';
 import { AttachAddon } from 'xterm-addon-attach';
+import { FitAddon } from 'xterm-addon-fit';
 import cache from '@/utils/storage';
 const TOKEN = 'token';
 const action = (type: any, data?: any) => {
@@ -18,111 +18,86 @@ const action = (type: any, data?: any) => {
 interface MidTerminalProps {
 	url: string;
 }
-let term: any; // 终端
-let socket: WebSocket; // WebSocket服务
 export default function MidTerminal(props: MidTerminalProps): JSX.Element {
-	// const [terminal, setTerminal] = useState(null);
-	// const prefix = 'admin $ ';
-	// let inputText = ''; // 输入字符
-	const ref: any = useRef();
-	const { url } = props;
-	console.log(url);
-	const initTerminal = () => {
-		socket = new WebSocket(url, cache.getLocal(TOKEN));
+	// const { url } = props;
+	// console.log(url);
+	console.log(useParams());
+	const params: MidTerminalProps = useParams();
+	const socketUrl = `ws://10.1.10.13:31088/ws/terminal?${params.url}`;
+
+	useEffect(() => {
+		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
+		const terminal = new Terminal({
+			cursorStyle: 'underline',
+			cursorBlink: true,
+			theme: {
+				foreground: '#dddddd',
+				cursor: 'gray'
+			},
+			windowsMode: true
+		});
+		// const attachAddon = new AttachAddon(socket);
+		// terminal.loadAddon(attachAddon);
+		const fitAddon = new FitAddon();
+		terminal.loadAddon(fitAddon);
+		const terminalDom = document.getElementById('terminal-container');
+		terminal.open(terminalDom as HTMLElement);
+		fitAddon.fit();
 		socket.onopen = () => {
 			socket.send(action('TERMINAL_INIT'));
 			socket.send(action('TERMINAL_READY'));
-			term = new Terminal({
-				cursorBlink: true
-			});
-			term.setOption('theme', {
-				background: 'black',
-				foreground: 'white'
-			});
-			// term.writeln('connect success!');
-			term.onData((str: string) => {
-				console.log(str);
-				socket.send(
-					action('TERMINAL_COMMAND', {
-						command: str
-					})
-				);
-			});
-			// term.onKey((e: any) => {
-			// 	console.log(e);
-			// 	// term.write(e.key);
-			// 	socket.send(
-			// 		action('TERMINAL_COMMAND', {
-			// 			command: e.key
-			// 		})
-			// 	);
-			// 	// const ev = e.domEvent;
-			// 	// const printable =
-			// 	// 	!ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey;
-			// 	// if (ev.keyCode === 13) {
-			// 	// 	// term.prompt();
-			// 	// 	// term.write(e.key);
-			// 	// } else if (ev.keyCode === 8) {
-			// 	// 	// Do not delete the prompt
-			// 	// 	if (term._core.buffer.x > 2) {
-			// 	// 		// term.write('\b \b');
-			// 	// 	}
-			// 	// } else if (printable) {
-			// 	// 	// term.write(e.key);
-			// 	// 	// socket.send(
-			// 	// 	// 	action('TERMINAL_COMMAND', {
-			// 	// 	// 		command: e.key
-			// 	// 	// 	})
-			// 	// 	// );
-			// 	// }
-			// });
-			// const webLinkAddon = new WebLinksAddon();
-			const fitAddon = new FitAddon();
-			const attachAddon = new AttachAddon(socket);
-			// term.loadAddon(webLinkAddon);
-			term.loadAddon(fitAddon);
-			term.loadAddon(attachAddon);
-			term.open((ref as MutableRefObject<HTMLDivElement>).current);
-			fitAddon.fit();
-			term.prompt = () => {
-				term.write('\r\n ');
-			};
-			term.prompt();
+			socket.send(
+				action('TERMINAL_RESIZE', {
+					columns: fitAddon.proposeDimensions().cols,
+					rows: fitAddon.proposeDimensions().rows
+				})
+			);
+			terminal.write('Welcome to terminal! \r\n$');
+		};
+		socket.onclose = () => {
+			terminal.write('Bye Bye! \r\n$');
 		};
 		socket.onerror = () => {
-			console.log('连接失败');
+			terminal.write('Something errors \r\n$');
 		};
-		socket.onmessage = (msg) => {
-			console.log(msg);
-			if (
-				msg.data !==
-				'{"text":"\r\u001B[Ksh-4.2# ","type":"TERMINAL_PRINT"}'
-			) {
-				const data = JSON.parse(msg.data);
-				console.log(data);
-				// 'TERMINAL_PRINT'
-				if (data.type === 'TERMINAL_PRINT') {
-					console.log(data.text);
-					console.log(true);
-					if (data.text !== '[Ksh-4.2# ') {
-						term.writeln(data.text);
-					}
-				}
+		// terminal.resize = (columns: number, rows: number) => {
+		// 	console.log(columns, rows);
+		// 	console.log(fitAddon.proposeDimensions());
+		// 	socket.send(
+		// 		action('TERMINAL_RESIZE', {
+		// 			columns: columns,
+		// 			rows: rows
+		// 		})
+		// 	);
+		// };
+		terminal.onResize(({ cols, rows }) => {
+			console.log(cols, rows);
+		});
+		terminal.onData((e: string) => {
+			socket.send(
+				action('TERMINAL_COMMAND', {
+					command: e
+				})
+			);
+		});
+		socket.onmessage = (e: MessageEvent<any>) => {
+			console.log(e);
+			const data = JSON.parse(e?.data);
+			// terminal.clear();
+			if (data?.type == 'TERMINAL_PRINT') {
+				terminal.write(data.text);
 			}
 		};
-	};
-	useEffect(() => {
-		if (socket) {
+		return () => {
 			socket.close();
-		}
-		initTerminal();
-	}, [url]);
+			terminal.dispose();
+		};
+	}, []);
 
 	return (
 		<div
-			// id="terminal-container"
-			style={{ marginTop: 10, width: 760, height: 500 }}
-			ref={ref}
+			id="terminal-container"
+			style={{ width: '100%', height: '100%' }}
 		></div>
 	);
 }

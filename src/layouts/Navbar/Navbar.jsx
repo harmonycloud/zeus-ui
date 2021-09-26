@@ -40,7 +40,8 @@ const hideRoute = [
 	'/resourcePoolManagement',
 	'/roleManagement',
 	'/dataOverview',
-	'/systemManagement'
+	'/systemManagement',
+	'/terminal'
 ];
 
 const header = (
