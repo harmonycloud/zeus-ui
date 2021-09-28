@@ -31,6 +31,7 @@ import MiddlewareVersion from '@/pages/MiddlewareRepository/middlewareVersion';
 import ResourcePoolManagement from '@/pages/ResourcePoolManagement';
 import AddResourcePool from '@/pages/ResourcePoolManagement/addResourcePool';
 import AddForm from '@/pages/ResourcePoolManagement/addForm';
+import MidTerminal from '@/components/MidTerminal';
 // ! 已弃用组件
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
@@ -48,7 +49,7 @@ const Routes = withRouter((props) => {
 					exact
 					render={() => <Redirect to="/dataOverview" />}
 				/>
-				{/* 弓箭总览 ——已废除的一张页面 */}
+				{/* 空间总览 ——已废除的一张页面 */}
 				{/* <Route path="/dataOverview" component={Home} exact /> */}
 				{/* 数据总览  */}
 				<Route
@@ -214,6 +215,7 @@ const Routes = withRouter((props) => {
 					component={AddForm}
 					exact
 				/>
+				<Route path="/terminal/:url" component={MidTerminal} exact />
 			</Switch>
 		</>
 	);

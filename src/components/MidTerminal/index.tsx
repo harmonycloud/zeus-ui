@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
+import React, { useEffect } from 'react';
 import 'xterm/css/xterm.css';
 import { Terminal } from 'xterm';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { FitAddon } from 'xterm-addon-fit';
+import { useParams } from 'react-router';
 import { AttachAddon } from 'xterm-addon-attach';
+import { FitAddon } from 'xterm-addon-fit';
 import cache from '@/utils/storage';
 const TOKEN = 'token';
 const action = (type: any, data?: any) => {
@@ -18,50 +18,86 @@ const action = (type: any, data?: any) => {
 interface MidTerminalProps {
 	url: string;
 }
-let term; // 终端
-let socket: WebSocket; // WebSocket服务
 export default function MidTerminal(props: MidTerminalProps): JSX.Element {
-	const ref: any = useRef();
-	const { url } = props;
-	const initTerminal = () => {
-		socket = new WebSocket(url, cache.getLocal(TOKEN));
+	// const { url } = props;
+	// console.log(url);
+	console.log(useParams());
+	const params: MidTerminalProps = useParams();
+	const socketUrl = `ws://10.1.10.13:31088/ws/terminal?${params.url}`;
+
+	useEffect(() => {
+		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
+		const terminal = new Terminal({
+			cursorStyle: 'underline',
+			cursorBlink: true,
+			theme: {
+				foreground: '#dddddd',
+				cursor: 'gray'
+			},
+			windowsMode: true
+		});
+		// const attachAddon = new AttachAddon(socket);
+		// terminal.loadAddon(attachAddon);
+		const fitAddon = new FitAddon();
+		terminal.loadAddon(fitAddon);
+		const terminalDom = document.getElementById('terminal-container');
+		terminal.open(terminalDom as HTMLElement);
+		fitAddon.fit();
 		socket.onopen = () => {
 			socket.send(action('TERMINAL_INIT'));
 			socket.send(action('TERMINAL_READY'));
-			console.log('connection success');
+			socket.send(
+				action('TERMINAL_RESIZE', {
+					columns: fitAddon.proposeDimensions().cols,
+					rows: fitAddon.proposeDimensions().rows
+				})
+			);
+			terminal.write('Welcome to terminal! \r\n$');
+		};
+		socket.onclose = () => {
+			terminal.write('Bye Bye! \r\n$');
 		};
 		socket.onerror = () => {
-			console.log('连接失败');
+			terminal.write('Something errors \r\n$');
 		};
-		socket.onmessage = (msg) => {
-			console.log(msg);
-		};
-		term = new Terminal({
-			cursorBlink: true
-		});
-		term.setOption('theme', {
-			background: 'black',
-			foreground: 'white'
-		});
-		const webLinkAddon = new WebLinksAddon();
-		const fitAddon = new FitAddon();
-		const attachAddon = new AttachAddon(socket);
-		term.loadAddon(webLinkAddon);
-		term.loadAddon(fitAddon);
-		term.loadAddon(attachAddon);
-		term.open((ref as MutableRefObject<HTMLDivElement>).current);
-		fitAddon.fit();
-		// term.prompt = () => {
-		// 	term.write('\r\n');
+		// terminal.resize = (columns: number, rows: number) => {
+		// 	console.log(columns, rows);
+		// 	console.log(fitAddon.proposeDimensions());
+		// 	socket.send(
+		// 		action('TERMINAL_RESIZE', {
+		// 			columns: columns,
+		// 			rows: rows
+		// 		})
+		// 	);
 		// };
-		// term.prompt();
-	};
-	useEffect(() => {
-		if (socket) {
+		terminal.onResize(({ cols, rows }) => {
+			console.log(cols, rows);
+		});
+		terminal.onData((e: string) => {
+			socket.send(
+				action('TERMINAL_COMMAND', {
+					command: e
+				})
+			);
+		});
+		socket.onmessage = (e: MessageEvent<any>) => {
+			console.log(e);
+			const data = JSON.parse(e?.data);
+			// terminal.clear();
+			if (data?.type == 'TERMINAL_PRINT') {
+				terminal.write(data.text);
+			}
+		};
+		return () => {
 			socket.close();
-		}
-		initTerminal();
-	}, [url]);
+			terminal.dispose();
+		};
+	}, []);
 
-	return <div ref={ref}></div>;
+	return (
+		<div
+			id="terminal-container"
+			style={{ width: '100%', height: '100%' }}
+		></div>
+	);
 }

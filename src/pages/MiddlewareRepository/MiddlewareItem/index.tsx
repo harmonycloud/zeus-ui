@@ -149,7 +149,7 @@ export default function MiddlewareItem(
 			}
 		} else {
 			history.push(
-				`/serviceCatalog/dynamicForm/${chartName}/${chartVersion}/${version}`
+				`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
 			);
 		}
 	};

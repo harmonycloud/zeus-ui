@@ -68,21 +68,22 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 		return temp;
 	};
 	const changeTree = (data: any[] | undefined) => {
-		data?.forEach((item) => {
-			const parentId = item.parentId;
-			if (parentId !== 0) {
-				data.forEach((ele) => {
-					if (ele.id === parentId) {
-						let childArray = ele.children;
-						if (!childArray) {
-							childArray = [];
+		data &&
+			data.forEach((item) => {
+				const parentId = item.parentId;
+				if (parentId !== 0) {
+					data.forEach((ele) => {
+						if (ele.id === parentId) {
+							let childArray = ele.children;
+							if (!childArray) {
+								childArray = [];
+							}
+							childArray.push(item);
+							ele.children = childArray;
 						}
-						childArray.push(item);
-						ele.children = childArray;
-					}
-				});
-			}
-		});
+					});
+				}
+			});
 
 		return data?.filter((item) => item.parentId === 0);
 	};
@@ -96,16 +97,14 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 		// console.log(checkedKeys,harfCheckedKeys);
 		if (data) {
 			const sendData: roleProps = data;
-			data?.menu?.forEach((item) => {
-				if (
-					checkedKeys.indexOf(String(item.id)) !== -1 ||
-					harfCheckedKeys.indexOf(String(item.id)) !== -1
-				) {
-					item.own = true;
-				} else {
-					item.own = false;
-				}
-			});
+			data.menu &&
+				data.menu.map((item) => {
+					if (checkedKeys.indexOf(String(item.id)) !== -1) {
+						item.own = true;
+					} else {
+						item.own = false;
+					}
+				});
 			delete sendData.createTime;
 			sendData.roleId = sendData.id;
 			updateRole(sendData).then((res) => {
