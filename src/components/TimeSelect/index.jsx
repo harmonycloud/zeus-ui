@@ -183,7 +183,7 @@ export default function TimeSelect(props) {
 									<Option value={true}>时间段</Option>
 								</Select>
 							</Col>
-							<Col span={16} style={{ marginLeft: 13 }}>
+							<Col span={22} style={{ marginLeft: 13 }}>
 								<RangePicker
 									showTime
 									onChange={onChange}

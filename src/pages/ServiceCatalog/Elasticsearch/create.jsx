@@ -348,7 +348,18 @@ const ElasticsearchCreate = (props) => {
 									messageConfig(
 										'error',
 										'失败',
-										`${key}节点没有选择存储配额`
+										`${key}节点没有选择存储类型`
+									)
+								);
+								modifyQuota(key);
+								return;
+							}
+							if (nodeObj[key].storageQuota === 0) {
+								Message.show(
+									messageConfig(
+										'error',
+										'失败',
+										`${key}节点存储配额不能为0`
 									)
 								);
 								modifyQuota(key);

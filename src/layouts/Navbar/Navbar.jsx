@@ -226,6 +226,7 @@ function Navbar(props) {
 			>
 				{hideFlag === false && (
 					<>
+						<span style={{ marginRight: 8 }}>资源池</span>
 						<Select
 							className="no-shadow"
 							value={currentCluster.id}
@@ -244,6 +245,7 @@ function Navbar(props) {
 								);
 							})}
 						</Select>
+						<span style={{ marginLeft: 8 }}>资源分区</span>
 						<Select
 							style={{ marginLeft: 16 }}
 							className="no-shadow"

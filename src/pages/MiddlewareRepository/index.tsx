@@ -93,7 +93,12 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			<Content>
 				<div className="middleware-repository-tips">
 					自定义上架中间件，请参考
-					<span className="name-link">
+					<span
+						className="name-link"
+						onClick={() => {
+							window.open('', '_blank');
+						}}
+					>
 						《自定义开发，上架中间件规范说明》
 					</span>
 				</div>

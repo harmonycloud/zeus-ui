@@ -15,16 +15,17 @@ const action = (type: any, data?: any) => {
 	);
 	return JSON.stringify(action);
 };
-interface MidTerminalProps {
+interface ParamsProps {
 	url: string;
 }
-export default function MidTerminal(props: MidTerminalProps): JSX.Element {
-	// const { url } = props;
-	// console.log(url);
-	console.log(useParams());
-	const params: MidTerminalProps = useParams();
-	const socketUrl = `ws://10.1.10.13:31088/ws/terminal?${params.url}`;
-
+export default function MidTerminal(): JSX.Element {
+	const params: ParamsProps = useParams();
+	// 添加https和http的支持
+	// wss://${window.location.hostname}:${window.location.port} 环境上使用
+	const socketUrl =
+		window.location.protocol.toLowerCase() === 'https:'
+			? `wss://10.1.10.13:31088/ws/terminal?${params.url}`
+			: `ws://10.1.10.13:31088/ws/terminal?${params.url}`;
 	useEffect(() => {
 		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
 		const terminal = new Terminal({
@@ -36,8 +37,11 @@ export default function MidTerminal(props: MidTerminalProps): JSX.Element {
 			},
 			windowsMode: true
 		});
+		// xterm 对websocket适用的插件，但在这里用的时候，在页面显示上有问题，就先注释了。
 		// const attachAddon = new AttachAddon(socket);
 		// terminal.loadAddon(attachAddon);
+		// attachAddon.activate(socket);
+
 		const fitAddon = new FitAddon();
 		terminal.loadAddon(fitAddon);
 		const terminalDom = document.getElementById('terminal-container');
@@ -60,16 +64,8 @@ export default function MidTerminal(props: MidTerminalProps): JSX.Element {
 		socket.onerror = () => {
 			terminal.write('Something errors \r\n$');
 		};
-		// terminal.resize = (columns: number, rows: number) => {
-		// 	console.log(columns, rows);
-		// 	console.log(fitAddon.proposeDimensions());
-		// 	socket.send(
-		// 		action('TERMINAL_RESIZE', {
-		// 			columns: columns,
-		// 			rows: rows
-		// 		})
-		// 	);
-		// };
+
+		// todo 终端跟随界面重绘，不知道为什么不起作用。
 		terminal.onResize(({ cols, rows }) => {
 			console.log(cols, rows);
 		});

@@ -335,12 +335,35 @@ const RedisCreate = (props) => {
 					if (nodeObj) {
 						sendData.quota = {};
 						for (let key in nodeObj) {
-							if (!nodeObj[key].disabled)
+							if (!nodeObj[key].disabled) {
+								if (nodeObj[key].storageClass === '') {
+									Message.show(
+										messageConfig(
+											'error',
+											'失败',
+											`${key}节点没有选择存储类型`
+										)
+									);
+									modifyQuota(key);
+									return;
+								}
+								if (nodeObj[key].storageQuota === 0) {
+									Message.show(
+										messageConfig(
+											'error',
+											'失败',
+											`${key}节点存储配额不能为0`
+										)
+									);
+									modifyQuota(key);
+									return;
+								}
 								sendData.quota[key] = {
 									...nodeObj[key],
 									storageClassName: nodeObj[key].storageClass,
 									storageClassQuota: nodeObj[key].storageQuota
 								};
+							}
 						}
 					}
 				}

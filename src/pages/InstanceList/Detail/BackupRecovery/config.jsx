@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Icon, Message, Switch } from '@alicloud/console-components';
+import {
+	Dialog,
+	Icon,
+	Message,
+	Switch,
+	Balloon
+} from '@alicloud/console-components';
 import BackupSettingForm from './backupSetting';
 import messageConfig from '@/components/messageConfig';
 import { getBackupConfig, addBackupConfig, backupNow } from '@/services/backup';
@@ -197,20 +203,74 @@ export default function Config(props) {
 						</span>
 					</div>
 				</div>
-				<div className="backup-setting">
-					<div className="backup-label">备份保留个数</div>
+				<div
+					className="backup-setting"
+					style={{
+						color: backupData.configed ? '#666666' : '#9b9ea0'
+					}}
+				>
+					<div
+						className="backup-label"
+						style={{
+							color: backupData.configed ? '#666666' : '#9b9ea0'
+						}}
+					>
+						备份保留个数{' '}
+						<Balloon
+							trigger={<Icon type="question-circle" size="xs" />}
+							closable={false}
+						>
+							成功备份一次，保存一份备份文件，意味着保留最新的N份备份文件，超过数量的备份将自动删除
+						</Balloon>
+					</div>
 					<div className="backup-value">{backupData.limitRecord}</div>
 				</div>
-				<div className="backup-setting">
-					<div className="backup-label">备份周期</div>
+				<div
+					className="backup-setting"
+					style={{
+						color: backupData.configed ? '#666666' : '#9b9ea0'
+					}}
+				>
+					<div
+						className="backup-label"
+						style={{
+							color: backupData.configed ? '#666666' : '#9b9ea0'
+						}}
+					>
+						备份周期
+					</div>
 					<div className="backup-value">{backupData.cycle}</div>
 				</div>
-				<div className="backup-setting">
-					<div className="backup-label">备份时间</div>
+				<div
+					className="backup-setting"
+					style={{
+						color: backupData.configed ? '#666666' : '#9b9ea0'
+					}}
+				>
+					<div
+						className="backup-label"
+						style={{
+							color: backupData.configed ? '#666666' : '#9b9ea0'
+						}}
+					>
+						备份时间
+					</div>
 					<div className="backup-value">{backupData.time}</div>
 				</div>
-				<div className="backup-setting">
-					<div className="backup-label">预计下次备份时间</div>
+				<div
+					className="backup-setting"
+					style={{
+						color: backupData.configed ? '#666666' : '#9b9ea0'
+					}}
+				>
+					<div
+						className="backup-label"
+						style={{
+							color: backupData.configed ? '#666666' : '#9b9ea0'
+						}}
+					>
+						预计下次备份时间
+					</div>
 					<div className="backup-value">
 						{transTime.gmt2local(backupData.nextBackupTime)}
 					</div>

@@ -406,11 +406,6 @@ export default function LogFile(props) {
 				</div> */}
 				<div className={styles['filter-item']}>
 					<Row>
-						<TimeSelect source="log" timeSelect={onTimeChange} />
-					</Row>
-				</div>
-				<div className={styles['filter-item']}>
-					<Row>
 						<Col span={6}>
 							<label>搜索类型</label>
 						</Col>
@@ -442,6 +437,11 @@ export default function LogFile(props) {
 								onChange={handleChange}
 							/>
 						</Col>
+					</Row>
+				</div>
+				<div className={styles['filter-item']}>
+					<Row>
+						<TimeSelect source="log" timeSelect={onTimeChange} />
 					</Row>
 				</div>
 				<div className={styles['filter-item']}>

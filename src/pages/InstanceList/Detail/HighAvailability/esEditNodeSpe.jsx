@@ -7,12 +7,14 @@ import {
 	Select,
 	Button,
 	Dialog,
-	NumberPicker
+	NumberPicker,
+	Message
 } from '@alicloud/console-components';
 import SelectBlock from '../../../ServiceCatalog/components/SelectBlock/index';
 import TableRadio from '../../../ServiceCatalog/components/TableRadio/index';
 import styles from './esEdit.module.scss';
 import pattern from '@/utils/pattern';
+import messageConfig from '@/components/messageConfig';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -230,12 +232,36 @@ export default function EsEditNodeSpe(props) {
 				if (nodeObj) {
 					sendData.quota = {};
 					for (let key in nodeObj) {
-						if (!nodeObj[key].disabled)
+						if (!nodeObj[key].disabled) {
+							// 因为es规格配置不能修改存储类型和配额，这段代码暂时注释
+							// if (nodeObj[key].storageClass === '') {
+							// 	Message.show(
+							// 		messageConfig(
+							// 			'error',
+							// 			'失败',
+							// 			`${key}节点没有选择存储配额`
+							// 		)
+							// 	);
+							// 	modifyQuota(key);
+							// 	return;
+							// }
+							// if (nodeObj[key].storageQuota === 0) {
+							// 	Message.show(
+							// 		messageConfig(
+							// 			'error',
+							// 			'失败',
+							// 			`${key}节点存储配额不能为0`
+							// 		)
+							// 	);
+							// 	modifyQuota(key);
+							// 	return;
+							// }
 							sendData.quota[key] = {
 								...nodeObj[key],
 								storageClassName: nodeObj[key].storageClass,
 								storageClassQuota: nodeObj[key].storageQuota
 							};
+						}
 					}
 				}
 				onCreate(sendData);
