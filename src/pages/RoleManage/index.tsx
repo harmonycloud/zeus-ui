@@ -77,7 +77,7 @@ function RoleManage(): JSX.Element {
 		setPermissionData(record);
 		setPermissionVisible(true);
 	};
-	const actionRander = (value: string, index: number, record: roleProps) => {
+	const actionRender = (value: string, index: number, record: roleProps) => {
 		return (
 			<Actions>
 				<LinkButton onClick={() => edit(record)}>编辑</LinkButton>
@@ -127,7 +127,10 @@ function RoleManage(): JSX.Element {
 	};
 	return (
 		<Page className="role-manege">
-			<Header></Header>
+			<Header
+				title="角色管理"
+				subTitle="创建具有不同系统权限的平台角色"
+			/>
 			<Content>
 				<Table
 					dataSource={dataSource}
@@ -155,7 +158,7 @@ function RoleManage(): JSX.Element {
 					<Table.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRander}
+						cell={actionRender}
 					/>
 				</Table>
 			</Content>

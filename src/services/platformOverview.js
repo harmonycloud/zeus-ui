@@ -9,3 +9,7 @@ export const getEvent = async (params) => {
 	const result = Axios.get(PLATFORMOVERVIEW.getEvent, params);
 	return result;
 };
+export const getServers = async (params) => {
+	const result = Axios.get(PLATFORMOVERVIEW.getServers, params);
+	return result;
+};

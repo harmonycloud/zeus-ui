@@ -20,6 +20,9 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 	const { onCancel, onCreate, visible, data } = props;
 	const [treeData, setTreeData] = useState<treeData[] | undefined>();
 	const [checkedKeys, setCheckedKeys] = useState<any | undefined[]>([]);
+	const [harfCheckedKeys, setHarfCheckedKeys] = useState<any | undefined[]>(
+		[]
+	);
 
 	useEffect(() => {
 		const menu: roleTree[] | undefined = data?.menu;
@@ -41,10 +44,11 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 						label: str.aliasName
 					};
 				});
+				const newChildren = filterArray(children);
 				return {
 					key: String(item.id),
 					label: item.aliasName,
-					children
+					children: newChildren
 				};
 			}
 		});
@@ -53,6 +57,16 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 
 		setCheckedKeys(defaultCheckedKeys);
 	}, []);
+	const filterArray = (arr: any[] | undefined) => {
+		const temp: any[] = [];
+		arr?.forEach(function (a) {
+			const check = temp.every(function (b) {
+				return a.key !== b.key;
+			});
+			check && temp.push(a);
+		});
+		return temp;
+	};
 	const changeTree = (data: any[] | undefined) => {
 		data?.forEach((item) => {
 			const parentId = item.parentId;
@@ -72,15 +86,21 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 
 		return data?.filter((item) => item.parentId === 0);
 	};
-	const handleCheck = (keys: any[]) => {
+	const handleCheck = (keys: any[], okr: { [propName: string]: any }) => {
+		// console.log(keys,okr);
+		// keys = keys.concat(okr.indeterminateKeys);
 		setCheckedKeys(keys);
+		setHarfCheckedKeys(okr.indeterminateKeys);
 	};
 	const onOk = () => {
-		// console.log(checkedKeys);
+		// console.log(checkedKeys,harfCheckedKeys);
 		if (data) {
 			const sendData: roleProps = data;
 			data?.menu?.forEach((item) => {
-				if (checkedKeys.indexOf(String(item.id)) !== -1) {
+				if (
+					checkedKeys.indexOf(String(item.id)) !== -1 ||
+					harfCheckedKeys.indexOf(String(item.id)) !== -1
+				) {
 					item.own = true;
 				} else {
 					item.own = false;
@@ -114,7 +134,6 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			<Tree
 				defaultExpandAll
 				checkable
-				checkStrictly={true}
 				checkedKeys={checkedKeys}
 				onCheck={handleCheck}
 				dataSource={treeData}
