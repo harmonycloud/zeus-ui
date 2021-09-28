@@ -3,26 +3,31 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Page from '@alicloud/console-components-page';
 import HomeCard from '@/components/HomeCard';
-import ExampleCharts from '@/components/ExampleCharts';
 import { connect } from 'react-redux';
+import { getClusters } from '@/services/common.js';
+import { api } from '@/api.json';
 import {
 	Radio,
 	Pagination,
+	Button,
 	Icon,
 	Select,
 	Table,
-	Balloon,
-	Search
+	Progress
 } from '@alicloud/console-components';
-import { getPlatformOverview, getEvent } from '@/services/platformOverview';
-import { getClusters } from '@/services/common';
+import {
+	getPlatformOverview,
+	getEvent,
+	getServers
+} from '@/services/platformOverview';
 import AlarmTimeLine from '@/components/AlarmTimeline';
 import {
 	setCluster,
 	setNamespace,
 	setRefreshCluster
 } from '@/redux/globalVar/var';
-import storage from '@/utils/storage';
+import EChartsReact from 'echarts-for-react';
+import { getLineOption, getPieOption } from '@/utils/echartsOption';
 
 const radioList = [
 	{
@@ -42,177 +47,61 @@ const radioList = [
 		label: '严重'
 	}
 ];
-const statusMap = {
-	Creating: '创建中',
-	Running: '运行中',
-	Failed: '运行异常',
-	RunningError: '运行错误',
-	Error: '错误',
-	Updating: '更新中'
-};
-const statusFilters = [
-	{
-		label: '创建中',
-		value: 'Creating'
-	},
-	{
-		label: '运行中',
-		value: 'Running'
-	},
-	{
-		label: '运行异常',
-		value: 'Failed'
-	},
-	{
-		label: '运行错误',
-		value: 'RunningError'
-	},
-	{
-		label: '错误',
-		value: 'Error'
-	},
-	{
-		label: '更新中',
-		value: 'Updating'
-	}
-];
+
 function PlatformOverview(props) {
 	// 设置事件数据
 	const [eventData, setEventData] = useState(null);
 	// 顶部统计数据
 	const [totalData, setTotalData] = useState({
-		namespace: 0,
-		cluster: 0,
-		node: 0,
-		except: 0
+		clusterNum: 0,
+		namespaceNum: 0,
+		totalCpu: 0,
+		usedCpu: 0,
+		totalMemory: 0,
+		usedMemory: 0,
+		cpuUsedPercent: '0%',
+		memoryUsedPercent: '0%'
 	});
-	// 数据类型cup/memory
-	const [dataType, setDataType] = useState('cpu');
+	// 服务信息列表
+	const [briefInfoList, setBriefInfoList] = useState([]);
 	// 单选按钮组
 	const RadioGroup = Radio.Group;
-	// 图表数据
-	const [chartData, setChartData] = useState({
-		cluster: [],
-		namespace: [],
-		node: []
-	});
-	// 存储图表数据
-	const [sourceData, setSourceData] = useState({});
 	const [clusters, setClusters] = useState([]);
 	const [current, setCurrent] = useState(1); // 页码 current
 	const [level, setLevel] = useState(''); // level
 	const [total, setTotal] = useState(10); // 总数
-	const [type, setType] = useState('chart');
-	const [tableSource, setTableSource] = useState([]);
-	const [clusterFilter, setClusterFilter] = useState([]);
-	const [namespaceFilter, setNamespaceFilter] = useState([]);
-	const [typeFilter, setTypeFilter] = useState([]);
+	const [poolList, setPoolList] = useState([]);
+	const [type, setType] = useState(null);
+	const [version, setVersion] = useState();
+	const [operatorData, setOperatorData] = useState();
+	const [operatorList, setOperatorList] = useState([]);
+	const [auditList, setAuditList] = useState([]);
 	const history = useHistory();
+	const [pieOption, setPieOption] = useState({});
+	const [lineOption, setLineOption] = useState({});
 
-	const getClusterList = async () => {
-		let res = await getClusters();
-		if (res.success) {
-			if (res.data.length > 0) {
-				setClusters(res.data);
-				const list = res.data.map((item) => {
-					return {
-						label: item.nickname,
-						value: item.name
-					};
-				});
-				setClusterFilter(list);
-			}
-		}
-	};
-
-	// 获取设置图表数据
-	const getChartData = (type = 'cpu') => {
-		const res = [];
-		sourceData.clusters &&
-			sourceData.clusters.forEach((ele) => {
-				const cluster = {
-					dataType: 'cluster',
-					name: ele.clusterName,
-					regNamespaceCount: ele.regNamespaceCount,
-					instanceCount: ele.instanceCount,
-					itemStyle: {
-						color: ele.status ? '#5CCDBB' : '#FFC440'
-					}
-				};
-				cluster.children = ele.namespaces.map((item) => {
-					const namespa = {
-						dataType: 'namespace',
-						name: item.name,
-						value: type === 'cpu' ? item.cpu : item.memory,
-						itemStyle: {
-							color: item.status ? '#5CCDBB' : '#FFC440',
-							opacity: 0.85
-						},
-						cpu: item.cpu,
-						memory: item.memory,
-						instanceCount: item.instanceCount,
-						instanceExceptionCount: item.instanceExceptionCount
-					};
-					namespa.children = item.middlewares.map((mid) => {
-						return {
-							dataType: 'node',
-							name: mid.name,
-							value:
-								type === 'cpu' ? mid.totalCpu : mid.totalMemory,
-							itemStyle: {
-								color: mid.status ? '#5CCDBB' : '#C80000',
-								opacity: 0.65
-							},
-							cluster: ele.clusterId,
-							namespace: item.name,
-							totalCpu: mid.totalCpu,
-							totalMemory: mid.totalMemory,
-							status: mid.status,
-							nodeCount: mid.nodeCount,
-							type: mid.type,
-							chartName: mid.chartName,
-							chartVersion: mid.chartVersion,
-							imagePath: mid.imagePath
-						};
-					});
-					return namespa;
-				});
-				res.push(cluster);
-			});
-		// 设置图表数据
-		setChartData(res);
-	};
 	useEffect(() => {
-		getClusterList();
+		getClusters().then((res) => {
+			// console.log(res.data);
+			res.data.push({ name: '全部', id: 'all' });
+			setPoolList(res.data);
+		});
 	}, []);
 	useEffect(() => {
-		getPlatformOverview().then((res) => {
-			setSourceData(res.data);
+		let clusterId = type === 'all' ? null : type;
+		getPlatformOverview({ clusterId }).then((res) => {
+			setVersion(res.data.zeusVersion);
+			setTotalData(res.data.clusterQuota);
+			setOperatorData(res.data.operatorDTO);
+			setOperatorList(res.data.operatorDTO.operatorList);
+			setAuditList(res.data.auditList);
+			setPieOption(getPieOption(res.data.operatorDTO));
+			setLineOption(getLineOption(res.data.alertSummary));
+		});
+		getServers({ clusterId }).then((res) => {
+			setBriefInfoList(res.data.briefInfoList);
 		});
 	}, [type]);
-
-	useEffect(() => {
-		console.log(sourceData);
-		if (sourceData && JSON.stringify(sourceData) !== '{}') {
-			if (Object.keys(sourceData).length) {
-				setTotalData({
-					namespace: sourceData.totalNamespaceCount,
-					cluster: sourceData.totalClusterCount,
-					node: sourceData.totalInstanceCount,
-					except: sourceData.totalExceptionCount
-				});
-				getChartData();
-				setTableSource(sourceData.middlewareDTOList);
-				const list = sourceData.middlewareDTOList.map((item) => {
-					return {
-						label: item.type,
-						value: item.type
-					};
-				});
-				setTypeFilter(list);
-			}
-		}
-	}, [sourceData]);
 
 	useEffect(() => {
 		// 请求事件数据
@@ -229,26 +118,7 @@ function PlatformOverview(props) {
 			});
 		}
 	}, [eventData]);
-	useEffect(() => {
-		if (props.globalVar) {
-			const list = props.globalVar.namespaceList.map((item) => {
-				return {
-					label: item.name,
-					value: item.name
-				};
-			});
-			console.log(list);
-			setNamespaceFilter(list);
-		}
-	}, [props]);
-	// 选择的数据类型修改
-	const dataTypeChange = (checked) => {
-		getChartData(checked); // 修改图表数据
-		setDataType(checked); // 修改radio绑定数据
-	};
-	const typeChange = (checked) => {
-		setType(checked);
-	};
+
 	const getEventsData = ({ current, level }) => {
 		const sendData = {
 			current: current,
@@ -276,398 +146,384 @@ function PlatformOverview(props) {
 		};
 		getEventsData(alertData);
 	};
-	const onSort = (dataIndex, order) => {
-		const tableList = sourceData.middlewareDTOList.sort(function (a, b) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
+	const onRefresh = () => {
+		getPlatformOverview().then((res) => {
+			setTotalData(res.data.clusterQuota);
+			setBriefInfoList(res.data.briefInfoList);
 		});
-		setTableSource([...tableList]);
 	};
-	const onFilter = (filterParams) => {
-		let ds = sourceData.middlewareDTOList;
-		Object.keys(filterParams).forEach((key) => {
-			const { selectedKeys } = filterParams[key];
-			if (selectedKeys.length) {
-				ds = ds.filter((record) => {
-					return selectedKeys.some((value) => {
-						return record[key].indexOf(value) > -1;
-					});
-				});
-			}
-		});
-		setTableSource([...ds]);
+	const onChartsEvent = () => {
+		return { legendselectchanged: onChartLegendselectchanged };
+	};
+	const onChartLegendselectchanged = (obj) => {
+		// console.log(obj);
+		let data = [];
+		if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
+			data = operatorData.operatorList.filter(
+				(item) => item.status === 1
+			);
+		} else if (!obj.selected['运行正常'] && obj.selected['运行异常']) {
+			data = operatorData.operatorList.filter(
+				(item) => item.status === 3
+			);
+		} else if (obj.selected['运行正常'] && obj.selected['运行异常']) {
+			data = operatorData.operatorList;
+		} else {
+			data = [];
+		}
+		// console.log(data);
+		// setOperatorList(data);
 	};
 
-	const statusRender = (value, index, record) => {
-		return (
-			<span
-				className="name-link"
-				style={{
-					color:
-						value === 'Failed' ||
-						value === 'RunningError' ||
-						value === 'Error'
-							? '#Ef595C'
-							: ''
-				}}
-				onClick={() => toDetail(record)}
-			>
-				{statusMap[value]}
-			</span>
-		);
-	};
-	const nameRender = (value, index, record) => {
-		return (
-			<span className="name-link" onClick={() => toDetail(record)}>
-				{record.source === false ? '(备)' + value : value}
-			</span>
-		);
-	};
-	const onSearch = (value) => {
-		const ds = sourceData.middlewareDTOList;
-		const list = ds.filter((item) => {
-			if (item?.name.includes(value)) {
-				return item;
-			}
-		});
-		setTableSource(list);
-	};
-	const nameTitleRender = () => {
-		return (
-			<div>
-				名称
-				<Balloon
-					trigger={
-						<Icon
-							type="search"
-							size="xs"
-							style={{ marginLeft: 8, cursor: 'pointer' }}
-						/>
-					}
-					closable={false}
-				>
-					<Search onSearch={onSearch} style={{ width: '300px' }} />
-				</Balloon>
-			</div>
-		);
-	};
-	const toDetail = (record) => {
-		const cs = clusters.filter((item) => item.id === record.clusterId);
-		setCluster(cs[0]);
-		storage.setLocal('cluster', JSON.stringify(cs[0]));
-		const ns = props.globalVar.namespaceList.filter(
-			(item) => item.name === record.namespace
-		);
-		setNamespace(ns[0]);
-		storage.setLocal('namespace', JSON.stringify(ns[0]));
-		setRefreshCluster(true);
-		history.push({
-			pathname: `/instanceList/detail/${record.name}/${
-				record.type || 'mysql'
-			}/${record.chartVersion}`,
-			state: {
-				flag: true
-			}
-		});
-	};
 	return (
 		<Page>
 			<Page.Content style={{ paddingBottom: 0 }}>
 				<div className="platform_overview-content">
-					<div className="left-content">
-						<HomeCard
-							title={'资产统计'}
-							height={'147px'}
-							width={'100%'}
-							marginBottom={'16px'}
-						>
-							<div className="total">
-								<div className="part part-border">
-									<div
-										className="part-icon"
-										style={{ backgroundColor: ' #5CCDBB' }}
-									>
-										<Icon
-											className="iconfont icon-jiqun"
-											size="large"
-											style={{
-												color: '#FFFFFF',
-												textAlign: 'center',
-												lineHeight: '36px'
-											}}
-										/>
+					<div className="header">
+						<div className="header-btn">
+							<div>
+								资源池:
+								<Select
+									style={{
+										width: '226px',
+										marginLeft: '10px'
+									}}
+									onChange={(value) => setType(value)}
+								>
+									{poolList.length &&
+										poolList.map((item) => {
+											return (
+												<Select.Option
+													value={item.id}
+													key={item.id}
+												>
+													{item.name}
+												</Select.Option>
+											);
+										})}
+								</Select>
+							</div>
+							<Button className="refresh-btn" onClick={onRefresh}>
+								<Icon type="refresh" />
+							</Button>
+						</div>
+						<div className="header-list">
+							<div className="part part-border">
+								<div className="part-detail">
+									<div className="part-circle">
+										<span className="iconfont icon-jiqun1"></span>
 									</div>
-									<div className="part-detail">
+									<div>
 										<p className="value">
-											{totalData.cluster}
-											<span
-												style={{
-													opacity: 0.45,
-													fontSize: 14,
-													marginLeft: 4
-												}}
-											>
-												个
+											<span className="num">
+												{totalData.clusterNum}
 											</span>
+											<span>个</span>
 										</p>
-										<p className="type">集群数</p>
-									</div>
-								</div>
-								<div className="part part-border">
-									<div
-										className="part-icon"
-										style={{ backgroundColor: '#A78CF3' }}
-									>
-										<Icon
-											className="iconfont icon-namespace"
-											size="large"
-											style={{
-												color: '#FFFFFF',
-												textAlign: 'center',
-												lineHeight: '36px'
-											}}
-										/>
-									</div>
-									<div className="part-detail">
-										<p className="value">
-											{totalData.namespace}
-											<span
-												style={{
-													opacity: 0.45,
-													fontSize: 14,
-													marginLeft: 4
-												}}
-											>
-												个
-											</span>
-										</p>
-										<span className="type">总命名空间</span>
-									</div>
-								</div>
-								<div className="part part-border">
-									<div
-										className="part-icon"
-										style={{ backgroundColor: '#25B3DD' }}
-									>
-										<Icon
-											className="iconfont icon-shili"
-											size="large"
-											style={{
-												color: '#FFFFFF',
-												textAlign: 'center',
-												lineHeight: '36px'
-											}}
-										/>
-									</div>
-									<div className="part-detail">
-										<p className="value">
-											{totalData.node}
-											<span
-												style={{
-													opacity: 0.45,
-													fontSize: 14,
-													marginLeft: 4
-												}}
-											>
-												个
-											</span>
-										</p>
-										<span className="type">总实例数</span>
-									</div>
-								</div>
-								<div className="part">
-									<div
-										className="part-icon"
-										style={{ backgroundColor: '#E9737A' }}
-									>
-										<Icon
-											className="iconfont icon-shili"
-											size="large"
-											style={{
-												color: '#FFFFFF',
-												textAlign: 'center',
-												lineHeight: '36px'
-											}}
-										/>
-									</div>
-									<div className="part-detail">
-										<p className="value error-color">
-											{totalData.except}
-											<span
-												style={{
-													color: '#000000',
-													opacity: 0.45,
-													fontSize: 14,
-													marginLeft: 4
-												}}
-											>
-												个
-											</span>
-										</p>
-										<span className="type">异常实例数</span>
+										<p className="type">资源池总数</p>
 									</div>
 								</div>
 							</div>
-						</HomeCard>
-						<HomeCard
-							title={'实例情况'}
-							height={'calc(100% - 163px)'}
-							width={'100%'}
-							action={
-								<div>
-									{type === 'chart' && (
-										<Select
-											shape="button"
-											dataSource={[
-												{
-													value: 'cpu',
-													label: 'cpu配额展示'
-												},
-												{
-													value: 'memory',
-													label: '内存配额展示'
+							<div className="part part-border">
+								<div className="part-detail">
+									<div className="part-circle">
+										<span className="iconfont icon-mingmingkongjian"></span>
+									</div>
+									<div>
+										<p className="value">
+											<span className="num">
+												{totalData.namespaceNum}
+											</span>
+											<span>个</span>
+										</p>
+										<span className="type">
+											总资源分区总数
+										</span>
+									</div>
+								</div>
+							</div>
+							<div className="part part-border">
+								<div className="part-detail">
+									<div className="part-circle">
+										<span className="iconfont icon-CPU"></span>
+									</div>
+									<div>
+										<div className="value percent">
+											<span>
+												{totalData.cpuUsedPercent}
+											</span>
+											<Progress
+												percent={Number(
+													totalData.cpuUsedPercent.replace(
+														'%',
+														''
+													)
+												)}
+												textRender={() =>
+													totalData.usedCpu.toFixed(
+														0
+													) + '核'
 												}
-											]}
-											onChange={dataTypeChange}
-											value={dataType}
-										/>
-									)}
-									<RadioGroup
-										style={{ marginLeft: 8 }}
-										shape="button"
-										dataSource={[
-											{
-												value: 'chart',
-												label: '图形模式'
-											},
-											{
-												value: 'table',
-												label: '列表模式'
-											}
-										]}
-										onChange={typeChange}
-										value={type}
-									/>
-								</div>
-							}
-						>
-							<div className="chart-content">
-								{type === 'chart' && (
-									<ExampleCharts
-										chartData={chartData}
-										clusters={clusters}
-									/>
-								)}
-								{type === 'table' && (
-									<div className="instance-table-content">
-										<Table
-											dataSource={tableSource}
-											maxBodyHeight={500}
-											fixedHeader
-											hasBorder={true}
-											onSort={onSort}
-											onFilter={onFilter}
-										>
-											<Table.Column
-												title="集群名称"
-												dataIndex="clusterName"
-												filters={clusterFilter}
-												filterMode="multiple"
 											/>
-											<Table.ColumnGroup title="命名空间">
-												<Table.Column
-													title="名称"
-													dataIndex="namespace"
-													filters={namespaceFilter}
-													filterMode="multiple"
-												/>
-												<Table.Column
-													title="CPU(核)"
-													dataIndex="namespaceCpu"
-													sortable={true}
-												/>
-												<Table.Column
-													title="内存(G)"
-													dataIndex="namespaceMemory"
-													sortable={true}
-												/>
-											</Table.ColumnGroup>
-											<Table.ColumnGroup title="实例">
-												<Table.Column
-													title="类型"
-													dataIndex="type"
-													filters={typeFilter}
-													filterMode="multiple"
-												/>
-												<Table.Column
-													title={nameTitleRender}
-													dataIndex="name"
-													cell={nameRender}
-												/>
-												<Table.Column
-													title="CPU(核)"
-													dataIndex="cpu"
-													sortable={true}
-												/>
-												<Table.Column
-													title="内存(G)"
-													dataIndex="memory"
-													sortable={true}
-												/>
-												<Table.Column
-													title="状态"
-													dataIndex="status"
-													filters={statusFilters}
-													filterMode="single"
-													cell={statusRender}
-												/>
-											</Table.ColumnGroup>
-										</Table>
+											<span>
+												{totalData.totalCpu.toFixed(0) +
+													'核'}
+											</span>
+										</div>
+										<span className="type">
+											CPU总量占比
+										</span>
 									</div>
-								)}
+								</div>
 							</div>
-						</HomeCard>
+							<div className="part">
+								<div className="part-detail">
+									<div className="part-circle">
+										<span className="iconfont icon-memory"></span>
+									</div>
+									<div>
+										<div className="value percent">
+											<span>
+												{totalData.memoryUsedPercent}
+											</span>
+											<Progress
+												percent={Number(
+													totalData.memoryUsedPercent.replace(
+														'%',
+														''
+													)
+												)}
+												textRender={() =>
+													totalData.usedMemory.toFixed(
+														0
+													) + 'GB'
+												}
+											/>
+											<span>
+												{totalData.totalMemory.toFixed(
+													0
+												) + 'GB'}
+											</span>
+										</div>
+										<span className="type">
+											内存总量占比
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-					<div className="right-content">
-						<HomeCard
-							title={'告警事件（全平台）'}
-							height={'100%'}
-							width={'100%'}
-						>
-							<RadioGroup
-								dataSource={radioList}
-								shape="button"
-								size="large"
-								value={level}
-								onChange={onNormalChange}
-								style={{ marginTop: 16 }}
-							/>
-							<AlarmTimeLine
-								list={eventData}
-								style={{
-									marginTop: 16
-									// height: 'calc(100vh - 152px)'
-								}}
-								clusters={clusters}
-								type="platform"
-							/>
-							<Pagination
-								style={{ float: 'right' }}
-								current={current}
-								size="small"
-								type="simple"
-								shape="no-border"
-								onChange={paginationChange}
-								total={total}
-								totalRender={(total) => `总数：${total}`}
-							/>
-						</HomeCard>
+					<div className="content">
+						<div className="left-content">
+							<HomeCard
+								title={'服务信息'}
+								height={'174px'}
+								width={'100%'}
+								marginBottom={'20px'}
+							>
+								<div className="serve-info">
+									{briefInfoList?.length ? (
+										briefInfoList.map((item) => {
+											return (
+												<div
+													className="info-item"
+													key={item.name}
+													onClick={() =>
+														history.push(
+															'/serviceList'
+														)
+													}
+												>
+													<img
+														height={40}
+														width={40}
+														src={`${api}/images/middleware/${item.imagePath}`}
+													/>
+													<p className="info-name">
+														{item.name}
+													</p>
+													<p className="info-count">
+														<span>服务数 </span>
+														<span
+															className={`total-count${
+																item.errServiceNum ===
+																0
+																	? ' total-color'
+																	: ''
+															}`}
+														>
+															{item.serviceNum}
+														</span>
+														{item.errServiceNum !==
+														0 ? (
+															<span className="err-count">
+																/
+																{
+																	item.errServiceNum
+																}
+															</span>
+														) : null}
+													</p>
+												</div>
+											);
+										})
+									) : (
+										<div style={{ margin: '0 auto' }}>
+											没有数据
+										</div>
+									)}
+								</div>
+							</HomeCard>
+							<HomeCard
+								title={'控制器状态'}
+								height={'289px'}
+								width={'60%'}
+								marginBottom={'20px'}
+								readMore={'更多'}
+								readMoreFn={() =>
+									history.push('/middlewareRepository')
+								}
+							>
+								<div className="control-container">
+									<EChartsReact
+										onEvents={onChartsEvent()}
+										option={pieOption}
+										style={{ height: '100%', width: '40%' }}
+									/>
+									<div className="dashed"></div>
+									<Table
+										dataSource={operatorList}
+										primaryKey="key"
+										hasBorder={false}
+										fixedHeader={true}
+										maxBodyHeight="180px"
+										style={{
+											width: '55%',
+											marginTop: '10px'
+										}}
+									>
+										<Table.Column
+											title="类型"
+											dataIndex="name"
+										/>
+										<Table.Column
+											title="状态"
+											dataIndex="status"
+											cell={(value) =>
+												value ? '运行正常' : '运行异常'
+											}
+										/>
+									</Table>
+								</div>
+							</HomeCard>
+							<HomeCard
+								title={'异常告警'}
+								height={'289px'}
+								width={'38%'}
+								marginLeft={'2%'}
+								marginBottom={'20px'}
+							>
+								<EChartsReact
+									option={lineOption}
+									style={{
+										height: 'calc(100% - 22px)',
+										width: '100%'
+									}}
+								/>
+							</HomeCard>
+							<HomeCard
+								title={'审计信息'}
+								height={'331px'}
+								width={'100%'}
+								readMore={'更多'}
+								readMoreFn={() =>
+									history.push(
+										'/systemManagement/operationAudit'
+									)
+								}
+							>
+								<Table
+									dataSource={auditList}
+									primaryKey="key"
+									hasBorder={false}
+									fixedHeader={true}
+									maxBodyHeight="210px"
+									style={{ marginTop: '20px' }}
+								>
+									<Table.Column
+										title="账号"
+										dataIndex="account"
+									/>
+									<Table.Column
+										title="模块"
+										cell={(value, index, record) => (
+											<span>
+												{record.moduleChDesc +
+													'/' +
+													record.childModuleChDesc}
+											</span>
+										)}
+									/>
+									<Table.Column
+										title="行为"
+										dataIndex="actionChDesc"
+									/>
+									<Table.Column
+										title="操作时间"
+										dataIndex="beginTime"
+									/>
+								</Table>
+							</HomeCard>
+						</div>
+						<div className="right-content">
+							<HomeCard
+								title={'告警事件（全平台）'}
+								height={'649px'}
+								width={'100%'}
+								marginBottom={'20px'}
+							>
+								<RadioGroup
+									dataSource={radioList}
+									shape="button"
+									size="large"
+									value={level}
+									onChange={onNormalChange}
+									style={{ marginTop: 16 }}
+								/>
+								<AlarmTimeLine
+									list={eventData}
+									style={{
+										marginTop: 16,
+										height: 'calc(100% - 110px)'
+									}}
+									clusters={clusters}
+									type="platform"
+								/>
+								<Pagination
+									style={{ float: 'right' }}
+									current={current}
+									size="small"
+									type="simple"
+									shape="no-border"
+									onChange={paginationChange}
+									total={total}
+									totalRender={(total) => `总数：${total}`}
+								/>
+							</HomeCard>
+							<HomeCard
+								title={'系统信息'}
+								height={'166px'}
+								width={'100%'}
+							>
+								<div className="system-info">
+									<div className="version">
+										Zeus {version}
+									</div>
+									<div>当前系统版本</div>
+									<div>Powered by zeus</div>
+								</div>
+							</HomeCard>
+						</div>
 					</div>
 				</div>
 			</Page.Content>
