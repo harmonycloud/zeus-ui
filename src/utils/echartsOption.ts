@@ -78,9 +78,7 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 				},
 				emphasis: {
 					label: {
-						show: true,
-						fontSize: '14',
-						fontWeight: 'bold'
+						show: false
 					}
 				},
 				labelLine: {

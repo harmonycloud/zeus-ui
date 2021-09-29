@@ -13,7 +13,8 @@ import {
 	Icon,
 	Select,
 	Table,
-	Progress
+	Progress,
+	Loading
 } from '@alicloud/console-components';
 import {
 	getPlatformOverview,
@@ -354,43 +355,46 @@ function PlatformOverview(props) {
 														)
 													}
 												>
-													<img
-														height={40}
-														width={40}
-														src={`${api}/images/middleware/${item.imagePath}`}
-													/>
+													<div className="info-img">
+														<img
+															height={40}
+															width={40}
+															src={`${api}/images/middleware/${item.imagePath}`}
+														/>
+														{item.errServiceNum !==
+														0 ? (
+															<span className="err-count">
+																{
+																	item.errServiceNum
+																}
+															</span>
+														) : null}
+													</div>
 													<p className="info-name">
 														{item.name}
 													</p>
 													<p className="info-count">
 														<span>服务数 </span>
 														<span
-															className={`total-count${
-																item.errServiceNum ===
-																0
-																	? ' total-color'
-																	: ''
-															}`}
+															className={
+																'total-count'
+															}
 														>
 															{item.serviceNum}
 														</span>
-														{item.errServiceNum !==
-														0 ? (
-															<span className="err-count">
-																/
-																{
-																	item.errServiceNum
-																}
-															</span>
-														) : null}
 													</p>
 												</div>
 											);
 										})
 									) : (
-										<div style={{ margin: '0 auto' }}>
-											没有数据
-										</div>
+										<Loading
+											tip="loading..."
+											size="medium"
+											style={{
+												width: '100%',
+												height: '70px'
+											}}
+										/>
 									)}
 								</div>
 							</HomeCard>
@@ -437,18 +441,19 @@ function PlatformOverview(props) {
 													<Icon
 														size="xs"
 														style={{
-															color: value
-																? '#00A700'
-																: '#C80000',
+															color:
+																value === 1
+																	? '#00A700'
+																	: '#C80000',
 															marginRight: '5px'
 														}}
 														type={
-															value
+															value === 1
 																? 'success'
 																: 'warning'
 														}
 													/>
-													{value
+													{value === 1
 														? '运行正常'
 														: '运行异常'}
 												</span>

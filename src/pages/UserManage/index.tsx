@@ -9,6 +9,7 @@ import messageConfig from '@/components/messageConfig';
 import { userProps } from './user';
 import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
+import storage from '@/utils/storage';
 
 function UserManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
@@ -124,9 +125,11 @@ function UserManage(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => deleteUserHandle(record)}>
-					删除
-				</LinkButton>
+				{record.userName !== storage.getLocal('userName') ? (
+					<LinkButton onClick={() => deleteUserHandle(record)}>
+						删除
+					</LinkButton>
+				) : null}
 				<LinkButton onClick={() => resetPasswordHandle(record)}>
 					密码重置
 				</LinkButton>
