@@ -131,6 +131,16 @@ export default function Config(props) {
 	};
 
 	const backupStatusChange = (checked) => {
+		if (listData.quota[listData.type].storageClassName === 'local-path') {
+			Message.show(
+				messageConfig(
+					'error',
+					'失败',
+					'存储类型为local-path时不支持立即备份功能'
+				)
+			);
+			return;
+		}
 		const arr = backupData.time.split(':');
 		const week = backupData.cycle
 			.split(',')
@@ -184,7 +194,25 @@ export default function Config(props) {
 		<div style={{ marginTop: 24 }}>
 			<div className="backup-setting" style={{ marginBottom: 24 }}>
 				<div className="backup-title">备份设置</div>
-				<div className="backup-action" onClick={() => setVisible(true)}>
+				<div
+					className="backup-action"
+					onClick={() => {
+						if (
+							listData.quota[listData.type].storageClassName ===
+							'local-path'
+						) {
+							Message.show(
+								messageConfig(
+									'error',
+									'失败',
+									'存储类型为local-path时不支持立即备份功能'
+								)
+							);
+							return;
+						}
+						setVisible(true);
+					}}
+				>
 					<Icon type="edit" /> 编辑
 				</div>
 			</div>

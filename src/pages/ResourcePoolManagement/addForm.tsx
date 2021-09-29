@@ -14,12 +14,13 @@ import {
 	Icon
 } from '@alicloud/console-components';
 import FormBlock from '../ServiceCatalog/components/FormBlock';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { postCluster, getCluster, putCluster } from '@/services/common.js';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { clusterAddType } from '@/types';
+import { connect } from 'react-redux';
 
 const { Group: RadioGroup } = Radio;
 const FormItem = Form.Item;
@@ -72,7 +73,11 @@ export interface valuesProps {
 interface paramsProps {
 	clusterId: string;
 }
-export default function AddForm(): JSX.Element {
+interface addFormProps {
+	setRefreshCluster: (flag: boolean) => void;
+}
+function AddForm(props: addFormProps): JSX.Element {
+	const { setRefreshCluster } = props;
 	const [isInstallIngress, setIsInstallIngress] = useState<string>('true');
 	const [isInstallLogging, setIsInstallLogging] = useState<string>('true');
 	const [logCollect, setLogCollect] = useState<boolean>(true);
@@ -81,10 +86,9 @@ export default function AddForm(): JSX.Element {
 	const [isInstallPrometheus, setIsInstallPrometheus] =
 		useState<string>('true');
 	const [dcId, setDcId] = useState<string>('');
-	// const [adminConfig, setAdminConfig] = useState<string>('');
 	const field = Field.useField();
 	const params: paramsProps = useParams();
-	// console.log(window.location.protocol);
+	const history = useHistory();
 	useEffect(() => {
 		if (params.clusterId) {
 			getCluster({ clusterId: params.clusterId, visible: true }).then(
@@ -287,6 +291,7 @@ export default function AddForm(): JSX.Element {
 						})
 					);
 					setRefreshCluster(true);
+					history.push('/systemManagement/resourcePoolManagement');
 				} else {
 					Message.show(messageConfig('error', '错误', res));
 				}
@@ -989,3 +994,6 @@ export default function AddForm(): JSX.Element {
 		</Page>
 	);
 }
+export default connect(() => ({}), {
+	setRefreshCluster
+})(AddForm);

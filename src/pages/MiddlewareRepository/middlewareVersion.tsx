@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Message, Button } from '@alicloud/console-components';
+import { Message, Button, Dialog } from '@alicloud/console-components';
+import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { StoreState, globalVarProps } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import { getTypeVersion, updateMiddleware } from '@/services/repository';
+import {
+	getTypeVersion,
+	updateMiddleware,
+	shelvesTypeVersion
+} from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import { middlewareProps } from './middleware';
 import Table from '@/components/MidTable';
@@ -142,34 +147,72 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 		record: middlewareProps
 	) => {
 		return (
-			record.versionStatus === 'future' && (
-				<span
-					className="name-link"
-					onClick={() => installUpdate(record)}
-				>
-					安装升级
-				</span>
-			)
+			<Actions>
+				{record.versionStatus === 'future' && (
+					<LinkButton onClick={() => installUpdate(record)}>
+						安装升级
+					</LinkButton>
+				)}
+				{record.versionStatus !== 'now' && (
+					<LinkButton onClick={() => shelves(record)}>
+						下架
+					</LinkButton>
+				)}
+			</Actions>
 		);
 	};
 	const installUpdate = (record: middlewareProps) => {
-		updateMiddleware({
-			clusterId: cluster.id,
-			chartName: record.chartName,
-			chartVersion: record.chartVersion
-		})
-			.then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '已升级到该版本')
-					);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			})
-			.finally(() => {
-				getData();
-			});
+		Dialog.show({
+			title: '操作确认',
+			content: '是否确认升级到该版本？',
+			onOk: () => {
+				return updateMiddleware({
+					clusterId: cluster.id,
+					chartName: record.chartName,
+					chartVersion: record.chartVersion
+				})
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'已升级到该版本'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						getData();
+					});
+			}
+		});
+	};
+	const shelves = (record: middlewareProps) => {
+		Dialog.show({
+			title: '操作确认',
+			content: '是否确认下架该版本中间件？',
+			onOk: () => {
+				return shelvesTypeVersion({
+					chartName: record.chartName,
+					chartVersion: record.chartVersion
+				})
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', '已下架该版本')
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						getData();
+					});
+			}
+		});
 	};
 
 	return (
@@ -216,7 +259,7 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 						/>
 						<Table.Column
 							title="版本"
-							dataIndex="version"
+							dataIndex="chartVersion"
 							width={100}
 						/>
 						<Table.Column

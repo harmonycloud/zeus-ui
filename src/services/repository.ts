@@ -14,6 +14,10 @@ interface installParamsProps {
 	chartVersion: string;
 	clusterId: string;
 }
+interface deleteParams {
+	chartName: string;
+	chartVersion: string;
+}
 export const getMiddlewareRepository = (params: listParamsProps) => {
 	return Axios.get(REPOSITORY.getMiddlewareRepository, params);
 };
@@ -28,4 +32,7 @@ export const unInstallMiddleware = (params: installParamsProps) => {
 };
 export const updateMiddleware = (params: installParamsProps) => {
 	return Axios.put(REPOSITORY.updateMiddleware, params);
+};
+export const shelvesTypeVersion = (params: deleteParams) => {
+	return Axios.delete(REPOSITORY.shelvesMiddlewareVersion, params);
 };

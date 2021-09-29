@@ -10,3 +10,5 @@ export const installMiddleware = `${api}/clusters/{clusterId}/middlewares/instal
 export const unInstallMiddleware = `${api}/clusters/{clusterId}/middlewares/delete`;
 // * 中间件更新升级
 export const updateMiddleware = `${api}/clusters/{clusterId}/middlewares/update`;
+// * 中间件版本下架
+export const shelvesMiddlewareVersion = `${api}/middlewares/info/delete`;

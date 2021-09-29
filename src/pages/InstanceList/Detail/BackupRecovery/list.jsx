@@ -4,12 +4,13 @@ import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import ComponentsLoading from '@/components/componentsLoading';
-import { getBackups, backupNow } from '@/services/backup';
+import { getBackups, backupNow, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
 
 export default function List(props) {
 	const { clusterId, namespace, data: listData, storage } = props;
+	console.log(props);
 	const [backups, setBackups] = useState([]);
 	const [backupFileName, setBackupFileName] = useState();
 	const [useVisible, setUseVisible] = useState(false);
@@ -41,6 +42,16 @@ export default function List(props) {
 	};
 
 	const backupOnNow = () => {
+		if (listData.quota[listData.type].storageClassName === 'local-path') {
+			Message.show(
+				messageConfig(
+					'error',
+					'失败',
+					'存储类型为local-path时不支持立即备份功能'
+				)
+			);
+			return;
+		}
 		Dialog.show({
 			title: '操作确认',
 			content: '请确认是否立刻备份？',
@@ -85,47 +96,44 @@ export default function List(props) {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						console.log('delete');
-						// Dialog.show({
-						// 	title: '操作确认',
-						// 	content: '备份删除后将无法恢复，请确认执行',
-						// 	onOk: () => {
-						// 		const sendData = {
-						// 			clusterId,
-						// 			namespace,
-						// 			mysqlName: listData.name,
-						// 			backupName: record.backupName,
-						// 			backupFileName: record.backupFileName
-						// 		};
-						// 		deleteBackup(sendData)
-						// 			.then((res) => {
-						// 				if (res.success) {
-						// 					Message.show(
-						// 						messageConfig(
-						// 							'success',
-						// 							'成功',
-						// 							'备份删除成功'
-						// 						)
-						// 					);
-						// 				} else {
-						// 					Message.show(
-						// 						messageConfig(
-						// 							'error',
-						// 							'失败',
-						// 							res
-						// 						)
-						// 					);
-						// 				}
-						// 			})
-						// 			.finally(() => {
-						// 				getData(
-						// 					clusterId,
-						// 					namespace,
-						// 					listData.name
-						// 				);
-						// 			});
-						// 	}
-						// });
+						Dialog.show({
+							title: '操作确认',
+							content: '备份删除后将无法恢复，请确认执行',
+							onOk: () => {
+								const sendData = {
+									clusterId,
+									namespace,
+									backupName: record.backupName
+								};
+								deleteBackups(sendData)
+									.then((res) => {
+										if (res.success) {
+											Message.show(
+												messageConfig(
+													'success',
+													'成功',
+													'备份删除成功'
+												)
+											);
+										} else {
+											Message.show(
+												messageConfig(
+													'error',
+													'失败',
+													res
+												)
+											);
+										}
+									})
+									.finally(() => {
+										getData(
+											clusterId,
+											namespace,
+											listData.name
+										);
+									});
+							}
+						});
 					}}
 				>
 					删除
