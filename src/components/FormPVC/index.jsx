@@ -72,6 +72,7 @@ export default function FormPVC(props) {
 						onChange={handleChange}
 						name={props.variable}
 						value={value}
+						autoWidth={false}
 					>
 						{pvcList.map((item, index) => (
 							<Option key={index} value={item.name}>

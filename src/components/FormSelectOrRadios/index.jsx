@@ -81,6 +81,7 @@ export default function FormSelectOrRadios(props) {
 							onChange={handleChange}
 							name={props.variable}
 							defaultValue={props.defaultValue}
+							autoWidth={false}
 						>
 							{props.options.map((item) => (
 								<Option key={item} value={item}>

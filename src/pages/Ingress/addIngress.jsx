@@ -169,6 +169,7 @@ function AddIngress(props) {
 						style={{ width: '100%' }}
 						value={selectedInstance.name}
 						disabled={entry === 'detail' ? true : false}
+						autoWidth={false}
 					>
 						{instances &&
 							instances.map((item) => {
@@ -273,6 +274,7 @@ function AddIngress(props) {
 						onChange={onServiceChange}
 						style={{ width: '100%' }}
 						value={selectedService.serviceName}
+						autoWidth={false}
 					>
 						{services &&
 							services.map((item) => {
@@ -313,6 +315,7 @@ function AddIngress(props) {
 						name="servicePort"
 						onChange={onPortChange}
 						style={{ width: '100%' }}
+						autoWidth={false}
 					>
 						{selectedService.portDetailDtoList &&
 							selectedService.portDetailDtoList.map((item) => {

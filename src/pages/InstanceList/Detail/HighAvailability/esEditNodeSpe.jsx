@@ -600,6 +600,7 @@ export default function EsEditNodeSpe(props) {
 															nodeModify.nodeName
 														].storageClassName
 													}
+													autoWidth={false}
 												>
 													<Option
 														value={

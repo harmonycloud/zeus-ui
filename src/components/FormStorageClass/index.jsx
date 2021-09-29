@@ -77,6 +77,7 @@ export default function FormStorageClass(props) {
 						onChange={handleChange}
 						name={props.variable}
 						value={value}
+						autoWidth={false}
 					>
 						{storageClassList.map((item, index) => (
 							<Option key={index} value={item.name}>

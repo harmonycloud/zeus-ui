@@ -233,6 +233,7 @@ function Navbar(props) {
 							hasBorder={false}
 							disabled={disabled}
 							onChange={clusterHandle}
+							autoWidth={false}
 						>
 							{clusterList.map((cluster, index) => {
 								return (
@@ -253,6 +254,7 @@ function Navbar(props) {
 							hasBorder={false}
 							disabled={disabled}
 							onChange={namespaceHandle}
+							autoWidth={false}
 						>
 							{namespaceList.map((namespace, index) => {
 								return (

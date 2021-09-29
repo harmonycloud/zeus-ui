@@ -282,6 +282,7 @@ export default function AddServiceAvailableForm(
 						onChange={onServiceChange}
 						style={{ width: '100%' }}
 						value={selectedService.serviceName}
+						autoWidth={false}
 					>
 						{services &&
 							services.map((item: any) => {
@@ -318,7 +319,11 @@ export default function AddServiceAvailableForm(
 					asterisk={false}
 					className="ne-required-ingress"
 				>
-					<Select name="servicePort" style={{ width: '100%' }}>
+					<Select
+						name="servicePort"
+						style={{ width: '100%' }}
+						autoWidth={false}
+					>
 						{selectedService.portDetailDtoList &&
 							selectedService.portDetailDtoList.map(
 								(item: any) => {

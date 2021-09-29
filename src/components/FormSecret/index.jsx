@@ -72,6 +72,7 @@ export default function FormSecret(props) {
 						onChange={handleChange}
 						name={props.variable}
 						value={value}
+						autoWidth={false}
 					>
 						{secrets.map((item, index) => (
 							<Option key={index} value={item.name}>

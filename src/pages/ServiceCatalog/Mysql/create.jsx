@@ -1341,6 +1341,7 @@ const MysqlCreate = (props) => {
 											<Select
 												name="storageClass"
 												style={{ marginRight: 8 }}
+												autoWidth={false}
 											>
 												{storageClassList.map(
 													(item, index) => {

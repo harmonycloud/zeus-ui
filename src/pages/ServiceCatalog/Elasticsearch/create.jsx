@@ -1364,6 +1364,7 @@ const ElasticsearchCreate = (props) => {
 															style={{
 																marginRight: 8
 															}}
+															autoWidth={false}
 														>
 															{storageClassList.map(
 																(
