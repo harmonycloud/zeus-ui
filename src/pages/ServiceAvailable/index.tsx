@@ -63,21 +63,23 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					namespace: namespace.name,
 					keyword: searchText
 				}).then((res) => {
-					setOriginData(res.data);
-					const listTemp = [...list];
-					res.data.forEach((item: serviceAvailablesProps) => {
-						listTemp.push({
-							name: item.name,
-							count: item.serviceNum
+					if (res.success) {
+						setOriginData(res.data);
+						const listTemp = [...list];
+						res.data.forEach((item: serviceAvailablesProps) => {
+							listTemp.push({
+								name: item.name,
+								count: item.serviceNum
+							});
 						});
-					});
-					listTemp[0].count = listTemp.reduce(
-						(pre, cur: listProps) => {
-							return pre + cur.count;
-						},
-						0
-					);
-					setList(listTemp);
+						listTemp[0].count = listTemp.reduce(
+							(pre, cur: listProps) => {
+								return pre + cur.count;
+							},
+							0
+						);
+						setList(listTemp);
+					}
 				});
 			}
 		}
@@ -108,7 +110,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				setShowDataSource(dataSource);
 			}
 		}
-	}, [selected, originData]);
+	}, [selected]);
 	const getData = (keyword: string = searchText) => {
 		const sendData = {
 			clusterId: cluster.id,
@@ -423,36 +425,47 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="暴露服务名称"
 						dataIndex="name"
 						cell={nameRender}
+						width={220}
+						lock="left"
 					/>
 					<Table.Column
 						title="服务名称/中文别名"
 						dataIndex="middlewareName"
-						width={200}
+						width={180}
 						cell={middlewareNameRender}
 					/>
 					<Table.Column
 						title="服务类型"
 						dataIndex="middlewareType"
 						cell={iconTypeRender}
+						width={200}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
+						width={150}
 						sortable={true}
 					/>
 					<Table.Column
 						title="协议"
+						width={100}
 						dataIndex="protocol"
 						sortable={true}
 					/>
-					<Table.Column title="访问地址" cell={addressRender} />
+					<Table.Column
+						width={200}
+						title="访问地址"
+						cell={addressRender}
+					/>
 					<Table.Column
 						title="实例端口"
+						width={100}
 						dataIndex="httpExposePort"
 						cell={portRender}
 					/>
 					<Table.Column
 						title="创建时间"
+						width={180}
 						dataIndex="creatTime"
 						sortable={true}
 						cell={timeRender}
@@ -461,7 +474,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={188}
+						width={150}
 						lock="right"
 					/>
 				</Table>

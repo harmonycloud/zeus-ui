@@ -92,22 +92,26 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				namespace,
 				mysqlName: middlewareName
 			}).then((res) => {
-				setOriginData({
-					cluster: res?.data?.source?.clusterId || '',
-					namespace: res?.data?.source?.namespace || '',
-					name: res?.data?.source?.middlewareName || '',
-					dbUser: res?.data?.source?.username || '',
-					dbPass: res?.data?.source?.password || '',
-					address: res?.data?.source?.address || ''
-				});
-				setBackupData({
-					cluster: res?.data?.disasterRecovery?.clusterId || '',
-					namespace: res?.data?.disasterRecovery?.namespace || '',
-					name: res?.data?.disasterRecovery?.middlewareName || '',
-					dbUser: res?.data?.disasterRecovery?.username || '',
-					dbPass: res?.data?.disasterRecovery?.password || '',
-					address: res?.data?.disasterRecovery?.address || ''
-				});
+				if (res.success) {
+					setOriginData({
+						cluster: res?.data?.source?.clusterId || '',
+						namespace: res?.data?.source?.namespace || '',
+						name: res?.data?.source?.middlewareName || '',
+						dbUser: res?.data?.source?.username || '',
+						dbPass: res?.data?.source?.password || '',
+						address: res?.data?.source?.address || ''
+					});
+					setBackupData({
+						cluster: res?.data?.disasterRecovery?.clusterId || '',
+						namespace: res?.data?.disasterRecovery?.namespace || '',
+						name: res?.data?.disasterRecovery?.middlewareName || '',
+						dbUser: res?.data?.disasterRecovery?.username || '',
+						dbPass: res?.data?.disasterRecovery?.password || '',
+						address: res?.data?.disasterRecovery?.address || ''
+					});
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
 			});
 		}
 		setRunState({
@@ -247,7 +251,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 	];
 	const toCreateBackup: () => void = () => {
 		history.push(
-			`/serviceCatalog/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}`
+			`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}`
 		);
 	};
 	const deleteInstance: () => void = () => {

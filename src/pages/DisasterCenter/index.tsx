@@ -192,6 +192,11 @@ function DisasterCenter(props: disasterCenterProps) {
 			}
 		}
 	};
+	const NotSupport = () => (
+		<h3 style={{ textAlign: 'center' }}>
+			该中间件类型不支持该功能，请选择mysql类型的中间件
+		</h3>
+	);
 	return (
 		<SecondLayout
 			title="灾备中心"
@@ -199,18 +204,21 @@ function DisasterCenter(props: disasterCenterProps) {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{isService && JSON.stringify(data) !== '{}' && (
-				<Disaster
-					chartName={basicData?.type || ''}
-					chartVersion={data?.chartVersion || ''}
-					middlewareName={basicData?.name || ''}
-					clusterId={basicData?.clusterId || ''}
-					namespace={basicData?.namespace || ''}
-					data={data}
-					onRefresh={getData}
-					toDetail={toDetail}
-				/>
-			)}
+			{basicData?.type !== 'mysql' && isService && <NotSupport />}
+			{basicData?.type === 'mysql' &&
+				isService &&
+				JSON.stringify(data) !== '{}' && (
+					<Disaster
+						chartName={basicData?.type || ''}
+						chartVersion={data?.chartVersion || ''}
+						middlewareName={basicData?.name || ''}
+						clusterId={basicData?.clusterId || ''}
+						namespace={basicData?.namespace || ''}
+						data={data}
+						onRefresh={getData}
+						toDetail={toDetail}
+					/>
+				)}
 			{!isService && <NoService />}
 			<SecondConfirm
 				visible={visible}

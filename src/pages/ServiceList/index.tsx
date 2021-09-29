@@ -87,7 +87,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		};
 	}, [namespace]);
 	useEffect(() => {
-		console.log(originData);
 		const allList: serviceProps[] = [];
 		if (originData.length > 0) {
 			originData.forEach((item) => {
@@ -196,7 +195,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			setShowDataSource(tempData);
 		}
 	};
-	// todo 关联服务名称的跳转
 	const toDetail = (record: any) => {
 		console.log(record);
 		console.log('to details');

@@ -1444,7 +1444,10 @@ const MysqlCreate = (props) => {
 													</span>
 												</label>
 												<div className="form-content">
-													<FormItem>
+													<FormItem
+														required
+														requiredMessage="请选择在被服务资源池"
+													>
 														<CascaderSelect
 															style={{
 																width: '378px'
