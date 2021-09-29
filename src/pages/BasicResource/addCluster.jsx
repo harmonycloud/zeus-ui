@@ -339,7 +339,8 @@ const AddCluster = (props) => {
 									htmlType="number"
 									name="port"
 									disabled={clusterId ? true : false}
-									value={6443}
+									defaultValue={6443}
+									// value={6443}
 									trim={true}
 									placeholder="端口"
 								/>
@@ -561,8 +562,8 @@ const AddCluster = (props) => {
 								</Col>
 								<Col span={12}>
 									<FormItem
-										pattern={pattern.ip}
-										patternMessage="请输入正确的ip地址！"
+										// pattern={pattern.ip}
+										// patternMessage="请输入正确的ip地址！"
 										style={{ marginLeft: -2 }}
 									>
 										<Input
@@ -659,8 +660,8 @@ const AddCluster = (props) => {
 							</Col>
 							<Col span={12}>
 								<FormItem
-									pattern={pattern.ip}
-									patternMessage="请输入正确的ip地址！"
+									// pattern={pattern.ip}
+									// patternMessage="请输入正确的ip地址！"
 									style={{ marginLeft: -2 }}
 								>
 									<Input
@@ -718,8 +719,8 @@ const AddCluster = (props) => {
 							</Col>
 							<Col span={12}>
 								<FormItem
-									pattern={pattern.ip}
-									patternMessage="请输入正确的ip地址！"
+									// pattern={pattern.ip}
+									// patternMessage="请输入正确的ip地址！"
 									style={{ marginLeft: -2 }}
 								>
 									<Input
@@ -777,8 +778,8 @@ const AddCluster = (props) => {
 							</Col>
 							<Col span={12}>
 								<FormItem
-									pattern={pattern.ip}
-									patternMessage="请输入正确的ip地址！"
+									// pattern={pattern.ip}
+									// patternMessage="请输入正确的ip地址！"
 									style={{ marginLeft: -2 }}
 								>
 									<Input

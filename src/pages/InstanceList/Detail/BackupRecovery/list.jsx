@@ -10,7 +10,6 @@ import UseBackupForm from './useBackupForm';
 
 export default function List(props) {
 	const { clusterId, namespace, data: listData, storage } = props;
-	console.log(props);
 	const [backups, setBackups] = useState([]);
 	const [backupFileName, setBackupFileName] = useState();
 	const [useVisible, setUseVisible] = useState(false);

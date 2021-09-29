@@ -27,25 +27,31 @@ export default class webSocket {
 	connection = () => {
 		let { socketUrl, timeout = 0 } = this.param;
 		console.log(window.location);
+		let url = '';
+		if (window.location.protocol.toLowerCase() === 'https:') {
+			url = `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
+		} else {
+			url = `ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
+		}
 		// 检测当前浏览器是什么浏览器来决定用什么socket
 		if ('WebSocket' in window) {
 			this.socket = new WebSocket(
-				`${wsUrl}${socketUrl}`,
-				// `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				// `${wsUrl}${socketUrl}`,
+				url,
 				cache.getLocal(TOKEN)
 			);
 		} else if ('MozWebSocket' in window) {
 			// eslint-disable-next-line no-undef
 			this.socket = new MozWebSocket(
 				// `${wsUrl}${socketUrl}`,
-				`wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				url,
 				cache.getLocal(TOKEN)
 			);
 		} else {
 			// eslint-disable-next-line no-undef
 			this.socket = new SockJS(
 				// `${wsUrl}${socketUrl}`,
-				`wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`,
+				url,
 				cache.getLocal(TOKEN)
 			);
 		}
