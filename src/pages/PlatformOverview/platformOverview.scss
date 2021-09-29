@@ -189,6 +189,7 @@
 						width: 40px;
 						height: 40px;
 						position: relative;
+						margin: 0 auto;
 						.err-count{
 							position: absolute;
 							top: 0;
@@ -228,6 +229,9 @@
 				margin-top: 10px;
 				display: flex;
 				justify-content: space-between;
+				.next-table td .next-table-cell-wrapper{
+					overflow: hidden !important;
+				}
 				.dashed{
 					border-right: 1px dashed #CCD0D4;
 					width: 1px;

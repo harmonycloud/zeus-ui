@@ -432,6 +432,14 @@ function PlatformOverview(props) {
 										<Table.Column
 											title="类型"
 											dataIndex="name"
+											cell={(value, obj, record) => (
+												<span>
+													{record.name +
+														'(' +
+														record.clusterName +
+														')'}
+												</span>
+											)}
 										/>
 										<Table.Column
 											title="状态"

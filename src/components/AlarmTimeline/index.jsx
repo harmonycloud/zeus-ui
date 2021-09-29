@@ -110,7 +110,7 @@ function AlarmTimeLine(props) {
 											</div>
 											<Balloon
 												alignEdge={true}
-												align="t"
+												align="l"
 												triggerType="hover"
 												// followTrigger={true}
 												closable={false}
