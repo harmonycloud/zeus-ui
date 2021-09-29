@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom';
 import JSEncrypt from 'jsencrypt';
 import Storage from '@/utils/storage';
 import { postLogin, getRsaKey } from '@/services/user';
+import EditPasswordForm from '@/layouts/Navbar/User/EditPasswordForm';
+import { Dialog, Button } from '@alicloud/console-components';
 import styles from './login.module.scss';
 
 export default function Login() {
@@ -13,6 +15,10 @@ export default function Login() {
 	});
 	const [message, setMessage] = useState('');
 	const [publicKey, setPublicKey] = useState('');
+	const [visible, setVisible] = useState(false);
+	const [editVisible, setEditVisible] = useState(false);
+	const [userName, setUserName] = useState(false);
+	const [rePassword, setRePassword] = useState();
 
 	useEffect(() => {
 		getRsaKey().then((res) => {
@@ -56,7 +62,11 @@ export default function Login() {
 					Storage.setSession('service-list-current', '全部服务');
 					Storage.setSession('service-available-current', '全部服务');
 					Storage.setLocal('token', res.data.token);
+					setUserName(res.data.userName);
 					history.push('/dataOverview');
+					if (res.data.rePassword) {
+						alert(res.data.rePassword);
+					}
 					window.location.reload();
 				} else {
 					setMessage(res.errorMsg || res.errorDetail);
@@ -65,6 +75,9 @@ export default function Login() {
 			.catch((err) => {
 				setMessage(err.data);
 			});
+	};
+	const onOk = () => {
+		setVisible(false);
 	};
 
 	return (
@@ -129,6 +142,41 @@ export default function Login() {
 					</div>
 				</div>
 			</form>
+
+			<Dialog
+				// visible={visible}
+				// onOk={onOk}
+				// onCancel={onCancel}
+				// onClose={onCancel}
+				title="改密提示"
+				style={{ width: '480px' }}
+				footer={
+					<div>
+						<Button warning type="primary" onClick={onOk}>
+							现在就改
+						</Button>
+						<Button
+							warning
+							type="primary"
+							onClick={() => setVisible(false)}
+						>
+							下次再说
+						</Button>
+					</div>
+				}
+			>
+				<div>
+					您的密码已使用xxx天，还有xxx天即将过期，到期改密可能无法正常登录，是否现在改密？
+				</div>
+				<div>为保障您的账户资产安全，请定期改密！</div>
+			</Dialog>
+			{editVisible && (
+				<EditPasswordForm
+					visible={visible}
+					onCancel={() => setEditVisible(false)}
+					userName={userName}
+				/>
+			)}
 		</div>
 	);
 }

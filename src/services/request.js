@@ -9,6 +9,7 @@ import cache from '@/utils/storage';
 import messageConfig from '@/components/messageConfig';
 
 const TOKEN = 'token';
+const USERTOKEN = 'usertoken';
 
 // To add to window  解决promise 在ie中未定义的问题
 if (!window.Promise) {
@@ -122,6 +123,8 @@ axios.interceptors.response.use(
 		if (response.data.code === 404) {
 			Message.show(messageConfig('error', '错误', '接口访问错误'));
 		}
+		response.headers.usertoken &&
+			cache.setLocal('token', response.headers.usertoken);
 		return response;
 	},
 	(err) => {

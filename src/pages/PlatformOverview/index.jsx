@@ -28,6 +28,8 @@ import {
 } from '@/redux/globalVar/var';
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
+import echarts from 'echarts';
+import storage from '@/utils/storage';
 
 const radioList = [
 	{
@@ -48,6 +50,7 @@ const radioList = [
 	}
 ];
 
+let x = [];
 function PlatformOverview(props) {
 	// 设置事件数据
 	const [eventData, setEventData] = useState(null);
@@ -97,6 +100,22 @@ function PlatformOverview(props) {
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(getLineOption(res.data.alertSummary));
+			// const chart = echarts.init(document.getElementById('id'));
+			// chart.setOption(getPieOption(res.data.operatorDTO));
+
+			// chart.on('legendselectchanged', (obj) => {
+			// 	if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
+			// 		x = res.data.operatorDTO.operatorList.filter((item) => item.status === 1);
+			// 	} else if (!obj.selected['运行正常'] && obj.selected['运行异常']) {
+			// 		x = res.data.operatorDTO.operatorList.filter((item) => item.status === 3);
+			// 	} else if (obj.selected['运行正常'] && obj.selected['运行异常']) {
+			// 		x = res.data.operatorDTO.operatorList;
+			// 	} else {
+			// 		x = [];
+			// 	}
+			// 	console.log(x);
+			// 	storage.setLocal('x',x)
+			// })
 		});
 		getServers({ clusterId }).then((res) => {
 			setBriefInfoList(res.data.briefInfoList);
@@ -171,7 +190,7 @@ function PlatformOverview(props) {
 		} else {
 			data = [];
 		}
-		// console.log(data);
+		console.log(data);
 		// setOperatorList(data);
 	};
 
@@ -189,6 +208,7 @@ function PlatformOverview(props) {
 										marginLeft: '10px'
 									}}
 									onChange={(value) => setType(value)}
+									defaultValue="全部"
 								>
 									{poolList.length &&
 										poolList.map((item) => {
@@ -390,6 +410,10 @@ function PlatformOverview(props) {
 										option={pieOption}
 										style={{ height: '100%', width: '40%' }}
 									/>
+									{/* <div id="id" style={{
+										height: '100%',
+										width: '40%'
+									}}></div> */}
 									<div className="dashed"></div>
 									<Table
 										dataSource={operatorList}
@@ -398,8 +422,7 @@ function PlatformOverview(props) {
 										fixedHeader={true}
 										maxBodyHeight="180px"
 										style={{
-											width: '55%',
-											marginTop: '10px'
+											width: '55%'
 										}}
 									>
 										<Table.Column
@@ -409,9 +432,27 @@ function PlatformOverview(props) {
 										<Table.Column
 											title="状态"
 											dataIndex="status"
-											cell={(value) =>
-												value ? '运行正常' : '运行异常'
-											}
+											cell={(value) => (
+												<span>
+													<Icon
+														size="xs"
+														style={{
+															color: value
+																? '#00A700'
+																: '#C80000',
+															marginRight: '5px'
+														}}
+														type={
+															value
+																? 'success'
+																: 'warning'
+														}
+													/>
+													{value
+														? '运行正常'
+														: '运行异常'}
+												</span>
+											)}
 										/>
 									</Table>
 								</div>
