@@ -59,12 +59,13 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 	}, []);
 	const filterArray = (arr: any[] | undefined) => {
 		const temp: any[] = [];
-		arr?.forEach(function (a) {
-			const check = temp.every(function (b) {
-				return a.key !== b.key;
+		arr &&
+			arr.forEach(function (a) {
+				const check = temp.every(function (b) {
+					return a.key !== b.key;
+				});
+				check && temp.push(a);
 			});
-			check && temp.push(a);
-		});
 		return temp;
 	};
 	const changeTree = (data: any[] | undefined) => {

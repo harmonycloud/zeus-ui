@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import { Button, Dialog, Message } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-// import { getBackups, addBackup, deleteBackup } from '@/services/middleware';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import ComponentsLoading from '@/components/componentsLoading';
@@ -11,10 +9,7 @@ import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
 
 export default function List(props) {
-	console.log(props);
 	const { clusterId, namespace, data: listData, storage } = props;
-	// const history = useHistory();
-	// const { middlewareName, type, chartName, chartVersion } = useParams();
 	const [backups, setBackups] = useState([]);
 	const [backupFileName, setBackupFileName] = useState();
 	const [useVisible, setUseVisible] = useState(false);

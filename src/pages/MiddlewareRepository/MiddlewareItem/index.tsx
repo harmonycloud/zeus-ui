@@ -43,7 +43,7 @@ const statusIconRender = (value: number) => {
 		case 3:
 			return (
 				<Icon
-					type="error"
+					type="warning"
 					size="small"
 					style={{ color: '#D93026', marginLeft: '6px' }}
 				/>
@@ -198,7 +198,7 @@ export default function MiddlewareItem(
 									type="icon-xiezai1"
 									style={{ color: 'white' }}
 								/>
-								下架
+								卸载
 							</div>
 							<div
 								className="middleware-item-action-item"

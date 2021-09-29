@@ -21,12 +21,26 @@ import { serviceListItemProps, serviceProps } from './service.list';
 import { listProps } from '@/components/RapidScreening';
 import { iconTypeRender, timeRender } from '@/utils/utils';
 import storage from '@/utils/storage';
+import {
+	setCluster,
+	setNamespace,
+	setRefreshCluster
+} from '@/redux/globalVar/var';
 
 interface serviceListProps {
 	globalVar: globalVarProps;
+	setCluster: (value: any) => void;
+	setNamespace: (value: any) => void;
+	setRefreshCluster: (flag: boolean) => void;
 }
 function ServiceList(props: serviceListProps): JSX.Element {
-	const { cluster, namespace } = props.globalVar;
+	const { setCluster, setNamespace, setRefreshCluster } = props;
+	const {
+		cluster,
+		namespace,
+		clusterList: globalClusterList,
+		namespaceList: globalNamespaceList
+	} = props.globalVar;
 	const history = useHistory();
 	const [originData, setOriginData] = useState<serviceListItemProps[]>([]);
 	const [dataSource, setDataSource] = useState<serviceProps[]>([]);
@@ -42,13 +56,13 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
-			getList({
-				clusterId: cluster.id,
-				namespace: namespace.name,
-				keyword: keyword
-			}).then((res) => {
-				if (res.success) {
-					if (mounted) {
+			if (mounted) {
+				getList({
+					clusterId: cluster.id,
+					namespace: namespace.name,
+					keyword: keyword
+				}).then((res) => {
+					if (res.success) {
 						setOriginData(res?.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
 						res.data.forEach((item: serviceListItemProps) => {
@@ -65,13 +79,13 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						);
 						setList(listTemp);
 					}
-				}
-			});
+				});
+			}
 		}
 		return () => {
 			mounted = false;
 		};
-	}, [props.globalVar]);
+	}, [namespace]);
 	useEffect(() => {
 		console.log(originData);
 		const allList: serviceProps[] = [];
@@ -186,25 +200,25 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const toDetail = (record: any) => {
 		console.log(record);
 		console.log('to details');
-		// const cs = globalClusterList.filter(
-		// 	(item) => item.id === record.mysqlDTO.relationClusterId
-		// );
-		// setCluster(cs[0]);
-		// storage.setLocal('cluster', JSON.stringify(cs[0]));
-		// const ns = globalNamespaceList.filter(
-		// 	(item) => item.name === record.mysqlDTO.relationNamespace
-		// );
-		// setNamespace(ns[0]);
-		// storage.setLocal('namespace', JSON.stringify(ns[0]));
-		// setRefreshCluster(true);
-		// history.push({
-		// 	pathname: `/instanceList/detail/${record.mysqlDTO.relationName}/${
-		// 		record.mysqlDTO.type || 'mysql'
-		// 	}/${instance.chartVersion}`,
-		// 	state: {
-		// 		flag: true
-		// 	}
-		// });
+		const cs = globalClusterList.filter(
+			(item) => item.id === record.mysqlDTO.relationClusterId
+		);
+		setCluster(cs[0]);
+		storage.setLocal('cluster', JSON.stringify(cs[0]));
+		const ns = globalNamespaceList.filter(
+			(item) => item.name === record.mysqlDTO.relationNamespace
+		);
+		setNamespace(ns[0]);
+		storage.setLocal('namespace', JSON.stringify(ns[0]));
+		setRefreshCluster(true);
+		history.push({
+			pathname: `/instanceList/detail/${record.mysqlDTO.relationName}/${
+				record.mysqlDTO.type || 'mysql'
+			}/${record.chartVersion}`,
+			state: {
+				flag: true
+			}
+		});
 	};
 	const deleteFn = (record: serviceProps) => {
 		Dialog.show({
@@ -412,7 +426,15 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						);
 					}}
 				>
-					服务控制台
+					<span
+						title={
+							!record.managePlatform
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '服务控制台'
+						}
+					>
+						服务控制台
+					</span>
 				</LinkButton>
 				<LinkButton
 					disabled={record.type !== 'mysql'}
@@ -426,7 +448,15 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						});
 					}}
 				>
-					灾备服务
+					<span
+						title={
+							record.type !== 'mysql'
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '灾备服务'
+						}
+					>
+						灾备服务
+					</span>
 				</LinkButton>
 				<LinkButton
 					onClick={() =>
@@ -503,18 +533,20 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					<Table.Column
 						title="服务名称/中文别名"
 						dataIndex="name"
-						resizable
+						width={180}
 						cell={nameRender}
+						lock="left"
 					/>
 					<Table.Column
 						title="类型"
 						dataIndex="type"
-						resizable
+						width={150}
 						cell={iconTypeRender}
 					/>
 					<Table.Column
 						title="状态"
 						dataIndex="status"
+						width={150}
 						cell={serviceListStatusRender}
 						filters={states}
 						filterMode="single"
@@ -522,17 +554,24 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					<Table.Column
 						title="实例数"
 						dataIndex="podNum"
+						width={80}
 						cell={podNumRender}
 					/>
-					<Table.Column title="备注" dataIndex="annotation" />
+					<Table.Column
+						title="备注"
+						dataIndex="annotation"
+						width={200}
+					/>
 					<Table.Column
 						title="关联服务名称/中文别名"
 						dataIndex="associated"
+						width={180}
 						cell={associatedRender}
 					/>
 					<Table.Column
 						title="创建时间"
 						dataIndex="createTime"
+						width={180}
 						sortable={true}
 						cell={timeRender}
 					/>
@@ -551,4 +590,8 @@ function ServiceList(props: serviceListProps): JSX.Element {
 const mapStateToProps = (state: StoreState) => ({
 	globalVar: state.globalVar
 });
-export default connect(mapStateToProps, {})(ServiceList);
+export default connect(mapStateToProps, {
+	setCluster,
+	setNamespace,
+	setRefreshCluster
+})(ServiceList);

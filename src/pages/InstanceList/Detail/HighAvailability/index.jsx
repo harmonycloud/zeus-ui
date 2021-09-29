@@ -27,22 +27,18 @@ import Console from './console';
 
 const { Row, Col } = Grid;
 
-// const FormItem = Form.Item;
-// const { Option } = Select;
 const specification = {
 	title: '规格配置',
 	model: '',
 	node: ''
 };
-// const formItemLayout = {
-// 	labelCol: { fixedSpan: 0 },
-// 	wrapperCol: { span: 24 }
-// };
 const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
+	'complex-cold': 'N主N数据N冷',
+	'cold-complex': 'N主N数据N冷N协调',
 	regular: 'N主N数据',
 	sentinel: '哨兵',
 	'2m-noslave': '两主',
@@ -236,9 +232,21 @@ export default function HighAvailability(props) {
 					});
 					setQuotaValue(data.quota[type]);
 				} else {
+					let mode = data.mode;
+					if (
+						data.quota.client.num !== 0 &&
+						data.quota.cold.num !== 0
+					) {
+						mode = 'cold-complex';
+					} else if (
+						data.quota.client.num === 0 &&
+						data.quota.cold.num !== 0
+					) {
+						mode = 'complex-cold';
+					}
 					setConfig({
 						title: '规格配置',
-						model: data.mode || ''
+						model: mode
 					});
 				}
 			}
@@ -725,7 +733,7 @@ export default function HighAvailability(props) {
 						<Table.Column
 							title="操作"
 							cell={actionRender}
-							width={100}
+							width={150}
 							lock="right"
 						/>
 					</Table>

@@ -118,14 +118,14 @@ const InstanceDetails = (props) => {
 		>
 			<Menu.Item key="basicInfo">基本信息</Menu.Item>
 			<Menu.Item key="highAvailability">高可用性</Menu.Item>
-			<Menu.Item key="backupRecovery">备份恢复</Menu.Item>
-			<Menu.Item key="externalAccess">对外访问</Menu.Item>
-			<Menu.Item key="monitor">性能监控</Menu.Item>
-			<Menu.Item key="log">日志管理</Menu.Item>
+			<Menu.Item key="backupRecovery">数据安全</Menu.Item>
+			<Menu.Item key="externalAccess">服务暴露</Menu.Item>
+			<Menu.Item key="monitor">数据监控</Menu.Item>
+			<Menu.Item key="log">日志详情</Menu.Item>
 			<Menu.Item key="paramterSetting">参数设置</Menu.Item>
 			<Menu.Item key="alarm">阈值报警</Menu.Item>
 			{type === 'mysql' ? (
-				<Menu.Item key="disaster">灾备管理</Menu.Item>
+				<Menu.Item key="disaster">灾备服务</Menu.Item>
 			) : null}
 		</Menu>
 	);

@@ -63,30 +63,28 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					namespace: namespace.name,
 					keyword: searchText
 				}).then((res) => {
-					if (mounted) {
-						setOriginData(res.data);
-						const listTemp = [...list];
-						res.data.forEach((item: serviceAvailablesProps) => {
-							listTemp.push({
-								name: item.name,
-								count: item.serviceNum
-							});
+					setOriginData(res.data);
+					const listTemp = [...list];
+					res.data.forEach((item: serviceAvailablesProps) => {
+						listTemp.push({
+							name: item.name,
+							count: item.serviceNum
 						});
-						listTemp[0].count = listTemp.reduce(
-							(pre, cur: listProps) => {
-								return pre + cur.count;
-							},
-							0
-						);
-						setList(listTemp);
-					}
+					});
+					listTemp[0].count = listTemp.reduce(
+						(pre, cur: listProps) => {
+							return pre + cur.count;
+						},
+						0
+					);
+					setList(listTemp);
 				});
 			}
 		}
 		return () => {
 			mounted = false;
 		};
-	}, [props]);
+	}, [namespace]);
 	useEffect(() => {
 		const allList: serviceAvailableItemProps[] = [];
 		originData.forEach((item) => {
@@ -429,6 +427,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="服务名称/中文别名"
 						dataIndex="middlewareName"
+						width={200}
 						cell={middlewareNameRender}
 					/>
 					<Table.Column

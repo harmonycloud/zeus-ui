@@ -195,10 +195,10 @@ export default function SlowLog(props) {
 				</div>
 				<div className={styles['filter-item']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={6} span={4}>
 							<label>执行时长</label>
 						</Col>
-						<Col span={16}>
+						<Col span={12}>
 							<NumberRange unit="秒" numberRange={numberRange} />
 						</Col>
 					</Row>
