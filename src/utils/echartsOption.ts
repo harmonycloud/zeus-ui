@@ -7,7 +7,6 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 			bottom: 0,
 			left: 'center',
 			icon: 'circle',
-			height: 20,
 			itemWidth: 8,
 			itemHeight: 8,
 			itemStyle: {
@@ -69,7 +68,7 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 			{
 				name: '控制器状态',
 				type: 'pie',
-				center: ['80', '40%'],
+				center: ['50%', '40%'],
 				radius: ['65%', '80%'],
 				avoidLabelOverlap: false,
 				color: ['#00a700', '#d92026'],
@@ -167,6 +166,7 @@ const getLineOption = (
 			axisLine: {
 				show: false
 			},
+			splitNumber: 3,
 			splitLine: {
 				lineStyle: {
 					type: 'dashed' // y轴分割线类型
