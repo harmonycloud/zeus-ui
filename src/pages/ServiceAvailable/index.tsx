@@ -169,7 +169,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						clusterId: cluster.id,
 						namespace: namespace.name,
 						exposeType: values.exposeType,
-						middlewareName: values.middlewareName,
+						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
 						rules: [
@@ -189,7 +189,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						clusterId: cluster.id,
 						namespace: namespace.name,
 						exposeType: values.exposeType,
-						middlewareName: values.middlewareName,
+						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
 						serviceList: [
