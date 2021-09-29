@@ -43,7 +43,13 @@ function UploadMiddlewareForm(props) {
 	function onSuccess(info) {
 		console.log('onSuccess : ', info);
 		if (info) {
-			Message.show(messageConfig('success', '成功', 'chart包上传成功'));
+			Message.show(
+				messageConfig(
+					'success',
+					'成功',
+					'chart包上传成功，3秒后刷新数据'
+				)
+			);
 			onCreate();
 		}
 	}

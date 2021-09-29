@@ -85,7 +85,11 @@ export default function MiddlewareItem(
 				installMiddleware(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '中间件安装成功')
+							messageConfig(
+								'success',
+								'成功',
+								'中间件安装成功，3秒后刷新数据'
+							)
 						);
 						onRefresh();
 					} else {
@@ -108,7 +112,11 @@ export default function MiddlewareItem(
 				unInstallMiddleware(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '中间件下架成功')
+							messageConfig(
+								'success',
+								'成功',
+								'中间件下架成功，3秒后刷新数据'
+							)
 						);
 						onRefresh();
 					} else {

@@ -5,6 +5,7 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getMiddlewareRepository } from '@/services/repository';
 import { StoreState, globalVarProps } from '@/types/index';
 import { middlewareProps, middlewareListProps } from './middleware';
+import timerClass from '@/utils/timerClass';
 import messageConfig from '@/components/messageConfig';
 import MiddlewareItem from './MiddlewareItem';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
@@ -22,6 +23,8 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareListProps>({});
 	const [visible, setVisible] = useState<boolean>(false);
+	const [timer, setTimer] = useState();
+
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -42,6 +45,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 		}
 		return () => {
 			mounted = false;
+			clearInterval(timer);
 		};
 	}, [namespace]);
 	useEffect(() => {
@@ -82,7 +86,11 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	};
 	const onCreate = () => {
 		setVisible(false);
-		getData();
+		setTimer(
+			timerClass.countdownTimer(() => {
+				getData();
+			}, 3)
+		);
 	};
 	return (
 		<Page>
@@ -133,7 +141,16 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 													key={item.id}
 													{...item}
 													clusterId={cluster.id}
-													onRefresh={getData}
+													onRefresh={() => {
+														setTimer(
+															timerClass.countdownTimer(
+																() => {
+																	getData();
+																},
+																3
+															)
+														);
+													}}
 												/>
 											);
 										})}
