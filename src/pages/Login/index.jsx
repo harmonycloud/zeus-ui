@@ -4,7 +4,7 @@ import JSEncrypt from 'jsencrypt';
 import Storage from '@/utils/storage';
 import { postLogin, getRsaKey } from '@/services/user';
 import EditPasswordForm from '@/layouts/Navbar/User/EditPasswordForm';
-import { Dialog, Button } from '@alicloud/console-components';
+import { Dialog, Button, Icon } from '@alicloud/console-components';
 import styles from './login.module.scss';
 
 export default function Login() {
@@ -62,11 +62,14 @@ export default function Login() {
 					Storage.setSession('service-list-current', '全部服务');
 					Storage.setSession('service-available-current', '全部服务');
 					Storage.setLocal('token', res.data.token);
-					setUserName(res.data.userName);
-					history.push('/dataOverview');
+					Storage.setLocal('userName', res.data.userName);
 					if (res.data.rePassword) {
-						alert(res.data.rePassword);
+						setVisible(true);
+						setRePassword(res.data.rePassword);
+						setUserName(res.data.userName);
+						return;
 					}
+					history.push('/dataOverview');
 					window.location.reload();
 				} else {
 					setMessage(res.errorMsg || res.errorDetail);
@@ -78,6 +81,13 @@ export default function Login() {
 	};
 	const onOk = () => {
 		setVisible(false);
+		setEditVisible(true);
+	};
+
+	const onCancel = () => {
+		setVisible(false);
+		history.push('/dataOverview');
+		window.location.reload();
 	};
 
 	return (
@@ -144,35 +154,48 @@ export default function Login() {
 			</form>
 
 			<Dialog
-				// visible={visible}
-				// onOk={onOk}
-				// onCancel={onCancel}
-				// onClose={onCancel}
+				visible={visible}
+				onClose={() => setVisible(false)}
 				title="改密提示"
 				style={{ width: '480px' }}
 				footer={
 					<div>
-						<Button warning type="primary" onClick={onOk}>
+						<Button type="primary" onClick={onOk}>
 							现在就改
 						</Button>
-						<Button
-							warning
-							type="primary"
-							onClick={() => setVisible(false)}
-						>
+						<Button type="normal" onClick={onCancel}>
 							下次再说
 						</Button>
 					</div>
 				}
 			>
-				<div>
-					您的密码已使用xxx天，还有xxx天即将过期，到期改密可能无法正常登录，是否现在改密？
+				<div style={{ display: 'flex' }}>
+					<Icon
+						type="warning"
+						style={{ color: '#faa700', margin: '5px 5px 0 0' }}
+					/>
+					<div>
+						<div style={{ lineHeight: '24px' }}>
+							您的密码已使用
+							{180 - Math.round(rePassword / 60 / 60 / 24)}
+							天，还有{Math.round(rePassword / 60 / 60 / 24)}
+							天即将过期，到期改密可能无法正常登录，是否现在改密？
+						</div>
+						<div
+							style={{
+								fontSize: '12px',
+								color: '#666',
+								lineHeight: '30px'
+							}}
+						>
+							为保障您的账户资产安全，请定期改密！
+						</div>
+					</div>
 				</div>
-				<div>为保障您的账户资产安全，请定期改密！</div>
 			</Dialog>
 			{editVisible && (
 				<EditPasswordForm
-					visible={visible}
+					visible={editVisible}
 					onCancel={() => setEditVisible(false)}
 					userName={userName}
 				/>

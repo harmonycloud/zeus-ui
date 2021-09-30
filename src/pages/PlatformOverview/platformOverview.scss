@@ -185,7 +185,27 @@
 						height: 46px;
 						background-color:#E3E4E6;
 					}
-					
+					.info-img{
+						width: 40px;
+						height: 40px;
+						position: relative;
+						margin: 0 auto;
+						.err-count{
+							position: absolute;
+							top: 0;
+							right: 0;
+							width: 18px;
+							height: 18px;
+							line-height: 18px;
+							font-size: 12px;
+							font-family: PingFangSC-Medium, PingFang SC;
+							font-weight: 500;
+							color: #FFFFFF;
+							text-align: center;
+							background: #C80000;
+							border: 2px solid #FFFFFF;
+						}
+					}
 					.info-name{
 						height: 18px;
 						font-size: 12px;
@@ -200,13 +220,7 @@
 						font-weight: 400;
 						color: #333333;
 						line-height: 18px;
-						margin-top: 10px;
-						.total-color{
-							color: #00A700;
-						}
-						.err-count{
-							color: #C80000;
-						}
+						margin-top: 20px;
 					}
 				}
 			}
@@ -215,6 +229,9 @@
 				margin-top: 10px;
 				display: flex;
 				justify-content: space-between;
+				.next-table td .next-table-cell-wrapper{
+					overflow: hidden !important;
+				}
 				.dashed{
 					border-right: 1px dashed #CCD0D4;
 					width: 1px;
