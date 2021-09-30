@@ -195,121 +195,126 @@ function AddForm(props: addFormProps): JSX.Element {
 	};
 	const onOk = () => {
 		field.validate((errors) => {
+			console.log(errors);
 			if (errors) return;
-		});
-		const values: valuesProps = field.getValues();
-		console.log(values);
-		const sendData: clusterAddType = {
-			cert: {
-				certificate: values.cert
-			},
-			name: values.name,
-			nickname: values.nickname,
-			host: values.host,
-			protocol: values.protocol,
-			port: values.port,
-			registry: {
-				protocol: values.protocolHarbor,
-				address: values.addressHarbor,
-				port: values.portHarbor,
-				user: values.user,
-				password: values.password,
-				type: 'harbor',
-				chartRepo: values.chartRepo
+			const values: valuesProps = field.getValues();
+			console.log(values);
+			const sendData: clusterAddType = {
+				cert: {
+					certificate: values.cert
+				},
+				name: values.name,
+				nickname: values.nickname,
+				host: values.host,
+				protocol: values.protocol,
+				port: values.port,
+				registry: {
+					protocol: values.protocolHarbor,
+					address: values.addressHarbor,
+					port: values.portHarbor,
+					user: values.user,
+					password: values.password,
+					type: 'harbor',
+					chartRepo: values.chartRepo
+				}
+			};
+			if (isInstallIngress === 'false') {
+				sendData.ingress = {
+					address: values.ingressAddress,
+					ingressClassName: values.ingressClassName,
+					tcp: {
+						enabled: true,
+						namespace: values.namespace,
+						configMapName: values.configMapName
+					}
+				};
 			}
-		};
-		if (isInstallIngress === 'false') {
-			sendData.ingress = {
-				address: values.ingressAddress,
-				ingressClassName: values.ingressClassName,
-				tcp: {
-					enabled: true,
-					namespace: values.namespace,
-					configMapName: values.configMapName
-				}
-			};
-		}
-		if (isInstallLogging === 'false') {
-			sendData.logging = {
-				elasticSearch: {
-					protocol: values.protocolEs,
-					host: values.hostEs,
-					port: values.portEs,
-					user: values.userEs,
-					password: values.passwordEs,
-					logCollect: values.logCollect
-				}
-			};
-		}
-		if (isInstallAlert === 'false') {
-			sendData.monitor = {
-				...sendData.monitor,
-				alertManager: {
-					host: values.hostAlert,
-					port: values.portAlert,
-					protocol: values.protocolAlert
-				}
-			};
-		}
-		if (isInstallGrafana === 'false') {
-			sendData.monitor = {
-				...sendData.monitor,
-				grafana: {
-					host: values.hostGrafana,
-					port: values.portGrafana,
-					protocol: values.protocolGrafana
-				}
-			};
-		} else {
-			sendData.monitor = {
-				...sendData.monitor,
-				grafana: {
-					protocol:
-						window.location.protocol === 'https:' ? 'https' : 'http'
-				}
-			};
-		}
-		if (isInstallPrometheus === 'false') {
-			sendData.monitor = {
-				...sendData.monitor,
-				prometheus: {
-					host: values.hostPrometheus,
-					port: values.portPrometheus,
-					protocol: values.protocolPrometheus
-				}
-			};
-		}
-		// console.log(sendData);
-		if (params.clusterId) {
-			sendData.clusterId = params.clusterId;
-			sendData.dcId = dcId;
-			putCluster(sendData).then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', {
-							data: '资源池修改成功'
-						})
-					);
-					setRefreshCluster(true);
-					history.push('/systemManagement/resourcePoolManagement');
-				} else {
-					Message.show(messageConfig('error', '错误', res));
-				}
-			});
-		} else {
-			postCluster(sendData).then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', {
-							data: '资源池接入成功'
-						})
-					);
-					setRefreshCluster(true);
-				} else {
-					Message.show(messageConfig('error', '错误', res));
-				}
-			});
-		}
+			if (isInstallLogging === 'false') {
+				sendData.logging = {
+					elasticSearch: {
+						protocol: values.protocolEs,
+						host: values.hostEs,
+						port: values.portEs,
+						user: values.userEs,
+						password: values.passwordEs,
+						logCollect: values.logCollect
+					}
+				};
+			}
+			if (isInstallAlert === 'false') {
+				sendData.monitor = {
+					...sendData.monitor,
+					alertManager: {
+						host: values.hostAlert,
+						port: values.portAlert,
+						protocol: values.protocolAlert
+					}
+				};
+			}
+			if (isInstallGrafana === 'false') {
+				sendData.monitor = {
+					...sendData.monitor,
+					grafana: {
+						host: values.hostGrafana,
+						port: values.portGrafana,
+						protocol: values.protocolGrafana
+					}
+				};
+			} else {
+				sendData.monitor = {
+					...sendData.monitor,
+					grafana: {
+						protocol:
+							window.location.protocol === 'https:'
+								? 'https'
+								: 'http'
+					}
+				};
+			}
+			if (isInstallPrometheus === 'false') {
+				sendData.monitor = {
+					...sendData.monitor,
+					prometheus: {
+						host: values.hostPrometheus,
+						port: values.portPrometheus,
+						protocol: values.protocolPrometheus
+					}
+				};
+			}
+			// console.log(sendData);
+			if (params.clusterId) {
+				sendData.clusterId = params.clusterId;
+				sendData.dcId = dcId;
+				putCluster(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', {
+								data: '资源池修改成功'
+							})
+						);
+						setRefreshCluster(true);
+						history.push(
+							'/systemManagement/resourcePoolManagement'
+						);
+					} else {
+						Message.show(messageConfig('error', '错误', res));
+					}
+				});
+			} else {
+				postCluster(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', {
+								data: '资源池接入成功'
+							})
+						);
+						setRefreshCluster(true);
+					} else {
+						Message.show(messageConfig('error', '错误', res));
+					}
+				});
+			}
+		});
 	};
 	return (
 		<Page>

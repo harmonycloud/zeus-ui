@@ -135,9 +135,14 @@ axios.interceptors.response.use(
 		} else {
 			err.message = '连接服务器失败!';
 		}
-		console.log(err.response);
+		// console.log(err.message);
+		// console.log(err.response);
 		Message.show(
-			messageConfig('error', '错误', err?.response?.data?.message || '')
+			messageConfig(
+				'error',
+				'错误',
+				err?.response?.data?.errorMsg || err.message
+			)
 		);
 		return Promise.reject(err.response);
 	}
