@@ -49,6 +49,7 @@ function RoleManage(): JSX.Element {
 		});
 	};
 	const edit: (record: roleProps) => void = (record: roleProps) => {
+		if (record.id === 1) return;
 		setUpdateData(record);
 		setVisible(true);
 		setIsEdit(true);
@@ -56,6 +57,8 @@ function RoleManage(): JSX.Element {
 	const deleteRoleHandle: (record: roleProps) => void = (
 		record: roleProps
 	) => {
+		if (record.id === 1) return;
+
 		Dialog.show({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
@@ -74,18 +77,40 @@ function RoleManage(): JSX.Element {
 		});
 	};
 	const permissionEdit: (record: roleProps) => void = (record: roleProps) => {
+		if (record.id === 1) return;
+
 		setPermissionData(record);
 		setPermissionVisible(true);
 	};
 	const actionRender = (value: string, index: number, record: roleProps) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => edit(record)}>编辑</LinkButton>
-				<LinkButton onClick={() => deleteRoleHandle(record)}>
+				<LinkButton
+					style={{
+						color: record.id === 1 ? '#ddd' : '#0070cc',
+						cursor: record.id === 1 ? 'not-allowed' : 'pointer'
+					}}
+					onClick={() => edit(record)}
+				>
+					编辑
+				</LinkButton>
+
+				<LinkButton
+					style={{
+						color: record.id === 1 ? '#ddd' : '#0070cc',
+						cursor: record.id === 1 ? 'not-allowed' : 'pointer'
+					}}
+					onClick={() => deleteRoleHandle(record)}
+				>
 					删除
 				</LinkButton>
-				<LinkButton onClick={() => permissionEdit(record)}>
-					{' '}
+				<LinkButton
+					style={{
+						color: record.id === 1 ? '#ddd' : '#0070cc',
+						cursor: record.id === 1 ? 'not-allowed' : 'pointer'
+					}}
+					onClick={() => permissionEdit(record)}
+				>
 					分配角色权限
 				</LinkButton>
 			</Actions>

@@ -104,7 +104,9 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					<span
 						className="name-link"
 						onClick={() => {
-							window.open('', '_blank');
+							window.open(
+								'https://harmonycloudcaas.yuque.com/acntg9/wbcthn/msdsob'
+							);
 						}}
 					>
 						《自定义开发，上架中间件规范说明》
