@@ -192,17 +192,18 @@
 						margin: 0 auto;
 						.err-count{
 							position: absolute;
-							top: 0;
-							right: 0;
+							top: -9px;
+							right: -9px;
 							width: 18px;
 							height: 18px;
-							line-height: 18px;
+							line-height: 14px;
 							font-size: 12px;
 							font-family: PingFangSC-Medium, PingFang SC;
 							font-weight: 500;
 							color: #FFFFFF;
 							text-align: center;
 							background: #C80000;
+							border-radius: 50%;
 							border: 2px solid #FFFFFF;
 						}
 					}

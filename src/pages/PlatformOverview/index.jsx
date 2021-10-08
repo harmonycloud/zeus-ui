@@ -87,7 +87,7 @@ function PlatformOverview(props) {
 	useEffect(() => {
 		getClusters().then((res) => {
 			// console.log(res.data);
-			res.data.push({ name: '全部', id: 'all' });
+			res.data.unshift({ name: '全部', id: 'all' });
 			setPoolList(res.data);
 		});
 	}, []);
@@ -97,7 +97,9 @@ function PlatformOverview(props) {
 			setVersion(res.data.zeusVersion);
 			setTotalData(res.data.clusterQuota);
 			setOperatorData(res.data.operatorDTO);
-			setOperatorList(res.data.operatorDTO.operatorList);
+			setOperatorList(
+				res.data.operatorDTO.operatorList.sort(compare('status'))
+			);
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(getLineOption(res.data.alertSummary));
@@ -167,8 +169,12 @@ function PlatformOverview(props) {
 		getEventsData(alertData);
 	};
 	const onRefresh = () => {
+		let clusterId = type === 'all' ? null : type;
+
 		getPlatformOverview().then((res) => {
 			setTotalData(res.data.clusterQuota);
+		});
+		getServers({ clusterId }).then((res) => {
 			setBriefInfoList(res.data.briefInfoList);
 		});
 	};
@@ -193,6 +199,19 @@ function PlatformOverview(props) {
 		}
 		console.log(data);
 		// setOperatorList(data);
+	};
+	const compare = function (prop) {
+		return function (obj1, obj2) {
+			var val1 = obj1[prop];
+			var val2 = obj2[prop];
+			if (val1 < val2) {
+				return 1;
+			} else if (val1 > val2) {
+				return -1;
+			} else {
+				return 0;
+			}
+		};
 	};
 
 	return (

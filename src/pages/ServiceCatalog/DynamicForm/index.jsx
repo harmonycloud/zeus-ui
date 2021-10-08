@@ -202,7 +202,7 @@ function DynamicForm(props) {
 	return (
 		<Page>
 			<Page.Header
-				title="发布服务"
+				title={`发布${chartName}服务`}
 				hasBackArrow
 				onBackArrowClick={() => window.history.back()}
 			/>

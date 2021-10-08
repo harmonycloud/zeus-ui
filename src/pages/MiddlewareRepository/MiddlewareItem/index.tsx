@@ -107,7 +107,7 @@ export default function MiddlewareItem(
 		};
 		Dialog.show({
 			title: '操作确认',
-			content: '请确认是否下架该中间件？',
+			content: '请确认是否卸载该中间件？',
 			onOk: () => {
 				unInstallMiddleware(sendData).then((res) => {
 					if (res.success) {
@@ -115,7 +115,7 @@ export default function MiddlewareItem(
 							messageConfig(
 								'success',
 								'成功',
-								'中间件下架成功，3秒后刷新数据'
+								'中间件卸载成功，3秒后刷新数据'
 							)
 						);
 						onRefresh();
