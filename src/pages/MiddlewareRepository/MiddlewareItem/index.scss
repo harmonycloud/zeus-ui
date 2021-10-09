@@ -47,6 +47,18 @@
 					justify-content: center;
 					align-items: center;
 				}
+				.middleware-item-action-item-two{
+					width: 110px;
+					height: 50px;
+					opacity: 0.6;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					&:nth-of-type(1){
+						border-bottom: 1px solid $white;
+					}
+				}
 				.middleware-item-action-item{
 					width: 50px;
 					height: 50px;

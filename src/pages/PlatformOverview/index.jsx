@@ -94,41 +94,47 @@ function PlatformOverview(props) {
 	useEffect(() => {
 		let clusterId = type === 'all' ? null : type;
 		getPlatformOverview({ clusterId }).then((res) => {
+			let list = res.data.operatorDTO.operatorList.filter(
+				(item) => item.status !== 1
+			);
+			list.push(
+				...res.data.operatorDTO.operatorList.filter(
+					(item) => item.status == 1
+				)
+			);
 			setVersion(res.data.zeusVersion);
 			setTotalData(res.data.clusterQuota);
 			setOperatorData(res.data.operatorDTO);
-			setOperatorList(
-				res.data.operatorDTO.operatorList.sort(compare('status'))
-			);
+			setOperatorList(list);
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(getLineOption(res.data.alertSummary));
-			const chart = echarts.init(document.getElementById('id'));
-			chart.setOption(getPieOption(res.data.operatorDTO));
+			// const chart = echarts.init(document.getElementById('id'));
+			// chart.setOption(getPieOption(res.data.operatorDTO));
 
-			chart.on('legendselectchanged', (obj) => {
-				if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
-					x = res.data.operatorDTO.operatorList.filter(
-						(item) => item.status === 1
-					);
-				} else if (
-					!obj.selected['运行正常'] &&
-					obj.selected['运行异常']
-				) {
-					x = res.data.operatorDTO.operatorList.filter(
-						(item) => item.status === 3
-					);
-				} else if (
-					obj.selected['运行正常'] &&
-					obj.selected['运行异常']
-				) {
-					x = res.data.operatorDTO.operatorList;
-				} else {
-					x = [];
-				}
-				console.log(chart.getOption().series[0].data);
-				// chart.setOption(getPieOption([]));
-			});
+			// chart.on('legendselectchanged', (obj) => {
+			// 	if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
+			// 		x = res.data.operatorDTO.operatorList.filter(
+			// 			(item) => item.status === 1
+			// 		);
+			// 	} else if (
+			// 		!obj.selected['运行正常'] &&
+			// 		obj.selected['运行异常']
+			// 	) {
+			// 		x = res.data.operatorDTO.operatorList.filter(
+			// 			(item) => item.status === 3
+			// 		);
+			// 	} else if (
+			// 		obj.selected['运行正常'] &&
+			// 		obj.selected['运行异常']
+			// 	) {
+			// 		x = res.data.operatorDTO.operatorList;
+			// 	} else {
+			// 		x = [];
+			// 	}
+			// 	console.log(chart.getOption().series[0].data);
+			// 	// chart.setOption(getPieOption([]));
+			// });
 		});
 		getServers({ clusterId }).then((res) => {
 			setBriefInfoList(res.data.briefInfoList);
@@ -209,19 +215,6 @@ function PlatformOverview(props) {
 		}
 		console.log(data);
 		// setOperatorList(data);
-	};
-	const compare = function (prop) {
-		return function (obj1, obj2) {
-			var val1 = obj1[prop];
-			var val2 = obj2[prop];
-			if (val1 < val2) {
-				return 1;
-			} else if (val1 > val2) {
-				return -1;
-			} else {
-				return 0;
-			}
-		};
 	};
 
 	return (
@@ -438,18 +431,18 @@ function PlatformOverview(props) {
 								}
 							>
 								<div className="control-container">
-									{/* <EChartsReact
+									<EChartsReact
 										onEvents={onChartsEvent()}
 										option={pieOption}
 										style={{ height: '100%', width: '40%' }}
-									/> */}
-									<div
+									/>
+									{/* <div
 										id="id"
 										style={{
 											height: '100%',
 											width: '40%'
 										}}
-									></div>
+									></div> */}
 									<div className="dashed"></div>
 									<Table
 										dataSource={operatorList}

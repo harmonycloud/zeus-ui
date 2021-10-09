@@ -7,8 +7,9 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 			bottom: 0,
 			left: 'center',
 			icon: 'circle',
+			width: '80%',
+			height: 40,
 			itemWidth: 8,
-			itemHeight: 8,
 			itemStyle: {
 				fontSize: 12
 			},
@@ -28,7 +29,7 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 				return arr.join(' ');
 			},
 			textStyle: {
-				lineHeight: 22,
+				lineHeight: 20,
 				fontSize: 10,
 				rich: {
 					b: {
@@ -69,7 +70,7 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 				name: '控制器状态',
 				type: 'pie',
 				center: ['50%', '40%'],
-				radius: ['65%', '80%'],
+				radius: ['52%', '67%'],
 				avoidLabelOverlap: false,
 				color: ['#00a700', '#d92026'],
 				label: {

@@ -103,7 +103,7 @@ function Home(props) {
 		getEvents(sendData).then((res) => {
 			if (res.success) {
 				setEvents(res.data.list ? res.data.list : []);
-				setTotal(res.data.total);
+				res.data.total && setTotal(res.data.total);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}

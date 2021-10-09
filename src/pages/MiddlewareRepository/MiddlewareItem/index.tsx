@@ -88,7 +88,7 @@ export default function MiddlewareItem(
 							messageConfig(
 								'success',
 								'成功',
-								'中间件安装成功，3秒后刷新数据'
+								'中间件安装成功，5秒后刷新数据'
 							)
 						);
 						onRefresh();
@@ -115,7 +115,7 @@ export default function MiddlewareItem(
 							messageConfig(
 								'success',
 								'成功',
-								'中间件卸载成功，3秒后刷新数据'
+								'中间件卸载成功，5秒后刷新数据'
 							)
 						);
 						onRefresh();
@@ -174,16 +174,30 @@ export default function MiddlewareItem(
 				/>
 				<div className="middleware-item-action-content">
 					{status === 2 ? (
-						<div
-							className="middleware-item-action-item-one"
-							onClick={install}
-						>
-							<CustomIcon
-								type="icon-anzhuang"
-								style={{ color: 'white' }}
-							/>
-							安装
-						</div>
+						<>
+							<div
+								className="middleware-item-action-item-two"
+								onClick={toVersion}
+							>
+								{/* <div className="middleware-item-action-icon"> */}
+								<CustomIcon
+									type="icon-banben"
+									style={{ color: 'white' }}
+								/>
+								版本
+								{/* </div> */}
+							</div>
+							<div
+								className="middleware-item-action-item-two"
+								onClick={install}
+							>
+								<CustomIcon
+									type="icon-anzhuang"
+									style={{ color: 'white' }}
+								/>
+								安装
+							</div>
+						</>
 					) : (
 						<>
 							<div

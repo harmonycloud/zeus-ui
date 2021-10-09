@@ -17,6 +17,7 @@ import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import './index.scss';
+import { spawn } from 'child_process';
 
 interface versionProps {
 	globalVar: globalVarProps;
@@ -265,6 +266,11 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 						<Table.Column
 							title="上架时间"
 							dataIndex="createTime"
+							cell={(text: string) => (
+								<span>
+									{moment(text).format('YYYY-MM-DD h:mm:ss')}
+								</span>
+							)}
 							width={200}
 							sortable
 						/>

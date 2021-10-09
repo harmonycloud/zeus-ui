@@ -149,7 +149,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 																() => {
 																	getData();
 																},
-																3
+																5
 															)
 														);
 													}}
