@@ -100,7 +100,10 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			const sendData: roleProps = data;
 			data.menu &&
 				data.menu.map((item) => {
-					if (checkedKeys.indexOf(String(item.id)) !== -1) {
+					if (
+						checkedKeys.indexOf(String(item.id)) !== -1 ||
+						harfCheckedKeys.indexOf(String(item.id)) !== -1
+					) {
 						item.own = true;
 					} else {
 						item.own = false;

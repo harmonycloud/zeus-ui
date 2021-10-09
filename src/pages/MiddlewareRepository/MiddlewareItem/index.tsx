@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Icon, Balloon, Message, Dialog } from '@alicloud/console-components';
 import { useHistory } from 'react-router-dom';
 import { api } from '@/api.json';
@@ -18,35 +18,67 @@ const statusIconRender = (value: number) => {
 	switch (value) {
 		case 0:
 			return (
-				<Icon
-					type="loading1"
-					size="small"
-					style={{ color: '#D1D5D9', marginLeft: '6px' }}
-				/>
+				<Balloon
+					trigger={
+						<Icon
+							type="loading1"
+							size="small"
+							style={{ color: '#D1D5D9', marginLeft: '6px' }}
+						/>
+					}
+					align="b"
+					closable={false}
+				>
+					安装中
+				</Balloon>
 			);
 		case 1:
 			return (
-				<Icon
-					type="success"
-					size="small"
-					style={{ color: '#1DC11D', marginLeft: '6px' }}
-				/>
+				<Balloon
+					trigger={
+						<Icon
+							type="success"
+							size="small"
+							style={{ color: '#1DC11D', marginLeft: '6px' }}
+						/>
+					}
+					align="b"
+					closable={false}
+				>
+					运行正常
+				</Balloon>
 			);
 		case 2:
 			return (
-				<Icon
-					type="minus-circle-fill"
-					size="small"
-					style={{ color: '#FAC800', marginLeft: '6px' }}
-				/>
+				<Balloon
+					trigger={
+						<Icon
+							type="minus-circle-fill"
+							size="small"
+							style={{ color: '#FAC800', marginLeft: '6px' }}
+						/>
+					}
+					align="b"
+					closable={false}
+				>
+					待安装
+				</Balloon>
 			);
 		case 3:
 			return (
-				<Icon
-					type="warning"
-					size="small"
-					style={{ color: '#D93026', marginLeft: '6px' }}
-				/>
+				<Balloon
+					trigger={
+						<Icon
+							type="warning"
+							size="small"
+							style={{ color: '#D93026', marginLeft: '6px' }}
+						/>
+					}
+					align="b"
+					closable={false}
+				>
+					运行异常
+				</Balloon>
 			);
 		default:
 			break;

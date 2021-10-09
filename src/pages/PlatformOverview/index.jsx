@@ -357,12 +357,12 @@ function PlatformOverview(props) {
 						</div>
 					</div>
 					<div className="content">
-						<div className="left-content">
+						<div className="top-content">
 							<HomeCard
 								title={'服务信息'}
-								height={'174px'}
+								height={'172px'}
 								width={'100%'}
-								marginBottom={'20px'}
+								marginBottom={'16px'}
 							>
 								<div className="serve-info">
 									{briefInfoList?.length ? (
@@ -420,188 +420,198 @@ function PlatformOverview(props) {
 									)}
 								</div>
 							</HomeCard>
-							<HomeCard
-								title={'控制器状态'}
-								height={'289px'}
-								width={'60%'}
-								marginBottom={'20px'}
-								readMore={'更多'}
-								readMoreFn={() =>
-									history.push('/middlewareRepository')
-								}
-							>
-								<div className="control-container">
-									<EChartsReact
-										onEvents={onChartsEvent()}
-										option={pieOption}
-										style={{ height: '100%', width: '40%' }}
-									/>
-									{/* <div
+						</div>
+						<div className="center-content">
+							<div className="left-content">
+								<HomeCard
+									title={'控制器状态'}
+									height={'300px'}
+									width={'65%'}
+									marginBottom={'16px'}
+									readMore={'更多'}
+									readMoreFn={() =>
+										history.push('/middlewareRepository')
+									}
+								>
+									<div className="control-container">
+										<EChartsReact
+											onEvents={onChartsEvent()}
+											option={pieOption}
+											style={{
+												height: '100%',
+												width: '40%'
+											}}
+										/>
+										{/* <div
 										id="id"
 										style={{
 											height: '100%',
 											width: '40%'
 										}}
 									></div> */}
-									<div className="dashed"></div>
+										<div className="dashed"></div>
+										<Table
+											dataSource={operatorList}
+											primaryKey="key"
+											hasBorder={false}
+											fixedHeader={true}
+											maxBodyHeight="180px"
+											style={{
+												width: '55%'
+											}}
+										>
+											<Table.Column
+												title="类型"
+												dataIndex="name"
+												cell={(value, obj, record) => (
+													<span>
+														{record.name +
+															'(' +
+															record.clusterName +
+															')'}
+													</span>
+												)}
+											/>
+											<Table.Column
+												title="状态"
+												dataIndex="status"
+												cell={(value) => (
+													<span>
+														<Icon
+															size="xs"
+															style={{
+																color:
+																	value === 1
+																		? '#00A700'
+																		: '#C80000',
+																marginRight:
+																	'5px'
+															}}
+															type={
+																value === 1
+																	? 'success'
+																	: 'warning'
+															}
+														/>
+														{value === 1
+															? '运行正常'
+															: '运行异常'}
+													</span>
+												)}
+											/>
+										</Table>
+									</div>
+								</HomeCard>
+								<HomeCard
+									title={'异常告警'}
+									height={'300px'}
+									width={'33%'}
+									marginLeft={'16px'}
+									marginBottom={'16px'}
+								>
+									<EChartsReact
+										option={lineOption}
+										style={{
+											height: 'calc(100% - 22px)',
+											width: '100%'
+										}}
+									/>
+								</HomeCard>
+								<HomeCard
+									title={'审计信息'}
+									height={'300px'}
+									width={'100%'}
+									readMore={'更多'}
+									readMoreFn={() =>
+										history.push(
+											'/systemManagement/operationAudit'
+										)
+									}
+								>
 									<Table
-										dataSource={operatorList}
+										dataSource={auditList}
 										primaryKey="key"
 										hasBorder={false}
 										fixedHeader={true}
-										maxBodyHeight="180px"
-										style={{
-											width: '55%'
-										}}
+										maxBodyHeight="190px"
+										style={{ marginTop: '16px' }}
 									>
 										<Table.Column
-											title="类型"
-											dataIndex="name"
-											cell={(value, obj, record) => (
+											title="账号"
+											dataIndex="account"
+										/>
+										<Table.Column
+											title="模块"
+											cell={(value, index, record) => (
 												<span>
-													{record.name +
-														'(' +
-														record.clusterName +
-														')'}
+													{record.moduleChDesc +
+														'/' +
+														record.childModuleChDesc}
 												</span>
 											)}
 										/>
 										<Table.Column
-											title="状态"
-											dataIndex="status"
-											cell={(value) => (
-												<span>
-													<Icon
-														size="xs"
-														style={{
-															color:
-																value === 1
-																	? '#00A700'
-																	: '#C80000',
-															marginRight: '5px'
-														}}
-														type={
-															value === 1
-																? 'success'
-																: 'warning'
-														}
-													/>
-													{value === 1
-														? '运行正常'
-														: '运行异常'}
-												</span>
-											)}
+											title="行为"
+											dataIndex="actionChDesc"
+										/>
+										<Table.Column
+											title="操作时间"
+											dataIndex="beginTime"
 										/>
 									</Table>
-								</div>
-							</HomeCard>
-							<HomeCard
-								title={'异常告警'}
-								height={'289px'}
-								width={'38%'}
-								marginLeft={'2%'}
-								marginBottom={'20px'}
-							>
-								<EChartsReact
-									option={lineOption}
-									style={{
-										height: 'calc(100% - 22px)',
-										width: '100%'
-									}}
-								/>
-							</HomeCard>
-							<HomeCard
-								title={'审计信息'}
-								height={'331px'}
-								width={'100%'}
-								readMore={'更多'}
-								readMoreFn={() =>
-									history.push(
-										'/systemManagement/operationAudit'
-									)
-								}
-							>
-								<Table
-									dataSource={auditList}
-									primaryKey="key"
-									hasBorder={false}
-									fixedHeader={true}
-									maxBodyHeight="210px"
-									style={{ marginTop: '20px' }}
+								</HomeCard>
+							</div>
+							<div className="right-content">
+								<HomeCard
+									title={'告警事件（全平台）'}
+									height={'450px'}
+									width={'100%'}
+									marginBottom={'16px'}
 								>
-									<Table.Column
-										title="账号"
-										dataIndex="account"
+									<RadioGroup
+										dataSource={radioList}
+										shape="button"
+										size="large"
+										value={level}
+										onChange={onNormalChange}
+										style={{ marginTop: 16 }}
 									/>
-									<Table.Column
-										title="模块"
-										cell={(value, index, record) => (
-											<span>
-												{record.moduleChDesc +
-													'/' +
-													record.childModuleChDesc}
-											</span>
-										)}
+									<AlarmTimeLine
+										list={eventData}
+										style={{
+											marginTop: 16,
+											height: 'calc(100% - 110px)'
+										}}
+										clusters={clusters}
+										type="platform"
 									/>
-									<Table.Column
-										title="行为"
-										dataIndex="actionChDesc"
+									<Pagination
+										style={{ float: 'right' }}
+										current={current}
+										size="small"
+										type="simple"
+										shape="no-border"
+										onChange={paginationChange}
+										total={total}
+										totalRender={(total) =>
+											`总数：${total}`
+										}
 									/>
-									<Table.Column
-										title="操作时间"
-										dataIndex="beginTime"
-									/>
-								</Table>
-							</HomeCard>
-						</div>
-						<div className="right-content">
-							<HomeCard
-								title={'告警事件（全平台）'}
-								height={'649px'}
-								width={'100%'}
-								marginBottom={'20px'}
-							>
-								<RadioGroup
-									dataSource={radioList}
-									shape="button"
-									size="large"
-									value={level}
-									onChange={onNormalChange}
-									style={{ marginTop: 16 }}
-								/>
-								<AlarmTimeLine
-									list={eventData}
-									style={{
-										marginTop: 16,
-										height: 'calc(100% - 110px)'
-									}}
-									clusters={clusters}
-									type="platform"
-								/>
-								<Pagination
-									style={{ float: 'right' }}
-									current={current}
-									size="small"
-									type="simple"
-									shape="no-border"
-									onChange={paginationChange}
-									total={total}
-									totalRender={(total) => `总数：${total}`}
-								/>
-							</HomeCard>
-							<HomeCard
-								title={'系统信息'}
-								height={'166px'}
-								width={'100%'}
-							>
-								<div className="system-info">
-									<div className="version">
-										Zeus {version}
+								</HomeCard>
+								<HomeCard
+									title={'系统信息'}
+									height={'150px'}
+									width={'100%'}
+								>
+									<div className="system-info">
+										<div className="version">
+											Zeus {version}
+										</div>
+										<div>当前系统版本</div>
+										<div>Powered by zeus</div>
 									</div>
-									<div>当前系统版本</div>
-									<div>Powered by zeus</div>
-								</div>
-							</HomeCard>
+								</HomeCard>
+							</div>
 						</div>
 					</div>
 				</div>

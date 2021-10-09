@@ -84,12 +84,35 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			}
 		});
 	};
+	useEffect(() => {
+		if (rule === 'type') {
+			const list = Array.from(
+				new Set(originData.map((item) => item.type))
+			);
+			console.log(list);
+			const obj = {};
+			list.forEach((item) => {
+				if (item === null) {
+					obj['其他'] = originData.filter((i) => i.type === item);
+				} else {
+					obj[item] = originData.filter((i) => i.type === item);
+				}
+			});
+			setDataSource(obj);
+		} else if (rule === 'source') {
+			console.log(originData);
+			const obj = {};
+			obj['官方'] = originData.filter((i) => i.official === true);
+			obj['非官方'] = originData.filter((i) => i.official !== true);
+			setDataSource(obj);
+		}
+	}, [originData]);
 	const onCreate = () => {
 		setVisible(false);
 		setTimer(
 			timerClass.countdownTimer(() => {
 				getData();
-			}, 3)
+			}, 5)
 		);
 	};
 	return (
