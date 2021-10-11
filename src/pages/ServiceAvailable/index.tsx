@@ -120,6 +120,17 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		getIngresses(sendData).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
+				const listTemp = [{ name: '全部服务', count: 0 }];
+				res.data.forEach((item: serviceAvailablesProps) => {
+					listTemp.push({
+						name: item.name,
+						count: item.serviceNum
+					});
+				});
+				listTemp[0].count = listTemp.reduce((pre, cur: listProps) => {
+					return pre + cur.count;
+				}, 0);
+				setList(listTemp);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
