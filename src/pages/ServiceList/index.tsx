@@ -98,7 +98,16 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			});
 		}
 		setDataSource(allList);
-		setShowDataSource(allList);
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.serviceList
+				);
+			} else {
+				setShowDataSource(allList);
+			}
+		}
 	}, [originData]);
 	useEffect(() => {
 		if (originData.length > 0) {
@@ -196,8 +205,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		}
 	};
 	const toDetail = (record: any) => {
-		console.log(record);
-		console.log('to details');
 		const cs = globalClusterList.filter(
 			(item) => item.id === record.mysqlDTO.relationClusterId
 		);

@@ -97,7 +97,16 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				});
 		});
 		setDataSource(allList);
-		setShowDataSource(allList);
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.ingressList
+				);
+			} else {
+				setShowDataSource(allList);
+			}
+		}
 	}, [originData]);
 	useEffect(() => {
 		if (originData.length > 0) {
