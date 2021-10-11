@@ -20,6 +20,7 @@ function AlarmTimeLine(props) {
 	const { style = {}, list = [], clusters = [], type = 'default' } = props;
 	const [data, setData] = useState(list);
 	const history = useHistory();
+	const clusterTemp = JSON.parse(storage.getLocal('cluster'));
 	// props变化时修改list值
 	useEffect(() => {
 		setData(list);
@@ -62,16 +63,37 @@ function AlarmTimeLine(props) {
 			}
 		}
 	};
+	// * 非跨资源池跳转
+	const unAcross = async (item) => {
+		let res = await getNamespaces({
+			clusterId: item.clusterId,
+			withQuota: true
+		});
+		if (res.success) {
+			if (res.data.length > 0) {
+				res.data.map((n) => {
+					if (n.name === item.namespace) {
+						setNamespace(n);
+						storage.setLocal('namespace', JSON.stringify(n));
+						history.push({
+							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`,
+							state: {
+								flag: true
+							}
+						});
+					}
+				});
+			}
+		}
+	};
 
 	const toDetail = (item) => {
-		// console.log(item);
 		if (item.chartVersion) {
-			// console.log(type);
-			if (type === 'default') {
-				history.push(
-					`/serviceList/basicInfo/${item.name}/${item.type}/${item.type}/${item.chartVersion}`
-				);
+			if (item.clusterId === clusterTemp.id) {
+				// * 非跨资源池群跳转
+				unAcross(item);
 			} else {
+				// * 跨资源池跳转
 				getNamespaceList(item);
 			}
 		}

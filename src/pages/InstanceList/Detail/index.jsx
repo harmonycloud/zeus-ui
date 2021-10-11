@@ -41,7 +41,10 @@ const InstanceDetails = (props) => {
 		globalVar,
 		match: {
 			params: { middlewareName, type, chartVersion, currentTab }
-		}
+		},
+		setCluster,
+		setNamespace,
+		setRefreshCluster
 	} = props;
 	const {
 		clusterList: globalClusterList,
@@ -337,16 +340,23 @@ const InstanceDetails = (props) => {
 		);
 	};
 	const toDetail = () => {
-		// * 源示例和备服务在用一个资源池时
-		if (data.mysqlDTO.relationClusterId === globalVar.cluster.id) {
-			unAcrossCluster();
+		if (!data.mysqlDTO.relationExist) {
+			Message.show(
+				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
+			);
+			return;
 		} else {
-			// across the cluster
-			const flag = storage.getLocal('firstAlert');
-			if (flag === 0) {
-				setVisible(true);
+			// * 源示例和备服务在用一个资源池时
+			if (data.mysqlDTO.relationClusterId === globalVar.cluster.id) {
+				unAcrossCluster();
 			} else {
-				acrossCluster();
+				// across the cluster
+				const flag = storage.getLocal('firstAlert');
+				if (flag === 0) {
+					setVisible(true);
+				} else {
+					acrossCluster();
+				}
 			}
 		}
 	};

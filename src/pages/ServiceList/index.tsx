@@ -205,6 +205,12 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		}
 	};
 	const toDetail = (record: any) => {
+		if (!record.mysqlDTO.relationExist) {
+			Message.show(
+				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
+			);
+			return;
+		}
 		const cs = globalClusterList.filter(
 			(item) => item.id === record.mysqlDTO.relationClusterId
 		);
