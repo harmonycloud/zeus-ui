@@ -14,7 +14,7 @@ import RegistryNamespace from '../BasicResource/registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
 import './index.scss';
 
-export default function ResourcePoolManagement() {
+export default function ResourcePoolManagement(): JSX.Element {
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [dataSource, setDataSource] = useState<clusterType[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -100,11 +100,11 @@ export default function ResourcePoolManagement() {
 		} else if (dataIndex === 'cpu') {
 			const dsTemp = clusterList.sort((a, b) => {
 				const aPer =
-					Number(a.storage?.resource?.cpuUsing) /
-					Number(a.storage?.resource?.cpuTotal);
+					Number(a.clusterQuotaDTO?.usedCpu) /
+					Number(a.clusterQuotaDTO?.totalCpu);
 				const bPer =
-					Number(b.storage?.resource?.cpuUsing) /
-					Number(b.storage?.resource?.cpuTotal);
+					Number(b.clusterQuotaDTO?.usedCpu) /
+					Number(b.clusterQuotaDTO?.totalCpu);
 				const result = aPer - bPer;
 				return order === 'asc'
 					? result > 0
@@ -118,11 +118,11 @@ export default function ResourcePoolManagement() {
 		} else if (dataIndex === 'memory') {
 			const dsTemp = clusterList.sort((a, b) => {
 				const aPer =
-					Number(a.storage?.resource?.memoryUsing) /
-					Number(a.storage?.resource?.memoryTotal);
+					Number(a.clusterQuotaDTO?.usedMemory) /
+					Number(a.clusterQuotaDTO?.totalMemory);
 				const bPer =
-					Number(b.storage?.resource?.memoryUsing) /
-					Number(b.storage?.resource?.memoryTotal);
+					Number(b.clusterQuotaDTO?.usedMemory) /
+					Number(b.clusterQuotaDTO?.totalMemory);
 				const result = aPer - bPer;
 				return order === 'asc'
 					? result > 0
@@ -171,9 +171,9 @@ export default function ResourcePoolManagement() {
 		);
 	};
 	const cpuRender = (value: string, index: number, record: clusterType) => {
-		const percentage = record.storage?.resource
-			? (Number(record.storage?.resource?.cpuUsing) /
-					Number(record.storage?.resource?.cpuTotal)) *
+		const percentage = record.clusterQuotaDTO
+			? (Number(record.clusterQuotaDTO?.usedCpu) /
+					Number(record.clusterQuotaDTO?.totalCpu)) *
 			  100
 			: 0;
 		return (
@@ -195,12 +195,12 @@ export default function ResourcePoolManagement() {
 					</div>
 				</div>
 				<div>
-					{record.storage?.resource
-						? Number(record.storage?.resource?.cpuUsing).toFixed(1)
+					{record.clusterQuotaDTO
+						? Number(record.clusterQuotaDTO?.usedCpu).toFixed(1)
 						: '-'}
 					/
-					{record.storage?.resource
-						? Number(record.storage?.resource?.cpuTotal).toFixed(1)
+					{record.clusterQuotaDTO
+						? Number(record.clusterQuotaDTO?.totalCpu).toFixed(1)
 						: '-'}
 				</div>
 			</div>
@@ -211,9 +211,9 @@ export default function ResourcePoolManagement() {
 		index: number,
 		record: clusterType
 	) => {
-		const percentage = record.storage?.resource
-			? (Number(record.storage?.resource?.memoryUsing) /
-					Number(record.storage?.resource?.memoryTotal)) *
+		const percentage = record.clusterQuotaDTO
+			? (Number(record.clusterQuotaDTO?.usedMemory) /
+					Number(record.clusterQuotaDTO?.totalMemory)) *
 			  100
 			: 0;
 		return (
@@ -235,16 +235,12 @@ export default function ResourcePoolManagement() {
 					</div>
 				</div>
 				<div>
-					{record.storage?.resource
-						? Number(record.storage?.resource?.memoryUsing).toFixed(
-								1
-						  )
+					{record.clusterQuotaDTO
+						? Number(record.clusterQuotaDTO?.usedMemory).toFixed(1)
 						: '-'}
 					/
-					{record.storage?.resource
-						? Number(record.storage?.resource?.memoryTotal).toFixed(
-								1
-						  )
+					{record.clusterQuotaDTO
+						? Number(record.clusterQuotaDTO?.totalMemory).toFixed(1)
 						: '-'}
 				</div>
 			</div>

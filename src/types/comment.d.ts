@@ -77,7 +77,7 @@ export interface monitorProps {
 export interface storageProps {
 	backup: backupProps | null;
 	support: supportProps | null;
-	resource?: resourceProps | null;
+	// resource?: resourceProps | null;
 }
 export interface backupProps {
 	type: string;
@@ -123,4 +123,14 @@ export interface registryProps {
 	type: string;
 	user: string;
 	version?: string;
+}
+export interface clusterQuotaDTOProps {
+	clusterNum: number;
+	cpuUsedPercent: number | null;
+	memoryUsedPercent: number | null;
+	namespaceNum: number;
+	totalCpu: number;
+	totalMemory: number;
+	usedCpu: number;
+	usedMemory: number;
 }

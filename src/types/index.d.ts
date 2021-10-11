@@ -2,7 +2,8 @@ import {
 	monitorProps,
 	storageProps,
 	ingressProps,
-	registryProps
+	registryProps,
+	clusterQuotaDTOProps
 } from './comment';
 
 export interface clusterAddType {
@@ -20,6 +21,7 @@ export interface clusterAddType {
 	protocol: string;
 	registry: registryProps;
 	storage?: storageProps;
+	clusterQuotaDTO?: clusterQuotaDTOProps | null;
 	[propsName: string]: any;
 }
 export interface clusterType extends clusterAddType {
