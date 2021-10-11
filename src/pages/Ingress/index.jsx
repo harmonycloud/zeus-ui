@@ -10,7 +10,7 @@ import {
 } from '@alicloud/console-components';
 import { Page } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import AddIngress from './addIngress';
+import AddServiceAvailableForm from '../ServiceAvailable/AddServiceAvailableForm';
 import {
 	getIngresses,
 	deleteIngress,
@@ -18,6 +18,7 @@ import {
 	getIngressMid
 } from '@/services/ingress';
 import messageConfig from '@/components/messageConfig';
+import CustomIcon from '@/components/CustomIcon';
 // import ComponentsLoading from '@/components/componentsLoading';
 import './ingress.scss';
 
@@ -195,14 +196,12 @@ function IngressList(props) {
 			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
 			return (
 				<>
-					{address}
-					<span
-						className="name-link"
-						style={{ marginLeft: 12 }}
+					<CustomIcon
+						type="icon-fuzhi"
+						size="xs"
 						onClick={() => copyValue(address)}
-					>
-						复制
-					</span>
+					/>
+					{address}
 				</>
 			);
 		} else {
@@ -217,14 +216,12 @@ function IngressList(props) {
 								}
 								return (
 									<div key={index}>
-										{address}
-										<span
-											className="name-link"
-											style={{ marginLeft: 12 }}
+										<CustomIcon
+											type="icon-fuzhi"
+											size="xs"
 											onClick={() => copyValue(address)}
-										>
-											复制
-										</span>
+										/>
+										{address}
 									</div>
 								);
 							})}
@@ -242,14 +239,12 @@ function IngressList(props) {
 								const address = `${record.exposeIP}:${item.exposePort}`;
 								return (
 									<div key={index} className="balloon-tips">
-										{address}
-										<span
-											className="name-link"
-											style={{ marginLeft: 12 }}
+										<CustomIcon
+											type="icon-fuzhi"
+											size="xs"
 											onClick={() => copyValue(address)}
-										>
-											复制
-										</span>
+										/>
+										{address}
 									</div>
 								);
 							})}
@@ -273,7 +268,7 @@ function IngressList(props) {
 						clusterId: globalVar.cluster.id,
 						namespace: globalVar.namespace.name,
 						exposeType: values.exposeType,
-						middlewareName: values.middlewareName,
+						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
 						rules: [
@@ -293,7 +288,7 @@ function IngressList(props) {
 						clusterId: globalVar.cluster.id,
 						namespace: globalVar.namespace.name,
 						exposeType: values.exposeType,
-						middlewareName: values.middlewareName,
+						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
 						serviceList: [
@@ -313,22 +308,16 @@ function IngressList(props) {
 					messageConfig('success', '成功', '对外路由添加成功')
 				);
 				setActive(false);
-				entry !== 'detail'
-					? getData(globalVar.cluster.id, globalVar.namespace.name)
-					: getIngressByMid(
-							globalVar.cluster.id,
-							globalVar.namespace.name,
-							type,
-							middlewareName
-					  );
+				getIngressByMid(
+					globalVar.cluster.id,
+					globalVar.namespace.name,
+					type,
+					middlewareName
+				);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-	};
-
-	const onCancel = () => {
-		setActive(false);
 	};
 
 	return (
@@ -337,7 +326,7 @@ function IngressList(props) {
 				<Page.Header title="对外路由"></Page.Header>
 			) : null}
 			<Page.Content style={entry !== 'detail' ? {} : { padding: '0 0' }}>
-				<div className="header-tips">
+				{/* <div className="header-tips">
 					对外路由功能说明
 					<br />
 					基于平台内置的负载均衡器，可创建对外访问的规则，使平台创建的中间件可以提供对外访问入口，详情参加
@@ -352,7 +341,7 @@ function IngressList(props) {
 					>
 						《中间件对外访问配置说明》
 					</span>
-				</div>
+				</div> */}
 				{/* {
 					globalVar.cluster.ingress ? */}
 				<Table
@@ -425,11 +414,12 @@ function IngressList(props) {
 				} */}
 			</Page.Content>
 			{active && (
-				<AddIngress
-					active={active}
+				<AddServiceAvailableForm
+					visible={active}
 					onCreate={onCreate}
-					onCancel={onCancel}
-					entry={entry}
+					onCancel={() => setActive(false)}
+					cluster={globalVar.cluster}
+					namespace={globalVar.namespace.name}
 					middlewareName={middlewareName}
 				/>
 			)}

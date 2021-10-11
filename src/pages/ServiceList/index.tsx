@@ -368,6 +368,20 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			</div>
 		);
 	};
+	const tabJudge: (record: serviceProps, tab: string) => boolean = (
+		record: serviceProps,
+		tab: string
+	) => {
+		if (record.capabilities === null) {
+			return false;
+		} else {
+			if (record.capabilities.includes(tab)) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	};
 	const actionRender = (
 		value: string,
 		index: number,
@@ -376,6 +390,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
+					disabled={tabJudge(record, 'high')}
 					onClick={() => {
 						history.push({
 							pathname: '/serviceAvailable',
@@ -385,9 +400,18 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						});
 					}}
 				>
-					服务暴露
+					<span
+						title={
+							tabJudge(record, 'high')
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '服务暴露'
+						}
+					>
+						服务暴露
+					</span>
 				</LinkButton>
 				<LinkButton
+					disabled={tabJudge(record, 'monitoring')}
 					onClick={() => {
 						history.push({
 							pathname: '/monitorAlarm/dataMonitor',
@@ -398,9 +422,18 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						});
 					}}
 				>
-					数据监控
+					<span
+						title={
+							tabJudge(record, 'monitoring')
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '数据监控'
+						}
+					>
+						数据监控
+					</span>
 				</LinkButton>
 				<LinkButton
+					disabled={tabJudge(record, 'log')}
 					onClick={() =>
 						history.push({
 							pathname: '/monitorAlarm/logDetail',
@@ -411,7 +444,15 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						})
 					}
 				>
-					日志详情
+					<span
+						title={
+							tabJudge(record, 'log')
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '日志详情'
+						}
+					>
+						日志详情
+					</span>
 				</LinkButton>
 				<LinkButton
 					disabled={!record.managePlatform}
@@ -457,6 +498,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					</span>
 				</LinkButton>
 				<LinkButton
+					disabled={tabJudge(record, 'alert')}
 					onClick={() =>
 						history.push({
 							pathname: '/monitorAlarm/alarmCenter',
@@ -467,9 +509,18 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						})
 					}
 				>
-					告警规则
+					<span
+						title={
+							tabJudge(record, 'alert')
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '告警规则'
+						}
+					>
+						告警规则
+					</span>
 				</LinkButton>
 				<LinkButton
+					disabled={tabJudge(record, 'backup')}
 					onClick={() => {
 						history.push({
 							pathname: '/disasterBackup/dataSecurity',
@@ -480,16 +531,33 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						});
 					}}
 				>
-					数据安全
+					<span
+						title={
+							tabJudge(record, 'backup')
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '数据安全'
+						}
+					>
+						数据安全
+					</span>
 				</LinkButton>
 				<LinkButton
+					disabled={tabJudge(record, 'config')}
 					onClick={() => {
 						history.push(
 							`/serviceList/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
 						);
 					}}
 				>
-					参数设置
+					<span
+						title={
+							tabJudge(record, 'config')
+								? '该中间件发布的服务组件暂不支持该功能'
+								: '参数设置'
+						}
+					>
+						参数设置
+					</span>
 				</LinkButton>
 				{/* <LinkButton>版本管理</LinkButton> */}
 				<LinkButton onClick={() => deleteFn(record)}>删除</LinkButton>

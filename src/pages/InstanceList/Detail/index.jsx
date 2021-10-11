@@ -26,8 +26,8 @@ import './detail.scss';
 /*
  * 自定义中间tab页显示判断 后端
  * 基本信息  basic
- * 高可用性  high 未完成
- * 备份恢复  backup (目前mysql中间件特有)
+ * 高可用性  high
+ * 备份恢复  backup
  * 对外访问  ingress
  * 性能监控  monitoring
  * 日志管理  log
