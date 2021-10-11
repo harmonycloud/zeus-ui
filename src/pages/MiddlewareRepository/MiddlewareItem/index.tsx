@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Icon, Balloon, Message, Dialog } from '@alicloud/console-components';
 import { useHistory } from 'react-router-dom';
 import { api } from '@/api.json';

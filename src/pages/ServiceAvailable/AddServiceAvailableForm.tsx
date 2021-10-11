@@ -90,11 +90,35 @@ export default function AddServiceAvailableForm(
 							? list[0].children[0].value
 							: middlewareName
 					);
-					setSelectedInstance({
-						name: list[0].children[0].value,
-						type: list[0].value
+					const listTemp = list.filter((item: filtersProps) => {
+						let flag = false;
+						item.children &&
+							item.children.length > 0 &&
+							item.children.map((i: filtersProps) => {
+								if (i.value === middlewareName) {
+									flag = true;
+									return i;
+								}
+							});
+						if (flag) {
+							return item;
+						}
 					});
-					getExposedService(list[0].children[0].value, list[0].value);
+					const selectedInstanceTemp = {
+						name:
+							middlewareName === ''
+								? list[0].children[0].value
+								: middlewareName,
+						type:
+							middlewareName === ''
+								? list[0].value
+								: listTemp[0].value
+					};
+					setSelectedInstance(selectedInstanceTemp);
+					getExposedService(
+						selectedInstanceTemp.name,
+						selectedInstanceTemp.type
+					);
 				}
 			});
 		}
