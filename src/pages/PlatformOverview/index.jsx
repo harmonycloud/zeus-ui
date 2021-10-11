@@ -423,100 +423,114 @@ function PlatformOverview(props) {
 						</div>
 						<div className="center-content">
 							<div className="left-content">
-								<HomeCard
-									title={'控制器状态'}
-									height={'300px'}
-									width={'65%'}
-									marginBottom={'16px'}
-									readMore={'更多'}
-									readMoreFn={() =>
-										history.push('/middlewareRepository')
-									}
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'space-between'
+									}}
 								>
-									<div className="control-container">
-										<EChartsReact
-											onEvents={onChartsEvent()}
-											option={pieOption}
-											style={{
-												height: '100%',
-												width: '40%'
-											}}
-										/>
-										{/* <div
+									<HomeCard
+										title={'控制器状态'}
+										height={'300px'}
+										width={'66%'}
+										marginBottom={'16px'}
+										readMore={'更多'}
+										readMoreFn={() =>
+											history.push(
+												'/middlewareRepository'
+											)
+										}
+									>
+										<div className="control-container">
+											<EChartsReact
+												onEvents={onChartsEvent()}
+												option={pieOption}
+												style={{
+													height: '100%',
+													width: '40%'
+												}}
+											/>
+											{/* <div
 										id="id"
 										style={{
 											height: '100%',
 											width: '40%'
 										}}
 									></div> */}
-										<div className="dashed"></div>
-										<Table
-											dataSource={operatorList}
-											primaryKey="key"
-											hasBorder={false}
-											fixedHeader={true}
-											maxBodyHeight="180px"
-											style={{
-												width: '55%'
-											}}
-										>
-											<Table.Column
-												title="类型"
-												dataIndex="name"
-												cell={(value, obj, record) => (
-													<span>
-														{record.name +
-															'(' +
-															record.clusterName +
-															')'}
-													</span>
-												)}
-											/>
-											<Table.Column
-												title="状态"
-												dataIndex="status"
-												cell={(value) => (
-													<span>
-														<Icon
-															size="xs"
-															style={{
-																color:
+											<div className="dashed"></div>
+											<Table
+												dataSource={operatorList}
+												primaryKey="key"
+												hasBorder={false}
+												fixedHeader={true}
+												maxBodyHeight="180px"
+												style={{
+													width: '55%'
+												}}
+											>
+												<Table.Column
+													title="类型"
+													dataIndex="name"
+													cell={(
+														value,
+														obj,
+														record
+													) => (
+														<span>
+															{record.name +
+																'(' +
+																record.clusterName +
+																')'}
+														</span>
+													)}
+												/>
+												<Table.Column
+													title="状态"
+													dataIndex="status"
+													cell={(value) => (
+														<span>
+															<Icon
+																size="xs"
+																style={{
+																	color:
+																		value ===
+																		1
+																			? '#00A700'
+																			: '#C80000',
+																	marginRight:
+																		'5px'
+																}}
+																type={
 																	value === 1
-																		? '#00A700'
-																		: '#C80000',
-																marginRight:
-																	'5px'
-															}}
-															type={
-																value === 1
-																	? 'success'
-																	: 'warning'
-															}
-														/>
-														{value === 1
-															? '运行正常'
-															: '运行异常'}
-													</span>
-												)}
-											/>
-										</Table>
-									</div>
-								</HomeCard>
-								<HomeCard
-									title={'异常告警'}
-									height={'300px'}
-									width={'33%'}
-									marginLeft={'16px'}
-									marginBottom={'16px'}
-								>
-									<EChartsReact
-										option={lineOption}
-										style={{
-											height: 'calc(100% - 22px)',
-											width: '100%'
-										}}
-									/>
-								</HomeCard>
+																		? 'success'
+																		: 'warning'
+																}
+															/>
+															{value === 1
+																? '运行正常'
+																: '运行异常'}
+														</span>
+													)}
+												/>
+											</Table>
+										</div>
+									</HomeCard>
+									<HomeCard
+										title={'异常告警'}
+										height={'300px'}
+										width={'33%'}
+										marginLeft={'16px'}
+										marginBottom={'16px'}
+									>
+										<EChartsReact
+											option={lineOption}
+											style={{
+												height: 'calc(100% - 22px)',
+												width: '100%'
+											}}
+										/>
+									</HomeCard>
+								</div>
 								<HomeCard
 									title={'审计信息'}
 									height={'300px'}
