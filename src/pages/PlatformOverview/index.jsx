@@ -30,7 +30,6 @@ import {
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
 import echarts from 'echarts';
-import storage from '@/utils/storage';
 
 const radioList = [
 	{
@@ -51,8 +50,9 @@ const radioList = [
 	}
 ];
 
-let x = [];
 function PlatformOverview(props) {
+	let x = [];
+
 	// 设置事件数据
 	const [eventData, setEventData] = useState(null);
 	// 顶部统计数据
@@ -109,32 +109,32 @@ function PlatformOverview(props) {
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(getLineOption(res.data.alertSummary));
-			// const chart = echarts.init(document.getElementById('id'));
-			// chart.setOption(getPieOption(res.data.operatorDTO));
+			const chart = echarts.init(document.getElementById('id'));
+			chart.setOption(getPieOption(res.data.operatorDTO));
 
-			// chart.on('legendselectchanged', (obj) => {
-			// 	if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
-			// 		x = res.data.operatorDTO.operatorList.filter(
-			// 			(item) => item.status === 1
-			// 		);
-			// 	} else if (
-			// 		!obj.selected['运行正常'] &&
-			// 		obj.selected['运行异常']
-			// 	) {
-			// 		x = res.data.operatorDTO.operatorList.filter(
-			// 			(item) => item.status === 3
-			// 		);
-			// 	} else if (
-			// 		obj.selected['运行正常'] &&
-			// 		obj.selected['运行异常']
-			// 	) {
-			// 		x = res.data.operatorDTO.operatorList;
-			// 	} else {
-			// 		x = [];
-			// 	}
-			// 	console.log(chart.getOption().series[0].data);
-			// 	// chart.setOption(getPieOption([]));
-			// });
+			chart.on('legendselectchanged', (obj) => {
+				if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
+					x = res.data.operatorDTO.operatorList.filter(
+						(item) => item.status === 1
+					);
+				} else if (
+					!obj.selected['运行正常'] &&
+					obj.selected['运行异常']
+				) {
+					x = res.data.operatorDTO.operatorList.filter(
+						(item) => item.status !== 1
+					);
+				} else if (
+					obj.selected['运行正常'] &&
+					obj.selected['运行异常']
+				) {
+					x = res.data.operatorDTO.operatorList;
+				} else {
+					x = [];
+				}
+				setOperatorList(x);
+			});
+			window.onresize = chart.resize;
 		});
 		getServers({ clusterId }).then((res) => {
 			setBriefInfoList(res.data.briefInfoList);
@@ -152,7 +152,7 @@ function PlatformOverview(props) {
 			};
 			getEvent(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);
-				setTotal(res.data?.total);
+				setTotal(res.data ? res.data.total : 0);
 			});
 		}
 	}, [eventData]);
@@ -165,7 +165,7 @@ function PlatformOverview(props) {
 		};
 		getEvent(sendData).then((res) => {
 			setEventData(res.data ? res.data.list : []);
-			setTotal(res.data.total);
+			setTotal(res.data ? res.data.total : 0);
 		});
 	};
 	const onNormalChange = (value) => {
@@ -193,28 +193,6 @@ function PlatformOverview(props) {
 		getServers({ clusterId }).then((res) => {
 			setBriefInfoList(res.data.briefInfoList);
 		});
-	};
-	const onChartsEvent = () => {
-		return { legendselectchanged: onChartLegendselectchanged };
-	};
-	const onChartLegendselectchanged = (obj) => {
-		// console.log(obj);
-		let data = [];
-		if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
-			data = operatorData.operatorList.filter(
-				(item) => item.status === 1
-			);
-		} else if (!obj.selected['运行正常'] && obj.selected['运行异常']) {
-			data = operatorData.operatorList.filter(
-				(item) => item.status === 3
-			);
-		} else if (obj.selected['运行正常'] && obj.selected['运行异常']) {
-			data = operatorData.operatorList;
-		} else {
-			data = [];
-		}
-		console.log(data);
-		// setOperatorList(data);
 	};
 
 	return (
@@ -442,21 +420,13 @@ function PlatformOverview(props) {
 										}
 									>
 										<div className="control-container">
-											<EChartsReact
-												onEvents={onChartsEvent()}
-												option={pieOption}
+											<div
+												id="id"
 												style={{
 													height: '100%',
 													width: '40%'
 												}}
-											/>
-											{/* <div
-										id="id"
-										style={{
-											height: '100%',
-											width: '40%'
-										}}
-									></div> */}
+											></div>
 											<div className="dashed"></div>
 											<Table
 												dataSource={operatorList}

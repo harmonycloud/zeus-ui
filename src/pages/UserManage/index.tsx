@@ -4,9 +4,14 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import moment from 'moment';
 import Table from '@/components/MidTable';
-import { getUserList, deleteUser, resetPassword } from '@/services/user';
+import {
+	getUserList,
+	deleteUser,
+	resetPassword,
+	getRoles
+} from '@/services/user';
 import messageConfig from '@/components/messageConfig';
-import { userProps } from './user';
+import { userProps, roleProps } from './user';
 import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
 import storage from '@/utils/storage';
@@ -17,6 +22,18 @@ function UserManage(): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<userProps>();
 	const [isEdit, setIsEdit] = useState(true);
+	const [roleVisible, setRoleVisible] = useState(false);
+	const [roles, setRoles] = useState<roleProps[]>([]);
+
+	useEffect(() => {
+		getRoles().then((res) => {
+			if (res.success) {
+				setRoles(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let mounted = true;
 		getUserList({ keyword: keyword }).then((res) => {
@@ -114,6 +131,9 @@ function UserManage(): JSX.Element {
 			setDataSource([...dsTemp]);
 		}
 	};
+	const editRole = (record: userProps) => {
+		setRoleVisible(true);
+	};
 	const actionRender = (value: string, index: number, record: userProps) => {
 		return (
 			<Actions>
@@ -132,6 +152,9 @@ function UserManage(): JSX.Element {
 				) : null}
 				<LinkButton onClick={() => resetPasswordHandle(record)}>
 					密码重置
+				</LinkButton>
+				<LinkButton onClick={() => editRole(record)}>
+					关联角色
 				</LinkButton>
 			</Actions>
 		);
@@ -216,6 +239,13 @@ function UserManage(): JSX.Element {
 					onCancel={() => setVisible(false)}
 					data={isEdit ? updateData : null}
 				/>
+			)}
+			{roleVisible && (
+				<Dialog
+					title="关联角色"
+					visible={roleVisible}
+					onCancel={() => setRoleVisible(false)}
+				></Dialog>
 			)}
 		</Page>
 	);

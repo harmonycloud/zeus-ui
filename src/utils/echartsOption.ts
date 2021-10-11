@@ -7,8 +7,6 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 			bottom: 0,
 			left: 'center',
 			icon: 'circle',
-			width: '80%',
-			height: 40,
 			itemWidth: 8,
 			itemStyle: {
 				fontSize: 12

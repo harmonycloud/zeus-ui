@@ -30,17 +30,17 @@ interface userFormProps {
 }
 export default function UserForm(props: userFormProps): JSX.Element {
 	const { visible, onCreate, onCancel, data } = props;
-	const [roles, setRoles] = useState<roleProps[]>([]);
+	// const [roles, setRoles] = useState<roleProps[]>([]);
 	const field: Field = Field.useField();
-	useEffect(() => {
-		getRoles().then((res) => {
-			if (res.success) {
-				setRoles(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	}, []);
+	// useEffect(() => {
+	// 	getRoles().then((res) => {
+	// 		if (res.success) {
+	// 			setRoles(res.data);
+	// 		} else {
+	// 			Message.show(messageConfig('error', '失败', res));
+	// 		}
+	// 	});
+	// }, []);
 	useEffect(() => {
 		if (data) {
 			field.setValues({
@@ -162,7 +162,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				>
 					<Input name="email" trim={true} placeholder="请输入邮箱" />
 				</FormItem>
-				<FormItem
+				{/* <FormItem
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
@@ -177,7 +177,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 							</Option>
 						))}
 					</Select>
-				</FormItem>
+				</FormItem> */}
 			</Form>
 		</Dialog>
 	);
