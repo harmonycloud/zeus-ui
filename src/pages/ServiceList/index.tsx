@@ -210,7 +210,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/instanceList/detail/${record.mysqlDTO.relationName}/${
+			pathname: `/serviceList/basicInfo/${record.mysqlDTO.relationName}/${
 				record.mysqlDTO.type || 'mysql'
 			}/${record.chartVersion}`,
 			state: {

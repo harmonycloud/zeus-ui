@@ -267,7 +267,7 @@ const InstanceDetails = (props) => {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/instanceList/detail/${data.mysqlDTO.relationName}/${
+			pathname: `/serviceList/basicInfo/${data.mysqlDTO.relationName}/${
 				data.mysqlDTO.type || 'mysql'
 			}/${chartVersion}`,
 			state: {

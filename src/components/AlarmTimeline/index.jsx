@@ -52,7 +52,7 @@ function AlarmTimeLine(props) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
 						history.push({
-							pathname: `/instanceList/detail/${item.name}/${item.type}/${item.type}/${item.chartVersion}`,
+							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`,
 							state: {
 								flag: true
 							}
@@ -69,7 +69,7 @@ function AlarmTimeLine(props) {
 			// console.log(type);
 			if (type === 'default') {
 				history.push(
-					`/instanceList/detail/${item.name}/${item.type}/${item.type}/${item.chartVersion}`
+					`/serviceList/basicInfo/${item.name}/${item.type}/${item.type}/${item.chartVersion}`
 				);
 			} else {
 				getNamespaceList(item);
