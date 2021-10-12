@@ -40,7 +40,7 @@ const Monitor = (props) => {
 				});
 			}
 		}
-	}, [props]);
+	}, [props.chartVersion]);
 
 	useEffect(() => {
 		if (url) {

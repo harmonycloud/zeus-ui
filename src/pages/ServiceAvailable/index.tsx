@@ -420,6 +420,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					selected={selected}
 					changeSelected={(value: string) => {
 						setSelected(value);
+						if (location.state.middlewareName !== '') {
+							setSearchText('');
+							location.state.middlewareName = '';
+							getData('');
+						}
 						storage.setSession('service-available-current', value);
 					}}
 				/>
@@ -435,6 +440,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					operation={Operation}
 					search={{
 						defaultValue: searchText,
+						value: searchText,
 						onSearch: handleSearch,
 						placeholder:
 							'请输入暴露路由名称、服务名称/中文别名、访问地址搜索'

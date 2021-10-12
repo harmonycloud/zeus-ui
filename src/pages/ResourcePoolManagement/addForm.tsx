@@ -309,6 +309,9 @@ function AddForm(props: addFormProps): JSX.Element {
 							})
 						);
 						setRefreshCluster(true);
+						history.push(
+							'/systemManagement/resourcePoolManagement'
+						);
 					} else {
 						Message.show(messageConfig('error', '错误', res));
 					}

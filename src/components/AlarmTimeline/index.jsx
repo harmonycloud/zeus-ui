@@ -20,7 +20,6 @@ function AlarmTimeLine(props) {
 	const { style = {}, list = [], clusters = [], type = 'default' } = props;
 	const [data, setData] = useState(list);
 	const history = useHistory();
-	const clusterTemp = JSON.parse(storage.getLocal('cluster'));
 	// props变化时修改list值
 	useEffect(() => {
 		setData(list);
@@ -88,6 +87,7 @@ function AlarmTimeLine(props) {
 	};
 
 	const toDetail = (item) => {
+		const clusterTemp = JSON.parse(storage.getLocal('cluster'));
 		if (item.chartVersion) {
 			if (item.clusterId === clusterTemp.id) {
 				// * 非跨资源池群跳转

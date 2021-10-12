@@ -311,7 +311,7 @@ export default function LogFile(props) {
 		}&searchType=${searchType}&middlewareType=${type}&logPath=${
 			logPath.logPath
 		}`;
-		console.log(url);
+		// console.log(url);
 		window.open(url, '_target');
 	};
 
