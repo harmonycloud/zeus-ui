@@ -78,6 +78,10 @@ function ServiceList(props: serviceListProps): JSX.Element {
 							0
 						);
 						setList(listTemp);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+						setOriginData([]);
+						setList([{ name: '全部服务', count: 0 }]);
 					}
 				});
 			}
@@ -149,6 +153,10 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						0
 					);
 					setList(listTemp);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+					setOriginData([]);
+					setList([{ name: '全部服务', count: 0 }]);
 				}
 			});
 		}
