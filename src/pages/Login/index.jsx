@@ -64,6 +64,7 @@ export default function Login() {
 					Storage.setLocal('token', res.data.token);
 					Storage.setLocal('userName', res.data.userName);
 					if (res.data.rePassword) {
+						console.log(res.data.rePassword);
 						setVisible(true);
 						setRePassword(res.data.rePassword);
 						setUserName(res.data.userName);
@@ -177,8 +178,8 @@ export default function Login() {
 					<div>
 						<div style={{ lineHeight: '24px' }}>
 							您的密码已使用
-							{180 - Math.round(rePassword / 60 / 60 / 24)}
-							天，还有{Math.round(rePassword / 60 / 60 / 24)}
+							{rePassword}
+							天，还有{180 - rePassword}
 							天即将过期，到期改密可能无法正常登录，是否现在改密？
 						</div>
 						<div
