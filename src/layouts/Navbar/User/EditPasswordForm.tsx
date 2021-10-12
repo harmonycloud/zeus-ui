@@ -46,7 +46,10 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((error) => {
 			if (error) return;
-			if (checks.includes(true)) return;
+			if (checks.includes(false)) {
+				Message.warning('密码格式不正确!');
+				return;
+			}
 			const v: sendDataProps = field.getValues();
 			const rsaPass = encrypt(v.password, publicKey);
 			// console.log(rsaPass);

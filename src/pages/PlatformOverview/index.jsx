@@ -138,7 +138,7 @@ function PlatformOverview(props) {
 			window.onresize = chart.resize;
 		});
 		getServers({ clusterId }).then((res) => {
-			setBriefInfoList(res.data.briefInfoList);
+			res.data && setBriefInfoList(res.data.briefInfoList);
 		});
 	}, [type]);
 
@@ -189,10 +189,10 @@ function PlatformOverview(props) {
 		let clusterId = type === 'all' ? null : type;
 
 		getPlatformOverview().then((res) => {
-			setTotalData(res.data.clusterQuota);
+			res.data && setTotalData(res.data.clusterQuota);
 		});
 		getServers({ clusterId }).then((res) => {
-			setBriefInfoList(res.data.briefInfoList);
+			res.data && setBriefInfoList(res.data.briefInfoList);
 		});
 	};
 
