@@ -1,11 +1,15 @@
 .middleware-item-content {
-	width: 180px;
+	float: left;
+	width: 116px;
+	margin-bottom: 16px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	margin-right: 48px;
 	text-align: center;
-	margin-top: 16px;
+	&:nth-of-type(7n){
+		margin-right: 0;
+	}
 	.middleware-item-icon{
 		width: 100px;
 		height: 100px;
@@ -104,8 +108,8 @@
 		font-family: PingFangSC-Semibold, PingFang SC;
 		font-weight: 600;
 		color: $text-color-title;
-		@include lineHeight (22px);
-		@include text-ellipsis;
+		max-width: 116px;
+		line-height: 22px;
 	}
 	.middleware-item-status{
 		margin-top: 8px;

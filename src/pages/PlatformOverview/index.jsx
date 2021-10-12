@@ -94,6 +94,7 @@ function PlatformOverview(props) {
 	useEffect(() => {
 		let clusterId = type === 'all' ? null : type;
 		getPlatformOverview({ clusterId }).then((res) => {
+			if (!res.data) return;
 			let list = res.data.operatorDTO.operatorList.filter(
 				(item) => item.status !== 1
 			);
