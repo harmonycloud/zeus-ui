@@ -86,7 +86,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 		>
 			<Form field={field}>
 				<FormItem
-					label="请输入角色名称"
+					label="输入角色名称"
 					required
 					requiredMessage="请输入角色名称"
 					pattern={pattern.roleName}
@@ -95,7 +95,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 					<Input placeholder="请输入角色名称" name="name" />
 				</FormItem>
 				<FormItem
-					label="请输入角色描述"
+					label="输入角色描述"
 					required
 					requiredMessage="请输入角色描述"
 					pattern={pattern.roleDescription}

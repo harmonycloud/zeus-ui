@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message, Radio } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import moment from 'moment';
@@ -8,13 +8,17 @@ import {
 	getUserList,
 	deleteUser,
 	resetPassword,
-	getRoles
+	getRoles,
+	updateUser
 } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import { userProps, roleProps } from './user';
 import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
 import storage from '@/utils/storage';
+import '../RoleManage/index.scss';
+
+const RadioGroup = Radio.Group;
 
 function UserManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
@@ -24,11 +28,19 @@ function UserManage(): JSX.Element {
 	const [isEdit, setIsEdit] = useState(true);
 	const [roleVisible, setRoleVisible] = useState(false);
 	const [roles, setRoles] = useState<roleProps[]>([]);
+	const [role, setRole] = useState<any>();
+	const [record, setRecord] = useState<userProps>();
 
 	useEffect(() => {
 		getRoles().then((res) => {
 			if (res.success) {
-				setRoles(res.data);
+				const obj: any = res.data.map((item) => {
+					return {
+						label: item.name,
+						value: item.id
+					};
+				});
+				setRoles(obj);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -132,7 +144,36 @@ function UserManage(): JSX.Element {
 		}
 	};
 	const editRole = (record: userProps) => {
+		// console.log(record.aliasName);
+		const role = roles.find((item) => item.label === record.aliasName);
+		role && setRole(role.value);
+		setRecord(record);
 		setRoleVisible(true);
+	};
+	const roleChange = (value: any) => {
+		const obj = {
+			roleId: value,
+			userName: record ? record.userName : '',
+			aliasName: record ? record.aliasName : null,
+			phone: record ? record.phone : null,
+			email: record ? record.email : null
+		};
+		setRecord(obj);
+		setRole(value);
+	};
+	const submitRole = () => {
+		const sendData = {
+			...(record as unknown as userProps)
+		};
+		updateUser(sendData).then((res) => {
+			console.log(res);
+			if (res.success) {
+				Message.show(messageConfig('success', '成功', '用户修改成功'));
+				setRoleVisible(false);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	};
 	const actionRender = (value: string, index: number, record: userProps) => {
 		return (
@@ -244,8 +285,17 @@ function UserManage(): JSX.Element {
 				<Dialog
 					title="关联角色"
 					visible={roleVisible}
+					onOk={submitRole}
 					onCancel={() => setRoleVisible(false)}
-				></Dialog>
+					className="role-modal"
+				>
+					<RadioGroup
+						itemDirection={'ver'}
+						dataSource={roles}
+						value={role}
+						onChange={roleChange}
+					/>
+				</Dialog>
 			)}
 		</Page>
 	);

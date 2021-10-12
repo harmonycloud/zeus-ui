@@ -127,7 +127,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 
 	return (
 		<Dialog
-			title="分配角色权限"
+			title="分配角色"
 			visible={visible}
 			onCancel={onCancel}
 			onClose={onCancel}

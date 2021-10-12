@@ -28,7 +28,8 @@ $component-name: 'middleware-repository';
 			@include lineHeight(24px);
 		}
 		.#{$component-name}-list-content {
-			display: flex;
+			// display: flex;
+			overflow: hidden;
 			margin-top: 16px;
 		}
 	}

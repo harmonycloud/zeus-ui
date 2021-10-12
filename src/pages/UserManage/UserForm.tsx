@@ -47,8 +47,8 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				userName: data.userName,
 				aliasName: data.aliasName,
 				phone: data.phone,
-				email: data.email,
-				roleId: data.roleId
+				email: data.email
+				// roleId: data.roleId
 			});
 		}
 	}, [data]);

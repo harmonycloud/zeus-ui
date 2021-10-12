@@ -160,6 +160,9 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								>
 									<p>{key}</p>
 									<div className="middleware-repository-list-content">
+										{console.log(
+											dataSource[key].length / 7
+										)}
 										{dataSource[key].map((item) => {
 											return (
 												<MiddlewareItem
