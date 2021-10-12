@@ -29,7 +29,8 @@ $component-name: 'middleware-repository';
 		}
 		.#{$component-name}-list-content {
 			display: flex;
-			margin-top: 16px;
+			flex-wrap: wrap;
+			// margin-top: 16px;
 		}
 	}
 }

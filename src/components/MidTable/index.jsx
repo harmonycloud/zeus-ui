@@ -124,6 +124,7 @@ const MidTable = (props) => {
 						<div>
 							<Search
 								defaultValue={tableProps.search.defaultValue}
+								value={tableProps.search.value}
 								onSearch={tableProps.search.onSearch}
 								placeholder={tableProps.search.placeholder}
 								style={
