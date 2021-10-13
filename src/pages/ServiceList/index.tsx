@@ -178,7 +178,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
-			const tempDataSource = dataSource.sort((a, b) => {
+			const tempDataSource = showDataSource.sort((a, b) => {
 				const result = a['createTimeNum'] - b['createTimeNum'];
 				return order === 'asc'
 					? result > 0
@@ -200,11 +200,11 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		} else {
 			let tempData: serviceProps[] = [];
 			if (selectedKeys[0] !== 'Other') {
-				tempData = dataSource.filter((item) => {
+				tempData = showDataSource.filter((item) => {
 					return item.status === selectedKeys[0];
 				});
 			} else if (selectedKeys[0] === 'Other') {
-				tempData = dataSource.filter((item) => {
+				tempData = showDataSource.filter((item) => {
 					return (
 						item.status !== 'Running' && item.status !== 'Creating'
 					);
