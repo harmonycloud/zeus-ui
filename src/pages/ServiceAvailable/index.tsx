@@ -97,6 +97,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				});
 		});
 		setDataSource(allList);
+		setShowDataSource(allList);
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
 				setShowDataSource(

@@ -102,6 +102,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			});
 		}
 		setDataSource(allList);
+		setShowDataSource(allList);
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
 				setShowDataSource(
@@ -478,6 +479,16 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				<LinkButton
 					disabled={!record.managePlatform}
 					onClick={() => {
+						if (record.managePlatformAddress === '') {
+							Message.show(
+								messageConfig(
+									'error',
+									'失败',
+									'服务控制台地址为空。'
+								)
+							);
+							return;
+						}
 						window.open(
 							`${window.location.protocol.toLowerCase()}//${
 								record.managePlatformAddress as string
