@@ -146,7 +146,7 @@ function UserManage(): JSX.Element {
 	const editRole = (record: userProps) => {
 		// console.log(record.roleName);
 		const role = roles.find((item) => item.label === record.roleName);
-		role && setRole(role.value);
+		setRole(role ? role.value : 0);
 		setRecord(record);
 		setRoleVisible(true);
 	};
@@ -292,6 +292,7 @@ function UserManage(): JSX.Element {
 					visible={roleVisible}
 					onOk={submitRole}
 					onCancel={() => setRoleVisible(false)}
+					onClose={() => setRoleVisible(false)}
 					className="role-modal"
 				>
 					<RadioGroup
