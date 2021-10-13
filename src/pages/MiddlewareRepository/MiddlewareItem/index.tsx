@@ -6,6 +6,7 @@ import { middlewareItemProps } from '../middleware';
 import CustomIcon from '@/components/CustomIcon';
 import { installMiddleware, unInstallMiddleware } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
+import otherColor from '@/assets/images/nodata.svg';
 import './index.scss';
 
 const statusMap = {
@@ -201,7 +202,11 @@ export default function MiddlewareItem(
 				<img
 					height={60}
 					width={60}
-					src={`${api}/images/middleware/${imagePath}`}
+					src={
+						imagePath
+							? `${api}/images/middleware/${imagePath}`
+							: otherColor
+					}
 					alt={name}
 				/>
 				<div className="middleware-item-action-content">

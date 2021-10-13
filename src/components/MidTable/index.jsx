@@ -125,7 +125,6 @@ const MidTable = (props) => {
 							<Search
 								defaultValue={tableProps.search.defaultValue}
 								value={tableProps.search.value}
-								onSearch={tableProps.search.onSearch}
 								placeholder={tableProps.search.placeholder}
 								style={
 									JSON.stringify(searchStyle) === '{}'
@@ -133,7 +132,11 @@ const MidTable = (props) => {
 										: searchStyle
 								}
 								filter={tableProps.search.filter}
-								onFilterChange={tableProps.search.onChange}
+								onSearch={tableProps.search.onSearch}
+								onFilterChange={
+									tableProps.search.onFilterChange
+								}
+								onChange={tableProps.search.onChange}
 								hasClear={true}
 							/>
 						</div>

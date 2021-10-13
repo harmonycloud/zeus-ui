@@ -149,6 +149,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		setSearchText(value);
 		getData(value);
 	};
+	const handleChange = (value: string) => {
+		setSearchText(value);
+	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
 		Dialog.show({
 			title: '操作确认',
@@ -442,6 +445,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						defaultValue: searchText,
 						value: searchText,
 						onSearch: handleSearch,
+						onChange: handleChange,
 						placeholder:
 							'请输入暴露路由名称、服务名称/中文别名、访问地址搜索'
 					}}
