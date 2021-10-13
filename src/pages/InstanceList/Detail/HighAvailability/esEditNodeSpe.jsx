@@ -86,11 +86,13 @@ export default function EsEditNodeSpe(props) {
 			kibana.disabled = false;
 			client.disabled = true;
 			dataes.disabled = true;
+			cold.disabled = true;
 		} else if (data.mode === 'regular') {
 			master.disabled = false;
 			kibana.disabled = false;
 			dataes.disabled = false;
 			client.disabled = true;
+			cold.disabled = true;
 		} else if (data.mode === 'complex') {
 			if (cold.num !== 0 && client.num === 0) {
 				setMode('complex-cold');
