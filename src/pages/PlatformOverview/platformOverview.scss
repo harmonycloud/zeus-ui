@@ -169,8 +169,8 @@
 				box-sizing: border-box;
 				padding-top: 20px;
 				.info-item{
+					min-width: 100px;
 					text-align: center;
-					// padding: 0 4%;
 					flex: 1;
 					position: relative;
 					&:not(:last-of-type)::after{

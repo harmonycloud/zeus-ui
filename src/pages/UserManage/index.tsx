@@ -144,8 +144,8 @@ function UserManage(): JSX.Element {
 		}
 	};
 	const editRole = (record: userProps) => {
-		// console.log(record.aliasName);
-		const role = roles.find((item) => item.label === record.aliasName);
+		// console.log(record.roleName);
+		const role = roles.find((item) => item.label === record.roleName);
 		role && setRole(role.value);
 		setRecord(record);
 		setRoleVisible(true);
