@@ -85,7 +85,7 @@ const mapLocationToActiveKey = (location: Location) => {
 function Menu(): JSX.Element {
 	const [items, setItems] = useState<IItemDescriptor[]>([]);
 	const history: History = useHistory();
-	console.log(history);
+	// console.log(history);
 	const [defaultOpenKeys] = useState<string[]>([
 		'/monitorAlarm',
 		'/disasterBackup',

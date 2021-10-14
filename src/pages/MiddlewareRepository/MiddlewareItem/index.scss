@@ -117,6 +117,9 @@
 		font-weight: 600;
 		color: $text-color-title;
 		line-height: 22px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 	.middleware-item-status{
 		margin-top: 8px;

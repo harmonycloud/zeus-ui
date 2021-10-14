@@ -24,8 +24,8 @@ export default function MidTerminal(): JSX.Element {
 	// wss://${window.location.hostname}:${window.location.port} 环境上使用
 	const socketUrl =
 		window.location.protocol.toLowerCase() === 'https:'
-			? `wss://10.1.10.13:31088/ws/terminal?${params.url}`
-			: `ws://10.1.10.13:31088/ws/terminal?${params.url}`;
+			? `wss://${window.location.hostname}:${window.location.port}/ws/terminal?${params.url}`
+			: `ws://${window.location.hostname}:${window.location.port}/ws/terminal?${params.url}`;
 	useEffect(() => {
 		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
 		const terminal = new Terminal({
