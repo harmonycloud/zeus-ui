@@ -97,6 +97,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				});
 		});
 		setDataSource(allList);
+		setShowDataSource(allList);
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
 				setShowDataSource(
@@ -374,7 +375,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
-			const tempDataSource = dataSource.sort((a, b) => {
+			const tempDataSource = showDataSource.sort((a, b) => {
 				const result = a['createTimeNum'] - b['createTimeNum'];
 				return order === 'asc'
 					? result > 0
@@ -386,7 +387,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			});
 			setShowDataSource([...tempDataSource]);
 		} else if (dataIndex === 'exposeType') {
-			const tempDataSource = dataSource.sort((a, b) => {
+			const tempDataSource = showDataSource.sort((a, b) => {
 				const result = a['exposeType'].length - b['exposeType'].length;
 				return order === 'asc'
 					? result > 0
@@ -398,7 +399,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			});
 			setShowDataSource([...tempDataSource]);
 		} else if (dataIndex === 'protocol') {
-			const tempDataSource = dataSource.sort((a, b) => {
+			const tempDataSource = showDataSource.sort((a, b) => {
 				const result = a['protocol'].length - b['protocol'].length;
 				return order === 'asc'
 					? result > 0
@@ -423,7 +424,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					selected={selected}
 					changeSelected={(value: string) => {
 						setSelected(value);
-						if (location.state.middlewareName !== '') {
+						if (
+							location.state &&
+							location.state.middlewareName !== ''
+						) {
 							setSearchText('');
 							location.state.middlewareName = '';
 							getData('');
@@ -496,7 +500,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="创建时间"
 						width={180}
-						dataIndex="creatTime"
+						dataIndex="createTime"
 						sortable={true}
 						cell={timeRender}
 					/>

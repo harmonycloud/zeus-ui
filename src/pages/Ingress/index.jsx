@@ -379,7 +379,7 @@ function IngressList(props) {
 					<Table.Column
 						title="路由名称/映射名称"
 						dataIndex="ingressName"
-						resizable
+						width={220}
 						cell={nameRender}
 					/>
 					<Table.Column
@@ -387,25 +387,36 @@ function IngressList(props) {
 						dataIndex="middlewareType"
 						filters={entry === 'detail' ? null : instanceType}
 						filterMode="single"
+						width={200}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
 						filters={entry === 'detail' ? null : exposedWay}
 						filterMode="single"
+						width={150}
 					/>
-					<Table.Column title="协议" dataIndex="protocol" />
-					<Table.Column title="访问地址" cell={addressRender} />
+					<Table.Column
+						title="协议"
+						dataIndex="protocol"
+						width={100}
+					/>
+					<Table.Column
+						title="访问地址"
+						cell={addressRender}
+						width={200}
+					/>
 					<Table.Column
 						title="服务端口"
 						dataIndex="httpExposePort"
 						cell={portRender}
+						width={100}
 					/>
 					<Table.Column
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={188}
+						width={150}
 						lock="right"
 					/>
 				</Table>

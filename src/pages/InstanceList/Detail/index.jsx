@@ -58,6 +58,7 @@ const InstanceDetails = (props) => {
 	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
+	console.log(history);
 	useEffect(() => {
 		if (
 			JSON.stringify(globalVar.cluster) !== '{}' &&

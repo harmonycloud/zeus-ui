@@ -50,7 +50,9 @@ export default function ResourcePoolManagement(): JSX.Element {
 		primary: (
 			<Button
 				onClick={() =>
-					history.push('/systemManagement/addResourcePool')
+					history.push(
+						'/systemManagement/resourcePoolManagement/addResourcePool'
+					)
 				}
 				type="primary"
 			>
@@ -72,7 +74,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		console.log(dataIndex, order);
-		if (dataIndex === 'createTime') {
+		if (dataIndex === 'attributes.createTime') {
 			const dsTemp = clusterList.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
@@ -145,7 +147,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/systemManagement/addResourcePool/addOther/${record.id}`
+							`/systemManagement/resourcePoolManagement/addResourcePool/addOther/${record.id}`
 						);
 					}}
 				>
@@ -292,6 +294,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 						title="创建时间"
 						dataIndex="attributes.createTime"
 						cell={timeRender}
+						sortable
 					/>
 					<Table.Column
 						title="操作"
