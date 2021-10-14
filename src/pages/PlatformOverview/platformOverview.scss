@@ -226,13 +226,10 @@
 			}
 		}
 		.center-content{
-			height: 516px;
 			display: flex;
 			.left-content {
 				height: 100%;
 				width: 75%;
-				display: flex;
-				flex-wrap: wrap;
 				margin-right: 16px;
 				.control-container{
 					height: calc(100% - 32px);
@@ -255,14 +252,13 @@
 				.system-info{
 					text-align: center;
 					.version{
-						// width: 106px;
 						height: 28px;
 						font-size: 20px;
 						font-family: PingFangSC-Medium, PingFang SC;
 						font-weight: 500;
 						color: #0064C8;
 						line-height: 28px;
-						margin: 30px auto 10px;
+						margin: 20px auto 10px;
 					}
 				}
 			}
