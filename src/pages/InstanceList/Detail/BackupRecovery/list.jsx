@@ -121,7 +121,8 @@ export default function List(props) {
 								const sendData = {
 									clusterId,
 									namespace,
-									backupName: record.backupName
+									backupName: record.backupName,
+									middlewareName: listData.name
 								};
 								deleteBackups(sendData)
 									.then((res) => {
