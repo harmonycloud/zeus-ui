@@ -41,9 +41,9 @@ export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 	// console.log(data);
 	const onOk = () => {
 		field.validate((error, values) => {
-			console.log(values);
+			// console.log(values);
 			if (!error) {
-				// onCreate(values);
+				onCreate(values);
 			}
 		});
 	};
@@ -77,7 +77,7 @@ export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 					required
 					requiredMessage="备份保留个数不能为空"
 				>
-					<NumberPicker type="inline" name="count" />
+					<NumberPicker defaultValue={1} type="inline" name="count" />
 				</Form.Item>
 				<Form.Item
 					label="备份周期"
