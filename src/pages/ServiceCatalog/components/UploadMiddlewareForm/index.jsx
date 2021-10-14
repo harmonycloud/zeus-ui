@@ -57,13 +57,22 @@ function UploadMiddlewareForm(props) {
 	function onError(info) {
 		console.log('error:', info);
 		if (info) {
-			Message.show(
-				messageConfig(
-					'error',
-					'失败',
-					`chart包上传失败,${info.response.errorMsg}`
+			const dialog = Dialog.show({
+				title: '失败',
+				content: '上架失败，不可上传旧版本或者已有版本哦。',
+				footer: (
+					<Button type="primary" onClick={() => dialog.hide()}>
+						我知道了
+					</Button>
 				)
-			);
+			});
+			// Message.show(
+			// 	messageConfig(
+			// 		'error',
+			// 		'失败',
+			// 		`chart包上传失败,${info.response.errorMsg}`
+			// 	)
+			// );
 		}
 	}
 

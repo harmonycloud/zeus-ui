@@ -17,7 +17,6 @@ import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import './index.scss';
-import { spawn } from 'child_process';
 
 interface versionProps {
 	globalVar: globalVarProps;
@@ -28,7 +27,8 @@ interface paramsProps {
 enum versionStatus {
 	now = '当前版本',
 	future = '可安装升级版本',
-	history = '历史版本'
+	history = '历史版本',
+	updating = '升级中'
 }
 function MiddlewareVersion(props: versionProps): JSX.Element {
 	const {
@@ -120,13 +120,13 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 		const color =
 			value === 'now'
 				? '#00A7FA'
-				: value === 'future'
+				: value === ('future' || 'updating')
 				? '#52C41A'
 				: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
-				: value === 'future'
+				: value === ('future' || 'updating')
 				? '#F6FFED'
 				: '#F5F5F5';
 		return (
@@ -154,8 +154,14 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 						安装升级
 					</LinkButton>
 				)}
+				{record.versionStatus === 'updating' && (
+					<LinkButton>升级中...</LinkButton>
+				)}
 				{record.versionStatus !== 'now' && (
-					<LinkButton onClick={() => shelves(record)}>
+					<LinkButton
+						disabled={record.versionStatus === 'updating'}
+						onClick={() => shelves(record)}
+					>
 						下架
 					</LinkButton>
 				)}
@@ -182,7 +188,20 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 								)
 							);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							const dialog = Dialog.show({
+								title: '失败',
+								content:
+									'升级失败，已维持升级前状态不变，可重试',
+								footer: (
+									<Button
+										type="primary"
+										onClick={() => dialog.hide()}
+									>
+										我知道了
+									</Button>
+								)
+							});
+							// Message.show(messageConfig('error', '失败', res));
 						}
 					})
 					.finally(() => {
@@ -253,7 +272,8 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 							filters={[
 								{ label: '当前状态', value: 'now' },
 								{ label: '可安装升级状态', value: 'future' },
-								{ label: '历史状态', value: 'history' }
+								{ label: '历史状态', value: 'history' },
+								{ label: '升级中', value: '升级中' }
 							]}
 							filterMode="single"
 							width={200}
