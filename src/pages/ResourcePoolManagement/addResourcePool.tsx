@@ -22,7 +22,7 @@ export default function AddResourcePool(): JSX.Element {
 						className="resource-pool-content"
 						onClick={() =>
 							history.push(
-								'/systemManagement/addResourcePool/addOther'
+								'/systemManagement/resourcePoolManagement/addResourcePool/addOther'
 							)
 						}
 					>

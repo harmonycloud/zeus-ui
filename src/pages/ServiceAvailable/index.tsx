@@ -500,7 +500,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="创建时间"
 						width={180}
-						dataIndex="creatTime"
+						dataIndex="createTime"
 						sortable={true}
 						cell={timeRender}
 					/>

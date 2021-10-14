@@ -38,25 +38,28 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 	const field = Field.useField();
-	console.log(data);
+	// console.log(data);
 	const onOk = () => {
 		field.validate((error, values) => {
+			console.log(values);
 			if (!error) {
-				onCreate(values);
+				// onCreate(values);
 			}
 		});
 	};
 	useEffect(() => {
-		const arr = data.time.split(':');
-		const obj = {
-			hour: arr[0],
-			minute: arr[1]
-		};
-		field.setValues({
-			count: data.limitRecord,
-			cycle: data.cycle.split(',').map((item) => listMap[item]),
-			time: moment(obj)
-		});
+		if (data.configed) {
+			const arr = data.time.split(':');
+			const obj = {
+				hour: arr[0],
+				minute: arr[1]
+			};
+			field.setValues({
+				count: data.limitRecord,
+				cycle: data.cycle.split(',').map((item) => listMap[item]),
+				time: moment(obj)
+			});
+		}
 	}, [data]);
 
 	return (

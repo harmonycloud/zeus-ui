@@ -201,17 +201,17 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/systemManagement/addResourcePool"
+					path="/systemManagement/resourcePoolManagement/addResourcePool"
 					component={AddResourcePool}
 					exact
 				/>
 				<Route
-					path="/systemManagement/addResourcePool/addOther"
+					path="/systemManagement/resourcePoolManagement/addResourcePool/addOther"
 					component={AddForm}
 					exact
 				/>
 				<Route
-					path="/systemManagement/addResourcePool/addOther/:clusterId"
+					path="/systemManagement/resourcePoolManagement/addResourcePool/addOther/:clusterId"
 					component={AddForm}
 					exact
 				/>
