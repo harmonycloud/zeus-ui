@@ -443,9 +443,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					operation={Operation}
 					search={{
 						defaultValue: searchText,
-						value: searchText,
+						// value: searchText,
 						onSearch: handleSearch,
-						onChange: handleChange,
+						// onChange: handleChange,
 						placeholder:
 							'请输入暴露路由名称、服务名称/中文别名、访问地址搜索'
 					}}

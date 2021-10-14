@@ -108,7 +108,7 @@ function UserManage(): JSX.Element {
 	) => {
 		Dialog.show({
 			title: '操作确认',
-			content: '该账户的密码已重置为：Ab123456!',
+			content: '该账户的密码已重置为：zeus123.com',
 			onOk: () => {
 				resetPassword({ userName: record.userName }).then((res) => {
 					if (res.success) {
@@ -196,11 +196,11 @@ function UserManage(): JSX.Element {
 						删除
 					</LinkButton>
 				) : null}
-				<LinkButton onClick={() => resetPasswordHandle(record)}>
-					密码重置
-				</LinkButton>
 				<LinkButton onClick={() => editRole(record)}>
 					关联角色
+				</LinkButton>
+				<LinkButton onClick={() => resetPasswordHandle(record)}>
+					密码重置
 				</LinkButton>
 			</Actions>
 		);
