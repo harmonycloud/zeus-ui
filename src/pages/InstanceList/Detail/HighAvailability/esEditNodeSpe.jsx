@@ -28,7 +28,7 @@ const formItemLayout = {
 };
 
 export default function EsEditNodeSpe(props) {
-	const { visible, onCreate, onCancel, data } = props;
+	const { visible, onCreate, onCancel, data: dataes } = props;
 	const [nodeModify, setNodeModify] = useState({
 		nodeName: '',
 		flag: false
@@ -46,19 +46,19 @@ export default function EsEditNodeSpe(props) {
 			value: 'Customize'
 		}
 	];
-	const [mode, setMode] = useState(data.mode);
+	const [mode, setMode] = useState(dataes.mode);
 	const [nodeObj, setNodeObj] = useState({});
 
 	useEffect(() => {
-		let { master, kibana, data: dataes, client, cold } = data.quota;
+		let { master, kibana, data, client, cold } = dataes.quota;
 		master.title = '主节点';
 		kibana.title = 'Kibana节点';
-		dataes.title = '数据节点';
+		data.title = '数据节点';
 		client.title = '协调节点';
 		cold.title = '冷数据节点';
 		master.cpu = Number(master.cpu);
 		kibana.cpu = Number(kibana.cpu);
-		dataes.cpu = Number(dataes.cpu);
+		data.cpu = Number(data.cpu);
 		client.cpu = Number(client.cpu);
 		cold.cpu = Number(cold.cpu);
 		master.memory =
@@ -69,10 +69,10 @@ export default function EsEditNodeSpe(props) {
 			typeof kibana.memory === 'string'
 				? Number(kibana.memory.substring(0, kibana.memory.length - 2))
 				: kibana.memory;
-		dataes.memory =
-			typeof dataes.memory === 'string'
-				? Number(dataes.memory.substring(0, dataes.memory.length - 2))
-				: dataes.memory;
+		data.memory =
+			typeof data.memory === 'string'
+				? Number(data.memory.substring(0, data.memory.length - 2))
+				: data.memory;
 		client.memory =
 			typeof client.memory === 'string'
 				? Number(client.memory.substring(0, client.memory.length - 2))
@@ -81,16 +81,16 @@ export default function EsEditNodeSpe(props) {
 			typeof cold.memory === 'string'
 				? Number(cold.memory.substring(0, cold.memory.length - 2))
 				: cold.memory;
-		if (data.mode === 'simple') {
+		if (dataes.mode === 'simple') {
 			master.disabled = false;
 			kibana.disabled = false;
 			client.disabled = true;
-			dataes.disabled = true;
+			data.disabled = true;
 			cold.disabled = true;
-		} else if (data.mode === 'regular') {
+		} else if (dataes.mode === 'regular') {
 			master.disabled = false;
 			kibana.disabled = false;
-			dataes.disabled = false;
+			data.disabled = false;
 			client.disabled = true;
 			cold.disabled = true;
 		} else if (data.mode === 'complex') {
@@ -111,9 +111,9 @@ export default function EsEditNodeSpe(props) {
 			}
 			master.disabled = false;
 			kibana.disabled = false;
-			dataes.disabled = false;
+			data.disabled = false;
 		}
-		setNodeObj({ master, kibana, dataes, client, cold });
+		setNodeObj({ master, kibana, data, client, cold });
 	}, []);
 
 	const modeList = [
@@ -532,7 +532,7 @@ export default function EsEditNodeSpe(props) {
 																	min={0.1}
 																	step={0.1}
 																	value={
-																		data
+																		dataes
 																			.quota[
 																			nodeModify
 																				.nodeName
@@ -562,7 +562,7 @@ export default function EsEditNodeSpe(props) {
 																	min={0.1}
 																	step={0.1}
 																	value={
-																		data
+																		dataes
 																			.quota[
 																			nodeModify
 																				.nodeName
@@ -598,7 +598,7 @@ export default function EsEditNodeSpe(props) {
 													}}
 													disabled
 													value={
-														data.quota[
+														dataes.quota[
 															nodeModify.nodeName
 														].storageClassName
 													}
@@ -606,14 +606,14 @@ export default function EsEditNodeSpe(props) {
 												>
 													<Option
 														value={
-															data.quota[
+															dataes.quota[
 																nodeModify
 																	.nodeName
 															].storageClassName
 														}
 													>
 														{
-															data.quota[
+															dataes.quota[
 																nodeModify
 																	.nodeName
 															].storageClassName
@@ -631,12 +631,12 @@ export default function EsEditNodeSpe(props) {
 													name="storageClassQuota"
 													value={
 														Number(
-															data.quota[
+															dataes.quota[
 																nodeModify
 																	.nodeName
 															].storageClassQuota?.substring(
 																0,
-																data.quota[
+																dataes.quota[
 																	nodeModify
 																		.nodeName
 																]
