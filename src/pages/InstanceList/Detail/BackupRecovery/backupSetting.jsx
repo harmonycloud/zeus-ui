@@ -38,7 +38,7 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 	const field = Field.useField();
-	// console.log(data);
+	console.log(data);
 	const onOk = () => {
 		field.validate((error, values) => {
 			// console.log(values);
@@ -48,7 +48,7 @@ export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 		});
 	};
 	useEffect(() => {
-		if (data.configed) {
+		if (data.pause === 'off') {
 			const arr = data.time.split(':');
 			const obj = {
 				hour: arr[0],

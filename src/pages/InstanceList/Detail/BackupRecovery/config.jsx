@@ -38,7 +38,8 @@ export default function Config(props) {
 		limitRecord: 0,
 		cycle: '',
 		time: '',
-		nextBackupTime: ''
+		nextBackupTime: '',
+		pause: 'on'
 	});
 
 	useEffect(() => {
@@ -74,7 +75,8 @@ export default function Config(props) {
 							time: `${cycleList[1]}:${
 								cycleList[0] === '0' ? '00' : cycleList[0]
 							}`,
-							nextBackupTime: res.data.nextBackupTime
+							nextBackupTime: res.data.nextBackupTime,
+							pause: res.data.pause
 						});
 					}
 				}
@@ -90,15 +92,15 @@ export default function Config(props) {
 		const week = values.cycle.join(',');
 		const cron = `${minute} ${hour} ? ? ${week}`;
 
-		const sendData = {
-			clusterId,
-			namespace,
-			middlewareName: listData.name,
-			type: listData.type,
-			limitRecord: values.count,
-			cron
-		};
 		if (backupData.configed) {
+			const sendData = {
+				clusterId,
+				namespace,
+				middlewareName: listData.name,
+				type: listData.type,
+				limitRecord: values.count,
+				cron
+			};
 			addBackupConfig(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -113,6 +115,12 @@ export default function Config(props) {
 					getData();
 				});
 		} else {
+			const sendData = {
+				clusterId,
+				namespace,
+				middlewareName: listData.name,
+				type: listData.type
+			};
 			backupNow(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -172,13 +180,20 @@ export default function Config(props) {
 				? '请确认是否打开备份设置？'
 				: '请确认是否关闭备份设置',
 			onOk: () => {
+				if (checked) {
+					setBackupData({
+						...backupData,
+						configed: checked
+					});
+					return;
+				}
 				const sendData = {
 					clusterId,
 					namespace,
 					middlewareName: listData.name,
 					type: listData.type,
 					limitRecord: backupData.limitRecord,
-					pause: checked ? 'on' : 'off',
+					pause: checked ? 'off' : 'on',
 					configed: checked ? true : false,
 					cron
 				};

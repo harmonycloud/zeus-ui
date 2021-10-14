@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page } from '@alicloud/console-components-page';
 import { useHistory, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message, Icon } from '@alicloud/console-components';
 import BasicInfo from './BasicInfo/index';
 import HighAvailability from './HighAvailability/index';
 import BackupRecovery from './BackupRecovery/index';
@@ -388,6 +388,9 @@ const InstanceDetails = (props) => {
 					) : null
 				}
 			>
+				<Button onClick={() => refresh(selectedKey)}>
+					<Icon type="refresh" />
+				</Button>
 				{data?.mysqlDTO?.openDisasterRecoveryMode &&
 				data?.mysqlDTO?.isSource === false ? (
 					<Button type="primary" onClick={toDetail}>
