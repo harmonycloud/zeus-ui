@@ -26,6 +26,7 @@ import {
 	setNamespace,
 	setRefreshCluster
 } from '@/redux/globalVar/var';
+import moment from 'moment';
 
 interface serviceListProps {
 	globalVar: globalVarProps;
@@ -92,17 +93,18 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	}, [namespace]);
 	useEffect(() => {
 		const allList: serviceProps[] = [];
-		if (originData.length > 0) {
-			originData.forEach((item) => {
-				item.serviceList.length > 0 &&
-					item.serviceList.forEach((i) => {
-						i.imagePath = item.imagePath;
-						allList.push(i);
-					});
-			});
-		}
-		setDataSource(allList);
-		setShowDataSource(allList);
+		originData.map((item) => {
+			item.serviceList.length > 0 &&
+				item.serviceList.forEach((i) => {
+					i.imagePath = item.imagePath;
+					allList.push(i);
+				});
+		});
+		const l = allList.sort(
+			(a, b) =>
+				moment(b.createTime).valueOf() - moment(a.createTime).valueOf()
+		);
+		setDataSource(l);
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
 				setShowDataSource(
@@ -110,7 +112,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						.serviceList
 				);
 			} else {
-				setShowDataSource(allList);
+				setShowDataSource(l);
 			}
 		}
 	}, [originData]);
@@ -619,7 +621,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}
-					primaryKey="name"
+					primaryKey="id"
 					operation={Operation}
 					search={{
 						onSearch: handleSearch,

@@ -55,6 +55,31 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		location?.state?.middlewareName || ''
 	);
 	useEffect(() => {
+		const allList: serviceAvailableItemProps[] = [];
+		originData.map((item) => {
+			item.ingressList.length > 0 &&
+				item.ingressList.forEach((i) => {
+					i.imagePath = item.imagePath;
+					allList.push(i);
+				});
+		});
+		const l = allList.sort(
+			(a, b) =>
+				moment(b.createTime).valueOf() - moment(a.createTime).valueOf()
+		);
+		setDataSource(l);
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.ingressList
+				);
+			} else {
+				setShowDataSource(l);
+			}
+		}
+	}, [originData]);
+	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
 			if (mounted) {
@@ -87,28 +112,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			mounted = false;
 		};
 	}, [namespace]);
-	useEffect(() => {
-		const allList: serviceAvailableItemProps[] = [];
-		originData.forEach((item) => {
-			item.ingressList.length > 0 &&
-				item.ingressList.forEach((i) => {
-					i.imagePath = item.imagePath;
-					allList.push(i);
-				});
-		});
-		setDataSource(allList);
-		setShowDataSource(allList);
-		if (originData.length > 0) {
-			if (selected !== '全部服务') {
-				setShowDataSource(
-					originData.filter((item) => item.chartName === selected)[0]
-						.ingressList
-				);
-			} else {
-				setShowDataSource(allList);
-			}
-		}
-	}, [originData]);
 	useEffect(() => {
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
