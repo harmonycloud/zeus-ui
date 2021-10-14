@@ -35,13 +35,15 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			if (!item.children) {
 				return {
 					key: String(item.id),
-					label: item.aliasName
+					label: item.aliasName,
+					own: item.own ? 1 : 0
 				};
 			} else {
 				const children = item.children?.map((str: roleTree) => {
 					return {
 						key: String(str.id),
-						label: str.aliasName
+						label: str.aliasName,
+						own: str.own ? 1 : 0
 					};
 				});
 				const newChildren = filterArray(children);
@@ -53,6 +55,18 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			}
 		});
 		setTreeData(menuTree);
+		console.log(menuTree);
+
+		menuTree &&
+			menuTree.map((item) => {
+				if (
+					item.children &&
+					item.children.every((str: any) => str.own)
+				) {
+					defaultCheckedKeys && defaultCheckedKeys.push(item.key);
+				}
+			});
+
 		console.log(defaultCheckedKeys);
 
 		setCheckedKeys(defaultCheckedKeys);
@@ -105,6 +119,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 						harfCheckedKeys.indexOf(String(item.id)) !== -1
 					) {
 						item.own = true;
+						console.log(item);
 					} else {
 						item.own = false;
 					}
@@ -146,3 +161,6 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 }
 
 export default RolePermissions;
+function str(str: any) {
+	throw new Error('Function not implemented.');
+}

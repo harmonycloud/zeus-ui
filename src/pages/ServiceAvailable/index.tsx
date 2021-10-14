@@ -55,31 +55,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		location?.state?.middlewareName || ''
 	);
 	useEffect(() => {
-		const allList: serviceAvailableItemProps[] = [];
-		originData.map((item) => {
-			item.ingressList.length > 0 &&
-				item.ingressList.forEach((i) => {
-					i.imagePath = item.imagePath;
-					allList.push(i);
-				});
-		});
-		const l = allList.sort(
-			(a, b) =>
-				moment(b.createTime).valueOf() - moment(a.createTime).valueOf()
-		);
-		setDataSource(l);
-		if (originData.length > 0) {
-			if (selected !== '全部服务') {
-				setShowDataSource(
-					originData.filter((item) => item.chartName === selected)[0]
-						.ingressList
-				);
-			} else {
-				setShowDataSource(l);
-			}
-		}
-	}, [originData]);
-	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
 			if (mounted) {
@@ -112,6 +87,27 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			mounted = false;
 		};
 	}, [namespace]);
+	useEffect(() => {
+		const allList: serviceAvailableItemProps[] = [];
+		originData.forEach((item) => {
+			item.ingressList.length > 0 &&
+				item.ingressList.forEach((i) => {
+					i.imagePath = item.imagePath;
+					allList.push(i);
+				});
+		});
+		setDataSource(allList);
+		if (originData.length > 0) {
+			if (selected !== '全部服务') {
+				setShowDataSource(
+					originData.filter((item) => item.chartName === selected)[0]
+						.ingressList
+				);
+			} else {
+				setShowDataSource(allList);
+			}
+		}
+	}, [originData]);
 	useEffect(() => {
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
@@ -378,7 +374,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
-			const tempDataSource = showDataSource.sort((a, b) => {
+			const tempDataSource = dataSource.sort((a, b) => {
 				const result = a['createTimeNum'] - b['createTimeNum'];
 				return order === 'asc'
 					? result > 0
@@ -390,7 +386,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			});
 			setShowDataSource([...tempDataSource]);
 		} else if (dataIndex === 'exposeType') {
-			const tempDataSource = showDataSource.sort((a, b) => {
+			const tempDataSource = dataSource.sort((a, b) => {
 				const result = a['exposeType'].length - b['exposeType'].length;
 				return order === 'asc'
 					? result > 0
@@ -402,7 +398,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			});
 			setShowDataSource([...tempDataSource]);
 		} else if (dataIndex === 'protocol') {
-			const tempDataSource = showDataSource.sort((a, b) => {
+			const tempDataSource = dataSource.sort((a, b) => {
 				const result = a['protocol'].length - b['protocol'].length;
 				return order === 'asc'
 					? result > 0
@@ -427,10 +423,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					selected={selected}
 					changeSelected={(value: string) => {
 						setSelected(value);
-						if (
-							location.state &&
-							location.state.middlewareName !== ''
-						) {
+						if (location.state.middlewareName !== '') {
 							setSearchText('');
 							location.state.middlewareName = '';
 							getData('');
@@ -503,7 +496,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="创建时间"
 						width={180}
-						dataIndex="createTime"
+						dataIndex="creatTime"
 						sortable={true}
 						cell={timeRender}
 					/>
