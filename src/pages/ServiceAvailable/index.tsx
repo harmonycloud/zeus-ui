@@ -96,7 +96,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					allList.push(i);
 				});
 		});
-		setDataSource(allList);
+		const l = allList.sort(
+			(a, b) =>
+				moment(b.createTime).valueOf() - moment(a.createTime).valueOf()
+		);
+		setDataSource(l);
 		if (originData.length > 0) {
 			if (selected !== '全部服务') {
 				setShowDataSource(
@@ -104,7 +108,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						.ingressList
 				);
 			} else {
-				setShowDataSource(allList);
+				setShowDataSource(l);
 			}
 		}
 	}, [originData]);
@@ -496,7 +500,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="创建时间"
 						width={180}
-						dataIndex="creatTime"
+						dataIndex="createTime"
 						sortable={true}
 						cell={timeRender}
 					/>
