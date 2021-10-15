@@ -41,14 +41,13 @@ export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 	console.log(data);
 	const onOk = () => {
 		field.validate((error, values) => {
-			// console.log(values);
 			if (!error) {
 				onCreate(values);
 			}
 		});
 	};
 	useEffect(() => {
-		if (data.pause === 'off') {
+		if (data.config) {
 			const arr = data.time.split(':');
 			const obj = {
 				hour: arr[0],
