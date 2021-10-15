@@ -50,7 +50,7 @@ export default function Config(props) {
 		) {
 			getData();
 		}
-	}, []);
+	}, [listData]);
 
 	const getData = () => {
 		const sendData = {
@@ -92,15 +92,15 @@ export default function Config(props) {
 		const week = values.cycle.join(',');
 		const cron = `${minute} ${hour} ? ? ${week}`;
 
+		const sendData = {
+			clusterId,
+			namespace,
+			middlewareName: listData.name,
+			type: listData.type,
+			limitRecord: values.count,
+			cron
+		};
 		if (backupData.configed) {
-			const sendData = {
-				clusterId,
-				namespace,
-				middlewareName: listData.name,
-				type: listData.type,
-				limitRecord: values.count,
-				cron
-			};
 			addBackupConfig(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -115,12 +115,6 @@ export default function Config(props) {
 					getData();
 				});
 		} else {
-			const sendData = {
-				clusterId,
-				namespace,
-				middlewareName: listData.name,
-				type: listData.type
-			};
 			backupNow(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -180,46 +174,43 @@ export default function Config(props) {
 				? '请确认是否打开备份设置？'
 				: '请确认是否关闭备份设置',
 			onOk: () => {
-				if (checked) {
-					setBackupData({
-						...backupData,
-						configed: checked
+				if (backupData.configed) {
+					const sendData = {
+						clusterId,
+						namespace,
+						middlewareName: listData.name,
+						type: listData.type,
+						limitRecord: backupData.limitRecord,
+						pause: checked ? 'off' : 'on',
+						cron
+					};
+					addBackupConfig(sendData).then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									`${
+										checked
+											? '备份设置开启成功'
+											: '备份设置关闭成功'
+									}`
+								)
+							);
+							setBackupData({
+								...backupData,
+								pause: checked ? 'off' : 'on'
+							});
+							getData();
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
 					});
-					return;
+				} else {
+					Message.show(
+						messageConfig('error', '失败', '请先配置备份信息！')
+					);
 				}
-				const sendData = {
-					clusterId,
-					namespace,
-					middlewareName: listData.name,
-					type: listData.type,
-					limitRecord: backupData.limitRecord,
-					pause: checked ? 'off' : 'on',
-					configed: checked ? true : false,
-					cron
-				};
-				// console.log(sendData);
-				addBackupConfig(sendData).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								`${
-									checked
-										? '备份设置开启成功'
-										: '备份设置关闭成功'
-								}`
-							)
-						);
-						setBackupData({
-							...backupData,
-							configed: checked
-						});
-						getData();
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
 			}
 		});
 	};
@@ -273,10 +264,10 @@ export default function Config(props) {
 					<div className="backup-value">
 						<Switch
 							onChange={backupStatusChange}
-							checked={backupData.configed}
+							checked={backupData.pause === 'off'}
 						/>
 						<span>
-							{backupData.configed
+							{backupData.pause === 'off'
 								? '执行备份中'
 								: '停止执行备份'}
 						</span>
