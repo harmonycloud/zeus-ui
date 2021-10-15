@@ -50,7 +50,7 @@ export default function Config(props) {
 		) {
 			getData();
 		}
-	}, []);
+	}, [listData]);
 
 	const getData = () => {
 		const sendData = {
@@ -92,15 +92,15 @@ export default function Config(props) {
 		const week = values.cycle.join(',');
 		const cron = `${minute} ${hour} ? ? ${week}`;
 
+		const sendData = {
+			clusterId,
+			namespace,
+			middlewareName: listData.name,
+			type: listData.type,
+			limitRecord: values.count,
+			cron
+		};
 		if (backupData.configed) {
-			const sendData = {
-				clusterId,
-				namespace,
-				middlewareName: listData.name,
-				type: listData.type,
-				limitRecord: values.count,
-				cron
-			};
 			addBackupConfig(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -115,12 +115,6 @@ export default function Config(props) {
 					getData();
 				});
 		} else {
-			const sendData = {
-				clusterId,
-				namespace,
-				middlewareName: listData.name,
-				type: listData.type
-			};
 			backupNow(sendData)
 				.then((res) => {
 					if (res.success) {

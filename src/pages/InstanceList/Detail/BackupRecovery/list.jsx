@@ -185,6 +185,7 @@ export default function List(props) {
 					<Table.Column
 						title="备份时间"
 						dataIndex="backupTime"
+						width={180}
 						// cell={dateRender}
 					/>
 					{/* <Table.Column
@@ -196,9 +197,14 @@ export default function List(props) {
 						title="状态"
 						dataIndex="status"
 						cell={statusBackupRender}
+						width={150}
 					/>
 					<Table.Column title="位置" dataIndex="backupAddressList" />
-					<Table.Column title="操作" cell={actionRender} />
+					<Table.Column
+						title="操作"
+						cell={actionRender}
+						width={150}
+					/>
 				</Table>
 			) : (
 				<ComponentsLoading type="backup" clusterId={clusterId} />
