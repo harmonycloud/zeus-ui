@@ -60,7 +60,7 @@ function UserManage(): JSX.Element {
 		return () => {
 			mounted = false;
 		};
-	}, [keyword]);
+	}, []);
 	const onRefresh: () => void = () => {
 		getUserList({ keyword: keyword }).then((res) => {
 			if (res.success) {
@@ -70,8 +70,11 @@ function UserManage(): JSX.Element {
 			}
 		});
 	};
-	const handleSearch: (value: string) => void = (value: string) => {
+	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const handleSearch: (value: string) => void = (value: string) => {
+		onRefresh();
 	};
 	const edit: (record: userProps) => void = (record: userProps) => {
 		setUpdateData(record);
@@ -241,7 +244,9 @@ function UserManage(): JSX.Element {
 					search={{
 						placeholder:
 							'请输入登录账户、用户名、手机号、角色进行搜索',
-						onSearch: handleSearch
+						onSearch: handleSearch,
+						onChange: handleChange,
+						value: keyword
 					}}
 					searchStyle={{
 						width: '360px'

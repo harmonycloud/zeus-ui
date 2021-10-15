@@ -15,7 +15,10 @@ const RegistryNamespace = (props) => {
 	const [dataSource, setDataSource] = useState([]);
 	const [originDataSource, setOriginDataSource] = useState([]);
 	const [primaryKeys, setPrimaryKeys] = useState([]);
-
+	const [key, setKey] = useState('');
+	const handleChange = (value) => {
+		setKey(value);
+	};
 	const handleSearch = (value) => {
 		let tempArr = originDataSource.filter((item) => {
 			if (item.name.indexOf(value) > -1) return true;
@@ -110,6 +113,8 @@ const RegistryNamespace = (props) => {
 						dataSource={dataSource}
 						exact
 						search={{
+							value: key,
+							onChange: handleChange,
 							onSearch: handleSearch,
 							placeholder: '请输入搜索内容'
 						}}

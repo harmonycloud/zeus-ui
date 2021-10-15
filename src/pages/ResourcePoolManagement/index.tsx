@@ -20,10 +20,11 @@ export default function ResourcePoolManagement(): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [namespaceVisible, setNamespaceVisible] = useState<boolean>(false);
 	const [data, setData] = useState<clusterType>();
+	const [key, setKey] = useState<string>('');
 	const history = useHistory();
 	useEffect(() => {
 		let mounted = true;
-		getClusters({ detail: true }).then((res) => {
+		getClusters({ detail: true, key }).then((res) => {
 			if (res.success) {
 				if (mounted) {
 					setClusterList(res.data);
@@ -39,12 +40,18 @@ export default function ResourcePoolManagement(): JSX.Element {
 	useEffect(() => {
 		setDataSource(clusterList);
 	}, [clusterList]);
-	const getData = () => {
-		getClusters({ detail: true }).then((res) => {
+	const getData = (key: string) => {
+		getClusters({ detail: true, key }).then((res) => {
 			if (res.success) {
 				setClusterList(res.data);
 			}
 		});
+	};
+	const handleChange = (value: string) => {
+		setKey(value);
+	};
+	const handleSearch = (value: string) => {
+		getData(value);
 	};
 	const Operation = {
 		primary: (
@@ -260,8 +267,14 @@ export default function ResourcePoolManagement(): JSX.Element {
 					exact
 					fixedBarExpandWidth={[24]}
 					affixActionBar
-					// showRefresh
-					// onRefresh={getData}
+					showRefresh
+					onRefresh={() => getData(key)}
+					search={{
+						value: key,
+						onSearch: handleSearch,
+						onChange: handleChange,
+						placeholder: '请输入资源池名称搜索'
+					}}
 					primaryKey="key"
 					operation={Operation}
 					onFilter={onFilter}
@@ -308,7 +321,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 					id={data.id}
 					visible={visible}
 					onCancel={() => setVisible(false)}
-					updateFn={getData}
+					updateFn={() => getData(key)}
 				/>
 			)}
 			{namespaceVisible && data && (
@@ -316,7 +329,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 					visible={namespaceVisible}
 					clusterId={data.id}
 					cancelHandle={() => setNamespaceVisible(false)}
-					updateFn={getData}
+					updateFn={() => getData(key)}
 				/>
 			)}
 		</Page>

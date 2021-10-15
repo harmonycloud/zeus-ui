@@ -51,9 +51,10 @@ export default function ThresholdAlarm(props) {
 			</Button>
 		)
 	};
-
-	const handleSearch = (value) => {
+	const handleChange = (value) => {
 		setSearchText(value);
+	};
+	const handleSearch = (value) => {
 		getData(clusterId, middlewareName, namespace, value);
 	};
 
@@ -153,6 +154,8 @@ export default function ThresholdAlarm(props) {
 				}}
 				operation={Operation}
 				search={{
+					value: searchText,
+					onChange: handleChange,
 					onSearch: handleSearch,
 					placeholder: '请输入搜索内容'
 				}}

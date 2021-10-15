@@ -101,9 +101,10 @@ function ElasticsearchList(props) {
 			</Button>
 		)
 	};
-
-	const handleSearch = (value) => {
+	const handleChange = (value) => {
 		setKeyword(value);
+	};
+	const handleSearch = (value) => {
 		getData(globalCluster.id, globalNamespace.name, value);
 	};
 
@@ -235,6 +236,8 @@ function ElasticsearchList(props) {
 				primaryKey="key"
 				operation={Operation}
 				search={{
+					value: keyword,
+					onChange: handleChange,
 					onSearch: handleSearch,
 					placeholder: '请输入搜索内容'
 				}}

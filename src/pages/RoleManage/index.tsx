@@ -35,9 +35,18 @@ function RoleManage(): JSX.Element {
 		return () => {
 			mounted = false;
 		};
-	}, [keyword]);
-	const handleSearch: (value: string) => void = (value: string) => {
+	}, []);
+	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const handleSearch: (value: string) => void = (value: string) => {
+		getRoleList({ key: value }).then((res) => {
+			if (res.success) {
+				setDataSource(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	};
 	const onRefresh: () => void = () => {
 		getRoleList({ key: keyword }).then((res) => {
@@ -160,6 +169,8 @@ function RoleManage(): JSX.Element {
 				<Table
 					dataSource={dataSource}
 					search={{
+						value: keyword,
+						onChange: handleChange,
 						placeholder: '请输入角色名称、描述搜索',
 						onSearch: handleSearch
 					}}

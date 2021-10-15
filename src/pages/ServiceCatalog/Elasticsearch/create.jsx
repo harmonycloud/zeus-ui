@@ -27,7 +27,6 @@ import {
 	getMiddlewareDetail
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import ColumnDialog from '@/components/MidTable/columnDialog';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {

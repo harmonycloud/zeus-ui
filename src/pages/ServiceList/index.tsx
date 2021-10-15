@@ -128,9 +128,9 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			}
 		}
 	}, [selected]);
-	useEffect(() => {
-		getData();
-	}, [keyword]);
+	// useEffect(() => {
+	// 	getData();
+	// }, [keyword]);
 	const getData: () => void = () => {
 		if (JSON.stringify(namespace) !== '{}') {
 			const sendData = {
@@ -175,8 +175,11 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			setShowDataSource(dataSource);
 		}
 	};
-	const handleSearch = (value: string) => {
+	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const handleSearch = (value: string) => {
+		getData();
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
@@ -624,6 +627,8 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					primaryKey="id"
 					operation={Operation}
 					search={{
+						value: keyword,
+						onChange: handleChange,
 						onSearch: handleSearch,
 						placeholder: '请输入搜索内容'
 					}}
