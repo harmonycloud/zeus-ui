@@ -166,13 +166,20 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	};
 	const handleFilterBackup = (checked: boolean) => {
 		setBackupCheck(checked);
+		let list = [];
+		if (selected !== '全部服务') {
+			list = originData.filter((item) => item.chartName === selected)[0]
+				.serviceList;
+		} else {
+			list = dataSource;
+		}
 		if (checked) {
-			const list = dataSource.filter(
+			const listTemp = list.filter(
 				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
 			);
-			setShowDataSource(list);
+			setShowDataSource(listTemp);
 		} else {
-			setShowDataSource(dataSource);
+			setShowDataSource(list);
 		}
 	};
 	const handleChange: (value: string) => void = (value: string) => {
@@ -200,7 +207,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		const {
 			status: { selectedKeys }
 		} = filterParams;
-		console.log(filterParams);
 		let list = [];
 		if (selected !== '全部服务') {
 			list = originData.filter((item) => item.chartName === selected)[0]
