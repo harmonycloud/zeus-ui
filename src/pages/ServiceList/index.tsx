@@ -200,16 +200,24 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		const {
 			status: { selectedKeys }
 		} = filterParams;
+		console.log(filterParams);
+		let list = [];
+		if (selected !== '全部服务') {
+			list = originData.filter((item) => item.chartName === selected)[0]
+				.serviceList;
+		} else {
+			list = dataSource;
+		}
 		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource);
+			setShowDataSource(list);
 		} else {
 			let tempData: serviceProps[] = [];
 			if (selectedKeys[0] !== 'Other') {
-				tempData = showDataSource.filter((item) => {
+				tempData = list.filter((item) => {
 					return item.status === selectedKeys[0];
 				});
 			} else if (selectedKeys[0] === 'Other') {
-				tempData = showDataSource.filter((item) => {
+				tempData = list.filter((item) => {
 					return (
 						item.status !== 'Running' && item.status !== 'Creating'
 					);
