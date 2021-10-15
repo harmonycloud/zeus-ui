@@ -63,6 +63,7 @@ export default function Login() {
 					Storage.setSession('service-available-current', '全部服务');
 					Storage.setLocal('token', res.data.token);
 					Storage.setLocal('userName', res.data.userName);
+					Storage.setLocal('roleName', res.data);
 					if (res.data.rePassword) {
 						console.log(res.data.rePassword);
 						setVisible(true);

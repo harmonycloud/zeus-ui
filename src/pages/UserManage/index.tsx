@@ -199,9 +199,11 @@ function UserManage(): JSX.Element {
 						删除
 					</LinkButton>
 				) : null}
-				<LinkButton onClick={() => editRole(record)}>
-					关联角色
-				</LinkButton>
+				{record.userName !== 'admin' ? (
+					<LinkButton onClick={() => editRole(record)}>
+						关联角色
+					</LinkButton>
+				) : null}
 				<LinkButton onClick={() => resetPasswordHandle(record)}>
 					密码重置
 				</LinkButton>

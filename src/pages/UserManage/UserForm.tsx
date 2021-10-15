@@ -98,7 +98,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 		>
 			<Form field={field} {...formItemLayout} style={{ paddingLeft: 12 }}>
 				<p style={{ color: '#Ef595C', marginBottom: 16 }}>
-					默认密码：Ab123456!，
+					默认密码：zeus123.com，
 					登录后，请点击【个人头像-&gt;修改密码】重新设置
 				</p>
 				<FormItem

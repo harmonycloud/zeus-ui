@@ -1,4 +1,4 @@
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message, Balloon } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Table from '@/components/MidTable';
 import * as React from 'react';
@@ -10,7 +10,9 @@ import RoleForm from './RoleForm';
 import RolePermissions from './RolePermissions';
 import { getRoleList, deleteRole } from '@/services/role';
 import messageConfig from '@/components/messageConfig';
+import { getUserInformation } from '@/services/user';
 import './index.scss';
+import storage from '@/utils/storage';
 
 function RoleManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<roleProps[]>([]);
@@ -19,10 +21,12 @@ function RoleManage(): JSX.Element {
 	const [permissionVisible, setPermissionVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<roleProps>();
 	const [permissionData, setPermissionData] = useState<roleProps>();
-	const [isEdit, setIsEdit] = useState(true);
+	const [isEdit, setIsEdit] = useState<boolean>(true);
+	const [roleId, setRoleId] = useState<string>('');
 
 	useEffect(() => {
 		let mounted = true;
+		getUserInfo();
 		getRoleList({ key: keyword }).then((res) => {
 			if (res.success) {
 				if (mounted) {
@@ -38,6 +42,15 @@ function RoleManage(): JSX.Element {
 	}, []);
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const getUserInfo = async () => {
+		const res: { roleId?: string; [propsName: string]: any } =
+			await getUserInformation();
+		if (res.success) {
+			res.data && setRoleId(res.data.roleId);
+		} else {
+			Message.show(messageConfig('error', '失败', res));
+		}
 	};
 	const handleSearch: (value: string) => void = (value: string) => {
 		getRoleList({ key: value }).then((res) => {
@@ -66,7 +79,7 @@ function RoleManage(): JSX.Element {
 	const deleteRoleHandle: (record: roleProps) => void = (
 		record: roleProps
 	) => {
-		if (record.id === 1) return;
+		if (record.id === 1 || Number(roleId) === record.id) return;
 
 		Dialog.show({
 			title: '操作确认',
@@ -86,7 +99,7 @@ function RoleManage(): JSX.Element {
 		});
 	};
 	const permissionEdit: (record: roleProps) => void = (record: roleProps) => {
-		if (record.id === 1) return;
+		if (record.id === 1 || Number(roleId) === record.id) return;
 
 		setPermissionData(record);
 		setPermissionVisible(true);
@@ -94,34 +107,114 @@ function RoleManage(): JSX.Element {
 	const actionRender = (value: string, index: number, record: roleProps) => {
 		return (
 			<Actions>
-				<LinkButton
-					style={{
-						color: record.id === 1 ? '#ddd' : '#0070cc',
-						cursor: record.id === 1 ? 'not-allowed' : 'pointer'
-					}}
-					onClick={() => edit(record)}
+				<Balloon
+					trigger={
+						<LinkButton
+							style={{
+								color: record.id === 1 ? '#ddd' : '#0070cc',
+								cursor:
+									record.id === 1 ? 'not-allowed' : 'pointer'
+							}}
+							onClick={() => edit(record)}
+						>
+							编辑
+						</LinkButton>
+					}
+					closable={false}
 				>
-					编辑
-				</LinkButton>
-
-				<LinkButton
-					style={{
-						color: record.id === 1 ? '#ddd' : '#0070cc',
-						cursor: record.id === 1 ? 'not-allowed' : 'pointer'
-					}}
-					onClick={() => deleteRoleHandle(record)}
-				>
-					删除
-				</LinkButton>
-				<LinkButton
-					style={{
-						color: record.id === 1 ? '#ddd' : '#0070cc',
-						cursor: record.id === 1 ? 'not-allowed' : 'pointer'
-					}}
-					onClick={() => permissionEdit(record)}
-				>
-					分配角色权限
-				</LinkButton>
+					系统初始化最高权限角色，不可操作
+				</Balloon>
+				{Number(roleId) === record.id ? (
+					<Balloon
+						trigger={
+							<LinkButton
+								style={{
+									color:
+										record.id === 1 ||
+										Number(roleId) === record.id
+											? '#ddd'
+											: '#0070cc',
+									cursor:
+										record.id === 1 ||
+										Number(roleId) === record.id
+											? 'not-allowed'
+											: 'pointer'
+								}}
+								onClick={() => deleteRoleHandle(record)}
+							>
+								删除
+							</LinkButton>
+						}
+						closable={false}
+					>
+						{record.id === 1
+							? '系统初始化最高权限角色，不可操作'
+							: '不能删除自己的角色哦'}
+					</Balloon>
+				) : (
+					<LinkButton
+						style={{
+							color:
+								record.id === 1 || Number(roleId) === record.id
+									? '#ddd'
+									: '#0070cc',
+							cursor:
+								record.id === 1 || Number(roleId) === record.id
+									? 'not-allowed'
+									: 'pointer'
+						}}
+						onClick={() => deleteRoleHandle(record)}
+					>
+						删除
+					</LinkButton>
+				)}
+				{Number(roleId) === record.id ? (
+					<Balloon
+						trigger={
+							<LinkButton
+								style={{
+									color:
+										record.id === 1 ||
+										Number(roleId) === record.id ||
+										Number(roleId) === record.id
+											? '#ddd'
+											: '#0070cc',
+									cursor:
+										record.id === 1 ||
+										Number(roleId) === record.id
+											? 'not-allowed'
+											: 'pointer'
+								}}
+								onClick={() => permissionEdit(record)}
+							>
+								分配角色权限
+							</LinkButton>
+						}
+						closable={false}
+					>
+						{record.id === 1
+							? '系统初始化最高权限角色，不可操作'
+							: '不能改自己的角色权限哦'}
+					</Balloon>
+				) : (
+					<LinkButton
+						style={{
+							color:
+								record.id === 1 ||
+								Number(roleId) === record.id ||
+								Number(roleId) === record.id
+									? '#ddd'
+									: '#0070cc',
+							cursor:
+								record.id === 1 || Number(roleId) === record.id
+									? 'not-allowed'
+									: 'pointer'
+						}}
+						onClick={() => permissionEdit(record)}
+					>
+						分配角色权限
+					</LinkButton>
+				)}
 			</Actions>
 		);
 	};

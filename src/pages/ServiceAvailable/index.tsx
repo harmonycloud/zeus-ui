@@ -427,7 +427,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					selected={selected}
 					changeSelected={(value: string) => {
 						setSelected(value);
-						if (location.state.middlewareName !== '') {
+						if (
+							location.state &&
+							location.state.middlewareName !== ''
+						) {
 							setSearchText('');
 							location.state.middlewareName = '';
 							getData('');
