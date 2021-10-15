@@ -72,17 +72,6 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 	value: string
 ) => {
 	switch (value) {
-		case 'Creating':
-			return (
-				<>
-					<Icon
-						type="sync-alt"
-						size="xs"
-						style={{ color: '#0091FF' }}
-					/>{' '}
-					创建中
-				</>
-			);
 		case 'Running':
 			return (
 				<>
@@ -91,7 +80,7 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#0091FF' }}
 					/>{' '}
-					运行中
+					进行中
 				</>
 			);
 		case 'Failed':
@@ -102,10 +91,10 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#C80000' }}
 					/>{' '}
-					运行失败
+					失败
 				</>
 			);
-		case 'Complete':
+		case 'Success':
 			return (
 				<>
 					<Icon
@@ -113,18 +102,7 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#00A700' }}
 					/>{' '}
-					成功完成
-				</>
-			);
-		case 'Unknown':
-			return (
-				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					运行状态未知
+					成功
 				</>
 			);
 		default:
@@ -135,7 +113,7 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#C80000' }}
 					/>{' '}
-					运行异常
+					未知
 				</>
 			);
 	}

@@ -195,7 +195,7 @@ export default function List(props) {
 					/> */}
 					<Table.Column
 						title="状态"
-						dataIndex="status"
+						dataIndex="phrase"
 						cell={statusBackupRender}
 						width={150}
 					/>
