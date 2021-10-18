@@ -55,6 +55,8 @@ const InstanceDetails = (props) => {
 	const [status, setStatus] = useState();
 	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
 	const [visible, setVisible] = useState(false);
+	const [waringVisible, setWaringVisible] = useState(true);
+	const [reason, setReason] = useState('');
 	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
@@ -94,6 +96,7 @@ const InstanceDetails = (props) => {
 		getMiddlewareDetail(sendData).then((res) => {
 			if (res.success) {
 				setData(res.data);
+				setReason(res.data.reason);
 				// setStorageClassName(res?.data?.quota?.mysql?.storageClassName);
 				setStatus(res.data.status || 'Failed');
 				if (res.data.dynamicValues) {
@@ -398,6 +401,22 @@ const InstanceDetails = (props) => {
 					</Button>
 				) : null}
 			</Page.Header>
+			{waringVisible && reason && (
+				<div className="warning-info">
+					<Icon
+						className="warning-icon"
+						size={'small'}
+						type="warning"
+					/>
+					<span className="info-text">{reason}</span>
+					<Icon
+						className="warning-close"
+						size={'xxs'}
+						type="times"
+						onClick={() => setWaringVisible(false)}
+					/>
+				</div>
+			)}
 			<div style={{ padding: '0px 40px 15px 40px' }}>
 				<DetailMenu selected={selectedKey} handleMenu={menuSelect} />
 			</div>
