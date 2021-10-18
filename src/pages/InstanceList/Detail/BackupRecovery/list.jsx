@@ -168,6 +168,19 @@ export default function List(props) {
 			</Button>
 		)
 	};
+	const addressListRender = (value, index, record) => {
+		if (value) {
+			return (
+				<div>
+					{value.map((item, index) => (
+						<p key={index}>{item}</p>
+					))}
+				</div>
+			);
+		} else {
+			return <div></div>;
+		}
+	};
 
 	return (
 		<div style={{ marginTop: 16 }}>
@@ -199,7 +212,11 @@ export default function List(props) {
 						cell={statusBackupRender}
 						width={150}
 					/>
-					<Table.Column title="位置" dataIndex="backupAddressList" />
+					<Table.Column
+						title="位置"
+						dataIndex="backupAddressList"
+						cell={addressListRender}
+					/>
 					<Table.Column
 						title="操作"
 						cell={actionRender}
