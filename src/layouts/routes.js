@@ -116,6 +116,11 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务列表 */}
 				<Route path="/serviceList" component={ServiceList} exact />
+				<Route
+					path="/serviceList/issueService"
+					component={MiddlewareRepository}
+					exact
+				/>
 				{/* 服务详情 - 实例详情*/}
 				<Route
 					path="/serviceList/:currentTab/:middlewareName/:type/:chartVersion"
