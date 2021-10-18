@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Button, Radio, Message } from '@alicloud/console-components';
+import { Button, Radio, Message, Icon } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getMiddlewareRepository } from '@/services/repository';
 import { StoreState, globalVarProps } from '@/types/index';
@@ -32,7 +32,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 				clusterId: cluster.id,
 				namespace: namespace.name
 			}).then((res) => {
-				console.log(res);
 				if (res.success) {
 					if (mounted) {
 						setOriginData(res.data);
@@ -53,7 +52,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const list = Array.from(
 				new Set(originData.map((item) => item.type))
 			);
-			console.log(list);
 			const obj = {};
 			list.forEach((item) => {
 				if (item === null) {
@@ -76,7 +74,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			clusterId: cluster.id,
 			namespace: namespace.name
 		}).then((res) => {
-			console.log(res);
 			if (res.success) {
 				setOriginData(res.data);
 			} else {
@@ -89,7 +86,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const list = Array.from(
 				new Set(originData.map((item) => item.type))
 			);
-			console.log(list);
 			const obj = {};
 			list.forEach((item) => {
 				if (item === null) {
@@ -139,16 +135,24 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					<Button type="primary" onClick={() => setVisible(true)}>
 						上架中间件
 					</Button>
-					<RadioGroup
-						dataSource={[
-							{ value: 'type', label: '类型' },
-							{ value: 'source', label: '来源' }
-						]}
-						shape="button"
-						size="large"
-						value={rule}
-						onChange={(value) => setRule(value as string)}
-					/>
+					<div className="middleware-repository-right-layout">
+						<RadioGroup
+							dataSource={[
+								{ value: 'type', label: '类型' },
+								{ value: 'source', label: '来源' }
+							]}
+							shape="button"
+							size="large"
+							value={rule}
+							onChange={(value) => setRule(value as string)}
+						/>
+						<div
+							className="middleware-repository-refresh-btn"
+							onClick={getData}
+						>
+							<Icon type="refresh" size="xs" color="#333333" />
+						</div>
+					</div>
 				</div>
 				<div className="middleware-repository-list-display">
 					{JSON.stringify(dataSource) !== '{}' &&
@@ -160,9 +164,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								>
 									<p>{key}</p>
 									<div className="middleware-repository-list-content">
-										{console.log(
-											dataSource[key].length / 7
-										)}
 										{dataSource[key].map((item) => {
 											return (
 												<MiddlewareItem
