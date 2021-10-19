@@ -339,12 +339,12 @@ export default function LogFile(props) {
 	return (
 		<div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
 						<Col span={6}>
 							<label>实例列表</label>
 						</Col>
-						<Col span={16}>
+						<Col span={18}>
 							<Select
 								placeholder="请选择实例"
 								value={pod}
@@ -361,12 +361,12 @@ export default function LogFile(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
 						<Col span={6}>
 							<label>容器列表</label>
 						</Col>
-						<Col span={16}>
+						<Col span={18}>
 							<Select
 								placeholder="请选择容器"
 								value={container}
@@ -404,12 +404,12 @@ export default function LogFile(props) {
 						</Col>
 					</Row>
 				</div> */}
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
 						<Col span={6}>
 							<label>搜索类型</label>
 						</Col>
-						<Col span={16}>
+						<Col span={18}>
 							<Select
 								placeholder="请选择搜索类型"
 								value={searchType}
@@ -425,12 +425,12 @@ export default function LogFile(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
 						<Col span={6}>
 							<label>关键字</label>
 						</Col>
-						<Col span={16}>
+						<Col span={18}>
 							<Input
 								style={{ width: '100%' }}
 								value={keyword}
@@ -439,19 +439,15 @@ export default function LogFile(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
 						<TimeSelect source="log" timeSelect={onTimeChange} />
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
-					<Row>
-						<Col offset={18}>
-							<Button type="primary" onClick={handleClick}>
-								搜索
-							</Button>
-						</Col>
-					</Row>
+				<div className={styles['filter-item-standard']}>
+					<Button type="primary" onClick={handleClick}>
+						搜索
+					</Button>
 				</div>
 			</div>
 			{logPaths.length > 0 && (

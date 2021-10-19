@@ -153,12 +153,12 @@ export default function SlowLog(props) {
 	return (
 		<div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
 						<Col span={6}>
 							<label>搜索类型</label>
 						</Col>
-						<Col span={16}>
+						<Col span={18}>
 							<Select
 								placeholder="请选择搜索类型"
 								value={searchType}
@@ -174,12 +174,12 @@ export default function SlowLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
 						<Col span={6}>
 							<label>关键字</label>
 						</Col>
-						<Col span={16}>
+						<Col span={18}>
 							<Input
 								style={{ width: '100%' }}
 								value={keyword}
@@ -188,36 +188,34 @@ export default function SlowLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
 						<TimeSelect source="log" timeSelect={onTimeChange} />
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col offset={6} span={4}>
+						<Col offset={4} span={4}>
 							<label>执行时长</label>
 						</Col>
-						<Col span={12}>
+						<Col span={16}>
 							<NumberRange unit="秒" numberRange={numberRange} />
 						</Col>
 					</Row>
 				</div>
 				<div className={styles['filter-item-search']}>
-					<Row>
-						<Col offset={20}>
-							<Button
-								onClick={slowLogDownload}
-								type="normal"
-								style={{ marginRight: 12 }}
-							>
-								<Icon type="arrow-to-bottom" />
-							</Button>
-							<Button type="primary" onClick={handleClick}>
-								搜索
-							</Button>
-						</Col>
-					</Row>
+					<>
+						<Button type="primary" onClick={handleClick}>
+							搜索
+						</Button>
+						<Button
+							onClick={slowLogDownload}
+							type="normal"
+							style={{ marginRight: 12 }}
+						>
+							<Icon type="arrow-to-bottom" />
+						</Button>
+					</>
 				</div>
 			</div>
 			<Table dataSource={dataSource}>
