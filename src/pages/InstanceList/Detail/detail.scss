@@ -6,7 +6,7 @@
 	.blue-line{
 		width: 1px;
 		height: 14px;
-		border: 1px solid #0064C8;
+		border: 1px solid #0070cc;
 	}
 	.detail-title{
 		@include lineHeight(22px);
@@ -31,7 +31,7 @@
 	}
 	.backup-action{
 		@include lineHeight(20px);
-		color: #0064C8;
+		color: #0070cc;
 		cursor: pointer;
 	}
 }
@@ -66,7 +66,7 @@
 	.blue-line{
 		width: 1px;
 		height: 14px;
-		border: 1px solid #0064C8;
+		border: 1px solid #0070cc;
 		margin-right: 8px;
 	}
 }
@@ -106,7 +106,7 @@
 		.blue-line{
 			width: 1px;
 			height: 14px;
-			border: 1px solid #0064C8;
+			border: 1px solid #0070cc;
 		}
 		.detail-title{
 			@include lineHeight(22px);
@@ -119,7 +119,7 @@
 }
 .details-go-back{
 	&:hover{
-		color: #0064C8;
+		color: #0070cc;
 	}
 }
 .balloon-text{
@@ -144,7 +144,7 @@
 	margin-bottom: 16px;
 	cursor: pointer;
 	.create-alarm-text{
-		color: #0064C8;
+		color: #0070cc;
 		margin-left: 8px;
 		font-size: $font-size-base;
 		font-weight: 400;
@@ -190,5 +190,11 @@
 		margin-right: 10px !important;
 		line-height: 32px;
 		color: #333333;
+	}
+}
+.edit-icon{
+	cursor: pointer;
+	&:hover{
+		color: #0070cc;
 	}
 }

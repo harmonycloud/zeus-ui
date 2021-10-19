@@ -18,7 +18,11 @@ export default function Log(props) {
 		setSelectedKey(selectedKey);
 	};
 	const ConsoleMenu = () => (
-		<Menu selectedKeys={selectedKey} onItemClick={menuSelect}>
+		<Menu
+			selectedKeys={selectedKey}
+			onItemClick={menuSelect}
+			style={{ height: '100%' }}
+		>
 			<Menu.Item key="realtime">实时日志</Menu.Item>
 			{!customMid && <Menu.Item key="standard">标准日志</Menu.Item>}
 			{!customMid && <Menu.Item key="file">日志文件</Menu.Item>}

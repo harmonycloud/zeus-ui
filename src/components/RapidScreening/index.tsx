@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Icon } from '@alicloud/console-components';
 import Tag from './tag';
 import './index.scss';
@@ -16,7 +16,13 @@ interface rapidProps {
 export default function RapidScreening(props: rapidProps): JSX.Element {
 	const { list, selected, changeSelected } = props;
 	const [action, setAction] = useState<boolean>(true);
+	const [showMore, setShowMore] = useState<boolean>(false);
 	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const maxWidth = ref?.current?.clientWidth;
+		maxWidth && maxWidth >= 952 ? setShowMore(true) : setShowMore(false);
+	}, [list.length]);
 	return (
 		<div
 			className="rapid-screening-content"
@@ -38,23 +44,25 @@ export default function RapidScreening(props: rapidProps): JSX.Element {
 					);
 				})}
 			</div>
-			<div
-				className="rapid-screening-action"
-				onClick={() => {
-					if (ref.current) {
-						ref.current.scrollTop = 0;
-					}
-					setAction(!action);
-				}}
-				style={{ marginTop: action ? 0 : 4 }}
-			>
-				{action ? '更多' : '收起'}
-				<Icon
-					type={action ? 'angle-double-down' : 'angle-double-up'}
-					size="xs"
-					style={{ marginLeft: 4 }}
-				/>
-			</div>
+			{showMore && (
+				<div
+					className="rapid-screening-action"
+					onClick={() => {
+						if (ref.current) {
+							ref.current.scrollTop = 0;
+						}
+						setAction(!action);
+					}}
+					style={{ marginTop: action ? 0 : 4 }}
+				>
+					{action ? '更多' : '收起'}
+					<Icon
+						type={action ? 'angle-double-down' : 'angle-double-up'}
+						size="xs"
+						style={{ marginLeft: 4 }}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

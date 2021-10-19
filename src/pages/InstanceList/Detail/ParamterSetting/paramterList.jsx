@@ -211,7 +211,9 @@ export default function ParamterLIst(props) {
 				</span>
 				<BalloonForm
 					closable={false}
-					trigger={<Icon type="edit" size="xs" />}
+					trigger={
+						<Icon className="edit-icon" type="edit" size="xs" />
+					}
 					style={{ width: '300px' }}
 					onConfirm={(v) => updateValue(v, record)}
 					formProps={formItemLayout}

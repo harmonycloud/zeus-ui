@@ -171,7 +171,7 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 	width: 100%;
 }
 .page-header .next-icon:hover {
-  color: #0064c8;
+  color: #0070cc;
 }
 
 /** 常用显示 */
@@ -322,7 +322,7 @@ table.table-list tbody tr td {
 }
 /** 名称连接 */
 .name-link {
-  color: #0064c8;
+  color: #0070cc;
   cursor: pointer;
 }
 
