@@ -74,7 +74,7 @@ export default function Log(props) {
 	} else {
 		return (
 			<Page>
-				<Content menu={<ConsoleMenu />}>
+				<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
 					{childrenRender(selectedKey)}
 				</Content>
 			</Page>
