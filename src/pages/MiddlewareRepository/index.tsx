@@ -157,7 +157,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								{ value: 'source', label: '来源' }
 							]}
 							shape="button"
-							size="large"
+							// size="large"
 							value={rule}
 							onChange={(value) => setRule(value as string)}
 						/>

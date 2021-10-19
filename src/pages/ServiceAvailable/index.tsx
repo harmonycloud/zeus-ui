@@ -462,30 +462,30 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="暴露服务名称"
 						dataIndex="name"
 						cell={nameRender}
-						width={220}
+						width={190}
 						lock="left"
 					/>
 					<Table.Column
 						title="服务名称/中文别名"
 						dataIndex="middlewareName"
-						width={180}
+						width={140}
 						cell={middlewareNameRender}
 					/>
 					<Table.Column
 						title="服务类型"
 						dataIndex="middlewareType"
 						cell={iconTypeRender}
-						width={200}
+						width={130}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
-						width={150}
+						width={110}
 						sortable={true}
 					/>
 					<Table.Column
 						title="协议"
-						width={100}
+						width={80}
 						dataIndex="protocol"
 						sortable={true}
 					/>
@@ -502,7 +502,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					/>
 					<Table.Column
 						title="创建时间"
-						width={180}
+						width={160}
 						dataIndex="createTime"
 						sortable={true}
 						cell={timeRender}
@@ -511,7 +511,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={150}
+						width={70}
 						lock="right"
 					/>
 				</Table>

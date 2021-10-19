@@ -282,7 +282,7 @@ export default function MiddlewareItem(
 				className="middleware-item-status"
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
-				消息类型：
+				消息类型
 				<Balloon
 					trigger={
 						<CustomIcon

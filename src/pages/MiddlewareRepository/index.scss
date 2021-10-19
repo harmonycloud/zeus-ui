@@ -15,12 +15,12 @@ $component-name: 'middleware-repository';
 	.#{$component-name}-right-layout{
 		display: flex;
 		.#{$component-name}-refresh-btn {
-			width: 36px;
-			height: 36px;
+			width: 32px;
+			height: 32px;
 			border-radius: 2px;
 			border: 1px solid #C0C6CC;
 			text-align: center;
-			line-height: 36px;
+			line-height: 32px;
 			margin-left: 8px;
 			cursor: pointer;
 		}
