@@ -9,12 +9,6 @@ import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
 import './index.scss';
 
-const statusMap = {
-	0: '创建中',
-	1: '创建成功',
-	2: '待安装',
-	3: '运行异常'
-};
 const statusIconRender = (value: number) => {
 	switch (value) {
 		case 0:
@@ -102,6 +96,7 @@ export default function MiddlewareItem(
 		version
 	} = props;
 	const history = useHistory();
+	console.log(history);
 	const toVersion = () => {
 		history.push(`/middlewareRepository/versionManagement/${chartName}`);
 	};
@@ -208,58 +203,63 @@ export default function MiddlewareItem(
 					}
 					alt={name}
 				/>
-				<div className="middleware-item-action-content">
-					{status === 2 ? (
-						<>
+				{history.location.pathname === '/middlewareRepository' ? (
+					<div className="middleware-item-action-content">
+						{status === 2 ? (
+							<>
+								<div
+									className="middleware-item-action-item-two"
+									onClick={toVersion}
+								>
+									<CustomIcon
+										type="icon-banben"
+										style={{ color: 'white' }}
+									/>
+									版本
+								</div>
+								<div
+									className="middleware-item-action-item-two"
+									onClick={install}
+								>
+									<CustomIcon
+										type="icon-anzhuang"
+										style={{ color: 'white' }}
+									/>
+									安装
+								</div>
+							</>
+						) : (
+							<>
+								<div
+									className="middleware-item-action-item-two"
+									onClick={toVersion}
+								>
+									{/* <div className="middleware-item-action-icon"> */}
+									<CustomIcon
+										type="icon-banben"
+										style={{ color: 'white' }}
+									/>
+									版本
+									{/* </div> */}
+								</div>
+								<div
+									className="middleware-item-action-item-two"
+									onClick={unInstall}
+								>
+									<CustomIcon
+										type="icon-xiezai1"
+										style={{ color: 'white' }}
+									/>
+									卸载
+								</div>
+							</>
+						)}
+					</div>
+				) : (
+					<div className="middleware-item-action-content">
+						{status !== 2 ? (
 							<div
-								className="middleware-item-action-item-two"
-								onClick={toVersion}
-							>
-								{/* <div className="middleware-item-action-icon"> */}
-								<CustomIcon
-									type="icon-banben"
-									style={{ color: 'white' }}
-								/>
-								版本
-								{/* </div> */}
-							</div>
-							<div
-								className="middleware-item-action-item-two"
-								onClick={install}
-							>
-								<CustomIcon
-									type="icon-anzhuang"
-									style={{ color: 'white' }}
-								/>
-								安装
-							</div>
-						</>
-					) : (
-						<>
-							<div
-								className="middleware-item-action-item"
-								onClick={toVersion}
-							>
-								{/* <div className="middleware-item-action-icon"> */}
-								<CustomIcon
-									type="icon-banben"
-									style={{ color: 'white' }}
-								/>
-								版本
-								{/* </div> */}
-							</div>
-							<div
-								className="middleware-item-action-item"
-								onClick={unInstall}
-							>
-								<CustomIcon
-									type="icon-xiezai1"
-									style={{ color: 'white' }}
-								/>
-								卸载
-							</div>
-							<div
-								className="middleware-item-action-item"
+								className="middleware-item-action-item-one"
 								onClick={releaseMiddleware}
 							>
 								<CustomIcon
@@ -268,9 +268,9 @@ export default function MiddlewareItem(
 								/>
 								发布
 							</div>
-						</>
-					)}
-				</div>
+						) : null}
+					</div>
+				)}
 			</div>
 			<div
 				className="middleware-item-title"
@@ -282,7 +282,7 @@ export default function MiddlewareItem(
 				className="middleware-item-status"
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
-				消息类型：
+				消息类型
 				<Balloon
 					trigger={
 						<CustomIcon

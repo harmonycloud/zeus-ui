@@ -271,7 +271,7 @@ export default function AddServiceAvailableForm(
 				{protocol === 'TCP' && (
 					<FormItem
 						label="对外端口"
-						required
+						required={exposedWay === 'Ingress' ? true : false}
 						labelTextAlign="left"
 						requiredMessage="对外端口不能为空！"
 						format="number"
@@ -282,7 +282,11 @@ export default function AddServiceAvailableForm(
 							exposedWay === 'Ingress' ? 65535 : 32000
 						}`}
 						asterisk={false}
-						className="ne-required-ingress"
+						className={
+							exposedWay === 'Ingress'
+								? 'ne-required-ingress'
+								: ''
+						}
 					>
 						<Input
 							name="exposePort"

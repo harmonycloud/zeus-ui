@@ -1,25 +1,42 @@
+$standard-name: 'standard';
+$realtime-name: 'realtime';
+$slowlog-name: 'slowlog';
 .filter-wrapper {
 	padding: 8px 0;
 	flex-wrap: wrap;
+	justify-content: flex-start;
 }
-.filter-item {
-	margin: 8px 0;
-	width: 50%;
+@each $componentName in $standard-name,$realtime-name,$slowlog-name {
+	.filter-item-#{$componentName} {
+		margin: 8px 8px;
+		width: 48%;
+		label {
+			color: #1A1A1A;
+			line-height: 32px;
+			font-weight: 500;
+		}
+		&:nth-child(2n) {
+			margin: 8px 0px 8px 10px;
+			width: 49%;
+		}
+		&:nth-last-child(1) {
+			button {
+				float: right;
+			}
+		}
+	}
+}
+
+.filter-item-search{
+	margin-top: 8px;
+	width: 100%;
 	label {
 		color: #1A1A1A;
 		line-height: 32px;
 		font-weight: 500;
 	}
-}
-
-.filter-item-search{
-	margin: 8px 0;
-	width: 50%;
-	flex-grow: 2;
-	label {
-		color: #1A1A1A;
-		line-height: 32px;
-		font-weight: 500;
+	button {
+		float: right;
 	}
 }
 // @media (min-width: 1600px){

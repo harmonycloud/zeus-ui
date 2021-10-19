@@ -485,3 +485,6 @@ table.table-list tbody tr td {
 .icon-type-content > img {
 	margin-right: 4px;
 }
+.next-table-filter-footer {
+	margin: 10px 10px 10px;
+}

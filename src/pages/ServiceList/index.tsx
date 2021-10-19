@@ -323,7 +323,12 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	};
 	const Operation = {
 		primary: (
-			<Button onClick={createService} type="primary">
+			<Button
+				onClick={() => {
+					history.push('/serviceList/issueService');
+				}}
+				type="primary"
+			>
 				发布服务
 			</Button>
 		),

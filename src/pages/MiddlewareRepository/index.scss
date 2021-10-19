@@ -12,6 +12,19 @@ $component-name: 'middleware-repository';
 	display: flex;
 	justify-content: space-between;
 	margin-top: 24px;
+	.#{$component-name}-right-layout{
+		display: flex;
+		.#{$component-name}-refresh-btn {
+			width: 32px;
+			height: 32px;
+			border-radius: 2px;
+			border: 1px solid #C0C6CC;
+			text-align: center;
+			line-height: 32px;
+			margin-left: 8px;
+			cursor: pointer;
+		}
+	}
 }
 .#{$component-name}-list-display {
 	.#{$component-name}-list-item {

@@ -170,7 +170,7 @@ export default function ThresholdAlarm(props) {
 					title="状态"
 					dataIndex="status"
 					cell={alarmStatusRender}
-					width={100}
+					width={80}
 				/>
 				<Table.Column
 					title="报警规则"
@@ -187,13 +187,13 @@ export default function ThresholdAlarm(props) {
 					title="创建时间"
 					dataIndex="createTime"
 					cell={(value) => transTime.gmt2local(value)}
-					width={180}
+					width={160}
 				/>
 				<Table.Column
 					title="操作"
 					dataIndex="action"
 					cell={actionRender}
-					width={120}
+					width={60}
 					lock="right"
 				/>
 			</Table>
