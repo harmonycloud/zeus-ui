@@ -354,7 +354,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<div className="gray-circle">备</div>
 				)}
 				<div>
-					<div className="name-link">{record.middlewareName}</div>
+					<div>{record.middlewareName}</div>
 					<div>{record.middlewareNickName}</div>
 				</div>
 			</div>
@@ -461,7 +461,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="暴露服务名称"
 						dataIndex="name"
-						cell={nameRender}
+						// cell={nameRender}
 						width={190}
 						lock="left"
 					/>
