@@ -75,6 +75,22 @@ const statusIconRender = (value: number) => {
 					运行异常
 				</Balloon>
 			);
+		case 4:
+			return (
+				<Balloon
+					trigger={
+						<Icon
+							type="success"
+							size="small"
+							style={{ color: '#1DC11D', marginLeft: '6px' }}
+						/>
+					}
+					align="b"
+					closable={false}
+				>
+					运行正常
+				</Balloon>
+			);
 		default:
 			break;
 	}
@@ -228,6 +244,17 @@ export default function MiddlewareItem(
 									安装
 								</div>
 							</>
+						) : status === 4 ? (
+							<div
+								className="middleware-item-action-item-one"
+								onClick={toVersion}
+							>
+								<CustomIcon
+									type="icon-banben"
+									style={{ color: 'white' }}
+								/>
+								版本
+							</div>
 						) : (
 							<>
 								<div
