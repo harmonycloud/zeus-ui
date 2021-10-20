@@ -8,6 +8,7 @@ import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
 import { filtersProps } from '@/types/comment';
 import { StoreState, globalVarProps, clusterType } from '@/types/index';
+import './index.scss';
 
 interface stateProps {
 	middlewareName: string;
@@ -133,6 +134,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 					expandTriggerType="hover"
 					value={current}
 					changeOnSelect={true}
+					popupClassName="cascader-select"
 				/>
 			</Header>
 			<Content>{children}</Content>

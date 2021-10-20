@@ -325,7 +325,9 @@ function IngressList(props) {
 			{entry !== 'detail' ? (
 				<Page.Header title="对外路由"></Page.Header>
 			) : null}
-			<Page.Content style={entry !== 'detail' ? {} : { padding: '0 0' }}>
+			<Page.Content
+				style={entry !== 'detail' ? {} : { padding: '0 0', margin: 0 }}
+			>
 				{/* <div className="header-tips">
 					对外路由功能说明
 					<br />

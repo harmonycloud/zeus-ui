@@ -393,7 +393,7 @@ export default function OperationAudit(): JSX.Element {
 											modules.length === 0 &&
 											childModules.length === 0
 												? '#111111'
-												: '#0064C8'
+												: '#0070cc'
 									}}
 									onClick={() => setCasVisible(true)}
 								/>

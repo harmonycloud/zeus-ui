@@ -314,7 +314,7 @@ export default function MiddlewareItem(
 					trigger={
 						<CustomIcon
 							style={{
-								color: '#0064C8',
+								color: '#0070cc',
 								marginLeft: '6px',
 								visibility: official ? 'initial' : 'hidden'
 							}}

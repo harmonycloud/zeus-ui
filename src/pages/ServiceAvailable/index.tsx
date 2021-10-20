@@ -54,6 +54,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [searchText, setSearchText] = useState<string>(
 		location?.state?.middlewareName || ''
 	);
+	const [iconVisible, setIconVisible] = useState<boolean>(false);
+	const [adress, setAdress] = useState<string>('');
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -253,8 +255,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		return <div className="name-link">{value}</div>;
 	};
 	// * 浏览器复制到剪切板方法
-	const copyValue = (value: any) => {
+	const copyValue = (value: any, record: any) => {
 		const input = document.createElement('input');
+		setAdress(record.name);
+		setIconVisible(true);
 		document.body.appendChild(input);
 		input.style.position = 'absolute';
 		input.style.top = '0px';
@@ -267,18 +271,36 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		}
 		input.blur();
 		document.body.removeChild(input);
-		Message.show(messageConfig('success', '成功', '复制成功'));
+		setTimeout(() => {
+			setIconVisible(false);
+		}, 3000);
+		// Message.show(messageConfig('success', '成功', '复制成功'));
 	};
 	const addressRender = (value: string, index: number, record: any) => {
 		if (record.protocol === 'HTTP') {
 			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
 			return (
 				<>
-					<CustomIcon
-						type="icon-fuzhi"
-						size="xs"
-						onClick={() => copyValue(address)}
-					/>
+					<Balloon
+						trigger={
+							<CustomIcon
+								type="icon-fuzhi"
+								size="xs"
+								style={{ color: '#0070CC', cursor: 'pointer' }}
+								onClick={() => copyValue(address, record)}
+							/>
+						}
+						triggerType={'click'}
+						closable={false}
+						visible={iconVisible && adress === record.name}
+					>
+						<Icon
+							type={'success'}
+							style={{ color: '#00A700', marginRight: '5px' }}
+							size={'xs'}
+						/>
+						复制成功
+					</Balloon>
 					{address}
 				</>
 			);
@@ -295,13 +317,40 @@ function ServiceAvailable(props: serviceAvailableProps) {
 									}
 									return (
 										<div key={index}>
-											<CustomIcon
-												type="icon-fuzhi"
-												size="xs"
-												onClick={() =>
-													copyValue(address)
+											<Balloon
+												trigger={
+													<CustomIcon
+														type="icon-fuzhi"
+														size="xs"
+														style={{
+															color: '#0070CC',
+															cursor: 'pointer'
+														}}
+														onClick={() =>
+															copyValue(
+																address,
+																record
+															)
+														}
+													/>
 												}
-											/>
+												triggerType={'click'}
+												closable={false}
+												visible={
+													iconVisible &&
+													adress === record.name
+												}
+											>
+												<Icon
+													type={'success'}
+													style={{
+														color: '#00A700',
+														marginRight: '5px'
+													}}
+													size={'xs'}
+												/>
+												复制成功
+											</Balloon>
 											{address}
 										</div>
 									);
@@ -325,13 +374,40 @@ function ServiceAvailable(props: serviceAvailableProps) {
 											key={index}
 											className="balloon-tips"
 										>
-											<CustomIcon
-												type="icon-fuzhi"
-												size="xs"
-												onClick={() =>
-													copyValue(address)
+											<Balloon
+												trigger={
+													<CustomIcon
+														type="icon-fuzhi"
+														size="xs"
+														style={{
+															color: '#0070CC',
+															cursor: 'pointer'
+														}}
+														onClick={() =>
+															copyValue(
+																address,
+																record
+															)
+														}
+													/>
 												}
-											/>
+												triggerType={'click'}
+												closable={false}
+												visible={
+													iconVisible &&
+													adress === record.name
+												}
+											>
+												<Icon
+													type={'success'}
+													style={{
+														color: '#00A700',
+														marginRight: '5px'
+													}}
+													size={'xs'}
+												/>
+												复制成功
+											</Balloon>
 											{address}
 										</div>
 									);

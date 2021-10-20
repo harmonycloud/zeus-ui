@@ -266,7 +266,7 @@ export default function CreateAlarm(props) {
 					);
 				})}
 			<div className="create-alarm-content" onClick={addAlarm}>
-				<Icon type="add" size="small" style={{ color: '#0064C8' }} />
+				<Icon type="add" size="small" style={{ color: '#0070cc' }} />
 				<div className="create-alarm-text">添加报警规则</div>
 			</div>
 			<div className="create-alarm-form-layout">

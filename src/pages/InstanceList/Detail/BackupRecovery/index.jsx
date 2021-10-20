@@ -21,7 +21,11 @@ export default function BackupRecovery(props) {
 	};
 	const ConsoleMenu = () => {
 		return (
-			<Menu selectedKeys={selectedKey} onItemClick={menuSelect}>
+			<Menu
+				selectedKeys={selectedKey}
+				onItemClick={menuSelect}
+				style={{ height: '100%' }}
+			>
 				<Menu.Item key="list">备份列表</Menu.Item>
 				<Menu.Item key="config">备份设置</Menu.Item>
 			</Menu>
@@ -43,7 +47,7 @@ export default function BackupRecovery(props) {
 	} else {
 		return (
 			<Page>
-				<Content menu={<ConsoleMenu />}>
+				<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
 					{childrenRender(selectedKey)}
 				</Content>
 			</Page>

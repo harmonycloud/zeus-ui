@@ -21,7 +21,11 @@ export default function ParamterSetting(props) {
 		setSelectedKey(selectedKey);
 	};
 	const ConsoleMenu = () => (
-		<Menu selectedKeys={selectedKey} onItemClick={menuSelect}>
+		<Menu
+			selectedKeys={selectedKey}
+			onItemClick={menuSelect}
+			style={{ height: '100%' }}
+		>
 			<Menu.Item key="list">参数列表</Menu.Item>
 			<Menu.Item key="config">参数修改历史</Menu.Item>
 		</Menu>
@@ -57,7 +61,7 @@ export default function ParamterSetting(props) {
 	}
 	return (
 		<Page>
-			<Content menu={<ConsoleMenu />}>
+			<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
 				{childrenRender(selectedKey)}
 			</Content>
 		</Page>

@@ -401,7 +401,7 @@ const InstanceDetails = (props) => {
 					</Button>
 				) : null}
 			</Page.Header>
-			{waringVisible && reason && (
+			{waringVisible && reason && status !== 'Running' && (
 				<div className="warning-info">
 					<Icon
 						className="warning-icon"

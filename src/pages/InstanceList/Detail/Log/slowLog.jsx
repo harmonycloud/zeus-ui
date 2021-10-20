@@ -155,10 +155,10 @@ export default function SlowLog(props) {
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
 				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col span={6}>
+						<Col span={5}>
 							<label>搜索类型</label>
 						</Col>
-						<Col span={18}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择搜索类型"
 								value={searchType}
@@ -176,10 +176,10 @@ export default function SlowLog(props) {
 				</div>
 				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>关键字</label>
 						</Col>
-						<Col span={18}>
+						<Col span={19}>
 							<Input
 								style={{ width: '100%' }}
 								value={keyword}
@@ -195,10 +195,10 @@ export default function SlowLog(props) {
 				</div>
 				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col offset={4} span={4}>
+						<Col offset={2} span={3}>
 							<label>执行时长</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<NumberRange unit="秒" numberRange={numberRange} />
 						</Col>
 					</Row>

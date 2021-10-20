@@ -341,10 +341,10 @@ export default function LogFile(props) {
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
 				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col span={5}>
 							<label>实例列表</label>
 						</Col>
-						<Col span={18}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择实例"
 								value={pod}
@@ -363,10 +363,10 @@ export default function LogFile(props) {
 				</div>
 				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>容器列表</label>
 						</Col>
-						<Col span={18}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择容器"
 								value={container}
@@ -385,10 +385,10 @@ export default function LogFile(props) {
 				</div>
 				{/* <div className={styles['filter-item']}>
 					<Row>
-						<Col span={6}>
+						<Col span={5}>
 							<label>日志目录</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择日志目录"
 								value={logIndex}
@@ -406,10 +406,10 @@ export default function LogFile(props) {
 				</div> */}
 				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col span={5}>
 							<label>搜索类型</label>
 						</Col>
-						<Col span={18}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择搜索类型"
 								value={searchType}
@@ -427,10 +427,10 @@ export default function LogFile(props) {
 				</div>
 				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>关键字</label>
 						</Col>
-						<Col span={18}>
+						<Col span={19}>
 							<Input
 								style={{ width: '100%' }}
 								value={keyword}

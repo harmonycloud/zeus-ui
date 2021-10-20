@@ -450,7 +450,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													size="small"
 													style={{
 														marginLeft: 16,
-														color: '#0064C8'
+														color: '#0070cc'
 													}}
 													onClick={() =>
 														addAuth('topic')
@@ -599,7 +599,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													size="small"
 													style={{
 														marginLeft: 16,
-														color: '#0064C8'
+														color: '#0070cc'
 													}}
 													onClick={() =>
 														addAuth('groups')
