@@ -335,12 +335,12 @@ export default function MiddlewareItem(
 							type="icon-guanfangrenzheng"
 						/>
 					}
-					align="r"
-					// offset={[0, 0]}
+					align="b"
+					offset={[-2, 0]}
 					// needAdjust={false}
 					// id="balloon"
 					closable={false}
-					followTrigger={false}
+					// followTrigger={false}
 				>
 					<div style={{ width: '75px' }}>谐云官方认证</div>
 				</Balloon>
