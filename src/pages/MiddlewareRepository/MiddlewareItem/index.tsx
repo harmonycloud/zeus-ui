@@ -22,9 +22,10 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[0, 0]}
+					offset={[1, 1]}
 					needAdjust={false}
 					closable={false}
+					animation={false}
 					id="balloon"
 				>
 					安装中
@@ -41,9 +42,10 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[0, 0]}
+					offset={[1, 1]}
 					needAdjust={false}
 					id="balloon"
+					animation={false}
 					closable={false}
 				>
 					运行正常
@@ -60,9 +62,10 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[0, 0]}
+					offset={[1, 1]}
 					needAdjust={false}
 					id="balloon"
+					animation={false}
 					closable={false}
 				>
 					待安装
@@ -79,9 +82,10 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[0, 0]}
+					offset={[1, 1]}
 					needAdjust={false}
 					id="balloon"
+					animation={false}
 					closable={false}
 				>
 					运行异常
@@ -98,9 +102,10 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[0, 0]}
+					offset={[1, 1]}
 					needAdjust={false}
 					id="balloon"
+					animation={false}
 					closable={false}
 				>
 					运行正常
@@ -326,12 +331,13 @@ export default function MiddlewareItem(
 						/>
 					}
 					align="b"
-					offset={[0, 0]}
+					offset={[1, 1]}
 					needAdjust={false}
+					animation={false}
 					id="balloon"
 					closable={false}
 				>
-					谐云官方认证
+					<div style={{ width: '75px' }}>谐云官方认证</div>
 				</Balloon>
 				{statusIconRender(status)}
 			</div>
