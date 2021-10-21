@@ -22,7 +22,7 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[1, 1]}
+					offset={[-1, -1]}
 					needAdjust={false}
 					closable={false}
 					animation={false}
@@ -42,7 +42,7 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[1, 1]}
+					offset={[-1, -1]}
 					needAdjust={false}
 					id="balloon"
 					animation={false}
@@ -62,7 +62,7 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[1, 1]}
+					offset={[-1, -1]}
 					needAdjust={false}
 					id="balloon"
 					animation={false}
@@ -82,7 +82,7 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[1, 1]}
+					offset={[-1, -1]}
 					needAdjust={false}
 					id="balloon"
 					animation={false}
@@ -102,7 +102,7 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[1, 1]}
+					offset={[-1, -1]}
 					needAdjust={false}
 					id="balloon"
 					animation={false}
@@ -331,7 +331,7 @@ export default function MiddlewareItem(
 						/>
 					}
 					align="b"
-					offset={[1, 1]}
+					offset={[-1, -1]}
 					needAdjust={false}
 					animation={false}
 					id="balloon"
