@@ -118,6 +118,7 @@ export default function TimeSelect(props) {
 							<Option value={true}>时间段</Option>
 						</Select>
 						<CascaderSelect
+							listStyle={{ width: '50%' }}
 							style={{ width: '100%' }}
 							dataSource={dataSource}
 							onChange={handleChange}

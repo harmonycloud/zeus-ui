@@ -42,7 +42,9 @@ import MidTerminal from '@/components/MidTerminal';
 const Routes = withRouter((props) => {
 	return (
 		<>
-			<MdBreadcrumb pathname={props.location.pathname} />
+			{props.location.pathname !== '/systemManagement/operationAudit' ? (
+				<MdBreadcrumb pathname={props.location.pathname} />
+			) : null}
 			<Switch>
 				<Route
 					path="/"

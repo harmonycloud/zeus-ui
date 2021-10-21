@@ -128,6 +128,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 				style={style}
 			>
 				<CascaderSelect
+					listStyle={{ width: '166px' }}
 					style={{ width: '333px' }}
 					dataSource={data}
 					onChange={handleChange}
