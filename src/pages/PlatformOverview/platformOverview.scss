@@ -39,13 +39,13 @@
 				&:nth-of-type(1){
 					background: #617BFF;
 					.part-detail{
-						padding: 0 20% 0 10%;
+						padding: 0 18% 0 10%;
 					}
 				}
 				&:nth-of-type(2){
 					background: #9661FF;
 					.part-detail{
-						padding: 0 20% 0 10%;
+						padding: 0 18% 0 10%;
 					}
 				}
 				&:nth-of-type(3){
@@ -144,7 +144,6 @@
 					}
 				}
 				.type{
-					width: 75px;
 					height: 20px;
 					font-size: 14px;
 					font-family: PingFangSC-Regular, PingFang SC;
@@ -260,6 +259,9 @@
 						line-height: 28px;
 						margin: 20px auto 10px;
 					}
+				}
+				.next-pagination-total{
+					font-size: 12px;
 				}
 			}
 		}
