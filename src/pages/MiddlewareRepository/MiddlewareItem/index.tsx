@@ -325,10 +325,10 @@ export default function MiddlewareItem(
 							type="icon-guanfangrenzheng"
 						/>
 					}
-					align="b"
-					offset={[0, 0]}
-					needAdjust={false}
-					id="balloon"
+					align="r"
+					// offset={[0, 0]}
+					// needAdjust={false}
+					// id="balloon"
 					closable={false}
 				>
 					谐云官方认证
