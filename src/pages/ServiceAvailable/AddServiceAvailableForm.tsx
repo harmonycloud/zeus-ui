@@ -208,6 +208,7 @@ export default function AddServiceAvailableForm(
 					className="ne-required-ingress"
 				>
 					<CascaderSelect
+						listStyle={{ width: '170px' }}
 						style={{ width: '100%' }}
 						value={current}
 						dataSource={data}

@@ -792,6 +792,9 @@ const MysqlCreate = (props) => {
 													requiredMessage="请选择灾备服务资源池"
 												>
 													<CascaderSelect
+														listStyle={{
+															width: '189px'
+														}}
 														name="clusterAndNamespace"
 														style={{
 															width: '378px'
@@ -1450,6 +1453,9 @@ const MysqlCreate = (props) => {
 														requiredMessage="请选择灾备服务资源池"
 													>
 														<CascaderSelect
+															listStyle={{
+																width: '189px'
+															}}
 															name="clusterAndNamespace"
 															style={{
 																width: '378px'

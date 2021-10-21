@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import {
+	Page,
+	Content,
+	Header,
+	Breadcrumb
+} from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import {
 	Message,
@@ -19,6 +24,7 @@ import { getAudits, getModules } from '@/services/audit';
 import messageConfig from '@/components/messageConfig';
 import './index.scss';
 import moment from 'moment';
+import { getXY } from './util';
 
 export default function OperationAudit(): JSX.Element {
 	const [dataSource, setDataSource] = useState<auditProps[]>([]);
@@ -42,6 +48,12 @@ export default function OperationAudit(): JSX.Element {
 	const [statusOrder, setStatusOrder] = useState<boolean | null>(false);
 	// const [showColumnDialog, setShowColumnDialog] = useState(false); // todo 展示column列表
 	const history = useHistory();
+	const breadcrumb = (
+		<Breadcrumb>
+			<Breadcrumb.Item>系统管理</Breadcrumb.Item>
+			<Breadcrumb.Item>操作审计</Breadcrumb.Item>
+		</Breadcrumb>
+	);
 	useEffect(() => {
 		// * 获取板块信息
 		getModules().then((res) => {
@@ -231,20 +243,8 @@ export default function OperationAudit(): JSX.Element {
 		setCasVisible(false);
 		setModules([]);
 		setChildModules([]);
-		const sendData = {
-			current,
-			size: 10,
-			searchKeyWord: keyword,
-			roles: roles,
-			requestMethods: methods,
-			modules: [],
-			childModules: [],
-			beginTimeNormalOrder: beginTimeNormalOrder
-		};
-		getAuditLists(sendData);
 	};
 	const confirmModules = () => {
-		setCasVisible(false);
 		const sendData = {
 			current,
 			size: 10,
@@ -257,6 +257,11 @@ export default function OperationAudit(): JSX.Element {
 		};
 		getAuditLists(sendData);
 	};
+	useEffect(() => {
+		if (!casVisible) {
+			confirmModules();
+		}
+	}, [casVisible]);
 	const onSort = (dataIndex: string, order: string) => {
 		const sendData: sendDataAuditProps = {
 			current: 1,
@@ -324,8 +329,8 @@ export default function OperationAudit(): JSX.Element {
 	};
 
 	return (
-		<Page>
-			<Header title="操作审计"></Header>
+		<Page style={{ minHeight: 'calc(100% - 43px)' }}>
+			<Header title="操作审计" breadcrumb={breadcrumb}></Header>
 			<Content>
 				<div className="audit-table-header-layout">
 					<Search
@@ -348,6 +353,7 @@ export default function OperationAudit(): JSX.Element {
 						</Button>
 					</div>
 				</div>
+				<div id="filter-cas"></div>
 				<Table
 					dataSource={dataSource}
 					primaryKey="key"
@@ -392,10 +398,12 @@ export default function OperationAudit(): JSX.Element {
 										color:
 											modules.length === 0 &&
 											childModules.length === 0
-												? '#111111'
+												? '#888'
 												: '#0070cc'
 									}}
-									onClick={() => setCasVisible(true)}
+									onClick={() => {
+										setCasVisible(true);
+									}}
 								/>
 								<CascaderSelect
 									listStyle={{ width: '200px' }}
@@ -409,9 +417,46 @@ export default function OperationAudit(): JSX.Element {
 									placeholder=" "
 									displayRender={(labels) => <span></span>}
 									changeOnSelect={true}
+									popupContainer={'filter-cas'}
+									// followTrigger={true}
 									onVisibleChange={(visible, type) => {
-										console.log(visible);
-										console.log(type);
+										const casCurrent =
+											document.getElementById(
+												'filter-cas'
+											);
+										console.log(document.body.scrollTop);
+										const x1 =
+											(casCurrent as HTMLElement)
+												.offsetLeft - 30;
+										const x2 =
+											(casCurrent as HTMLElement)
+												.offsetWidth +
+											(casCurrent as HTMLElement)
+												.offsetLeft +
+											30;
+										const y1 =
+											(casCurrent as HTMLElement)
+												.offsetTop - 43;
+										const y2 =
+											(casCurrent as HTMLElement)
+												.offsetHeight +
+											(casCurrent as HTMLElement)
+												.offsetTop +
+											43;
+
+										console.log(x1, x2, y1, y2);
+										const obj = getXY(window.event);
+										console.log(obj);
+										// console.log(window.event.clientX);
+										if (
+											obj.x < x1 ||
+											obj.x > x2 ||
+											obj.y < y1 ||
+											obj.y > y2
+										) {
+											setCasVisible(visible);
+											confirmModules();
+										}
 									}}
 									footer={
 										<div style={{ padding: 12 }}>
@@ -420,7 +465,9 @@ export default function OperationAudit(): JSX.Element {
 												style={{
 													marginRight: 8
 												}}
-												onClick={confirmModules}
+												onClick={() =>
+													setCasVisible(false)
+												}
 											>
 												确认
 											</Button>
@@ -429,7 +476,6 @@ export default function OperationAudit(): JSX.Element {
 											</Button>
 										</div>
 									}
-									// multiple={true}
 								/>
 							</span>
 						}
