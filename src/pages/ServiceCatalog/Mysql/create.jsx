@@ -707,7 +707,7 @@ const MysqlCreate = (props) => {
 												</FormItem>
 											</div>
 										</li>
-										<li className="display-flex">
+										{/* <li className="display-flex">
 											<label className="form-name">
 												<span>数据来源</span>
 											</label>
@@ -755,7 +755,7 @@ const MysqlCreate = (props) => {
 													</div>
 												</FormItem>
 											</div>
-										</li>
+										</li> */}
 									</ul>
 								</div>
 							</FormBlock>
