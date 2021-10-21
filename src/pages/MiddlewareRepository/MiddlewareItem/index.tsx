@@ -9,6 +9,7 @@ import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
 import './index.scss';
 
+const Tooltip = Balloon.Tooltip;
 const statusIconRender = (value: number) => {
 	switch (value) {
 		case 0:
@@ -324,7 +325,7 @@ export default function MiddlewareItem(
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
 				消息类型&nbsp;&nbsp;
-				<Balloon
+				<Tooltip
 					trigger={
 						<CustomIcon
 							style={{
@@ -336,16 +337,16 @@ export default function MiddlewareItem(
 						/>
 					}
 					align="b"
-					triggerType="click"
+					// triggerType="click"
 					// alignEdge={true}
 					// offset={[-2, 0]}
 					// needAdjust={false}
 					// id="balloon"
-					closable={false}
+					// closable={false}
 					// followTrigger={false}
 				>
-					<div style={{ width: '75px' }}>谐云官方认证</div>
-				</Balloon>
+					谐云官方认证
+				</Tooltip>
 				{statusIconRender(status)}
 			</div>
 			<div className="middleware-item-description" title={description}>
