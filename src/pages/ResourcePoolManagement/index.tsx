@@ -154,7 +154,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/systemManagement/resourcePoolManagement/addResourcePool/addOther/${record.id}`
+							`/systemManagement/resourcePoolManagement/editResourcePool/editOther/${record.id}`
 						);
 					}}
 				>

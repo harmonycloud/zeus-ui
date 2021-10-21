@@ -183,73 +183,144 @@ export default function HighAvailability(props) {
 			render: (val) => (
 				<div>
 					{val}
-					<span
-						className="name-link ml-12"
-						onClick={editConfiguration}
-					>
-						修改
-					</span>
+					{val === '-' ? null : (
+						<span
+							className="name-link ml-12"
+							onClick={editConfiguration}
+						>
+							修改
+						</span>
+					)}
 				</div>
 			)
 		}
 	]);
 
+	// model
+	const modelFormat = (mode) => {
+		let model = mode || '';
+		if (type === 'elasticsearch') {
+			if (data.quota.client.num !== 0 && data.quota.cold.num !== 0) {
+				model = 'cold-complex';
+			} else if (
+				data.quota.client.num === 0 &&
+				data.quota.cold.num !== 0
+			) {
+				model = 'complex-cold';
+			}
+		} else if (type === 'redis') {
+			if (mode === 'sentinel') {
+				model = mode;
+			} else {
+				model = data.quota.redis.num;
+			}
+		} else {
+			model = mode;
+		}
+		return model;
+	};
+
+	const nodeFormat = () => {
+		let node = '-';
+		if (
+			!customMid &&
+			data.quota[type] !== null &&
+			data.quota[type].cpu !== null
+		) {
+			const cpu =
+				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
+				'm'
+					? data.quota[type].cpu
+					: `${data.quota[type].cpu} Core`;
+			const memory = `${data.quota[type].memory} 内存`;
+			const storage = `${data.quota[type].storageClassQuota} 存储`;
+			node = cpu + memory + storage;
+		} else if (
+			customMid &&
+			data.quota[type] !== null &&
+			data.quota[type].cpu !== null
+		) {
+			const cpu =
+				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
+				'm'
+					? data.quota[type].cpu
+					: `${data.quota[type].cpu} Core`;
+			const memory = `${data.quota[type].memory} 内存`;
+			node = cpu + memory;
+		}
+		return node;
+	};
+
 	useEffect(() => {
 		if (data !== undefined) {
-			if (customMid && data.quota[type] !== null) {
+			if (type === 'elasticsearch') {
 				setConfig({
 					title: '规格配置',
-					model:
-						type === 'redis'
-							? data.quota.redis.num
-							: data.mode || '',
-					node: `${
-						data.quota[type].cpu.charAt(
-							data.quota[type].cpu.length - 1
-						) === 'm'
-							? data.quota[type].cpu
-							: `${data.quota[type].cpu} Core`
-					} CPU ${data.quota[type].memory} 内存`
+					model: modelFormat(data.mode)
 				});
-				setQuotaValue(data.quota[type]);
 			} else {
-				if (type !== 'elasticsearch') {
-					setConfig({
-						title: '规格配置',
-						model:
-							type === 'redis'
-								? data.quota.redis.num
-								: data.mode || '',
-						node: `${
-							data.quota[type].cpu.charAt(
-								data.quota[type].cpu.length - 1
-							) === 'm'
-								? data.quota[type].cpu
-								: `${data.quota[type].cpu} Core`
-						} CPU ${data.quota[type].memory} 内存 ${
-							data.quota[type].storageClassQuota
-						} 存储`
-					});
-					setQuotaValue(data.quota[type]);
-				} else {
-					let mode = data.mode;
-					if (
-						data.quota.client.num !== 0 &&
-						data.quota.cold.num !== 0
-					) {
-						mode = 'cold-complex';
-					} else if (
-						data.quota.client.num === 0 &&
-						data.quota.cold.num !== 0
-					) {
-						mode = 'complex-cold';
-					}
-					setConfig({
-						title: '规格配置',
-						model: mode
-					});
-				}
+				setConfig({
+					title: '规格配置',
+					model: modelFormat(data.mode),
+					node: nodeFormat()
+				});
 			}
+			setQuotaValue(data.quota[type]);
+			// * 自定义中间件 有operator，无operator
+			// if (customMid && data.quota[type] !== null) {
+			// 	setConfig({
+			// 		title: '规格配置',
+			// 		model: data.mode || '',
+			// 		node: `${
+			// 			data.quota[type].cpu.charAt(
+			// 				data.quota[type].cpu.length - 1
+			// 			) === 'm'
+			// 				? data.quota[type].cpu
+			// 				: `${data.quota[type].cpu} Core`
+			// 		} CPU ${data.quota[type].memory} 内存`
+			// 	});
+			// 	setQuotaValue(data.quota[type]);
+			// } else {
+			// 	// * mysql redis es mq
+			// 	if (type !== 'elasticsearch') {
+			// 		// * mysql redis mq
+			// 		setConfig({
+			// 			title: '规格配置',
+			// 			model:
+			// 				type === 'redis'
+			// 					? data.quota.redis.num
+			// 					: data.mode || '',
+			// 			node: `${
+			// 				data.quota[type].cpu.charAt(
+			// 					data.quota[type].cpu.length - 1
+			// 				) === 'm'
+			// 					? data.quota[type].cpu
+			// 					: `${data.quota[type].cpu} Core`
+			// 			} CPU ${data.quota[type].memory} 内存 ${
+			// 				data.quota[type].storageClassQuota
+			// 			} 存储`
+			// 		});
+			// 		setQuotaValue(data.quota[type]);
+			// 	} else {
+			// 		// es
+			// 		let mode = data.mode;
+			// 		if (
+			// 			data.quota.client.num !== 0 &&
+			// 			data.quota.cold.num !== 0
+			// 		) {
+			// 			mode = 'cold-complex';
+			// 		} else if (
+			// 			data.quota.client.num === 0 &&
+			// 			data.quota.cold.num !== 0
+			// 		) {
+			// 			mode = 'complex-cold';
+			// 		}
+			// 		setConfig({
+			// 			title: '规格配置',
+			// 			model: mode
+			// 		});
+			// 	}
+			// }
 		}
 	}, [data]);
 
@@ -362,7 +433,6 @@ export default function HighAvailability(props) {
 		}
 	};
 	const openSSL = (record) => {
-		console.log(record);
 		const strArr = record.containers.map((item) => item.name);
 		const consoleDataTemp = {
 			podName: record.podName,

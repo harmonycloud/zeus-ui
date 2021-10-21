@@ -222,6 +222,11 @@ const Routes = withRouter((props) => {
 					component={AddForm}
 					exact
 				/>
+				<Route
+					path="/systemManagement/resourcePoolManagement/editResourcePool/editOther/:clusterId"
+					component={AddForm}
+					exact
+				/>
 				<Route path="/terminal/:url" component={MidTerminal} exact />
 			</Switch>
 		</>

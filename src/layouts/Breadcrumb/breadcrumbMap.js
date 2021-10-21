@@ -33,5 +33,7 @@ export default {
 	highAvailability: '服务详情',
 	paramterSetting: '参数设置',
 	addResourcePool: '添加资源池',
-	addOther: '添加其他资源池'
+	addOther: '添加其他资源池',
+	editResourcePool: '编辑资源池',
+	editOther: '编辑其他资源池'
 };

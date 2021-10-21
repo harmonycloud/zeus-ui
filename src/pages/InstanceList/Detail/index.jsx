@@ -97,7 +97,6 @@ const InstanceDetails = (props) => {
 			if (res.success) {
 				setData(res.data);
 				setReason(res.data.reason);
-				// setStorageClassName(res?.data?.quota?.mysql?.storageClassName);
 				setStatus(res.data.status || 'Failed');
 				if (res.data.dynamicValues) {
 					setCustomMid(true);

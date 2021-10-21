@@ -125,6 +125,10 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 						? '不同类型中间件上/下架、升级管理等'
 						: '不同类型中间件发布服务'
 				}
+				hasBackArrow={
+					location.pathname === '/middlewareRepository' ? false : true
+				}
+				onBackArrowClick={() => window.history.back()}
 			/>
 			<Content>
 				{location.pathname === '/middlewareRepository' ? (
