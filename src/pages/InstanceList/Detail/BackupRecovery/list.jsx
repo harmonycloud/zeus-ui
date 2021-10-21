@@ -22,7 +22,7 @@ export default function List(props) {
 		) {
 			getData();
 		}
-	}, [props]);
+	}, [props.data]);
 
 	const getData = () => {
 		const sendData = {
