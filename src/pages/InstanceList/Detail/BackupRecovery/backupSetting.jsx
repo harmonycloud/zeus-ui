@@ -47,7 +47,7 @@ export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 		});
 	};
 	useEffect(() => {
-		if (data.config) {
+		if (data.pause === 'off') {
 			const arr = data.time.split(':');
 			const obj = {
 				hour: arr[0],

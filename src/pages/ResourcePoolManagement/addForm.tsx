@@ -294,7 +294,7 @@ function AddForm(props: addFormProps): JSX.Element {
 						);
 						setRefreshCluster(true);
 						history.push(
-							'/systemManagement/resourcePoolManagement/resourcePoolManagement'
+							'/systemManagement/resourcePoolManagement'
 						);
 					} else {
 						Message.show(messageConfig('error', '错误', res));
@@ -310,7 +310,7 @@ function AddForm(props: addFormProps): JSX.Element {
 						);
 						setRefreshCluster(true);
 						history.push(
-							'/systemManagement/resourcePoolManagement/resourcePoolManagement'
+							'/systemManagement/resourcePoolManagement'
 						);
 					} else {
 						Message.show(messageConfig('error', '错误', res));
@@ -322,7 +322,11 @@ function AddForm(props: addFormProps): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title="添加资源池（其他资源池）"
+				title={
+					params.clusterId
+						? '编辑资源池（其他资源池）'
+						: '添加资源池（其他资源池）'
+				}
 				hasBackArrow={true}
 				onBackArrowClick={() => window.history.back()}
 			/>
