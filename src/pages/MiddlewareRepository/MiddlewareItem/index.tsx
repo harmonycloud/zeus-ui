@@ -244,17 +244,6 @@ export default function MiddlewareItem(
 									安装
 								</div>
 							</>
-						) : status === 4 ? (
-							<div
-								className="middleware-item-action-item-one"
-								onClick={toVersion}
-							>
-								<CustomIcon
-									type="icon-banben"
-									style={{ color: 'white' }}
-								/>
-								版本
-							</div>
 						) : (
 							<>
 								<div
