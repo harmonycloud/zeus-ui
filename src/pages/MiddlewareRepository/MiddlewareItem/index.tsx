@@ -21,8 +21,11 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#D1D5D9', marginLeft: '6px' }}
 						/>
 					}
-					// align="b"
+					align="b"
+					offset={[0, 0]}
+					needAdjust={false}
 					closable={false}
+					id="balloon"
 				>
 					安装中
 				</Balloon>
@@ -37,7 +40,10 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#1DC11D', marginLeft: '6px' }}
 						/>
 					}
-					// align="b"
+					align="b"
+					offset={[0, 0]}
+					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					运行正常
@@ -53,7 +59,10 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#FAC800', marginLeft: '6px' }}
 						/>
 					}
-					// align="b"
+					align="b"
+					offset={[0, 0]}
+					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					待安装
@@ -69,7 +78,10 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#D93026', marginLeft: '6px' }}
 						/>
 					}
-					// align="b"
+					align="b"
+					offset={[0, 0]}
+					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					运行异常
@@ -86,6 +98,9 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
+					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					运行正常
@@ -310,7 +325,10 @@ export default function MiddlewareItem(
 							type="icon-guanfangrenzheng"
 						/>
 					}
-					// align="b"
+					align="b"
+					offset={[0, 0]}
+					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					谐云官方认证
