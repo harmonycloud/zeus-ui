@@ -26,6 +26,7 @@ const statusIconRender = (value: number) => {
 					needAdjust={false}
 					closable={false}
 					animation={false}
+					followTrigger={false}
 					id="balloon"
 				>
 					安装中
@@ -46,6 +47,7 @@ const statusIconRender = (value: number) => {
 					needAdjust={false}
 					id="balloon"
 					animation={false}
+					followTrigger={false}
 					closable={false}
 				>
 					运行正常
@@ -66,6 +68,7 @@ const statusIconRender = (value: number) => {
 					needAdjust={false}
 					id="balloon"
 					animation={false}
+					followTrigger={false}
 					closable={false}
 				>
 					待安装
@@ -87,6 +90,7 @@ const statusIconRender = (value: number) => {
 					id="balloon"
 					animation={false}
 					closable={false}
+					followTrigger={false}
 				>
 					运行异常
 				</Balloon>
@@ -107,6 +111,7 @@ const statusIconRender = (value: number) => {
 					id="balloon"
 					animation={false}
 					closable={false}
+					followTrigger={false}
 				>
 					运行正常
 				</Balloon>
@@ -336,6 +341,7 @@ export default function MiddlewareItem(
 					animation={false}
 					id="balloon"
 					closable={false}
+					followTrigger={false}
 				>
 					<div style={{ width: '75px' }}>谐云官方认证</div>
 				</Balloon>
