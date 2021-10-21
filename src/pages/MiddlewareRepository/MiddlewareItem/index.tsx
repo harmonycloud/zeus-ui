@@ -21,13 +21,8 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#D1D5D9', marginLeft: '6px' }}
 						/>
 					}
-					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
+					align="r"
 					closable={false}
-					animation={false}
-					followTrigger={false}
-					id="balloon"
 				>
 					安装中
 				</Balloon>
@@ -42,12 +37,7 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#1DC11D', marginLeft: '6px' }}
 						/>
 					}
-					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
-					followTrigger={false}
+					align="r"
 					closable={false}
 				>
 					运行正常
@@ -63,12 +53,7 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#FAC800', marginLeft: '6px' }}
 						/>
 					}
-					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
-					followTrigger={false}
+					align="r"
 					closable={false}
 				>
 					待安装
@@ -84,13 +69,8 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#D93026', marginLeft: '6px' }}
 						/>
 					}
-					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
+					align="r"
 					closable={false}
-					followTrigger={false}
 				>
 					运行异常
 				</Balloon>
@@ -105,13 +85,8 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#1DC11D', marginLeft: '6px' }}
 						/>
 					}
-					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
+					align="r"
 					closable={false}
-					followTrigger={false}
 				>
 					运行正常
 				</Balloon>
@@ -335,13 +310,8 @@ export default function MiddlewareItem(
 							type="icon-guanfangrenzheng"
 						/>
 					}
-					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					animation={false}
-					id="balloon"
+					align="r"
 					closable={false}
-					followTrigger={false}
 				>
 					<div style={{ width: '75px' }}>谐云官方认证</div>
 				</Balloon>
