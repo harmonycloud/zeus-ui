@@ -15,6 +15,14 @@ import { initMenu } from '@/utils/const';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
+const formItemLayout = {
+	labelCol: {
+		span: 6
+	},
+	wrapperCol: {
+		span: 18
+	}
+};
 
 interface RoleFormProps {
 	visible: true;
@@ -81,9 +89,9 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 			onCancel={onCancel}
 			onClose={onCancel}
 			onOk={onOk}
-			className="role-modal"
+			style={{ width: '540px' }}
 		>
-			<Form field={field}>
+			<Form field={field} {...formItemLayout}>
 				<FormItem
 					label="输入角色名称"
 					required

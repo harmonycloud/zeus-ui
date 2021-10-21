@@ -242,7 +242,9 @@ function PlatformOverview(props) {
 											</span>
 											<span>个</span>
 										</p>
-										<p className="type">资源池总数</p>
+										<p className="type">
+											资源池总数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										</p>
 									</div>
 								</div>
 							</div>
@@ -556,7 +558,7 @@ function PlatformOverview(props) {
 									<RadioGroup
 										dataSource={radioList}
 										shape="button"
-										size="large"
+										size="medium"
 										value={level}
 										onChange={onNormalChange}
 										style={{ marginTop: 16 }}
