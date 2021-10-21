@@ -438,6 +438,10 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				<LinkButton
 					disabled={tabJudge(record, 'high')}
 					onClick={() => {
+						storage.setSession(
+							'service-available-current',
+							record.type
+						);
 						history.push({
 							pathname: '/serviceAvailable',
 							state: {
