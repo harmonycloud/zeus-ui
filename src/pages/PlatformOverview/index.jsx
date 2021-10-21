@@ -30,6 +30,7 @@ import {
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
 import echarts from 'echarts';
+import moment from 'moment';
 
 const radioList = [
 	{
@@ -184,6 +185,10 @@ function PlatformOverview(props) {
 			level: level
 		};
 		getEventsData(alertData);
+	};
+	const createTimeRender = (value) => {
+		if (!value) return '/';
+		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 	const onRefresh = () => {
 		let clusterId = type === 'all' ? null : type;
@@ -544,6 +549,7 @@ function PlatformOverview(props) {
 										<Table.Column
 											title="操作时间"
 											dataIndex="beginTime"
+											cell={createTimeRender}
 										/>
 									</Table>
 								</HomeCard>

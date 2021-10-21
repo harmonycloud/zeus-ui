@@ -246,9 +246,9 @@ function Navbar(props) {
 								);
 							})}
 						</Select>
-						<span style={{ marginLeft: 8 }}>资源分区</span>
+						<span style={{ marginLeft: 24 }}>资源分区</span>
 						<Select
-							style={{ marginLeft: 16 }}
+							style={{ marginLeft: 8 }}
 							className="no-shadow"
 							value={currentNamespace.name}
 							hasBorder={false}
