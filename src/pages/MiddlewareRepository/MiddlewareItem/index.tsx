@@ -9,11 +9,12 @@ import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
 import './index.scss';
 
+const Tooltip = Balloon.Tooltip;
 const statusIconRender = (value: number) => {
 	switch (value) {
 		case 0:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="loading1"
@@ -21,15 +22,14 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#D1D5D9', marginLeft: '6px' }}
 						/>
 					}
-					align="r"
-					closable={false}
+					align="b"
 				>
 					安装中
-				</Balloon>
+				</Tooltip>
 			);
 		case 1:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="success"
@@ -37,15 +37,14 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#1DC11D', marginLeft: '6px' }}
 						/>
 					}
-					align="r"
-					closable={false}
+					align="b"
 				>
 					运行正常
-				</Balloon>
+				</Tooltip>
 			);
 		case 2:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="minus-circle-fill"
@@ -53,15 +52,14 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#FAC800', marginLeft: '6px' }}
 						/>
 					}
-					align="r"
-					closable={false}
+					align="b"
 				>
 					待安装
-				</Balloon>
+				</Tooltip>
 			);
 		case 3:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="warning"
@@ -69,15 +67,14 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#D93026', marginLeft: '6px' }}
 						/>
 					}
-					align="r"
-					closable={false}
+					align="b"
 				>
 					运行异常
-				</Balloon>
+				</Tooltip>
 			);
 		case 4:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="success"
@@ -85,11 +82,10 @@ const statusIconRender = (value: number) => {
 							style={{ color: '#1DC11D', marginLeft: '6px' }}
 						/>
 					}
-					align="r"
-					closable={false}
+					align="b"
 				>
 					运行正常
-				</Balloon>
+				</Tooltip>
 			);
 		default:
 			break;
@@ -299,7 +295,7 @@ export default function MiddlewareItem(
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
 				消息类型&nbsp;&nbsp;
-				<Balloon
+				<Tooltip
 					trigger={
 						<CustomIcon
 							style={{
@@ -310,11 +306,10 @@ export default function MiddlewareItem(
 							type="icon-guanfangrenzheng"
 						/>
 					}
-					align="r"
-					closable={false}
+					align="b"
 				>
-					<div style={{ width: '75px' }}>谐云官方认证</div>
-				</Balloon>
+					谐云官方认证
+				</Tooltip>
 				{statusIconRender(status)}
 			</div>
 			<div className="middleware-item-description" title={description}>

@@ -15,7 +15,7 @@ import { setCluster, setNamespace } from '@/redux/globalVar/var';
 	clusters:
 	type:'default' 在平台管理页面的告警跳转涉及跨资源池跳转
 */
-
+const Tooltip = Balloon.Tooltip;
 function AlarmTimeLine(props) {
 	const { style = {}, list = [], clusters = [], type = 'default' } = props;
 	const [data, setData] = useState(list);
@@ -130,12 +130,8 @@ function AlarmTimeLine(props) {
 											>
 												{item.summary}
 											</div>
-											<Balloon
-												alignEdge={true}
+											<Tooltip
 												align="l"
-												triggerType="hover"
-												// followTrigger={true}
-												closable={false}
 												trigger={
 													<span className="details-color">
 														详情
@@ -143,7 +139,7 @@ function AlarmTimeLine(props) {
 												}
 											>
 												{item.message}
-											</Balloon>
+											</Tooltip>
 										</div>
 									</>
 								}
