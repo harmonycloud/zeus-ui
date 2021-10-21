@@ -336,7 +336,9 @@ export default function MiddlewareItem(
 						/>
 					}
 					align="b"
-					offset={[-2, 0]}
+					triggerType="click"
+					// alignEdge={true}
+					// offset={[-2, 0]}
 					// needAdjust={false}
 					// id="balloon"
 					closable={false}
