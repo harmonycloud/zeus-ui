@@ -22,8 +22,10 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
 					needAdjust={false}
 					closable={false}
+					id="balloon"
 				>
 					安装中
 				</Balloon>
@@ -39,7 +41,9 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
 					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					运行正常
@@ -56,7 +60,9 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
 					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					待安装
@@ -73,7 +79,9 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
 					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					运行异常
@@ -90,7 +98,9 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
 					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					运行正常
@@ -316,7 +326,9 @@ export default function MiddlewareItem(
 						/>
 					}
 					align="b"
+					offset={[0, 0]}
 					needAdjust={false}
+					id="balloon"
 					closable={false}
 				>
 					谐云官方认证
