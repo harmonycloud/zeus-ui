@@ -109,9 +109,9 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 			return (
 				<>
 					<Icon
-						type="warning1"
+						type="minus-circle-fill"
 						size="xs"
-						style={{ color: '#C80000' }}
+						style={{ color: '#FAC800' }}
 					/>{' '}
 					未知
 				</>
