@@ -16,6 +16,7 @@ export interface filtersProps {
 	label: string;
 	value: number | string;
 	isLeaf?: boolean;
+	disabled?: boolean;
 	children?: filtersProps[];
 }
 export interface middlewareDetailProps {
@@ -52,6 +53,7 @@ export interface middlewareDetailProps {
 	stdoutEnabled: any | null;
 	type: string;
 	version: string;
+	official: boolean;
 }
 
 export interface basicDataProps {

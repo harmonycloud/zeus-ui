@@ -30,7 +30,6 @@ function DisasterCenter(props: disasterCenterProps) {
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
 	const history = useHistory();
-	console.log(props);
 	const onChange = (
 		name: string,
 		type: string,

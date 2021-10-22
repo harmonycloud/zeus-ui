@@ -88,10 +88,6 @@ const events = {
 	table: ''
 };
 
-// const formItemLayout = {
-// 	labelCol: { fixedSpan: 0 },
-// 	wrapperCol: { span: 24 }
-// };
 const modelMap = {
 	MasterSlave: '主从模式',
 	'1m-1s': '主从模式',
@@ -474,25 +470,6 @@ function BasicInfo(props) {
 		}
 		setInfoConfig(infoConfigTemp);
 	}, [props]);
-	// * 修改密码
-	// const editPassword = (value) => {
-	// 	const sendData = {
-	// 		clusterId: clusterId,
-	// 		namespace: namespace,
-	// 		middlewareName: data.name,
-	// 		chartName: data.chartName,
-	// 		chartVersion: data.chartVersion,
-	// 		type: data.type,
-	// 		password: value
-	// 	};
-	// 	updateMiddleware(sendData).then((res) => {
-	// 		if (res.success) {
-	// 			Message.show(messageConfig('success', '成功', res));
-	// 		} else {
-	// 			Message.shoe(messageConfig('success', '失败', res));
-	// 		}
-	// 	});
-	// };
 
 	const eventsConfig = [
 		{

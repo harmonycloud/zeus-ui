@@ -43,6 +43,7 @@ export default function DataSecurity(): JSX.Element {
 			setIsService(false);
 		}
 	};
+	console.log(data);
 	return (
 		<SecondLayout
 			title="数据安全"

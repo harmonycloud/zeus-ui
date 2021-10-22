@@ -4,6 +4,7 @@ import { Page, Content } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
 import List from './list';
 import Config from './config';
+import DefaultPicture from '@/components/DefaultPicture';
 const { Menu } = Page;
 export default function BackupRecovery(props) {
 	const location = useLocation();
@@ -31,6 +32,9 @@ export default function BackupRecovery(props) {
 			</Menu>
 		);
 	};
+	if (props.customMid && !(props.capabilities || []).includes('backup')) {
+		return <DefaultPicture />;
+	}
 	if (pathname.includes('disasterBackup')) {
 		return (
 			<div>

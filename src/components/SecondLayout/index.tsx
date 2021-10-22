@@ -54,7 +54,6 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 				namespace: namespace.name,
 				keyword: ''
 			}).then((res) => {
-				console.log(res);
 				if (res.success) {
 					const list = res.data.map((item: serviceListItemProps) => {
 						const result: filtersProps = {

@@ -41,6 +41,7 @@ export default function Config(props) {
 		nextBackupTime: '',
 		pause: 'on'
 	});
+	console.log(listData);
 
 	useEffect(() => {
 		if (
@@ -75,6 +76,15 @@ export default function Config(props) {
 							time: `${cycleList[1]}:${
 								cycleList[0] === '0' ? '00' : cycleList[0]
 							}`,
+							nextBackupTime: res.data.nextBackupTime,
+							pause: res.data.pause
+						});
+					} else {
+						setBackupData({
+							configed: res.data.configed,
+							limitRecord: res.data.limitRecord,
+							cycle: null,
+							time: null,
 							nextBackupTime: res.data.nextBackupTime,
 							pause: res.data.pause
 						});
@@ -276,13 +286,17 @@ export default function Config(props) {
 				<div
 					className="backup-setting"
 					style={{
-						color: backupData.configed ? '#666666' : '#9b9ea0'
+						color:
+							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
 					}}
 				>
 					<div
 						className="backup-label"
 						style={{
-							color: backupData.configed ? '#666666' : '#9b9ea0'
+							color:
+								backupData.pause === 'off'
+									? '#666666'
+									: '#9b9ea0'
 						}}
 					>
 						备份保留个数{' '}
@@ -298,13 +312,17 @@ export default function Config(props) {
 				<div
 					className="backup-setting"
 					style={{
-						color: backupData.configed ? '#666666' : '#9b9ea0'
+						color:
+							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
 					}}
 				>
 					<div
 						className="backup-label"
 						style={{
-							color: backupData.configed ? '#666666' : '#9b9ea0'
+							color:
+								backupData.pause === 'off'
+									? '#666666'
+									: '#9b9ea0'
 						}}
 					>
 						备份周期
@@ -314,13 +332,17 @@ export default function Config(props) {
 				<div
 					className="backup-setting"
 					style={{
-						color: backupData.configed ? '#666666' : '#9b9ea0'
+						color:
+							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
 					}}
 				>
 					<div
 						className="backup-label"
 						style={{
-							color: backupData.configed ? '#666666' : '#9b9ea0'
+							color:
+								backupData.pause === 'off'
+									? '#666666'
+									: '#9b9ea0'
 						}}
 					>
 						备份时间
@@ -330,13 +352,17 @@ export default function Config(props) {
 				<div
 					className="backup-setting"
 					style={{
-						color: backupData.configed ? '#666666' : '#9b9ea0'
+						color:
+							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
 					}}
 				>
 					<div
 						className="backup-label"
 						style={{
-							color: backupData.configed ? '#666666' : '#9b9ea0'
+							color:
+								backupData.pause === 'off'
+									? '#666666'
+									: '#9b9ea0'
 						}}
 					>
 						预计下次备份时间

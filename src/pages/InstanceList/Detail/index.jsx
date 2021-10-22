@@ -174,6 +174,7 @@ const InstanceDetails = (props) => {
 						clusterId={globalVar.cluster.id}
 						namespace={globalVar.namespace.name}
 						customMid={customMid}
+						capabilities={(data && data.capabilities) || []}
 					/>
 				);
 			case 'externalAccess':

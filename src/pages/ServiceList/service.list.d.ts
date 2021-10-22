@@ -43,4 +43,5 @@ export interface serviceListItemProps {
 	chartName: string;
 	chartVersion: string;
 	version?: string | null;
+	official: boolean;
 }
