@@ -14,7 +14,8 @@ import {
 	Select,
 	Table,
 	Progress,
-	Loading
+	Loading,
+	Balloon
 } from '@alicloud/console-components';
 import {
 	getPlatformOverview,
@@ -50,6 +51,7 @@ const radioList = [
 		label: '严重'
 	}
 ];
+const Tooltip = Balloon.Tooltip;
 
 function PlatformOverview(props) {
 	let x = [];
@@ -371,11 +373,17 @@ function PlatformOverview(props) {
 														/>
 														{item.errServiceNum !==
 														0 ? (
-															<span className="err-count">
-																{
-																	item.errServiceNum
+															<Tooltip
+																trigger={
+																	<span className="err-count">
+																		{
+																			item.errServiceNum
+																		}
+																	</span>
 																}
-															</span>
+															>
+																异常服务数
+															</Tooltip>
 														) : null}
 													</div>
 													<p className="info-name">
