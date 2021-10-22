@@ -168,11 +168,12 @@
 				box-sizing: border-box;
 				padding-top: 20px;
 				.info-item{
-					min-width: 100px;
+					min-width: 150px;
 					padding-bottom: 12px;
 					text-align: center;
 					flex: 1;
 					position: relative;
+					cursor: pointer;
 					&:not(:last-of-type)::after{
 						position: absolute;
 						top: 0;
