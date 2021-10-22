@@ -75,8 +75,15 @@ export default function BackupSetting({ visible, onCreate, onCancel, data }) {
 					label="备份保留个数"
 					required
 					requiredMessage="备份保留个数不能为空"
+					min={1}
+					minmaxLengthMessage="备份保留个数最小值为1"
 				>
-					<NumberPicker defaultValue={1} type="inline" name="count" />
+					<NumberPicker
+						min={1}
+						defaultValue={1}
+						type="inline"
+						name="count"
+					/>
 				</Form.Item>
 				<Form.Item
 					label="备份周期"

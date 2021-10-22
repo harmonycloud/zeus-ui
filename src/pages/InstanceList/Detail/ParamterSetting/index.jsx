@@ -56,7 +56,7 @@ export default function ParamterSetting(props) {
 	const handleChange = () => {
 		setRefreshFlag(!refreshFlag);
 	};
-	if (customMid && !(capabilities || []).includes('ingress')) {
+	if (customMid && !(capabilities || []).includes('config')) {
 		return <DefaultPicture />;
 	}
 	return (
