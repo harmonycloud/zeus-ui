@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tab } from '@alicloud/console-components';
 import { Page, Content } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
@@ -10,6 +10,12 @@ export default function BackupRecovery(props) {
 	const location = useLocation();
 	const { pathname } = location;
 	const [selectedKey, setSelectedKey] = useState('list');
+	const [customMid, setCustomMid] = useState(false);
+	const [capabilities, setCapabilities] = useState([]);
+	useEffect(() => {
+		setCustomMid(props.customMid);
+		setCapabilities(props.capabilities || []);
+	}, [props]);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
 	};
@@ -32,7 +38,8 @@ export default function BackupRecovery(props) {
 			</Menu>
 		);
 	};
-	if (props.customMid && !(props.capabilities || []).includes('backup')) {
+	console.log(props);
+	if (customMid && !capabilities.includes('backup')) {
 		return <DefaultPicture />;
 	}
 	if (pathname.includes('disasterBackup')) {

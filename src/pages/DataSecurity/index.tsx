@@ -59,6 +59,7 @@ export default function DataSecurity(): JSX.Element {
 					clusterId={basicData?.clusterId}
 					namespace={basicData?.namespace}
 					customMid={data?.dynamicValues !== null}
+					capabilities={(data && data.capabilities) || []}
 				/>
 			)}
 			{!isService && <NoService />}

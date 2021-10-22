@@ -213,7 +213,7 @@ export default function List(props) {
 						width={150}
 					/>
 					<Table.Column
-						title="位置"
+						title="备份位置"
 						dataIndex="backupAddressList"
 						cell={addressListRender}
 					/>
