@@ -7,6 +7,7 @@ import ComponentsLoading from '@/components/componentsLoading';
 import { getBackups, backupNow, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
+import moment from 'moment';
 
 export default function List(props) {
 	const { clusterId, namespace, data: listData, storage } = props;
@@ -33,7 +34,17 @@ export default function List(props) {
 		};
 		getBackups(sendData).then((res) => {
 			if (res.success) {
-				setBackups(res.data);
+				if (res.data.length > 0) {
+					setBackups(
+						res.data.sort(
+							(a, b) =>
+								moment(b['backupTime']).valueOf() -
+								moment(a['backupTime']).valueOf()
+						)
+					);
+				} else {
+					setBackups(res.data);
+				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
