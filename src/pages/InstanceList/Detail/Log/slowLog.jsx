@@ -211,14 +211,14 @@ export default function SlowLog(props) {
 						<Button
 							onClick={slowLogDownload}
 							type="normal"
-							style={{ marginRight: 12 }}
+							style={{ marginRight: 12, padding: '0 9px' }}
 						>
 							<Icon type="arrow-to-bottom" />
 						</Button>
 					</>
 				</div>
 			</div>
-			<Table dataSource={dataSource}>
+			<Table dataSource={dataSource} hasBorder={false}>
 				<Table.Column
 					title="慢日志采集时间"
 					dataIndex="timestampMysql"
@@ -226,7 +226,7 @@ export default function SlowLog(props) {
 					width={160}
 					lock
 				/>
-				<Table.Column title="SQL语句" dataIndex="query" width={500} />
+				<Table.Column title="SQL语句" dataIndex="query" width={450} />
 				<Table.Column
 					title="客户端IP"
 					dataIndex="clientip"
@@ -235,22 +235,22 @@ export default function SlowLog(props) {
 				<Table.Column
 					title="执行时长（秒）"
 					dataIndex="queryTime"
-					width={100}
+					width={120}
 				/>
 				<Table.Column
 					title="锁定时长（秒）"
 					dataIndex="lockTime"
-					width={100}
+					width={120}
 				/>
 				<Table.Column
 					title="解析行数"
 					dataIndex="rowsExamined"
-					width={70}
+					width={90}
 				/>
 				<Table.Column
 					title="返回行数"
 					dataIndex="rowsSent"
-					width={70}
+					width={90}
 				/>
 			</Table>
 			<SPagination
