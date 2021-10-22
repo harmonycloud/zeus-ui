@@ -182,6 +182,30 @@ export default function List(props) {
 		}
 	};
 
+	const onSort = (dataIndex, order) => {
+		if (dataIndex === 'backupTime') {
+			const tempDataSource = backups.sort((a, b) => {
+				const result = a['backupTime'] - b['backupTime'];
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setBackups([...tempDataSource]);
+		} else if (dataIndex === 'phrase') {
+			const tempDataSource = backups.sort((a, b) => {
+				if (a['phrase'] === 'Failed') return 2;
+				if (a['phrase'] === 'Running') return 1;
+				if (a['phrase'] === 'Success') return -1;
+				return 0;
+			});
+			setBackups([...tempDataSource]);
+		}
+	};
+
 	return (
 		<div style={{ marginTop: 16 }}>
 			{storage.backup ? (
@@ -194,11 +218,13 @@ export default function List(props) {
 					affixActionBar
 					primaryKey="key"
 					operation={Operation}
+					onSort={onSort}
 				>
 					<Table.Column
 						title="备份时间"
 						dataIndex="backupTime"
 						width={180}
+						sortable
 						// cell={dateRender}
 					/>
 					{/* <Table.Column
@@ -211,6 +237,7 @@ export default function List(props) {
 						dataIndex="phrase"
 						cell={statusBackupRender}
 						width={150}
+						sortable
 					/>
 					<Table.Column
 						title="备份位置"
