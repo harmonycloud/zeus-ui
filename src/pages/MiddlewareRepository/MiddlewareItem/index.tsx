@@ -14,7 +14,7 @@ const statusIconRender = (value: number) => {
 	switch (value) {
 		case 0:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="loading1"
@@ -23,19 +23,13 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					closable={false}
-					animation={false}
-					followTrigger={false}
-					id="balloon"
 				>
 					安装中
-				</Balloon>
+				</Tooltip>
 			);
 		case 1:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="success"
@@ -44,19 +38,13 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
-					followTrigger={false}
-					closable={false}
 				>
 					运行正常
-				</Balloon>
+				</Tooltip>
 			);
 		case 2:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="minus-circle-fill"
@@ -65,19 +53,13 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
-					followTrigger={false}
-					closable={false}
 				>
 					待安装
-				</Balloon>
+				</Tooltip>
 			);
 		case 3:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="warning"
@@ -86,19 +68,13 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
-					closable={false}
-					followTrigger={false}
 				>
 					运行异常
-				</Balloon>
+				</Tooltip>
 			);
 		case 4:
 			return (
-				<Balloon
+				<Tooltip
 					trigger={
 						<Icon
 							type="success"
@@ -107,15 +83,9 @@ const statusIconRender = (value: number) => {
 						/>
 					}
 					align="b"
-					offset={[-1, -1]}
-					needAdjust={false}
-					id="balloon"
-					animation={false}
-					closable={false}
-					followTrigger={false}
 				>
 					运行正常
-				</Balloon>
+				</Tooltip>
 			);
 		default:
 			break;
@@ -337,13 +307,6 @@ export default function MiddlewareItem(
 						/>
 					}
 					align="b"
-					// triggerType="click"
-					// alignEdge={true}
-					// offset={[-2, 0]}
-					// needAdjust={false}
-					// id="balloon"
-					// closable={false}
-					// followTrigger={false}
 				>
 					谐云官方认证
 				</Tooltip>

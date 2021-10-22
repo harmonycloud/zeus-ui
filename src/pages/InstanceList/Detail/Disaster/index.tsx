@@ -282,7 +282,11 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		<div>
 			{data?.mysqlDTO?.openDisasterRecoveryMode ? (
 				<>
-					<DataFields dataSource={runState} items={runItems} />
+					<DataFields
+						dataSource={runState}
+						items={runItems}
+						className="refresh-color"
+					/>
 					<div className="detail-divider"></div>
 				</>
 			) : null}

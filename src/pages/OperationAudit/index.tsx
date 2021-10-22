@@ -348,7 +348,10 @@ export default function OperationAudit(): JSX.Element {
 						>
 							<Icon type="set" />
 						</Button> */}
-						<Button onClick={onRefresh}>
+						<Button
+							onClick={onRefresh}
+							style={{ padding: '0 9px' }}
+						>
 							<Icon type="refresh" />
 						</Button>
 					</div>

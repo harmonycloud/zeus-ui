@@ -390,7 +390,10 @@ const InstanceDetails = (props) => {
 					) : null
 				}
 			>
-				<Button onClick={() => refresh(selectedKey)}>
+				<Button
+					onClick={() => refresh(selectedKey)}
+					style={{ padding: '0 9px', marginRight: '8px' }}
+				>
 					<Icon type="refresh" />
 				</Button>
 				{data?.mysqlDTO?.openDisasterRecoveryMode &&
