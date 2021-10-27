@@ -38,7 +38,6 @@ export default function BackupRecovery(props) {
 			</Menu>
 		);
 	};
-	console.log(props);
 	if (customMid && !capabilities.includes('backup')) {
 		return <DefaultPicture />;
 	}

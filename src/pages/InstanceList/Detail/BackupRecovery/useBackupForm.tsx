@@ -13,7 +13,10 @@ const FormItem = Form.Item;
 interface useBackupProps {
 	visible: boolean;
 	onCancel: () => void;
-	backupFileName: string;
+	backupData: {
+		backupName: string;
+		backupFileName: string;
+	};
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
@@ -35,7 +38,7 @@ export default function UseBackupForm(props: useBackupProps): JSX.Element {
 	const {
 		visible,
 		onCancel,
-		backupFileName,
+		backupData,
 		clusterId,
 		namespace,
 		middlewareName,
@@ -47,7 +50,8 @@ export default function UseBackupForm(props: useBackupProps): JSX.Element {
 			if (errors) return;
 			const values: valuesProps = field.getValues();
 			const sendData = {
-				backupName: backupFileName,
+				backupName: backupData.backupName,
+				backupFileName: backupData.backupFileName,
 				restoreName: values.name,
 				aliasName: values.aliasName,
 				clusterId,
@@ -55,7 +59,7 @@ export default function UseBackupForm(props: useBackupProps): JSX.Element {
 				middlewareName,
 				type
 			};
-			console.log(sendData);
+			// console.log(sendData);
 			applyBackup(sendData)
 				.then((res) => {
 					if (res.success) {

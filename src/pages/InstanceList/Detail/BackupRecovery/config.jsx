@@ -39,7 +39,8 @@ export default function Config(props) {
 		cycle: '',
 		time: '',
 		nextBackupTime: '',
-		pause: 'on'
+		pause: 'on',
+		canPause: true
 	});
 	console.log(listData);
 
@@ -77,7 +78,8 @@ export default function Config(props) {
 								cycleList[0] === '0' ? '00' : cycleList[0]
 							}`,
 							nextBackupTime: res.data.nextBackupTime,
-							pause: res.data.pause
+							pause: res.data.pause,
+							canPause: res.data.canPause
 						});
 					} else {
 						setBackupData({
@@ -86,7 +88,8 @@ export default function Config(props) {
 							cycle: null,
 							time: null,
 							nextBackupTime: res.data.nextBackupTime,
-							pause: res.data.pause
+							pause: res.data.pause,
+							canPause: res.data.canPause
 						});
 					}
 				}
@@ -172,6 +175,10 @@ export default function Config(props) {
 				return;
 			}
 		}
+		if (!backupData.configed) {
+			Message.show(messageConfig('error', '失败', '请先配置备份信息！'));
+			return;
+		}
 		const arr = backupData.time.split(':');
 		const week = backupData.cycle
 			.split(',')
@@ -194,6 +201,16 @@ export default function Config(props) {
 						pause: checked ? 'off' : 'on',
 						cron
 					};
+					if (!checked && !backupData.canPause) {
+						Message.show(
+							messageConfig(
+								'error',
+								'失败',
+								'当前中间件不支持此操作'
+							)
+						);
+						return;
+					}
 					addBackupConfig(sendData).then((res) => {
 						if (res.success) {
 							Message.show(
@@ -279,7 +296,7 @@ export default function Config(props) {
 						<span>
 							{backupData.pause === 'off'
 								? '执行备份中'
-								: '停止执行备份'}
+								: '备份已停止'}
 						</span>
 					</div>
 				</div>

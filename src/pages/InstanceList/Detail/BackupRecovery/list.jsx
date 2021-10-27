@@ -12,7 +12,7 @@ import moment from 'moment';
 export default function List(props) {
 	const { clusterId, namespace, data: listData, storage } = props;
 	const [backups, setBackups] = useState([]);
-	const [backupFileName, setBackupFileName] = useState();
+	const [backupData, setBackupData] = useState();
 	const [useVisible, setUseVisible] = useState(false);
 	useEffect(() => {
 		if (
@@ -108,8 +108,8 @@ export default function List(props) {
 		});
 	};
 
-	const toHandle = (backupFileName) => {
-		setBackupFileName(backupFileName);
+	const toHandle = (backupName, backupFileName) => {
+		setBackupData({ backupName, backupFileName });
 		setUseVisible(true);
 	};
 
@@ -119,7 +119,9 @@ export default function List(props) {
 			<Actions>
 				<LinkButton
 					disabled={record.backupName === ''}
-					onClick={() => toHandle(record.backupName)}
+					onClick={() =>
+						toHandle(record.backupName, record.backupFileName)
+					}
 				>
 					使用备份
 				</LinkButton>
@@ -133,8 +135,11 @@ export default function List(props) {
 									clusterId,
 									namespace,
 									backupName: record.backupName,
-									middlewareName: listData.name
+									middlewareName: listData.name,
+									type: listData.type,
+									backupFileName: record.backupFileName
 								};
+								// console.log(sendData);
 								deleteBackups(sendData)
 									.then((res) => {
 										if (res.success) {
@@ -264,11 +269,11 @@ export default function List(props) {
 			) : (
 				<ComponentsLoading type="backup" clusterId={clusterId} />
 			)}
-			{useVisible && backupFileName !== '' && (
+			{useVisible && backupData.backupName !== '' && (
 				<UseBackupForm
 					visible={useVisible}
 					onCancel={() => setUseVisible(false)}
-					backupFileName={backupFileName}
+					backupData={backupData}
 					clusterId={clusterId}
 					namespace={namespace}
 					middlewareName={listData.name}
