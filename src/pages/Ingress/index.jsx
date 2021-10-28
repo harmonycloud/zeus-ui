@@ -39,7 +39,8 @@ function IngressList(props) {
 	const [showDataSource, setShowDataSource] = useState([]);
 	const [searchText, setSearchText] = useState('');
 	const [active, setActive] = useState(false); // 抽屉显示
-
+	const [iconVisible, setIconVisible] = useState(false);
+	const [adress, setAdress] = useState('');
 	useEffect(() => {
 		if (
 			JSON.stringify(globalVar.cluster) !== '{}' &&
@@ -87,7 +88,7 @@ function IngressList(props) {
 	const Operation = {
 		primary: (
 			<Button onClick={() => setActive(true)} type="primary">
-				添加路由
+				服务暴露
 			</Button>
 		)
 	};
@@ -175,12 +176,14 @@ function IngressList(props) {
 		);
 	};
 	// * 浏览器复制到剪切板方法
-	const copyValue = (value) => {
-		let input = document.createElement('input');
+	const copyValue = (value, record) => {
+		const input = document.createElement('input');
+		setAdress(record.name);
+		setIconVisible(true);
 		document.body.appendChild(input);
 		input.style.position = 'absolute';
-		input.style.top = 0;
-		input.style.opacity = 0;
+		input.style.top = '0px';
+		input.style.opacity = '0';
 		input.value = value;
 		input.focus();
 		input.select();
@@ -189,18 +192,36 @@ function IngressList(props) {
 		}
 		input.blur();
 		document.body.removeChild(input);
-		Message.show(messageConfig('success', '成功', '复制成功'));
+		setTimeout(() => {
+			setIconVisible(false);
+		}, 3000);
+		// Message.show(messageConfig('success', '成功', '复制成功'));
 	};
 	const addressRender = (value, index, record) => {
 		if (record.protocol === 'HTTP') {
 			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
 			return (
 				<>
-					<CustomIcon
-						type="icon-fuzhi"
-						size="xs"
-						onClick={() => copyValue(address)}
-					/>
+					<Balloon
+						trigger={
+							<CustomIcon
+								type="icon-fuzhi"
+								size="xs"
+								style={{ color: '#0070CC', cursor: 'pointer' }}
+								onClick={() => copyValue(address, record)}
+							/>
+						}
+						triggerType={'click'}
+						closable={false}
+						visible={iconVisible && adress === record.name}
+					>
+						<Icon
+							type={'success'}
+							style={{ color: '#00A700', marginRight: '5px' }}
+							size={'xs'}
+						/>
+						复制成功
+					</Balloon>
 					{address}
 				</>
 			);
@@ -216,11 +237,40 @@ function IngressList(props) {
 								}
 								return (
 									<div key={index}>
-										<CustomIcon
-											type="icon-fuzhi"
-											size="xs"
-											onClick={() => copyValue(address)}
-										/>
+										<Balloon
+											trigger={
+												<CustomIcon
+													type="icon-fuzhi"
+													size="xs"
+													style={{
+														color: '#0070CC',
+														cursor: 'pointer'
+													}}
+													onClick={() =>
+														copyValue(
+															address,
+															record
+														)
+													}
+												/>
+											}
+											triggerType={'click'}
+											closable={false}
+											visible={
+												iconVisible &&
+												adress === record.name
+											}
+										>
+											<Icon
+												type={'success'}
+												style={{
+													color: '#00A700',
+													marginRight: '5px'
+												}}
+												size={'xs'}
+											/>
+											复制成功
+										</Balloon>
 										{address}
 									</div>
 								);
@@ -239,11 +289,40 @@ function IngressList(props) {
 								const address = `${record.exposeIP}:${item.exposePort}`;
 								return (
 									<div key={index} className="balloon-tips">
-										<CustomIcon
-											type="icon-fuzhi"
-											size="xs"
-											onClick={() => copyValue(address)}
-										/>
+										<Balloon
+											trigger={
+												<CustomIcon
+													type="icon-fuzhi"
+													size="xs"
+													style={{
+														color: '#0070CC',
+														cursor: 'pointer'
+													}}
+													onClick={() =>
+														copyValue(
+															address,
+															record
+														)
+													}
+												/>
+											}
+											triggerType={'click'}
+											closable={false}
+											visible={
+												iconVisible &&
+												adress === record.name
+											}
+										>
+											<Icon
+												type={'success'}
+												style={{
+													color: '#00A700',
+													marginRight: '5px'
+												}}
+												size={'xs'}
+											/>
+											复制成功
+										</Balloon>
 										{address}
 									</div>
 								);
