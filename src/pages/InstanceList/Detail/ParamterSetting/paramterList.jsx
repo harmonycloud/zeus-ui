@@ -100,21 +100,19 @@ export default function ParamterLIst(props) {
 			Dialog.show({
 				title: '修改参数',
 				content:
-					'本次修改需要重启实例才能生效，可能导致业务中断，请谨慎操作',
+					'本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作',
 				onOk: () => {
 					updateData(sendData);
-				},
-				onCancel: () => {}
+				}
 			});
 		} else {
 			Dialog.show({
 				title: '修改参数',
 				content:
-					'本次修改无需重启实例，参数将在提交后的15秒左右生效，请确认提交',
+					'本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
 				onOk: () => {
 					updateData(sendData);
-				},
-				onCancel: () => {}
+				}
 			});
 		}
 	};
@@ -150,8 +148,7 @@ export default function ParamterLIst(props) {
 					return item;
 				});
 				setDataSource(list);
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
@@ -214,7 +211,9 @@ export default function ParamterLIst(props) {
 				</span>
 				<BalloonForm
 					closable={false}
-					trigger={<Icon type="edit" size="xs" />}
+					trigger={
+						<Icon className="edit-icon" type="edit" size="xs" />
+					}
 					style={{ width: '300px' }}
 					onConfirm={(v) => updateValue(v, record)}
 					formProps={formItemLayout}

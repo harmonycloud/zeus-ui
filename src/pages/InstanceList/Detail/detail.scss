@@ -6,7 +6,7 @@
 	.blue-line{
 		width: 1px;
 		height: 14px;
-		border: 1px solid #0064C8;
+		border: 1px solid #0070cc;
 	}
 	.detail-title{
 		@include lineHeight(22px);
@@ -17,6 +17,7 @@
 	}
 }
 .backup-setting{
+	width: 50%;
 	display: flex;
 	color: $text-color-title;
 	margin-bottom: 6px;
@@ -30,15 +31,43 @@
 	}
 	.backup-action{
 		@include lineHeight(20px);
-		color: #0064C8;
+		color: #0070cc;
 		cursor: pointer;
 	}
-	.backup-label{
-		@include lineHeight(20px);
-		width: 160px;
+}
+.backup-display-content {
+	display: flex;
+	flex-wrap: wrap;
+	.backup-setting{
+		width: 50%;
+		display: flex;
+		color: $text-color-title;
+		margin-bottom: 6px;
 		font-size: $font-size-base;
-		font-weight: 500;
-		color: #666666;
+		.backup-label{
+			@include lineHeight(20px);
+			width: 160px;
+			font-size: $font-size-base;
+			font-weight: 500;
+			color: #666666;
+		}
+		.backup-value{
+			display: flex;
+			align-items: center;
+			span {
+				margin-left: 12px;
+			}
+		}
+	}
+}
+.use-backup-form-title{
+	display: flex;
+	margin-bottom: 12px;
+	.blue-line{
+		width: 1px;
+		height: 14px;
+		border: 1px solid #0070cc;
+		margin-right: 8px;
 	}
 }
 .password-content{
@@ -77,7 +106,7 @@
 		.blue-line{
 			width: 1px;
 			height: 14px;
-			border: 1px solid #0064C8;
+			border: 1px solid #0070cc;
 		}
 		.detail-title{
 			@include lineHeight(22px);
@@ -90,7 +119,7 @@
 }
 .details-go-back{
 	&:hover{
-		color: #0064C8;
+		color: #0070cc;
 	}
 }
 .balloon-text{
@@ -115,7 +144,7 @@
 	margin-bottom: 16px;
 	cursor: pointer;
 	.create-alarm-text{
-		color: #0064C8;
+		color: #0070cc;
 		margin-left: 8px;
 		font-size: $font-size-base;
 		font-weight: 400;
@@ -138,4 +167,34 @@
 }
 .create-alarm-form-del{
 	margin-left: 33px;
+}
+.warning-info{
+	margin: 0 24px 16px 24px;
+	height: 32px;
+	background: #FFF7D1;
+	border-radius: 2px;
+	&>.warning-icon{
+		font-size: 14px;
+		margin: 0 10px;
+		color: #FAC800;
+	}
+	&>.info-text{
+		font-size: 12px;
+		font-family: PingFangSC-Regular, PingFang SC;
+		font-weight: 400;
+		color: #333333;
+		line-height: 32px;
+	}
+	&>.warning-close{
+		float: right;
+		margin-right: 10px !important;
+		line-height: 32px;
+		color: #333333;
+	}
+}
+.edit-icon{
+	cursor: pointer;
+	&:hover{
+		color: #0070cc;
+	}
 }

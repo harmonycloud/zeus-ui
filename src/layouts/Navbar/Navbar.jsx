@@ -19,17 +19,30 @@ import {
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 
-// 集群分区不可改变路由名单
+// 资源池、分区不可改变路由名单
 const disabledRoute = [
-	'/serviceCatalog/mysqlCreate',
-	'/serviceCatalog/redisCreate',
-	'/serviceCatalog/elasticsearchCreate',
-	'/serviceCatalog/rocketmqCreate',
+	'/middlewareRepository/mysqlCreate',
+	'/middlewareRepository/redisCreate',
+	'/middlewareRepository/elasticsearchCreate',
+	'/middlewareRepository/rocketmqCreate',
+	'/middlewareRepository/dynamicForm',
+	'/middlewareRepository/versionManagement',
 	'/instanceList/detail'
 ];
 
-// 集群分区不显示路由名单
-const hideRoute = ['/basicResource', '/authManage', '/platformOverview'];
+// 资源池、分区不显示路由名单
+const hideRoute = [
+	'/basicResource',
+	'/authManage',
+	'/platformOverview',
+	'/operationAudit',
+	'/userManagement',
+	'/resourcePoolManagement',
+	'/roleManagement',
+	'/dataOverview',
+	'/systemManagement',
+	'/terminal'
+];
 
 const header = (
 	<div
@@ -57,7 +70,7 @@ function Navbar(props) {
 	const [currentNamespace, setCurrentNamespace] = useState({});
 	const [clusterList, setClusterList] = useState([]);
 	const [namespaceList, setNamespaceList] = useState([]);
-	// 控制集群和分区
+	// 控制资源池和分区
 	const [disabled, setDisabled] = useState(false);
 	const [hideFlag, setHideFlag] = useState(false);
 	// * 用户信息
@@ -213,12 +226,14 @@ function Navbar(props) {
 			>
 				{hideFlag === false && (
 					<>
+						<span style={{ marginRight: 8 }}>资源池</span>
 						<Select
 							className="no-shadow"
 							value={currentCluster.id}
 							hasBorder={false}
 							disabled={disabled}
 							onChange={clusterHandle}
+							autoWidth={false}
 						>
 							{clusterList.map((cluster, index) => {
 								return (
@@ -231,13 +246,15 @@ function Navbar(props) {
 								);
 							})}
 						</Select>
+						<span style={{ marginLeft: 24 }}>资源分区</span>
 						<Select
-							style={{ marginLeft: 16 }}
+							style={{ marginLeft: 8 }}
 							className="no-shadow"
 							value={currentNamespace.name}
 							hasBorder={false}
 							disabled={disabled}
 							onChange={namespaceHandle}
+							autoWidth={false}
 						>
 							{namespaceList.map((namespace, index) => {
 								return (

@@ -1,4 +1,4 @@
-import { resProps } from '@/utils/comment';
+import { resProps } from '@/types/comment';
 
 export interface auditProps {
 	id: number;
@@ -61,6 +61,7 @@ export interface sendDataAuditProps {
 	searchKeyWord?: string;
 	modules?: string[];
 	childModules?: string[];
-	beginTimeNormalOrder?: boolean;
-	executeTimeNormalOrder?: boolean;
+	beginTimeNormalOrder?: boolean | null;
+	executeTimeNormalOrder?: boolean | null;
+	statusOrder?: boolean | null;
 }

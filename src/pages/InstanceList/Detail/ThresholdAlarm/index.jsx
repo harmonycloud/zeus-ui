@@ -22,7 +22,6 @@ export default function ThresholdAlarm(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [visible, setVisible] = useState(false);
 	const [searchText, setSearchText] = useState('');
-
 	useEffect(() => {
 		if (!customMid || capabilities.includes('alert')) {
 			getData(clusterId, middlewareName, namespace, searchText);
@@ -37,9 +36,10 @@ export default function ThresholdAlarm(props) {
 			namespace
 		};
 		getUsedAlarms(sendData).then((res) => {
-			console.log(res);
 			if (res.success) {
 				setDataSource(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
@@ -51,9 +51,10 @@ export default function ThresholdAlarm(props) {
 			</Button>
 		)
 	};
-
-	const handleSearch = (value) => {
+	const handleChange = (value) => {
 		setSearchText(value);
+	};
+	const handleSearch = (value) => {
 		getData(clusterId, middlewareName, namespace, value);
 	};
 
@@ -87,8 +88,7 @@ export default function ThresholdAlarm(props) {
 						Message.show(messageConfig('error', '失败', res));
 					}
 				});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
@@ -154,6 +154,8 @@ export default function ThresholdAlarm(props) {
 				}}
 				operation={Operation}
 				search={{
+					value: searchText,
+					onChange: handleChange,
 					onSearch: handleSearch,
 					placeholder: '请输入搜索内容'
 				}}
@@ -168,7 +170,7 @@ export default function ThresholdAlarm(props) {
 					title="状态"
 					dataIndex="status"
 					cell={alarmStatusRender}
-					width={100}
+					width={80}
 				/>
 				<Table.Column
 					title="报警规则"
@@ -185,13 +187,13 @@ export default function ThresholdAlarm(props) {
 					title="创建时间"
 					dataIndex="createTime"
 					cell={(value) => transTime.gmt2local(value)}
-					width={180}
+					width={160}
 				/>
 				<Table.Column
 					title="操作"
 					dataIndex="action"
 					cell={actionRender}
-					width={120}
+					width={60}
 					lock="right"
 				/>
 			</Table>

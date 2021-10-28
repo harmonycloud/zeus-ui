@@ -1,48 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import { Button, Dialog, Message } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { getBackups, addBackup, deleteBackup } from '@/services/middleware';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import ComponentsLoading from '@/components/componentsLoading';
+import { getBackups, backupNow, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
-import transTime from '@/utils/transTime';
+import UseBackupForm from './useBackupForm';
+import moment from 'moment';
 
 export default function List(props) {
-	const {
-		data: { clusterId, namespace, data: listData },
-		backup
-	} = props;
-	const history = useHistory();
-	const { middlewareName, type, chartName, chartVersion } = useParams();
+	const { clusterId, namespace, data: listData, storage } = props;
 	const [backups, setBackups] = useState([]);
-
+	const [backupData, setBackupData] = useState();
+	const [useVisible, setUseVisible] = useState(false);
 	useEffect(() => {
 		if (
 			clusterId !== undefined &&
 			namespace !== undefined &&
 			listData !== undefined &&
-			backup
+			storage.backup
 		) {
-			getData(clusterId, namespace, listData.name);
+			getData();
 		}
-	}, []);
+	}, [props.data]);
 
-	const getData = (clusterId, namespace, mysqlName) => {
+	const getData = () => {
 		const sendData = {
 			clusterId,
 			namespace,
-			mysqlName: mysqlName
+			middlewareName: listData.name,
+			type: listData.type
 		};
 		getBackups(sendData).then((res) => {
 			if (res.success) {
-				setBackups(res.data);
+				if (res.data.length > 0) {
+					setBackups(
+						res.data.sort(
+							(a, b) =>
+								moment(b['backupTime']).valueOf() -
+								moment(a['backupTime']).valueOf()
+						)
+					);
+				} else {
+					setBackups(res.data);
+				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
 
-	const backupNow = () => {
+	const backupOnNow = () => {
+		if (listData.type === 'elasticsearch') {
+			const list = [];
+			for (let i in listData.quota) {
+				list.push(listData.quota[i].storageClassName);
+			}
+			if (list.includes('local-path')) {
+				Message.show(
+					messageConfig(
+						'error',
+						'失败',
+						'存储类型为local-path时不支持立即备份功能'
+					)
+				);
+				return;
+			}
+		} else {
+			if (
+				listData.quota[listData.type].storageClassName === 'local-path'
+			) {
+				Message.show(
+					messageConfig(
+						'error',
+						'失败',
+						'存储类型为local-path时不支持立即备份功能'
+					)
+				);
+				return;
+			}
+		}
 		Dialog.show({
 			title: '操作确认',
 			content: '请确认是否立刻备份？',
@@ -50,9 +88,10 @@ export default function List(props) {
 				const sendData = {
 					clusterId,
 					namespace,
-					mysqlName: listData.name
+					middlewareName: listData.name,
+					type: listData.type
 				};
-				addBackup(sendData)
+				backupNow(sendData)
 					.then((res) => {
 						if (res.success) {
 							Message.show(
@@ -63,54 +102,28 @@ export default function List(props) {
 						}
 					})
 					.finally(() => {
-						getData(clusterId, namespace, listData.name);
+						getData();
 					});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
-	const dateRender = (val) => {
-		return transTime.gmt2local(val);
+	const toHandle = (backupName, backupFileName) => {
+		setBackupData({ backupName, backupFileName });
+		setUseVisible(true);
 	};
 
-	const typeRender = (val) => {
-		switch (val) {
-			case 'all':
-				return '全量备份';
-			default:
-				return '全量备份';
-		}
-	};
-
-	const toHandle = (backupFileName) => {
-		if (type === 'mysql')
-			history.push(
-				`/serviceCatalog/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-		if (type === 'redis')
-			history.push(
-				`/serviceCatalog/redisCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-		if (type === 'elasticsearch')
-			history.push(
-				`/serviceCatalog/elasticsearchCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-		if (type === 'rocketmq')
-			history.push(
-				`/serviceCatalog/rocketmqCreate/${chartName}/${chartVersion}/${middlewareName}/${backupFileName}`
-			);
-	};
-
-	// 克隆实例
+	// 克隆服务
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={record.backupFileName === ''}
-					onClick={() => toHandle(record.backupFileName)}
+					disabled={record.backupName === ''}
+					onClick={() =>
+						toHandle(record.backupName, record.backupFileName)
+					}
 				>
-					克隆实例
+					使用备份
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -121,11 +134,13 @@ export default function List(props) {
 								const sendData = {
 									clusterId,
 									namespace,
-									mysqlName: listData.name,
 									backupName: record.backupName,
+									middlewareName: listData.name,
+									type: listData.type,
 									backupFileName: record.backupFileName
 								};
-								deleteBackup(sendData)
+								// console.log(sendData);
+								deleteBackups(sendData)
 									.then((res) => {
 										if (res.success) {
 											Message.show(
@@ -152,8 +167,7 @@ export default function List(props) {
 											listData.name
 										);
 									});
-							},
-							onCancel: () => {}
+							}
 						});
 					}}
 				>
@@ -165,48 +179,106 @@ export default function List(props) {
 
 	const Operation = {
 		primary: (
-			<Button onClick={backupNow} type="primary">
+			<Button onClick={backupOnNow} type="primary">
 				立即备份
 			</Button>
 		)
 	};
-
-	const onRefresh = () => {
-		getData(clusterId, namespace, listData.name);
+	const addressListRender = (value, index, record) => {
+		if (value) {
+			return (
+				<div>
+					{value.map((item, index) => (
+						<p key={index}>{item}</p>
+					))}
+				</div>
+			);
+		} else {
+			return <div></div>;
+		}
 	};
+
+	const onSort = (dataIndex, order) => {
+		if (dataIndex === 'backupTime') {
+			const tempDataSource = backups.sort((a, b) => {
+				const result = a['backupTime'] - b['backupTime'];
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setBackups([...tempDataSource]);
+		} else if (dataIndex === 'phrase') {
+			const tempDataSource = backups.sort((a, b) => {
+				if (a['phrase'] === 'Failed') return 2;
+				if (a['phrase'] === 'Running') return 1;
+				if (a['phrase'] === 'Success') return -1;
+				return 0;
+			});
+			setBackups([...tempDataSource]);
+		}
+	};
+
 	return (
 		<div style={{ marginTop: 16 }}>
-			{backup ? (
+			{storage.backup ? (
 				<Table
 					dataSource={backups}
 					exact
 					fixedBarExpandWidth={[24]}
 					showRefresh
-					onRefresh={onRefresh}
+					onRefresh={getData}
 					affixActionBar
 					primaryKey="key"
 					operation={Operation}
+					onSort={onSort}
 				>
 					<Table.Column
 						title="备份时间"
-						dataIndex="date"
-						cell={dateRender}
+						dataIndex="backupTime"
+						width={180}
+						sortable
+						// cell={dateRender}
 					/>
-					<Table.Column
+					{/* <Table.Column
 						title="类型"
 						dataIndex="type"
 						cell={typeRender}
-					/>
+					/> */}
 					<Table.Column
 						title="状态"
-						dataIndex="status"
+						dataIndex="phrase"
 						cell={statusBackupRender}
+						width={150}
+						sortable
 					/>
-					<Table.Column title="位置" dataIndex="position" />
-					<Table.Column title="操作" cell={actionRender} />
+					<Table.Column
+						title="备份位置"
+						dataIndex="backupAddressList"
+						cell={addressListRender}
+					/>
+					<Table.Column
+						title="操作"
+						cell={actionRender}
+						width={150}
+					/>
 				</Table>
 			) : (
 				<ComponentsLoading type="backup" clusterId={clusterId} />
+			)}
+			{useVisible && backupData.backupName !== '' && (
+				<UseBackupForm
+					visible={useVisible}
+					onCancel={() => setUseVisible(false)}
+					backupData={backupData}
+					clusterId={clusterId}
+					namespace={namespace}
+					middlewareName={listData.name}
+					type={listData.type}
+				/>
 			)}
 		</div>
 	);

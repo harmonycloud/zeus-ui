@@ -16,7 +16,7 @@ export default function DeployMonitorForm(props) {
 
 	const onOk = () => {
 		field.validate((err, values) => {
-			console.log(err);
+			// console.log(err);
 			if (err) return;
 			onCreate(values);
 		});

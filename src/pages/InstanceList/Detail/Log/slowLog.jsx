@@ -153,12 +153,12 @@ export default function SlowLog(props) {
 	return (
 		<div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col span={6}>
+						<Col span={5}>
 							<label>搜索类型</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择搜索类型"
 								value={searchType}
@@ -174,12 +174,12 @@ export default function SlowLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>关键字</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Input
 								style={{ width: '100%' }}
 								value={keyword}
@@ -188,39 +188,37 @@ export default function SlowLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
 						<TimeSelect source="log" timeSelect={onTimeChange} />
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-slowlog']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>执行时长</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<NumberRange unit="秒" numberRange={numberRange} />
 						</Col>
 					</Row>
 				</div>
 				<div className={styles['filter-item-search']}>
-					<Row>
-						<Col offset={20}>
-							<Button
-								onClick={slowLogDownload}
-								type="normal"
-								style={{ marginRight: 12 }}
-							>
-								<Icon type="arrow-to-bottom" />
-							</Button>
-							<Button type="primary" onClick={handleClick}>
-								搜索
-							</Button>
-						</Col>
-					</Row>
+					<>
+						<Button type="primary" onClick={handleClick}>
+							搜索
+						</Button>
+						<Button
+							onClick={slowLogDownload}
+							type="normal"
+							style={{ marginRight: 12, padding: '0 9px' }}
+						>
+							<Icon type="arrow-to-bottom" />
+						</Button>
+					</>
 				</div>
 			</div>
-			<Table dataSource={dataSource}>
+			<Table dataSource={dataSource} hasBorder={false}>
 				<Table.Column
 					title="慢日志采集时间"
 					dataIndex="timestampMysql"
@@ -228,7 +226,7 @@ export default function SlowLog(props) {
 					width={160}
 					lock
 				/>
-				<Table.Column title="SQL语句" dataIndex="query" width={500} />
+				<Table.Column title="SQL语句" dataIndex="query" width={450} />
 				<Table.Column
 					title="客户端IP"
 					dataIndex="clientip"
@@ -237,22 +235,22 @@ export default function SlowLog(props) {
 				<Table.Column
 					title="执行时长（秒）"
 					dataIndex="queryTime"
-					width={100}
+					width={120}
 				/>
 				<Table.Column
 					title="锁定时长（秒）"
 					dataIndex="lockTime"
-					width={100}
+					width={120}
 				/>
 				<Table.Column
 					title="解析行数"
 					dataIndex="rowsExamined"
-					width={70}
+					width={90}
 				/>
 				<Table.Column
 					title="返回行数"
 					dataIndex="rowsSent"
-					width={70}
+					width={90}
 				/>
 			</Table>
 			<SPagination

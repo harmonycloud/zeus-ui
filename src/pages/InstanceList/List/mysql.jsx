@@ -80,7 +80,7 @@ function MysqlList(props) {
 	const deleteFn = (name) => {
 		Dialog.show({
 			title: '提示',
-			content: '确定删除该Mysql实例？',
+			content: '确定删除该Mysql服务？',
 			onOk: async () => {
 				let res = await deleteMiddleware({
 					clusterId: globalCluster.id,
@@ -228,12 +228,12 @@ function MysqlList(props) {
 				}
 				type="primary"
 			>
-				发布实例
+				发布服务
 			</Button>
 		),
 		secondary: (
 			<Checkbox checked={backupCheck} onChange={handleFilterBackup}>
-				灾备实例
+				灾备服务
 			</Checkbox>
 		)
 	};
@@ -309,6 +309,12 @@ function MysqlList(props) {
 	};
 	const toDetail = (record) => {
 		console.log(record);
+		if (!record.mysqlDTO.relationExist) {
+			Message.show(
+				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
+			);
+			return;
+		}
 		const cs = globalClusterList.filter(
 			(item) => item.id === record.mysqlDTO.relationClusterId
 		);
@@ -400,7 +406,7 @@ function MysqlList(props) {
 				高可用MySQL使用说明
 				<br />
 				<span style={{ fontWeight: 400 }}>
-					当前Mysql中间件是基于日志构建的主从复制的高可用Mysql 集群,
+					当前Mysql中间件是基于日志构建的主从复制的高可用Mysql 资源池,
 					提供了故障自愈，手动/自动主从切换，备份恢复，监控告警等能力，版本支持：v5.7.21；详细参见
 				</span>
 				<span
@@ -433,7 +439,7 @@ function MysqlList(props) {
 				onFilter={onFilter}
 			>
 				<Table.Column
-					title="实例名称/显示名称"
+					title="服务名称/显示名称"
 					dataIndex="name"
 					resizable
 					cell={nameRender}
@@ -447,7 +453,7 @@ function MysqlList(props) {
 				/>
 				<Table.Column title="备注" dataIndex="annotation" />
 				<Table.Column
-					title="关联实例"
+					title="关联服务"
 					dataIndex="associated"
 					cell={associatedRender}
 				/>

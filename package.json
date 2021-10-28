@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
-		"@alicloud/console-components": "^2.0.0",
+		"@alicloud/console-components": "^1.4.57",
 		"@alicloud/console-components-actions": "^1.0.17",
 		"@alicloud/console-components-app-layout": "^1.0.10",
 		"@alicloud/console-components-console-menu": "^1.2.2",
@@ -64,7 +64,11 @@
 		"typescript": "^4.3.5",
 		"web-vitals": "^0.2.4",
 		"webpack": "4.42.0",
-		"webpack-dev-server": "3.11.0"
+		"webpack-dev-server": "3.11.0",
+		"xterm": "^4.14.1",
+		"xterm-addon-attach": "^0.6.0",
+		"xterm-addon-fit": "^0.5.0",
+		"xterm-addon-web-links": "^0.4.0"
 	},
 	"scripts": {
 		"start": "react-app-rewired start",

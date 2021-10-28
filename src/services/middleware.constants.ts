@@ -25,7 +25,7 @@ export const createTimingBackup = `${api}/clusters/{clusterId}/middlewares/mysql
 export const switchMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/switch`;
 // * 性能监控
 export const middlewareMonitor = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/monitor`;
-// * 实例事件
+// * 服务事件
 export const middlewareEvents = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/events`;
 // * 查询已设置的告警规则
 export const getUsedAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules/used`;
@@ -61,9 +61,9 @@ export const getLogDetails = `${api}/clusters/{clusterId}/namespaces/{namespace}
 export const downloadLog = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/applogs/export`;
 // * 获取日志目录
 export const getLogIndex = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/applogs/queryLogfiles`;
-// * 添加灾备实例
+// * 添加灾备服务
 export const addDisasterInstance = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}`;
-// * 灾备实例切换
+// * 灾备切换
 export const switchDisasterInstance = `${api}/clusters/{clusterId}/middlewares/mysql/{mysqlName}/disasterRecovery`;
 // * 获取mysql对外访问信息
 export const getMysqlExternal = `${api}/clusters/{clusterId}/middlewares/mysql/{mysqlName}/queryAccessInfo`;

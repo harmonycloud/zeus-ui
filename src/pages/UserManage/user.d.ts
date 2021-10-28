@@ -1,17 +1,18 @@
-import { resProps } from '@/utils/comment';
-
+import { resProps } from '@/types/comment';
 export interface userProps {
 	userName: string;
 	createTime?: string | null;
 	email: string | null;
 	password?: string | null;
 	phone: string | null;
-	roleId: number;
+	roleId: number | null;
 	roleName?: string;
-	aliasName: string;
+	aliasName: string | null;
 	[propsName: string]: any;
 }
 export interface roleProps {
+	value: any;
+	label: string;
 	description: string;
 	id: number;
 	name: string;

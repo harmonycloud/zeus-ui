@@ -31,7 +31,12 @@
 .acl-add-user-config{
 	color: $primary-color;
 	cursor: pointer;
+	margin: 8px 0 0 0;
 	& span {
 		margin-left: 8px;
 	}
+}
+.acl-error-text {
+	margin: 0px 0px 10px 120px;
+	color: $error-color;
 }

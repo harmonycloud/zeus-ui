@@ -23,25 +23,22 @@ import EditNodeSpe from './editNodeSpe';
 import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
+import Console from './console';
 
 const { Row, Col } = Grid;
 
-// const FormItem = Form.Item;
-// const { Option } = Select;
 const specification = {
 	title: '规格配置',
 	model: '',
 	node: ''
 };
-// const formItemLayout = {
-// 	labelCol: { fixedSpan: 0 },
-// 	wrapperCol: { span: 24 }
-// };
 const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
+	'complex-cold': 'N主N数据N冷',
+	'cold-complex': 'N主N数据N冷N协调',
 	regular: 'N主N数据',
 	sentinel: '哨兵',
 	'2m-noslave': '两主',
@@ -54,7 +51,8 @@ const esMap = {
 	master: '主节点',
 	data: '数据节点',
 	kibana: 'kibana',
-	client: '协调节点'
+	client: '协调节点',
+	cold: '冷数据节点'
 };
 
 // const redisModeSelects = [
@@ -80,6 +78,9 @@ export default function HighAvailability(props) {
 	const [config, setConfig] = useState(specification);
 	const [pods, setPods] = useState([]);
 	const [switchValue, setSwitchValue] = useState(true);
+	const [podVisible, setPodVisible] = useState(false);
+	const [containers, setContainers] = useState([]);
+	const [consoleData, setConsoleData] = useState();
 	// * 其他默认中间件修改阶段规格
 	const [visible, setVisible] = useState(false);
 	// * es中间件修改节点规格
@@ -182,61 +183,144 @@ export default function HighAvailability(props) {
 			render: (val) => (
 				<div>
 					{val}
-					<span
-						className="name-link ml-12"
-						onClick={editConfiguration}
-					>
-						修改
-					</span>
+					{val === '-' ? null : (
+						<span
+							className="name-link ml-12"
+							onClick={editConfiguration}
+						>
+							修改
+						</span>
+					)}
 				</div>
 			)
 		}
 	]);
 
+	// model
+	const modelFormat = (mode) => {
+		let model = mode || '';
+		if (type === 'elasticsearch') {
+			if (data.quota.client.num !== 0 && data.quota.cold.num !== 0) {
+				model = 'cold-complex';
+			} else if (
+				data.quota.client.num === 0 &&
+				data.quota.cold.num !== 0
+			) {
+				model = 'complex-cold';
+			}
+		} else if (type === 'redis') {
+			if (mode === 'sentinel') {
+				model = mode;
+			} else {
+				model = data.quota.redis.num;
+			}
+		} else {
+			model = mode;
+		}
+		return model;
+	};
+
+	const nodeFormat = () => {
+		let node = '-';
+		if (
+			!customMid &&
+			data.quota[type] !== null &&
+			data.quota[type].cpu !== null
+		) {
+			const cpu =
+				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
+				'm'
+					? data.quota[type].cpu
+					: `${data.quota[type].cpu} Core`;
+			const memory = `${data.quota[type].memory} 内存`;
+			const storage = `${data.quota[type].storageClassQuota} 存储`;
+			node = cpu + memory + storage;
+		} else if (
+			customMid &&
+			data.quota[type] !== null &&
+			data.quota[type].cpu !== null
+		) {
+			const cpu =
+				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
+				'm'
+					? data.quota[type].cpu
+					: `${data.quota[type].cpu} Core`;
+			const memory = `${data.quota[type].memory} 内存`;
+			node = cpu + memory;
+		}
+		return node;
+	};
+
 	useEffect(() => {
 		if (data !== undefined) {
-			if (customMid && data.quota[type] !== null) {
+			if (type === 'elasticsearch') {
 				setConfig({
 					title: '规格配置',
-					model:
-						type === 'redis'
-							? data.quota.redis.num
-							: data.mode || '',
-					node: `${
-						data.quota[type].cpu.charAt(
-							data.quota[type].cpu.length - 1
-						) === 'm'
-							? data.quota[type].cpu
-							: `${data.quota[type].cpu} Core`
-					} CPU ${data.quota[type].memory} 内存`
+					model: modelFormat(data.mode)
 				});
-				setQuotaValue(data.quota[type]);
 			} else {
-				if (type !== 'elasticsearch') {
-					setConfig({
-						title: '规格配置',
-						model:
-							type === 'redis'
-								? data.quota.redis.num
-								: data.mode || '',
-						node: `${
-							data.quota[type].cpu.charAt(
-								data.quota[type].cpu.length - 1
-							) === 'm'
-								? data.quota[type].cpu
-								: `${data.quota[type].cpu} Core`
-						} CPU ${data.quota[type].memory} 内存 ${
-							data.quota[type].storageClassQuota
-						} 存储`
-					});
-					setQuotaValue(data.quota[type]);
-				} else {
-					setConfig({
-						title: '规格配置',
-						model: data.mode || ''
-					});
-				}
+				setConfig({
+					title: '规格配置',
+					model: modelFormat(data.mode),
+					node: nodeFormat()
+				});
 			}
+			setQuotaValue(data.quota[type]);
+			// * 自定义中间件 有operator，无operator
+			// if (customMid && data.quota[type] !== null) {
+			// 	setConfig({
+			// 		title: '规格配置',
+			// 		model: data.mode || '',
+			// 		node: `${
+			// 			data.quota[type].cpu.charAt(
+			// 				data.quota[type].cpu.length - 1
+			// 			) === 'm'
+			// 				? data.quota[type].cpu
+			// 				: `${data.quota[type].cpu} Core`
+			// 		} CPU ${data.quota[type].memory} 内存`
+			// 	});
+			// 	setQuotaValue(data.quota[type]);
+			// } else {
+			// 	// * mysql redis es mq
+			// 	if (type !== 'elasticsearch') {
+			// 		// * mysql redis mq
+			// 		setConfig({
+			// 			title: '规格配置',
+			// 			model:
+			// 				type === 'redis'
+			// 					? data.quota.redis.num
+			// 					: data.mode || '',
+			// 			node: `${
+			// 				data.quota[type].cpu.charAt(
+			// 					data.quota[type].cpu.length - 1
+			// 				) === 'm'
+			// 					? data.quota[type].cpu
+			// 					: `${data.quota[type].cpu} Core`
+			// 			} CPU ${data.quota[type].memory} 内存 ${
+			// 				data.quota[type].storageClassQuota
+			// 			} 存储`
+			// 		});
+			// 		setQuotaValue(data.quota[type]);
+			// 	} else {
+			// 		// es
+			// 		let mode = data.mode;
+			// 		if (
+			// 			data.quota.client.num !== 0 &&
+			// 			data.quota.cold.num !== 0
+			// 		) {
+			// 			mode = 'cold-complex';
+			// 		} else if (
+			// 			data.quota.client.num === 0 &&
+			// 			data.quota.cold.num !== 0
+			// 		) {
+			// 			mode = 'complex-cold';
+			// 		}
+			// 		setConfig({
+			// 			title: '规格配置',
+			// 			model: mode
+			// 		});
+			// 	}
+			// }
 		}
 	}, [data]);
 
@@ -278,7 +362,7 @@ export default function HighAvailability(props) {
 			}
 		});
 	};
-	// * es 修改实例规格
+	// * es 修改服务规格
 	const editConfiguration = () => {
 		if (data.status === 'Running') {
 			if (customMid) {
@@ -291,7 +375,7 @@ export default function HighAvailability(props) {
 				messageConfig(
 					'error',
 					'失败',
-					'该实例运行异常，无法修改该实例节点规格'
+					'该服务运行异常，无法修改该服务节点规格'
 				)
 			);
 		}
@@ -340,19 +424,30 @@ export default function HighAvailability(props) {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					});
-				},
-				onCancel: () => {}
+				}
 			});
 		} else {
 			Message.show(
-				messageConfig('error', '失败', '该实例运行异常，无法重启该pod')
+				messageConfig('error', '失败', '该服务运行异常，无法重启该实例')
 			);
 		}
+	};
+	const openSSL = (record) => {
+		const strArr = record.containers.map((item) => item.name);
+		const consoleDataTemp = {
+			podName: record.podName,
+			namespace: namespace,
+			clusterId: clusterId
+		};
+		setContainers(strArr);
+		setConsoleData(consoleDataTemp);
+		setPodVisible(true);
 	};
 
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
+				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
 				<LinkButton onClick={() => reStart(record)}>重启</LinkButton>
 			</Actions>
 		);
@@ -373,7 +468,7 @@ export default function HighAvailability(props) {
 				messageConfig(
 					'error',
 					'失败',
-					'该实例运行异常，无法进行主备切换'
+					'该服务运行异常，无法进行主备切换'
 				)
 			);
 		}
@@ -384,18 +479,17 @@ export default function HighAvailability(props) {
 			Dialog.show({
 				title: '操作确认',
 				content:
-					'主备实例切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
+					'主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
 				onOk: () => {
 					switchMiddleware(null);
-				},
-				onCancel: () => {}
+				}
 			});
 		} else {
 			Message.show(
 				messageConfig(
 					'error',
 					'失败',
-					'该实例运行异常，无法进行主备切换'
+					'该服务运行异常，无法进行主备切换'
 				)
 			);
 		}
@@ -463,8 +557,7 @@ export default function HighAvailability(props) {
 						Message.show(messageConfig('error', '失败', res));
 					}
 				});
-			},
-			onCancel: () => {}
+			}
 		});
 	};
 
@@ -513,7 +606,6 @@ export default function HighAvailability(props) {
 				[data.type]: values
 			}
 		};
-		console.log(sendData);
 		updateMid(sendData);
 	};
 
@@ -530,6 +622,8 @@ export default function HighAvailability(props) {
 					return '主节点';
 				} else if (record.podName.includes('data')) {
 					return '数据节点';
+				} else if (record.podName.includes('cold')) {
+					return '冷节点';
 				}
 			} else {
 				switch (value) {
@@ -541,6 +635,8 @@ export default function HighAvailability(props) {
 						return '数据节点';
 					case 'client':
 						return '协调节点';
+					case 'cold':
+						return '冷节点';
 					case 'kibana':
 						return 'kibana';
 					case 'nameserver':
@@ -620,7 +716,7 @@ export default function HighAvailability(props) {
 									align={'r'}
 								>
 									<span className="balloon-text">
-										开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行集群异常的处理。
+										开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行资源池异常的处理。
 									</span>
 								</Balloon>
 								<Switch
@@ -649,12 +745,12 @@ export default function HighAvailability(props) {
 						operation={
 							<div className="title-content">
 								<div className="blue-line"></div>
-								<div className="detail-title">pod列表</div>
+								<div className="detail-title">实例列表</div>
 							</div>
 						}
 					>
 						<Table.Column
-							title="Pod名称"
+							title="实例名称"
 							dataIndex="podName"
 							width={150}
 							lock="left"
@@ -665,7 +761,7 @@ export default function HighAvailability(props) {
 							width={120}
 						/>
 						<Table.Column
-							title="Pod IP"
+							title="实例 IP"
 							dataIndex="podIp"
 							width={150}
 						/>
@@ -707,7 +803,7 @@ export default function HighAvailability(props) {
 						<Table.Column
 							title="操作"
 							cell={actionRender}
-							width={100}
+							width={150}
 							lock="right"
 						/>
 					</Table>
@@ -735,6 +831,14 @@ export default function HighAvailability(props) {
 					onCreate={onCustomCreate}
 					onCancel={() => setCustomVisible(false)}
 					quota={quotaValue}
+				/>
+			)}
+			{podVisible && (
+				<Console
+					visible={podVisible}
+					data={consoleData}
+					onCancel={() => setPodVisible(false)}
+					containers={containers}
 				/>
 			)}
 		</div>

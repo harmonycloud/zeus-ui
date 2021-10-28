@@ -23,7 +23,7 @@ export default function Card(props) {
 			</div>
 			<div className={styles['quota']}>
 				<p>
-					授权实例数：
+					授权服务数：
 					{middleware.total}个
 				</p>
 				<div className={styles['process']}>

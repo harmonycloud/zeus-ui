@@ -89,7 +89,7 @@ const EventsList = (props) => {
 										? successTip
 										: errorTip
 								}
-								className="basic-info-event"
+								id="basic-info-event"
 								content={
 									<div className={styles['event-content']}>
 										<div

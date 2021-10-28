@@ -7,12 +7,14 @@ import {
 	Select,
 	Button,
 	Dialog,
-	NumberPicker
+	NumberPicker,
+	Message
 } from '@alicloud/console-components';
 import SelectBlock from '../../../ServiceCatalog/components/SelectBlock/index';
 import TableRadio from '../../../ServiceCatalog/components/TableRadio/index';
 import styles from './esEdit.module.scss';
 import pattern from '@/utils/pattern';
+import messageConfig from '@/components/messageConfig';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -26,7 +28,7 @@ const formItemLayout = {
 };
 
 export default function EsEditNodeSpe(props) {
-	const { visible, onCreate, onCancel, data } = props;
+	const { visible, onCreate, onCancel, data: dataes } = props;
 	const [nodeModify, setNodeModify] = useState({
 		nodeName: '',
 		flag: false
@@ -44,19 +46,21 @@ export default function EsEditNodeSpe(props) {
 			value: 'Customize'
 		}
 	];
-	const [mode] = useState(data.mode);
+	const [mode, setMode] = useState(dataes.mode);
 	const [nodeObj, setNodeObj] = useState({});
 
 	useEffect(() => {
-		let { master, kibana, data: dataes, client } = data.quota;
+		let { master, kibana, data, client, cold } = dataes.quota;
 		master.title = '主节点';
 		kibana.title = 'Kibana节点';
-		dataes.title = '数据节点';
+		data.title = '数据节点';
 		client.title = '协调节点';
+		cold.title = '冷数据节点';
 		master.cpu = Number(master.cpu);
 		kibana.cpu = Number(kibana.cpu);
-		dataes.cpu = Number(dataes.cpu);
+		data.cpu = Number(data.cpu);
 		client.cpu = Number(client.cpu);
+		cold.cpu = Number(cold.cpu);
 		master.memory =
 			typeof master.memory === 'string'
 				? Number(master.memory.substring(0, master.memory.length - 2))
@@ -65,31 +69,51 @@ export default function EsEditNodeSpe(props) {
 			typeof kibana.memory === 'string'
 				? Number(kibana.memory.substring(0, kibana.memory.length - 2))
 				: kibana.memory;
-		dataes.memory =
-			typeof dataes.memory === 'string'
-				? Number(dataes.memory.substring(0, dataes.memory.length - 2))
-				: dataes.memory;
+		data.memory =
+			typeof data.memory === 'string'
+				? Number(data.memory.substring(0, data.memory.length - 2))
+				: data.memory;
 		client.memory =
 			typeof client.memory === 'string'
 				? Number(client.memory.substring(0, client.memory.length - 2))
 				: client.memory;
-		if (data.mode === 'simple') {
+		cold.memory =
+			typeof cold.memory === 'string'
+				? Number(cold.memory.substring(0, cold.memory.length - 2))
+				: cold.memory;
+		if (dataes.mode === 'simple') {
 			master.disabled = false;
 			kibana.disabled = false;
 			client.disabled = true;
-			dataes.disabled = true;
-		} else if (data.mode === 'regular') {
+			data.disabled = true;
+			cold.disabled = true;
+		} else if (dataes.mode === 'regular') {
 			master.disabled = false;
 			kibana.disabled = false;
-			dataes.disabled = false;
+			data.disabled = false;
 			client.disabled = true;
+			cold.disabled = true;
 		} else if (data.mode === 'complex') {
+			if (cold.num !== 0 && client.num === 0) {
+				setMode('complex-cold');
+				cold.disabled = false;
+				client.disabled = true;
+			}
+			if (client.num !== 0 && cold.num === 0) {
+				setMode('complex');
+				client.disabled = false;
+				cold.disabled = true;
+			}
+			if (cold.num !== 0 && client.num !== 0) {
+				setMode('cold-complex');
+				cold.disabled = false;
+				client.disabled = false;
+			}
 			master.disabled = false;
 			kibana.disabled = false;
-			dataes.disabled = false;
-			client.disabled = false;
+			data.disabled = false;
 		}
-		setNodeObj({ master, kibana, dataes, client });
+		setNodeObj({ master, kibana, data, client, cold });
 	}, []);
 
 	const modeList = [
@@ -104,6 +128,14 @@ export default function EsEditNodeSpe(props) {
 		{
 			label: 'N主 N数据 N协调',
 			value: 'complex'
+		},
+		{
+			label: 'N主 N数据 N冷',
+			value: 'complex-cold'
+		},
+		{
+			label: 'N主 N数据 N冷 N协调',
+			value: 'cold-complex'
 		}
 	];
 
@@ -202,12 +234,36 @@ export default function EsEditNodeSpe(props) {
 				if (nodeObj) {
 					sendData.quota = {};
 					for (let key in nodeObj) {
-						if (!nodeObj[key].disabled)
+						if (!nodeObj[key].disabled) {
+							// 因为es规格配置不能修改存储类型和配额，这段代码暂时注释
+							// if (nodeObj[key].storageClass === '') {
+							// 	Message.show(
+							// 		messageConfig(
+							// 			'error',
+							// 			'失败',
+							// 			`${key}节点没有选择存储配额`
+							// 		)
+							// 	);
+							// 	modifyQuota(key);
+							// 	return;
+							// }
+							// if (nodeObj[key].storageQuota === 0) {
+							// 	Message.show(
+							// 		messageConfig(
+							// 			'error',
+							// 			'失败',
+							// 			`${key}节点存储配额不能为0`
+							// 		)
+							// 	);
+							// 	modifyQuota(key);
+							// 	return;
+							// }
 							sendData.quota[key] = {
 								...nodeObj[key],
 								storageClassName: nodeObj[key].storageClass,
 								storageClassQuota: nodeObj[key].storageQuota
 							};
+						}
 					}
 				}
 				onCreate(sendData);
@@ -217,7 +273,7 @@ export default function EsEditNodeSpe(props) {
 
 	return (
 		<Dialog
-			title="修改实例规格"
+			title="修改服务规格"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
@@ -476,7 +532,7 @@ export default function EsEditNodeSpe(props) {
 																	min={0.1}
 																	step={0.1}
 																	value={
-																		data
+																		dataes
 																			.quota[
 																			nodeModify
 																				.nodeName
@@ -506,7 +562,7 @@ export default function EsEditNodeSpe(props) {
 																	min={0.1}
 																	step={0.1}
 																	value={
-																		data
+																		dataes
 																			.quota[
 																			nodeModify
 																				.nodeName
@@ -542,21 +598,22 @@ export default function EsEditNodeSpe(props) {
 													}}
 													disabled
 													value={
-														data.quota[
+														dataes.quota[
 															nodeModify.nodeName
 														].storageClassName
 													}
+													autoWidth={false}
 												>
 													<Option
 														value={
-															data.quota[
+															dataes.quota[
 																nodeModify
 																	.nodeName
 															].storageClassName
 														}
 													>
 														{
-															data.quota[
+															dataes.quota[
 																nodeModify
 																	.nodeName
 															].storageClassName
@@ -572,18 +629,22 @@ export default function EsEditNodeSpe(props) {
 											>
 												<Input
 													name="storageClassQuota"
-													value={Number(
-														data.quota[
-															nodeModify.nodeName
-														].storageClassQuota.substring(
-															0,
-															data.quota[
+													value={
+														Number(
+															dataes.quota[
 																nodeModify
 																	.nodeName
-															].storageClassQuota
-																.length - 2
-														)
-													)}
+															].storageClassQuota?.substring(
+																0,
+																dataes.quota[
+																	nodeModify
+																		.nodeName
+																]
+																	.storageClassQuota
+																	.length - 2
+															)
+														) || 0
+													}
 													htmlType="number"
 													min={1}
 													placeholder="请输入存储配额大小"

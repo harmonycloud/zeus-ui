@@ -68,10 +68,10 @@ export default function ParamterHistory(props) {
 	const Operation = {
 		primary: <RangePicker onOk={onOk} />
 	};
-
-	const handleSearch = (value) => {
-		console.log(value);
+	const handleChange = (value) => {
 		setSearchText(value);
+	};
+	const handleSearch = (value) => {
 		getData(
 			clusterId,
 			namespace,
@@ -114,7 +114,9 @@ export default function ParamterHistory(props) {
 						)
 					}
 					search={{
+						value: searchText,
 						onSearch: handleSearch,
+						onChange: handleChange,
 						placeholder: '请输入搜索内容'
 					}}
 				>

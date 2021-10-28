@@ -9,7 +9,7 @@ export default function ResourceProcess(props) {
 	const judgeColor = (index) => {
 		switch (type) {
 			case 'cpu':
-				return index % 2 === 0 ? '#007DFA' : '#0064C8';
+				return index % 2 === 0 ? '#007DFA' : '#0070cc';
 			case 'memory':
 				return index % 2 === 0 ? '#6CF0DB' : '#5CCDBB';
 			default:

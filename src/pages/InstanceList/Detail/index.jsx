@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page } from '@alicloud/console-components-page';
 import { useHistory, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message, Icon } from '@alicloud/console-components';
 import BasicInfo from './BasicInfo/index';
 import HighAvailability from './HighAvailability/index';
 import BackupRecovery from './BackupRecovery/index';
@@ -26,35 +26,40 @@ import './detail.scss';
 /*
  * 自定义中间tab页显示判断 后端
  * 基本信息  basic
- * 高可用性  high 未完成
- * 备份恢复  backup (目前mysql中间件特有)
+ * 高可用性  high
+ * 备份恢复  backup
  * 对外访问  ingress
  * 性能监控  monitoring
  * 日志管理  log
  * 参数设置  config
  * 阈值告警  alert
- * 灾备实例  disaster(目前mysql中间件特有)
+ * 灾备服务  disaster(目前mysql中间件特有)
  */
 const { Menu } = Page;
 const InstanceDetails = (props) => {
 	const {
 		globalVar,
 		match: {
-			params: { middlewareName, type, chartVersion }
-		}
+			params: { middlewareName, type, chartVersion, currentTab }
+		},
+		setCluster,
+		setNamespace,
+		setRefreshCluster
 	} = props;
 	const {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = globalVar;
-	const [selectedKey, setSelectedKey] = useState('basicInfo');
+	const [selectedKey, setSelectedKey] = useState(currentTab);
 	const [data, setData] = useState();
 	const [status, setStatus] = useState();
 	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
 	const [visible, setVisible] = useState(false);
+	const [waringVisible, setWaringVisible] = useState(true);
+	const [reason, setReason] = useState('');
+	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
-
 	useEffect(() => {
 		if (
 			JSON.stringify(globalVar.cluster) !== '{}' &&
@@ -91,6 +96,7 @@ const InstanceDetails = (props) => {
 		getMiddlewareDetail(sendData).then((res) => {
 			if (res.success) {
 				setData(res.data);
+				setReason(res.data.reason);
 				setStatus(res.data.status || 'Failed');
 				if (res.data.dynamicValues) {
 					setCustomMid(true);
@@ -109,19 +115,24 @@ const InstanceDetails = (props) => {
 	};
 
 	const DetailMenu = ({ selected, handleMenu }) => (
-		<Menu id="mid-menu" selectedKeys={selected} onSelect={handleMenu}>
+		<Menu
+			id="mid-menu"
+			selectedKeys={selected}
+			onSelect={handleMenu}
+			direction="hoz"
+		>
 			<Menu.Item key="basicInfo">基本信息</Menu.Item>
 			<Menu.Item key="highAvailability">高可用性</Menu.Item>
 			{type === 'mysql' ? (
-				<Menu.Item key="backupRecovery">备份恢复</Menu.Item>
+				<Menu.Item key="backupRecovery">数据安全</Menu.Item>
 			) : null}
-			<Menu.Item key="externalAccess">对外访问</Menu.Item>
-			<Menu.Item key="monitor">性能监控</Menu.Item>
-			<Menu.Item key="log">日志管理</Menu.Item>
+			<Menu.Item key="externalAccess">服务暴露</Menu.Item>
+			<Menu.Item key="monitor">数据监控</Menu.Item>
+			<Menu.Item key="log">日志详情</Menu.Item>
 			<Menu.Item key="paramterSetting">参数设置</Menu.Item>
 			<Menu.Item key="alarm">阈值报警</Menu.Item>
 			{type === 'mysql' ? (
-				<Menu.Item key="disaster">灾备管理</Menu.Item>
+				<Menu.Item key="disaster">灾备服务</Menu.Item>
 			) : null}
 		</Menu>
 	);
@@ -161,10 +172,11 @@ const InstanceDetails = (props) => {
 					<BackupRecovery
 						type={type}
 						data={data}
-						backup={globalVar.cluster.storage}
+						storage={globalVar.cluster.storage}
 						clusterId={globalVar.cluster.id}
 						namespace={globalVar.namespace.name}
 						customMid={customMid}
+						capabilities={(data && data.capabilities) || []}
 					/>
 				);
 			case 'externalAccess':
@@ -263,7 +275,7 @@ const InstanceDetails = (props) => {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/instanceList/detail/${data.mysqlDTO.relationName}/${
+			pathname: `/serviceList/basicInfo/${data.mysqlDTO.relationName}/${
 				data.mysqlDTO.type || 'mysql'
 			}/${chartVersion}`,
 			state: {
@@ -290,7 +302,7 @@ const InstanceDetails = (props) => {
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/instanceList/detail/${
+						pathname: `/serviceList/basicInfo/${
 							data.mysqlDTO.relationName
 						}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 						state: {
@@ -328,22 +340,28 @@ const InstanceDetails = (props) => {
 					</div>
 				}
 			>
-				该备用实例不在当前集群命名空间，返回源实例页面请点击右上角“返回源实例”按钮
+				该备用服务不在当前资源池资源分区，返回源服务页面请点击右上角“返回源服务”按钮
 			</Dialog>
 		);
 	};
 	const toDetail = () => {
-		// * 源示例和备实例在用一个集群时
-		if (data.mysqlDTO.relationClusterId === globalVar.cluster.id) {
-			unAcrossCluster();
+		if (!data.mysqlDTO.relationExist) {
+			Message.show(
+				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
+			);
+			return;
 		} else {
-			// across the cluster
-			const flag = storage.getLocal('firstAlert');
-			console.log(flag);
-			if (flag === 0) {
-				setVisible(true);
+			// * 源示例和备服务在用一个资源池时
+			if (data.mysqlDTO.relationClusterId === globalVar.cluster.id) {
+				unAcrossCluster();
 			} else {
-				acrossCluster();
+				// across the cluster
+				const flag = storage.getLocal('firstAlert');
+				if (flag === 0) {
+					setVisible(true);
+				} else {
+					acrossCluster();
+				}
 			}
 		}
 	};
@@ -360,7 +378,7 @@ const InstanceDetails = (props) => {
 				renderBackArrow={(elem) => (
 					<span
 						className="details-go-back"
-						onClick={() => history.push('/instanceList')}
+						onClick={() => window.history.back()}
 					>
 						{elem}
 					</span>
@@ -375,23 +393,39 @@ const InstanceDetails = (props) => {
 					) : null
 				}
 			>
+				<Button
+					onClick={() => refresh(selectedKey)}
+					style={{ padding: '0 9px', marginRight: '8px' }}
+				>
+					<Icon type="refresh" />
+				</Button>
 				{data?.mysqlDTO?.openDisasterRecoveryMode &&
 				data?.mysqlDTO?.isSource === false ? (
 					<Button type="primary" onClick={toDetail}>
-						返回源实例
+						返回源服务
 					</Button>
 				) : null}
 			</Page.Header>
-			<Page.Content
-				menu={
-					<DetailMenu
-						selected={selectedKey}
-						handleMenu={menuSelect}
+			{waringVisible && reason && status !== 'Running' && (
+				<div className="warning-info">
+					<Icon
+						className="warning-icon"
+						size={'small'}
+						type="warning"
 					/>
-				}
-			>
-				{childrenRender(selectedKey)}
-			</Page.Content>
+					<span className="info-text">{reason}</span>
+					<Icon
+						className="warning-close"
+						size={'xxs'}
+						type="times"
+						onClick={() => setWaringVisible(false)}
+					/>
+				</div>
+			)}
+			<div style={{ padding: '0px 40px 15px 40px' }}>
+				<DetailMenu selected={selectedKey} handleMenu={menuSelect} />
+			</div>
+			<Page.Content>{childrenRender(selectedKey)}</Page.Content>
 			<SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}

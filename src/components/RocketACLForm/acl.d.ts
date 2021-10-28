@@ -23,3 +23,7 @@ export interface authProps {
 	key: string;
 	value: string;
 }
+export interface visibleProps {
+	topicsVisible: boolean;
+	groupsVisible: boolean;
+}

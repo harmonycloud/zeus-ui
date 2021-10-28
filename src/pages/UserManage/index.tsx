@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message, Radio } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import moment from 'moment';
 import Table from '@/components/MidTable';
-import { getUserList, deleteUser, resetPassword } from '@/services/user';
+import {
+	getUserList,
+	deleteUser,
+	resetPassword,
+	getRoles,
+	updateUser
+} from '@/services/user';
 import messageConfig from '@/components/messageConfig';
-import { userProps } from './user';
+import { userProps, roleProps } from './user';
+import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
+import storage from '@/utils/storage';
+import '../RoleManage/index.scss';
+
+const RadioGroup = Radio.Group;
 
 function UserManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
@@ -15,6 +26,26 @@ function UserManage(): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<userProps>();
 	const [isEdit, setIsEdit] = useState(true);
+	const [roleVisible, setRoleVisible] = useState(false);
+	const [roles, setRoles] = useState<roleProps[]>([]);
+	const [role, setRole] = useState<any>();
+	const [record, setRecord] = useState<userProps>();
+
+	useEffect(() => {
+		getRoles().then((res) => {
+			if (res.success) {
+				const obj: any = res.data.map((item) => {
+					return {
+						label: item.name,
+						value: item.id
+					};
+				});
+				setRoles(obj);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let mounted = true;
 		getUserList({ keyword: keyword }).then((res) => {
@@ -29,7 +60,7 @@ function UserManage(): JSX.Element {
 		return () => {
 			mounted = false;
 		};
-	}, [keyword]);
+	}, []);
 	const onRefresh: () => void = () => {
 		getUserList({ keyword: keyword }).then((res) => {
 			if (res.success) {
@@ -39,8 +70,11 @@ function UserManage(): JSX.Element {
 			}
 		});
 	};
-	const handleSearch: (value: string) => void = (value: string) => {
+	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const handleSearch: (value: string) => void = (value: string) => {
+		onRefresh();
 	};
 	const edit: (record: userProps) => void = (record: userProps) => {
 		setUpdateData(record);
@@ -53,6 +87,12 @@ function UserManage(): JSX.Element {
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
 			onOk: () => {
+				if (record.userName === 'admin') {
+					Message.show(
+						messageConfig('error', '失败', 'admin用户无法删除')
+					);
+					return;
+				}
 				deleteUser({ userName: record.userName }).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -71,7 +111,7 @@ function UserManage(): JSX.Element {
 	) => {
 		Dialog.show({
 			title: '操作确认',
-			content: '该账户的密码已重置为：Ab123456!',
+			content: '该账户的密码已重置为：zeus123.com',
 			onOk: () => {
 				resetPassword({ userName: record.userName }).then((res) => {
 					if (res.success) {
@@ -106,6 +146,43 @@ function UserManage(): JSX.Element {
 			setDataSource([...dsTemp]);
 		}
 	};
+	const editRole = (record: userProps) => {
+		// console.log(record.roleName);
+		const role = roles.find((item) => item.label === record.roleName);
+		setRole(role ? role.value : 0);
+		setRecord(record);
+		setRoleVisible(true);
+	};
+	const roleChange = (value: any) => {
+		const obj = {
+			roleId: value,
+			userName: record ? record.userName : '',
+			aliasName: record ? record.aliasName : null,
+			phone: record ? record.phone : null,
+			email: record ? record.email : null
+		};
+		setRecord(obj);
+		setRole(value);
+	};
+	const submitRole = () => {
+		if (!role) {
+			Message.show(messageConfig('warning', '请选择关联角色!'));
+			return;
+		}
+		const sendData = {
+			...(record as unknown as userProps)
+		};
+		updateUser(sendData).then((res) => {
+			// console.log(res);
+			if (res.success) {
+				Message.show(messageConfig('success', '成功', '用户修改成功'));
+				setRoleVisible(false);
+				onRefresh();
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
 	const actionRender = (value: string, index: number, record: userProps) => {
 		return (
 			<Actions>
@@ -117,9 +194,16 @@ function UserManage(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => deleteUserHandle(record)}>
-					删除
-				</LinkButton>
+				{record.userName !== storage.getLocal('userName') ? (
+					<LinkButton onClick={() => deleteUserHandle(record)}>
+						删除
+					</LinkButton>
+				) : null}
+				{record.userName !== 'admin' ? (
+					<LinkButton onClick={() => editRole(record)}>
+						关联角色
+					</LinkButton>
+				) : null}
 				<LinkButton onClick={() => resetPasswordHandle(record)}>
 					密码重置
 				</LinkButton>
@@ -127,7 +211,7 @@ function UserManage(): JSX.Element {
 		);
 	};
 	const createTimeRender = (value: string) => {
-		if (!value) return '';
+		if (!value) return '/';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 	const Operation = {
@@ -162,7 +246,9 @@ function UserManage(): JSX.Element {
 					search={{
 						placeholder:
 							'请输入登录账户、用户名、手机号、角色进行搜索',
-						onSearch: handleSearch
+						onSearch: handleSearch,
+						onChange: handleChange,
+						value: keyword
 					}}
 					searchStyle={{
 						width: '360px'
@@ -172,8 +258,16 @@ function UserManage(): JSX.Element {
 				>
 					<Table.Column title="登录账户" dataIndex="userName" />
 					<Table.Column title="用户名" dataIndex="aliasName" />
-					<Table.Column title="邮箱" dataIndex="email" />
-					<Table.Column title="手机" dataIndex="phone" />
+					<Table.Column
+						title="邮箱"
+						dataIndex="email"
+						cell={nullRender}
+					/>
+					<Table.Column
+						title="手机"
+						dataIndex="phone"
+						cell={nullRender}
+					/>
 					<Table.Column
 						title="创建时间"
 						dataIndex="createTime"
@@ -198,6 +292,23 @@ function UserManage(): JSX.Element {
 					onCancel={() => setVisible(false)}
 					data={isEdit ? updateData : null}
 				/>
+			)}
+			{roleVisible && (
+				<Dialog
+					title="关联角色"
+					visible={roleVisible}
+					onOk={submitRole}
+					onCancel={() => setRoleVisible(false)}
+					onClose={() => setRoleVisible(false)}
+					className="role-modal"
+				>
+					<RadioGroup
+						itemDirection={'ver'}
+						dataSource={roles}
+						value={role}
+						onChange={roleChange}
+					/>
+				</Dialog>
 			)}
 		</Page>
 	);

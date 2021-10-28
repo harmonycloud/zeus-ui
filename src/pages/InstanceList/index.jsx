@@ -15,10 +15,8 @@ import './instance.scss';
 const { Menu } = Page;
 
 function InstanceList(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const location = useLocation();
 	const [mdList, setMdList] = useState([]);
 	const [currentKey, setCurrentKey] = useState('');
@@ -218,7 +216,7 @@ function InstanceList(props) {
 
 	return (
 		<Page>
-			<Page.Header title="实例列表" />
+			<Page.Header title="服务列表" />
 			<Page.Content menu={<CustomMenu mdList={mdList} />}>
 				<div>{switchContent(currentKey, currentOfficial)}</div>
 			</Page.Content>

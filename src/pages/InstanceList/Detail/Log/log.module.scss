@@ -1,32 +1,49 @@
+$standard-name: 'standard';
+$realtime-name: 'realtime';
+$slowlog-name: 'slowlog';
 .filter-wrapper {
 	padding: 8px 0;
 	flex-wrap: wrap;
+	justify-content: flex-start;
 }
-.filter-item {
-	margin: 8px 0;
-	width: 50%;
-	label {
-		color: #1A1A1A;
-		line-height: 32px;
-		font-weight: 500;
+@each $componentName in $standard-name,$realtime-name,$slowlog-name {
+	.filter-item-#{$componentName} {
+		margin: 8px 8px;
+		width: 48%;
+		label {
+			color: #1A1A1A;
+			line-height: 32px;
+			font-weight: 500;
+		}
+		&:nth-child(2n) {
+			margin: 8px 0px 8px 10px;
+			width: 49%;
+		}
+		&:nth-last-child(1) {
+			button {
+				float: right;
+			}
+		}
 	}
 }
 
 .filter-item-search{
-	margin: 8px 0;
-	width: 50%;
-	flex-grow: 2;
+	margin-top: 8px;
+	width: 100%;
 	label {
 		color: #1A1A1A;
 		line-height: 32px;
 		font-weight: 500;
 	}
-}
-@media (min-width: 1600px){
-	.filter-item {
-        width: 33.33%
+	button {
+		float: right;
 	}
 }
+// @media (min-width: 1600px){
+// 	.filter-item {
+//         width: 33.33%
+// 	}
+// }
 
 .log-display {
 	background-color: #272822;
@@ -44,7 +61,7 @@
 			.btn {
 				margin-right: 24px;
 				&:hover{
-					color: #0064C8;
+					color: #0070cc;
 					cursor: pointer;
 				}
 			}

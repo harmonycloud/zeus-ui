@@ -16,7 +16,7 @@ export default function FormSelectOrRadios(props) {
 	const [value, setValue] = useState(props.defaultValue);
 
 	function handleChange(value) {
-		console.log(value);
+		// console.log(value);
 		props.field.setValues({
 			[`${props.variable}`]: value
 		});
@@ -81,6 +81,7 @@ export default function FormSelectOrRadios(props) {
 							onChange={handleChange}
 							name={props.variable}
 							defaultValue={props.defaultValue}
+							autoWidth={false}
 						>
 							{props.options.map((item) => (
 								<Option key={item} value={item}>

@@ -132,17 +132,17 @@ export default function OperationAuditDetail(): JSX.Element {
 	useEffect(() => {
 		setBasicSource({
 			title: '基础信息',
-			account: data?.account || '',
-			userName: data?.userName || '',
-			roleName: data?.roleName || '',
-			remoteIp: data?.remoteIp || '',
+			account: data?.account || '/',
+			userName: data?.userName || '/',
+			roleName: data?.roleName || '/',
+			remoteIp: data?.remoteIp || '/',
 			plate: data?.moduleChDesc + '/' + data?.childModuleChDesc,
-			url: data?.url || '',
-			requestMethod: data?.requestMethod || '',
-			executeTime: data?.executeTime || '',
-			status: data?.status || '',
-			phone: data?.phone || '',
-			beginTime: data?.beginTime || ''
+			url: data?.url || '/',
+			requestMethod: data?.requestMethod || '/',
+			executeTime: `${data?.executeTime}ms` || '0ms',
+			status: data?.status || '/',
+			phone: data?.phone || '/',
+			beginTime: data?.beginTime || '/'
 		});
 		setDataSource({
 			title: '数据信息',

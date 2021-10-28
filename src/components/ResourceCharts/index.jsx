@@ -5,7 +5,7 @@ import './resourceCharts.scss';
 export default function ResourceCharts(props) {
 	const { data } = props;
 	const [option, setOption] = useState({
-		color: ['#0064C8', '#5CCDBB', '#FAD368'],
+		color: ['#0070cc', '#5CCDBB', '#FAD368'],
 		title: {
 			left: 'left',
 			align: 'right',

@@ -1,7 +1,10 @@
 import React from 'react';
-import { Icon } from '@alicloud/console-components';
+import { Icon, Balloon } from '@alicloud/console-components';
+import { api } from '@/api.json';
 import JSEncrypt from 'jsencrypt';
+import moment from 'moment';
 
+// * 组件复用
 export const statusRender: (value: string) => JSX.Element = (value: string) => {
 	switch (value) {
 		case 'Creating':
@@ -69,17 +72,6 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 	value: string
 ) => {
 	switch (value) {
-		case 'Creating':
-			return (
-				<>
-					<Icon
-						type="sync-alt"
-						size="xs"
-						style={{ color: '#0091FF' }}
-					/>{' '}
-					创建中
-				</>
-			);
 		case 'Running':
 			return (
 				<>
@@ -88,7 +80,7 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#0091FF' }}
 					/>{' '}
-					运行中
+					进行中
 				</>
 			);
 		case 'Failed':
@@ -99,10 +91,10 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#C80000' }}
 					/>{' '}
-					运行失败
+					失败
 				</>
 			);
-		case 'Complete':
+		case 'Success':
 			return (
 				<>
 					<Icon
@@ -110,35 +102,24 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 						size="xs"
 						style={{ color: '#00A700' }}
 					/>{' '}
-					成功完成
-				</>
-			);
-		case 'Unknown':
-			return (
-				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					运行状态未知
+					成功
 				</>
 			);
 		default:
 			return (
 				<>
 					<Icon
-						type="warning1"
+						type="minus-circle-fill"
 						size="xs"
-						style={{ color: '#C80000' }}
+						style={{ color: '#FAC800' }}
 					/>{' '}
-					运行异常
+					未知
 				</>
 			);
 	}
 };
 
-// * 中间件详情中报警阈值中使用
+// * 报警阈值中使用
 export const alarmStatusRender: (value: string) => JSX.Element = (
 	value: string
 ) => {
@@ -200,7 +181,130 @@ export const alarmStatusRender: (value: string) => JSX.Element = (
 			);
 	}
 };
+// * 服务列表中使用
+export const serviceListStatusRender: (
+	value: string,
+	index: number,
+	record: any
+) => JSX.Element = (value: string, index: number, record: any) => {
+	switch (value) {
+		case 'Creating':
+			return (
+				<>
+					<Icon
+						type="sync-alt"
+						size="xs"
+						style={{ color: '#0091FF' }}
+					/>{' '}
+					启动中
+				</>
+			);
+		case 'Running':
+			return (
+				<>
+					<Icon
+						type="success1"
+						size="xs"
+						style={{ color: '#00A700' }}
+					/>{' '}
+					运行正常
+				</>
+			);
+		case 'Failed':
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="warning1"
+								size="xs"
+								style={{ color: '#C80000' }}
+							/>{' '}
+							运行异常
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						{record.reason}
+					</span>
+				</Balloon>
+			);
+		case 'RunningError':
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="warning1"
+								size="xs"
+								style={{ color: '#C80000' }}
+							/>{' '}
+							运行异常
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						{record.reason}
+					</span>
+				</Balloon>
+			);
+		case '':
+			return <></>;
+		default:
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="warning1"
+								size="xs"
+								style={{ color: '#C80000' }}
+							/>{' '}
+							运行异常
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						{record.reason}
+					</span>
+				</Balloon>
+			);
+	}
+};
+export const iconTypeRender = (value: string, index: number, record: any) => {
+	return (
+		<div className="icon-type-content">
+			<img
+				width={14}
+				height={14}
+				src={`${api}/images/middleware/${record.imagePath}`}
+				alt={record.chartName}
+			/>
+			{value}
+		</div>
+	);
+};
+export const timeRender = (value: string, index: number, record: any) => {
+	return moment(value).format('YYYY-MM-DD HH:mm:ss');
+};
+// * 简单表格列为空
+export const nullRender: (value: string | null) => string = (
+	value: string | null
+) => {
+	return value || '/';
+};
+// * 蓝字显示
+export const nameRender = (value: string, index: number, record: any) => {
+	return <span className="name-link">{value}</span>;
+};
 
+// * 函数复用
 // * 判断两个数组中是否含有相同的元素（简单数组）
 export const judgeArrays: (
 	arr1: Array<string>,
@@ -224,19 +328,24 @@ export const judgeObjArrayAttrIsNull: (
 	arr: any[],
 	...argument: any[]
 ) => boolean = (arr: any[] = [], ...argument: any[]) => {
-	console.log(arr);
-	console.log(argument);
 	if (arr.length > 0) {
 		let flag = false;
 		argument.map((key) => {
 			flag = arr.find((item) => item[key] === '');
 		});
-		if (flag) {
-			return true;
-		} else {
-			return false;
-		}
+		if (flag) return true;
+		return false;
 	} else {
 		return true;
 	}
+};
+// * 对象数组属性值重复判断（根据某个字段进行判断）
+export const judgeObjArrayHeavyByAttr: (arr: any[], attr: string) => boolean = (
+	arr: any[],
+	attr: string
+) => {
+	if (arr.length === 0) return false;
+	const values = arr.map((item) => item[attr]);
+	const t = Array.from(new Set(values));
+	return values.length !== t.length;
 };

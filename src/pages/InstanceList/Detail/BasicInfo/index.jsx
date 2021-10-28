@@ -46,7 +46,7 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'name',
-		label: '实例名称'
+		label: '服务名称'
 	},
 	{
 		dataIndex: 'aliasName',
@@ -88,10 +88,6 @@ const events = {
 	table: ''
 };
 
-// const formItemLayout = {
-// 	labelCol: { fixedSpan: 0 },
-// 	wrapperCol: { span: 24 }
-// };
 const modelMap = {
 	MasterSlave: '主从模式',
 	'1m-1s': '主从模式',
@@ -225,7 +221,7 @@ function BasicInfo(props) {
 	const { chartVersion } = useParams();
 	const disasterInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
-		label: '备份实例名称',
+		label: '备份服务名称',
 		render: (val) => {
 			return (
 				<span
@@ -235,7 +231,7 @@ function BasicInfo(props) {
 							Dialog.show({
 								title: '提醒',
 								content:
-									'该备用实例不在当前集群命名空间，返回源实例页面请点击右上角“返回源实例”按钮',
+									'该备用服务不在当前资源池资源分区，返回源服务页面请点击右上角“返回源服务”按钮',
 								onOk: () => {
 									toDetail();
 								}
@@ -252,7 +248,7 @@ function BasicInfo(props) {
 	};
 	const originInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
-		label: '源实例名称',
+		label: '源服务名称',
 		render: (val) => {
 			return (
 				<span
@@ -372,9 +368,7 @@ function BasicInfo(props) {
 						: ''
 			});
 			setAclData({
-				title: `访问权限控制认证(${
-					data?.rocketMQParam?.acl?.enable ? '已开启' : '已关闭'
-				})`,
+				title: '访问权限控制认证',
 				globalIps:
 					data?.rocketMQParam?.acl?.globalWhiteRemoteAddresses || ''
 			});
@@ -476,25 +470,6 @@ function BasicInfo(props) {
 		}
 		setInfoConfig(infoConfigTemp);
 	}, [props]);
-	// * 修改密码
-	// const editPassword = (value) => {
-	// 	const sendData = {
-	// 		clusterId: clusterId,
-	// 		namespace: namespace,
-	// 		middlewareName: data.name,
-	// 		chartName: data.chartName,
-	// 		chartVersion: data.chartVersion,
-	// 		type: data.type,
-	// 		password: value
-	// 	};
-	// 	updateMiddleware(sendData).then((res) => {
-	// 		if (res.success) {
-	// 			Message.show(messageConfig('success', '成功', res));
-	// 		} else {
-	// 			Message.shoe(messageConfig('success', '失败', res));
-	// 		}
-	// 	});
-	// };
 
 	const eventsConfig = [
 		{
@@ -645,7 +620,12 @@ function BasicInfo(props) {
 											<Col fixedSpan={8}>
 												全局IP白名单
 											</Col>
-											<Col>{aclData.globalIps}</Col>
+											<Col
+												title={aclData.globalIps}
+												className="text-hidden"
+											>
+												{aclData.globalIps}
+											</Col>
 										</Row>
 									</div>
 								)}

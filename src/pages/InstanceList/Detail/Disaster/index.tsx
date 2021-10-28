@@ -19,7 +19,7 @@ import './index.scss';
 import messageConfig from '@/components/messageConfig';
 
 const clusterInfo = {
-	title: '实例详情'
+	title: '服务详情'
 };
 const runStateInit = {
 	title: '运行状态',
@@ -92,22 +92,26 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				namespace,
 				mysqlName: middlewareName
 			}).then((res) => {
-				setOriginData({
-					cluster: res?.data?.source?.clusterId || '',
-					namespace: res?.data?.source?.namespace || '',
-					name: res?.data?.source?.middlewareName || '',
-					dbUser: res?.data?.source?.username || '',
-					dbPass: res?.data?.source?.password || '',
-					address: res?.data?.source?.address || ''
-				});
-				setBackupData({
-					cluster: res?.data?.disasterRecovery?.clusterId || '',
-					namespace: res?.data?.disasterRecovery?.namespace || '',
-					name: res?.data?.disasterRecovery?.middlewareName || '',
-					dbUser: res?.data?.disasterRecovery?.username || '',
-					dbPass: res?.data?.disasterRecovery?.password || '',
-					address: res?.data?.disasterRecovery?.address || ''
-				});
+				if (res.success) {
+					setOriginData({
+						cluster: res?.data?.source?.clusterId || '',
+						namespace: res?.data?.source?.namespace || '',
+						name: res?.data?.source?.middlewareName || '',
+						dbUser: res?.data?.source?.username || '',
+						dbPass: res?.data?.source?.password || '',
+						address: res?.data?.source?.address || ''
+					});
+					setBackupData({
+						cluster: res?.data?.disasterRecovery?.clusterId || '',
+						namespace: res?.data?.disasterRecovery?.namespace || '',
+						name: res?.data?.disasterRecovery?.middlewareName || '',
+						dbUser: res?.data?.disasterRecovery?.username || '',
+						dbPass: res?.data?.disasterRecovery?.password || '',
+						address: res?.data?.disasterRecovery?.address || ''
+					});
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
 			});
 		}
 		setRunState({
@@ -149,7 +153,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 														messageConfig(
 															'success',
 															'成功',
-															'实例切换成功'
+															'服务切换成功'
 														)
 													);
 													onRefresh();
@@ -247,7 +251,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 	];
 	const toCreateBackup: () => void = () => {
 		history.push(
-			`/serviceCatalog/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}`
+			`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}`
 		);
 	};
 	const deleteInstance: () => void = () => {
@@ -278,7 +282,11 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		<div>
 			{data?.mysqlDTO?.openDisasterRecoveryMode ? (
 				<>
-					<DataFields dataSource={runState} items={runItems} />
+					<DataFields
+						dataSource={runState}
+						items={runItems}
+						className="refresh-color"
+					/>
 					<div className="detail-divider"></div>
 				</>
 			) : null}
@@ -306,7 +314,10 @@ export default function Disaster(props: disasterProps): JSX.Element {
 					</>
 				) : (
 					<>
-						<DisasterOriginCard originData={originData} />
+						<DisasterOriginCard
+							originData={originData}
+							toBasicInfo={() => onRefresh('basicInfo')}
+						/>
 						<DisasterBackupCardNone
 							toCreateBackup={toCreateBackup}
 						/>

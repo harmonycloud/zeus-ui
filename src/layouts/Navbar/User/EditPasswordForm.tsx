@@ -46,9 +46,13 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((error) => {
 			if (error) return;
+			if (checks.includes(false)) {
+				Message.warning('密码格式不正确!');
+				return;
+			}
 			const v: sendDataProps = field.getValues();
 			const rsaPass = encrypt(v.password, publicKey);
-			console.log(rsaPass);
+			// console.log(rsaPass);
 			const newRsaPass = encrypt(v.newPassword, publicKey);
 			const reNewRsaPass = encrypt(v.reNewPassword, publicKey);
 			const sendData = {
@@ -91,7 +95,7 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 			} else {
 				temp[2] = false;
 			}
-			if (value.length >= 8 || value.length <= 16) {
+			if (value.length >= 8 && value.length <= 16) {
 				temp[3] = true;
 			} else {
 				temp[3] = false;

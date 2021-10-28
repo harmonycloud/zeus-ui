@@ -5,3 +5,10 @@
 .nav-item-select-custom > .next-child-selected i {
 	color: $primary-color;
 }
+.next-nav-item.next-menu-item.next-selected.next-selected{
+	background-color: #E6EEF5 !important;
+	color: $primary-color !important;
+}
+.next-nav-item.next-menu-item.next-selected.next-selected a{
+	color: $primary-color !important;
+}

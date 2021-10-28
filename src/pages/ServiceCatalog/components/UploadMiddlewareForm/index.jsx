@@ -10,6 +10,7 @@ import {
 import messageConfig from '@/components/messageConfig';
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
+import storage from '@/utils/storage';
 
 const formItemLayout = {
 	labelCol: {
@@ -26,6 +27,10 @@ function UploadMiddlewareForm(props) {
 	// const upload = useRef();
 	const upload2 = createRef();
 	const field = Field.useField();
+	const headers = {
+		userToken: storage.getLocal('token'),
+		authType: storage.getLocal('token') ? 1 : 0
+	};
 
 	function beforeUpload(info) {
 		console.log('beforeUpload : ', info);
@@ -38,7 +43,13 @@ function UploadMiddlewareForm(props) {
 	function onSuccess(info) {
 		console.log('onSuccess : ', info);
 		if (info) {
-			Message.show(messageConfig('success', '成功', 'chart包上传成功'));
+			Message.show(
+				messageConfig(
+					'success',
+					'成功',
+					'chart包上传成功，3秒后刷新数据'
+				)
+			);
 			onCreate();
 		}
 	}
@@ -46,13 +57,22 @@ function UploadMiddlewareForm(props) {
 	function onError(info) {
 		console.log('error:', info);
 		if (info) {
-			Message.show(
-				messageConfig(
-					'error',
-					'失败',
-					`chart包上传失败,${info.response.errorMsg}`
+			const dialog = Dialog.show({
+				title: '失败',
+				content: '上架失败，不可上传旧版本或者已有版本哦。',
+				footer: (
+					<Button type="primary" onClick={() => dialog.hide()}>
+						我知道了
+					</Button>
 				)
-			);
+			});
+			// Message.show(
+			// 	messageConfig(
+			// 		'error',
+			// 		'失败',
+			// 		`chart包上传失败,${info.response.errorMsg}`
+			// 	)
+			// );
 		}
 	}
 
@@ -87,6 +107,7 @@ function UploadMiddlewareForm(props) {
 						onError={onError}
 						listType="text"
 						ref={upload2}
+						headers={headers}
 					>
 						<Button type="primary" style={{ margin: '0 0 10px' }}>
 							上传文件

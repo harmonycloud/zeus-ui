@@ -123,15 +123,21 @@ const MidTable = (props) => {
 					tableProps.search ? (
 						<div>
 							<Search
-								onSearch={tableProps.search.onSearch}
-								placeholder={tableProps.search.placeholder}
+								{...tableProps.search}
+								// defaultValue={tableProps.search.defaultValue}
+								// value={tableProps.search.value}
+								// placeholder={tableProps.search.placeholder}
 								style={
 									JSON.stringify(searchStyle) === '{}'
 										? { width: '260px' }
 										: searchStyle
 								}
-								filter={tableProps.search.filter}
-								onFilterChange={tableProps.search.onChange}
+								// filter={tableProps.search.filter}
+								// onSearch={tableProps.search.onSearch}
+								// onFilterChange={
+								// 	tableProps.search.onFilterChange
+								// }
+								// onChange={tableProps.search.onChange}
 								hasClear={true}
 							/>
 						</div>

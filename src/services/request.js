@@ -9,6 +9,7 @@ import cache from '@/utils/storage';
 import messageConfig from '@/components/messageConfig';
 
 const TOKEN = 'token';
+const USERTOKEN = 'usertoken';
 
 // To add to window  解决promise 在ie中未定义的问题
 if (!window.Promise) {
@@ -119,6 +120,11 @@ axios.interceptors.response.use(
 			cache.removeLocal('token', true);
 			window.location.reload();
 		}
+		if (response.data.code === 404) {
+			Message.show(messageConfig('error', '错误', '接口访问错误'));
+		}
+		response.headers.usertoken &&
+			cache.setLocal('token', response.headers.usertoken);
 		return response;
 	},
 	(err) => {
@@ -129,12 +135,13 @@ axios.interceptors.response.use(
 		} else {
 			err.message = '连接服务器失败!';
 		}
-		console.log(err.response);
+		// console.log(err.message);
+		// console.log(err.response);
 		Message.show(
 			messageConfig(
 				'error',
 				'错误',
-				err.response.data.message || err.response.data
+				err?.response?.data?.errorMsg || err.message
 			)
 		);
 		return Promise.reject(err.response);

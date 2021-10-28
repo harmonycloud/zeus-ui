@@ -20,7 +20,9 @@ function User(props) {
 		postLogout().then((res) => {
 			if (res.success) {
 				Storage.removeLocal('token', true);
-				// Storage.removeSession('token', true);
+				Storage.removeSession('service-list-current', true);
+				Storage.removeSession('service-available-current', true);
+				Storage.removeLocal('firstAlert', true);
 				history.push('/login');
 				window.location.reload();
 			} else {
@@ -35,6 +37,7 @@ function User(props) {
 	return (
 		<div className={`${styles['nav-user-container']} ${className}`}>
 			<Icon type="user-circle" />
+			<span style={{ marginLeft: '5px' }}>{role.roleName}</span>
 			<ul className={styles['nav-user-operator']}>
 				<li className={styles['nav-user-container-item']}>
 					<p>{nickName}</p>

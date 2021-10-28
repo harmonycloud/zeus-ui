@@ -30,25 +30,25 @@ interface userFormProps {
 }
 export default function UserForm(props: userFormProps): JSX.Element {
 	const { visible, onCreate, onCancel, data } = props;
-	const [roles, setRoles] = useState<roleProps[]>([]);
+	// const [roles, setRoles] = useState<roleProps[]>([]);
 	const field: Field = Field.useField();
-	useEffect(() => {
-		getRoles().then((res) => {
-			if (res.success) {
-				setRoles(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	}, []);
+	// useEffect(() => {
+	// 	getRoles().then((res) => {
+	// 		if (res.success) {
+	// 			setRoles(res.data);
+	// 		} else {
+	// 			Message.show(messageConfig('error', '失败', res));
+	// 		}
+	// 	});
+	// }, []);
 	useEffect(() => {
 		if (data) {
 			field.setValues({
 				userName: data.userName,
 				aliasName: data.aliasName,
 				phone: data.phone,
-				email: data.email,
-				roleId: data.roleId
+				email: data.email
+				// roleId: data.roleId
 			});
 		}
 	}, [data]);
@@ -56,7 +56,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 		field.validate((errors, values) => {
 			if (errors) return;
 			const sendData = {
-				...((values as unknown) as userProps)
+				...(values as unknown as userProps)
 			};
 			if (data) {
 				// * 修改用户
@@ -96,9 +96,9 @@ export default function UserForm(props: userFormProps): JSX.Element {
 			onCancel={onCancel}
 			onClose={onCancel}
 		>
-			<Form field={field} {...formItemLayout}>
+			<Form field={field} {...formItemLayout} style={{ paddingLeft: 12 }}>
 				<p style={{ color: '#Ef595C', marginBottom: 16 }}>
-					默认密码：Ab123456!，
+					默认密码：zeus123.com，
 					登录后，请点击【个人头像-&gt;修改密码】重新设置
 				</p>
 				<FormItem
@@ -162,7 +162,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				>
 					<Input name="email" trim={true} placeholder="请输入邮箱" />
 				</FormItem>
-				<FormItem
+				{/* <FormItem
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
@@ -177,7 +177,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 							</Option>
 						))}
 					</Select>
-				</FormItem>
+				</FormItem> */}
 			</Form>
 		</Dialog>
 	);

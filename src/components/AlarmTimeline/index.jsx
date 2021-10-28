@@ -13,9 +13,9 @@ import { setCluster, setNamespace } from '@/redux/globalVar/var';
 	list:[{time:'',message:'',summary:'',level:''}]
 	style:内联样式
 	clusters:
-	type:'default' 在平台管理页面的告警跳转涉及跨集群跳转
+	type:'default' 在平台管理页面的告警跳转涉及跨资源池跳转
 */
-
+const Tooltip = Balloon.Tooltip;
 function AlarmTimeLine(props) {
 	const { style = {}, list = [], clusters = [], type = 'default' } = props;
 	const [data, setData] = useState(list);
@@ -36,7 +36,7 @@ function AlarmTimeLine(props) {
 		);
 	};
 
-	// 跨集群跳转
+	// 跨资源池跳转
 	const getNamespaceList = async (item) => {
 		const clusterData = clusters.filter((c) => c.id === item.clusterId)[0];
 		setCluster(clusterData);
@@ -52,7 +52,30 @@ function AlarmTimeLine(props) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
 						history.push({
-							pathname: `/instanceList/detail/${item.name}/${item.type}/${item.type}/${item.chartVersion}`,
+							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`,
+							state: {
+								flag: true
+							}
+						});
+					}
+				});
+			}
+		}
+	};
+	// * 非跨资源池跳转
+	const unAcross = async (item) => {
+		let res = await getNamespaces({
+			clusterId: item.clusterId,
+			withQuota: true
+		});
+		if (res.success) {
+			if (res.data.length > 0) {
+				res.data.map((n) => {
+					if (n.name === item.namespace) {
+						setNamespace(n);
+						storage.setLocal('namespace', JSON.stringify(n));
+						history.push({
+							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`,
 							state: {
 								flag: true
 							}
@@ -64,14 +87,13 @@ function AlarmTimeLine(props) {
 	};
 
 	const toDetail = (item) => {
-		// console.log(item);
+		const clusterTemp = JSON.parse(storage.getLocal('cluster'));
 		if (item.chartVersion) {
-			console.log(type);
-			if (type === 'default') {
-				history.push(
-					`/instanceList/detail/${item.name}/${item.type}/${item.type}/${item.chartVersion}`
-				);
+			if (item.clusterId === clusterTemp.id) {
+				// * 非跨资源池群跳转
+				unAcross(item);
 			} else {
+				// * 跨资源池跳转
 				getNamespaceList(item);
 			}
 		}
@@ -108,12 +130,8 @@ function AlarmTimeLine(props) {
 											>
 												{item.summary}
 											</div>
-											<Balloon
-												alignEdge={true}
-												align="t"
-												triggerType="hover"
-												// followTrigger={true}
-												closable={false}
+											<Tooltip
+												align="l"
 												trigger={
 													<span className="details-color">
 														详情
@@ -121,7 +139,7 @@ function AlarmTimeLine(props) {
 												}
 											>
 												{item.message}
-											</Balloon>
+											</Tooltip>
 										</div>
 									</>
 								}

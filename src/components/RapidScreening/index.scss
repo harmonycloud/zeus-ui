@@ -1,0 +1,62 @@
+$component-name: rapid-screening;
+
+.#{$component-name}-content{
+	width: 100%;
+	min-height: 56px;
+	max-height: 164px;
+	background: #F8F8F9;
+	border-radius: 2px;
+	padding: 16px 19px;
+	margin-bottom: 19px;
+	display: flex;
+	justify-content: space-between;
+}
+.#{$component-name}-tags{
+	min-height: 24px;
+	max-height: 24px;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	overflow: hidden;
+	transition: all .3s ease;
+}
+.overflow{
+	max-height: 110px;
+	overflow-y: auto;
+	transition: all .3s ease;
+}
+.#{$component-name}-title{
+	color: $text-color-title;
+	margin-right: 10px;
+}
+.#{$component-name}-action{
+	width: 190px;
+	color: $primary-color;
+	cursor: pointer;
+	align-self: flex-end;
+	line-height: 24px;
+	margin-right: 8px;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.tag-content{
+	height: 24px;
+	width: auto;
+	line-height: 21px;
+	background: #FAFAFA;
+	border-radius: 12px;
+	font-size: 12px;
+	border: 1px solid #DEDEDE;
+	color: #555555;
+	margin-right: 8px;
+	margin-bottom: 16px;
+	text-align: center;
+	cursor: pointer;
+	padding: 0 8px;
+}
+.selected{
+	border: 1px solid $primary-color;
+	color: $primary-color;
+}
+

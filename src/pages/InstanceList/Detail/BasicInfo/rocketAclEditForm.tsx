@@ -29,7 +29,6 @@ export default function RocketAclEditForm(props: aclEditProps) {
 		chartName,
 		chartVersion
 	} = props;
-	console.log(props);
 	const field = Field.useField();
 	const onOk = () => {
 		field.validate((errors, values) => {

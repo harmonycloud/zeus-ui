@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import {
+	Page,
+	Content,
+	Header,
+	Breadcrumb
+} from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import {
 	Message,
@@ -13,12 +18,13 @@ import {
 } from '@alicloud/console-components';
 import styled from 'styled-components';
 import { auditProps, sendDataAuditProps } from './audit';
-import { filtersProps } from '@/utils/comment';
+import { filtersProps } from '@/types/comment';
 import Storage from '@/utils/storage';
 import { getAudits, getModules } from '@/services/audit';
 import messageConfig from '@/components/messageConfig';
 import './index.scss';
 import moment from 'moment';
+import { getXY } from './util';
 
 export default function OperationAudit(): JSX.Element {
 	const [dataSource, setDataSource] = useState<auditProps[]>([]);
@@ -33,13 +39,21 @@ export default function OperationAudit(): JSX.Element {
 	const [methods, setMethods] = useState<string[]>([]); // * 方法筛选保存内容
 	const [modules, setModules] = useState<string[]>([]); // * 父模块筛选保存内容
 	const [childModules, setChildModules] = useState<string[]>([]); // * 子模块筛选保存内容
-	const [beginTimeNormalOrder, setBeginTimeNormalOrder] = useState<boolean>(); // * 排序
-	const [
-		executeTimeNormalOrder,
-		setExecuteTimeNormalOrder
-	] = useState<boolean>(); // * 排序
+	const [beginTimeNormalOrder, setBeginTimeNormalOrder] = useState<
+		boolean | null
+	>(false); // * 排序
+	const [executeTimeNormalOrder, setExecuteTimeNormalOrder] = useState<
+		boolean | null
+	>(); // * 排序
+	const [statusOrder, setStatusOrder] = useState<boolean | null>(false);
 	// const [showColumnDialog, setShowColumnDialog] = useState(false); // todo 展示column列表
 	const history = useHistory();
+	const breadcrumb = (
+		<Breadcrumb>
+			<Breadcrumb.Item>系统管理</Breadcrumb.Item>
+			<Breadcrumb.Item>操作审计</Breadcrumb.Item>
+		</Breadcrumb>
+	);
 	useEffect(() => {
 		// * 获取板块信息
 		getModules().then((res) => {
@@ -91,7 +105,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAudits(sendData).then((res) => {
 			if (res.success) {
@@ -133,7 +147,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
@@ -162,7 +176,7 @@ export default function OperationAudit(): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						history.push({
-							pathname: `/operationAudit/${record.account}`,
+							pathname: `/systemManagement/operationAudit/${record.account}`,
 							state: {
 								...record
 							}
@@ -186,7 +200,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
@@ -201,7 +215,7 @@ export default function OperationAudit(): JSX.Element {
 			requestMethods: methods,
 			modules,
 			childModules,
-			beginTimeNormalOrder: false
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		switch (keys[0]) {
 			case 'roleName':
@@ -219,7 +233,6 @@ export default function OperationAudit(): JSX.Element {
 		getAuditLists(sendData);
 	};
 	const onModuleChange = (value: any, data: any, extra: any) => {
-		console.log(value, data, extra);
 		if (data.children) {
 			setModules([value]);
 		} else {
@@ -230,20 +243,8 @@ export default function OperationAudit(): JSX.Element {
 		setCasVisible(false);
 		setModules([]);
 		setChildModules([]);
-		const sendData = {
-			current,
-			size: 10,
-			searchKeyWord: keyword,
-			roles: roles,
-			requestMethods: methods,
-			modules: [],
-			childModules: [],
-			beginTimeNormalOrder: false
-		};
-		getAuditLists(sendData);
 	};
 	const confirmModules = () => {
-		setCasVisible(false);
 		const sendData = {
 			current,
 			size: 10,
@@ -251,14 +252,18 @@ export default function OperationAudit(): JSX.Element {
 			roles: roles,
 			requestMethods: methods,
 			modules,
-			childModules
+			childModules,
+			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
+	useEffect(() => {
+		if (!casVisible) {
+			confirmModules();
+		}
+	}, [casVisible]);
 	const onSort = (dataIndex: string, order: string) => {
-		console.log(dataIndex);
-		console.log(order);
-		const sendData = {
+		const sendData: sendDataAuditProps = {
 			current: 1,
 			size: 10,
 			searchKeyWord: keyword,
@@ -267,23 +272,56 @@ export default function OperationAudit(): JSX.Element {
 			modules,
 			childModules,
 			beginTimeNormalOrder: beginTimeNormalOrder,
-			executeTimeNormalOrder: executeTimeNormalOrder
+			executeTimeNormalOrder: executeTimeNormalOrder,
+			statusOrder: statusOrder
 		};
 		if (dataIndex === 'executeTime') {
 			if (order === 'desc') {
 				setExecuteTimeNormalOrder(false);
+				setBeginTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.executeTimeNormalOrder = false;
+				sendData.beginTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			} else {
 				setExecuteTimeNormalOrder(true);
+				setBeginTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.executeTimeNormalOrder = true;
+				sendData.beginTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			}
-		} else {
+		} else if (dataIndex === 'beginTime') {
 			if (order === 'desc') {
 				setBeginTimeNormalOrder(false);
+				setExecuteTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.beginTimeNormalOrder = false;
+				sendData.executeTimeNormalOrder = null;
+				sendData.statusOrder = null;
 			} else {
 				setBeginTimeNormalOrder(true);
+				setExecuteTimeNormalOrder(null);
+				setStatusOrder(null);
 				sendData.beginTimeNormalOrder = true;
+				sendData.executeTimeNormalOrder = null;
+				sendData.statusOrder = null;
+			}
+		} else if (dataIndex === 'status') {
+			if (order === 'desc') {
+				setStatusOrder(true);
+				setBeginTimeNormalOrder(null);
+				setExecuteTimeNormalOrder(null);
+				sendData.statusOrder = true;
+				sendData.beginTimeNormalOrder = null;
+				sendData.executeTimeNormalOrder = null;
+			} else {
+				setStatusOrder(false);
+				setBeginTimeNormalOrder(null);
+				setExecuteTimeNormalOrder(null);
+				sendData.statusOrder = false;
+				sendData.beginTimeNormalOrder = null;
+				sendData.executeTimeNormalOrder = null;
 			}
 		}
 		setCurrent(1);
@@ -291,8 +329,8 @@ export default function OperationAudit(): JSX.Element {
 	};
 
 	return (
-		<Page>
-			<Header title="操作审计"></Header>
+		<Page style={{ minHeight: 'calc(100% - 43px)' }}>
+			<Header title="操作审计" breadcrumb={breadcrumb}></Header>
 			<Content>
 				<div className="audit-table-header-layout">
 					<Search
@@ -310,16 +348,21 @@ export default function OperationAudit(): JSX.Element {
 						>
 							<Icon type="set" />
 						</Button> */}
-						<Button onClick={onRefresh}>
+						<Button
+							onClick={onRefresh}
+							style={{ padding: '0 9px' }}
+						>
 							<Icon type="refresh" />
 						</Button>
 					</div>
 				</div>
+				<div id="filter-cas"></div>
 				<Table
 					dataSource={dataSource}
 					primaryKey="key"
 					onFilter={onFilter}
 					onSort={onSort}
+					hasBorder={false}
 				>
 					<Table.Column
 						title="登录账户"
@@ -358,10 +401,12 @@ export default function OperationAudit(): JSX.Element {
 										color:
 											modules.length === 0 &&
 											childModules.length === 0
-												? '#111111'
-												: '#0064C8'
+												? '#888'
+												: '#0070cc'
 									}}
-									onClick={() => setCasVisible(true)}
+									onClick={() => {
+										setCasVisible(true);
+									}}
 								/>
 								<CascaderSelect
 									listStyle={{ width: '200px' }}
@@ -375,9 +420,46 @@ export default function OperationAudit(): JSX.Element {
 									placeholder=" "
 									displayRender={(labels) => <span></span>}
 									changeOnSelect={true}
+									popupContainer={'filter-cas'}
+									// followTrigger={true}
 									onVisibleChange={(visible, type) => {
-										console.log(visible);
-										console.log(type);
+										const casCurrent =
+											document.getElementById(
+												'filter-cas'
+											);
+										console.log(document.body.scrollTop);
+										const x1 =
+											(casCurrent as HTMLElement)
+												.offsetLeft - 30;
+										const x2 =
+											(casCurrent as HTMLElement)
+												.offsetWidth +
+											(casCurrent as HTMLElement)
+												.offsetLeft +
+											30;
+										const y1 =
+											(casCurrent as HTMLElement)
+												.offsetTop - 43;
+										const y2 =
+											(casCurrent as HTMLElement)
+												.offsetHeight +
+											(casCurrent as HTMLElement)
+												.offsetTop +
+											43;
+
+										console.log(x1, x2, y1, y2);
+										const obj = getXY(window.event);
+										console.log(obj);
+										// console.log(window.event.clientX);
+										if (
+											obj.x < x1 ||
+											obj.x > x2 ||
+											obj.y < y1 ||
+											obj.y > y2
+										) {
+											setCasVisible(visible);
+											confirmModules();
+										}
 									}}
 									footer={
 										<div style={{ padding: 12 }}>
@@ -386,7 +468,9 @@ export default function OperationAudit(): JSX.Element {
 												style={{
 													marginRight: 8
 												}}
-												onClick={confirmModules}
+												onClick={() =>
+													setCasVisible(false)
+												}
 											>
 												确认
 											</Button>
@@ -395,7 +479,6 @@ export default function OperationAudit(): JSX.Element {
 											</Button>
 										</div>
 									}
-									// multiple={true}
 								/>
 							</span>
 						}
@@ -426,6 +509,7 @@ export default function OperationAudit(): JSX.Element {
 						title="状态码"
 						dataIndex="status"
 						width={100}
+						sortable
 					/>
 					<Table.Column
 						title="操作时间"
@@ -439,6 +523,7 @@ export default function OperationAudit(): JSX.Element {
 						dataIndex="action"
 						width={100}
 						cell={actionRender}
+						lock="right"
 					/>
 				</Table>
 				<SPagination

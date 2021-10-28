@@ -23,8 +23,7 @@ module.exports = {
 					options: {
 						resources: [
 							'./src/styles/_mixin.scss',
-							'./src/styles/_vars.scss',
-							'./src/styles/iconfont.scss'
+							'./src/styles/_vars.scss'
 						]
 					}
 				})

@@ -28,7 +28,7 @@ export default function FormStorageClass(props) {
 	}, [cluster]);
 
 	function handleChange(value) {
-		console.log(value);
+		// console.log(value);
 		setValue(value);
 		// props.field.setValues({
 		// 	[`${props.label}`]: value
@@ -77,6 +77,7 @@ export default function FormStorageClass(props) {
 						onChange={handleChange}
 						name={props.variable}
 						value={value}
+						autoWidth={false}
 					>
 						{storageClassList.map((item, index) => (
 							<Option key={index} value={item.name}>

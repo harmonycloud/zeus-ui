@@ -5,7 +5,7 @@ const { Item: FormItem } = Form;
 const { Option } = Select;
 
 export default function FormSecret(props) {
-	console.log(props);
+	// console.log(props);
 	const { cluster, namespace } = props;
 	const keys = Object.keys(props);
 	const [secrets, setSecrets] = useState([]);
@@ -26,7 +26,7 @@ export default function FormSecret(props) {
 	}, [cluster]);
 
 	function handleChange(value) {
-		console.log(value);
+		// console.log(value);
 		setValue(value);
 	}
 
@@ -72,6 +72,7 @@ export default function FormSecret(props) {
 						onChange={handleChange}
 						name={props.variable}
 						value={value}
+						autoWidth={false}
 					>
 						{secrets.map((item, index) => (
 							<Option key={index} value={item.name}>

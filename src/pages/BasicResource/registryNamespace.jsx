@@ -10,17 +10,15 @@ import { setRefreshCluster } from '@/redux/globalVar/var';
 import styles from './basicResource.module.scss';
 
 const RegistryNamespace = (props) => {
-	const {
-		visible,
-		clusterId,
-		updateFn,
-		cancelHandle,
-		setRefreshCluster
-	} = props;
+	const { visible, clusterId, updateFn, cancelHandle, setRefreshCluster } =
+		props;
 	const [dataSource, setDataSource] = useState([]);
 	const [originDataSource, setOriginDataSource] = useState([]);
 	const [primaryKeys, setPrimaryKeys] = useState([]);
-
+	const [key, setKey] = useState('');
+	const handleChange = (value) => {
+		setKey(value);
+	};
 	const handleSearch = (value) => {
 		let tempArr = originDataSource.filter((item) => {
 			if (item.name.indexOf(value) > -1) return true;
@@ -63,7 +61,7 @@ const RegistryNamespace = (props) => {
 				withQuota: true,
 				withMiddleware: true
 			}).then((res) => {
-				console.log(res);
+				// console.log(res);
 				if (res.success) {
 					let temp = res.data.map((item, index) => ({
 						...item,
@@ -92,14 +90,14 @@ const RegistryNamespace = (props) => {
 
 	return (
 		<Dialog
-			title="注册命名空间"
+			title="注册资源分区"
 			visible={visible}
 			style={{ width: 640 }}
 			footerAlign="right"
 			onOk={okHandle}
 			onCancel={cancelHandle}
 			onClose={cancelHandle}
-			isFullScreen={true}
+			// isFullScreen={true}
 		>
 			<div className={styles['registry-namespace']}>
 				<div className={styles['tips-yellow']}>
@@ -108,13 +106,15 @@ const RegistryNamespace = (props) => {
 						size="xs"
 						style={{ color: '#FAC800' }}
 					/>
-					<span>中间件实例数不为0时不能取消勾选</span>
+					<span>中间件服务数不为0时不能取消勾选</span>
 				</div>
 				<div className={styles['namespace-table']}>
 					<MidTable
 						dataSource={dataSource}
 						exact
 						search={{
+							value: key,
+							onChange: handleChange,
 							onSearch: handleSearch,
 							placeholder: '请输入搜索内容'
 						}}
@@ -125,11 +125,11 @@ const RegistryNamespace = (props) => {
 						showJump={false}
 					>
 						<MidTable.Column
-							title="命名空间名称"
+							title="资源分区名称"
 							dataIndex="name"
 						/>
 						<MidTable.Column
-							title="中间件实例数"
+							title="中间件服务数"
 							dataIndex="middlewareReplicas"
 						/>
 						<MidTable.Column title="CPU配额" dataIndex="cpu" />

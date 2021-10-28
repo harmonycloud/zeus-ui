@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Tab } from '@alicloud/console-components';
+import { Page, Content } from '@alicloud/console-components-page';
 import ParamterList from './paramterList';
 import ParamterHistory from './paramterHistory';
 import DefaultPicture from '@/components/DefaultPicture';
 
+const { Menu } = Page;
 export default function ParamterSetting(props) {
 	const {
 		middlewareName,
@@ -14,15 +16,23 @@ export default function ParamterSetting(props) {
 		capabilities
 	} = props;
 	const [refreshFlag, setRefreshFlag] = useState(false);
-	const handleChange = () => {
-		setRefreshFlag(!refreshFlag);
+	const [selectedKey, setSelectedKey] = useState('list');
+	const menuSelect = (selectedKey) => {
+		setSelectedKey(selectedKey);
 	};
-	if (customMid && !(capabilities || []).includes('ingress')) {
-		return <DefaultPicture />;
-	}
-	return (
-		<Tab>
-			<Tab.Item title="参数列表">
+	const ConsoleMenu = () => (
+		<Menu
+			selectedKeys={selectedKey}
+			onItemClick={menuSelect}
+			style={{ height: '100%' }}
+		>
+			<Menu.Item key="list">参数列表</Menu.Item>
+			<Menu.Item key="config">参数修改历史</Menu.Item>
+		</Menu>
+	);
+	const childrenRender = (selectedKey) => {
+		if (selectedKey === 'list') {
+			return (
 				<ParamterList
 					clusterId={clusterId}
 					middlewareName={middlewareName}
@@ -30,8 +40,9 @@ export default function ParamterSetting(props) {
 					type={type}
 					onFreshChange={handleChange}
 				/>
-			</Tab.Item>
-			<Tab.Item title="参数修改历史">
+			);
+		} else {
+			return (
 				<ParamterHistory
 					clusterId={clusterId}
 					middlewareName={middlewareName}
@@ -39,7 +50,20 @@ export default function ParamterSetting(props) {
 					type={type}
 					refreshFlag={refreshFlag}
 				/>
-			</Tab.Item>
-		</Tab>
+			);
+		}
+	};
+	const handleChange = () => {
+		setRefreshFlag(!refreshFlag);
+	};
+	if (customMid && !(capabilities || []).includes('config')) {
+		return <DefaultPicture />;
+	}
+	return (
+		<Page>
+			<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
+				{childrenRender(selectedKey)}
+			</Content>
+		</Page>
 	);
 }

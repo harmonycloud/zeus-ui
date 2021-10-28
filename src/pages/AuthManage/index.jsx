@@ -34,7 +34,7 @@ export default function AuthManage() {
 				<img src={iconResource} width="90" />
 				<div className={`display-flex ${styles['license-intro']}`}>
 					<h2>授权管理</h2>
-					<p>通过激活license获得中间件的授权实例数</p>
+					<p>通过激活license获得中间件的授权服务数</p>
 					<Button type="primary" onClick={updateHandle}>
 						更新授权
 					</Button>

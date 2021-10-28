@@ -31,20 +31,20 @@ function ExampleCharts(props) {
 				switch (params.data.dataType) {
 					case 'cluster':
 						res = `<div style='border: 1px solid #D1D5D9;line-height: 24px;font-size: 12px;color: rgba(0, 0, 0, 0.85);'>
-							<div style='height: 40px;display:flex; align-items:center;background-color: rgb(245,245,245);padding: 0 16px;font-weight: 500;font-family: PingFangSC-Medium, PingFang SC;'>集群：${params.name}</div>
+							<div style='height: 40px;display:flex; align-items:center;background-color: rgb(245,245,245);padding: 0 16px;font-weight: 500;font-family: PingFangSC-Medium, PingFang SC;'>资源池：${params.name}</div>
 							<div style='padding:10px 16px;font-family: PingFangSC-Regular, PingFang SC;font-weight: 400;'>
-								<p>注册命名空间数：${params.data.regNamespaceCount}</p>
-								<p>中间件实例数：${params.data.instanceCount}</p>
+								<p>注册资源分区数：${params.data.regNamespaceCount}</p>
+								<p>中间件服务数：${params.data.instanceCount}</p>
 							</div>
 						</div>`;
 						break;
 					case 'namespace':
 						res = `<div style='border: 1px solid #D1D5D9;line-height: 24px;font-size: 12px;color: rgba(0, 0, 0, 0.85);'>
-							<div style='height: 40px;display:flex; align-items:center;background-color: rgb(245,245,245);padding: 0 16px;font-weight: 500;font-family: PingFangSC-Medium, PingFang SC;'>命名空间：${
+							<div style='height: 40px;display:flex; align-items:center;background-color: rgb(245,245,245);padding: 0 16px;font-weight: 500;font-family: PingFangSC-Medium, PingFang SC;'>资源分区：${
 								params.name
 							}</div>
 							<div style='padding:10px 16px;font-family: PingFangSC-Regular, PingFang SC;font-weight: 400;'>
-								<p>实例数：
+								<p>服务数：
 									<span style='color: ${
 										params.data.instanceExceptionCount > 0
 											? 'red'
@@ -99,7 +99,7 @@ function ExampleCharts(props) {
 			]
 		}
 	});
-	// 跨集群跳转
+	// 跨资源池跳转
 	const getNamespaceList = async (clusterId, namespace, params) => {
 		const clusterData = props.clusters.filter(
 			(item) => item.id === clusterId

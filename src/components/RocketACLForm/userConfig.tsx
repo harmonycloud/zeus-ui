@@ -9,7 +9,8 @@ import {
 	Switch
 } from '@alicloud/console-components';
 // import { findDOMNode } from 'react-dom';
-import { rocketMQAccount, userConfigProps, authProps } from './acl';
+import { userConfigProps, authProps, visibleProps } from './acl';
+import { judgeObjArrayHeavyByAttr } from '@/utils/utils';
 // todo 优化点
 // todo 方法一、对于topicPerm 和 groupPerm 的处理 可以更为简洁 可以尝试 Object.entries() 将对象转成一个二维数组 在通过Object.fromEntries 将二位数组重新转换成对象
 // todo 方法二、可以使用Map对象，通过setMap等函数来处理数据，最后通过Object.fromEntries(map) 可以转换成对象
@@ -41,6 +42,10 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 	const [groups, setGroups] = useState<authProps[]>([]);
 	const [nameState, setNameState] = useState<stateProps>();
 	const [passwordState, setPasswordState] = useState<stateProps>();
+	const [errorVisible, setErrorVisible] = useState<visibleProps>({
+		topicsVisible: false,
+		groupsVisible: false
+	});
 	useEffect(() => {
 		// * init topics groups
 		const keys = Object.keys(data.topicPerms);
@@ -50,6 +55,10 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 				value: data.topicPerms[item]
 			};
 		});
+		list.sort((a, b) => {
+			if (a.key === 'defaultTopicPerm') return -1;
+			return 1;
+		});
 		setTopics(list);
 		const keys2 = Object.keys(data.groupPerms);
 		const list2 = keys2.map((item: string) => {
@@ -57,6 +66,10 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 				key: item,
 				value: data.groupPerms[item]
 			};
+		});
+		list2.sort((a, b) => {
+			if (a.key === 'defaultGroupPerm') return -1;
+			return 1;
 		});
 		setGroups(list2);
 		if (list.length > 1) {
@@ -68,6 +81,10 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 	}, []);
 	useEffect(() => {
 		const obj: any = {};
+		setErrorVisible({
+			...errorVisible,
+			topicsVisible: judgeObjArrayHeavyByAttr(topics, 'key')
+		});
 		topics.map((item) => {
 			obj[item.key] = item.value;
 		});
@@ -75,13 +92,16 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 	}, [topics]);
 	useEffect(() => {
 		const obj: any = {};
+		setErrorVisible({
+			...errorVisible,
+			groupsVisible: judgeObjArrayHeavyByAttr(groups, 'key')
+		});
 		groups.map((item) => {
 			obj[item.key] = item.value;
 		});
 		changeData(obj, 'groupPerms');
 	}, [groups]);
 	useEffect(() => {
-		// console.log(data);
 		setUserConfig(data);
 	}, [data]);
 
@@ -115,11 +135,13 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 	};
 	const handleSwitch = (value: boolean, type: string) => {
 		if (type === 'topic') {
+			if (!value) setTopics([{ key: 'defaultTopicPerm', value: 'DENY' }]);
 			setTopicCustom(value);
 		} else {
+			if (!value) setGroups([{ key: 'defaultGroupPerm', value: 'DENY' }]);
 			setGroupCustom(value);
 		}
-		addAuth(type);
+		if (value) addAuth(type);
 	};
 	const addAuth = (type: string) => {
 		if (type === 'topic') {
@@ -132,37 +154,34 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 	};
 	const deleteAuth = (index: number, type: string) => {
 		if (type === 'topic') {
+			if (topics.length === 2 && index === 1) return;
 			const list = topics.filter((item, i) => i !== index);
 			setTopics(list);
 		} else {
+			if (groups.length === 2 && index === 1) return;
 			const list = groups.filter((item, i) => i !== index);
 			setGroups(list);
 		}
 	};
 	const handleAuthChange = (value: string, type: string, index: number) => {
-		switch (type) {
-			case 'topicKey':
-				setTopics(
-					topics.map((item, i) => {
-						if (i === index) {
-							item.key = value;
-						}
-						return item;
-					})
-				);
-				break;
-			case 'groupKey':
-				setGroups(
-					groups.map((item, i) => {
-						if (i === index) {
-							item.key = value;
-						}
-						return item;
-					})
-				);
-				break;
-			default:
-				break;
+		if (type === 'topicKey') {
+			setTopics(
+				topics.map((item, i) => {
+					if (i === index) {
+						item.key = value;
+					}
+					return item;
+				})
+			);
+		} else {
+			setGroups(
+				groups.map((item, i) => {
+					if (i === index) {
+						item.key = value;
+					}
+					return item;
+				})
+			);
 		}
 	};
 	const handleSelectChange = (value: string, type: string, index: number) => {
@@ -289,7 +308,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								<RadioGroup
 									name="admin"
 									value={data.admin}
-									onChange={(value: string) =>
+									onChange={(value) =>
 										changeData(value, 'admin')
 									}
 								>
@@ -342,6 +361,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 											0
 										)
 									}
+									value={topics[0].value}
 									defaultValue="DENY"
 								>
 									<Option value="DENY">DENY</Option>
@@ -410,6 +430,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 															index
 														)
 													}
+													value={item.value}
 												>
 													<Option value="DENY">
 														DENY
@@ -429,7 +450,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													size="small"
 													style={{
 														marginLeft: 16,
-														color: '#0064C8'
+														color: '#0070cc'
 													}}
 													onClick={() =>
 														addAuth('topic')
@@ -441,9 +462,15 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													style={{
 														marginLeft: 10,
 														color:
-															index === 1
+															topics.length ===
+																2 && index === 1
 																? '#CCCCCC'
-																: '#C80000'
+																: '#C80000',
+														cursor:
+															topics.length ===
+																2 && index === 1
+																? 'not-allowed'
+																: 'pointer'
 													}}
 													onClick={() =>
 														deleteAuth(
@@ -458,6 +485,11 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								}
 						  })
 						: null}
+					{errorVisible.topicsVisible && (
+						<div className="acl-error-text">
+							不能设置相同key值的Topic权限,设置相同的key值默认设置最后一个
+						</div>
+					)}
 					<li className="display-flex" style={{ height: 48 }}>
 						<label className="form-name">
 							<span style={{ marginRight: 8 }}>消费者权限</span>
@@ -472,6 +504,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								/>
 								<span className="acl-equal">=</span>
 								<Select
+									value={groups[0].value}
 									defaultValue="DENY"
 									style={{ width: '22%' }}
 									onChange={(value: string) =>
@@ -546,6 +579,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 															index
 														)
 													}
+													value={item.value}
 												>
 													<Option value="DENY">
 														DENY
@@ -565,7 +599,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													size="small"
 													style={{
 														marginLeft: 16,
-														color: '#0064C8'
+														color: '#0070cc'
 													}}
 													onClick={() =>
 														addAuth('groups')
@@ -577,9 +611,15 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													style={{
 														marginLeft: 10,
 														color:
-															index === 1
+															groups.length ===
+																2 && index === 1
 																? '#CCCCCC'
-																: '#C80000'
+																: '#C80000',
+														cursor:
+															groups.length ===
+																2 && index === 1
+																? 'not-allowed'
+																: 'pointer'
 													}}
 													onClick={() =>
 														deleteAuth(
@@ -594,6 +634,11 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								}
 						  })
 						: null}
+					{errorVisible.groupsVisible && (
+						<div className="acl-error-text">
+							不能设置相同key值的消费者权限,设置相同的key值默认设置最后一个
+						</div>
+					)}
 				</ul>
 			)}
 		</div>

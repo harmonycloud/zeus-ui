@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CascaderSelect, Select, Grid } from '@alicloud/console-components';
 import { DatePicker } from '@alicloud/console-components';
 import moment from 'moment';
+import './index.scss';
 const { Option } = Select;
 const { Row, Col } = Grid;
 
@@ -10,6 +11,7 @@ export default function TimeSelect(props) {
 	const {
 		timeSelect,
 		align = 'right',
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		onRefresh = () => {},
 		source = 'default',
 		style = {}
@@ -94,7 +96,6 @@ export default function TimeSelect(props) {
 		timeSelect([moment().subtract(number, unit), moment()]);
 	};
 	const onTypeChange = (value) => {
-		console.log(value);
 		setIsSelect(value);
 		if (value === false) {
 			onRefresh();
@@ -103,7 +104,6 @@ export default function TimeSelect(props) {
 		setStartTime(moment().subtract(1, 'hours'));
 		setEndTime(moment());
 	};
-	useEffect(() => {}, []);
 	if (source === 'default') {
 		return (
 			<>
@@ -118,7 +118,8 @@ export default function TimeSelect(props) {
 							<Option value={true}>时间段</Option>
 						</Select>
 						<CascaderSelect
-							style={{ width: 332 }}
+							listStyle={{ width: '50%' }}
+							style={{ width: '100%' }}
 							dataSource={dataSource}
 							onChange={handleChange}
 							value={timeQuantum}
@@ -138,7 +139,7 @@ export default function TimeSelect(props) {
 							showTime
 							onChange={onChange}
 							onOk={onRangeOk}
-							style={{ width: 332 }}
+							style={{ width: '100%' }}
 							value={[startTime, endTime]}
 						/>
 					</div>
@@ -151,7 +152,7 @@ export default function TimeSelect(props) {
 				{isSelect ? (
 					<div id="timepicker" className="timepicker-filter-item">
 						<Row>
-							<Col span={6} style={{ marginLeft: -13 }}>
+							<Col span={5} style={{ marginLeft: -13 }}>
 								<Select
 									onChange={onTypeChange}
 									defaultValue={isSelect}
@@ -161,7 +162,7 @@ export default function TimeSelect(props) {
 									<Option value={true}>时间段</Option>
 								</Select>
 							</Col>
-							<Col span={16} style={{ marginLeft: 13 }}>
+							<Col span={19} style={{ marginLeft: 13 }}>
 								<CascaderSelect
 									style={{ width: '100%' }}
 									dataSource={dataSource}
@@ -174,7 +175,7 @@ export default function TimeSelect(props) {
 				) : (
 					<div id="timepicker" className="timepicker-filter-item">
 						<Row>
-							<Col span={6} style={{ marginLeft: -13 }}>
+							<Col span={5} style={{ marginLeft: -13 }}>
 								<Select
 									onChange={onTypeChange}
 									defaultValue={isSelect}
@@ -184,7 +185,7 @@ export default function TimeSelect(props) {
 									<Option value={true}>时间段</Option>
 								</Select>
 							</Col>
-							<Col span={16} style={{ marginLeft: 13 }}>
+							<Col span={19} style={{ marginLeft: 13 }}>
 								<RangePicker
 									showTime
 									onChange={onChange}

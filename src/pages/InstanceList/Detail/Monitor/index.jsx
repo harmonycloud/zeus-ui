@@ -21,9 +21,9 @@ const Monitor = (props) => {
 	} = props;
 	const [url, setUrl] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
-
+	console.log(props);
 	useEffect(() => {
-		if (!customMid || capabilities.includes('ingress')) {
+		if (!customMid || capabilities.includes('monitoring')) {
 			if (type && monitor) {
 				getMiddlewareMonitorUrl({
 					clusterId,
@@ -40,7 +40,7 @@ const Monitor = (props) => {
 				});
 			}
 		}
-	}, [type]);
+	}, [props.chartVersion]);
 
 	useEffect(() => {
 		if (url) {
@@ -64,13 +64,13 @@ const Monitor = (props) => {
 		);
 	});
 
-	if (customMid && !capabilities.includes('ingress')) {
+	if (customMid && !capabilities.includes('monitoring')) {
 		return <DefaultPicture />;
 	}
 
 	return (
 		<div className={styles['monitor']}>
-			{monitor === null ? (
+			{monitor.grafana === null ? (
 				<ComponentsLoading type="monitor" />
 			) : (
 				<>

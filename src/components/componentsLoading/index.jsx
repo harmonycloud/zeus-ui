@@ -44,7 +44,7 @@ export default function ComponentsLoading(props) {
 	};
 
 	const onCreate = (values) => {
-		console.log(values);
+		// console.log(values);
 		if (type === 'monitor') {
 			const sendData = {
 				url: {
@@ -83,15 +83,19 @@ export default function ComponentsLoading(props) {
 			const sendData = {
 				url: {
 					clusterId: clusterId,
-					componentName: 'monitor'
+					componentName: 'storageBackup'
 				},
 				data: {
 					storage: {
-						accessKeyId: values.accessKeyId,
-						secretAccessKey: values.secretAccessKey,
-						bucketName: values.bucketName,
-						endpoint: values.endpoint,
-						name: values.name
+						backup: {
+							storage: {
+								accessKeyId: values.accessKeyId,
+								secretAccessKey: values.secretAccessKey,
+								bucketName: values.bucketName,
+								endpoint: values.endpoint,
+								name: values.name
+							}
+						}
 					}
 				}
 			};

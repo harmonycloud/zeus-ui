@@ -159,14 +159,14 @@ const RealtimeLog = (props) => {
 	return (
 		<>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-realtime']}>
 					<Row>
-						<Col span={6}>
-							<label>节点列表</label>
+						<Col span={5}>
+							<label>实例列表</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
-								placeholder="请选择节点"
+								placeholder="请选择实例"
 								value={pod}
 								onChange={changePod}
 								style={{ width: '100%' }}
@@ -180,12 +180,12 @@ const RealtimeLog = (props) => {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-realtime']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>容器列表</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择容器"
 								value={container}

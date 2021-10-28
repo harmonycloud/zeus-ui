@@ -29,10 +29,8 @@ const formItemLayout = {
 };
 
 function DynamicForm(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const {
 		params: { chartName, chartVersion, version }
 	} = props.match;
@@ -166,7 +164,7 @@ function DynamicForm(props) {
 						messageConfig('success', '成功', '中间件创建成功')
 					);
 					history.push({
-						pathname: '/instanceList',
+						pathname: '/serviceList',
 						query: { key: chartName, timer: true }
 					});
 				} else {
@@ -204,7 +202,7 @@ function DynamicForm(props) {
 	return (
 		<Page>
 			<Page.Header
-				title="发布实例"
+				title={`发布${chartName}服务`}
 				hasBackArrow
 				onBackArrowClick={() => window.history.back()}
 			/>
@@ -219,13 +217,13 @@ function DynamicForm(props) {
 										style={{ paddingLeft: 8 }}
 									>
 										<span className="ne-required">
-											实例名称
+											服务名称
 										</span>
 									</label>
 									<div className="form-content">
 										<FormItem
 											required
-											requiredMessage="请输入实例名称"
+											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>

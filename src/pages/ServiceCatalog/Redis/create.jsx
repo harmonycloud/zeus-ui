@@ -42,16 +42,10 @@ const formItemLayout = {
 };
 
 const RedisCreate = (props) => {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
-	const {
-		chartName,
-		chartVersion,
-		middlewareName,
-		backupFileName
-	} = useParams();
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
+	const { chartName, chartVersion, middlewareName, backupFileName } =
+		useParams();
 	const field = Field.useField();
 	const history = useHistory();
 
@@ -98,7 +92,7 @@ const RedisCreate = (props) => {
 	const [mode, setMode] = useState('cluster');
 	const modeList = [
 		{
-			label: '集群模式',
+			label: '资源池模式',
 			value: 'cluster'
 		},
 		{
@@ -341,12 +335,35 @@ const RedisCreate = (props) => {
 					if (nodeObj) {
 						sendData.quota = {};
 						for (let key in nodeObj) {
-							if (!nodeObj[key].disabled)
+							if (!nodeObj[key].disabled) {
+								if (nodeObj[key].storageClass === '') {
+									Message.show(
+										messageConfig(
+											'error',
+											'失败',
+											`${key}节点没有选择存储类型`
+										)
+									);
+									modifyQuota(key);
+									return;
+								}
+								if (nodeObj[key].storageQuota === 0) {
+									Message.show(
+										messageConfig(
+											'error',
+											'失败',
+											`${key}节点存储配额不能为0`
+										)
+									);
+									modifyQuota(key);
+									return;
+								}
 								sendData.quota[key] = {
 									...nodeObj[key],
 									storageClassName: nodeObj[key].storageClass,
 									storageClassQuota: nodeObj[key].storageQuota
 								};
+							}
 						}
 					}
 				}
@@ -359,7 +376,7 @@ const RedisCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/instanceList',
+							pathname: '/serviceList',
 							query: { key: 'Redis', timer: true }
 						});
 					} else {
@@ -370,7 +387,7 @@ const RedisCreate = (props) => {
 		});
 	};
 
-	// 全局集群更新
+	// 全局资源池更新
 	useEffect(() => {
 		if (JSON.stringify(globalCluster) !== '{}') {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
@@ -406,7 +423,7 @@ const RedisCreate = (props) => {
 			}
 		});
 		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆实例
+			// 克隆服务
 			if (backupFileName) {
 				getMiddlewareDetail({
 					clusterId: globalCluster.id,
@@ -429,7 +446,7 @@ const RedisCreate = (props) => {
 	return (
 		<Page>
 			<Page.Header
-				title="发布Redis实例"
+				title="发布Redis服务"
 				className="page-header"
 				hasBackArrow
 				onBackArrowClick={() => {
@@ -444,13 +461,13 @@ const RedisCreate = (props) => {
 								<li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
-											实例名称
+											服务名称
 										</span>
 									</label>
 									<div className="form-content">
 										<FormItem
 											required
-											requiredMessage="请输入实例名称"
+											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>
@@ -530,7 +547,7 @@ const RedisCreate = (props) => {
 											}
 											closable={false}
 										>
-											勾选强制亲和时，实例只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
+											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
 										</Balloon>
 									</label>
 									<div
@@ -615,7 +632,7 @@ const RedisCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -713,7 +730,7 @@ const RedisCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -1042,7 +1059,8 @@ const RedisCreate = (props) => {
 													tempObj.num = value;
 													setNodeObj({
 														...nodeObj,
-														[nodeModify.nodeName]: tempObj
+														[nodeModify.nodeName]:
+															tempObj
 													});
 												}}
 											/>
@@ -1180,6 +1198,7 @@ const RedisCreate = (props) => {
 															style={{
 																marginRight: 8
 															}}
+															autoWidth={false}
 														>
 															{storageClassList.map(
 																(

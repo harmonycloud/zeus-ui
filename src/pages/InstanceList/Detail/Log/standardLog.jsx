@@ -291,14 +291,14 @@ export default function StandardLog(props) {
 	return (
 		<div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
-							<label>节点列表</label>
+						<Col span={5}>
+							<label>实例列表</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
-								placeholder="请选择节点"
+								placeholder="请选择实例"
 								value={pod}
 								onChange={changePod}
 								style={{ width: '100%' }}
@@ -313,12 +313,12 @@ export default function StandardLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>容器列表</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择容器"
 								value={container}
@@ -335,12 +335,12 @@ export default function StandardLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col span={5}>
 							<label>搜索类型</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Select
 								placeholder="请选择搜索类型"
 								value={searchType}
@@ -356,12 +356,12 @@ export default function StandardLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
-						<Col span={6}>
+						<Col offset={2} span={3}>
 							<label>关键字</label>
 						</Col>
-						<Col span={16}>
+						<Col span={19}>
 							<Input
 								style={{ width: '100%' }}
 								value={keyword}
@@ -370,24 +370,20 @@ export default function StandardLog(props) {
 						</Col>
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
+				<div className={styles['filter-item-standard']}>
 					<Row>
 						<TimeSelect source="log" timeSelect={onTimeChange} />
 					</Row>
 				</div>
-				<div className={styles['filter-item']}>
-					<Row>
-						<Col offset={18}>
-							<Button type="primary" onClick={handleClick}>
-								搜索
-							</Button>
-						</Col>
-					</Row>
+				<div className={styles['filter-item-standard']}>
+					<Button type="primary" onClick={handleClick}>
+						搜索
+					</Button>
 				</div>
 			</div>
 			{logFiles.length > 0 && (
 				<div className="display-flex flex-column">
-					<div>实例节点数：{logFiles.length}</div>
+					<div>服务节点数：{logFiles.length}</div>
 					<div className={styles['log-file-flex-wrapper']}>
 						{logFiles.map((item) => {
 							return (

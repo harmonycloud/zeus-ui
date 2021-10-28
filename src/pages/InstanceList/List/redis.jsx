@@ -13,10 +13,8 @@ import timerClass from '@/utils/timerClass';
 import { statusRender } from '@/utils/utils';
 
 function RedisList(props) {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
 	const { instance, updateList } = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState([]);
@@ -55,7 +53,7 @@ function RedisList(props) {
 	const deleteFn = (name) => {
 		Dialog.show({
 			title: '提示',
-			content: '确定删除该Redis实例？',
+			content: '确定删除该Redis服务？',
 			onOk: async () => {
 				let res = await deleteMiddleware({
 					clusterId: globalCluster.id,
@@ -99,7 +97,7 @@ function RedisList(props) {
 				}
 				type="primary"
 			>
-				发布实例
+				发布服务
 			</Button>
 		)
 	};
@@ -214,7 +212,7 @@ function RedisList(props) {
 				<span style={{ fontWeight: 400 }}>
 					当前Redis中间件是一款兼容Redis
 					协议的缓存数据库，是基于开源的redis
-					在kubernetes容器平台的扩展改造。提供了集群、哨兵、故障自愈、监控告警等能力，版本支持：v5.0.8；详细参见
+					在kubernetes容器平台的扩展改造。提供了资源池、哨兵、故障自愈、监控告警等能力，版本支持：v5.0.8；详细参见
 				</span>
 				<span
 					className="name-link"
@@ -246,7 +244,7 @@ function RedisList(props) {
 				onSort={onSort}
 			>
 				<Table.Column
-					title="实例名称/显示名称"
+					title="服务名称/显示名称"
 					dataIndex="name"
 					resizable
 					cell={nameRender}

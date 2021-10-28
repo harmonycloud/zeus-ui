@@ -39,16 +39,10 @@ const formItemLayout = {
 };
 
 const ElasticsearchCreate = (props) => {
-	const {
-		cluster: globalCluster,
-		namespace: globalNamespace
-	} = props.globalVar;
-	const {
-		chartName,
-		chartVersion,
-		middlewareName,
-		backupFileName
-	} = useParams();
+	const { cluster: globalCluster, namespace: globalNamespace } =
+		props.globalVar;
+	const { chartName, chartVersion, middlewareName, backupFileName } =
+		useParams();
 	const field = Field.useField();
 	const history = useHistory();
 
@@ -143,6 +137,14 @@ const ElasticsearchCreate = (props) => {
 		{
 			label: 'N主 N数据 N协调',
 			value: 'complex'
+		},
+		{
+			label: 'N主 N数据 N冷',
+			value: 'complex-cold'
+		},
+		{
+			label: 'N主 N数据 N冷 N协调',
+			value: 'cold-complex'
 		}
 	];
 	const [nodeObj, setNodeObj] = useState({
@@ -178,6 +180,16 @@ const ElasticsearchCreate = (props) => {
 			disabled: true,
 			title: '协调节点',
 			num: 2,
+			specId: '1',
+			cpu: 1,
+			memory: 2,
+			storageClass: '',
+			storageQuota: 0
+		},
+		cold: {
+			disabled: true,
+			title: '冷数据节点',
+			num: 3,
 			specId: '1',
 			cpu: 1,
 			memory: 2,
@@ -307,7 +319,7 @@ const ElasticsearchCreate = (props) => {
 					password: values.pwd,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode: mode
+					mode: mode.includes('complex') ? 'complex' : mode
 				};
 				if (affinity.flag) {
 					if (affinity.label === '') {
@@ -327,13 +339,37 @@ const ElasticsearchCreate = (props) => {
 				}
 				if (nodeObj) {
 					sendData.quota = {};
+					console.log(nodeObj);
 					for (let key in nodeObj) {
-						if (!nodeObj[key].disabled)
+						if (!nodeObj[key].disabled) {
+							if (nodeObj[key].storageClass === '') {
+								Message.show(
+									messageConfig(
+										'error',
+										'失败',
+										`${key}节点没有选择存储类型`
+									)
+								);
+								modifyQuota(key);
+								return;
+							}
+							if (nodeObj[key].storageQuota === 0) {
+								Message.show(
+									messageConfig(
+										'error',
+										'失败',
+										`${key}节点存储配额不能为0`
+									)
+								);
+								modifyQuota(key);
+								return;
+							}
 							sendData.quota[key] = {
 								...nodeObj[key],
 								storageClassName: nodeObj[key].storageClass,
 								storageClassQuota: nodeObj[key].storageQuota
 							};
+						}
 					}
 				}
 				// console.log(sendData);
@@ -345,7 +381,7 @@ const ElasticsearchCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/instanceList',
+							pathname: '/serviceList',
 							query: { key: 'Elasticsearch', timer: true }
 						});
 					} else {
@@ -356,7 +392,7 @@ const ElasticsearchCreate = (props) => {
 		});
 	};
 
-	// 全局集群更新
+	// 全局资源池更新
 	useEffect(() => {
 		if (JSON.stringify(globalCluster) !== '{}') {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
@@ -393,7 +429,7 @@ const ElasticsearchCreate = (props) => {
 			}
 		});
 		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆实例
+			// 克隆服务
 			if (backupFileName) {
 				getMiddlewareDetail({
 					clusterId: globalCluster.id,
@@ -410,31 +446,46 @@ const ElasticsearchCreate = (props) => {
 	// 模式变更
 	useEffect(() => {
 		if (mode) {
-			let { master, kibana, data, client } = nodeObj;
+			let { master, kibana, data, client, cold } = nodeObj;
 			if (mode === 'simple') {
 				master.disabled = false;
 				kibana.disabled = false;
 				data.disabled = true;
 				client.disabled = true;
+				cold.disabled = true;
 			} else if (mode === 'regular') {
 				master.disabled = false;
 				kibana.disabled = false;
 				data.disabled = false;
 				client.disabled = true;
+				cold.disabled = true;
 			} else if (mode === 'complex') {
 				master.disabled = false;
 				kibana.disabled = false;
 				data.disabled = false;
 				client.disabled = false;
+				cold.disabled = true;
+			} else if (mode === 'complex-cold') {
+				master.disabled = false;
+				kibana.disabled = false;
+				data.disabled = false;
+				client.disabled = true;
+				cold.disabled = false;
+			} else if (mode === 'cold-complex') {
+				master.disabled = false;
+				kibana.disabled = false;
+				data.disabled = false;
+				client.disabled = false;
+				cold.disabled = false;
 			}
-			setNodeObj({ master, kibana, data, client });
+			setNodeObj({ master, kibana, data, client, cold });
 		}
 	}, [mode]);
 
 	return (
 		<Page>
 			<Page.Header
-				title="发布Elasticsearch实例"
+				title="发布Elasticsearch服务"
 				className="page-header"
 				hasBackArrow
 				onBackArrowClick={() => {
@@ -449,13 +500,13 @@ const ElasticsearchCreate = (props) => {
 								<li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
-											实例名称
+											服务名称
 										</span>
 									</label>
 									<div className="form-content">
 										<FormItem
 											required
-											requiredMessage="请输入实例名称"
+											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>
@@ -533,7 +584,7 @@ const ElasticsearchCreate = (props) => {
 											}
 											closable={false}
 										>
-											勾选强制亲和时，实例只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
+											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
 										</Balloon>
 									</label>
 									<div
@@ -615,7 +666,7 @@ const ElasticsearchCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -713,7 +764,7 @@ const ElasticsearchCreate = (props) => {
 											<span
 												style={{ lineHeight: '18px' }}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在实例详情下的“日志管理”菜单下查看具体的日志，如果当前集群未部署/对接Elasticsearch组件，则无法启用该功能
+												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
 											</span>
 										</Balloon>
 									</label>
@@ -1178,7 +1229,8 @@ const ElasticsearchCreate = (props) => {
 														tempObj.num = value;
 														setNodeObj({
 															...nodeObj,
-															[nodeModify.nodeName]: tempObj
+															[nodeModify.nodeName]:
+																tempObj
 														});
 													}}
 												/>
@@ -1295,7 +1347,9 @@ const ElasticsearchCreate = (props) => {
 										{nodeModify.nodeName !== 'kibana' && (
 											<li className="display-flex mt-8">
 												<label className="form-name">
-													<span>存储配额</span>
+													<span className="ne-required">
+														存储配额
+													</span>
 												</label>
 												<div
 													className={`form-content display-flex`}
@@ -1309,6 +1363,7 @@ const ElasticsearchCreate = (props) => {
 															style={{
 																marginRight: 8
 															}}
+															autoWidth={false}
 														>
 															{storageClassList.map(
 																(

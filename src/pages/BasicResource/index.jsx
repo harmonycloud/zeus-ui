@@ -32,13 +32,15 @@ export default function BasicResource() {
 			<div className={`display-flex ${styles['cluster-wrapper']}`}>
 				<img src={iconResource} width="90" />
 				<div className={`display-flex ${styles['cluster-intro']}`}>
-					<h2>集群管理</h2>
+					<h2>资源池管理</h2>
 					<p>
-						对多个集群以及每个集群的基础资源，服务组件和资源等的统一管理
+						对多个资源池以及每个资源池的基础资源，服务组件和资源等的统一管理
 					</p>
-					<Button type="primary" onClick={clusterHandle}>
-						添加集群
-					</Button>
+					<div>
+						<Button type="primary" onClick={clusterHandle}>
+							添加资源池
+						</Button>
+					</div>
 				</div>
 			</div>
 			<div className={`${styles['cluster-list']}`}>

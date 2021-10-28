@@ -171,7 +171,7 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 	width: 100%;
 }
 .page-header .next-icon:hover {
-  color: #0064c8;
+  color: #0070cc;
 }
 
 /** 常用显示 */
@@ -322,7 +322,7 @@ table.table-list tbody tr td {
 }
 /** 名称连接 */
 .name-link {
-  color: #0064c8;
+  color: #0070cc;
   cursor: pointer;
 }
 
@@ -380,7 +380,7 @@ table.table-list tbody tr td {
 	overflow: auto !important;
 }
 
-/** 实例日志全屏 */
+/** 服务日志全屏 */
 .log-full-screen {
   position: fixed;
   top: 0;
@@ -465,12 +465,28 @@ table.table-list tbody tr td {
 	line-height: 24px;
 	margin-right: 4px;
 }
+/* 离线字体 */
 @font-face {
 	font-family: NextIcon;
 	src: url("./assets/wind-bold.woff2");
 	src: url("./assets/wind-medium.woff2");
 	src: url("./assets/wind-regular.woff2");
 	src: url("./assets/wind.woff2");
+}
+.text-hidden {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+.icon-type-content{
+	display: flex;
+	align-items: center;
+}
+.icon-type-content > img {
+	margin-right: 4px;
+}
+.next-table-filter-footer {
+	margin: 10px 10px 10px;
 }
 .next-icon {
 	display: inline-block;
