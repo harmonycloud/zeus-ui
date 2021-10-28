@@ -1,41 +1,57 @@
 # 中间件平台
 基于**Create-React-App**脚手架二次开发
 ## 依赖下载
+```
 yarn install
+or
+npm install
+```
 > *不建议使用**npm**下载，推荐下载**yarn**后使用
 
->建议node版本 **10.20.1** 可以用**nvm**去切换本地node版本
+>建议node版本 **14.x.x** 可以用**nvm**去切换本地node版本
 ## 启动项目
+```
 yarn start
+or
+npm run start
+```
 ## 打包项目
+```
 yarn build
+or
+npm run build
+```
 ## 文件目录结构
 ```
 Zeus-ui
+	|-- docs
 	|-- node_modules
 	|-- public
+		|-- iconfont.js // 自定义icon
 	|-- src
 	  	|-- assets // 静态资源
 			|-- images // 图片
-			|-- iconfont.ttf // 字体文件
-			|-- iconfont.woff // 字体文件
-			|-- iconfont.woff2 // 字体文件
+			|-- iconfont.ttf // UI组件库的离线字体
+			|-- wind-bold.woff2 // UI组件库的离线字体
+			|-- wind-medium.woff2 // UI组件库的离线字体
+			|-- wind-regular.woff2 // UI组件库的离线字体
+			|-- wind.woff2 // UI组件库的离线字体
+			|-- README.md
 	  	|-- components // 自定义通用业务组件
 			|-- ...
-			|-- FormXXX 动态表单专用组件
+			|-- FormXXX  // 动态表单专用组件
 			|-- messageConfig.js // 全局提醒框
 			|-- renderFormItem.js // 动态表单生成
-	  	|-- layout // 全局布局
-			|-- ...
-			|-- routes.js // 路由
+	  	|-- layouts // 全局布局
+				|-- ...
+				|-- routes.js // 路由
 		|-- locales // 国际化文档，暂时没做
 	  	|-- pages // 业务组件
 		|-- redux // 全局redux
 		|-- services // 接口定义
-		|-- styles //
+		|-- styles
 			|-- _mixin.scss // scss的常用代码块
 			|-- _vars.scss // 系统的自定义变量
-			|-- iconfont.scss // 自定义字体样式
 		|-- utils // 全局实用工具函数
 			|-- ...
 			|-- url.js // 后端地址设置
@@ -50,6 +66,7 @@ Zeus-ui
 	|-- Dockerfile // docker文件，用于流水线
 	|-- nginx.conf // 线上nginx配置，了解一下
 	|-- ...
+
 ```
 #### Commit规范
 ```bash
@@ -94,6 +111,6 @@ babel支持2020语法: ?.[可选连操作符] ??[空位合并操作符]
 ```
 ### 关于typescript
 项目刚启动初期，使用JavaScript进行开发。在开发调试过程中感受到了JavaScript作为弱类型语言带来的一些麻烦和不确定性。typescript作为JavaScript的超集，是一种强类型语言，能够很好的约束开发人员来增加代码的可读性和健壮性，以便项目之后的开发和维护。
-在1.2.0版本中，进行了增量升级，项目代码可以使用typescript进行编写。
+在内部的1.2.0（release-v0.1.0）版本中，进行了增量升级，项目代码可以使用typescript进行编写。
 目前ts，tsx的代码可以与js和jsx的代码兼容。
-在之后新功能的开发中，规定使用ts进行编写，在修改老代码时，首先对老代码进行js->ts的转换升级，直至所有老的js代码更新完成。
+在之后新功能的开发中，规定使用ts进行编写，在修改老代码时，首先对老代码进行js->ts/（jsx -> tsx）的转换升级，直至所有老的js/jsx代码更新完成。

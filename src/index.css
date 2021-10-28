@@ -488,3 +488,10 @@ table.table-list tbody tr td {
 .next-table-filter-footer {
 	margin: 10px 10px 10px;
 }
+.next-icon {
+	display: inline-block;
+	font-family: NextIcon !important;
+	font-style: normal;
+	font-weight: normal;
+	text-transform: none;
+}
