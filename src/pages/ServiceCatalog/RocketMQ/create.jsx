@@ -177,7 +177,7 @@ const RocketMQCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
-			console.log(values);
+			if (values.name === 'rocketmq') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,
@@ -372,12 +372,28 @@ const RocketMQCreate = (props) => {
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
+											validateState={
+												field.getValue('name') ===
+													'rocketmq' && 'error'
+											}
 										>
 											<Input
 												name="name"
 												placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 												trim
 											/>
+											{field.getValue('name') ===
+												'rocketmq' && (
+												<Form.Error>
+													<span
+														style={{
+															color: '#C80000'
+														}}
+													>
+														服务名称不能与类型同名
+													</span>
+												</Form.Error>
+											)}
 										</FormItem>
 									</div>
 								</li>
