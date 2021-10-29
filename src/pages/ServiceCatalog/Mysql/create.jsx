@@ -1368,12 +1368,14 @@ const MysqlCreate = (props) => {
 											patternMessage="请输入小于21位的正整数"
 											required
 											requiredMessage="请输入存储配额大小（GB）"
+											min={5}
+											minmaxMessage="mysql存储配额不得低于5GB"
 										>
 											<Input
 												name="storageQuota"
 												defaultValue={5}
 												htmlType="number"
-												min={1}
+												min={5}
 												placeholder="请输入存储配额大小"
 												addonTextAfter="GB"
 											/>
