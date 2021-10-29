@@ -68,6 +68,16 @@ export default function List(props) {
 				return;
 			}
 		} else {
+			if (listData.type === 'mysql' && !listData.mysqlDTO.isLvmStorage) {
+				Message.show(
+					messageConfig(
+						'error',
+						'失败',
+						'存储不使用lvm时，不支持立即备份功能'
+					)
+				);
+				return;
+			}
 			if (
 				listData.quota[listData.type].storageClassName === 'local-path'
 			) {
