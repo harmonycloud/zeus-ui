@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message } from '@alicloud/console-components';
 import { useHistory } from 'react-router';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { Page, Header, Content } from '@alicloud/console-components-page';
@@ -170,8 +170,24 @@ export default function ResourcePoolManagement(): JSX.Element {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						setVisible(true);
-						setData(record);
+						if (record.removable) {
+							setVisible(true);
+							setData(record);
+						} else {
+							const dialog = Dialog.show({
+								title: '提示',
+								content:
+									'该资源池正在被中间件服务使用，请删除后再试',
+								footer: (
+									<Button
+										type="primary"
+										onClick={() => dialog.hide()}
+									>
+										我知道了
+									</Button>
+								)
+							});
+						}
 					}}
 				>
 					删除

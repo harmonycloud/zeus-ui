@@ -108,6 +108,7 @@ function DynamicForm(props) {
 	const handleSubmit = () => {
 		field.validate((err, values) => {
 			if (err) return;
+			if (values.name === chartName) return;
 			console.log(values);
 			const sendData = {
 				clusterId: globalCluster.id,
@@ -173,31 +174,6 @@ function DynamicForm(props) {
 			});
 		});
 	};
-	// const obj = {
-	// 	variable: 'nodeAffinity',
-	// 	description: '打开主机亲和',
-	// 	label: '主机亲和',
-	// 	default: false,
-	// 	type: 'boolean',
-	// 	group: 'strategy',
-	// 	showSubQuestionIf: true,
-	// 	subQuestions: [
-	// 		{
-	// 			variable: 'nodeAffinity.label',
-	// 			description: '',
-	// 			type: 'nodeAffinity',
-	// 			group: 'strategy',
-	// 			label: ''
-	// 		},
-	// 		{
-	// 			variable: 'nodeAffinity.force',
-	// 			description: '',
-	// 			type: 'select',
-	// 			options: ['true', 'false'],
-	// 			group: 'strategy'
-	// 		}
-	// 	]
-	// };
 
 	return (
 		<Page>
@@ -226,6 +202,10 @@ function DynamicForm(props) {
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
+											validateState={
+												field.getValue('name') ===
+													chartName && 'error'
+											}
 										>
 											<Input
 												style={{ width: '390px' }}
@@ -233,6 +213,18 @@ function DynamicForm(props) {
 												placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 												trim
 											/>
+											{field.getValue('name') ===
+												chartName && (
+												<Form.Error>
+													<span
+														style={{
+															color: '#C80000'
+														}}
+													>
+														服务名称不能与类型同名
+													</span>
+												</Form.Error>
+											)}
 										</FormItem>
 									</div>
 								</li>

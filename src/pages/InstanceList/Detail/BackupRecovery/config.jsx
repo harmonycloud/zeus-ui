@@ -162,6 +162,16 @@ export default function Config(props) {
 				return;
 			}
 		} else {
+			if (listData.type === 'mysql' && !listData.mysqlDTO.isLvmStorage) {
+				Message.show(
+					messageConfig(
+						'error',
+						'失败',
+						'存储不使用lvm时，不支持备份设置功能'
+					)
+				);
+				return;
+			}
 			if (
 				listData.quota[listData.type].storageClassName === 'local-path'
 			) {
@@ -169,7 +179,7 @@ export default function Config(props) {
 					messageConfig(
 						'error',
 						'失败',
-						'存储类型为local-path时不支持立即备份功能'
+						'存储类型为local-path时不支持备份设置功能'
 					)
 				);
 				return;
@@ -265,6 +275,19 @@ export default function Config(props) {
 								return;
 							}
 						} else {
+							if (
+								listData.type === 'mysql' &&
+								!listData.mysqlDTO.isLvmStorage
+							) {
+								Message.show(
+									messageConfig(
+										'error',
+										'失败',
+										'存储不使用lvm时，不支持备份设置功能'
+									)
+								);
+								return;
+							}
 							if (
 								listData.quota[listData.type]
 									.storageClassName === 'local-path'

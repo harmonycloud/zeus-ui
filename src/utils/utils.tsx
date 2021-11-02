@@ -349,3 +349,20 @@ export const judgeObjArrayHeavyByAttr: (arr: any[], attr: string) => boolean = (
 	const t = Array.from(new Set(values));
 	return values.length !== t.length;
 };
+// * 调换对象属性位置
+export const changeObjectIndex: (obj: any, prop: string, index: number) => any =
+	(obj: any, prop: string, index: number) => {
+		const keyArr = Object.keys(obj);
+		if (keyArr.length > 0) {
+			const propIndex = keyArr.indexOf(prop);
+			keyArr.splice(propIndex, 1);
+			keyArr.splice(index, 0, prop);
+			const result = {};
+			for (let i = 0; i < keyArr.length; i++) {
+				result[keyArr[i]] = obj[keyArr[i]];
+			}
+			return result;
+		} else {
+			return obj;
+		}
+	};

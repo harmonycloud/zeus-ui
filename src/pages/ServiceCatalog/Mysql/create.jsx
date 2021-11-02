@@ -200,6 +200,7 @@ const MysqlCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
+			if (values.name === 'mysql') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,
@@ -530,14 +531,6 @@ const MysqlCreate = (props) => {
 			namespace: globalNamespace.name
 		}).then((res) => {
 			if (res.success) {
-				// for (let i = 0; i < res.data.length; i++) {
-				// 	if (res.data[i].type === 'CSI-LVM') {
-				// 		field.setValues({
-				// 			storageClass: res.data[i].name
-				// 		});
-				// 		break;
-				// 	}
-				// }
 				setStorageClassList(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -547,47 +540,6 @@ const MysqlCreate = (props) => {
 			// 克隆服务
 			if (backupFileName) {
 				getMiddlewareDetailAndSetForm(middlewareName);
-				// getMiddlewareDetail({
-				// 	clusterId: globalCluster.id,
-				// 	namespace: globalNamespace.name,
-				// 	middlewareName: middlewareName,
-				// 	type: 'mysql'
-				// }).then((res) => {
-				// if (res.data.nodeAffinity) {
-				// 	setAffinity({
-				// 		flag: true,
-				// 		label: res.data.nodeAffinity[0].label,
-				// 		checked: res.data.nodeAffinity[0].required
-				// 	});
-				// }
-				// if (res.data.mode) {
-				// 	setMode(res.data.mode);
-				// }
-				// if (res.data.charSet) {
-				// 	setCharSet(res.data.charSet);
-				// }
-				// if (res.data.version) {
-				// 	setVersion(res.data.version);
-				// }
-				// field.setValues({
-				// 	aliasName: res.data.aliasName,
-				// 	// name: res.data.name,
-				// 	labels: res.data.labels,
-				// 	annotation: res.data.annotation,
-				// 	mysqlPort: res.data.port,
-				// 	mysqlPwd: res.data.password,
-				// 	cpu: res.data.quota.mysql.cpu,
-				// 	memory: transUnit.removeUnit(
-				// 		res.data.quota.mysql.memory,
-				// 		'Gi'
-				// 	),
-				// 	storageClass: res.data.quota.mysql.storageClassName,
-				// 	storageQuota: transUnit.removeUnit(
-				// 		res.data.quota.mysql.storageClassQuota,
-				// 		'Gi'
-				// 	)
-				// });
-				// });
 			}
 		}
 		if (JSON.stringify(globalNamespace) !== '{}') {
@@ -831,6 +783,10 @@ const MysqlCreate = (props) => {
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
+											validateState={
+												field.getValue('name') ===
+													'mysql' && 'error'
+											}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>
 											<Input
@@ -838,6 +794,18 @@ const MysqlCreate = (props) => {
 												placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 												trim
 											/>
+											{field.getValue('name') ===
+												'mysql' && (
+												<Form.Error>
+													<span
+														style={{
+															color: '#C80000'
+														}}
+													>
+														服务名称不能与类型同名
+													</span>
+												</Form.Error>
+											)}
 										</FormItem>
 									</div>
 								</li>
@@ -1368,12 +1336,14 @@ const MysqlCreate = (props) => {
 											patternMessage="请输入小于21位的正整数"
 											required
 											requiredMessage="请输入存储配额大小（GB）"
+											min={5}
+											minmaxMessage="mysql存储配额不得低于5GB"
 										>
 											<Input
 												name="storageQuota"
 												defaultValue={5}
 												htmlType="number"
-												min={1}
+												min={5}
 												placeholder="请输入存储配额大小"
 												addonTextAfter="GB"
 											/>

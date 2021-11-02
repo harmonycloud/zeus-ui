@@ -10,6 +10,7 @@ import timerClass from '@/utils/timerClass';
 import messageConfig from '@/components/messageConfig';
 import MiddlewareItem from './MiddlewareItem';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
+import { changeObjectIndex } from '@/utils/utils';
 import './index.scss';
 
 const RadioGroup = Radio.Group;
@@ -75,7 +76,8 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					}
 				});
 			}
-			setDataSource(obj);
+
+			setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
 		} else if (rule === 'source') {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {

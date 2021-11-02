@@ -22,6 +22,7 @@ export interface clusterAddType {
 	registry: registryProps;
 	storage?: storageProps;
 	clusterQuotaDTO?: clusterQuotaDTOProps | null;
+	removable?: boolean;
 	[propsName: string]: any;
 }
 export interface clusterType extends clusterAddType {
