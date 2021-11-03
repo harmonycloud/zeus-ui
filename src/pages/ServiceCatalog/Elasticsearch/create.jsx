@@ -27,6 +27,7 @@ import {
 	getMiddlewareDetail
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import ModeItem from '@/components/ModeItem';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -406,29 +407,6 @@ const ElasticsearchCreate = (props) => {
 
 	// 全局分区更新
 	useEffect(() => {
-		getStorageClass({
-			clusterId: globalCluster.id,
-			namespace: globalNamespace.name
-		}).then((res) => {
-			if (res.success) {
-				for (let i = 0; i < res.data.length; i++) {
-					if (res.data[i].type === 'CSI-LVM') {
-						const { master, kibana, data, client } = nodeObj;
-						master.storageClass = res.data[i].name;
-						master.storageQuota = 5;
-						data.storageClass = res.data[i].name;
-						data.storageQuota = 5;
-						client.storageClass = res.data[i].name;
-						client.storageQuota = 5;
-						setNodeObj({ master, kibana, data, client });
-						break;
-					}
-				}
-				setStorageClassList(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
 		if (JSON.stringify(globalNamespace) !== '{}') {
 			// 克隆服务
 			if (backupFileName) {
@@ -1038,393 +1016,32 @@ const ElasticsearchCreate = (props) => {
 										<div
 											className={`display-flex ${styles['mode-content']}`}
 										>
-											{Object.keys(nodeObj).map((key) => {
-												if (nodeObj[key].disabled)
-													return (
-														<div
-															className={`${styles['node-box']} ${styles['disabled']}`}
-															key={key}
-														>
-															<div
-																className={
-																	styles[
-																		'node-type'
-																	]
-																}
-															>
-																{
-																	nodeObj[key]
-																		.title
-																}
-															</div>
-															<div
-																className={
-																	styles[
-																		'node-data'
-																	]
-																}
-															>
-																<span
-																	className={
-																		styles[
-																			'not-start'
-																		]
-																	}
-																>
-																	未启用
-																</span>
-															</div>
-														</div>
-													);
-												else
-													return (
-														<div
-															className={
-																styles[
-																	'node-box'
-																]
-															}
-															key={key}
-														>
-															<div
-																className={
-																	styles[
-																		'node-type'
-																	]
-																}
-															>
-																{
-																	nodeObj[key]
-																		.title
-																}{' '}
-																<span
-																	className={
-																		styles[
-																			'circle'
-																		]
-																	}
-																>
-																	{
-																		nodeObj[
-																			key
-																		].num
-																	}
-																</span>
-															</div>
-															<div
-																className={
-																	styles[
-																		'node-data'
-																	]
-																}
-															>
-																<ul>
-																	<li>
-																		<span>
-																			CPU：
-																		</span>
-																		<span>
-																			{
-																				nodeObj[
-																					key
-																				]
-																					.cpu
-																			}{' '}
-																			Core
-																		</span>
-																	</li>
-																	<li>
-																		<span>
-																			内存：
-																		</span>
-																		<span>
-																			{
-																				nodeObj[
-																					key
-																				]
-																					.memory
-																			}{' '}
-																			Gi
-																		</span>
-																	</li>
-																	{nodeObj[
-																		key
-																	]
-																		.storageClass &&
-																		nodeObj[
-																			key
-																		]
-																			.storageClass !==
-																			'' && (
-																			<li>
-																				<span>
-																					{
-																						nodeObj[
-																							key
-																						]
-																							.storageClass
-																					}
-
-																					：
-																				</span>
-																				<span>
-																					{
-																						nodeObj[
-																							key
-																						]
-																							.storageQuota
-																					}{' '}
-																					GB
-																				</span>
-																			</li>
-																		)}
-																</ul>
-																<div
-																	className={
-																		styles[
-																			'btn'
-																		]
-																	}
-																>
-																	{key ===
-																	nodeModify.nodeName ? (
-																		<Button
-																			type="primary"
-																			onClick={() =>
-																				putAway(
-																					key
-																				)
-																			}
-																		>
-																			收起
-																			<Icon type="arrow-up" />
-																		</Button>
-																	) : (
-																		<Button
-																			type="primary"
-																			disabled={
-																				nodeModify.nodeName !==
-																					'' &&
-																				key !==
-																					nodeModify.nodeName
-																			}
-																			onClick={() =>
-																				modifyQuota(
-																					key
-																				)
-																			}
-																		>
-																			修改
-																		</Button>
-																	)}
-																</div>
-															</div>
-														</div>
-													);
-											})}
-										</div>
-									</div>
-								</li>
-								{nodeModify.flag && (
-									<>
-										<li className="display-flex form-li">
-											<label className="form-name">
-												<span>节点数量</span>
-											</label>
-											<div
-												className={`form-content display-flex ${styles['input-flex-length']}`}
-											>
-												<CalInput
-													value={nodeNum}
-													onChange={(value) => {
-														setNodeNum(value);
-														let tempObj =
-															nodeObj[
-																nodeModify
-																	.nodeName
-															];
-														tempObj.num = value;
+											{Object.keys(nodeObj).map((key) => (
+												<ModeItem
+													key={key}
+													type={key}
+													data={nodeObj[key]}
+													clusterId={globalCluster.id}
+													namespace={
+														globalNamespace.name
+													}
+													onChange={(values) => {
+														// console.log(values);
+														// console.log(key);
+														// console.log({
+														// 	...nodeObj,
+														// 	[key]: values
+														// });
 														setNodeObj({
 															...nodeObj,
-															[nodeModify.nodeName]:
-																tempObj
+															[key]: values
 														});
 													}}
 												/>
-											</div>
-										</li>
-										<li className="display-flex form-li">
-											<label className="form-name">
-												<span>节点规格</span>
-											</label>
-											<div
-												className={`form-content display-flex ${styles['instance-spec-content']}`}
-											>
-												<SelectBlock
-													options={instanceSpecList}
-													currentValue={instanceSpec}
-													onCallBack={(value) =>
-														setInstanceSpec(value)
-													}
-												/>
-												{instanceSpec === 'General' ? (
-													<div
-														style={{
-															width: 652,
-															marginTop: 16
-														}}
-													>
-														<TableRadio
-															id={specId}
-															onCallBack={(
-																value
-															) =>
-																checkGeneral(
-																	value
-																)
-															}
-														/>
-													</div>
-												) : null}
-												{instanceSpec ===
-												'Customize' ? (
-													<div
-														className={
-															styles[
-																'spec-custom'
-															]
-														}
-													>
-														<ul className="form-layout">
-															<li className="display-flex">
-																<label className="form-name">
-																	<span className="ne-required">
-																		CPU
-																	</span>
-																</label>
-																<div className="form-content">
-																	<FormItem
-																		min={
-																			0.1
-																		}
-																		minmaxMessage="最小为0.1"
-																		required
-																		requiredMessage="请输入自定义CPU配额，单位为Core"
-																	>
-																		<Input
-																			name="cpu"
-																			htmlType="number"
-																			min={
-																				0.1
-																			}
-																			step={
-																				0.1
-																			}
-																			placeholder="请输入自定义CPU配额，单位为Core"
-																			trim
-																		/>
-																	</FormItem>
-																</div>
-															</li>
-															<li className="display-flex">
-																<label className="form-name">
-																	<span className="ne-required">
-																		内存
-																	</span>
-																</label>
-																<div className="form-content">
-																	<FormItem
-																		min={
-																			0.1
-																		}
-																		minmaxMessage="最小为0.1"
-																		required
-																		requiredMessage="请输入自定义内存配额，单位为Gi"
-																	>
-																		<Input
-																			name="memory"
-																			htmlType="number"
-																			min={
-																				0.1
-																			}
-																			step={
-																				0.1
-																			}
-																			placeholder="请输入自定义内存配额，单位为Gi"
-																			trim
-																		/>
-																	</FormItem>
-																</div>
-															</li>
-														</ul>
-													</div>
-												) : null}
-											</div>
-										</li>
-										{nodeModify.nodeName !== 'kibana' && (
-											<li className="display-flex mt-8">
-												<label className="form-name">
-													<span className="ne-required">
-														存储配额
-													</span>
-												</label>
-												<div
-													className={`form-content display-flex`}
-												>
-													<FormItem
-														required
-														requiredMessage="请选择存储类型"
-													>
-														<Select
-															name="storageClass"
-															style={{
-																marginRight: 8
-															}}
-															autoWidth={false}
-														>
-															{storageClassList.map(
-																(
-																	item,
-																	index
-																) => {
-																	return (
-																		<Select.Option
-																			key={
-																				index
-																			}
-																			value={
-																				item.name
-																			}
-																		>
-																			{
-																				item.name
-																			}
-																		</Select.Option>
-																	);
-																}
-															)}
-														</Select>
-													</FormItem>
-													<FormItem
-														pattern={pattern.posInt}
-														patternMessage="请输入小于21位的正整数"
-														required
-														requiredMessage="请输入存储配额大小（GB）"
-													>
-														<Input
-															name="storageQuota"
-															defaultValue={5}
-															htmlType="number"
-															min={1}
-															placeholder="请输入存储配额大小"
-															addonTextAfter="GB"
-														/>
-													</FormItem>
-												</div>
-											</li>
-										)}
-									</>
-								)}
+											))}
+										</div>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>

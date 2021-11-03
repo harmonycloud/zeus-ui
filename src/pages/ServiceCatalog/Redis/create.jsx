@@ -28,6 +28,7 @@ import {
 	getMiddlewareDetail
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import ModeItem from '@/components/ModeItem';
 
 // const { Group: TagGroup, Closable: ClosableTag } = Tag;
 
@@ -151,8 +152,6 @@ const RedisCreate = (props) => {
 	const [storageClassList, setStorageClassList] = useState([]);
 	const [maxCpu, setMaxCpu] = useState({}); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
-	// * acl相关
-	const [aclCheck, setAclCheck] = useState(false);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -423,26 +422,20 @@ const RedisCreate = (props) => {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆服务
-			if (backupFileName) {
-				getMiddlewareDetail({
-					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
-					middlewareName: middlewareName,
-					type: 'redis'
-				}).then((res) => {
-					console.log(res.data);
-				});
-			}
-		}
+		// * 克隆服务 - redis 暂不支持
+		// if (JSON.stringify(globalNamespace) !== '{}') {
+		// 	if (backupFileName) {
+		// 		getMiddlewareDetail({
+		// 			clusterId: globalCluster.id,
+		// 			namespace: globalNamespace.name,
+		// 			middlewareName: middlewareName,
+		// 			type: 'redis'
+		// 		}).then((res) => {
+		// 			console.log(res.data);
+		// 		});
+		// 	}
+		// }
 	}, [globalNamespace]);
-
-	// * acl 相关
-	const aclSwitchChange = (checked) => {
-		console.log(checked);
-		setAclCheck(checked);
-	};
 
 	return (
 		<Page>
@@ -860,204 +853,39 @@ const RedisCreate = (props) => {
 												className={`display-flex ${styles['mode-content']}`}
 											>
 												{Object.keys(nodeObj).map(
-													(key) => {
-														if (
-															nodeObj[key]
-																.disabled
-														)
-															return (
-																<div
-																	className={`${styles['node-box']} ${styles['disabled']}`}
-																	key={key}
-																>
-																	<div
-																		className={
-																			styles[
-																				'node-type'
-																			]
-																		}
-																	>
-																		{
-																			nodeObj[
-																				key
-																			]
-																				.title
-																		}
-																	</div>
-																	<div
-																		className={
-																			styles[
-																				'node-data'
-																			]
-																		}
-																	>
-																		<span
-																			className={
-																				styles[
-																					'not-start'
-																				]
-																			}
-																		>
-																			未启用
-																		</span>
-																	</div>
-																</div>
-															);
-														else
-															return (
-																<div
-																	className={
-																		styles[
-																			'node-box'
-																		]
-																	}
-																	key={key}
-																>
-																	<div
-																		className={
-																			styles[
-																				'node-type'
-																			]
-																		}
-																	>
-																		{
-																			nodeObj[
-																				key
-																			]
-																				.title
-																		}{' '}
-																		<span
-																			className={
-																				styles[
-																					'circle'
-																				]
-																			}
-																		>
-																			{
-																				nodeObj[
-																					key
-																				]
-																					.num
-																			}
-																		</span>
-																	</div>
-																	<div
-																		className={
-																			styles[
-																				'node-data'
-																			]
-																		}
-																	>
-																		<ul>
-																			<li>
-																				<span>
-																					CPU：
-																				</span>
-																				<span>
-																					{
-																						nodeObj[
-																							key
-																						]
-																							.cpu
-																					}{' '}
-																					Core
-																				</span>
-																			</li>
-																			<li>
-																				<span>
-																					内存：
-																				</span>
-																				<span>
-																					{
-																						nodeObj[
-																							key
-																						]
-																							.memory
-																					}{' '}
-																					Gi
-																				</span>
-																			</li>
-																			{nodeObj[
-																				key
-																			]
-																				.storageClass &&
-																				nodeObj[
-																					key
-																				]
-																					.storageClass !==
-																					'' && (
-																					<li>
-																						<span>
-																							{
-																								nodeObj[
-																									key
-																								]
-																									.storageClass
-																							}
-
-																							：
-																						</span>
-																						<span>
-																							{
-																								nodeObj[
-																									key
-																								]
-																									.storageQuota
-																							}{' '}
-																							GB
-																						</span>
-																					</li>
-																				)}
-																		</ul>
-																		<div
-																			className={
-																				styles[
-																					'btn'
-																				]
-																			}
-																		>
-																			{key ===
-																			nodeModify.nodeName ? (
-																				<Button
-																					type="primary"
-																					onClick={() =>
-																						putAway(
-																							key
-																						)
-																					}
-																				>
-																					收起
-																					<Icon type="arrow-up" />
-																				</Button>
-																			) : (
-																				<Button
-																					type="primary"
-																					disabled={
-																						nodeModify.nodeName !==
-																							'' &&
-																						key !==
-																							nodeModify.nodeName
-																					}
-																					onClick={() =>
-																						modifyQuota(
-																							key
-																						)
-																					}
-																				>
-																					修改
-																				</Button>
-																			)}
-																		</div>
-																	</div>
-																</div>
-															);
-													}
+													(key) => (
+														<ModeItem
+															key={key}
+															type={key}
+															data={nodeObj[key]}
+															clusterId={
+																globalCluster.id
+															}
+															namespace={
+																globalNamespace.name
+															}
+															onChange={(
+																values
+															) => {
+																// console.log(values);
+																// console.log(key);
+																// console.log({
+																// 	...nodeObj,
+																// 	[key]: values
+																// });
+																setNodeObj({
+																	...nodeObj,
+																	[key]: values
+																});
+															}}
+														/>
+													)
 												)}
 											</div>
 										) : null}
 									</div>
 								</li>
-								{nodeModify.flag && (
+								{/* {nodeModify.flag && (
 									<li className="display-flex form-li">
 										<label className="form-name">
 											<span>节点数量</span>
@@ -1083,7 +911,7 @@ const RedisCreate = (props) => {
 											/>
 										</div>
 									</li>
-								)}
+								)} */}
 								{(mode === 'cluster' || nodeModify.flag) && (
 									<>
 										<li className="display-flex form-li">
