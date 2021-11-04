@@ -378,42 +378,42 @@ const MysqlCreate = (props) => {
 					};
 					sendData = sendDataTemp;
 				}
-				console.log(sendData);
-				// if (disasterOriginName) {
-				// 	addDisasterIns(sendData).then((res) => {
-				// 		if (res.success) {
-				// 			Message.show(
-				// 				messageConfig(
-				// 					'success',
-				// 					'成功',
-				// 					'中间件mysql正在创建中'
-				// 				)
-				// 			);
-				// 			history.push({
-				// 				pathname: '/serviceList',
-				// 				query: { key: 'Mysql', timer: true }
-				// 			});
-				// 		} else {
-				// 			Message.show(messageConfig('error', '失败', res));
-				// 		}
-				// 	});
-				// } else {
-				// 	postMiddleware(sendData).then((res) => {
-				// 		if (res.success) {
-				// 			Message.show(
-				// 				messageConfig('success', '成功', {
-				// 					data: '中间件Mysql正在创建中'
-				// 				})
-				// 			);
-				// 			history.push({
-				// 				pathname: '/serviceList',
-				// 				query: { key: 'Mysql', timer: true }
-				// 			});
-				// 		} else {
-				// 			Message.show(messageConfig('error', '错误', res));
-				// 		}
-				// 	});
-				// }
+				// console.log(sendData);
+				if (disasterOriginName) {
+					addDisasterIns(sendData).then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'中间件mysql正在创建中'
+								)
+							);
+							history.push({
+								pathname: '/serviceList',
+								query: { key: 'Mysql', timer: true }
+							});
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					});
+				} else {
+					postMiddleware(sendData).then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', {
+									data: '中间件Mysql正在创建中'
+								})
+							);
+							history.push({
+								pathname: '/serviceList',
+								query: { key: 'Mysql', timer: true }
+							});
+						} else {
+							Message.show(messageConfig('error', '错误', res));
+						}
+					});
+				}
 			}
 		});
 	};

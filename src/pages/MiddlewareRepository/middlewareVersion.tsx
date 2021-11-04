@@ -270,9 +270,9 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 							dataIndex="versionStatus"
 							cell={versionStatusRender}
 							filters={[
-								{ label: '当前状态', value: 'now' },
-								{ label: '可安装升级状态', value: 'future' },
-								{ label: '历史状态', value: 'history' },
+								{ label: '当前版本', value: 'now' },
+								{ label: '可安装升级版本', value: 'future' },
+								{ label: '历史版本', value: 'history' },
 								{ label: '升级中', value: '升级中' }
 							]}
 							filterMode="single"
