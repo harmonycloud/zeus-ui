@@ -1,0 +1,86 @@
+.personlization{
+    .header{
+        padding: 0 24px;
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        .next-icon::before{
+            cursor: pointer;
+            width: 32px;
+            font-size: 32px;
+        }
+        .sc-fodVek{
+            margin: 0;
+            padding-left: 16px;
+        }
+    }
+
+    h2{
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #333333;
+        line-height: 22px;
+        margin: 16px 0;
+        display: flex;
+        align-items: center;
+        &::before{
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 14px;
+            border: 1px solid #0064C8;
+            margin-right: 5px;
+        }
+    }
+
+    .upload-info{
+        font-size: 12px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #666666;
+        line-height: 18px;
+    }
+    .next-form-item{
+        align-items: center;
+        label{
+            font-size: 12px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: #333333;
+            line-height: 18px;
+        }
+        .next-upload-card {
+            &:hover{
+                border-color: #0064C8;
+            }
+            .next-icon{
+                color: #0064C8;
+                &::before{
+                    font-size: 12px;
+                }
+            }
+            .next-upload-text{
+                font-size: 12px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: #333333;
+                line-height: 18px;
+            }
+        }
+        .next-btn{
+            width: 100px;
+            font-size: 12px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: #333333;
+            line-height: 18px;
+            .next-icon{
+                color: #0064C8;
+                &::before{
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+}

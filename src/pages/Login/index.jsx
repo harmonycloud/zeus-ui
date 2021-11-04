@@ -4,7 +4,14 @@ import JSEncrypt from 'jsencrypt';
 import Storage from '@/utils/storage';
 import { postLogin, getRsaKey } from '@/services/user';
 import EditPasswordForm from '@/layouts/Navbar/User/EditPasswordForm';
-import { Dialog, Button, Icon } from '@alicloud/console-components';
+import {
+	Dialog,
+	Button,
+	Icon,
+	Form,
+	Input
+} from '@alicloud/console-components';
+import logo from '@/assets/images/logo.svg';
 import styles from './login.module.scss';
 
 export default function Login() {
@@ -94,49 +101,61 @@ export default function Login() {
 
 	return (
 		<div className={styles['login']}>
+			<div className={styles['header']}>
+				<img className={styles['logo']} src={logo} />
+				<span className={styles['info']}>
+					Zeus | 中间件管理一体化平台
+				</span>
+			</div>
+			<div className={styles['slogan']}>我是slogan，产品介绍描述</div>
 			<form className={styles['login-form']}>
 				<header className={styles['login-header']}>
 					中间件平台登录
 				</header>
 				<div className={styles['login-form-box']}>
-					<div className={styles['login-input-item']}>
-						<input
-							type="text"
-							className={styles['login-input']}
-							value={account.username}
-							onChange={(e) =>
-								setAccount({
-									...account,
-									username: e.target.value
-								})
-							}
-							onKeyPress={(event) => {
-								if (event.charCode === 13) {
-									submit(event);
+					<Form className={styles['form']}>
+						<Form.Item label="登陆账户">
+							<Input
+								innerBefore={
+									<span className={styles['account']}></span>
 								}
-							}}
-							placeholder="请输入登录账户"
-						/>
-					</div>
-					<div className={styles['login-input-item']}>
-						<input
-							type="password"
-							className={styles['login-input']}
-							value={account.password}
-							onChange={(e) =>
-								setAccount({
-									...account,
-									password: e.target.value
-								})
-							}
-							onKeyPress={(event) => {
-								if (event.charCode === 13) {
-									submit(event);
+								placeholder="请输入登录账户"
+								value={account.username}
+								onChange={(value) =>
+									setAccount({
+										...account,
+										username: value
+									})
 								}
-							}}
-							placeholder="请输入密码"
-						/>
-					</div>
+								onKeyPress={(event) => {
+									if (event.charCode === 13) {
+										submit(event);
+									}
+								}}
+							/>
+						</Form.Item>
+						<Form.Item label="密码" asterisk={false}>
+							<Input.Password
+								innerBefore={
+									<span className={styles['password']}></span>
+								}
+								placeholder="请输入密码"
+								value={account.password}
+								onChange={(value) =>
+									setAccount({
+										...account,
+										password: value
+									})
+								}
+								onKeyPress={(event) => {
+									console.log(event.charCode);
+									if (event.charCode === 13) {
+										submit(event);
+									}
+								}}
+							/>
+						</Form.Item>
+					</Form>
 					<div
 						className={`${styles['login-submit']} ${styles['centered-item']}`}
 					>
@@ -202,6 +221,11 @@ export default function Login() {
 					userName={userName}
 				/>
 			)}
+			<div className={styles['copy']}>
+				Copyeight © 2021 杭州谐云科技有限公司 All rights
+				reserved.Copyeight © 2021 杭州谐云科技有限公司 All rights
+				reserved.
+			</div>
 		</div>
 	);
 }
