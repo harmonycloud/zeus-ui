@@ -69,24 +69,6 @@
 					opacity: 0.96;
 					line-height: 60px;
 					text-align: center;
-					.iconfont{
-						font-size: 36px;
-						&.icon-jiqun1{
-							color: #617BFF;
-						}
-						&.icon-mingmingkongjian{
-							color: #9661FF;
-						}
-						&.icon-CPU{
-							color: #00C1D4;
-							font-size: 60px;
-							margin-left: 2px;
-						}
-						&.icon-memory{
-							color: #FF9861;
-							font-size: 60px;
-						}
-					}
 				}
 				.value{
 					&>span{
