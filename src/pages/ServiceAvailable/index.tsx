@@ -532,6 +532,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						placeholder:
 							'请输入暴露路由名称、服务名称/中文别名、访问地址搜索'
 					}}
+					searchStyle={{
+						width: '370px'
+					}}
 					onSort={onSort}
 				>
 					<Table.Column

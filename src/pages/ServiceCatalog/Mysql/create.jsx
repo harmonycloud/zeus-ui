@@ -939,6 +939,13 @@ const MysqlCreate = (props) => {
 										) : null}
 									</div>
 								</li>
+								<li className="display-flex form-li">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											配置污点
+										</span>
+									</label>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>

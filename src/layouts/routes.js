@@ -32,6 +32,7 @@ import ResourcePoolManagement from '@/pages/ResourcePoolManagement';
 import AddResourcePool from '@/pages/ResourcePoolManagement/addResourcePool';
 import AddForm from '@/pages/ResourcePoolManagement/addForm';
 import MidTerminal from '@/components/MidTerminal';
+import Personlization from '@/pages/Personalization/index';
 // ! 已弃用组件
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
@@ -228,6 +229,12 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route path="/terminal/:url" component={MidTerminal} exact />
+				{/* 个性化设置 */}
+				<Route
+					path="/dataOverview/personlization"
+					component={Personlization}
+					exact
+				/>
 			</Switch>
 		</>
 	);

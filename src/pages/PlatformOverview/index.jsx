@@ -1,4 +1,3 @@
-import './platformOverview.scss';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Page from '@alicloud/console-components-page';
@@ -32,6 +31,7 @@ import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
 import echarts from 'echarts';
 import moment from 'moment';
+import './platformOverview.scss';
 
 const radioList = [
 	{
@@ -90,6 +90,7 @@ function PlatformOverview(props) {
 	useEffect(() => {
 		getClusters().then((res) => {
 			// console.log(res.data);
+			if (!res.data) return;
 			res.data.unshift({ name: '全部', id: 'all' });
 			setPoolList(res.data);
 		});
@@ -381,6 +382,7 @@ function PlatformOverview(props) {
 																		}
 																	</span>
 																}
+																align="t"
 															>
 																异常服务数
 															</Tooltip>

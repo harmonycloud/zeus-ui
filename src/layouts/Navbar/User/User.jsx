@@ -10,6 +10,7 @@ import Storage from '@/utils/storage';
 import { postLogout } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import EditPasswordForm from './EditPasswordForm';
+import { loadavg } from 'os';
 
 function User(props) {
 	const { nickName, className, role } = props;
@@ -45,6 +46,20 @@ function User(props) {
 						{role.aliasName}
 					</span>
 				</li>
+				{Storage.getLocal('userName') === 'admin' && (
+					<li
+						className={styles['nav-user-container-item']}
+						onClick={() =>
+							history.push('/dataOverview/personlization')
+						}
+					>
+						<span
+							className="iconfont icon-gexinghua"
+							style={{ marginRight: '6px' }}
+						></span>
+						个性化
+					</li>
+				)}
 				<li
 					className={styles['nav-user-container-item']}
 					onClick={editPassword}
