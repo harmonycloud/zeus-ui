@@ -45,3 +45,8 @@ export interface serviceListItemProps {
 	version?: string | null;
 	official: boolean;
 }
+
+export interface CurrentService {
+	name: string;
+	type: string;
+}

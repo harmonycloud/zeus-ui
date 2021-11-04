@@ -28,12 +28,26 @@ import {
 } from '@/redux/globalVar/var';
 import moment from 'moment';
 
-interface serviceListProps {
+export interface serviceListProps {
 	globalVar: globalVarProps;
 	setCluster: (value: any) => void;
 	setNamespace: (value: any) => void;
 	setRefreshCluster: (flag: boolean) => void;
 }
+export const tabJudge: (record: serviceProps, tab: string) => boolean = (
+	record: serviceProps,
+	tab: string
+) => {
+	if (record.capabilities === null) {
+		return false;
+	} else {
+		if (record.capabilities.includes(tab)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+};
 function ServiceList(props: serviceListProps): JSX.Element {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
 	const {
@@ -54,43 +68,43 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const [selected, setSelected] = useState<string>(
 		storage.getSession('service-list-current') || '全部服务'
 	);
-	useEffect(() => {
-		let mounted = true;
-		if (JSON.stringify(namespace) !== '{}') {
-			if (mounted) {
-				getList({
-					clusterId: cluster.id,
-					namespace: namespace.name,
-					keyword: keyword
-				}).then((res) => {
-					if (res.success) {
-						setOriginData(res?.data);
-						const listTemp = [{ name: '全部服务', count: 0 }];
-						res.data.forEach((item: serviceListItemProps) => {
-							listTemp.push({
-								name: item.name,
-								count: item.serviceNum
-							});
-						});
-						listTemp[0].count = listTemp.reduce(
-							(pre, cur: listProps) => {
-								return pre + cur.count;
-							},
-							0
-						);
-						setList(listTemp);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-						setOriginData([]);
-						setList([{ name: '全部服务', count: 0 }]);
-					}
-				});
-			}
-		}
-		return () => {
-			mounted = false;
-		};
-	}, [namespace]);
+	// useEffect(() => {
+	// 	let mounted = true;
+	// 	if (JSON.stringify(namespace) !== '{}') {
+	// 		if (mounted) {
+	// 			getList({
+	// 				clusterId: cluster.id,
+	// 				namespace: namespace.name,
+	// 				keyword: keyword
+	// 			}).then((res) => {
+	// 				if (res.success) {
+	// 					setOriginData(res?.data);
+	// 					const listTemp = [{ name: '全部服务', count: 0 }];
+	// 					res.data.forEach((item: serviceListItemProps) => {
+	// 						listTemp.push({
+	// 							name: item.name,
+	// 							count: item.serviceNum
+	// 						});
+	// 					});
+	// 					listTemp[0].count = listTemp.reduce(
+	// 						(pre, cur: listProps) => {
+	// 							return pre + cur.count;
+	// 						},
+	// 						0
+	// 					);
+	// 					setList(listTemp);
+	// 				} else {
+	// 					Message.show(messageConfig('error', '失败', res));
+	// 					setOriginData([]);
+	// 					setList([{ name: '全部服务', count: 0 }]);
+	// 				}
+	// 			});
+	// 		}
+	// 	}
+	// 	return () => {
+	// 		mounted = false;
+	// 	};
+	// }, [namespace]);
 	useEffect(() => {
 		const allList: serviceProps[] = [];
 		originData.map((item) => {
@@ -132,37 +146,37 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	// 	getData();
 	// }, [keyword]);
 	const getData: () => void = () => {
-		if (JSON.stringify(namespace) !== '{}') {
-			const sendData = {
-				clusterId: cluster.id,
-				namespace: namespace.name,
-				keyword
-			};
-			getList(sendData).then((res) => {
-				console.log(res);
-				if (res.success) {
-					setOriginData(res?.data);
-					const listTemp = [{ name: '全部服务', count: 0 }];
-					res.data.forEach((item: serviceListItemProps) => {
-						listTemp.push({
-							name: item.name,
-							count: item.serviceNum
-						});
-					});
-					listTemp[0].count = listTemp.reduce(
-						(pre, cur: listProps) => {
-							return pre + cur.count;
-						},
-						0
-					);
-					setList(listTemp);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-					setOriginData([]);
-					setList([{ name: '全部服务', count: 0 }]);
-				}
-			});
-		}
+		// if (JSON.stringify(namespace) !== '{}') {
+		// 	const sendData = {
+		// 		clusterId: cluster.id,
+		// 		namespace: namespace.name,
+		// 		keyword
+		// 	};
+		// 	getList(sendData).then((res) => {
+		// 		console.log(res);
+		// 		if (res.success) {
+		// 			setOriginData(res?.data);
+		// 			const listTemp = [{ name: '全部服务', count: 0 }];
+		// 			res.data.forEach((item: serviceListItemProps) => {
+		// 				listTemp.push({
+		// 					name: item.name,
+		// 					count: item.serviceNum
+		// 				});
+		// 			});
+		// 			listTemp[0].count = listTemp.reduce(
+		// 				(pre, cur: listProps) => {
+		// 					return pre + cur.count;
+		// 				},
+		// 				0
+		// 			);
+		// 			setList(listTemp);
+		// 		} else {
+		// 			Message.show(messageConfig('error', '失败', res));
+		// 			setOriginData([]);
+		// 			setList([{ name: '全部服务', count: 0 }]);
+		// 		}
+		// 	});
+		// }
 	};
 	const handleFilterBackup = (checked: boolean) => {
 		setBackupCheck(checked);
@@ -413,20 +427,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				) : null}
 			</div>
 		);
-	};
-	const tabJudge: (record: serviceProps, tab: string) => boolean = (
-		record: serviceProps,
-		tab: string
-	) => {
-		if (record.capabilities === null) {
-			return false;
-		} else {
-			if (record.capabilities.includes(tab)) {
-				return false;
-			} else {
-				return true;
-			}
-		}
 	};
 	const actionRender = (
 		value: string,

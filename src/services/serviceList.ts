@@ -5,6 +5,7 @@ interface listParamsProps {
 	clusterId: string;
 	namespace: string;
 	keyword: string;
+	type?: string;
 }
 
 export const getList = (params: listParamsProps) => {

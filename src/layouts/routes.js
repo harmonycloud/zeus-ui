@@ -19,7 +19,6 @@ import OperationAudit from '@/pages/OperationAudit/index';
 import UserManage from '@/pages/UserManage';
 import RoleManage from '@/pages/RoleManage';
 import OperationAuditDetail from '@/pages/OperationAudit/detail';
-import ServiceList from '@/pages/ServiceList';
 import ServiceAvailable from '@/pages/ServiceAvailable';
 import DataMonitor from '@/pages/DataMonitor';
 import LogDetail from '@/pages/LogDetail';
@@ -32,7 +31,9 @@ import ResourcePoolManagement from '@/pages/ResourcePoolManagement';
 import AddResourcePool from '@/pages/ResourcePoolManagement/addResourcePool';
 import AddForm from '@/pages/ResourcePoolManagement/addForm';
 import MidTerminal from '@/components/MidTerminal';
+import ServiceListByType from '@/pages/ServiceList/serviceListByType';
 // ! 已弃用组件
+// import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
 // import AuthManage from '@/pages/AuthManage/index';
 // import Ingress from '@/pages/Ingress/index';
@@ -117,12 +118,17 @@ const Routes = withRouter((props) => {
 					component={MiddlewareVersion}
 				/>
 				{/* 服务列表 */}
-				<Route path="/serviceList" component={ServiceList} exact />
+				{/* <Route path="/serviceList" component={ServiceList} exact /> */}
 				<Route
+					path="/serviceList/:name/:aliasName"
+					component={ServiceListByType}
+					exact
+				/>
+				{/* <Route
 					path="/serviceList/issueService"
 					component={MiddlewareRepository}
 					exact
-				/>
+				/> */}
 				{/* 服务详情 - 实例详情*/}
 				<Route
 					path="/serviceList/:currentTab/:middlewareName/:type/:chartVersion"
