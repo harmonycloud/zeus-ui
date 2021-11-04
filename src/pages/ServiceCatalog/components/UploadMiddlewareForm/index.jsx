@@ -11,6 +11,7 @@ import messageConfig from '@/components/messageConfig';
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
+import { setMenuRefresh } from '@/redux/menu/menu';
 
 const formItemLayout = {
 	labelCol: {
@@ -22,7 +23,7 @@ const formItemLayout = {
 };
 
 function UploadMiddlewareForm(props) {
-	const { visible, onCancel, onCreate } = props;
+	const { visible, onCancel, onCreate, setMenuRefresh } = props;
 	const { cluster: globalCluster } = props.globalVar;
 	// const upload = useRef();
 	const upload2 = createRef();
@@ -50,6 +51,7 @@ function UploadMiddlewareForm(props) {
 					'chart包上传成功，3秒后刷新数据'
 				)
 			);
+			setMenuRefresh(true);
 			onCreate();
 		}
 	}
@@ -66,13 +68,6 @@ function UploadMiddlewareForm(props) {
 					</Button>
 				)
 			});
-			// Message.show(
-			// 	messageConfig(
-			// 		'error',
-			// 		'失败',
-			// 		`chart包上传失败,${info.response.errorMsg}`
-			// 	)
-			// );
 		}
 	}
 
@@ -118,7 +113,6 @@ function UploadMiddlewareForm(props) {
 		</Dialog>
 	);
 }
-export default connect(
-	({ globalVar }) => ({ globalVar }),
-	{}
-)(UploadMiddlewareForm);
+export default connect(({ globalVar, menu }) => ({ globalVar, menu }), {
+	setMenuRefresh
+})(UploadMiddlewareForm);

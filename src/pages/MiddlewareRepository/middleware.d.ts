@@ -1,3 +1,4 @@
+import { menuReduxProps } from '@/redux/menu/menu';
 export interface middlewareProps {
 	chartName: string;
 	chartVersion: string;
@@ -20,6 +21,8 @@ export interface middlewareProps {
 export interface middlewareItemProps extends middlewareProps {
 	clusterId: string;
 	onRefresh: () => void;
+	menu: menuReduxProps;
+	setMenuRefresh: (flag: boolean) => void;
 }
 export interface middlewareListProps {
 	[propsName: string]: middlewareProps[];

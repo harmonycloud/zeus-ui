@@ -78,6 +78,10 @@ export interface valuesProps {
 	protocolPrometheus: string;
 	hostPrometheus: string;
 	portPrometheus: string;
+	accessKeyId: string;
+	bucketName: string;
+	minioName: string;
+	secretAccessKey: string;
 }
 interface paramsProps {
 	clusterId: string;
@@ -205,6 +209,7 @@ function AddForm(props: addFormProps): JSX.Element {
 		});
 	}, []);
 	const uploadConf = (e: any) => {
+		console.log(e);
 		const reader = new window.FileReader();
 		reader.onload = function (e) {
 			field.setValue('cert', reader.result);
@@ -234,8 +239,30 @@ function AddForm(props: addFormProps): JSX.Element {
 					password: values.password,
 					type: 'harbor',
 					chartRepo: values.chartRepo
+				},
+				componentsInstall: {
+					alertManager: isInstallAlert === 'uninstall' ? false : true,
+					grafana: isInstallGrafana === 'uninstall' ? false : true,
+					ingress: isInstallIngress === 'uninstall' ? false : true,
+					logging: isInstallLogging === 'uninstall' ? false : true,
+					minio: isInstallMinio === 'uninstall' ? false : true,
+					prometheus:
+						isInstallPrometheus === 'uninstall' ? false : true
 				}
 			};
+			if (isInstallMinio === 'false') {
+				sendData.storage = {
+					backup: {
+						storage: {
+							accessKeyId: values.accessKeyId,
+							secretAccessKey: values.secretAccessKey,
+							bucketName: values.bucketName,
+							endpoint: head + mid + ':' + tail + '',
+							name: values.minioName
+						}
+					}
+				};
+			}
 			if (isInstallIngress === 'false') {
 				sendData.ingress = {
 					address: values.ingressAddress,

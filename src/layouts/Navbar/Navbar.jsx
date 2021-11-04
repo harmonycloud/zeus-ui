@@ -156,6 +156,7 @@ function Navbar(props) {
 			if (clusterList[i].id === id) {
 				setCurrentCluster(clusterList[i]);
 				setCluster(clusterList[i]);
+				getClusterId(clusterList[i].id);
 				storage.setLocal('cluster', JSON.stringify(clusterList[i]));
 			}
 		}
