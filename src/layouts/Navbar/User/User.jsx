@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon } from '@alifd/next';
 import { Message } from '@alicloud/console-components';
-
+import CustomIcon from '@/components/CustomIcon';
 import styles from './user.module.scss';
 import logoutSvg from '@/assets/images/navbar/logout.svg';
-
 import Storage from '@/utils/storage';
 import { postLogout } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
@@ -53,11 +52,8 @@ function User(props) {
 							history.push('/dataOverview/personlization')
 						}
 					>
-						<span
-							className="iconfont icon-gexinghua"
-							style={{ marginRight: '6px' }}
-						></span>
-						个性化
+						<CustomIcon type='icon-gexinghua' size={16}/>
+						&nbsp;个性化
 					</li>
 				)}
 				<li
