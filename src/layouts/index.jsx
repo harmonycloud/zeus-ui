@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import AppLayout from '@alicloud/console-components-app-layout';
 import Login from '@/pages/Login/index';
@@ -10,6 +10,7 @@ import Storage from '@/utils/storage';
 import styles from './layout.module.scss';
 
 export default function Layout() {
+	const [clusterId, setClusterId] = useState('');
 	const redirectToLogin = () => (
 		<Router>
 			<Route path={['/', '/login']} component={Login} />
@@ -28,12 +29,16 @@ export default function Layout() {
 		return redirectToTerminal();
 	}
 
+	const getClusterId = (value) => {
+		setClusterId(value);
+	};
+
 	return (
 		<div className={styles['flex-layout']}>
 			<Router>
-				<Navbar />
+				<Navbar getClusterId={getClusterId} />
 				<AppLayout
-					nav={<Menu />}
+					nav={<Menu clusterId={clusterId} />}
 					navCollapsible={true}
 					className={styles['middleware-layout']}
 				>

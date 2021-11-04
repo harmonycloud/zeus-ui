@@ -61,7 +61,8 @@ function Navbar(props) {
 		setNamespace,
 		setRefreshCluster,
 		setGlobalClusterList,
-		setGlobalNamespaceList
+		setGlobalNamespaceList,
+		getClusterId
 	} = props;
 	const { flag } = props.globalVar;
 	// console.log(flag);
@@ -109,11 +110,13 @@ function Navbar(props) {
 						return item.id === JSON.parse(jsonLocalCluster).id;
 					})
 				) {
+					getClusterId(JSON.parse(jsonLocalCluster).id);
 					setCurrentCluster(JSON.parse(jsonLocalCluster));
 					setCluster(JSON.parse(jsonLocalCluster));
 				} else {
 					setCurrentCluster(res.data[0]);
 					setCluster(res.data[0]);
+					getClusterId(res.data[0].id);
 					storage.setLocal('cluster', JSON.stringify(res.data[0]));
 				}
 			}
