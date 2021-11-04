@@ -22,6 +22,7 @@ import {
 	getEvent,
 	getServers
 } from '@/services/platformOverview';
+import CustomIcon from '@/components/CustomIcon';
 import AlarmTimeLine from '@/components/AlarmTimeline';
 import {
 	setCluster,
@@ -240,7 +241,7 @@ function PlatformOverview(props) {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<span className="iconfont icon-jiqun1"></span>
+										<CustomIcon type="icon-jiqun1" size={36} style={{ color: "#617BFF", marginTop: '12px' }} />
 									</div>
 									<div>
 										<p className="value">
@@ -258,7 +259,7 @@ function PlatformOverview(props) {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<span className="iconfont icon-mingmingkongjian"></span>
+										<CustomIcon type="icon-mingmingkongjian" size={36} style={{ color: "#9661FF", marginTop: '12px' }} />
 									</div>
 									<div>
 										<p className="value">
@@ -276,7 +277,7 @@ function PlatformOverview(props) {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<span className="iconfont icon-CPU"></span>
+										<CustomIcon type="icon-CPU" size={60} style={{ color: "#00C1D4", marginTop: '-10px', marginLeft: '2px' }} />
 									</div>
 									<div>
 										<div className="value percent">
@@ -310,7 +311,7 @@ function PlatformOverview(props) {
 							<div className="part">
 								<div className="part-detail">
 									<div className="part-circle">
-										<span className="iconfont icon-memory"></span>
+										<CustomIcon type="icon-memory" size={60} style={{ color: "#FF9861", marginTop: '-10px' }} />
 									</div>
 									<div>
 										<div className="value percent">
@@ -372,7 +373,7 @@ function PlatformOverview(props) {
 															src={`${api}/images/middleware/${item.imagePath}`}
 														/>
 														{item.errServiceNum !==
-														0 ? (
+															0 ? (
 															<Tooltip
 																trigger={
 																	<span className="err-count">
@@ -480,7 +481,7 @@ function PlatformOverview(props) {
 																style={{
 																	color:
 																		value ===
-																		1
+																			1
 																			? '#00A700'
 																			: '#C80000',
 																	marginRight:
