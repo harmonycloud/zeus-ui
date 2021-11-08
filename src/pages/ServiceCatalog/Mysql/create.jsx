@@ -105,7 +105,7 @@ const MysqlCreate = (props) => {
 	// };
 
 	// MySQL配置
-	const [version, setVersion] = useState('5.7.21');
+	const [version, setVersion] = useState('5.7');
 	const versionList = [
 		// 暂时隐藏8.0.21版本
 		// {
@@ -113,8 +113,8 @@ const MysqlCreate = (props) => {
 		// 	value: '8.0.21'
 		// },
 		{
-			label: '5.7.21',
-			value: '5.7.21'
+			label: '5.7',
+			value: '5.7'
 		}
 	];
 	const [charSet, setCharSet] = useState('utf8mb4');
