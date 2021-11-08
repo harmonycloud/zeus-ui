@@ -31,7 +31,7 @@ export default function AddResourcePool(): JSX.Element {
 							width={80}
 							height={80}
 						/>
-						<div>其他资源池</div>
+						<div>基于已有资源池</div>
 						<CustomIcon type="icon-xuanzhong" />
 					</div>
 				</FormBlock>

@@ -42,7 +42,6 @@ interface MenuProps {
 	setMenuRefresh: (flag: boolean) => void;
 }
 function Menu(props: MenuProps): JSX.Element {
-	console.log(props);
 	const [items, setItems] = useState<IItemDescriptor[]>([]);
 	const history: History = useHistory();
 	const [defaultOpenKeys] = useState<string[]>([
@@ -53,7 +52,6 @@ function Menu(props: MenuProps): JSX.Element {
 	]);
 	const { clusterId, menu } = props;
 	useEffect(() => {
-		console.log(props);
 		if (props.clusterId !== '') {
 			getMenus();
 		}

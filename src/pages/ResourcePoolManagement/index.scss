@@ -73,3 +73,41 @@
 		top: 0;
 	}
 }
+
+// * 资源池详情
+.resource-pool-info-content {
+	width: 100%;
+	height: 370px;
+	display: flex;
+	.resource-pool-gauge-content{
+		width: 342px;
+		height: 100%;
+		margin-right: 16px;
+	}
+	.resource-pool-table-content{
+		width: calc(100% - 326px - 16px);
+		height: 100%;
+		// padding-left: 16px;
+		.resource-pool-table-header{
+			display: flex;
+			justify-content: space-between;
+		}
+		.resource-pool-table-content{
+			margin-top: 8px;
+			width: 100%;
+		}
+	}
+}
+.node-title-content{
+	display: flex !important;
+	align-items: center;
+	.node-title-name{
+		font-size: 14px;
+		font-weight: 500;
+		color: #333333;
+		line-height: 22px;
+		border-left: 2px solid #0070cc;
+		padding: 0 8px;
+		margin: 8px 0;
+	}
+}

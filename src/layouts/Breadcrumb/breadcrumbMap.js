@@ -35,5 +35,6 @@ export default {
 	addResourcePool: '添加资源池',
 	addOther: '添加其他资源池',
 	editResourcePool: '编辑资源池',
-	editOther: '编辑其他资源池'
+	editOther: '编辑其他资源池',
+	resourcePoolDetail: '资源池详情'
 };
