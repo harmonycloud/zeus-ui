@@ -52,8 +52,8 @@ function User(props) {
 							history.push('/dataOverview/personlization')
 						}
 					>
-						<CustomIcon type='icon-gexinghua' size={16}/>
-						&nbsp;个性化
+						<CustomIcon type='icon-gexinghua' size={15}/>
+						<span style={{marginLeft: '5px'}}>个性化</span>
 					</li>
 				)}
 				<li

@@ -11,8 +11,12 @@ import {
 	Form,
 	Input
 } from '@alicloud/console-components';
+import { api } from '@/api.json';
+import { getPersonalConfig } from '@/services/user'
 import logo from '@/assets/images/logo.svg';
+import background from '../../assets/images/login_bg.svg'
 import styles from './login.module.scss';
+import storage from '@/utils/storage';
 
 export default function Login() {
 	const history = useHistory();
@@ -26,10 +30,19 @@ export default function Login() {
 	const [editVisible, setEditVisible] = useState(false);
 	const [userName, setUserName] = useState(false);
 	const [rePassword, setRePassword] = useState();
+	const [data, setData] = useState();
+
+	useEffect(() => {
+		getPersonalConfig({}).then(res => {
+			// console.log(res);
+			setData(res.data);
+			storage.setLocal('personalization',res.data);
+			document.title = data && data.title ? data.title : 'Zeus'; 
+		})
+	}, [])
 
 	useEffect(() => {
 		getRsaKey().then((res) => {
-			console.log(res);
 			if (res.success) {
 				const pub = `-----BEGIN PUBLIC KEY-----${res.data}-----END PUBLIC KEY-----`;
 				Storage.setSession('rsa', pub);
@@ -71,6 +84,7 @@ export default function Login() {
 					Storage.setLocal('token', res.data.token);
 					Storage.setLocal('userName', res.data.userName);
 					Storage.setLocal('roleName', res.data);
+					Storage.setLocal('url', 'https://mpaas.com/assets/images/bg-d2bf59ca.png')
 					if (res.data.rePassword) {
 						console.log(res.data.rePassword);
 						setVisible(true);
@@ -100,14 +114,16 @@ export default function Login() {
 	};
 
 	return (
-		<div className={styles['login']}>
+		<div className={styles['login']} style={{background: `transparent url(${data && data.backgroundImagePath ? api+'/images/middleware/'+data.homeLogoPath :  background}) no-repeat center center /cover`}}>
 			<div className={styles['header']}>
-				<img className={styles['logo']} src={logo} />
+				<img className={styles['logo']} src={data && data.homeLogoPath
+					? `${api}/images/middleware/${data.homeLogoPath}`
+					: logo} />
 				<span className={styles['info']}>
-					Zeus | 中间件管理一体化平台
+					{data && data.platformName || 'Zeus | 中间件管理一体化平台'}
 				</span>
 			</div>
-			<div className={styles['slogan']}>我是slogan，产品介绍描述</div>
+			<div className={styles['slogan']}>{data && data.slogan || '我是slogan，产品介绍描述'}</div>
 			<form className={styles['login-form']}>
 				<header className={styles['login-header']}>
 					中间件平台登录
@@ -222,9 +238,7 @@ export default function Login() {
 				/>
 			)}
 			<div className={styles['copy']}>
-				Copyeight © 2021 杭州谐云科技有限公司 All rights
-				reserved.Copyeight © 2021 杭州谐云科技有限公司 All rights
-				reserved.
+				{data && data.copyrightNotice || 'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight © 2021 杭州谐云科技有限公司 All rightsreserved.'}
 			</div>
 		</div>
 	);

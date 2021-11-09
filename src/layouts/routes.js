@@ -33,6 +33,7 @@ import AddForm from '@/pages/ResourcePoolManagement/addForm';
 import MidTerminal from '@/components/MidTerminal';
 import ServiceListByType from '@/pages/ServiceList/serviceListByType';
 import Personlization from '@/pages/Personalization/index';
+import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -130,6 +131,11 @@ const Routes = withRouter((props) => {
 					component={MiddlewareRepository}
 					exact
 				/> */}
+				{/* 服务详情 - 版本管理*/}
+				<Route
+					path="/serviceList/ServerVersion/:type"
+					component={ServiceVersion}
+				/>
 				{/* 服务详情 - 实例详情*/}
 				<Route
 					path="/serviceList/:currentTab/:middlewareName/:type/:chartVersion"

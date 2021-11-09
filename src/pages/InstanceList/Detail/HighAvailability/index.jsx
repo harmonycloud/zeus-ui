@@ -24,6 +24,9 @@ import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
+import cache from '@/utils/storage';
+import axios from 'axios';
+import LogFile from '../Log/logFile';
 
 const { Row, Col } = Grid;
 
@@ -141,13 +144,12 @@ export default function HighAvailability(props) {
 												内存{' '}
 												{item.type !== 'kibana'
 													? item.storageClassQuota ||
-													  0
+													0
 													: null}
-												{`${
-													item.type !== 'kibana'
+												{`${item.type !== 'kibana'
 														? '存储'
 														: ''
-												}`}
+													}`}
 											</Col>{' '}
 										</Row>
 									);
@@ -229,7 +231,7 @@ export default function HighAvailability(props) {
 		) {
 			const cpu =
 				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
-				'm'
+					'm'
 					? data.quota[type].cpu
 					: `${data.quota[type].cpu} Core`;
 			const memory = `${data.quota[type].memory} 内存`;
@@ -242,7 +244,7 @@ export default function HighAvailability(props) {
 		) {
 			const cpu =
 				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
-				'm'
+					'm'
 					? data.quota[type].cpu
 					: `${data.quota[type].cpu} Core`;
 			const memory = `${data.quota[type].memory} 内存`;
@@ -266,6 +268,15 @@ export default function HighAvailability(props) {
 				});
 			}
 			setQuotaValue(data.quota[type]);
+			axios.get(`api/clusters/${clusterId}/namespaces/${namespace}/middlewares/${chartName}/pods`, {
+				headers: {
+					userToken: cache.getLocal('token'),
+					authType: cache.getLocal('token') ? 1 : 0
+				}
+			}).then(data => {
+
+				console.log('dasdasdasd', data);
+			})
 			// * 自定义中间件 有operator，无operator
 			// if (customMid && data.quota[type] !== null) {
 			// 	setConfig({
@@ -454,9 +465,8 @@ export default function HighAvailability(props) {
 	};
 
 	const restartRender = (value, index, record) => {
-		return `${value}(${
-			transTime.gmt2local(record.lastRestartTime) || '无'
-		})`;
+		return `${value}(${transTime.gmt2local(record.lastRestartTime) || '无'
+			})`;
 	};
 
 	const onChange = (checked) => {
@@ -655,9 +665,8 @@ export default function HighAvailability(props) {
 	};
 
 	const storageRender = (value, index, record) => {
-		return `${record.resources.storageClassQuota || '无'}(${
-			record.resources.storageClassName || '无'
-		})`;
+		return `${record.resources.storageClassQuota || '无'}(${record.resources.storageClassName || '无'
+			})`;
 	};
 
 	const createTimeRender = (value) => {
