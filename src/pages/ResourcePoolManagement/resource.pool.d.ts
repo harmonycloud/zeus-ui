@@ -11,18 +11,17 @@ export interface NodeResourceProps {
 	status: string;
 }
 export interface MiddlewareResourceProps {
-	aliasName: string;
+	aliasName?: string;
 	clusterId: string;
 	cpuRate: number;
+	cpuRequest?: number;
 	memoryRate: number;
+	memoryRequest?: number;
 	name: string;
-	namespace: string;
+	namespace?: string;
 	per5MinCpu: number;
 	per5MinMemory: number;
-	per5MinStorage: number;
-	requestCpu: number;
-	requestMemory: number;
-	requestStorage: number;
-	storageRate: number;
-	type: string;
+	requestCpu?: number;
+	requestMemory?: number;
+	type?: string;
 }

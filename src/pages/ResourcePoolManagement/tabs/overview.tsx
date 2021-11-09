@@ -4,13 +4,35 @@ import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import FormBlock from '@/pages/ServiceCatalog/components/FormBlock';
 import CustomIcon from '@/components/CustomIcon';
-import { iconTypeRender } from '@/utils/utils';
+import { iconTypeRender, nullRender } from '@/utils/utils';
 import { paramsProps } from '../detail';
-import { getMiddlewareResource, getNodeResource } from '@/services/common';
+import {
+	getMiddlewareResource,
+	getNodeResource,
+	getNamespaceResource
+} from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import transBg from '@/assets/images/trans-bg.svg';
 import { NodeResourceProps, MiddlewareResourceProps } from '../resource.pool';
+// * E charts v5
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import * as echarts from 'echarts/core';
+import { GaugeChart } from 'echarts/charts';
+import {
+	GridComponent,
+	TooltipComponent,
+	TitleComponent
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
 
+// Register the required components
+echarts.use([
+	TitleComponent,
+	TooltipComponent,
+	GridComponent,
+	GaugeChart,
+	CanvasRenderer
+]);
 const RadioGroup = Radio.Group;
 const Tooltip = Balloon.Tooltip;
 const Overview = () => {
@@ -46,11 +68,12 @@ const Overview = () => {
 			mounted = false;
 		};
 	}, []);
-	const getMiddlewares = () => {
+	const getMiddleware = () => {
 		getMiddlewareResource({ clusterId: id }).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
+				setDataSource([]);
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
@@ -64,16 +87,37 @@ const Overview = () => {
 			}
 		});
 	};
+	const getNamespace = () => {
+		getNamespaceResource({ clusterId: id }).then((res) => {
+			if (res.success) {
+				const list = res.data.map((item: MiddlewareResourceProps) => {
+					return {
+						namespace: item.name,
+						requestCpu: item.cpuRequest,
+						per5MinCpu: item.per5MinCpu,
+						cpuRate: item.cpuRate,
+						requestMemory: item.memoryRequest,
+						per5MinMemory: item.per5MinMemory,
+						memoryRate: item.memoryRate
+					};
+				});
+				setDataSource(list);
+			} else {
+				setDataSource([]);
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
 	const onViewChange = (value: string | number | boolean, type: string) => {
-		switch (type) {
-			case 'view':
-				setViewType(value as string);
-				break;
-			case 'table':
-				setTableType(value as string);
-				break;
-			default:
-				break;
+		if (type === 'view') {
+			setViewType(value as string);
+			if (value === 'service') {
+				getMiddleware();
+			} else {
+				getNamespace();
+			}
+		} else {
+			setTableType(value as string);
 		}
 	};
 	const nameRender = (
@@ -258,11 +302,131 @@ const Overview = () => {
 		});
 		setNodeDataSource([...temp]);
 	};
+	const onSort = (dataIndex: string, order: string) => {
+		const temp = dataSource.sort(function (
+			a: MiddlewareResourceProps,
+			b: MiddlewareResourceProps
+		) {
+			const result = a[dataIndex] - b[dataIndex];
+			return order === 'asc'
+				? result > 0
+					? 1
+					: -1
+				: result > 0
+				? -1
+				: 1;
+		});
+		setDataSource([...temp]);
+	};
+	const option = {
+		series: [
+			{
+				type: 'gauge',
+				startAngle: 180,
+				endAngle: 0,
+				min: 0,
+				max: 1,
+				splitNumber: 8,
+				axisLine: {
+					show: false,
+					lineStyle: {
+						width: 6,
+						color: [
+							[0.25, '#00a700'],
+							[0.5, '#0070cc'],
+							[0.75, '#FFAA3A'],
+							[1, '#Ef595C']
+						]
+					}
+				},
+				center: ['50%', '70%'],
+				radius: '145%',
+				pointer: {
+					icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+					length: '13%',
+					width: 10,
+					offsetCenter: [0, '-60%'],
+					itemStyle: {
+						color: 'auto'
+					}
+				},
+				axisTick: {
+					length: 12,
+					lineStyle: {
+						color: 'auto',
+						width: 2
+					}
+				},
+				splitLine: {
+					show: false
+				},
+				axisLabel: {
+					show: false
+				},
+				title: {
+					offsetCenter: [0, '0%'],
+					fontSize: 14
+				},
+				detail: {
+					fontSize: 29,
+					offsetCenter: [0, '-30%'],
+					valueAnimation: true,
+					formatter: function (value: any) {
+						return Math.round(value * 100) + '%';
+					},
+					color: 'auto'
+				},
+				data: [
+					{
+						value: 0.2,
+						name: 'CPU(核)'
+					}
+				]
+			}
+		]
+	};
 	return (
 		<div>
 			<FormBlock title="资源信息">
 				<div className="resource-pool-info-content">
-					<div className="resource-pool-gauge-content"></div>
+					<div className="resource-pool-gauge-content">
+						<div className="resource-pool-gauge-item">
+							<ReactEChartsCore
+								echarts={echarts}
+								option={option}
+								notMerge={true}
+								lazyUpdate={true}
+								style={{
+									height: '100%',
+									width: 'calc(100% - 120px)'
+								}}
+							/>
+							<div className="resource-pool-gauge-info">
+								总容量：50核 <br />
+								已分配：21核 <br />
+								剩余容量：29核
+								<br />
+							</div>
+						</div>
+						<div className="resource-pool-gauge-item">
+							<ReactEChartsCore
+								echarts={echarts}
+								option={option}
+								notMerge={true}
+								lazyUpdate={true}
+								style={{
+									height: '100%',
+									width: 'calc(100% - 120px)'
+								}}
+							/>
+							<div className="resource-pool-gauge-info">
+								总容量：50核 <br />
+								已分配：21核 <br />
+								剩余容量：29核
+								<br />
+							</div>
+						</div>
+					</div>
 					<div className="resource-pool-table-content">
 						<Table
 							dataSource={dataSource}
@@ -270,6 +434,7 @@ const Overview = () => {
 							primaryKey="key"
 							operation={Operation}
 							maxBodyHeight="250px"
+							onSort={onSort}
 						>
 							<Table.Column
 								title="资源分区"
@@ -293,36 +458,42 @@ const Overview = () => {
 								<Table.Column
 									title="CPU配额（核）"
 									dataIndex="requestCpu"
+									cell={nullRender}
 								/>
 							)}
 							{tableType === 'cpu' && (
 								<Table.Column
 									title="近5min平均使用额（核）"
 									dataIndex="per5MinCpu"
+									cell={nullRender}
 								/>
 							)}
 							{tableType === 'cpu' && (
 								<Table.Column
 									title="CPU使用率（%）"
 									dataIndex="cpuRate"
+									cell={nullRender}
 								/>
 							)}
 							{tableType === 'memory' && (
 								<Table.Column
 									title="内存配额（GB）"
 									dataIndex="requestMemory"
+									cell={nullRender}
 								/>
 							)}
 							{tableType === 'memory' && (
 								<Table.Column
 									title="近5min平均使用额（GB）"
 									dataIndex="per5MinMemory"
+									cell={nullRender}
 								/>
 							)}
 							{tableType === 'memory' && (
 								<Table.Column
 									title="内存使用率（%）"
 									dataIndex="memoryRate"
+									cell={nullRender}
 								/>
 							)}
 						</Table>
