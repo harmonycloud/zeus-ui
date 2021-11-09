@@ -231,6 +231,20 @@ export default function ResourcePoolManagement(): JSX.Element {
 			</div>
 		);
 	};
+	const clusterNameRender = (value: string, index: number, record: any) => {
+		return (
+			<span
+				className="name-link"
+				onClick={() =>
+					history.push(
+						`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
+					)
+				}
+			>
+				{value}
+			</span>
+		);
+	};
 	const memoryRender = (
 		value: string,
 		index: number,
@@ -299,7 +313,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 					<Table.Column
 						title="资源池名称"
 						dataIndex="nickname"
-						cell={nameRender}
+						cell={clusterNameRender}
 					/>
 					<Table.Column
 						title="资源分区"

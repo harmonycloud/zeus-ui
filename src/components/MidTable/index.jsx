@@ -11,8 +11,10 @@ function getDataByPageInfo(list, { current = 1, pageSize = 10 } = {}) {
 function translateChildrenToColumns(children) {
 	const list = [];
 	children.forEach((item) => {
-		if (item.type.displayName === 'Column') {
-			list.push(item.props);
+		if (item) {
+			if (item.type.displayName === 'Column') {
+				list.push(item.props);
+			}
 		}
 	});
 	return list;

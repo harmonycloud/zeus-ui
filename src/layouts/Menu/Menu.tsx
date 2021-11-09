@@ -5,6 +5,7 @@ import {
 	Link,
 	useHistory
 } from 'react-router-dom';
+import { connect } from 'react-redux';
 import ConsoleMenu, {
 	IItemDescriptor,
 	StyledComponents
@@ -15,6 +16,8 @@ import { Message } from '@alicloud/console-components';
 import { History } from 'history';
 import messageConfig from '@/components/messageConfig';
 import { Icon } from '@alifd/next';
+import { setMenuRefresh } from '@/redux/menu/menu';
+import { StoreState, menuReduxProps } from '@/types/index';
 import './menu.scss';
 
 const CustomIcon = Icon.createFromIconfontCN({
@@ -35,6 +38,8 @@ const mapLocationToActiveKey = (location: Location) => {
 };
 interface MenuProps {
 	clusterId: string;
+	menu: menuReduxProps;
+	setMenuRefresh: (flag: boolean) => void;
 }
 function Menu(props: MenuProps): JSX.Element {
 	const [items, setItems] = useState<IItemDescriptor[]>([]);
@@ -45,11 +50,17 @@ function Menu(props: MenuProps): JSX.Element {
 		'/systemManagement',
 		'/serviceList'
 	]);
+	const { clusterId, menu } = props;
 	useEffect(() => {
 		if (props.clusterId !== '') {
 			getMenus();
 		}
-	}, [props]);
+	}, [clusterId]);
+	useEffect(() => {
+		if (menu.flag) {
+			getMenus();
+		}
+	}, [menu]);
 	function renderAsLink({ key, label }: IItemDescriptor) {
 		return <Link to={`${key}`}>{label}</Link>;
 	}
@@ -148,7 +159,12 @@ function Menu(props: MenuProps): JSX.Element {
 	);
 }
 
-export default Menu;
+const mapStateToProps = (state: StoreState) => ({
+	menu: state.menu
+});
+export default connect(mapStateToProps, {
+	setMenuRefresh
+})(Menu);
 
 const CustomizedConsoleMenu = styled(ConsoleMenu)`
 	${StyledComponents.Item} {

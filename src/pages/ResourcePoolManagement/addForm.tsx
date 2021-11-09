@@ -10,7 +10,8 @@ import {
 	Button,
 	Switch,
 	Message,
-	Icon
+	Icon,
+	Tab
 } from '@alicloud/console-components';
 import FormBlock from '../ServiceCatalog/components/FormBlock';
 import { useParams, useHistory } from 'react-router';
@@ -78,6 +79,10 @@ export interface valuesProps {
 	protocolPrometheus: string;
 	hostPrometheus: string;
 	portPrometheus: string;
+	accessKeyId: string;
+	bucketName: string;
+	minioName: string;
+	secretAccessKey: string;
 }
 interface paramsProps {
 	clusterId: string;
@@ -205,6 +210,7 @@ function AddForm(props: addFormProps): JSX.Element {
 		});
 	}, []);
 	const uploadConf = (e: any) => {
+		console.log(e);
 		const reader = new window.FileReader();
 		reader.onload = function (e) {
 			field.setValue('cert', reader.result);
@@ -234,8 +240,30 @@ function AddForm(props: addFormProps): JSX.Element {
 					password: values.password,
 					type: 'harbor',
 					chartRepo: values.chartRepo
+				},
+				componentsInstall: {
+					alertManager: isInstallAlert === 'uninstall' ? false : true,
+					grafana: isInstallGrafana === 'uninstall' ? false : true,
+					ingress: isInstallIngress === 'uninstall' ? false : true,
+					logging: isInstallLogging === 'uninstall' ? false : true,
+					minio: isInstallMinio === 'uninstall' ? false : true,
+					prometheus:
+						isInstallPrometheus === 'uninstall' ? false : true
 				}
 			};
+			if (isInstallMinio === 'false') {
+				sendData.storage = {
+					backup: {
+						storage: {
+							accessKeyId: values.accessKeyId,
+							secretAccessKey: values.secretAccessKey,
+							bucketName: values.bucketName,
+							endpoint: head + mid + ':' + tail + '',
+							name: values.minioName
+						}
+					}
+				};
+			}
 			if (isInstallIngress === 'false') {
 				sendData.ingress = {
 					address: values.ingressAddress,
@@ -378,576 +406,149 @@ function AddForm(props: addFormProps): JSX.Element {
 				onBackArrowClick={() => window.history.back()}
 			/>
 			<Content>
-				<FormBlock title="基础信息">
-					<Form
-						{...formItemLayout}
-						field={field}
-						style={{ width: '50%', paddingLeft: 12 }}
-					>
-						<FormItem
-							label="英文简称"
-							pattern={pattern.name}
-							patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
-							required
-							requiredMessage="请输入英文简称"
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-						>
-							<Input
-								name="name"
-								trim={true}
-								disabled={params.clusterId ? true : false}
-								placeholder="请输入英文简称"
-							/>
-						</FormItem>
-						<FormItem
-							label="显示名称"
-							required
-							requiredMessage="请输入显示名称"
-							maxLength={80}
-							minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-						>
-							<Input
-								name="nickname"
-								trim={true}
-								placeholder="请输入显示名称"
-							/>
-						</FormItem>
-						<FormItem
-							label="Apiserver地址"
-							style={{ marginBottom: 0 }}
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-						>
-							<Row gutter={4}>
-								<Col span={6}>
-									<FormItem>
-										<Input
-											name="protocol"
-											value="https"
-											disabled={true}
-										/>
-									</FormItem>
-								</Col>
-								<Col span={12}>
-									<FormItem
-										pattern={pattern.ip}
-										patternMessage="请输入正确的ip地址！"
-										required
-										requiredMessage="请输入地址"
-									>
-										<Input
-											htmlType="text"
-											name="host"
-											disabled={
-												params.clusterId ? true : false
-											}
-											trim={true}
-											placeholder="请输入主机地址"
-										/>
-									</FormItem>
-								</Col>
-								<Col span={6}>
-									<FormItem
-										required
-										requiredMessage="请输入端口"
-									>
-										<Input
-											htmlType="number"
-											name="port"
-											disabled={
-												params.clusterId ? true : false
-											}
-											value={6443}
-											trim={true}
-											placeholder="端口"
-										/>
-									</FormItem>
-								</Col>
-							</Row>
-						</FormItem>
-						<FormItem
-							label="AdminConfig"
-							required
-							requiredMessage="请输入AdminConfig"
-							className="ne-required-ingress upload-position"
-							labelTextAlign="left"
-							asterisk={false}
-						>
-							<Input.TextArea
-								name="cert"
-								rows={4}
-								placeholder="请输入AdminConfig"
-							/>
-							<div className="upload-parse-file">
-								<Icon
-									type="arrow-to-top"
-									size="xs"
-									style={{ marginRight: 4 }}
-								/>
-								上传文件
-								<input
-									id="my-upload-parse"
-									type="file"
-									name="file"
-									onChange={uploadConf}
-								/>
-							</div>
-						</FormItem>
-						<FormItem
-							label="Harbor地址"
-							style={{ marginBottom: 0 }}
-							labelTextAlign="left"
-							asterisk={false}
-						>
-							<Row>
-								<Col span={6}>
-									<FormItem>
-										<Select
-											name="protocolHarbor"
-											style={{ width: '100%' }}
-										>
-											<Select.Option value="https">
-												https
-											</Select.Option>
-											<Select.Option value="http">
-												http
-											</Select.Option>
-										</Select>
-									</FormItem>
-								</Col>
-								<Col span={12}>
-									<FormItem
-										// pattern={pattern.ip}
-										// patternMessage="请输入正确的ip地址！"
-										// required
-										// requiredMessage="请输入地址"
-										style={{ marginLeft: -2 }}
-									>
-										<Input
-											htmlType="text"
-											name="addressHarbor"
-											trim={true}
-											placeholder="请输入主机地址"
-										/>
-									</FormItem>
-								</Col>
-								<Col span={6}>
-									<FormItem
-										// required
-										// requiredMessage="请输入端口"
-										style={{ marginLeft: -2 }}
-									>
-										<Input
-											htmlType="number"
-											name="portHarbor"
-											trim={true}
-											placeholder="端口"
-										/>
-									</FormItem>
-								</Col>
-							</Row>
-						</FormItem>
-						<FormItem
-							label="Harbor项目"
-							labelTextAlign="left"
-							asterisk={false}
-							// required
-							// requiredMessage="请输入Harbor项目"
-						>
-							<Input
-								name="chartRepo"
-								trim={true}
-								placeholder="请输入Harbor项目"
-							/>
-						</FormItem>
-						<FormItem
-							label="Harbor鉴权"
-							style={{ marginBottom: 0 }}
-							labelTextAlign="left"
-							asterisk={false}
-						>
-							<Row gutter={4}>
-								<Col>
-									<FormItem
-									// required requiredMessage="请输入用户名"
-									>
-										<Input
-											name="user"
-											trim={true}
-											placeholder="请输入用户名"
-										/>
-									</FormItem>
-								</Col>
-								<Col>
-									<FormItem
-									//  required requiredMessage="请输入密码"
-									>
-										<Input.Password
-											name="password"
-											trim={true}
-											placeholder="请输入密码"
-										/>
-									</FormItem>
-								</Col>
-							</Row>
-						</FormItem>
-						{/* 1 */}
-						<FormItem
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-							label="备份存储"
-						>
-							<RadioGroup
-								dataSource={yesOrNo}
-								shape="button"
-								defaultValue={true}
-								value={isInstallMinio}
-								onChange={(value) =>
-									setIsInstallMinio(value as string)
-								}
-							/>
-						</FormItem>
-						{isInstallMinio === 'false' && (
-							<div className="second-form-content">
-								<FormItem
-									{...formItemLayout2}
-									label="Access Key ID"
-									required
-									labelTextAlign="left"
-									asterisk={false}
-									className="ne-required-ingress"
-								>
-									<Input name="accessKeyId" />
-								</FormItem>
-								<FormItem
-									{...formItemLayout2}
-									label="Bucket名称"
-									required
-									labelTextAlign="left"
-									asterisk={false}
-									className="ne-required-ingress"
-								>
-									<Input name="bucketName" />
-								</FormItem>
-								<FormItem
-									{...formItemLayout2}
-									label="Minio名称"
-									required
-									labelTextAlign="left"
-									asterisk={false}
-									className="ne-required-ingress"
-								>
-									<Input name="minioName" />
-								</FormItem>
-								<FormItem
-									{...formItemLayout2}
-									label="Minio地址"
-									required
-									labelTextAlign="left"
-									asterisk={false}
-									className="ne-required-ingress"
-								>
-									<Input.Group
-										addonBefore={select}
-										addonAfter={input}
-									>
-										<Input
-											style={{ width: '100%' }}
-											value={mid}
-											onChange={(value) =>
-												handleChange(value, 'mid')
-											}
-										/>
-									</Input.Group>
-								</FormItem>
-								<FormItem
-									{...formItemLayout2}
-									label="Access Key Secret"
-									required
-									labelTextAlign="left"
-									asterisk={false}
-									className="ne-required-ingress"
-								>
-									<Input name="secretAccessKey" />
-								</FormItem>
-							</div>
-						)}
-						{/* 2 */}
-						<FormItem
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-							label="数据监控"
-						>
-							<RadioGroup
-								dataSource={yesOrNo}
-								shape="button"
-								defaultValue={true}
-								value={isInstallPrometheus}
-								onChange={(value) =>
-									setIsInstallPrometheus(value as string)
-								}
-							/>
-						</FormItem>
-						{isInstallPrometheus === 'false' && (
-							<div
-								className="second-form-content"
-								style={{ paddingBottom: 0 }}
+				<Tab>
+					<Tab.Item title="快捷模式">
+						<FormBlock title="基础信息">tbc</FormBlock>
+					</Tab.Item>
+					<Tab.Item title="表单模式">
+						<FormBlock title="基础信息">
+							<Form
+								{...formItemLayout}
+								field={field}
+								style={{ width: '50%', paddingLeft: 12 }}
 							>
 								<FormItem
-									{...formItemLayout}
-									className="ne-required-ingress"
-									labelTextAlign="left"
-									label="prometheus地址"
-									style={{ marginBottom: 0 }}
-								>
-									<Row>
-										<Col span={6}>
-											<FormItem>
-												<Select
-													name="protocolPrometheus"
-													style={{ width: '100%' }}
-												>
-													<Select.Option value="https">
-														https
-													</Select.Option>
-													<Select.Option value="http">
-														http
-													</Select.Option>
-												</Select>
-											</FormItem>
-										</Col>
-										<Col span={12}>
-											<FormItem
-												required
-												requiredMessage="请输入ip地址"
-												pattern={pattern.ip}
-												patternMessage="请输入正确的ip地址！"
-												style={{ marginLeft: -2 }}
-											>
-												<Input
-													htmlType="text"
-													name="hostPrometheus"
-													trim={true}
-													placeholder="请输入主机地址"
-												/>
-											</FormItem>
-										</Col>
-										<Col span={6}>
-											<FormItem
-												required
-												requiredMessage="请输入端口"
-												style={{ marginLeft: -2 }}
-											>
-												<Input
-													htmlType="number"
-													name="portPrometheus"
-													trim={true}
-													placeholder="端口"
-												/>
-											</FormItem>
-										</Col>
-									</Row>
-								</FormItem>
-							</div>
-						)}
-						{/* 3 */}
-						<FormItem
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-							label="监控告警"
-						>
-							<RadioGroup
-								dataSource={yesOrNo}
-								shape="button"
-								defaultValue={true}
-								value={isInstallAlert}
-								onChange={(value) =>
-									setIsInstallAlert(value as string)
-								}
-							/>
-						</FormItem>
-						{isInstallAlert === 'false' && (
-							<div
-								className="second-form-content"
-								style={{ paddingBottom: 0 }}
-							>
-								<FormItem
-									{...formItemLayout}
-									className="ne-required-ingress"
-									labelTextAlign="left"
-									label="监控告警地址"
-									style={{ marginBottom: 0 }}
-								>
-									<Row>
-										<Col span={6}>
-											<FormItem>
-												<Select
-													name="protocolAlert"
-													style={{ width: '100%' }}
-												>
-													<Select.Option value="https">
-														https
-													</Select.Option>
-													<Select.Option value="http">
-														http
-													</Select.Option>
-												</Select>
-											</FormItem>
-										</Col>
-										<Col span={12}>
-											<FormItem
-												required
-												requiredMessage="请输入ip地址"
-												pattern={pattern.ip}
-												patternMessage="请输入正确的ip地址！"
-												style={{ marginLeft: -2 }}
-											>
-												<Input
-													htmlType="text"
-													name="hostAlert"
-													trim={true}
-													placeholder="请输入主机地址"
-												/>
-											</FormItem>
-										</Col>
-										<Col span={6}>
-											<FormItem
-												style={{ marginLeft: -2 }}
-												required
-												requiredMessage="请输入端口"
-											>
-												<Input
-													htmlType="number"
-													name="portAlert"
-													trim={true}
-													placeholder="端口"
-												/>
-											</FormItem>
-										</Col>
-									</Row>
-								</FormItem>
-							</div>
-						)}
-						{/* 4 */}
-						<FormItem
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-							label="监控面板"
-						>
-							<RadioGroup
-								dataSource={yesOrNo}
-								shape="button"
-								defaultValue={true}
-								value={isInstallGrafana}
-								onChange={(value) =>
-									setIsInstallGrafana(value as string)
-								}
-							/>
-						</FormItem>
-						{isInstallGrafana === 'false' && (
-							<div
-								className="second-form-content"
-								style={{ paddingBottom: 0 }}
-							>
-								<FormItem
-									{...formItemLayout}
-									className="ne-required-ingress"
-									labelTextAlign="left"
-									label="grafana地址"
-									style={{ marginBottom: 0 }}
-								>
-									<Row>
-										<Col span={6}>
-											<FormItem>
-												<Select
-													name="protocolGrafana"
-													style={{ width: '100%' }}
-												>
-													<Select.Option value="https">
-														https
-													</Select.Option>
-													<Select.Option value="http">
-														http
-													</Select.Option>
-												</Select>
-											</FormItem>
-										</Col>
-										<Col span={12}>
-											<FormItem
-												required
-												requiredMessage="请输入ip地址"
-												pattern={pattern.ip}
-												patternMessage="请输入正确的ip地址！"
-												style={{ marginLeft: -2 }}
-											>
-												<Input
-													htmlType="text"
-													name="hostGrafana"
-													trim={true}
-													placeholder="请输入主机地址"
-												/>
-											</FormItem>
-										</Col>
-										<Col span={6}>
-											<FormItem
-												required
-												requiredMessage="请输入端口"
-												style={{ marginLeft: -2 }}
-											>
-												<Input
-													htmlType="number"
-													name="portGrafana"
-													trim={true}
-													placeholder="端口"
-												/>
-											</FormItem>
-										</Col>
-									</Row>
-								</FormItem>
-							</div>
-						)}
-						{/* 5 */}
-						<FormItem
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-							label="日志采集"
-						>
-							<RadioGroup
-								dataSource={yesOrNo}
-								shape="button"
-								defaultValue={true}
-								value={isInstallLogging}
-								onChange={(value) =>
-									setIsInstallLogging(value as string)
-								}
-							/>
-						</FormItem>
-						{isInstallLogging === 'false' && (
-							<div className="second-form-content">
-								<FormItem
-									{...formItemLayout}
+									label="英文简称"
+									pattern={pattern.name}
+									patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
+									required
+									requiredMessage="请输入英文简称"
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
-									label="ES地址"
+								>
+									<Input
+										name="name"
+										trim={true}
+										disabled={
+											params.clusterId ? true : false
+										}
+										placeholder="请输入英文简称"
+									/>
+								</FormItem>
+								<FormItem
+									label="显示名称"
+									required
+									requiredMessage="请输入显示名称"
+									maxLength={80}
+									minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
+									className="ne-required-ingress"
+									labelTextAlign="left"
+									asterisk={false}
+								>
+									<Input
+										name="nickname"
+										trim={true}
+										placeholder="请输入显示名称"
+									/>
+								</FormItem>
+								<FormItem
+									label="Apiserver地址"
 									style={{ marginBottom: 0 }}
+									className="ne-required-ingress"
+									labelTextAlign="left"
+									asterisk={false}
+								>
+									<Row gutter={4}>
+										<Col span={6}>
+											<FormItem>
+												<Input
+													name="protocol"
+													value="https"
+													disabled={true}
+												/>
+											</FormItem>
+										</Col>
+										<Col span={12}>
+											<FormItem
+												pattern={pattern.ip}
+												patternMessage="请输入正确的ip地址！"
+												required
+												requiredMessage="请输入地址"
+											>
+												<Input
+													htmlType="text"
+													name="host"
+													disabled={
+														params.clusterId
+															? true
+															: false
+													}
+													trim={true}
+													placeholder="请输入主机地址"
+												/>
+											</FormItem>
+										</Col>
+										<Col span={6}>
+											<FormItem
+												required
+												requiredMessage="请输入端口"
+											>
+												<Input
+													htmlType="number"
+													name="port"
+													disabled={
+														params.clusterId
+															? true
+															: false
+													}
+													value={6443}
+													trim={true}
+													placeholder="端口"
+												/>
+											</FormItem>
+										</Col>
+									</Row>
+								</FormItem>
+								<FormItem
+									label="AdminConfig"
+									required
+									requiredMessage="请输入AdminConfig"
+									className="ne-required-ingress upload-position"
+									labelTextAlign="left"
+									asterisk={false}
+								>
+									<Input.TextArea
+										name="cert"
+										rows={4}
+										placeholder="请输入AdminConfig"
+									/>
+									<div className="upload-parse-file">
+										<Icon
+											type="arrow-to-top"
+											size="xs"
+											style={{ marginRight: 4 }}
+										/>
+										上传文件
+										<input
+											id="my-upload-parse"
+											type="file"
+											name="file"
+											onChange={uploadConf}
+										/>
+									</div>
+								</FormItem>
+								<FormItem
+									label="Harbor地址"
+									style={{ marginBottom: 0 }}
+									labelTextAlign="left"
+									asterisk={false}
 								>
 									<Row>
 										<Col span={6}>
 											<FormItem>
 												<Select
-													name="protocolEs"
+													name="protocolHarbor"
 													style={{ width: '100%' }}
 												>
 													<Select.Option value="https">
@@ -961,15 +562,15 @@ function AddForm(props: addFormProps): JSX.Element {
 										</Col>
 										<Col span={12}>
 											<FormItem
-												required
-												requiredMessage="请输入ip地址"
-												pattern={pattern.ip}
-												patternMessage="请输入正确的ip地址！"
+												// pattern={pattern.ip}
+												// patternMessage="请输入正确的ip地址！"
+												// required
+												// requiredMessage="请输入地址"
 												style={{ marginLeft: -2 }}
 											>
 												<Input
 													htmlType="text"
-													name="hostEs"
+													name="addressHarbor"
 													trim={true}
 													placeholder="请输入主机地址"
 												/>
@@ -977,13 +578,13 @@ function AddForm(props: addFormProps): JSX.Element {
 										</Col>
 										<Col span={6}>
 											<FormItem
-												required
-												requiredMessage="请输入端口"
+												// required
+												// requiredMessage="请输入端口"
 												style={{ marginLeft: -2 }}
 											>
 												<Input
 													htmlType="number"
-													name="portEs"
+													name="portHarbor"
 													trim={true}
 													placeholder="端口"
 												/>
@@ -992,27 +593,42 @@ function AddForm(props: addFormProps): JSX.Element {
 									</Row>
 								</FormItem>
 								<FormItem
-									{...formItemLayout}
-									className="ne-required-ingress"
+									label="Harbor项目"
 									labelTextAlign="left"
 									asterisk={false}
-									label="ES鉴权"
+									// required
+									// requiredMessage="请输入Harbor项目"
+								>
+									<Input
+										name="chartRepo"
+										trim={true}
+										placeholder="请输入Harbor项目"
+									/>
+								</FormItem>
+								<FormItem
+									label="Harbor鉴权"
 									style={{ marginBottom: 0 }}
+									labelTextAlign="left"
+									asterisk={false}
 								>
 									<Row gutter={4}>
 										<Col>
-											<FormItem>
+											<FormItem
+											// required requiredMessage="请输入用户名"
+											>
 												<Input
-													name="userEs"
+													name="user"
 													trim={true}
 													placeholder="请输入用户名"
 												/>
 											</FormItem>
 										</Col>
 										<Col>
-											<FormItem>
+											<FormItem
+											//  required requiredMessage="请输入密码"
+											>
 												<Input.Password
-													name="passwordEs"
+													name="password"
 													trim={true}
 													placeholder="请输入密码"
 												/>
@@ -1020,112 +636,566 @@ function AddForm(props: addFormProps): JSX.Element {
 										</Col>
 									</Row>
 								</FormItem>
+								{/* 1 */}
 								<FormItem
-									{...formItemLayout}
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
-									label="ES日志采集工具"
-									style={{ marginBottom: 0 }}
+									label="备份存储"
 								>
-									<Switch
-										name="logCollect"
-										checked={logCollect}
+									<RadioGroup
+										dataSource={yesOrNo}
+										shape="button"
+										defaultValue={true}
+										value={isInstallMinio}
 										onChange={(value) =>
-											setLogCollect(value)
+											setIsInstallMinio(value as string)
 										}
 									/>
 								</FormItem>
-							</div>
-						)}
-						{/* 6 */}
-						<FormItem
-							className="ne-required-ingress"
-							labelTextAlign="left"
-							asterisk={false}
-							label="负载均衡"
-						>
-							<RadioGroup
-								dataSource={yesOrNo}
-								shape="button"
-								defaultValue={true}
-								value={isInstallIngress}
-								onChange={(value) =>
-									setIsInstallIngress(value as string)
-								}
-							/>
-						</FormItem>
-						{isInstallIngress === 'false' && (
-							<div className="second-form-content">
+								{isInstallMinio === 'false' && (
+									<div className="second-form-content">
+										<FormItem
+											{...formItemLayout2}
+											label="Access Key ID"
+											required
+											labelTextAlign="left"
+											asterisk={false}
+											className="ne-required-ingress"
+										>
+											<Input name="accessKeyId" />
+										</FormItem>
+										<FormItem
+											{...formItemLayout2}
+											label="Bucket名称"
+											required
+											labelTextAlign="left"
+											asterisk={false}
+											className="ne-required-ingress"
+										>
+											<Input name="bucketName" />
+										</FormItem>
+										<FormItem
+											{...formItemLayout2}
+											label="Minio名称"
+											required
+											labelTextAlign="left"
+											asterisk={false}
+											className="ne-required-ingress"
+										>
+											<Input name="minioName" />
+										</FormItem>
+										<FormItem
+											{...formItemLayout2}
+											label="Minio地址"
+											required
+											labelTextAlign="left"
+											asterisk={false}
+											className="ne-required-ingress"
+										>
+											<Input.Group
+												addonBefore={select}
+												addonAfter={input}
+											>
+												<Input
+													style={{ width: '100%' }}
+													value={mid}
+													onChange={(value) =>
+														handleChange(
+															value,
+															'mid'
+														)
+													}
+												/>
+											</Input.Group>
+										</FormItem>
+										<FormItem
+											{...formItemLayout2}
+											label="Access Key Secret"
+											required
+											labelTextAlign="left"
+											asterisk={false}
+											className="ne-required-ingress"
+										>
+											<Input name="secretAccessKey" />
+										</FormItem>
+									</div>
+								)}
+								{/* 2 */}
 								<FormItem
-									{...formItemLayout}
-									label="Ingress名称"
-									required
-									requiredMessage="请输入Ingress名称"
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
+									label="数据监控"
 								>
-									<Input
-										htmlType="text"
-										name="ingressClassName"
-										trim={true}
-										defaultValue="nginx-ingress-controller"
-										placeholder="请输入Ingress名称"
+									<RadioGroup
+										dataSource={yesOrNo}
+										shape="button"
+										defaultValue={true}
+										value={isInstallPrometheus}
+										onChange={(value) =>
+											setIsInstallPrometheus(
+												value as string
+											)
+										}
 									/>
 								</FormItem>
+								{isInstallPrometheus === 'false' && (
+									<div
+										className="second-form-content"
+										style={{ paddingBottom: 0 }}
+									>
+										<FormItem
+											{...formItemLayout}
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											label="prometheus地址"
+											style={{ marginBottom: 0 }}
+										>
+											<Row>
+												<Col span={6}>
+													<FormItem>
+														<Select
+															name="protocolPrometheus"
+															style={{
+																width: '100%'
+															}}
+														>
+															<Select.Option value="https">
+																https
+															</Select.Option>
+															<Select.Option value="http">
+																http
+															</Select.Option>
+														</Select>
+													</FormItem>
+												</Col>
+												<Col span={12}>
+													<FormItem
+														required
+														requiredMessage="请输入ip地址"
+														pattern={pattern.ip}
+														patternMessage="请输入正确的ip地址！"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="text"
+															name="hostPrometheus"
+															trim={true}
+															placeholder="请输入主机地址"
+														/>
+													</FormItem>
+												</Col>
+												<Col span={6}>
+													<FormItem
+														required
+														requiredMessage="请输入端口"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="number"
+															name="portPrometheus"
+															trim={true}
+															placeholder="端口"
+														/>
+													</FormItem>
+												</Col>
+											</Row>
+										</FormItem>
+									</div>
+								)}
+								{/* 3 */}
 								<FormItem
-									{...formItemLayout}
-									label="Ingress地址"
-									required
-									requiredMessage="请输入Ingress地址"
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
+									label="监控告警"
 								>
-									<Input
-										htmlType="text"
-										name="ingressAddress"
-										trim={true}
-										placeholder="请输入主机地址"
+									<RadioGroup
+										dataSource={yesOrNo}
+										shape="button"
+										defaultValue={true}
+										value={isInstallAlert}
+										onChange={(value) =>
+											setIsInstallAlert(value as string)
+										}
 									/>
 								</FormItem>
+								{isInstallAlert === 'false' && (
+									<div
+										className="second-form-content"
+										style={{ paddingBottom: 0 }}
+									>
+										<FormItem
+											{...formItemLayout}
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											label="监控告警地址"
+											style={{ marginBottom: 0 }}
+										>
+											<Row>
+												<Col span={6}>
+													<FormItem>
+														<Select
+															name="protocolAlert"
+															style={{
+																width: '100%'
+															}}
+														>
+															<Select.Option value="https">
+																https
+															</Select.Option>
+															<Select.Option value="http">
+																http
+															</Select.Option>
+														</Select>
+													</FormItem>
+												</Col>
+												<Col span={12}>
+													<FormItem
+														required
+														requiredMessage="请输入ip地址"
+														pattern={pattern.ip}
+														patternMessage="请输入正确的ip地址！"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="text"
+															name="hostAlert"
+															trim={true}
+															placeholder="请输入主机地址"
+														/>
+													</FormItem>
+												</Col>
+												<Col span={6}>
+													<FormItem
+														style={{
+															marginLeft: -2
+														}}
+														required
+														requiredMessage="请输入端口"
+													>
+														<Input
+															htmlType="number"
+															name="portAlert"
+															trim={true}
+															placeholder="端口"
+														/>
+													</FormItem>
+												</Col>
+											</Row>
+										</FormItem>
+									</div>
+								)}
+								{/* 4 */}
 								<FormItem
-									{...formItemLayout}
-									label="ConfigMap分区"
-									required
-									requiredMessage="请输入分区"
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
+									label="监控面板"
 								>
-									<Input
-										htmlType="text"
-										name="namespace"
-										trim={true}
-										placeholder="请输入分区"
+									<RadioGroup
+										dataSource={yesOrNo}
+										shape="button"
+										defaultValue={true}
+										value={isInstallGrafana}
+										onChange={(value) =>
+											setIsInstallGrafana(value as string)
+										}
 									/>
 								</FormItem>
+								{isInstallGrafana === 'false' && (
+									<div
+										className="second-form-content"
+										style={{ paddingBottom: 0 }}
+									>
+										<FormItem
+											{...formItemLayout}
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											label="grafana地址"
+											style={{ marginBottom: 0 }}
+										>
+											<Row>
+												<Col span={6}>
+													<FormItem>
+														<Select
+															name="protocolGrafana"
+															style={{
+																width: '100%'
+															}}
+														>
+															<Select.Option value="https">
+																https
+															</Select.Option>
+															<Select.Option value="http">
+																http
+															</Select.Option>
+														</Select>
+													</FormItem>
+												</Col>
+												<Col span={12}>
+													<FormItem
+														required
+														requiredMessage="请输入ip地址"
+														pattern={pattern.ip}
+														patternMessage="请输入正确的ip地址！"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="text"
+															name="hostGrafana"
+															trim={true}
+															placeholder="请输入主机地址"
+														/>
+													</FormItem>
+												</Col>
+												<Col span={6}>
+													<FormItem
+														required
+														requiredMessage="请输入端口"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="number"
+															name="portGrafana"
+															trim={true}
+															placeholder="端口"
+														/>
+													</FormItem>
+												</Col>
+											</Row>
+										</FormItem>
+									</div>
+								)}
+								{/* 5 */}
 								<FormItem
-									{...formItemLayout}
-									label="ConfigMap名称"
-									required
-									requiredMessage="请输入ConfigMap名称"
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
+									label="日志采集"
 								>
-									<Input
-										htmlType="text"
-										name="configMapName"
-										trim={true}
-										placeholder="请输入ConfigMap名称"
+									<RadioGroup
+										dataSource={yesOrNo}
+										shape="button"
+										defaultValue={true}
+										value={isInstallLogging}
+										onChange={(value) =>
+											setIsInstallLogging(value as string)
+										}
 									/>
 								</FormItem>
-							</div>
-						)}
-					</Form>
-				</FormBlock>
+								{isInstallLogging === 'false' && (
+									<div className="second-form-content">
+										<FormItem
+											{...formItemLayout}
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+											label="ES地址"
+											style={{ marginBottom: 0 }}
+										>
+											<Row>
+												<Col span={6}>
+													<FormItem>
+														<Select
+															name="protocolEs"
+															style={{
+																width: '100%'
+															}}
+														>
+															<Select.Option value="https">
+																https
+															</Select.Option>
+															<Select.Option value="http">
+																http
+															</Select.Option>
+														</Select>
+													</FormItem>
+												</Col>
+												<Col span={12}>
+													<FormItem
+														required
+														requiredMessage="请输入ip地址"
+														pattern={pattern.ip}
+														patternMessage="请输入正确的ip地址！"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="text"
+															name="hostEs"
+															trim={true}
+															placeholder="请输入主机地址"
+														/>
+													</FormItem>
+												</Col>
+												<Col span={6}>
+													<FormItem
+														required
+														requiredMessage="请输入端口"
+														style={{
+															marginLeft: -2
+														}}
+													>
+														<Input
+															htmlType="number"
+															name="portEs"
+															trim={true}
+															placeholder="端口"
+														/>
+													</FormItem>
+												</Col>
+											</Row>
+										</FormItem>
+										<FormItem
+											{...formItemLayout}
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+											label="ES鉴权"
+											style={{ marginBottom: 0 }}
+										>
+											<Row gutter={4}>
+												<Col>
+													<FormItem>
+														<Input
+															name="userEs"
+															trim={true}
+															placeholder="请输入用户名"
+														/>
+													</FormItem>
+												</Col>
+												<Col>
+													<FormItem>
+														<Input.Password
+															name="passwordEs"
+															trim={true}
+															placeholder="请输入密码"
+														/>
+													</FormItem>
+												</Col>
+											</Row>
+										</FormItem>
+										<FormItem
+											{...formItemLayout}
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+											label="ES日志采集工具"
+											style={{ marginBottom: 0 }}
+										>
+											<Switch
+												name="logCollect"
+												checked={logCollect}
+												onChange={(value) =>
+													setLogCollect(value)
+												}
+											/>
+										</FormItem>
+									</div>
+								)}
+								{/* 6 */}
+								<FormItem
+									className="ne-required-ingress"
+									labelTextAlign="left"
+									asterisk={false}
+									label="负载均衡"
+								>
+									<RadioGroup
+										dataSource={yesOrNo}
+										shape="button"
+										defaultValue={true}
+										value={isInstallIngress}
+										onChange={(value) =>
+											setIsInstallIngress(value as string)
+										}
+									/>
+								</FormItem>
+								{isInstallIngress === 'false' && (
+									<div className="second-form-content">
+										<FormItem
+											{...formItemLayout}
+											label="Ingress名称"
+											required
+											requiredMessage="请输入Ingress名称"
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+										>
+											<Input
+												htmlType="text"
+												name="ingressClassName"
+												trim={true}
+												defaultValue="nginx-ingress-controller"
+												placeholder="请输入Ingress名称"
+											/>
+										</FormItem>
+										<FormItem
+											{...formItemLayout}
+											label="Ingress地址"
+											required
+											requiredMessage="请输入Ingress地址"
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+										>
+											<Input
+												htmlType="text"
+												name="ingressAddress"
+												trim={true}
+												placeholder="请输入主机地址"
+											/>
+										</FormItem>
+										<FormItem
+											{...formItemLayout}
+											label="ConfigMap分区"
+											required
+											requiredMessage="请输入分区"
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+										>
+											<Input
+												htmlType="text"
+												name="namespace"
+												trim={true}
+												placeholder="请输入分区"
+											/>
+										</FormItem>
+										<FormItem
+											{...formItemLayout}
+											label="ConfigMap名称"
+											required
+											requiredMessage="请输入ConfigMap名称"
+											className="ne-required-ingress"
+											labelTextAlign="left"
+											asterisk={false}
+										>
+											<Input
+												htmlType="text"
+												name="configMapName"
+												trim={true}
+												placeholder="请输入ConfigMap名称"
+											/>
+										</FormItem>
+									</div>
+								)}
+							</Form>
+						</FormBlock>
+					</Tab.Item>
+				</Tab>
 				<div>
 					<Button
 						type="primary"

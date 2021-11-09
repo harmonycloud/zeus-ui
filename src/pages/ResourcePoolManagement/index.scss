@@ -73,3 +73,61 @@
 		top: 0;
 	}
 }
+
+// * 资源池详情
+.resource-pool-info-content {
+	width: 100%;
+	height: 370px;
+	display: flex;
+	.resource-pool-gauge-content{
+		width: 342px;
+		height: 100%;
+		margin-right: 18px;
+		margin-top: 16px;
+		.resource-pool-gauge-item{
+			width: 100%;
+			height: 140px;
+			display: flex;
+			box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+			margin-bottom: 24px;
+			margin-left: 2px;
+			.resource-pool-gauge-info{
+				width: 120px;
+				// height: 54px;
+				padding-top: 40px;
+				font-size: 12px;
+				font-family: PingFangSC-Regular, PingFang SC;
+				font-weight: 400;
+				color: #333333;
+				line-height: 18px;
+			}
+		}
+	}
+	.resource-pool-table-content{
+		width: calc(100% - 326px - 16px - 20px);
+		height: 100%;
+		// padding-left: 16px;
+		margin-top: 16px;
+		.resource-pool-table-header{
+			display: flex;
+			justify-content: space-between;
+		}
+		.resource-pool-table-content{
+			margin-top: 8px;
+			width: 100%;
+		}
+	}
+}
+.node-title-content{
+	display: flex !important;
+	align-items: center;
+	.node-title-name{
+		font-size: 14px;
+		font-weight: 500;
+		color: #333333;
+		line-height: 22px;
+		border-left: 2px solid #0070cc;
+		padding: 0 8px;
+		margin: 8px 0;
+	}
+}

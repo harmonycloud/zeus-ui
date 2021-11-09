@@ -1,5 +1,16 @@
 const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 	const option = {
+		title: {
+			text: data ? data.total + '个' : '',
+			left: 'center',
+			top: '30%',
+			textStyle: {
+				fontSize: 24,
+				color: 'rgba(0, 0, 0, 0.85)',
+				align: 'center',
+				fontWeight: 500
+			}
+		},
 		tooltip: {
 			trigger: 'item'
 		},
@@ -39,17 +50,6 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 						color: 'rgba(0, 0, 0, 0.45)'
 					}
 				}
-			}
-		},
-		title: {
-			text: data ? data.total + '个' : '',
-			left: 'center',
-			top: '30%',
-			textStyle: {
-				color: 'rgba(0, 0, 0, 0.85)',
-				fontSize: 24,
-				align: 'center',
-				fontWeight: 0
 			}
 		},
 		graphic: {

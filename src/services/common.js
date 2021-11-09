@@ -1,6 +1,7 @@
 import Axios from './request';
 import * as COMMON from './common.constants';
 
+// * 获取集群列表
 export const getClusters = (params) => {
 	return Axios.get(COMMON.clusters, params);
 };
@@ -24,12 +25,12 @@ export const deleteCluster = (params) => {
 export const getNamespaces = (params) => {
 	return Axios.get(COMMON.namespaces, params);
 };
-// 部署组件
+// * 部署组件
 export const deployComponent = (params) => {
 	const { restUrl } = Axios.restfulAPI(COMMON.components, params.url);
 	return Axios.json(restUrl, params.data, {}, 'POST');
 };
-//对接组件
+// * 对接组件
 export const dockComponent = (params) => {
 	const { restUrl } = Axios.restfulAPI(COMMON.components, params.url);
 	return Axios.json(restUrl, params.data, {}, 'PUT');
@@ -41,4 +42,14 @@ export const putNamespaces = (params, data) => {
 		{ data: JSON.stringify(data) },
 		'put'
 	);
+};
+// * 资源池详情等接口
+export const getMiddlewareResource = (params) => {
+	return Axios.get(COMMON.getMiddlewareResource, params);
+};
+export const getNodeResource = (params) => {
+	return Axios.get(COMMON.getNodeResource, params);
+};
+export const getNamespaceResource = (params) => {
+	return Axios.get(COMMON.getNamespaceResource, params);
 };

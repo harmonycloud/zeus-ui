@@ -41,8 +41,12 @@ export interface globalVarProps {
 	namespace: namespaceType;
 	namespaceList: namespaceType[];
 }
+export interface menuReduxProps {
+	flag: boolean;
+}
 export interface StoreState {
 	user: any;
 	globalVar: globalVarProps;
 	log: any;
+	menu: menuReduxProps;
 }

@@ -2,11 +2,14 @@ import React from 'react';
 import { Icon, Balloon, Message, Dialog } from '@alicloud/console-components';
 import { useHistory } from 'react-router-dom';
 import { api } from '@/api.json';
+import { connect } from 'react-redux';
 import { middlewareItemProps } from '../middleware';
 import CustomIcon from '@/components/CustomIcon';
 import { installMiddleware, unInstallMiddleware } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
+import { StoreState } from '@/types/index';
+import { setMenuRefresh } from '@/redux/menu/menu';
 import './index.scss';
 
 const Tooltip = Balloon.Tooltip;
@@ -92,9 +95,7 @@ const statusIconRender = (value: number) => {
 	}
 };
 
-export default function MiddlewareItem(
-	props: middlewareItemProps
-): JSX.Element {
+function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 	const {
 		name,
 		chartName,
@@ -105,10 +106,12 @@ export default function MiddlewareItem(
 		status,
 		clusterId,
 		onRefresh,
-		version
+		version,
+		setMenuRefresh,
+		menu
 	} = props;
 	const history = useHistory();
-	console.log(history);
+	console.log(setMenuRefresh, menu);
 	const toVersion = () => {
 		history.push(`/middlewareRepository/versionManagement/${chartName}`);
 	};
@@ -131,6 +134,7 @@ export default function MiddlewareItem(
 								'中间件安装成功，5秒后刷新数据'
 							)
 						);
+						setMenuRefresh(true);
 						onRefresh();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -158,6 +162,7 @@ export default function MiddlewareItem(
 								'中间件卸载成功，5秒后刷新数据'
 							)
 						);
+						setMenuRefresh(true);
 						onRefresh();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -318,3 +323,9 @@ export default function MiddlewareItem(
 		</div>
 	);
 }
+const mapStateToProps = (state: StoreState) => ({
+	menu: state.menu
+});
+export default connect(mapStateToProps, {
+	setMenuRefresh
+})(MiddlewareItem);

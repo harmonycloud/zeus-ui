@@ -34,6 +34,7 @@ import MidTerminal from '@/components/MidTerminal';
 import ServiceListByType from '@/pages/ServiceList/serviceListByType';
 import Personlization from '@/pages/Personalization/index';
 import ServiceVersion from '@/pages/ServiceList/serviceVersion';
+import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -240,6 +241,12 @@ const Routes = withRouter((props) => {
 					component={AddForm}
 					exact
 				/>
+				<Route
+					path="/systemManagement/resourcePoolManagement/resourcePoolDetail/:id/:nickname"
+					component={ResourcePoolDetail}
+					exact
+				/>
+				{/* 控制台 */}
 				<Route path="/terminal/:url" component={MidTerminal} exact />
 				{/* 个性化设置 */}
 				<Route
