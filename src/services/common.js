@@ -50,3 +50,6 @@ export const getMiddlewareResource = (params) => {
 export const getNodeResource = (params) => {
 	return Axios.get(COMMON.getNodeResource, params);
 };
+export const getNamespaceResource = (params) => {
+	return Axios.get(COMMON.getNamespaceResource, params);
+};

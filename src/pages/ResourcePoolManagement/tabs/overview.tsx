@@ -76,6 +76,18 @@ const Overview = () => {
 				break;
 		}
 	};
+	const nameRender = (
+		value: string,
+		index: number,
+		record: MiddlewareResourceProps
+	) => {
+		return (
+			<div>
+				<div className="name-link">{record.name}</div>
+				<div>{record.aliasName}</div>
+			</div>
+		);
+	};
 	const statusRender = (
 		value: string,
 		index: number,
@@ -257,55 +269,60 @@ const Overview = () => {
 							exact
 							primaryKey="key"
 							operation={Operation}
+							maxBodyHeight="250px"
 						>
-							<Table.Column title="资源分区" dataIndex="id" />
+							<Table.Column
+								title="资源分区"
+								dataIndex="namespace"
+							/>
 							{viewType === 'service' && (
 								<Table.Column
 									title="类型"
-									dataIndex="id"
+									dataIndex="type"
 									cell={iconTypeRender}
 								/>
 							)}
 							{viewType === 'service' && (
 								<Table.Column
 									title="服务名称/中文别名"
-									dataIndex="id"
+									dataIndex="name"
+									cell={nameRender}
 								/>
 							)}
 							{tableType === 'cpu' && (
 								<Table.Column
 									title="CPU配额（核）"
-									dataIndex="id"
+									dataIndex="requestCpu"
 								/>
 							)}
 							{tableType === 'cpu' && (
 								<Table.Column
 									title="近5min平均使用额（核）"
-									dataIndex="id"
+									dataIndex="per5MinCpu"
 								/>
 							)}
 							{tableType === 'cpu' && (
 								<Table.Column
 									title="CPU使用率（%）"
-									dataIndex="id"
+									dataIndex="cpuRate"
 								/>
 							)}
 							{tableType === 'memory' && (
 								<Table.Column
 									title="内存配额（GB）"
-									dataIndex="id"
+									dataIndex="requestMemory"
 								/>
 							)}
 							{tableType === 'memory' && (
 								<Table.Column
 									title="近5min平均使用额（GB）"
-									dataIndex="id"
+									dataIndex="per5MinMemory"
 								/>
 							)}
 							{tableType === 'memory' && (
 								<Table.Column
 									title="内存使用率（%）"
-									dataIndex="id"
+									dataIndex="memoryRate"
 								/>
 							)}
 						</Table>
