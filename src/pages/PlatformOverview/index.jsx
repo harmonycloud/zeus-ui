@@ -98,6 +98,7 @@ function PlatformOverview(props) {
 	}, []);
 	useEffect(() => {
 		let clusterId = type === 'all' ? null : type;
+		const chart = echarts.init(document.getElementById('id'));
 		getPlatformOverview({ clusterId }).then((res) => {
 			if (!res.data) return;
 			let list = res.data.operatorDTO.operatorList.filter(
@@ -115,7 +116,6 @@ function PlatformOverview(props) {
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(getLineOption(res.data.alertSummary));
-			const chart = echarts.init(document.getElementById('id'));
 			chart.setOption(getPieOption(res.data.operatorDTO));
 
 			chart.on('legendselectchanged', (obj) => {

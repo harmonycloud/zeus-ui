@@ -24,6 +24,9 @@ import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
+import cache from '@/utils/storage';
+import axios from 'axios';
+import LogFile from '../Log/logFile';
 
 const { Row, Col } = Grid;
 
@@ -266,6 +269,19 @@ export default function HighAvailability(props) {
 				});
 			}
 			setQuotaValue(data.quota[type]);
+			axios
+				.get(
+					`api/clusters/${clusterId}/namespaces/${namespace}/middlewares/${chartName}/pods`,
+					{
+						headers: {
+							userToken: cache.getLocal('token'),
+							authType: cache.getLocal('token') ? 1 : 0
+						}
+					}
+				)
+				.then((data) => {
+					console.log('dasdasdasd', data);
+				});
 			// * 自定义中间件 有operator，无operator
 			// if (customMid && data.quota[type] !== null) {
 			// 	setConfig({
