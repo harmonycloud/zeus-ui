@@ -25,3 +25,25 @@ export interface MiddlewareResourceProps {
 	requestMemory?: number;
 	type?: string;
 }
+
+export interface NamespaceResourceProps {
+	aliasName: string;
+	clusterId: string;
+	createTime: string;
+	middlewareReplicas: number;
+	name: string;
+	quotas: {
+		[propName: string]: string[];
+	};
+	registered: boolean;
+}
+export interface ClusterQuotaDTO {
+	clusterNum: number;
+	cpuUsedPercent: number | null;
+	memoryUsedPercent: null;
+	namespaceNum: number;
+	totalCpu: number;
+	totalMemory: number;
+	usedCpu: number;
+	usedMemory: number;
+}

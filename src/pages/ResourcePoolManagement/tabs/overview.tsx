@@ -9,11 +9,16 @@ import { paramsProps } from '../detail';
 import {
 	getMiddlewareResource,
 	getNodeResource,
-	getNamespaceResource
+	getNamespaceResource,
+	getCluster
 } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import transBg from '@/assets/images/trans-bg.svg';
-import { NodeResourceProps, MiddlewareResourceProps } from '../resource.pool';
+import {
+	NodeResourceProps,
+	MiddlewareResourceProps,
+	ClusterQuotaDTO
+} from '../resource.pool';
 // * E charts v5
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
@@ -24,6 +29,7 @@ import {
 	TitleComponent
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { getGaugeOption } from '@/utils/echartsOption';
 
 // Register the required components
 echarts.use([
@@ -42,6 +48,10 @@ const Overview = () => {
 	const [nodeDataSource, setNodeDataSource] = useState<NodeResourceProps[]>(
 		[]
 	);
+	const [clusterQuota, setClusterQuota] = useState<ClusterQuotaDTO>();
+	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
+	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
+
 	const params: paramsProps = useParams();
 	const { id } = params;
 	useEffect(() => {
@@ -60,6 +70,25 @@ const Overview = () => {
 				if (mounted) {
 					setNodeDataSource(res.data);
 				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+		getCluster({ clusterId: id, detail: true }).then((res) => {
+			if (res.success) {
+				setClusterQuota(res.data.clusterQuotaDTO || {});
+				const cpuRate = res.data.clusterQuotaDTO
+					? Number(res.data.clusterQuotaDTO?.usedCpu) /
+					  Number(res.data.clusterQuotaDTO?.totalCpu)
+					: 0;
+				const option1Temp = getGaugeOption(cpuRate, 'CPU(核)');
+				setOption1(option1Temp);
+				const memoryRate = res.data.clusterQuotaDTO
+					? Number(res.data.clusterQuotaDTO?.usedMemory) /
+					  Number(res.data.clusterQuotaDTO?.totalMemory)
+					: 0;
+				const option2Temp = getGaugeOption(memoryRate, '内存(GB)');
+				setOption2(option2Temp);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -318,73 +347,7 @@ const Overview = () => {
 		});
 		setDataSource([...temp]);
 	};
-	const option = {
-		series: [
-			{
-				type: 'gauge',
-				startAngle: 180,
-				endAngle: 0,
-				min: 0,
-				max: 1,
-				splitNumber: 8,
-				axisLine: {
-					show: false,
-					lineStyle: {
-						width: 6,
-						color: [
-							[0.25, '#00a700'],
-							[0.5, '#0070cc'],
-							[0.75, '#FFAA3A'],
-							[1, '#Ef595C']
-						]
-					}
-				},
-				center: ['50%', '70%'],
-				radius: '145%',
-				pointer: {
-					icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
-					length: '13%',
-					width: 10,
-					offsetCenter: [0, '-60%'],
-					itemStyle: {
-						color: 'auto'
-					}
-				},
-				axisTick: {
-					length: 12,
-					lineStyle: {
-						color: 'auto',
-						width: 2
-					}
-				},
-				splitLine: {
-					show: false
-				},
-				axisLabel: {
-					show: false
-				},
-				title: {
-					offsetCenter: [0, '0%'],
-					fontSize: 14
-				},
-				detail: {
-					fontSize: 29,
-					offsetCenter: [0, '-30%'],
-					valueAnimation: true,
-					formatter: function (value: any) {
-						return Math.round(value * 100) + '%';
-					},
-					color: 'auto'
-				},
-				data: [
-					{
-						value: 0.2,
-						name: 'CPU(核)'
-					}
-				]
-			}
-		]
-	};
+
 	return (
 		<div>
 			<FormBlock title="资源信息">
@@ -393,7 +356,7 @@ const Overview = () => {
 						<div className="resource-pool-gauge-item">
 							<ReactEChartsCore
 								echarts={echarts}
-								option={option}
+								option={option1}
 								notMerge={true}
 								lazyUpdate={true}
 								style={{
@@ -402,16 +365,23 @@ const Overview = () => {
 								}}
 							/>
 							<div className="resource-pool-gauge-info">
-								总容量：50核 <br />
-								已分配：21核 <br />
-								剩余容量：29核
+								总容量：{clusterQuota?.totalCpu.toFixed(2)}核
+								<br />
+								已分配：{clusterQuota?.usedCpu.toFixed(
+									2
+								)}核 <br />
+								剩余容量：
+								{Number(clusterQuota?.totalCpu.toFixed(2)) -
+									Number(clusterQuota?.usedCpu.toFixed(2)) ||
+									0}
+								核
 								<br />
 							</div>
 						</div>
 						<div className="resource-pool-gauge-item">
 							<ReactEChartsCore
 								echarts={echarts}
-								option={option}
+								option={option2}
 								notMerge={true}
 								lazyUpdate={true}
 								style={{
@@ -420,9 +390,17 @@ const Overview = () => {
 								}}
 							/>
 							<div className="resource-pool-gauge-info">
-								总容量：50核 <br />
-								已分配：21核 <br />
-								剩余容量：29核
+								总容量：{clusterQuota?.totalMemory.toFixed(2)}核
+								<br />
+								已分配：{clusterQuota?.usedMemory.toFixed(
+									2
+								)}核 <br />
+								剩余容量：
+								{Number(clusterQuota?.totalMemory.toFixed(2)) -
+									Number(
+										clusterQuota?.usedMemory.toFixed(2)
+									) || 0}
+								核
 								<br />
 							</div>
 						</div>
