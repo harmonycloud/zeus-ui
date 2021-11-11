@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Dialog,
 	Form,
@@ -28,8 +28,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 					);
 					onCancel();
 				} else {
-					// todo 同名校验
-					console.log('error');
+					field.setError('name', res.errorMsg);
 				}
 			});
 		});
