@@ -19,6 +19,7 @@ import {
 	MiddlewareResourceProps,
 	ClusterQuotaDTO
 } from '../resource.pool';
+import { filtersProps } from '@/types/comment';
 // * E charts v5
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
@@ -44,6 +45,7 @@ const Tooltip = Balloon.Tooltip;
 const Overview = () => {
 	const [viewType, setViewType] = useState<string>('service');
 	const [tableType, setTableType] = useState<string>('cpu');
+	const [originData, setOriginData] = useState<MiddlewareResourceProps[]>([]);
 	const [dataSource, setDataSource] = useState<MiddlewareResourceProps[]>([]);
 	const [nodeDataSource, setNodeDataSource] = useState<NodeResourceProps[]>(
 		[]
@@ -51,6 +53,8 @@ const Overview = () => {
 	const [clusterQuota, setClusterQuota] = useState<ClusterQuotaDTO>();
 	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
 	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
+	const [namespaceFilter, setNamespaceFilter] = useState<filtersProps[]>([]);
+	const [typeFilter, setTypeFilter] = useState<filtersProps[]>([]);
 
 	const params: paramsProps = useParams();
 	const { id } = params;
@@ -59,7 +63,24 @@ const Overview = () => {
 		getMiddlewareResource({ clusterId: id }).then((res) => {
 			if (res.success) {
 				if (mounted) {
+					setOriginData(res.data);
 					setDataSource(res.data);
+					setNamespaceFilter(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.namespace,
+								value: item.namespace
+							};
+						})
+					);
+					setTypeFilter(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.type,
+								value: item.type
+							};
+						})
+					);
 				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -332,7 +353,7 @@ const Overview = () => {
 		setNodeDataSource([...temp]);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		const temp = dataSource.sort(function (
+		const temp = originData.sort(function (
 			a: MiddlewareResourceProps,
 			b: MiddlewareResourceProps
 		) {
@@ -347,7 +368,18 @@ const Overview = () => {
 		});
 		setDataSource([...temp]);
 	};
-
+	const onFilter = (filterParams: any) => {
+		const keys = Object.keys(filterParams);
+		if (filterParams[keys[0]].selectedKeys.length > 0) {
+			const list = dataSource.filter(
+				(item: MiddlewareResourceProps) =>
+					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+			);
+			setDataSource(list);
+		} else {
+			setDataSource(originData);
+		}
+	};
 	return (
 		<div>
 			<FormBlock title="资源信息">
@@ -371,9 +403,10 @@ const Overview = () => {
 									2
 								)}核 <br />
 								剩余容量：
-								{Number(clusterQuota?.totalCpu.toFixed(2)) -
-									Number(clusterQuota?.usedCpu.toFixed(2)) ||
-									0}
+								{(
+									Number(clusterQuota?.totalCpu.toFixed(2)) -
+									Number(clusterQuota?.usedCpu.toFixed(2))
+								).toFixed(2) || 0}
 								核
 								<br />
 							</div>
@@ -396,10 +429,12 @@ const Overview = () => {
 									2
 								)}核 <br />
 								剩余容量：
-								{Number(clusterQuota?.totalMemory.toFixed(2)) -
+								{(
 									Number(
-										clusterQuota?.usedMemory.toFixed(2)
-									) || 0}
+										clusterQuota?.totalMemory.toFixed(2)
+									) -
+									Number(clusterQuota?.usedMemory.toFixed(2))
+								).toFixed(2) || 0}
 								核
 								<br />
 							</div>
@@ -413,16 +448,24 @@ const Overview = () => {
 							operation={Operation}
 							maxBodyHeight="250px"
 							onSort={onSort}
+							onFilter={onFilter}
 						>
 							<Table.Column
 								title="资源分区"
 								dataIndex="namespace"
+								filters={namespaceFilter}
+								filterMode="single"
+								width={200}
+								lock="left"
 							/>
 							{viewType === 'service' && (
 								<Table.Column
 									title="类型"
 									dataIndex="type"
 									cell={iconTypeRender}
+									filters={typeFilter}
+									filterMode="single"
+									width={200}
 								/>
 							)}
 							{viewType === 'service' && (
@@ -430,6 +473,7 @@ const Overview = () => {
 									title="服务名称/中文别名"
 									dataIndex="name"
 									cell={nameRender}
+									width={200}
 								/>
 							)}
 							{tableType === 'cpu' && (
@@ -437,6 +481,8 @@ const Overview = () => {
 									title="CPU配额（核）"
 									dataIndex="requestCpu"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'cpu' && (
@@ -444,6 +490,8 @@ const Overview = () => {
 									title="近5min平均使用额（核）"
 									dataIndex="per5MinCpu"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'cpu' && (
@@ -451,6 +499,8 @@ const Overview = () => {
 									title="CPU使用率（%）"
 									dataIndex="cpuRate"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'memory' && (
@@ -458,6 +508,8 @@ const Overview = () => {
 									title="内存配额（GB）"
 									dataIndex="requestMemory"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'memory' && (
@@ -465,6 +517,8 @@ const Overview = () => {
 									title="近5min平均使用额（GB）"
 									dataIndex="per5MinMemory"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'memory' && (
@@ -472,6 +526,8 @@ const Overview = () => {
 									title="内存使用率（%）"
 									dataIndex="memoryRate"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 						</Table>

@@ -131,3 +131,34 @@
 		margin: 8px 0;
 	}
 }
+.delete-disabled{
+	color: #CCCCCC;
+}
+.quick-model-content{
+	width: 100%;
+	height: 182px;
+	background: #F5F5F5;
+	padding: 16px;
+	.quick-model-title{
+		width: 375px;
+		height: 22px;
+		font-size: 12px;
+		font-family: PingFangSC-Regular, PingFang SC;
+		font-weight: 400;
+		color: #333333;
+		line-height: 22px;
+	}
+	.quick-model-text{
+		width: 100%;
+		margin-top: 16px;
+		height: 113px;
+		background: #272822;
+		padding: 24px;
+	}
+	.quick-model-copy{
+		margin-top: 16px;
+		width: 46px;
+		height: 113px;
+		background: #0064C8;
+	}
+}
