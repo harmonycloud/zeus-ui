@@ -12,6 +12,7 @@
 		"@alicloud/console-components-page": "^1.0.15",
 		"@alicloud/console-components-slide-panel": "^2.2.3",
 		"@alicloud/console-components-table": "^1.0.15",
+		"@antv/g6": "4.3.11",
 		"@babel/helper-builder-react-jsx": "^7.10.4",
 		"@babel/plugin-proposal-nullish-coalescing-operator": "^7.12.1",
 		"@babel/plugin-proposal-optional-chaining": "^7.12.7",

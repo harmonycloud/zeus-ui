@@ -21,6 +21,7 @@ import pattern from '@/utils/pattern';
 import styles from './rocketmq.module.scss';
 import {
 	getNodePort,
+	getNodeTaint,
 	getStorageClass,
 	postMiddleware,
 	getMiddlewareDetail
@@ -60,6 +61,20 @@ const RocketMQCreate = (props) => {
 			[key]: value
 		});
 	};
+	const [affinityLabels, setAffinityLabels] = useState([]);
+	// 主机容忍
+	const [tolerations, setTolerations] = useState({
+		flag: false,
+		label: '',
+	});
+	const [tolerationList, setTolerationList] = useState([]);
+	const changeTolerations = (value, key) => {
+		setTolerations({
+			...tolerations,
+			[key]: value
+		});
+	};
+	const [tolerationsLabels, setTolerationsLabels] = useState([]);
 
 	// 日志
 	const [fileLog, setFileLog] = useState(false);
@@ -212,13 +227,23 @@ const RocketMQCreate = (props) => {
 						);
 						return;
 					} else {
-						sendData.nodeAffinity = [
-							{
-								label: affinity.label,
+						sendData.nodeAffinity = affinityLabels.map(item => {
+							return {
+								label: item.label,
 								required: affinity.checked,
 								namespace: globalNamespace.name
 							}
-						];
+						})
+					}
+				}
+				if (tolerations.flag) {
+					if (!tolerationsLabels.length) {
+						Message.show(
+							messageConfig('error', '错误', '请选择主机容忍。')
+						);
+						return;
+					} else {
+						sendData.tolerations = tolerationsLabels.map(item => item.label)
 					}
 				}
 				if (instanceSpec === 'General') {
@@ -273,22 +298,22 @@ const RocketMQCreate = (props) => {
 							values.rocketMQAccountList;
 					}
 				}
-				// console.log(sendData);
-				postMiddleware(sendData).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', {
-								data: '中间件RocketMQ正在创建中'
-							})
-						);
-						history.push({
-							pathname: '/serviceList',
-							query: { key: 'RocketMQ', timer: true }
-						});
-					} else {
-						Message.show(messageConfig('error', '错误', res));
-					}
-				});
+				console.log(sendData);
+				// postMiddleware(sendData).then((res) => {
+				// 	if (res.success) {
+				// 		Message.show(
+				// 			messageConfig('success', '成功', {
+				// 				data: '中间件RocketMQ正在创建中'
+				// 			})
+				// 		);
+				// 		history.push({
+				// 			pathname: '/serviceList',
+				// 			query: { key: 'RocketMQ', timer: true }
+				// 		});
+				// 	} else {
+				// 		Message.show(messageConfig('error', '错误', res));
+				// 	}
+				// });
 			}
 		});
 	};
@@ -299,6 +324,11 @@ const RocketMQCreate = (props) => {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setLabelList(res.data);
+				}
+			});
+			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
+				if (res.success) {
+					setTolerationList(res.data);
 				}
 			});
 		}
@@ -552,6 +582,88 @@ const RocketMQCreate = (props) => {
 										) : null}
 									</div>
 								</li>
+								{
+									affinityLabels.length ? <div className={styles['tags']}>
+										{
+											affinityLabels.map(item => {
+												return (
+													<p className={styles['tag']}>
+														<span>{item.label}</span>
+														<Icon type="error" size='xs' className={styles['tag-close']} onClick={() => setAffinityLabels(affinityLabels.filter(arr => arr.id !== item.id))} />
+													</p>
+												)
+											})
+										}
+									</div> : null
+								}
+								<li className="display-flex form-li">
+									<label className="form-name">
+										<span className="mr-8">
+											配置污点
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['host-affinity']}`}
+									>
+										<div className={styles['switch']}>
+											{tolerations.flag ? '已开启' : '关闭'}
+											<Switch
+												checked={tolerations.flag}
+												onChange={(value) =>
+													changeTolerations(
+														value,
+														'flag'
+													)
+												}
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+											/>
+										</div>
+										{tolerations.flag ? (
+											<>
+												<div
+													className={styles['input']}
+												>
+													<Select.AutoComplete
+														value={tolerations.label}
+														onChange={(value) =>
+															changeTolerations(
+																value,
+																'label'
+															)
+														}
+														dataSource={tolerationList}
+														style={{
+															width: '100%'
+														}}
+													/>
+												</div>
+												<div className={styles['add']}>
+													<Button style={{ marginLeft: '4px', padding: '0 9px' }} onClick={() => setTolerationsLabels([...tolerationsLabels, { label: tolerations.label, id: Math.random() }])}>
+														<Icon style={{ color: '#005AA5' }} type="add" />
+													</Button>
+												</div>
+											</>
+										) : null}
+									</div>
+								</li>
+								{
+									tolerationsLabels.length ? <div className={styles['tags']}>
+										{
+											tolerationsLabels.map(item => {
+												return (
+													<p className={styles['tag']}>
+														<span>{item.label}</span>
+														<Icon type="error" size='xs' className={styles['tag-close']} onClick={() => setTolerationsLabels(tolerationsLabels.filter(arr => arr.id !== item.id))} />
+													</p>
+												)
+											})
+										}
+									</div> : null
+								}
 							</ul>
 						</div>
 					</FormBlock>

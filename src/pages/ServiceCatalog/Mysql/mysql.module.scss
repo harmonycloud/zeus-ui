@@ -7,7 +7,7 @@
 	padding: 8px 0 16px 0;
 }
 .schedule-strategy {
-	width: 620px;
+	width: 656px;
 	padding: 8px 0 16px 0;
 	.host-affinity {
 		.switch {
@@ -112,4 +112,26 @@
 	padding: 16px 16px 16px 0px;
 	background: $white;
 	border-top: 1px solid $border-color;
+}
+.tags{
+	padding: 10px 24px;
+	background: #F1F1F2;
+	display: flex;
+	flex-wrap: wrap;
+	.tag{
+		font-size: 12px;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: 500;
+		color: #333333;
+		padding: 6px;
+		line-height: 18px;
+		margin: 0 6px 6px 0;
+		border-radius: 12px;
+		border: 1px solid #C0C6CC;
+	}
+	.tag-close{
+		margin-left: 6px;
+		color: #666666;
+		cursor: pointer;
+	}
 }

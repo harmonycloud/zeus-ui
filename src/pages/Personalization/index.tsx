@@ -19,7 +19,7 @@ import logo from '@/assets/images/navbar/zeus-logo-small.svg';
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
 import { api } from '@/api.json';
-import { getPersonalConfig, personalized } from '@/services/user'
+import { getPersonalConfig, personalized } from '@/services/user';
 import './index.scss';
 
 const formItemLayout = {
@@ -50,12 +50,15 @@ function Personlization(): JSX.Element {
         getPersonalConfig({}).then((res) => {
             if (!res.data) return;
             setData(res.data);
+            setStatus(res.data.status);
+            storage.setLocal('personalization',res.data);
             field.setValues(res.data);
+            document.title = res.data && res.data.title ? res.data.title : 'Zeus'; 
         })
     }
 
     const beforeUpload = (info: any) => {
-        console.log(info);
+        // console.log(info);
 
         if (info.size / 1024 / 1024 > 2) {
             Message.show(
@@ -78,7 +81,7 @@ function Personlization(): JSX.Element {
     }
 
     const logoBeforeUpload = (info: any) => {
-        console.log(info);
+        // console.log(info);
 
         if (info.size / 1024 / 1024 > 2) {
             Message.show(
@@ -122,14 +125,15 @@ function Personlization(): JSX.Element {
             delete values.backgroundImage;
             delete values.loginLogo;
             delete values.homeLogo;
-            delete values.status;
+            console.log();
+            
             if (values.status === "1") {
                 values.status = 'init'
             } else {
                 values.status = ''
             }
             personalized(values).then(res => {
-                if (!res.data) return;
+                if (res.code) return;
                 getData();
             })
         });
@@ -161,7 +165,6 @@ function Personlization(): JSX.Element {
                             action={`${api}/user/uploadFile?type=background`}
                             accept="image/svg,image/jpg,image/png,.svg"
                             limit={1}
-                            // name="file"
                             useDataURL={true}
                             headers={headers}
                             beforeUpload={beforeUpload}
@@ -171,9 +174,9 @@ function Personlization(): JSX.Element {
                                     name: 'IMG.png',
                                     state: 'done',
                                     size: 1024,
-                                    downloadURL: personalization.backgroundImagePath || background,
-                                    fileURL: personalization.backgroundImagePath || background,
-                                    imgURL: personalization.backgroundImagePath || background
+                                    downloadURL: personalization.backgroundPath ? api+'/images/middleware/'+personalization.backgroundPath : background,
+                                    fileURL: personalization.backgroundPath ? api+'/images/middleware/'+personalization.backgroundPath : background,
+                                    imgURL: personalization.backgroundPath ? api+'/images/middleware/'+personalization.backgroundPath : background
                                 }
                             ]}
                         >
@@ -198,7 +201,6 @@ function Personlization(): JSX.Element {
                             accept="image/svg,.svg"
                             limit={1}
                             useDataURL={true}
-                            // name="file"
                             headers={headers}
                             beforeUpload={logoBeforeUpload}
                             defaultValue={[
@@ -206,7 +208,7 @@ function Personlization(): JSX.Element {
                                     name: 'IMG.png',
                                     state: 'done',
                                     size: 1024,
-                                    url: personalization.homeLogoPath || homeLogo
+                                    url: personalization.homeLogoPath ? api+'/images/middleware/'+personalization.homeLogoPath : homeLogo
                                 }
                             ]}
                         >
@@ -253,21 +255,20 @@ function Personlization(): JSX.Element {
                         <Upload
                             style={{ display: 'inline' }}
                             listType="card"
-                            action={`${api}/user/uploadFile?type=logo`}
+                            action={`${api}/user/uploadFile?type=home`}
                             accept="image/svg,.svg"
                             headers={headers}
                             useDataURL={true}
                             limit={1}
                             beforeUpload={logoBeforeUpload}
-                            // name="homeLogoPath"
                             defaultValue={[
                                 {
                                     name: 'IMG.png',
                                     state: 'done',
                                     size: 1024,
-                                    downloadURL: personalization.logoPath || logo,
-                                    fileURL: personalization.logoPath || logo,
-                                    imgURL: personalization.logoPath || logo
+                                    downloadURL: personalization.loginLogoPath ? api+'/images/middleware/'+personalization.loginLogoPath : logo,
+                                    fileURL: personalization.loginLogoPath ? api+'/images/middleware/'+personalization.loginLogoPath : logo,
+                                    imgURL: personalization.loginLogoPath ? api+'/images/middleware/'+personalization.loginLogoPath : logo
                                 }
                             ]}
                         >

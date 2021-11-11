@@ -10,6 +10,7 @@ import {
 import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
+import Visualization from './visualization'
 // import BalloonForm from '@/components/BalloonForm';
 import {
 	getPods,
@@ -91,6 +92,7 @@ export default function HighAvailability(props) {
 	// * 自定义中间件修改节点规格
 	const [customVisible, setCustomVisible] = useState(false);
 	const [quotaValue, setQuotaValue] = useState();
+	const [topoData, setTopoData] = useState();
 	// * es专用 specificationConfig
 	const [esSpConfig] = useState([
 		{
@@ -147,8 +149,8 @@ export default function HighAvailability(props) {
 													0
 													: null}
 												{`${item.type !== 'kibana'
-														? '存储'
-														: ''
+													? '存储'
+													: ''
 													}`}
 											</Col>{' '}
 										</Row>
@@ -268,15 +270,6 @@ export default function HighAvailability(props) {
 				});
 			}
 			setQuotaValue(data.quota[type]);
-			axios.get(`api/clusters/${clusterId}/namespaces/${namespace}/middlewares/${chartName}/pods`, {
-				headers: {
-					userToken: cache.getLocal('token'),
-					authType: cache.getLocal('token') ? 1 : 0
-				}
-			}).then(data => {
-
-				console.log('dasdasdasd', data);
-			})
 			// * 自定义中间件 有operator，无operator
 			// if (customMid && data.quota[type] !== null) {
 			// 	setConfig({
@@ -368,6 +361,7 @@ export default function HighAvailability(props) {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				setPods(res.data.pods);
+				setTopoData(res.data.podInfoGroup)
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -679,7 +673,7 @@ export default function HighAvailability(props) {
 				<DefaultPicture />
 			) : (
 				<>
-					{customMid && data.quota[data.type] === null ? null : (
+					{/* {customMid && data.quota[data.type] === null ? null : (
 						<>
 							<DataFields
 								dataSource={config}
@@ -691,7 +685,14 @@ export default function HighAvailability(props) {
 							/>
 							<div className="detail-divider" />
 						</>
-					)}
+					)} */}
+					{
+						topoData &&
+						<>
+							<Visualization topoData={topoData} serverData={data} />
+							<div className="detail-divider" />
+						</>
+					}
 					{type === 'mysql' ? (
 						<>
 							<div className="title-content">

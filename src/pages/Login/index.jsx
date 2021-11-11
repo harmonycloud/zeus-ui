@@ -33,11 +33,11 @@ export default function Login() {
 	const [data, setData] = useState();
 
 	useEffect(() => {
-		getPersonalConfig({}).then(res => {
-			// console.log(res);
+		getPersonalConfig({}).then((res) => {
+			// console.log(res.data);
 			setData(res.data);
 			storage.setLocal('personalization',res.data);
-			document.title = data && data.title ? data.title : 'Zeus'; 
+			document.title = res.data && res.data.title ? res.data.title : 'Zeus'; 
 		})
 	}, [])
 
@@ -114,7 +114,7 @@ export default function Login() {
 	};
 
 	return (
-		<div className={styles['login']} style={{background: `transparent url(${data && data.backgroundImagePath ? api+'/images/middleware/'+data.homeLogoPath :  background}) no-repeat center center /cover`}}>
+		<div className={styles['login']} style={{background: `transparent url(${data && data.backgroundPath ? api+'/images/middleware/'+data.backgroundPath :  background}) no-repeat center center /cover`}}>
 			<div className={styles['header']}>
 				<img className={styles['logo']} src={data && data.homeLogoPath
 					? `${api}/images/middleware/${data.homeLogoPath}`
@@ -164,7 +164,6 @@ export default function Login() {
 									})
 								}
 								onKeyPress={(event) => {
-									console.log(event.charCode);
 									if (event.charCode === 13) {
 										submit(event);
 									}
