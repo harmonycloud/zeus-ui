@@ -82,5 +82,10 @@ export const getPersonalConfig = (params: any) => {
 };
 // * 添加个性化配置
 export const personalized = (params: any) => {
-	return Axios.json(USER.personalized+'?status='+params.status, params, {}, 'POST');
+	return Axios.json(
+		USER.personalized + '?status=' + params.status,
+		params,
+		{},
+		'POST'
+	);
 };

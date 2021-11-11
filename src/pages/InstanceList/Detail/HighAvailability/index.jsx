@@ -146,7 +146,7 @@ export default function HighAvailability(props) {
 												内存{' '}
 												{item.type !== 'kibana'
 													? item.storageClassQuota ||
-													0
+													  0
 													: null}
 												{`${item.type !== 'kibana'
 													? '存储'
@@ -233,7 +233,7 @@ export default function HighAvailability(props) {
 		) {
 			const cpu =
 				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
-					'm'
+				'm'
 					? data.quota[type].cpu
 					: `${data.quota[type].cpu} Core`;
 			const memory = `${data.quota[type].memory} 内存`;
@@ -246,7 +246,7 @@ export default function HighAvailability(props) {
 		) {
 			const cpu =
 				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
-					'm'
+				'm'
 					? data.quota[type].cpu
 					: `${data.quota[type].cpu} Core`;
 			const memory = `${data.quota[type].memory} 内存`;
@@ -459,8 +459,9 @@ export default function HighAvailability(props) {
 	};
 
 	const restartRender = (value, index, record) => {
-		return `${value}(${transTime.gmt2local(record.lastRestartTime) || '无'
-			})`;
+		return `${value}(${
+			transTime.gmt2local(record.lastRestartTime) || '无'
+		})`;
 	};
 
 	const onChange = (checked) => {
@@ -659,8 +660,9 @@ export default function HighAvailability(props) {
 	};
 
 	const storageRender = (value, index, record) => {
-		return `${record.resources.storageClassQuota || '无'}(${record.resources.storageClassName || '无'
-			})`;
+		return `${record.resources.storageClassQuota || '无'}(${
+			record.resources.storageClassName || '无'
+		})`;
 	};
 
 	const createTimeRender = (value) => {

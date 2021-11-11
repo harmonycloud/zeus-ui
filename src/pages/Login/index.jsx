@@ -12,9 +12,9 @@ import {
 	Input
 } from '@alicloud/console-components';
 import { api } from '@/api.json';
-import { getPersonalConfig } from '@/services/user'
+import { getPersonalConfig } from '@/services/user';
 import logo from '@/assets/images/logo.svg';
-import background from '../../assets/images/login_bg.svg'
+import background from '../../assets/images/login_bg.svg';
 import styles from './login.module.scss';
 import storage from '@/utils/storage';
 
@@ -84,7 +84,10 @@ export default function Login() {
 					Storage.setLocal('token', res.data.token);
 					Storage.setLocal('userName', res.data.userName);
 					Storage.setLocal('roleName', res.data);
-					Storage.setLocal('url', 'https://mpaas.com/assets/images/bg-d2bf59ca.png')
+					Storage.setLocal(
+						'url',
+						'https://mpaas.com/assets/images/bg-d2bf59ca.png'
+					);
 					if (res.data.rePassword) {
 						console.log(res.data.rePassword);
 						setVisible(true);
@@ -116,14 +119,22 @@ export default function Login() {
 	return (
 		<div className={styles['login']} style={{background: `transparent url(${data && data.backgroundPath ? api+'/images/middleware/'+data.backgroundPath :  background}) no-repeat center center /cover`}}>
 			<div className={styles['header']}>
-				<img className={styles['logo']} src={data && data.homeLogoPath
-					? `${api}/images/middleware/${data.homeLogoPath}`
-					: logo} />
+				<img
+					className={styles['logo']}
+					src={
+						data && data.homeLogoPath
+							? `${api}/images/middleware/${data.homeLogoPath}`
+							: logo
+					}
+				/>
 				<span className={styles['info']}>
-					{data && data.platformName || 'Zeus | 中间件管理一体化平台'}
+					{(data && data.platformName) ||
+						'Zeus | 中间件管理一体化平台'}
 				</span>
 			</div>
-			<div className={styles['slogan']}>{data && data.slogan || '我是slogan，产品介绍描述'}</div>
+			<div className={styles['slogan']}>
+				{(data && data.slogan) || '我是slogan，产品介绍描述'}
+			</div>
 			<form className={styles['login-form']}>
 				<header className={styles['login-header']}>
 					中间件平台登录
@@ -237,7 +248,8 @@ export default function Login() {
 				/>
 			)}
 			<div className={styles['copy']}>
-				{data && data.copyrightNotice || 'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight © 2021 杭州谐云科技有限公司 All rightsreserved.'}
+				{(data && data.copyrightNotice) ||
+					'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight © 2021 杭州谐云科技有限公司 All rightsreserved.'}
 			</div>
 		</div>
 	);

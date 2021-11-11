@@ -204,4 +204,75 @@ const getLineOption = (
 	return option;
 };
 
-export { getPieOption, getLineOption };
+const getGaugeOption = (data: number, name: string) => {
+	const option = {
+		series: [
+			{
+				type: 'gauge',
+				startAngle: 180,
+				endAngle: 0,
+				min: 0,
+				max: 1,
+				splitNumber: 8,
+				axisLine: {
+					show: false,
+					lineStyle: {
+						width: 6,
+						color: [
+							[0.25, '#00a700'],
+							[0.5, '#0070cc'],
+							[0.75, '#FFAA3A'],
+							[1, '#Ef595C']
+						]
+					}
+				},
+				center: ['50%', '70%'],
+				radius: '145%',
+				pointer: {
+					icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+					length: '13%',
+					width: 10,
+					offsetCenter: [0, '-60%'],
+					itemStyle: {
+						color: 'auto'
+					}
+				},
+				axisTick: {
+					length: 12,
+					lineStyle: {
+						color: 'auto',
+						width: 2
+					}
+				},
+				splitLine: {
+					show: false
+				},
+				axisLabel: {
+					show: false
+				},
+				title: {
+					offsetCenter: [0, '0%'],
+					fontSize: 14
+				},
+				detail: {
+					fontSize: 29,
+					offsetCenter: [0, '-30%'],
+					valueAnimation: true,
+					formatter: function (value: any) {
+						return Math.round(value * 100) + '%';
+					},
+					color: 'auto'
+				},
+				data: [
+					{
+						value: data,
+						name: name
+					}
+				]
+			}
+		]
+	};
+	return option;
+};
+
+export { getPieOption, getLineOption, getGaugeOption };

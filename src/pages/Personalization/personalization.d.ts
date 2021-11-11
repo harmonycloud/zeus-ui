@@ -11,6 +11,6 @@ export interface personalizationProps {
 	loginLogoPath: string | null;
 	status: string;
 	slogan: string | null;
-    title: string | null
+	title: string | null;
 	[propsName: string]: any;
 }

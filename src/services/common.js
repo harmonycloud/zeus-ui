@@ -44,6 +44,7 @@ export const putNamespaces = (params, data) => {
 	);
 };
 // * 资源池详情等接口
+// * 概览
 export const getMiddlewareResource = (params) => {
 	return Axios.get(COMMON.getMiddlewareResource, params);
 };
@@ -52,4 +53,14 @@ export const getNodeResource = (params) => {
 };
 export const getNamespaceResource = (params) => {
 	return Axios.get(COMMON.getNamespaceResource, params);
+};
+// * 资源分区
+export const createNamespace = (params) => {
+	return Axios.post(COMMON.namespaces, params);
+};
+export const deleteNamespace = (params) => {
+	return Axios.delete(COMMON.updateNamespace, params);
+};
+export const regNamespace = (params) => {
+	return Axios.put(COMMON.updateNamespace, params);
 };

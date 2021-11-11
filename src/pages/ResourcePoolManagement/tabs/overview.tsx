@@ -9,11 +9,17 @@ import { paramsProps } from '../detail';
 import {
 	getMiddlewareResource,
 	getNodeResource,
-	getNamespaceResource
+	getNamespaceResource,
+	getCluster
 } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import transBg from '@/assets/images/trans-bg.svg';
-import { NodeResourceProps, MiddlewareResourceProps } from '../resource.pool';
+import {
+	NodeResourceProps,
+	MiddlewareResourceProps,
+	ClusterQuotaDTO
+} from '../resource.pool';
+import { filtersProps } from '@/types/comment';
 // * E charts v5
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
@@ -24,6 +30,7 @@ import {
 	TitleComponent
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { getGaugeOption } from '@/utils/echartsOption';
 
 // Register the required components
 echarts.use([
@@ -38,10 +45,17 @@ const Tooltip = Balloon.Tooltip;
 const Overview = () => {
 	const [viewType, setViewType] = useState<string>('service');
 	const [tableType, setTableType] = useState<string>('cpu');
+	const [originData, setOriginData] = useState<MiddlewareResourceProps[]>([]);
 	const [dataSource, setDataSource] = useState<MiddlewareResourceProps[]>([]);
 	const [nodeDataSource, setNodeDataSource] = useState<NodeResourceProps[]>(
 		[]
 	);
+	const [clusterQuota, setClusterQuota] = useState<ClusterQuotaDTO>();
+	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
+	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
+	const [namespaceFilter, setNamespaceFilter] = useState<filtersProps[]>([]);
+	const [typeFilter, setTypeFilter] = useState<filtersProps[]>([]);
+
 	const params: paramsProps = useParams();
 	const { id } = params;
 	useEffect(() => {
@@ -49,7 +63,24 @@ const Overview = () => {
 		getMiddlewareResource({ clusterId: id }).then((res) => {
 			if (res.success) {
 				if (mounted) {
+					setOriginData(res.data);
 					setDataSource(res.data);
+					setNamespaceFilter(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.namespace,
+								value: item.namespace
+							};
+						})
+					);
+					setTypeFilter(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.type,
+								value: item.type
+							};
+						})
+					);
 				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -60,6 +91,25 @@ const Overview = () => {
 				if (mounted) {
 					setNodeDataSource(res.data);
 				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+		getCluster({ clusterId: id, detail: true }).then((res) => {
+			if (res.success) {
+				setClusterQuota(res.data.clusterQuotaDTO || {});
+				const cpuRate = res.data.clusterQuotaDTO
+					? Number(res.data.clusterQuotaDTO?.usedCpu) /
+					  Number(res.data.clusterQuotaDTO?.totalCpu)
+					: 0;
+				const option1Temp = getGaugeOption(cpuRate, 'CPU(核)');
+				setOption1(option1Temp);
+				const memoryRate = res.data.clusterQuotaDTO
+					? Number(res.data.clusterQuotaDTO?.usedMemory) /
+					  Number(res.data.clusterQuotaDTO?.totalMemory)
+					: 0;
+				const option2Temp = getGaugeOption(memoryRate, '内存(GB)');
+				setOption2(option2Temp);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -303,7 +353,7 @@ const Overview = () => {
 		setNodeDataSource([...temp]);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		const temp = dataSource.sort(function (
+		const temp = originData.sort(function (
 			a: MiddlewareResourceProps,
 			b: MiddlewareResourceProps
 		) {
@@ -318,72 +368,17 @@ const Overview = () => {
 		});
 		setDataSource([...temp]);
 	};
-	const option = {
-		series: [
-			{
-				type: 'gauge',
-				startAngle: 180,
-				endAngle: 0,
-				min: 0,
-				max: 1,
-				splitNumber: 8,
-				axisLine: {
-					show: false,
-					lineStyle: {
-						width: 6,
-						color: [
-							[0.25, '#00a700'],
-							[0.5, '#0070cc'],
-							[0.75, '#FFAA3A'],
-							[1, '#Ef595C']
-						]
-					}
-				},
-				center: ['50%', '70%'],
-				radius: '145%',
-				pointer: {
-					icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
-					length: '13%',
-					width: 10,
-					offsetCenter: [0, '-60%'],
-					itemStyle: {
-						color: 'auto'
-					}
-				},
-				axisTick: {
-					length: 12,
-					lineStyle: {
-						color: 'auto',
-						width: 2
-					}
-				},
-				splitLine: {
-					show: false
-				},
-				axisLabel: {
-					show: false
-				},
-				title: {
-					offsetCenter: [0, '0%'],
-					fontSize: 14
-				},
-				detail: {
-					fontSize: 29,
-					offsetCenter: [0, '-30%'],
-					valueAnimation: true,
-					formatter: function (value: any) {
-						return Math.round(value * 100) + '%';
-					},
-					color: 'auto'
-				},
-				data: [
-					{
-						value: 0.2,
-						name: 'CPU(核)'
-					}
-				]
-			}
-		]
+	const onFilter = (filterParams: any) => {
+		const keys = Object.keys(filterParams);
+		if (filterParams[keys[0]].selectedKeys.length > 0) {
+			const list = dataSource.filter(
+				(item: MiddlewareResourceProps) =>
+					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+			);
+			setDataSource(list);
+		} else {
+			setDataSource(originData);
+		}
 	};
 	return (
 		<div>
@@ -393,7 +388,7 @@ const Overview = () => {
 						<div className="resource-pool-gauge-item">
 							<ReactEChartsCore
 								echarts={echarts}
-								option={option}
+								option={option1}
 								notMerge={true}
 								lazyUpdate={true}
 								style={{
@@ -402,16 +397,24 @@ const Overview = () => {
 								}}
 							/>
 							<div className="resource-pool-gauge-info">
-								总容量：50核 <br />
-								已分配：21核 <br />
-								剩余容量：29核
+								总容量：{clusterQuota?.totalCpu.toFixed(2)}核
+								<br />
+								已分配：{clusterQuota?.usedCpu.toFixed(
+									2
+								)}核 <br />
+								剩余容量：
+								{(
+									Number(clusterQuota?.totalCpu.toFixed(2)) -
+									Number(clusterQuota?.usedCpu.toFixed(2))
+								).toFixed(2) || 0}
+								核
 								<br />
 							</div>
 						</div>
 						<div className="resource-pool-gauge-item">
 							<ReactEChartsCore
 								echarts={echarts}
-								option={option}
+								option={option2}
 								notMerge={true}
 								lazyUpdate={true}
 								style={{
@@ -420,9 +423,19 @@ const Overview = () => {
 								}}
 							/>
 							<div className="resource-pool-gauge-info">
-								总容量：50核 <br />
-								已分配：21核 <br />
-								剩余容量：29核
+								总容量：{clusterQuota?.totalMemory.toFixed(2)}核
+								<br />
+								已分配：{clusterQuota?.usedMemory.toFixed(
+									2
+								)}核 <br />
+								剩余容量：
+								{(
+									Number(
+										clusterQuota?.totalMemory.toFixed(2)
+									) -
+									Number(clusterQuota?.usedMemory.toFixed(2))
+								).toFixed(2) || 0}
+								核
 								<br />
 							</div>
 						</div>
@@ -435,16 +448,24 @@ const Overview = () => {
 							operation={Operation}
 							maxBodyHeight="250px"
 							onSort={onSort}
+							onFilter={onFilter}
 						>
 							<Table.Column
 								title="资源分区"
 								dataIndex="namespace"
+								filters={namespaceFilter}
+								filterMode="single"
+								width={200}
+								lock="left"
 							/>
 							{viewType === 'service' && (
 								<Table.Column
 									title="类型"
 									dataIndex="type"
 									cell={iconTypeRender}
+									filters={typeFilter}
+									filterMode="single"
+									width={200}
 								/>
 							)}
 							{viewType === 'service' && (
@@ -452,6 +473,7 @@ const Overview = () => {
 									title="服务名称/中文别名"
 									dataIndex="name"
 									cell={nameRender}
+									width={200}
 								/>
 							)}
 							{tableType === 'cpu' && (
@@ -459,6 +481,8 @@ const Overview = () => {
 									title="CPU配额（核）"
 									dataIndex="requestCpu"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'cpu' && (
@@ -466,6 +490,8 @@ const Overview = () => {
 									title="近5min平均使用额（核）"
 									dataIndex="per5MinCpu"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'cpu' && (
@@ -473,6 +499,8 @@ const Overview = () => {
 									title="CPU使用率（%）"
 									dataIndex="cpuRate"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'memory' && (
@@ -480,6 +508,8 @@ const Overview = () => {
 									title="内存配额（GB）"
 									dataIndex="requestMemory"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'memory' && (
@@ -487,6 +517,8 @@ const Overview = () => {
 									title="近5min平均使用额（GB）"
 									dataIndex="per5MinMemory"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 							{tableType === 'memory' && (
@@ -494,6 +526,8 @@ const Overview = () => {
 									title="内存使用率（%）"
 									dataIndex="memoryRate"
 									cell={nullRender}
+									width={200}
+									sortable
 								/>
 							)}
 						</Table>

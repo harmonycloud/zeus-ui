@@ -25,4 +25,4 @@ export const getRoles = `${api}/role/list`;
 // * 获取角色列表
 export const getPersonalConfig = `${api}/user/getPersonalConfig`;
 // * 添加个性化配置
-export const personalized = `${api}/user/personalized`
+export const personalized = `${api}/user/personalized`;

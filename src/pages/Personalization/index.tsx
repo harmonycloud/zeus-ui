@@ -2,18 +2,18 @@ import React, { useEffect, useState, useMemo, useRef, createRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import {
-    Button,
-    Form,
-    Upload,
-    Icon,
-    Input,
-    Radio,
-    Field,
-    Message
+	Button,
+	Form,
+	Upload,
+	Icon,
+	Input,
+	Radio,
+	Field,
+	Message
 } from '@alicloud/console-components';
 import Confirm from '@alicloud/console-components-confirm';
 import { personalizationProps } from './personalization';
-import background from '../../assets/images/login_bg.svg'
+import background from '../../assets/images/login_bg.svg';
 import homeLogo from '@/assets/images/logo.svg';
 import logo from '@/assets/images/navbar/zeus-logo-small.svg';
 import messageConfig from '@/components/messageConfig';
@@ -23,28 +23,28 @@ import { getPersonalConfig, personalized } from '@/services/user';
 import './index.scss';
 
 const formItemLayout = {
-    labelCol: {
-        fixedSpan: 6
-    },
-    wrapperCol: {
-        span: 10
-    }
+	labelCol: {
+		fixedSpan: 6
+	},
+	wrapperCol: {
+		span: 10
+	}
 };
 
 function Personlization(): JSX.Element {
-    const history = useHistory();
-    const field: Field = Field.useField();
-    const headers = {
-        userToken: storage.getLocal('token'),
-        authType: storage.getLocal('token') ? 1 : 0
-    };
-    const [data, setData] = useState<personalizationProps>();
-    const personalization = storage.getLocal('personalization');
-    const [status, setStatus] = useState<number | string | boolean>('0');
+	const history = useHistory();
+	const field: Field = Field.useField();
+	const headers = {
+		userToken: storage.getLocal('token'),
+		authType: storage.getLocal('token') ? 1 : 0
+	};
+	const [data, setData] = useState<personalizationProps>();
+	const personalization = storage.getLocal('personalization');
+	const [status, setStatus] = useState<number | string | boolean>('0');
 
-    useEffect(() => {
-        getData();
-    }, [])
+	useEffect(() => {
+		getData();
+	}, []);
 
     const getData = () => {
         getPersonalConfig({}).then((res) => {
@@ -60,61 +60,39 @@ function Personlization(): JSX.Element {
     const beforeUpload = (info: any) => {
         // console.log(info);
 
-        if (info.size / 1024 / 1024 > 2) {
-            Message.show(
-                messageConfig(
-                    'warning',
-                    '图片过大，请重新上传',
-                )
-            );
-            return false;
-        }
-        if (info.type !== 'image/svg+xml' && info.type !== 'image/jpeg' && info.type !== 'image/png') {
-            Message.show(
-                messageConfig(
-                    'warning',
-                    '文件格式错误，请重新上传',
-                )
-            );
-            return false;
-        }
-    }
+		if (info.size / 1024 / 1024 > 2) {
+			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			return false;
+		}
+		if (
+			info.type !== 'image/svg+xml' &&
+			info.type !== 'image/jpeg' &&
+			info.type !== 'image/png'
+		) {
+			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			return false;
+		}
+	};
 
     const logoBeforeUpload = (info: any) => {
         // console.log(info);
 
-        if (info.size / 1024 / 1024 > 2) {
-            Message.show(
-                messageConfig(
-                    'warning',
-                    '图片过大，请重新上传',
-                )
-            );
-            return false;
-        }
-        if (info.type !== 'image/svg+xml') {
-            Message.show(
-                messageConfig(
-                    'warning',
-                    '文件格式错误，请重新上传',
-                )
-            );
-            return false;
-        }
-    }
+		if (info.size / 1024 / 1024 > 2) {
+			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			return false;
+		}
+		if (info.type !== 'image/svg+xml') {
+			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			return false;
+		}
+	};
 
-    const onSuccess = (info: any) => {
-        // console.log('onSuccess : ', info);
-        if (info) {
-            Message.show(
-                messageConfig(
-                    'success',
-                    '成功',
-                    '图片上传成功'
-                )
-            );
-        }
-    }
+	const onSuccess = (info: any) => {
+		// console.log('onSuccess : ', info);
+		if (info) {
+			Message.show(messageConfig('success', '成功', '图片上传成功'));
+		}
+	};
 
     const onSubmit = () => {
         field.validate((errors, values: any) => {

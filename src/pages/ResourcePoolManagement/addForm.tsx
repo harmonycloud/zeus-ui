@@ -21,6 +21,7 @@ import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { clusterAddType } from '@/types';
 import { connect } from 'react-redux';
+import CustomIcon from '@/components/CustomIcon';
 
 const { Option } = Select;
 const { Group: RadioGroup } = Radio;
@@ -106,6 +107,7 @@ function AddForm(props: addFormProps): JSX.Element {
 
 	const [logCollect, setLogCollect] = useState<boolean>(true);
 	const [dcId, setDcId] = useState<string>('');
+	const [quickName, setQuickName] = useState<string>();
 	const [head, setHead] = useState('http://');
 	const [mid, setMid] = useState();
 	const [tail, setTail] = useState();
@@ -407,8 +409,53 @@ function AddForm(props: addFormProps): JSX.Element {
 			/>
 			<Content>
 				<Tab>
-					<Tab.Item title="快捷模式">
-						<FormBlock title="基础信息">tbc</FormBlock>
+					<Tab.Item
+						title="快捷模式"
+						disabled={params.clusterId ? true : false}
+					>
+						<FormBlock title="基础信息">
+							<FormItem
+								style={{ width: '50%', marginLeft: 12 }}
+								{...formItemLayout}
+								label="英文简称"
+								pattern={pattern.name}
+								patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
+								required
+								requiredMessage="请输入英文简称"
+								className="ne-required-ingress"
+								labelTextAlign="left"
+								asterisk={false}
+							>
+								<Input
+									value={quickName}
+									trim={true}
+									placeholder="请输入英文简称"
+									onChange={(value: string) =>
+										setQuickName(value)
+									}
+								/>
+							</FormItem>
+							<div className="quick-model-content">
+								<div className="quick-model-title">
+									在已有资源池的任意一个master节点上运行以下指令，实现资源池纳管
+								</div>
+								<div className="display-flex">
+									<div className="quick-model-text"></div>
+									<div className="quick-model-copy">
+										<CustomIcon
+											type="icon-fuzhi1"
+											style={{
+												color: '#FFFFFF',
+												marginLeft: 7,
+												marginTop: 40,
+												cursor: 'pointer'
+											}}
+											size="xl"
+										/>
+									</div>
+								</div>
+							</div>
+						</FormBlock>
 					</Tab.Item>
 					<Tab.Item title="表单模式">
 						<FormBlock title="基础信息">

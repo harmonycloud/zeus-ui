@@ -9,3 +9,4 @@ export const components = `${api}/clusters/{clusterId}/components/{componentName
 export const getMiddlewareResource = `${api}/clusters/{clusterId}/middleware/resource`;
 export const getNodeResource = `${api}/clusters/{clusterId}/node/resource`;
 export const getNamespaceResource = `${api}/clusters/{clusterId}/namespace/resource`;
+export const updateNamespace = `${api}/clusters/{clusterId}/namespaces/{name}`;
