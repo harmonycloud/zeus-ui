@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import {
 	Button,
 	Message,
@@ -15,7 +15,7 @@ import {
 	serviceProps,
 	CurrentService
 } from './service.list';
-import { StoreState, globalVarProps } from '@/types/index';
+import { StoreState } from '@/types/index';
 import { getList } from '@/services/serviceList';
 import { deleteMiddleware } from '@/services/middleware';
 import { states } from '@/utils/const';
@@ -29,6 +29,10 @@ import {
 } from '@/redux/globalVar/var';
 import storage from '@/utils/storage';
 
+interface paramsProps {
+	name: string;
+	aliasName: string;
+}
 const ServiceListByType = (props: serviceListProps) => {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
 	const {
@@ -44,14 +48,14 @@ const ServiceListByType = (props: serviceListProps) => {
 	const [keyword, setKeyword] = useState<string>('');
 	const [selectedKeys, setSelectKeys] = useState<string[]>([]);
 	const history = useHistory();
-	const location = useLocation();
-	const { pathname } = location;
+	const params: paramsProps = useParams();
+	const { name, aliasName } = params;
 	useEffect(() => {
 		setCurrentServiceType({
-			name: pathname.split('/')[3],
-			type: pathname.split('/')[2]
+			name: aliasName,
+			type: name
 		});
-	}, [pathname]);
+	}, [params]);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -196,33 +200,33 @@ const ServiceListByType = (props: serviceListProps) => {
 			switch (dataSource.chartName) {
 				case 'mysql':
 					history.push(
-						`/middlewareRepository/mysqlCreate/${dataSource.chartName}/${dataSource.chartVersion}`
+						`/middlewareRepository/mysqlCreate/${currentService?.name}/${dataSource.chartName}/${dataSource.chartVersion}`
 					);
 					break;
 				case 'redis':
 					history.push(
-						`/middlewareRepository/redisCreate/${dataSource?.chartName}/${dataSource?.chartVersion}`
+						`/middlewareRepository/redisCreate/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}`
 					);
 					break;
 				case 'elasticsearch':
 					history.push(
-						`/middlewareRepository/elasticsearchCreate/${dataSource?.chartName}/${dataSource?.chartVersion}`
+						`/middlewareRepository/elasticsearchCreate/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}`
 					);
 					break;
 				case 'rocketmq':
 					history.push(
-						`/middlewareRepository/rocketmqCreate/${dataSource?.chartName}/${dataSource?.chartVersion}`
+						`/middlewareRepository/rocketmqCreate/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}`
 					);
 					break;
 				default:
 					history.push(
-						`/middlewareRepository/dynamicForm/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
+						`/middlewareRepository/dynamicForm/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
 					);
 					break;
 			}
 		} else {
 			history.push(
-				`/middlewareRepository/dynamicForm/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
+				`/middlewareRepository/dynamicForm/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
 			);
 		}
 	};

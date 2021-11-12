@@ -71,7 +71,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 4款中间件发布 + 动态表单的发布*/}
 				<Route
-					path="/middlewareRepository/mysqlCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/mysqlCreate/:aliasName/:chartName/:chartVersion"
 					component={MysqlCreate}
 					exact
 				/>
@@ -86,7 +86,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/middlewareRepository/redisCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/redisCreate/:aliasName/:chartName/:chartVersion"
 					component={RedisCreate}
 					exact
 				/>
@@ -95,7 +95,7 @@ const Routes = withRouter((props) => {
 					component={RedisCreate}
 				/>
 				<Route
-					path="/middlewareRepository/elasticsearchCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/elasticsearchCreate/:aliasName/:chartName/:chartVersion"
 					component={ElasticsearchCreate}
 					exact
 				/>
@@ -104,7 +104,7 @@ const Routes = withRouter((props) => {
 					component={ElasticsearchCreate}
 				/>
 				<Route
-					path="/middlewareRepository/rocketmqCreate/:chartName/:chartVersion"
+					path="/middlewareRepository/rocketmqCreate/:aliasName/:chartName/:chartVersion"
 					component={RocketMQCreate}
 				/>
 				<Route
@@ -112,7 +112,7 @@ const Routes = withRouter((props) => {
 					component={RocketMQCreate}
 				/>
 				<Route
-					path="/middlewareRepository/dynamicForm/:chartName/:chartVersion/:version"
+					path="/middlewareRepository/dynamicForm/:aliasName/:chartName/:chartVersion/:version"
 					component={DynamicForm}
 				/>
 				{/* 中间件市场-版本管理 */}

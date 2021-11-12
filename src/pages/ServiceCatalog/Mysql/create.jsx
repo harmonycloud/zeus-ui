@@ -69,7 +69,8 @@ const MysqlCreate = (props) => {
 		chartVersion,
 		middlewareName,
 		backupFileName,
-		disasterOriginName
+		disasterOriginName,
+		aliasName
 	} = useParams();
 	const field = Field.useField();
 	const history = useHistory();
@@ -215,7 +216,7 @@ const MysqlCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
-			if (values.name === 'mysql') return;
+			// if (values.name === 'mysql') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,
@@ -416,8 +417,7 @@ const MysqlCreate = (props) => {
 								)
 							);
 							history.push({
-								pathname: '/serviceList',
-								query: { key: 'Mysql', timer: true }
+								pathname: `/serviceList/${chartName}/${aliasName}`
 							});
 						} else {
 							Message.show(messageConfig('error', '失败', res));
@@ -432,8 +432,7 @@ const MysqlCreate = (props) => {
 								})
 							);
 							history.push({
-								pathname: '/serviceList',
-								query: { key: 'Mysql', timer: true }
+								pathname: `/serviceList/${chartName}/${aliasName}`
 							});
 						} else {
 							Message.show(messageConfig('error', '错误', res));
@@ -814,10 +813,10 @@ const MysqlCreate = (props) => {
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											validateState={
-												field.getValue('name') ===
-												'mysql' && 'error'
-											}
+											// validateState={
+											// 	field.getValue('name') ===
+											// 		'mysql' && 'error'
+											// }
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 										>
 											<Input
@@ -825,18 +824,18 @@ const MysqlCreate = (props) => {
 												placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 												trim
 											/>
-											{field.getValue('name') ===
+											{/* {field.getValue('name') ===
 												'mysql' && (
-													<Form.Error>
-														<span
-															style={{
-																color: '#C80000'
-															}}
-														>
-															服务名称不能与类型同名
-														</span>
-													</Form.Error>
-												)}
+												<Form.Error>
+													<span
+														style={{
+															color: '#C80000'
+														}}
+													>
+														服务名称不能与类型同名
+													</span>
+												</Form.Error>
+											)} */}
 										</FormItem>
 									</div>
 								</li>

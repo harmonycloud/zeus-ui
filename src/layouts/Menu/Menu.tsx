@@ -52,9 +52,9 @@ function Menu(props: MenuProps): JSX.Element {
 	]);
 	const { clusterId, menu } = props;
 	useEffect(() => {
-		if (props.clusterId !== '') {
-			getMenus();
-		}
+		// if (props.clusterId !== '') {
+		// }
+		getMenus();
 	}, [clusterId]);
 	useEffect(() => {
 		if (menu.flag) {
@@ -65,9 +65,13 @@ function Menu(props: MenuProps): JSX.Element {
 		return <Link to={`${key}`}>{label}</Link>;
 	}
 	const getMenus = async () => {
-		const res = await getMenu({
-			clusterId: props.clusterId
-		});
+		const res = await getMenu(
+			props.clusterId !== ''
+				? {
+						clusterId: props.clusterId
+				  }
+				: {}
+		);
 		if (res.success) {
 			const itemsTemp = res.data.map((item: any) => {
 				if (item.subMenu) {
