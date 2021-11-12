@@ -298,22 +298,22 @@ const RocketMQCreate = (props) => {
 							values.rocketMQAccountList;
 					}
 				}
-				console.log(sendData);
-				// postMiddleware(sendData).then((res) => {
-				// 	if (res.success) {
-				// 		Message.show(
-				// 			messageConfig('success', '成功', {
-				// 				data: '中间件RocketMQ正在创建中'
-				// 			})
-				// 		);
-				// 		history.push({
-				// 			pathname: '/serviceList',
-				// 			query: { key: 'RocketMQ', timer: true }
-				// 		});
-				// 	} else {
-				// 		Message.show(messageConfig('error', '错误', res));
-				// 	}
-				// });
+				// console.log(sendData);
+				postMiddleware(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', {
+								data: '中间件RocketMQ正在创建中'
+							})
+						);
+						history.push({
+							pathname: '/serviceList',
+							query: { key: 'RocketMQ', timer: true }
+						});
+					} else {
+						Message.show(messageConfig('error', '错误', res));
+					}
+				});
 			}
 		});
 	};
@@ -599,7 +599,7 @@ const RocketMQCreate = (props) => {
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span className="mr-8">
-											配置污点
+											主机容忍
 										</span>
 									</label>
 									<div

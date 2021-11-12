@@ -126,15 +126,15 @@ function DynamicForm(props) {
 			// * 主机亲和特殊处理
 			if (values.nodeAffinity) {
 				if (values.nodeAffinityLabel) {
-					sendData.nodeAffinity = [
-						{
-							label: values.nodeAffinityLabel,
+					sendData.nodeAffinity = values.affinityLabels.map(item => {
+						return {
+							label: item.label,
 							required: values.nodeAffinityForce
 								? values.nodeAffinityForce
 								: false,
 							namespace: globalNamespace.name
 						}
-					];
+					})
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机亲和。')
@@ -157,7 +157,19 @@ function DynamicForm(props) {
 				}
 			}
 			sendData.dynamicValues = dynamicValues;
-			console.log(sendData);
+			// * 主机容忍特殊处理
+			if (values.tolerations) {
+				if (values.tolerationsLabels) {
+					sendData.tolerations = values.tolerationsLabels.map(item => {
+						return { label: item.label }
+					})
+				} else {
+					Message.show(
+						messageConfig('error', '失败', '请选择主机容忍。')
+					);
+				}
+			}
+			// console.log(sendData);
 			postMiddleware(sendData).then((res) => {
 				console.log(res);
 				if (res.success) {
@@ -204,7 +216,7 @@ function DynamicForm(props) {
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 											validateState={
 												field.getValue('name') ===
-													chartName && 'error'
+												chartName && 'error'
 											}
 										>
 											<Input
@@ -215,16 +227,16 @@ function DynamicForm(props) {
 											/>
 											{field.getValue('name') ===
 												chartName && (
-												<Form.Error>
-													<span
-														style={{
-															color: '#C80000'
-														}}
-													>
-														服务名称不能与类型同名
-													</span>
-												</Form.Error>
-											)}
+													<Form.Error>
+														<span
+															style={{
+																color: '#C80000'
+															}}
+														>
+															服务名称不能与类型同名
+														</span>
+													</Form.Error>
+												)}
 										</FormItem>
 									</div>
 								</li>
