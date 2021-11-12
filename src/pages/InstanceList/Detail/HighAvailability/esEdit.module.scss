@@ -54,3 +54,23 @@
 		}
 	}
 }
+.visualization{
+    h2{
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #333333;
+        line-height: 22px;
+        margin: 16px 0;
+        display: flex;
+        align-items: center;
+        &::before{
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 14px;
+            border: 1px solid #0064C8;
+            margin-right: 5px;
+        }
+    }
+}

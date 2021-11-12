@@ -16,6 +16,7 @@ import {
 	setGlobalClusterList,
 	setGlobalNamespaceList
 } from '@/redux/globalVar/var';
+import { api } from '@/api.json';
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 
@@ -44,12 +45,25 @@ const hideRoute = [
 	'/terminal'
 ];
 
+// 设置logo
+const personalization = storage.getLocal('personalization');
+
 const header = (
 	<div
 		className={styles['logo-box']}
 		style={{ lineHeight: '48px', textAlign: 'center', padding: '5px 0px' }}
 	>
-		<img className={styles['logo-png']} src={logo} alt="" />
+		<img
+			className={styles['logo-png']}
+			src={
+				personalization.loginLogoPath
+					? api +
+					  '/images/middleware/' +
+					  personalization.loginLogoPath
+					: logo
+			}
+			alt=""
+		/>
 	</div>
 );
 

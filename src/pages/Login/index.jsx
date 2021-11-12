@@ -34,10 +34,11 @@ export default function Login() {
 
 	useEffect(() => {
 		getPersonalConfig({}).then((res) => {
-			// console.log(res);
+			// console.log(res.data);
 			setData(res.data);
 			storage.setLocal('personalization', res.data);
-			document.title = data && data.title ? data.title : 'Zeus';
+			document.title =
+				res.data && res.data.title ? res.data.title : 'Zeus';
 		});
 	}, []);
 
@@ -121,8 +122,8 @@ export default function Login() {
 			className={styles['login']}
 			style={{
 				background: `transparent url(${
-					data && data.backgroundImagePath
-						? api + '/images/middleware/' + data.homeLogoPath
+					data && data.backgroundPath
+						? api + '/images/middleware/' + data.backgroundPath
 						: background
 				}) no-repeat center center /cover`
 			}}
@@ -184,7 +185,6 @@ export default function Login() {
 									})
 								}
 								onKeyPress={(event) => {
-									console.log(event.charCode);
 									if (event.charCode === 13) {
 										submit(event);
 									}

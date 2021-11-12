@@ -9,6 +9,10 @@ export const getNodePort = (params) => {
 	return Axios.get(MIDDLEWARE.nodePorts, params);
 };
 
+export const getNodeTaint = (params) => {
+	return Axios.get(MIDDLEWARE.nodeTaints, params);
+};
+
 export const getStorageClass = (params) => {
 	return Axios.get(MIDDLEWARE.storageClasses, params);
 };

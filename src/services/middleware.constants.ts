@@ -2,6 +2,7 @@ import { api } from '@/api.json';
 
 export const middlewares = `${api}/middlewares/info`;
 export const nodePorts = `${api}/clusters/{clusterId}/nodes/labels`;
+export const nodeTaints = `${api}/clusters/{clusterid}/nodes/taints`;
 export const storageClasses = `${api}/clusters/{clusterId}/storageclasses`;
 export const middleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares`;
 // * 获取中间件详情
