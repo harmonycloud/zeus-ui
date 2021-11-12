@@ -13,12 +13,14 @@ function DataMonitor(): JSX.Element {
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
 	const onChange = (
-		name: string,
+		name: string | null,
 		type: string,
 		namespace: string,
 		cluster: clusterType
 	) => {
-		if (name !== type) {
+		setData(undefined);
+		// console.log(name, type, namespace, cluster);
+		if (name !== null) {
 			setBasicData({
 				name,
 				type,

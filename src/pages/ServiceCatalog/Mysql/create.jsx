@@ -201,7 +201,6 @@ const MysqlCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
-			// if (values.name === 'mysql') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,

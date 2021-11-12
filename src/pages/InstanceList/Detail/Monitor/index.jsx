@@ -21,26 +21,28 @@ const Monitor = (props) => {
 	} = props;
 	const [url, setUrl] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
-	console.log(props);
+	// console.log(props);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('monitoring')) {
 			if (type && monitor) {
-				getMiddlewareMonitorUrl({
-					clusterId,
-					namespace,
-					middlewareName,
-					type,
-					chartVersion
-				}).then((res) => {
-					if (res.success) {
-						setUrl(res.data.url);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
+				if (props.chartVersion !== undefined) {
+					getMiddlewareMonitorUrl({
+						clusterId,
+						namespace,
+						middlewareName,
+						type,
+						chartVersion
+					}).then((res) => {
+						if (res.success) {
+							setUrl(res.data.url);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					});
+				}
 			}
 		}
-	}, [props.chartVersion]);
+	}, [props.chartVersion, props.middlewareName]);
 
 	useEffect(() => {
 		if (url) {

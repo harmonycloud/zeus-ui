@@ -42,8 +42,13 @@ const formItemLayout = {
 const ElasticsearchCreate = (props) => {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
-	const { chartName, chartVersion, middlewareName, backupFileName } =
-		useParams();
+	const {
+		chartName,
+		chartVersion,
+		middlewareName,
+		backupFileName,
+		aliasName
+	} = useParams();
 	const field = Field.useField();
 	const history = useHistory();
 
@@ -305,7 +310,6 @@ const ElasticsearchCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
-			if (values.name === 'elasticsearch') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,
@@ -383,8 +387,7 @@ const ElasticsearchCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/serviceList',
-							query: { key: 'Elasticsearch', timer: true }
+							pathname: `/serviceList/${chartName}/${aliasName}`
 						});
 					} else {
 						Message.show(messageConfig('error', '错误', res));
@@ -488,28 +491,12 @@ const ElasticsearchCreate = (props) => {
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
-											validateState={
-												field.getValue('name') ===
-													'elasticsearch' && 'error'
-											}
 										>
 											<Input
 												name="name"
 												placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 												trim
 											/>
-											{field.getValue('name') ===
-												'elasticsearch' && (
-												<Form.Error>
-													<span
-														style={{
-															color: '#C80000'
-														}}
-													>
-														服务名称不能与类型同名
-													</span>
-												</Form.Error>
-											)}
 										</FormItem>
 									</div>
 								</li>

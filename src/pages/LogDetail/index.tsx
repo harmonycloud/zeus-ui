@@ -13,12 +13,12 @@ export default function LogDetail(): JSX.Element {
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
 	const onChange = (
-		name: string,
+		name: string | null,
 		type: string,
 		namespace: string,
 		cluster: clusterType
 	) => {
-		if (name !== type) {
+		if (name !== null) {
 			setBasicData({
 				name,
 				type,

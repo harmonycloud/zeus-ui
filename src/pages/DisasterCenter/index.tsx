@@ -31,12 +31,12 @@ function DisasterCenter(props: disasterCenterProps) {
 	} = props.globalVar;
 	const history = useHistory();
 	const onChange = (
-		name: string,
+		name: string | null,
 		type: string,
 		namespace: string,
 		cluster: clusterType
 	) => {
-		if (name !== type) {
+		if (name !== null) {
 			setBasicData({
 				name,
 				type,
