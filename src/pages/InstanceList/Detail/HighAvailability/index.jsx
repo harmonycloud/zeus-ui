@@ -10,7 +10,7 @@ import {
 import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
-import Visualization from './visualization'
+// import Visualization from './visualization'
 // import BalloonForm from '@/components/BalloonForm';
 import {
 	getPods,
@@ -148,10 +148,11 @@ export default function HighAvailability(props) {
 													? item.storageClassQuota ||
 													  0
 													: null}
-												{`${item.type !== 'kibana'
-													? '存储'
-													: ''
-													}`}
+												{`${
+													item.type !== 'kibana'
+														? '存储'
+														: ''
+												}`}
 											</Col>{' '}
 										</Row>
 									);
@@ -361,7 +362,7 @@ export default function HighAvailability(props) {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				setPods(res.data.pods);
-				setTopoData(res.data.podInfoGroup)
+				setTopoData(res.data.podInfoGroup);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -688,13 +689,12 @@ export default function HighAvailability(props) {
 							<div className="detail-divider" />
 						</>
 					)} */}
-					{
-						topoData &&
+					{topoData && (
 						<>
-							<Visualization topoData={topoData} serverData={data} />
+							{/* <Visualization topoData={topoData} serverData={data} /> */}
 							<div className="detail-divider" />
 						</>
-					}
+					)}
 					{type === 'mysql' ? (
 						<>
 							<div className="title-content">

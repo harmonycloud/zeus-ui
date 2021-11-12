@@ -25,7 +25,7 @@ interface secondLayoutProps {
 	style?: any;
 	className?: string;
 	onChange: (
-		name: string,
+		name: string | null,
 		type: string,
 		namespace: string,
 		cluster: clusterType
@@ -93,8 +93,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						} else {
 							setCurrent('无服务');
 							onChange(
-								'undefined',
-								'undefined',
+								null,
+								list[0].value,
 								namespace.name,
 								cluster
 							);
@@ -105,13 +105,36 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 		}
 	}, [namespace, cluster]);
 	const handleChange = (value: string | string[], data: any, extra: any) => {
-		setCurrent(value as string);
-		onChange(
-			value as string,
-			extra.selectedPath[0].value,
-			namespace.name,
-			cluster
-		);
+		// console.log(value, data, extra);
+		if (data.isLeaf) {
+			// * 如果选的是叶子结点的话
+			setCurrent(value as string);
+			onChange(
+				value as string,
+				extra.selectedPath[0].value,
+				namespace.name,
+				cluster
+			);
+		} else {
+			// * 如果选择的是父节点，那么就默认勾选叶子结点，如果没有叶子结点，则传参告诉选择的是服务类型，且无服务。
+			if (data.children && data.children.length > 0) {
+				setCurrent(data.children[0].value as string);
+				onChange(
+					data.children[0].value as string,
+					extra.selectedPath[0].value,
+					namespace.name,
+					cluster
+				);
+			} else {
+				setCurrent('无服务');
+				onChange(
+					null,
+					extra.selectedPath[0].value,
+					namespace.name,
+					cluster
+				);
+			}
+		}
 	};
 	return (
 		<Page>

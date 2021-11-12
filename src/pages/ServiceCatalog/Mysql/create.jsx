@@ -91,7 +91,7 @@ const MysqlCreate = (props) => {
 	// 主机容忍
 	const [tolerations, setTolerations] = useState({
 		flag: false,
-		label: '',
+		label: ''
 	});
 	const [tolerationList, setTolerationList] = useState([]);
 	const changeTolerations = (value, key) => {
@@ -216,7 +216,6 @@ const MysqlCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
-			// if (values.name === 'mysql') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,
@@ -255,13 +254,13 @@ const MysqlCreate = (props) => {
 						);
 						return;
 					} else {
-						sendData.nodeAffinity = affinityLabels.map(item => {
+						sendData.nodeAffinity = affinityLabels.map((item) => {
 							return {
 								label: item.label,
 								required: affinity.checked,
 								namespace: globalNamespace.name
-							}
-						})
+							};
+						});
 					}
 				}
 				// 主机容忍
@@ -272,7 +271,9 @@ const MysqlCreate = (props) => {
 						);
 						return;
 					} else {
-						sendData.tolerations = tolerationsLabels.map(item => item.label)
+						sendData.tolerations = tolerationsLabels.map(
+							(item) => item.label
+						);
 					}
 				}
 				// 配额
@@ -950,8 +951,27 @@ const MysqlCreate = (props) => {
 													/>
 												</div>
 												<div className={styles['add']}>
-													<Button style={{ marginLeft: '4px', padding: '0 9px' }} onClick={() => setAffinityLabels([...affinityLabels, { label: affinity.label, id: Math.random() }])}>
-														<Icon style={{ color: '#005AA5' }} type="add" />
+													<Button
+														style={{
+															marginLeft: '4px',
+															padding: '0 9px'
+														}}
+														onClick={() =>
+															setAffinityLabels([
+																...affinityLabels,
+																{
+																	label: affinity.label,
+																	id: Math.random()
+																}
+															])
+														}
+													>
+														<Icon
+															style={{
+																color: '#005AA5'
+															}}
+															type="add"
+														/>
 													</Button>
 												</div>
 												<div
@@ -974,31 +994,47 @@ const MysqlCreate = (props) => {
 										) : null}
 									</div>
 								</li>
-								{
-									affinityLabels.length ? <div className={styles['tags']}>
-										{
-											affinityLabels.map(item => {
-												return (
-													<p className={styles['tag']}>
-														<span>{item.label}</span>
-														<Icon type="error" size='xs' className={styles['tag-close']} onClick={() => setAffinityLabels(affinityLabels.filter(arr => arr.id !== item.id))} />
-													</p>
-												)
-											})
-										}
-									</div> : null
-								}
+								{affinityLabels.length ? (
+									<div className={styles['tags']}>
+										{affinityLabels.map((item) => {
+											return (
+												<p
+													className={styles['tag']}
+													key={item.label}
+												>
+													<span>{item.label}</span>
+													<Icon
+														type="error"
+														size="xs"
+														className={
+															styles['tag-close']
+														}
+														onClick={() =>
+															setAffinityLabels(
+																affinityLabels.filter(
+																	(arr) =>
+																		arr.id !==
+																		item.id
+																)
+															)
+														}
+													/>
+												</p>
+											);
+										})}
+									</div>
+								) : null}
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span className="mr-8">
-											主机容忍
-										</span>
+										<span className="mr-8">配置污点</span>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['host-affinity']}`}
 									>
 										<div className={styles['switch']}>
-											{tolerations.flag ? '已开启' : '关闭'}
+											{tolerations.flag
+												? '已开启'
+												: '关闭'}
 											<Switch
 												checked={tolerations.flag}
 												onChange={(value) =>
@@ -1020,42 +1056,83 @@ const MysqlCreate = (props) => {
 													className={styles['input']}
 												>
 													<Select.AutoComplete
-														value={tolerations.label}
+														value={
+															tolerations.label
+														}
 														onChange={(value) =>
 															changeTolerations(
 																value,
 																'label'
 															)
 														}
-														dataSource={tolerationList}
+														dataSource={
+															tolerationList
+														}
 														style={{
 															width: '100%'
 														}}
 													/>
 												</div>
 												<div className={styles['add']}>
-													<Button style={{ marginLeft: '4px', padding: '0 9px' }} onClick={() => setTolerationsLabels([...tolerationsLabels, { label: tolerations.label, id: Math.random() }])}>
-														<Icon style={{ color: '#005AA5' }} type="add" />
+													<Button
+														style={{
+															marginLeft: '4px',
+															padding: '0 9px'
+														}}
+														onClick={() =>
+															setTolerationsLabels(
+																[
+																	...tolerationsLabels,
+																	{
+																		label: tolerations.label,
+																		id: Math.random()
+																	}
+																]
+															)
+														}
+													>
+														<Icon
+															style={{
+																color: '#005AA5'
+															}}
+															type="add"
+														/>
 													</Button>
 												</div>
 											</>
 										) : null}
 									</div>
 								</li>
-								{
-									tolerationsLabels.length ? <div className={styles['tags']}>
-										{
-											tolerationsLabels.map(item => {
-												return (
-													<p className={styles['tag']}>
-														<span>{item.label}</span>
-														<Icon type="error" size='xs' className={styles['tag-close']} onClick={() => setTolerationsLabels(tolerationsLabels.filter(arr => arr.id !== item.id))} />
-													</p>
-												)
-											})
-										}
-									</div> : null
-								}
+								{tolerationsLabels.length ? (
+									<div className={styles['tags']}>
+										{tolerationsLabels.map((item) => {
+											return (
+												<p
+													className={styles['tag']}
+													key={item.label}
+												>
+													<span>{item.label}</span>
+													<Icon
+														type="error"
+														size="xs"
+														className={
+															styles['tag-close']
+														}
+														onClick={() =>
+															setTolerationsLabels(
+																tolerationsLabels.filter(
+																	(arr) =>
+																		arr.id !==
+																		item.id
+																)
+															)
+														}
+													/>
+												</p>
+											);
+										})}
+									</div>
+								) : null}
 							</ul>
 						</div>
 					</FormBlock>

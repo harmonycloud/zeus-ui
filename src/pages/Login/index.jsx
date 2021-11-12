@@ -36,10 +36,11 @@ export default function Login() {
 		getPersonalConfig({}).then((res) => {
 			// console.log(res.data);
 			setData(res.data);
-			storage.setLocal('personalization',res.data);
-			document.title = res.data && res.data.title ? res.data.title : 'Zeus'; 
-		})
-	}, [])
+			storage.setLocal('personalization', res.data);
+			document.title =
+				res.data && res.data.title ? res.data.title : 'Zeus';
+		});
+	}, []);
 
 	useEffect(() => {
 		getRsaKey().then((res) => {
@@ -117,7 +118,16 @@ export default function Login() {
 	};
 
 	return (
-		<div className={styles['login']} style={{background: `transparent url(${data && data.backgroundPath ? api+'/images/middleware/'+data.backgroundPath :  background}) no-repeat center center /cover`}}>
+		<div
+			className={styles['login']}
+			style={{
+				background: `transparent url(${
+					data && data.backgroundPath
+						? api + '/images/middleware/' + data.backgroundPath
+						: background
+				}) no-repeat center center /cover`
+			}}
+		>
 			<div className={styles['header']}>
 				<img
 					className={styles['logo']}

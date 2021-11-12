@@ -43,8 +43,13 @@ const formItemLayout = {
 const RocketMQCreate = (props) => {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
-	const { chartName, chartVersion, middlewareName, backupFileName } =
-		useParams();
+	const {
+		chartName,
+		chartVersion,
+		middlewareName,
+		backupFileName,
+		aliasName
+	} = useParams();
 	const field = Field.useField();
 	const history = useHistory();
 
@@ -65,7 +70,7 @@ const RocketMQCreate = (props) => {
 	// 主机容忍
 	const [tolerations, setTolerations] = useState({
 		flag: false,
-		label: '',
+		label: ''
 	});
 	const [tolerationList, setTolerationList] = useState([]);
 	const changeTolerations = (value, key) => {
@@ -192,7 +197,6 @@ const RocketMQCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
-			if (values.name === 'rocketmq') return;
 			if (!err) {
 				let sendData = {
 					chartName: chartName,
@@ -227,13 +231,13 @@ const RocketMQCreate = (props) => {
 						);
 						return;
 					} else {
-						sendData.nodeAffinity = affinityLabels.map(item => {
+						sendData.nodeAffinity = affinityLabels.map((item) => {
 							return {
 								label: item.label,
 								required: affinity.checked,
 								namespace: globalNamespace.name
-							}
-						})
+							};
+						});
 					}
 				}
 				if (tolerations.flag) {
@@ -243,7 +247,9 @@ const RocketMQCreate = (props) => {
 						);
 						return;
 					} else {
-						sendData.tolerations = tolerationsLabels.map(item => item.label)
+						sendData.tolerations = tolerationsLabels.map(
+							(item) => item.label
+						);
 					}
 				}
 				if (instanceSpec === 'General') {
@@ -307,8 +313,7 @@ const RocketMQCreate = (props) => {
 							})
 						);
 						history.push({
-							pathname: '/serviceList',
-							query: { key: 'RocketMQ', timer: true }
+							pathname: `/serviceList/${chartName}/${aliasName}`
 						});
 					} else {
 						Message.show(messageConfig('error', '错误', res));
@@ -402,28 +407,12 @@ const RocketMQCreate = (props) => {
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
 											patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
-											validateState={
-												field.getValue('name') ===
-													'rocketmq' && 'error'
-											}
 										>
 											<Input
 												name="name"
 												placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 												trim
 											/>
-											{field.getValue('name') ===
-												'rocketmq' && (
-												<Form.Error>
-													<span
-														style={{
-															color: '#C80000'
-														}}
-													>
-														服务名称不能与类型同名
-													</span>
-												</Form.Error>
-											)}
 										</FormItem>
 									</div>
 								</li>
@@ -582,31 +571,47 @@ const RocketMQCreate = (props) => {
 										) : null}
 									</div>
 								</li>
-								{
-									affinityLabels.length ? <div className={styles['tags']}>
-										{
-											affinityLabels.map(item => {
-												return (
-													<p className={styles['tag']}>
-														<span>{item.label}</span>
-														<Icon type="error" size='xs' className={styles['tag-close']} onClick={() => setAffinityLabels(affinityLabels.filter(arr => arr.id !== item.id))} />
-													</p>
-												)
-											})
-										}
-									</div> : null
-								}
+								{affinityLabels.length ? (
+									<div className={styles['tags']}>
+										{affinityLabels.map((item) => {
+											return (
+												<p
+													className={styles['tag']}
+													key={item.label}
+												>
+													<span>{item.label}</span>
+													<Icon
+														type="error"
+														size="xs"
+														className={
+															styles['tag-close']
+														}
+														onClick={() =>
+															setAffinityLabels(
+																affinityLabels.filter(
+																	(arr) =>
+																		arr.id !==
+																		item.id
+																)
+															)
+														}
+													/>
+												</p>
+											);
+										})}
+									</div>
+								) : null}
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span className="mr-8">
-											主机容忍
-										</span>
+										<span className="mr-8">配置污点</span>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['host-affinity']}`}
 									>
 										<div className={styles['switch']}>
-											{tolerations.flag ? '已开启' : '关闭'}
+											{tolerations.flag
+												? '已开启'
+												: '关闭'}
 											<Switch
 												checked={tolerations.flag}
 												onChange={(value) =>
@@ -628,42 +633,83 @@ const RocketMQCreate = (props) => {
 													className={styles['input']}
 												>
 													<Select.AutoComplete
-														value={tolerations.label}
+														value={
+															tolerations.label
+														}
 														onChange={(value) =>
 															changeTolerations(
 																value,
 																'label'
 															)
 														}
-														dataSource={tolerationList}
+														dataSource={
+															tolerationList
+														}
 														style={{
 															width: '100%'
 														}}
 													/>
 												</div>
 												<div className={styles['add']}>
-													<Button style={{ marginLeft: '4px', padding: '0 9px' }} onClick={() => setTolerationsLabels([...tolerationsLabels, { label: tolerations.label, id: Math.random() }])}>
-														<Icon style={{ color: '#005AA5' }} type="add" />
+													<Button
+														style={{
+															marginLeft: '4px',
+															padding: '0 9px'
+														}}
+														onClick={() =>
+															setTolerationsLabels(
+																[
+																	...tolerationsLabels,
+																	{
+																		label: tolerations.label,
+																		id: Math.random()
+																	}
+																]
+															)
+														}
+													>
+														<Icon
+															style={{
+																color: '#005AA5'
+															}}
+															type="add"
+														/>
 													</Button>
 												</div>
 											</>
 										) : null}
 									</div>
 								</li>
-								{
-									tolerationsLabels.length ? <div className={styles['tags']}>
-										{
-											tolerationsLabels.map(item => {
-												return (
-													<p className={styles['tag']}>
-														<span>{item.label}</span>
-														<Icon type="error" size='xs' className={styles['tag-close']} onClick={() => setTolerationsLabels(tolerationsLabels.filter(arr => arr.id !== item.id))} />
-													</p>
-												)
-											})
-										}
-									</div> : null
-								}
+								{tolerationsLabels.length ? (
+									<div className={styles['tags']}>
+										{tolerationsLabels.map((item) => {
+											return (
+												<p
+													className={styles['tag']}
+													key={item.label}
+												>
+													<span>{item.label}</span>
+													<Icon
+														type="error"
+														size="xs"
+														className={
+															styles['tag-close']
+														}
+														onClick={() =>
+															setTolerationsLabels(
+																tolerationsLabels.filter(
+																	(arr) =>
+																		arr.id !==
+																		item.id
+																)
+															)
+														}
+													/>
+												</p>
+											);
+										})}
+									</div>
+								) : null}
 							</ul>
 						</div>
 					</FormBlock>

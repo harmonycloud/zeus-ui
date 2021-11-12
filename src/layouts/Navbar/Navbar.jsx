@@ -53,7 +53,17 @@ const header = (
 		className={styles['logo-box']}
 		style={{ lineHeight: '48px', textAlign: 'center', padding: '5px 0px' }}
 	>
-		<img className={styles['logo-png']} src={personalization.loginLogoPath ? api + '/images/middleware/' + personalization.loginLogoPath : logo} alt="" />
+		<img
+			className={styles['logo-png']}
+			src={
+				personalization.loginLogoPath
+					? api +
+					  '/images/middleware/' +
+					  personalization.loginLogoPath
+					: logo
+			}
+			alt=""
+		/>
 	</div>
 );
 

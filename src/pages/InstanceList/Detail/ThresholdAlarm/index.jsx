@@ -22,11 +22,16 @@ export default function ThresholdAlarm(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [visible, setVisible] = useState(false);
 	const [searchText, setSearchText] = useState('');
+	console.log(props);
 	useEffect(() => {
-		if (!customMid || capabilities.includes('alert')) {
+		if (customMid) {
+			if (capabilities.includes('alert')) {
+				getData(clusterId, middlewareName, namespace, searchText);
+			}
+		} else {
 			getData(clusterId, middlewareName, namespace, searchText);
 		}
-	}, [props]);
+	}, [props.middlewareName, props.customMid]);
 
 	const getData = (clusterId, middlewareName, namespace, keyword) => {
 		const sendData = {

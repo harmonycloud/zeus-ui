@@ -81,6 +81,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		onRefresh,
 		toDetail
 	} = props;
+	// console.log(props);
 	const [originData, setOriginData] = useState<OriginProps>(originDataInit);
 	const [backupData, setBackupData] = useState<OriginProps>(backupDataInit);
 	const [runState, setRunState] = useState<runStateProps>(runStateInit);
