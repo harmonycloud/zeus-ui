@@ -73,4 +73,19 @@
             margin-right: 5px;
         }
     }
+	.tools{
+		height: 50px;
+		padding: 10px 30px;
+		box-sizing: border-box;
+		background-color: #f9f9f9;
+		button{
+			min-width: 24px !important;
+			width: 24px;
+			height: 24px;
+			padding: 0;
+			&:not(:last-child){
+				border-right: none;
+			}
+		}
+	}
 }

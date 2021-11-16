@@ -10,6 +10,7 @@ import FormList from '@/components/FormList';
 import FormStorageClass from '@/components/FormStorageClass';
 import FormPVC from '@/components/FormPVC';
 import FormSecret from '@/components/FormSecret';
+import FormTolerations from './FormTolerations';
 
 /*
  *	名称 —— 对应后端判断
@@ -69,6 +70,15 @@ export const renderFormItem = (
 					namespace={namespace}
 				/>
 			);
+		case 'tolerations':
+			return (
+				<FormTolerations
+					{...formValue}
+					field={field}
+					cluster={cluster}
+					namespace={namespace}
+				/>
+			);
 		case 'list': //todo 未完成
 			return <FormList {...formValue} />;
 		case 'storageclass':
@@ -77,7 +87,7 @@ export const renderFormItem = (
 					{...formValue}
 					cluster={cluster}
 					namespace={namespace}
-					// field={field}
+				// field={field}
 				/>
 			);
 		case 'pvc':

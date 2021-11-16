@@ -694,7 +694,7 @@ const RedisCreate = (props) => {
 								) : null}
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span className="mr-8">配置污点</span>
+										<span className="mr-8">主机容忍</span>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['host-affinity']}`}

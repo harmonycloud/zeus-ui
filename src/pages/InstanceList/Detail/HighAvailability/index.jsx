@@ -10,7 +10,7 @@ import {
 import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
-// import Visualization from './visualization'
+import Visualization from './visualization'
 // import BalloonForm from '@/components/BalloonForm';
 import {
 	getPods,
@@ -691,7 +691,7 @@ export default function HighAvailability(props) {
 					)} */}
 					{topoData && (
 						<>
-							{/* <Visualization topoData={topoData} serverData={data} /> */}
+							<Visualization topoData={topoData} serverData={data} />
 							<div className="detail-divider" />
 						</>
 					)}

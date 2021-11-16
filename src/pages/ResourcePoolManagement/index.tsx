@@ -288,7 +288,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title="系统资源池"
+				title="资源池"
 				subTitle="发布中间件需要消耗CPU、内存等资源"
 			/>
 			<Content>

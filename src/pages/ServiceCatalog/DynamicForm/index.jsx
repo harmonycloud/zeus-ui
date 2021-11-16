@@ -125,15 +125,15 @@ function DynamicForm(props) {
 			// * 主机亲和特殊处理
 			if (values.nodeAffinity) {
 				if (values.nodeAffinityLabel) {
-					sendData.nodeAffinity = [
-						{
-							label: values.nodeAffinityLabel,
+					sendData.nodeAffinity = values.affinityLabels.map(item => {
+						return {
+							label: item.label,
 							required: values.nodeAffinityForce
 								? values.nodeAffinityForce
 								: false,
 							namespace: globalNamespace.name
 						}
-					];
+					})
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机亲和。')
@@ -156,7 +156,19 @@ function DynamicForm(props) {
 				}
 			}
 			sendData.dynamicValues = dynamicValues;
-			console.log(sendData);
+			// * 主机容忍特殊处理
+			if (values.tolerations) {
+				if (values.tolerationsLabels) {
+					sendData.tolerations = values.tolerationsLabels.map(item => {
+						return { label: item.label }
+					})
+				} else {
+					Message.show(
+						messageConfig('error', '失败', '请选择主机容忍。')
+					);
+				}
+			}
+			// console.log(sendData);
 			postMiddleware(sendData).then((res) => {
 				console.log(res);
 				if (res.success) {
