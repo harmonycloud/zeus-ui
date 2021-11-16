@@ -47,3 +47,9 @@ export interface ClusterQuotaDTO {
 	usedCpu: number;
 	usedMemory: number;
 }
+export interface ComponentProp {
+	clusterId: string;
+	component: string;
+	status: number;
+	type: null | string;
+}

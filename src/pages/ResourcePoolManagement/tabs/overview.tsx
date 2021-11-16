@@ -397,15 +397,21 @@ const Overview = () => {
 								}}
 							/>
 							<div className="resource-pool-gauge-info">
-								总容量：{clusterQuota?.totalCpu.toFixed(2)}核
-								<br />
-								已分配：{clusterQuota?.usedCpu.toFixed(
+								总容量：
+								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
 									2
-								)}核 <br />
+								)}
+								核
+								<br />
+								已分配：
+								{(Number(clusterQuota?.usedCpu) || 0).toFixed(
+									2
+								)}
+								核 <br />
 								剩余容量：
 								{(
-									Number(clusterQuota?.totalCpu.toFixed(2)) -
-									Number(clusterQuota?.usedCpu.toFixed(2))
+									(Number(clusterQuota?.totalCpu) || 0) -
+										Number(clusterQuota?.usedCpu) || 0
 								).toFixed(2) || 0}
 								核
 								<br />
@@ -423,18 +429,23 @@ const Overview = () => {
 								}}
 							/>
 							<div className="resource-pool-gauge-info">
-								总容量：{clusterQuota?.totalMemory.toFixed(2)}核
+								总容量：
+								{(
+									Number(clusterQuota?.totalMemory) || 0
+								).toFixed(2)}
+								核
 								<br />
-								已分配：{clusterQuota?.usedMemory.toFixed(
-									2
-								)}核 <br />
+								已分配：
+								{(
+									Number(clusterQuota?.usedMemory) || 0
+								).toFixed(2)}
+								核
+								<br />
 								剩余容量：
 								{(
-									Number(
-										clusterQuota?.totalMemory.toFixed(2)
-									) -
-									Number(clusterQuota?.usedMemory.toFixed(2))
-								).toFixed(2) || 0}
+									(Number(clusterQuota?.totalMemory) || 0) -
+										Number(clusterQuota?.usedMemory) || 0
+								).toFixed(2)}
 								核
 								<br />
 							</div>

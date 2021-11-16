@@ -1,0 +1,156 @@
+.component-card-content{
+	width: 240px;
+	height: 124px;
+	background: #FFFFFF;
+	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.09);
+	border-radius: 2px;
+	border: 1px solid #E9E9E9;
+	margin-right: 16px;
+	margin-top: 16px;
+	.component-card-display{
+		padding: 16px;
+		display: flex;
+		.component-card-icon{
+			width: 60px;
+			height: 60px;
+			border-radius: 4px;
+			text-align: center;
+			line-height: 57px;
+		}
+		.component-card-title{
+			width: 100px;
+			height: 60px;
+			font-size: 14px;
+			font-weight: 400;
+			color: rgba(0, 0, 0, 0.85);
+			margin-left: 12px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			.component-card-icon{
+				text-align: left;
+				width: 100px;
+				height: 18px;
+				line-height: 18px;
+				font-size: 12px;
+				margin-top: 4px;
+			}
+		}
+	}
+	.component-card-action{
+		width: 239px;
+		height: 32px;
+		background: #F7F7F7;
+		border-radius: 0px 0px 2px 2px;
+		border-top: 1px solid #E9E9E9;
+		border-right: 1px solid #E9E9E9;
+		border-bottom: 1px solid #E9E9E9;
+		display: flex;
+		.component-card-install{
+			width: 50%;
+			color: #878787;
+			border-right: 1px solid #E8E8E8;
+			height: 16px;
+			line-height: 16px;
+			text-align: center;
+			margin-top: 8px;
+			cursor: pointer;
+		}
+		.component-card-uninstall{
+			width: 100%;
+			color: #878787;
+			height: 16px;
+			line-height: 16px;
+			text-align: center;
+			margin-top: 8px;
+			cursor: pointer;
+		}
+		.component-card-access{
+			width: 49%;
+			color: #878787;
+			height: 16px;
+			line-height: 16px;
+			text-align: center;
+			margin-top: 8px;
+			cursor: pointer;
+		}
+	}
+	.component-card-installing{
+		width: 240px;
+		height: 32px;
+		background: #0064C8;
+		border-radius: 0px 0px 2px 2px;
+		color: #ffffff;
+		text-align: center;
+		line-height: 32px;
+	}
+	.component-card-uninstalling{
+		width: 240px;
+		height: 32px;
+		background: #C80000;
+		border-radius: 0px 0px 2px 2px;
+		color: #ffffff;
+		text-align: center;
+		line-height: 32px;
+	}
+}
+.access-title-content,
+.install-title-content{
+	display: flex !important;
+	align-items: center;
+	.access-title-name,
+	.install-title-name{
+		font-size: 14px;
+		font-weight: 500;
+		color: #333333;
+		line-height: 22px;
+		border-left: 2px solid #0070cc;
+		padding: 0 8px;
+		margin: 8px 0;
+	}
+}
+.access-subtitle,
+.install-subtitle{
+	height: 18px;
+	font-size: 12px;
+	font-family: PingFangSC-Regular, PingFang SC;
+	font-weight: 400;
+	color: #666666;
+	line-height: 18px;
+}
+.access-form-content{
+	margin-top: 24px;
+	padding-left: 15px;
+}
+.install-item{
+	width: 424px;
+	height: 120px;
+	border: 1px dashed #888888;
+	display: flex;
+	padding: 20px;
+	margin-top: 24px;
+	border-radius: 4px;
+	cursor: pointer;
+	position: relative;
+	.install-item-info{
+		margin-left: 20px;
+		h2{
+			height: 24px;
+			font-size: 16px;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: 500;
+			color: #40454A;
+			line-height: 24px;
+		}
+		p{
+			width: 276px;
+			height: 36px;
+			font-size: 12px;
+			font-family: PingFangSC-Regular, PingFang SC;
+			font-weight: 400;
+			color: #666666;
+			line-height: 18px;
+			margin-top: 10px;
+		}
+	}
+}
