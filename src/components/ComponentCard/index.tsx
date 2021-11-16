@@ -197,11 +197,19 @@ const ComponentCard = (props: ComponentCardProps) => {
 				</div>
 			)}
 			{status === 1 && (
-				<div
-					className="component-card-action"
-					onClick={uninstallComponent}
-				>
-					<div className="component-card-uninstall">取消接入</div>
+				<div className="component-card-action">
+					<div
+						className="component-card-uninstall"
+						onClick={uninstallComponent}
+					>
+						取消接入
+					</div>
+					<div
+						className="component-card-edit"
+						onClick={() => setAccessVisible(true)}
+					>
+						编辑
+					</div>
 				</div>
 			)}
 			{status === 2 && (
@@ -210,11 +218,27 @@ const ComponentCard = (props: ComponentCardProps) => {
 				</div>
 			)}
 			{(status === 3 || status === 4) && (
-				<div
-					className="component-card-action"
-					onClick={uninstallComponent}
-				>
-					<div className="component-card-uninstall">卸载</div>
+				<div className="component-card-action">
+					<div
+						className={
+							title !== 'local-path' &&
+							title !== 'middleware-controller'
+								? 'component-card-uninstall'
+								: 'component-card-uninstall-one'
+						}
+						onClick={uninstallComponent}
+					>
+						卸载
+					</div>
+					{title !== 'local-path' &&
+					title !== 'middleware-controller' ? (
+						<div
+							className="component-card-edit"
+							onClick={() => setAccessVisible(true)}
+						>
+							编辑
+						</div>
+					) : null}
 				</div>
 			)}
 			{status === 5 && (

@@ -3,7 +3,7 @@ import * as REPOSITORY from './repository.contants';
 
 interface listParamsProps {
 	clusterId: string;
-	namespace: string;
+	namespace?: string;
 }
 interface typeListParamsProps {
 	clusterId: string;

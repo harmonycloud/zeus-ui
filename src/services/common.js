@@ -80,3 +80,7 @@ export const putComponent = (params) => {
 export const deleteComponent = (params) => {
 	return Axios.delete(COMMON.updateComponents, params);
 };
+// * 批量安装组件
+export const mulInstallComponent = (params) => {
+	return Axios.json(COMMON.multipleComponents, params, {}, 'POST');
+};

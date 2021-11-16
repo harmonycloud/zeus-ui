@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Dialog, Checkbox, Radio } from '@alicloud/console-components';
+import React, { useEffect, useState } from 'react';
+import { Dialog, Checkbox, Radio, Message } from '@alicloud/console-components';
 import { name, color, icon } from '@/components/ComponentCard/index';
 import { ComponentProp } from '../resource.pool';
+import { getMiddlewareRepository } from '@/services/repository';
 import CustomIcon from '@/components/CustomIcon';
+import messageConfig from '@/components/messageConfig';
+import { mulInstallComponent } from '@/services/common';
 
 interface BatchInstallProps {
 	visible: boolean;
@@ -10,15 +13,97 @@ interface BatchInstallProps {
 	components: ComponentProp[];
 	clusterId: string;
 }
-
+interface ControllerItemProps {
+	chartName: string;
+	chartVersion: string;
+}
+const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
 const BatchInstall = (props: BatchInstallProps) => {
 	const { visible, onCancel, components, clusterId } = props;
 	const [data, setData] = useState<ComponentProp[]>(components);
-	const [componentCheck, setComponentCheck] = useState<boolean>(false);
+	const [controllers, setControllers] = useState<ControllerItemProps[]>([]);
 	const [controllerCheck, setControllerCheck] = useState<boolean>(false);
+	const [selectController, setSelectController] = useState<string[]>([]);
+	useEffect(() => {
+		getMiddlewareRepository({ clusterId }).then((res) => {
+			if (res.success) {
+				if (res.data.length > 0) {
+					const list = res.data
+						.filter((item: any) => item.status === 2)
+						.map((item: any) => {
+							const result: ControllerItemProps = {
+								chartName: item.chartName,
+								chartVersion: item.chartVersion
+							};
+							return result;
+						});
+					setControllers(list);
+				} else {
+					setControllers([]);
+				}
+			} else {
+				setControllers([]);
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	}, []);
 	const onOk = () => {
-		console.log('on ok');
+		const componentList = data
+			.filter((i) => i.status === 0)
+			.map((f) => {
+				if (f.type === null) {
+					f.type = 'simple';
+				}
+				return f;
+			});
+		const controllerList = selectController.map((item) => {
+			return controllers.find((i) => i.chartName === item);
+		});
+		const sendData = {
+			clusterId,
+			clusterComponentsDtoList: componentList,
+			middlewareInfoDTOList: controllerList
+		};
+		mulInstallComponent(sendData).then((res) => {
+			if (res.success) {
+				Message.show(
+					messageConfig('success', '成功', '组件批量安装成功')
+				);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
+	const onChange = (value: string[]) => {
+		setSelectController(value);
+		if (value.length === controllers.length) {
+			setControllerCheck(true);
+		} else {
+			setControllerCheck(false);
+		}
+	};
+	const allControllerSelect = (checked: boolean) => {
+		setControllerCheck(checked);
+		if (checked) {
+			setSelectController(
+				controllers.map((item: ControllerItemProps) => item.chartName)
+			);
+		} else {
+			setSelectController([]);
+		}
+	};
+	const componentChange = (
+		value: string | number | boolean,
+		record: ComponentProp
+	) => {
+		const listTemp = data.map((item) => {
+			if (item.component === record.component) {
+				item.type = value as string;
+			}
+			return item;
+		});
+		setData(listTemp);
 	};
 	return (
 		<Dialog
@@ -30,9 +115,6 @@ const BatchInstall = (props: BatchInstallProps) => {
 		>
 			<div className="batch-install-title-content">
 				<div className="batch-install-name">平台组件</div>
-				<div>
-					<Checkbox label="全选" checked={componentCheck} />
-				</div>
 			</div>
 			{data.map((item: ComponentProp) => {
 				return (
@@ -90,6 +172,9 @@ const BatchInstall = (props: BatchInstallProps) => {
 								<RadioGroup
 									defaultValue={'simple'}
 									disabled={item.status !== 0}
+									onChange={(
+										value: string | number | boolean
+									) => componentChange(value, item)}
 								>
 									<Radio
 										id="simple"
@@ -133,9 +218,22 @@ const BatchInstall = (props: BatchInstallProps) => {
 			>
 				<div className="batch-install-name">中间件控制器</div>
 				<div>
-					<Checkbox label="全选" checked={controllerCheck} />
+					<Checkbox
+						label="全选"
+						checked={controllerCheck}
+						onChange={allControllerSelect}
+					/>
 				</div>
 			</div>
+			<CheckboxGroup value={selectController} onChange={onChange}>
+				{controllers.map((item: ControllerItemProps, index: number) => {
+					return (
+						<Checkbox key={index} value={item.chartName}>
+							{item.chartName}|{item.chartVersion}
+						</Checkbox>
+					);
+				})}
+			</CheckboxGroup>
 		</Dialog>
 	);
 };
