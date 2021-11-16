@@ -41,11 +41,11 @@ const radioList = [
 	},
 	{
 		value: 'info',
-		label: '提示'
+		label: '一般'
 	},
 	{
 		value: 'warning',
-		label: '告警'
+		label: '重要'
 	},
 	{
 		value: 'critical',
@@ -79,7 +79,7 @@ function PlatformOverview(props) {
 	const [level, setLevel] = useState(''); // level
 	const [total, setTotal] = useState(10); // 总数
 	const [poolList, setPoolList] = useState([]);
-	const [type, setType] = useState(null);
+	const [type, setType] = useState('all');
 	const [version, setVersion] = useState();
 	const [operatorData, setOperatorData] = useState();
 	const [operatorList, setOperatorList] = useState([]);
@@ -87,6 +87,8 @@ function PlatformOverview(props) {
 	const history = useHistory();
 	const [pieOption, setPieOption] = useState({});
 	const [lineOption, setLineOption] = useState({});
+	const [alertSummary, setAlertSummary] = useState();
+	// 资源迟选中项
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -115,7 +117,8 @@ function PlatformOverview(props) {
 			setOperatorList(list);
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
-			setLineOption(getLineOption(res.data.alertSummary));
+			setLineOption(getLineOption({...res.data.alertSummary,x: res.data.alertSummary.infoList}));
+			setAlertSummary({...res.data.alertSummary,x: res.data.alertSummary.infoList});
 			chart.setOption(getPieOption(res.data.operatorDTO));
 
 			chart.on('legendselectchanged', (obj) => {
@@ -180,6 +183,20 @@ function PlatformOverview(props) {
 			current: current,
 			level: value
 		};
+		switch (value) {
+			case 'info':
+				setLineOption(getLineOption({ infoList: alertSummary.infoList,x: alertSummary.x }));
+				break;
+			case 'warning':
+				setLineOption(getLineOption({ warningList: alertSummary.warningList,x: alertSummary.x  }));
+				break;
+			case 'critical':
+				setLineOption(getLineOption({ criticalList: alertSummary.criticalList,x: alertSummary.x  }));
+				break;
+			default:
+				setLineOption(getLineOption(alertSummary));
+				break;
+		}
 		getEventsData(alertData);
 	};
 	const paginationChange = (current) => {
@@ -387,51 +404,62 @@ function PlatformOverview(props) {
 									{briefInfoList?.length ? (
 										briefInfoList.map((item) => {
 											return (
-												<div
-													className="info-item"
-													key={item.name}
-													onClick={() =>
-														history.push(
-															'/serviceList'
-														)
-													}
-												>
-													<div className="info-img">
-														<img
-															height={40}
-															width={40}
-															src={`${api}/images/middleware/${item.imagePath}`}
-														/>
-														{item.errServiceNum !==
-														0 ? (
-															<Tooltip
-																trigger={
-																	<span className="err-count">
-																		{
-																			item.errServiceNum
-																		}
-																	</span>
-																}
-																align="t"
-															>
-																异常服务数
-															</Tooltip>
-														) : null}
-													</div>
-													<p className="info-name">
-														{item.name}
-													</p>
-													<p className="info-count">
-														<span>服务数 </span>
-														<span
-															className={
-																'total-count'
+												<Tooltip
+													trigger={
+														<div
+															className="info-item"
+															key={item.name}
+															onClick={() => {
+																if (type === 'all') return;
+																history.push(
+																	`/serviceList/${item.name}/${item.name.charAt(0).toUpperCase() + item.name.slice(1)}`
+																)
+															}
+
 															}
 														>
-															{item.serviceNum}
-														</span>
-													</p>
-												</div>
+															<div className="info-img">
+																<img
+																	height={40}
+																	width={40}
+																	src={`${api}/images/middleware/${item.imagePath}`}
+																/>
+																{item.errServiceNum !==
+																	0 ? (
+																	<Tooltip
+																		trigger={
+																			<span className="err-count">
+																				{
+																					item.errServiceNum
+																				}
+																			</span>
+																		}
+																		align="t"
+																	>
+																		异常服务数
+																	</Tooltip>
+																) : null}
+															</div>
+															<p className="info-name">
+																{item.name}
+															</p>
+															<p className="info-count">
+																<span>服务数 </span>
+																<span
+																	className={
+																		'total-count'
+																	}
+																>
+																	{item.serviceNum}
+																</span>
+															</p>
+														</div>
+													}
+													align="t"
+													triggerType="click"
+												>
+													请选择资源池后跳转
+												</Tooltip>
 											);
 										})
 									) : (
@@ -512,7 +540,7 @@ function PlatformOverview(props) {
 																style={{
 																	color:
 																		value ===
-																		1
+																			1
 																			? '#00A700'
 																			: '#C80000',
 																	marginRight:

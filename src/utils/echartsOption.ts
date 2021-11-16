@@ -96,65 +96,21 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 const getLineOption = (
 	data: { [propName: string]: any } | null | undefined
 ) => {
+	console.log('22',data);
+	
 	const option = {
 		tooltip: {
 			trigger: 'axis'
 		},
-		legend: {
-			left: 0,
-			icon: 'none',
-			itemStyle: {
-				fontSize: 12
-			},
-			formatter: (name: unknown) => {
-				let target = 0;
-				if (data)
-					name === '提示'
-						? (target = data.infoSum)
-						: name === '告警'
-						? (target = data.warningSum)
-						: (target = data.criticalSum);
-				const arr = [
-					'{a|' + target + '}',
-					'{b|' + '个\n' + '}',
-					'{c|' + name + '}'
-				];
-				return arr.join('');
-			},
-			textStyle: {
-				lineHeight: 22,
-				fontSize: 10,
-				rich: {
-					a: {
-						fontSize: 18,
-						fontFamily: 'PingFangHK-Semibold, PingFangHK',
-						lineHeight: 24,
-						color: ['#00A7FA', '#FAA700', '#FF4D4F']
-					},
-					b: {
-						fontSize: 10,
-						lineHeight: 18,
-						color: '#666666',
-						fontFamily: 'PingFangSC-Regular, PingFang SC'
-					},
-					c: {
-						fontSize: 10,
-						lineHeight: 18,
-						color: '#666666',
-						fontFamily: 'PingFangHK-Regular, PingFangHK'
-					}
-				}
-			}
-		},
 		grid: {
-			left: '1%',
-			bottom: '5%',
+			left: '5%',
+			bottom: '10%',
 			containLabel: true
 		},
 		xAxis: {
 			type: 'category',
 			boundaryGap: false,
-			data: data?.infoList.map((item: any) =>
+			data: data && data.x && data.x.map((item: any) =>
 				item.alerttime.substring(11, 16)
 			)
 		},
@@ -172,19 +128,19 @@ const getLineOption = (
 		},
 		series: [
 			{
-				name: '提示',
+				name: '一般',
 				type: 'line',
 				symbol: 'none',
-				data: data?.infoList.map((item: any) => item.num),
+				data: data && data.infoList && data.infoList.map((item: any) => item.num),
 				itemStyle: {
 					color: '#00A7FA'
 				}
 			},
 			{
-				name: '告警',
+				name: '重要',
 				type: 'line',
 				symbol: 'none',
-				data: data?.warningList.map((item: any) => item.num),
+				data: data && data.warningList && data.warningList.map((item: any) => item.num),
 				itemStyle: {
 					color: '#FAA700'
 				}
@@ -193,7 +149,7 @@ const getLineOption = (
 				name: '严重',
 				type: 'line',
 				symbol: 'none',
-				data: data?.criticalList.map((item: any) => item.num),
+				data: data && data.criticalList && data.criticalList.map((item: any) => item.num),
 				itemStyle: {
 					color: '#FF4D4F'
 				}

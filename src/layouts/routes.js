@@ -35,6 +35,7 @@ import ServiceListByType from '@/pages/ServiceList/serviceListByType';
 import Personlization from '@/pages/Personalization/index';
 import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
+import SystemAlarm from '@/pages/SystemAlarm';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -244,6 +245,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/resourcePoolManagement/resourcePoolDetail/:id/:nickname"
 					component={ResourcePoolDetail}
+					exact
+				/>
+				<Route
+					path="/systemManagement/systemAlarm"
+					component={SystemAlarm}
 					exact
 				/>
 				{/* 控制台 */}
