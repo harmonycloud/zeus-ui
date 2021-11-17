@@ -1,26 +1,28 @@
-.next-form-item-control{
-	display: flex;
-	align-items: center;
-}
-.tags{
-	padding: 10px 24px;
-	background: #F1F1F2;
-	display: flex;
-	flex-wrap: wrap;
-	.tag{
-		font-size: 12px;
-		font-family: PingFangSC-Medium, PingFang SC;
-		font-weight: 500;
-		color: #333333;
-		padding: 6px;
-		line-height: 18px;
-		margin: 0 6px 6px 0;
-		border-radius: 12px;
-		border: 1px solid #C0C6CC;
+.node-affinity {
+	.next-form-item-control {
+		display: flex;
+		align-items: center;
 	}
-	.tag-close{
-		margin-left: 6px;
-		color: #666666;
-		cursor: pointer;
+	.tags {
+		padding: 10px 24px;
+		background: #f1f1f2;
+		display: flex;
+		flex-wrap: wrap;
+		.tag {
+			font-size: 12px;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: 500;
+			color: #333333;
+			padding: 6px;
+			line-height: 18px;
+			margin: 0 6px 6px 0;
+			border-radius: 12px;
+			border: 1px solid #c0c6cc;
+		}
+		.tag-close {
+			margin-left: 6px;
+			color: #666666;
+			cursor: pointer;
+		}
 	}
 }

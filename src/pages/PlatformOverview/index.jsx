@@ -117,8 +117,8 @@ function PlatformOverview(props) {
 			setOperatorList(list);
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
-			setLineOption(getLineOption({...res.data.alertSummary,x: res.data.alertSummary.infoList}));
-			setAlertSummary({...res.data.alertSummary,x: res.data.alertSummary.infoList});
+			setLineOption(getLineOption({ ...res.data.alertSummary, x: res.data.alertSummary.infoList }));
+			setAlertSummary({ ...res.data.alertSummary, x: res.data.alertSummary.infoList });
 			chart.setOption(getPieOption(res.data.operatorDTO));
 
 			chart.on('legendselectchanged', (obj) => {
@@ -185,13 +185,13 @@ function PlatformOverview(props) {
 		};
 		switch (value) {
 			case 'info':
-				setLineOption(getLineOption({ infoList: alertSummary.infoList,x: alertSummary.x }));
+				setLineOption(getLineOption({ infoList: alertSummary.infoList, x: alertSummary.x }));
 				break;
 			case 'warning':
-				setLineOption(getLineOption({ warningList: alertSummary.warningList,x: alertSummary.x  }));
+				setLineOption(getLineOption({ warningList: alertSummary.warningList, x: alertSummary.x }));
 				break;
 			case 'critical':
-				setLineOption(getLineOption({ criticalList: alertSummary.criticalList,x: alertSummary.x  }));
+				setLineOption(getLineOption({ criticalList: alertSummary.criticalList, x: alertSummary.x }));
 				break;
 			default:
 				setLineOption(getLineOption(alertSummary));
@@ -405,10 +405,10 @@ function PlatformOverview(props) {
 										briefInfoList.map((item) => {
 											return (
 												<Tooltip
+													key={item.name}
 													trigger={
 														<div
 															className="info-item"
-															key={item.name}
 															onClick={() => {
 																if (type === 'all') return;
 																history.push(

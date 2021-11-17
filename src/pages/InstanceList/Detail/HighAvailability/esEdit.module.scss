@@ -5,8 +5,8 @@
 		.spec-custom {
 			width: 562px;
 			margin-top: 8px;
-    		padding: 12px 44px 0 30px;
-			background: #EFEFEF;
+			padding: 12px 44px 0 30px;
+			background: #efefef;
 		}
 	}
 }
@@ -16,18 +16,18 @@
 		margin-top: 8px;
 		.node-box {
 			width: 182px;
-			border-top: 1px solid #B2D4EF;
-			border-right: 1px solid #B2D4EF;
-			border-bottom: 1px solid #B2D4EF;
+			border-top: 1px solid #b2d4ef;
+			border-right: 1px solid #b2d4ef;
+			border-bottom: 1px solid #b2d4ef;
 			.node-type {
 				width: 100%;
 				height: 30px;
-				border-bottom: 1px solid #B2D4EF;
+				border-bottom: 1px solid #b2d4ef;
 				text-align: center;
 				line-height: 30px;
 				.circle {
 					padding: 0 4px;
-					background-color: #C3D6F0;
+					background-color: #c3d6f0;
 					border-radius: 8px;
 				}
 			}
@@ -47,44 +47,57 @@
 			}
 		}
 		.node-box:first-child {
-			border-left: 1px solid #B2D4EF;
+			border-left: 1px solid #b2d4ef;
 		}
 		.node-box.disabled {
-			background-color: #EFEFEF;
+			background-color: #efefef;
 		}
 	}
 }
-.visualization{
-    h2{
-        font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
-        font-weight: 500;
-        color: #333333;
-        line-height: 22px;
-        margin: 16px 0;
-        display: flex;
-        align-items: center;
-        &::before{
-            content: '';
-            display: inline-block;
-            width: 1px;
-            height: 14px;
-            border: 1px solid #0064C8;
-            margin-right: 5px;
-        }
-    }
-	.tools{
+.visualization {
+	position: relative;
+	h2 {
+		font-size: 14px;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: 500;
+		color: #333333;
+		line-height: 22px;
+		margin: 16px 0;
+		display: flex;
+		align-items: center;
+		&::before {
+			content: "";
+			display: inline-block;
+			width: 1px;
+			height: 14px;
+			border: 1px solid #0064c8;
+			margin-right: 5px;
+		}
+	}
+	.tools {
 		height: 50px;
 		padding: 10px 30px;
 		box-sizing: border-box;
 		background-color: #f9f9f9;
-		button{
+		button {
 			min-width: 24px !important;
 			width: 24px;
 			height: 24px;
 			padding: 0;
-			&:not(:last-child){
+			color: #666;
+			&:not(:last-child) {
 				border-right: none;
+			}
+			&:hover {
+				color: #fff;
+				background: #0064c8;
+				svg{
+					color: #fff !important;
+				}
+			}
+			&:active {
+				color: #fff;
+				background: #0064c8;
 			}
 		}
 	}

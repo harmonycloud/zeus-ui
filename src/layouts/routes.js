@@ -36,6 +36,7 @@ import Personlization from '@/pages/Personalization/index';
 import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
+import CreateAlarm from '@/components/CreateAlarm';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -269,6 +270,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/systemAlarm"
 					component={SystemAlarm}
+					exact
+				/>
+				<Route
+					path="/systemManagement/createAlarm"
+					component={CreateAlarm}
 					exact
 				/>
 				{/* 控制台 */}

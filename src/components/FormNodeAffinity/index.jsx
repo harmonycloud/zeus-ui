@@ -59,7 +59,7 @@ export default function FormNodeAffinity(props) {
 	}
 
 	return (
-		<div className="display-flex flex-column">
+		<div className="display-flex flex-column node-affinity">
 			<label
 				className="dynamic-form-name"
 				style={keys.includes('required') ? { paddingLeft: 8 } : {}}
