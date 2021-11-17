@@ -155,6 +155,11 @@ const Routes = withRouter((props) => {
 					component={ServiceAvailable}
 					exact
 				/>
+				<Route
+					path="/monitorAlarm"
+					exact
+					render={() => <Redirect to="/monitorAlarm/dataMonitor" />}
+				/>
 				{/* 监控告警——数据监控 */}
 				<Route
 					path="/monitorAlarm/dataMonitor"
@@ -175,6 +180,13 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 容灾备份——灾备中心 */}
 				<Route
+					path="/disasterBackup"
+					exact
+					render={() => (
+						<Redirect to="/disasterBackup/disasterCenter" />
+					)}
+				/>
+				<Route
 					path="/disasterBackup/disasterCenter"
 					component={DisasterCenter}
 					exact
@@ -193,6 +205,13 @@ const Routes = withRouter((props) => {
 					component={AuthManage}
 					exact
 				/> */}
+				<Route
+					path="/systemManagement"
+					exact
+					render={() => (
+						<Redirect to="/systemManagement/userManagement" />
+					)}
+				/>
 				{/* 用户管理 */}
 				<Route
 					path="/systemManagement/userManagement"

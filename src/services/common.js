@@ -84,3 +84,7 @@ export const deleteComponent = (params) => {
 export const mulInstallComponent = (params) => {
 	return Axios.json(COMMON.multipleComponents, params, {}, 'POST');
 };
+// * 获取集群纳管命令指令
+export const getJoinCommand = (params) => {
+	return Axios.get(COMMON.getClusterJoinCommand, params);
+};

@@ -72,6 +72,7 @@ const BatchInstall = (props: BatchInstallProps) => {
 					messageConfig('success', '成功', '组件批量安装成功')
 				);
 				onRefresh();
+				onCancel();
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}

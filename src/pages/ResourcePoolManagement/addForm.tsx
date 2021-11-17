@@ -15,13 +15,19 @@ import {
 } from '@alicloud/console-components';
 import FormBlock from '../ServiceCatalog/components/FormBlock';
 import { useParams, useHistory } from 'react-router';
-import { postCluster, getCluster, putCluster } from '@/services/common.js';
+import {
+	postCluster,
+	getCluster,
+	putCluster,
+	getJoinCommand
+} from '@/services/common.js';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { clusterAddType } from '@/types';
 import { connect } from 'react-redux';
 import CustomIcon from '@/components/CustomIcon';
+import { apiUrl } from '@/utils/url';
 
 // ! 去掉了在表单中安装或者接入组件的操作
 const { Option } = Select;
@@ -112,6 +118,7 @@ function AddForm(props: addFormProps): JSX.Element {
 	// const [head, setHead] = useState('http://');
 	// const [mid, setMid] = useState();
 	// const [tail, setTail] = useState();
+	const [command, setCommand] = useState<string>('');
 	const field = Field.useField();
 	const params: paramsProps = useParams();
 	const history = useHistory();
@@ -397,6 +404,48 @@ function AddForm(props: addFormProps): JSX.Element {
 	// 		value={tail}
 	// 	/>
 	// );
+	const onBlur = () => {
+		// console.log(quickName);
+		// 构建到环境中使用
+		const apiAddress =
+			window.location.protocol.toLowerCase() === 'https:'
+				? `https://${window.location.hostname}:${window.location.port}/api`
+				: `http://${window.location.hostname}:${window.location.port}/api`;
+		const sendData = {
+			name: quickName,
+			apiAddress: apiUrl
+		};
+		getJoinCommand(sendData).then((res) => {
+			if (res.success) {
+				setCommand(res.data);
+			} else {
+				setCommand('');
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
+	// * 浏览器复制到剪切板方法
+	const copyValue = () => {
+		const input = document.createElement('input');
+		// setAdress(record.name);
+		// setIconVisible(true);
+		document.body.appendChild(input);
+		input.style.position = 'absolute';
+		input.style.top = '0px';
+		input.style.opacity = '0';
+		input.value = command;
+		input.focus();
+		input.select();
+		if (document.execCommand('copy')) {
+			document.execCommand('copy');
+		}
+		input.blur();
+		document.body.removeChild(input);
+		// setTimeout(() => {
+		// 	// setIconVisible(false);
+		// }, 3000);
+		Message.show(messageConfig('success', '成功', '复制成功'));
+	};
 	return (
 		<Page>
 			<Header
@@ -434,6 +483,7 @@ function AddForm(props: addFormProps): JSX.Element {
 									onChange={(value: string) =>
 										setQuickName(value)
 									}
+									onBlur={onBlur}
 								/>
 							</FormItem>
 							<div className="quick-model-content">
@@ -441,8 +491,13 @@ function AddForm(props: addFormProps): JSX.Element {
 									在已有资源池的任意一个master节点上运行以下指令，实现资源池纳管
 								</div>
 								<div className="display-flex">
-									<div className="quick-model-text"></div>
-									<div className="quick-model-copy">
+									<div className="quick-model-text">
+										{command}
+									</div>
+									<div
+										className="quick-model-copy"
+										onClick={copyValue}
+									>
 										<CustomIcon
 											type="icon-fuzhi1"
 											style={{
@@ -457,6 +512,24 @@ function AddForm(props: addFormProps): JSX.Element {
 								</div>
 							</div>
 						</FormBlock>
+						<div>
+							<Button
+								style={{ marginRight: 8 }}
+								onClick={() => window.history.back()}
+							>
+								返回上一页
+							</Button>
+							<Button
+								type="primary"
+								onClick={() =>
+									history.push(
+										'/systemManagement/resourcePoolManagement'
+									)
+								}
+							>
+								退出
+							</Button>
+						</div>
 					</Tab.Item>
 					<Tab.Item title="表单模式">
 						<FormBlock title="基础信息">
@@ -1242,18 +1315,20 @@ function AddForm(props: addFormProps): JSX.Element {
 								)} */}
 							</Form>
 						</FormBlock>
+						<div>
+							<Button
+								type="primary"
+								onClick={onOk}
+								style={{ marginRight: 8 }}
+							>
+								完成
+							</Button>
+							<Button onClick={() => window.history.back()}>
+								取消
+							</Button>
+						</div>
 					</Tab.Item>
 				</Tab>
-				<div>
-					<Button
-						type="primary"
-						onClick={onOk}
-						style={{ marginRight: 8 }}
-					>
-						完成
-					</Button>
-					<Button onClick={() => window.history.back()}>取消</Button>
-				</div>
 			</Content>
 		</Page>
 	);
