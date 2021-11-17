@@ -64,3 +64,23 @@ export const deleteNamespace = (params) => {
 export const regNamespace = (params) => {
 	return Axios.put(COMMON.updateNamespace, params);
 };
+// * 平台组件
+export const getComponents = (params) => {
+	return Axios.get(COMMON.getComponents, params);
+};
+// * 部署（安装）组件
+export const postComponent = (params) => {
+	return Axios.post(COMMON.updateComponents, params);
+};
+// * 对接（接入）组件
+export const putComponent = (params) => {
+	return Axios.put(COMMON.updateComponents, params);
+};
+// * 卸载（取消接入）组件
+export const deleteComponent = (params) => {
+	return Axios.delete(COMMON.updateComponents, params);
+};
+// * 批量安装组件
+export const mulInstallComponent = (params) => {
+	return Axios.json(COMMON.multipleComponents, params, {}, 'POST');
+};

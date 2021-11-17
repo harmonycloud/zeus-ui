@@ -118,9 +118,11 @@
 		}
 	}
 }
+.batch-install-title-content,
 .node-title-content{
 	display: flex !important;
 	align-items: center;
+	.batch-install-name,
 	.node-title-name{
 		font-size: 14px;
 		font-weight: 500;
@@ -164,5 +166,54 @@
 		width: 46px;
 		height: 113px;
 		background: #0064C8;
+	}
+}
+.component-plugging-content{
+	display: flex;
+	flex-wrap: wrap;
+}
+.batch-install-component-item{
+	width: 667px;
+	height: 72px;
+	border: 1px dashed #888888;
+	display: flex;
+	margin-bottom: 1px;
+	padding: 16px 30px;
+	label {
+		margin-bottom: 8px;
+	}
+	.batch-install-component-title{
+		display: flex;
+		width: 200px;
+		.batch-install-component-title-icon{
+			width: 40px;
+			height: 40px;
+			border-radius: 4px;
+			text-align: center;
+			padding-top: 4.5px;
+		}
+		.batch-install-component-title-info{
+			margin-left: 8px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			.batch-install-component-title-name{
+				height: 22px;
+				font-size: 14px;
+				font-family: PingFangSC-Medium, PingFang SC;
+				font-weight: 500;
+				color: #333333;
+				line-height: 22px;
+			}
+			.batch-install-component-status-tag{
+				width: 52px;
+				height: 16px;
+				border-radius: 12px;
+				text-align: center;
+				font-size: 8px;
+				font-weight: 400;
+				line-height: 16px;
+			}
+		}
 	}
 }

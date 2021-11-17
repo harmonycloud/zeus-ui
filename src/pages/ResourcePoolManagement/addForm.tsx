@@ -23,6 +23,7 @@ import { clusterAddType } from '@/types';
 import { connect } from 'react-redux';
 import CustomIcon from '@/components/CustomIcon';
 
+// ! 去掉了在表单中安装或者接入组件的操作
 const { Option } = Select;
 const { Group: RadioGroup } = Radio;
 const FormItem = Form.Item;
@@ -94,23 +95,23 @@ interface addFormProps {
 function AddForm(props: addFormProps): JSX.Element {
 	const { setRefreshCluster } = props;
 
-	const [isInstallMinio, setIsInstallMinio] = useState<string>('true');
-	const [isInstallPrometheus, setIsInstallPrometheus] =
-		useState<string>('true');
-	const [isInstallAlert, setIsInstallAlert] = useState<string>('uninstall');
-	const [isInstallGrafana, setIsInstallGrafana] =
-		useState<string>('uninstall');
-	const [isInstallLogging, setIsInstallLogging] =
-		useState<string>('uninstall');
-	const [isInstallIngress, setIsInstallIngress] =
-		useState<string>('uninstall');
+	// const [isInstallMinio, setIsInstallMinio] = useState<string>('true');
+	// const [isInstallPrometheus, setIsInstallPrometheus] =
+	// 	useState<string>('true');
+	// const [isInstallAlert, setIsInstallAlert] = useState<string>('uninstall');
+	// const [isInstallGrafana, setIsInstallGrafana] =
+	// 	useState<string>('uninstall');
+	// const [isInstallLogging, setIsInstallLogging] =
+	// 	useState<string>('uninstall');
+	// const [isInstallIngress, setIsInstallIngress] =
+	// 	useState<string>('uninstall');
 
-	const [logCollect, setLogCollect] = useState<boolean>(true);
+	// const [logCollect, setLogCollect] = useState<boolean>(true);
 	const [dcId, setDcId] = useState<string>('');
 	const [quickName, setQuickName] = useState<string>();
-	const [head, setHead] = useState('http://');
-	const [mid, setMid] = useState();
-	const [tail, setTail] = useState();
+	// const [head, setHead] = useState('http://');
+	// const [mid, setMid] = useState();
+	// const [tail, setTail] = useState();
 	const field = Field.useField();
 	const params: paramsProps = useParams();
 	const history = useHistory();
@@ -142,75 +143,75 @@ function AddForm(props: addFormProps): JSX.Element {
 								chartRepo: res.data.registry.chartRepo
 							});
 						}
-						if (res.data.ingress) {
-							setIsInstallIngress('false');
-							field.setValues({
-								ingressAddress: res.data.ingress.address,
-								ingressClassName:
-									res.data.ingress.ingressClassName,
-								namespace: res.data.ingress.tcp.namespace,
-								configMapName:
-									res.data.ingress.tcp.configMapName
-							});
-						}
-						if (
-							res.data.logging &&
-							res.data.logging.elasticSearch
-						) {
-							setIsInstallLogging('false');
-							field.setValues({
-								protocolEs:
-									res.data.logging.elasticSearch.protocol,
-								hostEs: res.data.logging.elasticSearch.host,
-								portEs: res.data.logging.elasticSearch.port,
-								userEs: res.data.logging.elasticSearch.user,
-								passwordEs:
-									res.data.logging.elasticSearch.password,
-								logCollect:
-									res.data.logging.elasticSearch.logCollect
-							});
-						}
-						if (res.data.monitor?.alertManager) {
-							setIsInstallAlert('false');
-							field.setValues({
-								protocolAlert:
-									res.data.monitor.alertManager.protocol,
-								hostAlert: res.data.monitor.alertManager.host,
-								portAlert: res.data.monitor.alertManager.port
-							});
-						}
-						if (res.data.monitor?.grafana) {
-							setIsInstallGrafana('false');
-							field.setValues({
-								protocolGrafana:
-									res.data.monitor.grafana.protocol,
-								hostGrafana: res.data.monitor.grafana.host,
-								portGrafana: res.data.monitor.grafana.port
-							});
-						}
-						if (res.data.monitor?.prometheus) {
-							setIsInstallPrometheus('false');
-							field.setValues({
-								protocolPrometheus:
-									res.data.monitor.prometheus.protocol,
-								hostPrometheus:
-									res.data.monitor.prometheus.host,
-								portPrometheus: res.data.monitor.prometheus.port
-							});
-						}
+						// if (res.data.ingress) {
+						// 	// setIsInstallIngress('false');
+						// 	field.setValues({
+						// 		ingressAddress: res.data.ingress.address,
+						// 		ingressClassName:
+						// 			res.data.ingress.ingressClassName,
+						// 		namespace: res.data.ingress.tcp.namespace,
+						// 		configMapName:
+						// 			res.data.ingress.tcp.configMapName
+						// 	});
+						// }
+						// if (
+						// 	res.data.logging &&
+						// 	res.data.logging.elasticSearch
+						// ) {
+						// 	// setIsInstallLogging('false');
+						// 	field.setValues({
+						// 		protocolEs:
+						// 			res.data.logging.elasticSearch.protocol,
+						// 		hostEs: res.data.logging.elasticSearch.host,
+						// 		portEs: res.data.logging.elasticSearch.port,
+						// 		userEs: res.data.logging.elasticSearch.user,
+						// 		passwordEs:
+						// 			res.data.logging.elasticSearch.password,
+						// 		logCollect:
+						// 			res.data.logging.elasticSearch.logCollect
+						// 	});
+						// }
+						// if (res.data.monitor?.alertManager) {
+						// 	// setIsInstallAlert('false');
+						// 	field.setValues({
+						// 		protocolAlert:
+						// 			res.data.monitor.alertManager.protocol,
+						// 		hostAlert: res.data.monitor.alertManager.host,
+						// 		portAlert: res.data.monitor.alertManager.port
+						// 	});
+						// }
+						// if (res.data.monitor?.grafana) {
+						// 	// setIsInstallGrafana('false');
+						// 	field.setValues({
+						// 		protocolGrafana:
+						// 			res.data.monitor.grafana.protocol,
+						// 		hostGrafana: res.data.monitor.grafana.host,
+						// 		portGrafana: res.data.monitor.grafana.port
+						// 	});
+						// }
+						// if (res.data.monitor?.prometheus) {
+						// 	// setIsInstallPrometheus('false');
+						// 	field.setValues({
+						// 		protocolPrometheus:
+						// 			res.data.monitor.prometheus.protocol,
+						// 		hostPrometheus:
+						// 			res.data.monitor.prometheus.host,
+						// 		portPrometheus: res.data.monitor.prometheus.port
+						// 	});
+						// }
 					}
 				}
 			);
 		}
 	}, [params.clusterId]);
-	useEffect(() => {
-		field.setValues({
-			protocolEs: 'http',
-			protocolAlert: 'http',
-			protocolGrafana: 'https',
-			protocolPrometheus: 'http'
-		});
-	}, []);
+	// useEffect(() => {
+	// 	// field.setValues({
+	// 	// 	protocolEs: 'http',
+	// 	// 	protocolAlert: 'http',
+	// 	// 	protocolGrafana: 'https',
+	// 	// 	protocolPrometheus: 'http'
+	// 	// });
+	// }, []);
 	const uploadConf = (e: any) => {
 		console.log(e);
 		const reader = new window.FileReader();
@@ -242,93 +243,93 @@ function AddForm(props: addFormProps): JSX.Element {
 					password: values.password,
 					type: 'harbor',
 					chartRepo: values.chartRepo
-				},
-				componentsInstall: {
-					alertManager: isInstallAlert === 'uninstall' ? false : true,
-					grafana: isInstallGrafana === 'uninstall' ? false : true,
-					ingress: isInstallIngress === 'uninstall' ? false : true,
-					logging: isInstallLogging === 'uninstall' ? false : true,
-					minio: isInstallMinio === 'uninstall' ? false : true,
-					prometheus:
-						isInstallPrometheus === 'uninstall' ? false : true
 				}
+				// componentsInstall: {
+				// 	alertManager: isInstallAlert === 'uninstall' ? false : true,
+				// 	grafana: isInstallGrafana === 'uninstall' ? false : true,
+				// 	ingress: isInstallIngress === 'uninstall' ? false : true,
+				// 	logging: isInstallLogging === 'uninstall' ? false : true,
+				// 	minio: isInstallMinio === 'uninstall' ? false : true,
+				// 	prometheus:
+				// 		isInstallPrometheus === 'uninstall' ? false : true
+				// }
 			};
-			if (isInstallMinio === 'false') {
-				sendData.storage = {
-					backup: {
-						storage: {
-							accessKeyId: values.accessKeyId,
-							secretAccessKey: values.secretAccessKey,
-							bucketName: values.bucketName,
-							endpoint: head + mid + ':' + tail + '',
-							name: values.minioName
-						}
-					}
-				};
-			}
-			if (isInstallIngress === 'false') {
-				sendData.ingress = {
-					address: values.ingressAddress,
-					ingressClassName: values.ingressClassName,
-					tcp: {
-						enabled: true,
-						namespace: values.namespace,
-						configMapName: values.configMapName
-					}
-				};
-			}
-			if (isInstallLogging === 'false') {
-				sendData.logging = {
-					elasticSearch: {
-						protocol: values.protocolEs,
-						host: values.hostEs,
-						port: values.portEs,
-						user: values.userEs,
-						password: values.passwordEs,
-						logCollect: values.logCollect
-					}
-				};
-			}
-			if (isInstallAlert === 'false') {
-				sendData.monitor = {
-					...sendData.monitor,
-					alertManager: {
-						host: values.hostAlert,
-						port: values.portAlert,
-						protocol: values.protocolAlert
-					}
-				};
-			}
-			if (isInstallGrafana === 'false') {
-				sendData.monitor = {
-					...sendData.monitor,
-					grafana: {
-						host: values.hostGrafana,
-						port: values.portGrafana,
-						protocol: values.protocolGrafana
-					}
-				};
-			} else {
-				sendData.monitor = {
-					...sendData.monitor,
-					grafana: {
-						protocol:
-							window.location.protocol === 'https:'
-								? 'https'
-								: 'http'
-					}
-				};
-			}
-			if (isInstallPrometheus === 'false') {
-				sendData.monitor = {
-					...sendData.monitor,
-					prometheus: {
-						host: values.hostPrometheus,
-						port: values.portPrometheus,
-						protocol: values.protocolPrometheus
-					}
-				};
-			}
+			// if (isInstallMinio === 'false') {
+			// 	sendData.storage = {
+			// 		backup: {
+			// 			storage: {
+			// 				accessKeyId: values.accessKeyId,
+			// 				secretAccessKey: values.secretAccessKey,
+			// 				bucketName: values.bucketName,
+			// 				endpoint: head + mid + ':' + tail + '',
+			// 				name: values.minioName
+			// 			}
+			// 		}
+			// 	};
+			// }
+			// if (isInstallIngress === 'false') {
+			// 	sendData.ingress = {
+			// 		address: values.ingressAddress,
+			// 		ingressClassName: values.ingressClassName,
+			// 		tcp: {
+			// 			enabled: true,
+			// 			namespace: values.namespace,
+			// 			configMapName: values.configMapName
+			// 		}
+			// 	};
+			// }
+			// if (isInstallLogging === 'false') {
+			// 	sendData.logging = {
+			// 		elasticSearch: {
+			// 			protocol: values.protocolEs,
+			// 			host: values.hostEs,
+			// 			port: values.portEs,
+			// 			user: values.userEs,
+			// 			password: values.passwordEs,
+			// 			logCollect: values.logCollect
+			// 		}
+			// 	};
+			// }
+			// if (isInstallAlert === 'false') {
+			// 	sendData.monitor = {
+			// 		...sendData.monitor,
+			// 		alertManager: {
+			// 			host: values.hostAlert,
+			// 			port: values.portAlert,
+			// 			protocol: values.protocolAlert
+			// 		}
+			// 	};
+			// }
+			// if (isInstallGrafana === 'false') {
+			// 	sendData.monitor = {
+			// 		...sendData.monitor,
+			// 		grafana: {
+			// 			host: values.hostGrafana,
+			// 			port: values.portGrafana,
+			// 			protocol: values.protocolGrafana
+			// 		}
+			// 	};
+			// } else {
+			// 	sendData.monitor = {
+			// 		...sendData.monitor,
+			// 		grafana: {
+			// 			protocol:
+			// 				window.location.protocol === 'https:'
+			// 					? 'https'
+			// 					: 'http'
+			// 		}
+			// 	};
+			// }
+			// if (isInstallPrometheus === 'false') {
+			// 	sendData.monitor = {
+			// 		...sendData.monitor,
+			// 		prometheus: {
+			// 			host: values.hostPrometheus,
+			// 			port: values.portPrometheus,
+			// 			protocol: values.protocolPrometheus
+			// 		}
+			// 	};
+			// }
 			// console.log(sendData);
 			if (params.clusterId) {
 				sendData.clusterId = params.clusterId;
@@ -367,35 +368,35 @@ function AddForm(props: addFormProps): JSX.Element {
 			}
 		});
 	};
-	const handleChange = (value: any, type: string) => {
-		switch (type) {
-			case 'head':
-				setHead(value);
-				break;
-			case 'mid':
-				setMid(value);
-				break;
-			case 'tail':
-				setTail(value);
-				break;
-			default:
-				break;
-		}
-	};
-	const select = (
-		<Select onChange={(value) => handleChange(value, 'head')} value={head}>
-			<Option value="https://">https://</Option>
-			<Option value="http://">http://</Option>
-		</Select>
-	);
-	const input = (
-		<Input
-			htmlType="number"
-			onChange={(value) => handleChange(value, 'tail')}
-			style={{ width: '80px' }}
-			value={tail}
-		/>
-	);
+	// const handleChange = (value: any, type: string) => {
+	// 	switch (type) {
+	// 		case 'head':
+	// 			setHead(value);
+	// 			break;
+	// 		case 'mid':
+	// 			setMid(value);
+	// 			break;
+	// 		case 'tail':
+	// 			setTail(value);
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// };
+	// const select = (
+	// 	<Select onChange={(value) => handleChange(value, 'head')} value={head}>
+	// 		<Option value="https://">https://</Option>
+	// 		<Option value="http://">http://</Option>
+	// 	</Select>
+	// );
+	// const input = (
+	// 	<Input
+	// 		htmlType="number"
+	// 		onChange={(value) => handleChange(value, 'tail')}
+	// 		style={{ width: '80px' }}
+	// 		value={tail}
+	// 	/>
+	// );
 	return (
 		<Page>
 			<Header
@@ -684,7 +685,7 @@ function AddForm(props: addFormProps): JSX.Element {
 									</Row>
 								</FormItem>
 								{/* 1 */}
-								<FormItem
+								{/* <FormItem
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
@@ -767,9 +768,9 @@ function AddForm(props: addFormProps): JSX.Element {
 											<Input name="secretAccessKey" />
 										</FormItem>
 									</div>
-								)}
+								)} */}
 								{/* 2 */}
-								<FormItem
+								{/* <FormItem
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
@@ -854,9 +855,9 @@ function AddForm(props: addFormProps): JSX.Element {
 											</Row>
 										</FormItem>
 									</div>
-								)}
+								)} */}
 								{/* 3 */}
-								<FormItem
+								{/* <FormItem
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
@@ -939,9 +940,9 @@ function AddForm(props: addFormProps): JSX.Element {
 											</Row>
 										</FormItem>
 									</div>
-								)}
+								)} */}
 								{/* 4 */}
-								<FormItem
+								{/* <FormItem
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
@@ -1024,9 +1025,9 @@ function AddForm(props: addFormProps): JSX.Element {
 											</Row>
 										</FormItem>
 									</div>
-								)}
+								)} */}
 								{/* 5 */}
-								<FormItem
+								{/* <FormItem
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
@@ -1152,9 +1153,9 @@ function AddForm(props: addFormProps): JSX.Element {
 											/>
 										</FormItem>
 									</div>
-								)}
+								)} */}
 								{/* 6 */}
-								<FormItem
+								{/* <FormItem
 									className="ne-required-ingress"
 									labelTextAlign="left"
 									asterisk={false}
@@ -1238,7 +1239,7 @@ function AddForm(props: addFormProps): JSX.Element {
 											/>
 										</FormItem>
 									</div>
-								)}
+								)} */}
 							</Form>
 						</FormBlock>
 					</Tab.Item>
