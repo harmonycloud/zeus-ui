@@ -125,15 +125,17 @@ function DynamicForm(props) {
 			// * 主机亲和特殊处理
 			if (values.nodeAffinity) {
 				if (values.nodeAffinityLabel) {
-					sendData.nodeAffinity = values.affinityLabels.map(item => {
-						return {
-							label: item.label,
-							required: values.nodeAffinityForce
-								? values.nodeAffinityForce
-								: false,
-							namespace: globalNamespace.name
+					sendData.nodeAffinity = values.affinityLabels.map(
+						(item) => {
+							return {
+								label: item.label,
+								required: values.nodeAffinityForce
+									? values.nodeAffinityForce
+									: false,
+								namespace: globalNamespace.name
+							};
 						}
-					})
+					);
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机亲和。')
@@ -159,9 +161,11 @@ function DynamicForm(props) {
 			// * 主机容忍特殊处理
 			if (values.tolerations) {
 				if (values.tolerationsLabels) {
-					sendData.tolerations = values.tolerationsLabels.map(item => {
-						return { label: item.label }
-					})
+					sendData.tolerations = values.tolerationsLabels.map(
+						(item) => {
+							return { label: item.label };
+						}
+					);
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机容忍。')
@@ -261,14 +265,14 @@ function DynamicForm(props) {
 								</li>
 								<li className="display-flex  flex-column">
 									<label className="dynamic-form-name">
-										<span>描述</span>
+										<span>备注</span>
 									</label>
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
 												style={{ width: '390px' }}
 												name="annotation"
-												placeholder="请输入描述信息"
+												placeholder="请输入备注信息"
 											/>
 										</FormItem>
 									</div>

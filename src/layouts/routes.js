@@ -71,56 +71,56 @@ const Routes = withRouter((props) => {
 					component={MiddlewareRepository}
 					exact
 				/>
-				{/* 4款中间件发布 + 动态表单的发布*/}
-				<Route
-					path="/middlewareRepository/mysqlCreate/:aliasName/:chartName/:chartVersion"
-					component={MysqlCreate}
-					exact
-				/>
-				<Route
-					path="/middlewareRepository/mysqlCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={MysqlCreate}
-					exact
-				/>
-				<Route
-					path="/middlewareRepository/mysqlCreate/:chartName/:chartVersion/:disasterOriginName"
-					component={MysqlCreate}
-					exact
-				/>
-				<Route
-					path="/middlewareRepository/redisCreate/:aliasName/:chartName/:chartVersion"
-					component={RedisCreate}
-					exact
-				/>
-				<Route
-					path="/middlewareRepository/redisCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={RedisCreate}
-				/>
-				<Route
-					path="/middlewareRepository/elasticsearchCreate/:aliasName/:chartName/:chartVersion"
-					component={ElasticsearchCreate}
-					exact
-				/>
-				<Route
-					path="/middlewareRepository/elasticsearchCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={ElasticsearchCreate}
-				/>
-				<Route
-					path="/middlewareRepository/rocketmqCreate/:aliasName/:chartName/:chartVersion"
-					component={RocketMQCreate}
-				/>
-				<Route
-					path="/middlewareRepository/rocketmqCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={RocketMQCreate}
-				/>
-				<Route
-					path="/middlewareRepository/dynamicForm/:aliasName/:chartName/:chartVersion/:version"
-					component={DynamicForm}
-				/>
 				{/* 中间件市场-版本管理 */}
 				<Route
 					path="/middlewareRepository/versionManagement/:type"
 					component={MiddlewareVersion}
+				/>
+				{/* 4款中间件发布 + 动态表单的发布*/}
+				<Route
+					path="/serviceList/mysqlCreate/:aliasName/:chartName/:chartVersion"
+					component={MysqlCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/mysqlCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					component={MysqlCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/mysqlCreate/:chartName/:chartVersion/:disasterOriginName"
+					component={MysqlCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/redisCreate/:aliasName/:chartName/:chartVersion"
+					component={RedisCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/redisCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					component={RedisCreate}
+				/>
+				<Route
+					path="/serviceList/elasticsearchCreate/:aliasName/:chartName/:chartVersion"
+					component={ElasticsearchCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/elasticsearchCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					component={ElasticsearchCreate}
+				/>
+				<Route
+					path="/serviceList/rocketmqCreate/:aliasName/:chartName/:chartVersion"
+					component={RocketMQCreate}
+				/>
+				<Route
+					path="/serviceList/rocketmqCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					component={RocketMQCreate}
+				/>
+				<Route
+					path="/serviceList/dynamicForm/:aliasName/:chartName/:chartVersion/:version"
+					component={DynamicForm}
 				/>
 				{/* 服务列表 */}
 				{/* <Route path="/serviceList" component={ServiceList} exact /> */}

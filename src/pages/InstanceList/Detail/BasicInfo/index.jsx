@@ -62,7 +62,7 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'description',
-		label: '描述'
+		label: '备注'
 	}
 ];
 

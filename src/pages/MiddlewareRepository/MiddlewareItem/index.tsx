@@ -176,33 +176,33 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			switch (chartName) {
 				case 'mysql':
 					history.push(
-						`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}`
+						`/serviceList/mysqlCreate/${chartName}/${chartVersion}`
 					);
 					break;
 				case 'redis':
 					history.push(
-						`/middlewareRepository/redisCreate/${chartName}/${chartVersion}`
+						`/serviceList/redisCreate/${chartName}/${chartVersion}`
 					);
 					break;
 				case 'elasticsearch':
 					history.push(
-						`/middlewareRepository/elasticsearchCreate/${chartName}/${chartVersion}`
+						`/serviceList/elasticsearchCreate/${chartName}/${chartVersion}`
 					);
 					break;
 				case 'rocketmq':
 					history.push(
-						`/middlewareRepository/rocketmqCreate/${chartName}/${chartVersion}`
+						`/serviceList/rocketmqCreate/${chartName}/${chartVersion}`
 					);
 					break;
 				default:
 					history.push(
-						`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
+						`/serviceList/dynamicForm/${chartName}/${chartVersion}/${version}`
 					);
 					break;
 			}
 		} else {
 			history.push(
-				`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
+				`/serviceList/dynamicForm/${chartName}/${chartVersion}/${version}`
 			);
 		}
 	};

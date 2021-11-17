@@ -569,13 +569,13 @@ const ElasticsearchCreate = (props) => {
 								</li>
 								<li className="display-flex">
 									<label className="form-name">
-										<span>描述</span>
+										<span>备注</span>
 									</label>
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
 												name="annotation"
-												placeholder="请输入描述信息"
+												placeholder="请输入备注信息"
 											/>
 										</FormItem>
 									</div>
