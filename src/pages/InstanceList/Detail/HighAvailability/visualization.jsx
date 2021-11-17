@@ -3,14 +3,41 @@ import styles from './esEdit.module.scss';
 import G6 from '@antv/g6'
 import { Button, Icon } from '@alicloud/console-components';
 import CustomIcon from '@/components/CustomIcon';
+import select from '@/assets/images/tree-select.svg';
+import Completed from '@/assets/images/Completed.svg';
+import NotReady from '@/assets/images/NotReady.svg';
+import Terminating from '@/assets/images/Terminating.svg';
+import Running from '@/assets/images/Running.svg';
 
-const type = [
-    {}
+const podStatus = [
+    {
+        status: 'Completed',
+        color: '#1E8E3E',
+        image: Completed,
+        title: '即将完成'
+    },
+    {
+        status: 'Terminating',
+        color: '#D93026',
+        image: Terminating,
+        title: '已停止'
+    },
+    {
+        status: 'Running',
+        color: '#0091FF',
+        image: Running,
+        title: '进行中'
+    },
+    {
+        status: 'NotReady',
+        color: '#FFC440',
+        image: NotReady,
+        title: '未准备好'
+    }
 ]
 
 function Visualization(props) {
     const { topoData, serverData } = props;
-    let count = 1;
 
     const hasConfigBackup = (cfg) => {
         if (!cfg.depth) {
@@ -33,7 +60,7 @@ function Visualization(props) {
             'tree-node',
             {
                 drawShape: function drawShape(cfg, group) {
-                    console.log(cfg);
+                    console.log(cfg, serverData);
                     const rect = group.addShape('rect', {
                         attrs: {
                             fill: '#fff',
@@ -47,7 +74,7 @@ function Visualization(props) {
                     });
                     group.addShape('rect', {
                         attrs: {
-                            fill: '#1E8E3E',
+                            fill: podStatus.filter(item => (item.status === cfg.status) || (item.status === serverData.status))[0].color,
                             x: 0,
                             y: 0,
                             width: 40,
@@ -55,13 +82,26 @@ function Visualization(props) {
                         },
                         name: 'status',
                     });
+                    group.addShape('image', {
+                        attrs: {
+                            img: podStatus.filter(item => (item.status === cfg.status) || (item.status === serverData.status))[0].image,
+                            x: 12,
+                            y: 42,
+                            width: 16,
+                            height: 16
+                        },
+                        name: 'status-image',
+                    });
                     group.addShape('text', {
                         attrs: {
                             text: !cfg.depth ? serverData.name : 'IP ' + cfg.podIp,
                             x: 45,
                             y: 30,
                             textBaseline: 'middle',
-                            fill: '#666',
+                            fill: '#333',
+                            fontWeight: 500,
+                            lineHeight: 18,
+                            fontFamily: 'PingFangSC-Medium, PingFang SC'
                         },
                         name: 'text-shape1',
                     });
@@ -69,9 +109,10 @@ function Visualization(props) {
                         attrs: {
                             text: !cfg.depth ? serverData.aliasName : '资源/存储 ' + cfg.resources.cpu + 'C/' + cfg.resources.memory + 'G/' + cfg.resources.storageClassQuota,
                             x: 45,
-                            y: 65,
+                            y: 55,
                             textBaseline: 'middle',
                             fill: '#666',
+                            fontWeight: 400,
                         },
                         name: 'text-shape2',
                     });
@@ -90,7 +131,7 @@ function Visualization(props) {
                         attrs: {
                             text: '已',
                             x: 204,
-                            y: 30,
+                            y: 38,
                             fill: '#fff',
                         },
                         visible: hasConfigBackup(cfg),
@@ -100,7 +141,7 @@ function Visualization(props) {
                         attrs: {
                             text: '设',
                             x: 204,
-                            y: 42,
+                            y: 50,
                             fill: '#fff',
                         },
                         visible: hasConfigBackup(cfg),
@@ -110,31 +151,22 @@ function Visualization(props) {
                         attrs: {
                             text: '置',
                             x: 204,
-                            y: 54,
+                            y: 62,
                             fill: '#fff',
                         },
                         visible: hasConfigBackup(cfg),
                         name: 'text3',
                     });
-                    group.addShape('text', {
+                    group.addShape('image', {
                         attrs: {
-                            text: '备',
-                            x: 204,
-                            y: 66,
-                            fill: '#fff',
+                            x: 196,
+                            y: 76,
+                            width: 24,
+                            height: 24,
+                            img: select
                         },
-                        visible: hasConfigBackup(cfg),
-                        name: 'text4',
-                    });
-                    group.addShape('text', {
-                        attrs: {
-                            text: '份',
-                            x: 204,
-                            y: 78,
-                            fill: '#fff',
-                        },
-                        visible: hasConfigBackup(cfg),
-                        name: 'text-5',
+                        visible: false,
+                        name: 'select-image',
                     });
                     const hasChildren = cfg.children && cfg.children.length > 0;
                     group.addShape('rect', {
@@ -240,13 +272,19 @@ function Visualization(props) {
         );
 
         const topology = document.getElementById('topology');
-        const width = topology.scrollWidth || 1000;
+        const minimapDom = document.getElementById('minimap');
+        const width = topology.scrollWidth || 800;
         const height = topology.scrollHeight || 480;
+        const minimap = new G6.Minimap({
+            container: minimapDom,
+            size: [window.innerWidth / 4, window.innerHeight / 4]
+        });
         const graph = new G6.TreeGraph({
-            container: 'topology',
+            container: topology,
             width,
             height,
             fitViewPadding: [20, 30, 20, 30],
+            plugins: [minimap],
             modes: {
                 default: [
                     {
@@ -259,6 +297,13 @@ function Visualization(props) {
                             data.collapsed = collapsed;
                             return true;
                         },
+                    },
+                    {
+                        type: 'tooltip',
+                        formatText(model) {
+                            return `<div class="tooltip">${podStatus.filter(item => (item.status === model.status) || (item.status === serverData.status))[0].title}</div>`;
+                        },
+                        offset: 10,
                     },
                     'drag-canvas',
                     'zoom-canvas',
@@ -307,7 +352,7 @@ function Visualization(props) {
             },
         });
         let res = {
-            id: '111'
+            id: 'tree'
         }
         res.children = topoData.pods;
         console.log(res);
@@ -352,45 +397,48 @@ function Visualization(props) {
         });
         graph.on('node:click', (evt) => {
             const { item } = evt;
+            const group = item.getContainer();
             graph.setItemState(item, 'select', true);
+            const selectImage = group.find((e) => e.get('name') === 'select-image');
+            selectImage.cfg.visible = true;
             console.log('node');
         })
-        graph.on('button1:mouseenter', (evt) => {
-            const { item } = evt;
-            const group = item.getContainer();
-            const button1 = group.find((e) => e.get('name') === 'button1');
-            button1.attrs.fill = '#000';
-        })
-        graph.on('button1:mouseleave', (evt) => {
-            const { item } = evt;
-            const group = item.getContainer();
-            const button1 = group.find((e) => e.get('name') === 'button1');
-            button1.attrs.fill = '#595959';
-        })
-        graph.on('button2:mouseenter', (evt) => {
-            const { item } = evt;
-            const group = item.getContainer();
-            const button2 = group.find((e) => e.get('name') === 'button2');
-            button2.attrs.fill = '#000';
-        })
-        graph.on('button2:mouseleave', (evt) => {
-            const { item } = evt;
-            const group = item.getContainer();
-            const button2 = group.find((e) => e.get('name') === 'button2');
-            button2.attrs.fill = '#595959';
-        })
-        graph.on('button3:mouseenter', (evt) => {
-            const { item } = evt;
-            const group = item.getContainer();
-            const button3 = group.find((e) => e.get('name') === 'button3');
-            button3.attrs.fill = '#000';
-        })
-        graph.on('button3:mouseleave', (evt) => {
-            const { item } = evt;
-            const group = item.getContainer();
-            const button3 = group.find((e) => e.get('name') === 'button3');
-            button3.attrs.fill = '#595959';
-        })
+        // graph.on('button1:mouseenter', (evt) => {
+        //     const { item } = evt;
+        //     const group = item.getContainer();
+        //     const button1 = group.find((e) => e.get('name') === 'button1');
+        //     button1.attrs.fill = '#000';
+        // })
+        // graph.on('button1:mouseleave', (evt) => {
+        //     const { item } = evt;
+        //     const group = item.getContainer();
+        //     const button1 = group.find((e) => e.get('name') === 'button1');
+        //     button1.attrs.fill = '#595959';
+        // })
+        // graph.on('button2:mouseenter', (evt) => {
+        //     const { item } = evt;
+        //     const group = item.getContainer();
+        //     const button2 = group.find((e) => e.get('name') === 'button2');
+        //     button2.attrs.fill = '#000';
+        // })
+        // graph.on('button2:mouseleave', (evt) => {
+        //     const { item } = evt;
+        //     const group = item.getContainer();
+        //     const button2 = group.find((e) => e.get('name') === 'button2');
+        //     button2.attrs.fill = '#595959';
+        // })
+        // graph.on('button3:mouseenter', (evt) => {
+        //     const { item } = evt;
+        //     const group = item.getContainer();
+        //     const button3 = group.find((e) => e.get('name') === 'button3');
+        //     button3.attrs.fill = '#000';
+        // })
+        // graph.on('button3:mouseleave', (evt) => {
+        //     const { item } = evt;
+        //     const group = item.getContainer();
+        //     const button3 = group.find((e) => e.get('name') === 'button3');
+        //     button3.attrs.fill = '#595959';
+        // })
         graph.on('button1:click', () => {
             console.log('button1');
         })
@@ -410,13 +458,33 @@ function Visualization(props) {
     }
 
     const bingger = () => {
-        count++;
-        window.graph.zoom((Math.round(window.graph.getZoom() * 10) + count) / 10);
+        window.graph.zoom(window.graph.getZoom() * 1.2);
     }
 
     const smaller = () => {
-        count++;
-        window.graph.zoom((Math.round(window.graph.getZoom() * 10) - count) / 10);
+        window.graph.zoom(window.graph.getZoom() * 0.8);
+    }
+
+    const changeTree = (value) => {
+        window.graph.updateLayout({
+            type: 'compactBox',
+            direction: value,
+            getId: function getId(d) {
+                return d.id;
+            },
+            getHeight: function getHeight() {
+                return 100;
+            },
+            getWidth: function getWidth() {
+                return 220;
+            },
+            getVGap: function getVGap() {
+                return 50;
+            },
+            getHGap: function getHGap() {
+                return 50;
+            },
+        });
     }
 
 
@@ -428,46 +496,10 @@ function Visualization(props) {
                     <Icon type="arrows-alt" />
                 </Button>
                 <Button>
-                    <Icon type="Directory-tree" onClick={() => window.graph.updateLayout({
-                        type: 'compactBox',
-                        direction: 'LR',
-                        getId: function getId(d) {
-                            return d.id;
-                        },
-                        getHeight: function getHeight() {
-                            return 100;
-                        },
-                        getWidth: function getWidth() {
-                            return 220;
-                        },
-                        getVGap: function getVGap() {
-                            return 50;
-                        },
-                        getHGap: function getHGap() {
-                            return 50;
-                        },
-                    })} />
+                    <Icon type="Directory-tree" onClick={() => changeTree('LR')} />
                 </Button>
                 <Button>
-                    <CustomIcon type='icon-shuxiangjiegou' size={12} onClick={() => window.graph.updateLayout({
-                        type: 'compactBox',
-                        direction: 'TB',
-                        getId: function getId(d) {
-                            return d.id;
-                        },
-                        getHeight: function getHeight() {
-                            return 100;
-                        },
-                        getWidth: function getWidth() {
-                            return 220;
-                        },
-                        getVGap: function getVGap() {
-                            return 50;
-                        },
-                        getHGap: function getHGap() {
-                            return 50;
-                        },
-                    })} />
+                    <CustomIcon type='icon-shuxiangjiegou' size={12} style={{ color: '#000000' }} onClick={() => changeTree('TB')} />
                 </Button>
                 <Button>
                     <Icon type="add" onClick={bingger} />
@@ -476,10 +508,14 @@ function Visualization(props) {
                     <Icon type="minus" onClick={smaller} />
                 </Button>
                 <Button>
-                    <CustomIcon type='icon-yuandian' size={12} onClick={reset} />
+                    <CustomIcon type='icon-double-circle' size={12} style={{ color: '#000000' }} onClick={reset} />
                 </Button>
             </div>
-            <div id='topology' style={{ background: "#f9f9f9" }}></div>
+            <div style={{ display: "flex" }}>
+                <div id='topology' style={{ background: "#f9f9f9", width: "70%" }}></div>
+                <div id='minimap' style={{ background: "#f9f9f9", width: "30%" }}></div>
+            </div>
+
         </div>
     );
 }

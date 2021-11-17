@@ -59,7 +59,7 @@ export default function FormTolerations(props) {
 	}
 
 	return (
-		<div className="display-flex flex-column">
+		<div className="display-flex flex-column form-tolerations">
 			<label
 				className="dynamic-form-name"
 				style={keys.includes('required') ? { paddingLeft: 8 } : {}}
