@@ -63,6 +63,7 @@ const Component = () => {
 					onCancel={() => setVisible(false)}
 					components={components}
 					clusterId={id}
+					onRefresh={getData}
 				/>
 			)}
 		</Page>

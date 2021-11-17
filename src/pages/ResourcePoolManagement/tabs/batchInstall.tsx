@@ -12,6 +12,7 @@ interface BatchInstallProps {
 	onCancel: () => void;
 	components: ComponentProp[];
 	clusterId: string;
+	onRefresh: () => void;
 }
 interface ControllerItemProps {
 	chartName: string;
@@ -20,7 +21,7 @@ interface ControllerItemProps {
 const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
 const BatchInstall = (props: BatchInstallProps) => {
-	const { visible, onCancel, components, clusterId } = props;
+	const { visible, onCancel, components, clusterId, onRefresh } = props;
 	const [data, setData] = useState<ComponentProp[]>(components);
 	const [controllers, setControllers] = useState<ControllerItemProps[]>([]);
 	const [controllerCheck, setControllerCheck] = useState<boolean>(false);
@@ -70,6 +71,7 @@ const BatchInstall = (props: BatchInstallProps) => {
 				Message.show(
 					messageConfig('success', '成功', '组件批量安装成功')
 				);
+				onRefresh();
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
