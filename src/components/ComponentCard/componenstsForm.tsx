@@ -6,6 +6,7 @@ import {
 	Grid,
 	Switch
 } from '@alicloud/console-components';
+import storage from '@/utils/storage';
 import pattern from '@/utils/pattern';
 const formItemLayout = {
 	labelCol: {
@@ -385,6 +386,16 @@ export const MinioRender = (props: any) => {
 	useEffect(() => {
 		field.setValue('endpoint', head + mid + ':' + tail + '');
 	}, [head, mid, tail]);
+	useEffect(() => {
+		const cluster = JSON.parse(storage.getLocal('cluster'));
+		console.log(cluster);
+		if (cluster?.storage?.backup?.storage) {
+			const endpoint = cluster.storage.backup.storage.endpoint.split(':');
+			setHead(`${endpoint[0]}://`);
+			setMid(endpoint[1].substring(2));
+			setTail(endpoint[2]);
+		}
+	}, [props]);
 	const handleChange = (value: any, type: string) => {
 		switch (type) {
 			case 'head':

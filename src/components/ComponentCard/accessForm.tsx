@@ -66,6 +66,15 @@ const AccessForm = (props: AccessFormProps) => {
 				portPrometheus: cluster.monitor.prometheus.port
 			});
 		}
+		if (cluster?.storage?.backup?.storage) {
+			field.setValues({
+				accessKeyId: cluster?.storage?.backup?.storage.accessKeyId,
+				bucketName: cluster?.storage?.backup?.storage.bucketName,
+				minioName: cluster?.storage?.backup?.storage.name,
+				secretAccessKey:
+					cluster?.storage?.backup?.storage.secretAccessKey
+			});
+		}
 	}, []);
 	const onOk = () => {
 		field.validate((errors, values: any) => {
