@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Dialog } from '@alicloud/console-components';
 import CustomIcon from '../CustomIcon';
 import { SendDataProps } from './index';
+import {
+	labelHigh,
+	labelSimple
+} from '@/pages/ResourcePoolManagement/tabs/batchInstall';
 import './index.scss';
 
 interface installFormProps {
@@ -18,7 +22,11 @@ const InstallForm = (props: installFormProps) => {
 		const sendData = {
 			clusterId,
 			componentName: title,
-			type: type
+			type: type,
+			protocol:
+				window.location.protocol.toLowerCase() === 'https:'
+					? 'https'
+					: 'http'
 		};
 		onCreate(sendData);
 		onCancel();
@@ -57,7 +65,7 @@ const InstallForm = (props: installFormProps) => {
 					<h2>单实例版</h2>
 					<p>
 						资源占用少，保证安装后，该工具可用，但是不稳定
-						所需资源约CPU：**核；内存：**G；存储**G
+						所需资源约CPU：{labelSimple[title]}
 					</p>
 					<CustomIcon
 						type="icon-xuanzhong"
@@ -88,7 +96,7 @@ const InstallForm = (props: installFormProps) => {
 					<h2>高可用版（推荐）</h2>
 					<p>
 						资源占用相对多，保证安装后，该工具可用，且稳定
-						所需资源约CPU：**核；内存：**G；存储**G
+						所需资源约CPU：{labelHigh[title]}
 					</p>
 					<CustomIcon
 						type="icon-xuanzhong"

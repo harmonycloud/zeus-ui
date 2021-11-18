@@ -18,6 +18,22 @@ interface ControllerItemProps {
 	chartName: string;
 	chartVersion: string;
 }
+export enum labelSimple {
+	alertmanager = 'cpu：0.2核；内存：0.5G；存储：0G',
+	prometheus = 'cpu：1核；内存：2G；存储：10G',
+	logging = 'cpu：2.5核；内存：7G；存储：5G',
+	minio = 'cpu：0.5核；内存：1G；存储：20G',
+	grafana = 'cpu：1核；内存：1G；存储：0G',
+	'middleware-controller' = 'cpu：0.5核；内存：0.5G；存储：0G'
+}
+export enum labelHigh {
+	alertmanager = 'cpu：0.6核；内存：1.5G；存储：0G',
+	prometheus = 'cpu：3核；内存：6G；存储：30G',
+	logging = 'cpu：4.5核；内存：15G；存储：15G',
+	minio = 'cpu：1.5核；内存：3G；存储：30G',
+	grafana = 'cpu：3核；内存：3G；存储：0G',
+	'middleware-controller' = 'cpu：1.5核；内存：1.5G；存储：0G'
+}
 const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
 const BatchInstall = (props: BatchInstallProps) => {
@@ -55,6 +71,12 @@ const BatchInstall = (props: BatchInstallProps) => {
 			.map((f) => {
 				if (f.type === null) {
 					f.type = 'simple';
+				}
+				if (f.component === 'grafana') {
+					f.protocol =
+						window.location.protocol.toLowerCase() === 'https:'
+							? 'https'
+							: 'http';
 				}
 				return f;
 			});
@@ -170,7 +192,7 @@ const BatchInstall = (props: BatchInstallProps) => {
 							</div>
 						</div>
 						{item.component !== 'local-path' &&
-						item.component !== 'middleware-controller' ? (
+						item.component !== 'ingress' ? (
 							<div>
 								<RadioGroup
 									defaultValue={'simple'}
@@ -182,13 +204,17 @@ const BatchInstall = (props: BatchInstallProps) => {
 									<Radio
 										id="simple"
 										value="simple"
-										label="单实例版：cpu：**核；内存：***G；存储：****G"
+										label={`单实例版：${
+											labelSimple[item.component]
+										}`}
 									/>
 									<br />
 									<Radio
 										id="high"
 										value="high"
-										label="高可用版：cpu：**核；内存：***G；存储：****G"
+										label={`高实例版：${
+											labelHigh[item.component]
+										}`}
 									/>
 								</RadioGroup>
 							</div>

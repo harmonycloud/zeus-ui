@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Form,
 	Input,
@@ -377,10 +377,14 @@ export const AlertRender = () => (
 		</Row>
 	</FormItem>
 );
-export const MinioRender = () => {
+export const MinioRender = (props: any) => {
+	const { field } = props;
 	const [head, setHead] = useState<string>('http://');
 	const [mid, setMid] = useState<string>();
 	const [tail, setTail] = useState<number>();
+	useEffect(() => {
+		field.setValue('endpoint', head + mid + ':' + tail + '');
+	}, [head, mid, tail]);
 	const handleChange = (value: any, type: string) => {
 		switch (type) {
 			case 'head':

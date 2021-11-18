@@ -70,11 +70,11 @@ export const getComponents = (params) => {
 };
 // * 部署（安装）组件
 export const postComponent = (params) => {
-	return Axios.post(COMMON.updateComponents, params);
+	return Axios.json(COMMON.updateComponents, params, {}, 'POST');
 };
 // * 对接（接入）组件
 export const putComponent = (params) => {
-	return Axios.put(COMMON.updateComponents, params);
+	return Axios.json(COMMON.updateComponents, params, {}, 'PUT');
 };
 // * 卸载（取消接入）组件
 export const deleteComponent = (params) => {

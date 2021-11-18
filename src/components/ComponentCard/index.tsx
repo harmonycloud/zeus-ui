@@ -261,6 +261,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 					onCancel={() => setAccessVisible(false)}
 					title={title}
 					clusterId={clusterId}
+					onRefresh={onRefresh}
 				/>
 			)}
 		</div>

@@ -569,6 +569,22 @@ const ElasticsearchCreate = (props) => {
 								</li>
 								<li className="display-flex">
 									<label className="form-name">
+										<span>注解</span>
+									</label>
+									<div className="form-content">
+										<FormItem
+											pattern={pattern.labels}
+											patternMessage="请输入key=value格式的注释，多个注释以英文逗号分隔"
+										>
+											<Input
+												name="annotation"
+												placeholder="请输入key=value格式的注视，多个注释以英文逗号分隔"
+											/>
+										</FormItem>
+									</div>
+								</li>
+								<li className="display-flex">
+									<label className="form-name">
 										<span>备注</span>
 									</label>
 									<div className="form-content">

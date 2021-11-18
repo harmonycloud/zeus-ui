@@ -52,4 +52,5 @@ export interface ComponentProp {
 	component: string;
 	status: number;
 	type: null | string;
+	protocol?: string | null;
 }
