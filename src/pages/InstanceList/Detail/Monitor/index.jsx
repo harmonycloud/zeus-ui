@@ -20,6 +20,7 @@ const Monitor = (props) => {
 		chartVersion
 	} = props;
 	const [url, setUrl] = useState('');
+	const [token, setToken] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
 	console.log(props);
 	useEffect(() => {
@@ -34,6 +35,8 @@ const Monitor = (props) => {
 				}).then((res) => {
 					if (res.success) {
 						setUrl(res.data.url);
+						// setUrl(`${res.data.url}?auth_token=${res.data.authorization}`);
+						setToken(res.data.authorization);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -43,13 +46,19 @@ const Monitor = (props) => {
 	}, [props.chartVersion]);
 
 	useEffect(() => {
-		if (url) {
+		if (url && token) {
+			console.log(url);
+			console.log(token);
 			let iframe = document.getElementById('iframe');
 			iframe.onload = function () {
-				iframe.contentWindow.postMessage({ showMenu: false }, '*');
+				// iframe.contentWindow.init(token);
+				iframe.contentWindow.postMessage(
+					{ showMenu: false, token: token },
+					'*'
+				);
 			};
 		}
-	}, [url]);
+	}, [url, token]);
 
 	useEffect(() => {
 		// 子页面去掉侧边栏之后再显示iframe
@@ -87,6 +96,7 @@ const Monitor = (props) => {
 								frameBorder="no"
 								border="0"
 								scrolling="no"
+								// referrerPolicy="origin-when-cross-origin"
 								style={{
 									width: '100%',
 									height: '100%',

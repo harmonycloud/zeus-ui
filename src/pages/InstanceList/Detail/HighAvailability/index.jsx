@@ -119,6 +119,7 @@ export default function HighAvailability(props) {
 			render: () => {
 				const list = [];
 				if (data) {
+					console.log(data);
 					for (let i in data.quota) {
 						if (data.quota[i].num !== 0) {
 							list.push({
@@ -266,61 +267,6 @@ export default function HighAvailability(props) {
 				});
 			}
 			setQuotaValue(data.quota[type]);
-			// * 自定义中间件 有operator，无operator
-			// if (customMid && data.quota[type] !== null) {
-			// 	setConfig({
-			// 		title: '规格配置',
-			// 		model: data.mode || '',
-			// 		node: `${
-			// 			data.quota[type].cpu.charAt(
-			// 				data.quota[type].cpu.length - 1
-			// 			) === 'm'
-			// 				? data.quota[type].cpu
-			// 				: `${data.quota[type].cpu} Core`
-			// 		} CPU ${data.quota[type].memory} 内存`
-			// 	});
-			// 	setQuotaValue(data.quota[type]);
-			// } else {
-			// 	// * mysql redis es mq
-			// 	if (type !== 'elasticsearch') {
-			// 		// * mysql redis mq
-			// 		setConfig({
-			// 			title: '规格配置',
-			// 			model:
-			// 				type === 'redis'
-			// 					? data.quota.redis.num
-			// 					: data.mode || '',
-			// 			node: `${
-			// 				data.quota[type].cpu.charAt(
-			// 					data.quota[type].cpu.length - 1
-			// 				) === 'm'
-			// 					? data.quota[type].cpu
-			// 					: `${data.quota[type].cpu} Core`
-			// 			} CPU ${data.quota[type].memory} 内存 ${
-			// 				data.quota[type].storageClassQuota
-			// 			} 存储`
-			// 		});
-			// 		setQuotaValue(data.quota[type]);
-			// 	} else {
-			// 		// es
-			// 		let mode = data.mode;
-			// 		if (
-			// 			data.quota.client.num !== 0 &&
-			// 			data.quota.cold.num !== 0
-			// 		) {
-			// 			mode = 'cold-complex';
-			// 		} else if (
-			// 			data.quota.client.num === 0 &&
-			// 			data.quota.cold.num !== 0
-			// 		) {
-			// 			mode = 'complex-cold';
-			// 		}
-			// 		setConfig({
-			// 			title: '规格配置',
-			// 			model: mode
-			// 		});
-			// 	}
-			// }
 		}
 	}, [data]);
 
