@@ -1,0 +1,46 @@
+.guide-page-content {
+	width: 100%;
+	height: 100%;
+	margin-top: 90px;
+	.guide-page-img-content {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		.guide-page-img-item{
+			display: flex;
+			flex-direction: column;
+			.guide-page-img-title{
+				min-width: 32px;
+				height: 32px;
+				display: flex;
+				align-items: center;
+				margin-top: 32px;
+				margin-bottom: 16px;
+				.guide-page-img-icon{
+					width: 32px;
+					height: 32px;
+					border: 1px solid #C0C6CC;
+					color: #333333;
+					border-radius: 16px;
+					text-align: center;
+					line-height: 30px;
+				}
+				.guide-page-img-info{
+					height: 36px;
+					font-size: 18px;
+					font-family: PingFangSC-Medium, PingFang SC;
+					font-weight: 500;
+					color: #111111;
+					line-height: 36px;
+					margin-left: 8px;
+					position: relative;
+				}
+			}
+		}
+	}
+}
+.guide-page-line {
+	width: 170px;
+	border-bottom: 1px solid #C0C6CC;
+	margin: 0 14px;
+}

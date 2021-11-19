@@ -325,6 +325,10 @@ table.table-list tbody tr td {
   color: #0070cc;
   cursor: pointer;
 }
+.name-disabled-link {
+	color: #C0C6CC;
+	cursor: pointer;
+}
 
 /** 分割线 */
 .detail-divider {

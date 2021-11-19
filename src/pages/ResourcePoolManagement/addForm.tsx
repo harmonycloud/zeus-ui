@@ -28,6 +28,7 @@ import { clusterAddType } from '@/types';
 import { connect } from 'react-redux';
 import CustomIcon from '@/components/CustomIcon';
 import { apiUrl } from '@/utils/url';
+import storage from '@/utils/storage';
 
 // ! 去掉了在表单中安装或者接入组件的操作
 const { Option } = Select;
@@ -365,8 +366,12 @@ function AddForm(props: addFormProps): JSX.Element {
 							})
 						);
 						setRefreshCluster(true);
+						storage.setLocal(
+							'cluster-detail-current-tab',
+							'component'
+						);
 						history.push(
-							'/systemManagement/resourcePoolManagement'
+							`/systemManagement/resourcePoolManagement/resourcePoolDetail/default--${sendData.name}/${sendData.nickname}`
 						);
 					} else {
 						Message.show(messageConfig('error', '错误', res));

@@ -37,6 +37,7 @@ import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
 import CreateAlarm from '@/components/CreateAlarm';
+import GuidePage from '@/pages/GuidePage';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -123,7 +124,7 @@ const Routes = withRouter((props) => {
 					component={DynamicForm}
 				/>
 				{/* 服务列表 */}
-				{/* <Route path="/serviceList" component={ServiceList} exact /> */}
+				<Route path="/serviceList" component={GuidePage} exact />
 				<Route
 					path="/serviceList/:name/:aliasName"
 					component={ServiceListByType}
