@@ -48,9 +48,9 @@
                         padding-right: 10px;
                         position: relative;
                         border-right: none;
-                        &::before{
+                        &::before {
                             display: inline-block;
-                            content: '';
+                            content: "";
                             position: absolute;
                             top: 0;
                             right: 0;
@@ -60,9 +60,9 @@
                             border-left: 9px solid transparent;
                             border-bottom: 9px solid transparent;
                         }
-                        &::after{
+                        &::after {
                             display: inline-block;
-                            content: '';
+                            content: "";
                             position: absolute;
                             top: 1px;
                             right: 0;
@@ -72,11 +72,11 @@
                             border-left: 8px solid transparent;
                             border-bottom: 8px solid transparent;
                         }
-                        .none{
-                            border-color: #FFDB94;
-                            color: #FFDB94;
-                            &::before{
-                                border-right-color: #FFDB94;
+                        &.none {
+                            border-color: #ffdb94;
+                            color: #faa700;
+                            &::before {
+                                border-right-color: #ffdb94;
                             }
                         }
                     }
@@ -108,6 +108,13 @@
                     button {
                         &:not(:last-child) {
                             margin-right: 8px;
+                        }
+                        &.test[disabled] {
+                            color: #ccc;
+                        }
+                        &.save[disabled] {
+                            background: #d1d5d9;
+                            color: #fff;
                         }
                     }
                 }
