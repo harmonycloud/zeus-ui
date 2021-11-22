@@ -23,7 +23,8 @@ function AlarmCenter(): JSX.Element {
 				name,
 				type,
 				clusterId: cluster.id,
-				namespace
+				namespace,
+				monitor: cluster.monitor
 			});
 			getMiddlewareDetail({
 				clusterId: cluster.id,
@@ -57,6 +58,7 @@ function AlarmCenter(): JSX.Element {
 					type={basicData?.type}
 					customMid={data?.dynamicValues !== null}
 					capabilities={data?.capabilities || []}
+					monitor={basicData?.monitor}
 				/>
 			)}
 			{!isService && <NoService />}

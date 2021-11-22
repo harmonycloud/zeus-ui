@@ -19,6 +19,7 @@ import messageConfig from '@/components/messageConfig';
 import NumberRange from '@/components/NumberRange';
 import { api } from '@/api.json';
 import styles from './log.module.scss';
+import ComponentsNull from '@/components/ComponentsNull';
 
 const searchTypes = [
 	{ label: '分词搜索', value: 'match' },
@@ -29,6 +30,7 @@ const searchTypes = [
 const { Option } = Select;
 const { Row, Col } = Grid;
 export default function SlowLog(props) {
+	const { logging } = props;
 	const { clusterId, middlewareName, namespace } = props.data;
 	const defaultStart = moment().subtract({ hours: 1 });
 	const [rangeTime, setRangeTime] = useState([defaultStart, moment()]);
@@ -149,7 +151,11 @@ export default function SlowLog(props) {
 			setToQueryTime(Number(value[1]));
 		}
 	};
-
+	if (!logging || !logging.elasticSearch) {
+		return (
+			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+		);
+	}
 	return (
 		<div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>

@@ -458,7 +458,7 @@ const Overview = () => {
 							primaryKey="key"
 							operation={Operation}
 							fixedHeader={true}
-							maxBodyHeight="250px"
+							maxBodyHeight="225px"
 							onSort={onSort}
 							onFilter={onFilter}
 						>

@@ -23,7 +23,8 @@ export default function LogDetail(): JSX.Element {
 				name,
 				type,
 				clusterId: cluster.id,
-				namespace
+				namespace,
+				logging: cluster.logging
 			});
 			getMiddlewareDetail({
 				clusterId: cluster.id,
@@ -59,6 +60,7 @@ export default function LogDetail(): JSX.Element {
 					namespace={basicData?.namespace}
 					customMid={data?.dynamicValues !== null}
 					capabilities={data?.capabilities || []}
+					logging={basicData?.logging}
 				/>
 			)}
 			{!isService && <NoService />}

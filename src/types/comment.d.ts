@@ -63,6 +63,7 @@ export interface basicDataProps {
 	namespace: string;
 	monitor?: monitorProps;
 	storage?: storageProps;
+	logging?: any | null;
 }
 export interface monitorItemProps {
 	address?: string;

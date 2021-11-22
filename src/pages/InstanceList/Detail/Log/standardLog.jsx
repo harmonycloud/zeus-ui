@@ -21,6 +21,7 @@ import {
 import TimeSelect from '@/components/TimeSelect';
 import transTime from '@/utils/transTime';
 import messageConfig from '@/components/messageConfig';
+import ComponentsNull from '@/components/ComponentsNull';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -31,6 +32,7 @@ const searchTypes = [
 	{ label: '正则表达式搜索', value: 'regexp' }
 ];
 export default function StandardLog(props) {
+	const { logging } = props;
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [logs, setLogs] = useState('');
@@ -70,7 +72,7 @@ export default function StandardLog(props) {
 	};
 
 	useEffect(() => {
-		if (clusterId && namespace && middlewareName) {
+		if (clusterId && namespace && middlewareName && logging) {
 			getPods({ clusterId, namespace, middlewareName, type }).then(
 				(res) => {
 					if (res.success) {
@@ -287,6 +289,12 @@ export default function StandardLog(props) {
 		}`;
 		window.open(url, '_target');
 	};
+
+	if (!logging || !logging.elasticSearch) {
+		return (
+			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+		);
+	}
 
 	return (
 		<div>

@@ -21,6 +21,7 @@ import {
 import TimeSelect from '@/components/TimeSelect';
 import transTime from '@/utils/transTime';
 import messageConfig from '@/components/messageConfig';
+import ComponentsNull from '@/components/ComponentsNull';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -40,6 +41,7 @@ const options = {
 	lineWrapping: true
 };
 export default function LogFile(props) {
+	const { logging } = props;
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	// *------------显示-------------------
 	// * 日志显示是否全屏
@@ -335,7 +337,11 @@ export default function LogFile(props) {
 	// 		}
 	// 	});
 	// };
-
+	if (!logging || !logging.elasticSearch) {
+		return (
+			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+		);
+	}
 	return (
 		<div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>

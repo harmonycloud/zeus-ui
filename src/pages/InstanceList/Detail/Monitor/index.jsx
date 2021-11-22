@@ -4,6 +4,7 @@ import { getMiddlewareMonitorUrl } from '@/services/middleware.js';
 import ComponentsLoading from '@/components/componentsLoading';
 import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
+import ComponentNull from '@/components/ComponentsNull';
 
 import styles from './monitor.module.scss';
 import svg from '@/assets/images/grafana_icon.svg';
@@ -24,7 +25,7 @@ const Monitor = (props) => {
 	// console.log(props);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('monitoring')) {
-			if (type && monitor) {
+			if (type && monitor.grafana !== null) {
 				if (props.chartVersion !== undefined) {
 					getMiddlewareMonitorUrl({
 						clusterId,
@@ -73,7 +74,7 @@ const Monitor = (props) => {
 	return (
 		<div className={styles['monitor']}>
 			{monitor.grafana === null ? (
-				<ComponentsLoading type="monitor" />
+				<ComponentNull title="该功能所需要数据监控和监控面板工具支持，您可前往“资源池——>平台组件进行安装" />
 			) : (
 				<>
 					<div

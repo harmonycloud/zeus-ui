@@ -64,7 +64,7 @@ export default function AddServiceAvailableForm(
 	const [current, setCurrent] = useState<string>();
 	const field = Field.useField();
 	useEffect(() => {
-		if (JSON.stringify(namespace) !== '{}') {
+		if (JSON.stringify(namespace) !== '{}' && cluster.ingress !== null) {
 			getList({
 				clusterId: cluster.id,
 				namespace: namespace,
@@ -213,6 +213,7 @@ export default function AddServiceAvailableForm(
 						value={current}
 						dataSource={data}
 						onChange={handleChange}
+						disabled={cluster.ingress === null}
 					/>
 				</FormItem>
 				<FormItem
@@ -226,6 +227,7 @@ export default function AddServiceAvailableForm(
 						onChange={onChange}
 						style={{ width: '100%' }}
 						value={exposedWay}
+						disabled={cluster.ingress === null}
 					>
 						<Option value="Ingress">Ingress</Option>
 						<Option value="NodePort">NodePort</Option>
@@ -242,6 +244,7 @@ export default function AddServiceAvailableForm(
 						onChange={onProtocolChange}
 						style={{ width: '100%' }}
 						value={protocol}
+						disabled={cluster.ingress === null}
 					>
 						{exposedWay === 'Ingress' && (
 							<Option value="HTTP">HTTP</Option>
@@ -266,6 +269,7 @@ export default function AddServiceAvailableForm(
 						<Input
 							name="domain"
 							placeholder="例如：www.example.com"
+							disabled={cluster.ingress === null}
 						/>
 					</FormItem>
 				)}
@@ -297,6 +301,7 @@ export default function AddServiceAvailableForm(
 									? '范围：30000-65535'
 									: '范围：30000-32000'
 							}
+							disabled={cluster.ingress === null}
 						/>
 					</FormItem>
 				)}
@@ -313,6 +318,7 @@ export default function AddServiceAvailableForm(
 						style={{ width: '100%' }}
 						value={selectedService.serviceName}
 						autoWidth={false}
+						disabled={cluster.ingress === null}
 					>
 						{services &&
 							services.map((item: any) => {
@@ -338,7 +344,11 @@ export default function AddServiceAvailableForm(
 						asterisk={false}
 						className="ne-required-ingress"
 					>
-						<Input name="path" placeholder="例如：/" />
+						<Input
+							name="path"
+							placeholder="例如：/"
+							disabled={cluster.ingress === null}
+						/>
 					</FormItem>
 				)}
 				<FormItem
@@ -353,6 +363,7 @@ export default function AddServiceAvailableForm(
 						name="servicePort"
 						style={{ width: '100%' }}
 						autoWidth={false}
+						disabled={cluster.ingress === null}
 					>
 						{selectedService.portDetailDtoList &&
 							selectedService.portDetailDtoList.map(

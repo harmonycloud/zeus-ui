@@ -10,10 +10,11 @@ import LogFile from './logFile';
 
 const { Menu } = Page;
 export default function Log(props) {
-	const { type, data, customMid = false } = props;
+	const { type, data, customMid = false, logging } = props;
 	const location = useLocation();
 	const { pathname } = location;
 	const [selectedKey, setSelectedKey] = useState('realtime');
+	console.log(logging);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
 	};
@@ -34,11 +35,11 @@ export default function Log(props) {
 			case 'realtime':
 				return <RealtimeLog data={props} />;
 			case 'standard':
-				return <StandardLog data={props} />;
+				return <StandardLog data={props} logging={logging} />;
 			case 'file':
-				return <LogFile data={props} />;
+				return <LogFile data={props} logging={logging} />;
 			case 'slow':
-				return <SlowLog data={props} />;
+				return <SlowLog data={props} logging={logging} />;
 			default:
 				return null;
 		}

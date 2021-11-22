@@ -9,6 +9,7 @@ import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
 import { createAlarms } from '@/services/middleware';
 import transTime from '@/utils/transTime';
+import ComponentNull from '@/components/ComponentsNull';
 
 export default function ThresholdAlarm(props) {
 	const {
@@ -17,12 +18,13 @@ export default function ThresholdAlarm(props) {
 		namespace,
 		type,
 		customMid,
-		capabilities
+		capabilities,
+		monitor
 	} = props;
 	const [dataSource, setDataSource] = useState([]);
 	const [visible, setVisible] = useState(false);
 	const [searchText, setSearchText] = useState('');
-	console.log(props);
+	console.log(monitor);
 	useEffect(() => {
 		if (customMid) {
 			if (capabilities.includes('alert')) {
@@ -140,6 +142,12 @@ export default function ThresholdAlarm(props) {
 		});
 		setVisible(false);
 	};
+
+	if (!monitor.alertManager || monitor.alertManager === null) {
+		return (
+			<ComponentNull title="该功能所需要数据监控和监控告警工具支持，您可前往“资源池——>平台组件进行安装" />
+		);
+	}
 
 	if (customMid && !capabilities.includes('alert')) {
 		return <DefaultPicture />;

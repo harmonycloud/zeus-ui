@@ -210,6 +210,7 @@ const InstanceDetails = (props) => {
 						clusterId={globalVar.cluster.id}
 						namespace={globalVar.namespace.name}
 						customMid={customMid}
+						logging={globalVar.cluster.logging}
 					/>
 				);
 			case 'paramterSetting':
@@ -232,6 +233,7 @@ const InstanceDetails = (props) => {
 						type={type}
 						customMid={customMid}
 						capabilities={(data && data.capabilities) || []}
+						monitor={globalVar.cluster.monitor}
 					/>
 				);
 			case 'disaster':
