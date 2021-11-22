@@ -36,7 +36,7 @@ const Monitor = (props) => {
 					if (res.success) {
 						setUrl(res.data.url);
 						// setUrl(`${res.data.url}?auth_token=${res.data.authorization}`);
-						setToken(res.data.authorization);
+						// setToken(res.data.authorization);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -46,19 +46,25 @@ const Monitor = (props) => {
 	}, [props.chartVersion]);
 
 	useEffect(() => {
-		if (url && token) {
+		if (url) {
 			console.log(url);
-			console.log(token);
+			// console.log(token);
 			let iframe = document.getElementById('iframe');
+			let iframeDocument =
+				document.getElementsByTagName('iframe')[0].contentDocument;
+			console.log(iframeDocument);
 			iframe.onload = function () {
 				// iframe.contentWindow.init(token);
-				iframe.contentWindow.postMessage(
-					{ showMenu: false, token: token },
-					'*'
-				);
+				console.log(iframeDocument);
+				// document.domain = 'http://10.1.30.70:31900';
+				document.cookie =
+					'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; Domain=10.1.30.70;';
+				// iframeDocument.cookie =
+				// 	'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; domain=http://10.1.30.70:31900';
+				iframe.contentWindow.postMessage({ showMenu: false }, '*');
 			};
 		}
-	}, [url, token]);
+	}, [url]);
 
 	useEffect(() => {
 		// 子页面去掉侧边栏之后再显示iframe
