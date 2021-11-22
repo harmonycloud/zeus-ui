@@ -13,6 +13,7 @@ import DeleteCard from '../BasicResource/DeleteCard';
 import RegistryNamespace from '../BasicResource/registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
 import './index.scss';
+import IngressForm from './ingressForm';
 
 export default function ResourcePoolManagement(): JSX.Element {
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
@@ -21,6 +22,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 	const [namespaceVisible, setNamespaceVisible] = useState<boolean>(false);
 	const [data, setData] = useState<clusterType>();
 	const [key, setKey] = useState<string>('');
+	const [ingressVisible, setIngressVisible] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		let mounted = true;
@@ -167,6 +169,13 @@ export default function ResourcePoolManagement(): JSX.Element {
 					}}
 				>
 					分区
+				</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setIngressVisible(true);
+					}}
+				>
+					服务暴露
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -346,6 +355,12 @@ export default function ResourcePoolManagement(): JSX.Element {
 					clusterId={data.id}
 					cancelHandle={() => setNamespaceVisible(false)}
 					updateFn={() => getData(key)}
+				/>
+			)}
+			{ingressVisible && (
+				<IngressForm
+					visible={ingressVisible}
+					onCancel={() => setIngressVisible(false)}
 				/>
 			)}
 		</Page>

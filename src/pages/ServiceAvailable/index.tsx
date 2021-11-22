@@ -67,7 +67,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				}).then((res) => {
 					if (res.success) {
 						setOriginData(res.data);
-						const listTemp = [...list];
+						const listTemp = [{ name: '全部服务', count: 0 }];
 						res.data.forEach((item: serviceAvailablesProps) => {
 							listTemp.push({
 								name: item.name,
@@ -81,6 +81,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							0
 						);
 						setList(listTemp);
+					} else {
+						Message.show(messageConfig('error', '', res));
+						setOriginData([]);
+						setList([{ name: '全部服务', count: 0 }]);
 					}
 				});
 			}
