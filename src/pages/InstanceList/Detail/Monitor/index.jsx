@@ -20,7 +20,7 @@ const Monitor = (props) => {
 		chartVersion
 	} = props;
 	const [url, setUrl] = useState('');
-	const [token, setToken] = useState('');
+	// const [token, setToken] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
 	console.log(props);
 	useEffect(() => {
@@ -50,15 +50,15 @@ const Monitor = (props) => {
 			console.log(url);
 			// console.log(token);
 			let iframe = document.getElementById('iframe');
-			let iframeDocument =
-				document.getElementsByTagName('iframe')[0].contentDocument;
-			console.log(iframeDocument);
+			// let iframeDocument =
+			// 	document.getElementsByTagName('iframe')[0].contentDocument;
+			// console.log(iframeDocument);
 			iframe.onload = function () {
 				// iframe.contentWindow.init(token);
-				console.log(iframeDocument);
+				// console.log(iframeDocument);
 				// document.domain = 'http://10.1.30.70:31900';
-				document.cookie =
-					'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; Domain=10.1.30.70;';
+				// document.cookie =
+				// 	'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; Domain=10.1.30.70;';
 				// iframeDocument.cookie =
 				// 	'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; domain=http://10.1.30.70:31900';
 				iframe.contentWindow.postMessage({ showMenu: false }, '*');
