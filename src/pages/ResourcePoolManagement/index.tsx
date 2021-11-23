@@ -173,6 +173,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						setIngressVisible(true);
+						setData(record);
 					}}
 				>
 					服务暴露
@@ -357,9 +358,10 @@ export default function ResourcePoolManagement(): JSX.Element {
 					updateFn={() => getData(key)}
 				/>
 			)}
-			{ingressVisible && (
+			{ingressVisible && data && (
 				<IngressForm
 					visible={ingressVisible}
+					clusterId={data.id}
 					onCancel={() => setIngressVisible(false)}
 				/>
 			)}

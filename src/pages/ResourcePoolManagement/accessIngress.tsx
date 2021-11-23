@@ -6,10 +6,14 @@ import {
 	Field,
 	Input
 } from '@alicloud/console-components';
+import { accessIngress } from '@/services/common';
+import messageConfig from '@/components/messageConfig';
 
 interface AccessIngressProps {
 	visible: boolean;
+	clusterId: string;
 	onCancel: () => void;
+	onRefresh: () => void;
 }
 const formItemLayout = {
 	labelCol: {
@@ -19,14 +23,45 @@ const formItemLayout = {
 		span: 19
 	}
 };
+interface FieldProps {
+	ingressClassName: string;
+	ingressAddress: string;
+	namespace: string;
+	configMapName: string;
+}
 const FormItem = Form.Item;
 const AccessIngressForm = (props: AccessIngressProps) => {
-	const { visible, onCancel } = props;
+	const { visible, onCancel, clusterId, onRefresh } = props;
 	const field = Field.useField();
 	const onOk = () => {
 		console.log('ok');
 		field.validate((errors, values) => {
-			console.log(values);
+			// console.log(values);
+			const value: FieldProps = field.getValues();
+			const sendData = {
+				clusterId,
+				ingressList: [
+					{
+						address: value.ingressAddress,
+						ingressClassName: value.ingressClassName,
+						tcp: {
+							configMapName: value.configMapName,
+							namespace: value.namespace
+						}
+					}
+				]
+			};
+			accessIngress(sendData).then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '服务暴露接入成功')
+					);
+					onCancel();
+					onRefresh();
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
 		});
 	};
 	return (
