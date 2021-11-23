@@ -19,13 +19,21 @@ interface AccessFormProps {
 	title: string;
 	clusterId: string;
 	onRefresh: () => void;
+	setRefreshCluster: (flag: boolean) => void;
 }
 const AccessForm = (props: AccessFormProps) => {
-	const { visible, onCancel, title, clusterId, onRefresh } = props;
+	const {
+		visible,
+		onCancel,
+		title,
+		clusterId,
+		onRefresh,
+		setRefreshCluster
+	} = props;
 	const field = Field.useField();
-	console.log(props);
+	// console.log(props);
 	useEffect(() => {
-		console.log(JSON.parse(storage.getLocal('cluster')));
+		// console.log(JSON.parse(storage.getLocal('cluster')));
 		const cluster = JSON.parse(storage.getLocal('cluster'));
 		if (cluster.ingress) {
 			field.setValues({
@@ -79,7 +87,7 @@ const AccessForm = (props: AccessFormProps) => {
 	const onOk = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
-			console.log({ ...values, title });
+			// console.log({ ...values, title });
 			const sendData: any = {
 				clusterId,
 				componentName: title
@@ -142,13 +150,14 @@ const AccessForm = (props: AccessFormProps) => {
 					}
 				};
 			}
-			console.log(sendData);
+			// console.log(sendData);
 			putComponent(sendData).then((res) => {
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '组件接入成功')
 					);
 					onCancel();
+					setRefreshCluster(true);
 					onRefresh();
 				} else {
 					Message.show(messageConfig('error', '失败', res));

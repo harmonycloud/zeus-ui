@@ -1,0 +1,81 @@
+.mid-card-content {
+	width: 240px;
+	height: 124px;
+	background: #FFFFFF;
+	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.09);
+	border-radius: 2px;
+	border: 1px solid #E9E9E9;
+	margin-right: 16px;
+	margin-top: 16px;
+	.mid-card-display{
+		padding: 16px;
+		display: flex;
+		.mid-card-icon{
+			width: 60px;
+			height: 60px;
+			border-radius: 4px;
+			text-align: center;
+			line-height: 57px;
+		}
+		.mid-card-title{
+			width: 100px;
+			height: 60px;
+			font-size: 14px;
+			font-weight: 400;
+			color: rgba(0, 0, 0, 0.85);
+			margin-left: 12px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			.mid-card-icon{
+				text-align: left;
+				width: 100px;
+				height: 18px;
+				line-height: 18px;
+				font-size: 12px;
+				margin-top: 4px;
+			}
+		}
+	}
+	.mid-card-action{
+		width: 239px;
+		height: 32px;
+		background: #F7F7F7;
+		border-radius: 0px 0px 2px 2px;
+		border-top: 1px solid #E9E9E9;
+		border-right: 1px solid #E9E9E9;
+		border-bottom: 1px solid #E9E9E9;
+		display: flex;
+		.mid-card-left{
+			width: 50%;
+			color: #878787;
+			border-right: 1px solid #E8E8E8;
+			height: 16px;
+			line-height: 16px;
+			text-align: center;
+			margin-top: 8px;
+			cursor: pointer;
+		}
+		.mid-card-right{
+			width: 49%;
+			color: #878787;
+			height: 16px;
+			line-height: 16px;
+			text-align: center;
+			margin-top: 8px;
+			cursor: pointer;
+		}
+	}
+	.mid-card-center{
+		width: 239px;
+		height: 32px;
+		background: #F7F7F7;
+		border-radius: 0px 0px 2px 2px;
+		color: #878787;
+		text-align: center;
+		line-height: 32px;
+		border-top: 1px solid #E9E9E9;
+		border-right: 1px solid #E9E9E9;
+		border-bottom: 1px solid #E9E9E9;
+	}
+}
