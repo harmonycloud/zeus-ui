@@ -25,6 +25,7 @@ import {
 import { iconTypeRender, timeRender } from '@/utils/utils';
 import CustomIcon from '@/components/CustomIcon';
 import { getIngresses, deleteIngress, addIngress } from '@/services/ingress';
+import { getList } from '@/services/serviceList';
 import AddServiceAvailableForm from './AddServiceAvailableForm';
 import storage from '@/utils/storage';
 
@@ -56,6 +57,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	);
 	const [iconVisible, setIconVisible] = useState<boolean>(false);
 	const [adress, setAdress] = useState<string>('');
+	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -85,6 +87,21 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						Message.show(messageConfig('error', '', res));
 						setOriginData([]);
 						setList([{ name: '全部服务', count: 0 }]);
+					}
+				});
+				getList({
+					clusterId: cluster.id,
+					namespace: namespace.name,
+					keyword: ''
+				}).then((res) => {
+					if (res.success) {
+						const flag = res.data.every(
+							(item: any) => item.serviceNum === 0
+						);
+						console.log(flag);
+						setVisibleFlag(flag);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
 					}
 				});
 			}
@@ -204,6 +221,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						exposeType: values.exposeType,
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
+						ingressClassName: values.ingressClassName,
 						protocol: values.protocol,
 						rules: [
 							{
@@ -224,6 +242,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						exposeType: values.exposeType,
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
+						ingressClassName: values.ingressClassName,
 						protocol: values.protocol,
 						serviceList: [
 							{
@@ -250,7 +269,22 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	};
 	const Operation = {
 		primary: (
-			<Button onClick={() => setVisible(true)} type="primary">
+			<Button
+				onClick={() => {
+					if (visibleFlag) {
+						Message.show(
+							messageConfig(
+								'error',
+								'失败',
+								'当前资源分区下无服务'
+							)
+						);
+					} else {
+						setVisible(true);
+					}
+				}}
+				type="primary"
+			>
 				暴露服务
 			</Button>
 		)

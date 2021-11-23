@@ -12,7 +12,7 @@ interface IngressFormProps {
 	onCancel: () => void;
 	clusterId: string;
 }
-interface IngressItemProps {
+export interface IngressItemProps {
 	address: string;
 	clusterId: string;
 	configMapName: string;
@@ -39,7 +39,7 @@ const IngressForm = (props: IngressFormProps) => {
 	const getData = () => {
 		getIngresses({ clusterId }).then((res) => {
 			if (res.success) {
-				console.log(res);
+				// console.log(res);
 				const list = res.data.map(
 					(item: IngressItemProps, index: number) => {
 						const result: DataSourceItemProps = { ...item };
@@ -47,15 +47,12 @@ const IngressForm = (props: IngressFormProps) => {
 						return result;
 					}
 				);
-				console.log(list);
+				// console.log(list);
 				setDataSource(list);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-	};
-	const onOk = () => {
-		console.log('ok');
 	};
 	const Operation = {
 		primary: (
@@ -112,7 +109,7 @@ const IngressForm = (props: IngressFormProps) => {
 			visible={visible}
 			onCancel={onCancel}
 			onClose={onCancel}
-			onOk={onOk}
+			onOk={onCancel}
 			style={{ width: 1040 }}
 			footerAlign="right"
 		>
