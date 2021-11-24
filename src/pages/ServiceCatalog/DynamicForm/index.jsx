@@ -157,7 +157,7 @@ function DynamicForm(props) {
 				}
 			}
 			sendData.dynamicValues = dynamicValues;
-			console.log(sendData);
+			// console.log(sendData);
 			postMiddleware(sendData).then((res) => {
 				console.log(res);
 				if (res.success) {

@@ -28,6 +28,9 @@ import {
 import messageConfig from '@/components/messageConfig';
 import RocketACLForm from '@/components/RocketACLForm';
 import { judgeObjArrayAttrIsNull } from '@/utils/utils';
+import { getCustomFormKeys } from '../Mysql/create';
+import { renderFormItem } from '@/components/renderFormItem';
+import { getAspectFrom } from '@/services/common';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -157,6 +160,8 @@ const RocketMQCreate = (props) => {
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
 	// * acl相关
 	const [aclCheck, setAclCheck] = useState(false);
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -189,6 +194,7 @@ const RocketMQCreate = (props) => {
 					aliasName: values.aliasName,
 					labels: values.labels,
 					annotation: values.annotation,
+					description: values.description,
 					version: version,
 					mode: mode,
 					filelogEnabled: fileLog,
@@ -205,6 +211,19 @@ const RocketMQCreate = (props) => {
 						}
 					}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				if (affinity.flag) {
 					if (affinity.label === '') {
 						Message.show(
@@ -302,6 +321,13 @@ const RocketMQCreate = (props) => {
 				}
 			});
 		}
+		getAspectFrom().then((res) => {
+			if (res.success) {
+				setCustomForm(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	}, [globalCluster]);
 
 	// 全局分区更新
@@ -344,7 +370,39 @@ const RocketMQCreate = (props) => {
 	const aclSwitchChange = (checked) => {
 		setAclCheck(checked);
 	};
-
+	const childrenRender = (values) => {
+		if (values) {
+			const keys = Object.keys(values);
+			return (
+				<div>
+					{keys.map((item) => {
+						return (
+							<FormBlock key={item} title={item}>
+								<div className="w-50">
+									<ul className="form-layout">
+										{values[item].map((formItem) => {
+											return (
+												<React.Fragment
+													key={formItem.variable}
+												>
+													{renderFormItem(
+														formItem,
+														field,
+														globalCluster,
+														globalNamespace
+													)}
+												</React.Fragment>
+											);
+										})}
+									</ul>
+								</div>
+							</FormBlock>
+						);
+					})}
+				</div>
+			);
+		}
+	};
 	return (
 		<Page>
 			<Page.Header
@@ -455,7 +513,7 @@ const RocketMQCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入描述信息"
 											/>
 										</FormItem>
@@ -1072,6 +1130,7 @@ const RocketMQCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

@@ -28,6 +28,9 @@ import {
 	getMiddlewareDetail
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import { getCustomFormKeys } from '../Mysql/create';
+import { renderFormItem } from '@/components/renderFormItem';
+import { getAspectFrom } from '@/services/common';
 
 // const { Group: TagGroup, Closable: ClosableTag } = Tag;
 
@@ -151,8 +154,8 @@ const RedisCreate = (props) => {
 	const [storageClassList, setStorageClassList] = useState([]);
 	const [maxCpu, setMaxCpu] = useState({}); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
-	// * acl相关
-	const [aclCheck, setAclCheck] = useState(false);
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -272,6 +275,7 @@ const RedisCreate = (props) => {
 					aliasName: values.aliasName,
 					labels: values.labels,
 					annotation: values.annotation,
+					description: values.description,
 					version: version,
 					password: values.pwd,
 					mode: mode,
@@ -279,6 +283,19 @@ const RedisCreate = (props) => {
 					stdoutEnabled: standardLog,
 					quota: {}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				if (affinity.flag) {
 					if (affinity.label === '') {
 						Message.show(
@@ -368,7 +385,7 @@ const RedisCreate = (props) => {
 						}
 					}
 				}
-				// console.log(sendData);
+				console.log(sendData);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -397,6 +414,13 @@ const RedisCreate = (props) => {
 				}
 			});
 		}
+		getAspectFrom().then((res) => {
+			if (res.success) {
+				setCustomForm(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	}, [globalCluster]);
 
 	// 全局分区更新
@@ -437,13 +461,39 @@ const RedisCreate = (props) => {
 			}
 		}
 	}, [globalNamespace]);
-
-	// * acl 相关
-	const aclSwitchChange = (checked) => {
-		console.log(checked);
-		setAclCheck(checked);
+	const childrenRender = (values) => {
+		if (values) {
+			const keys = Object.keys(values);
+			return (
+				<div>
+					{keys.map((item) => {
+						return (
+							<FormBlock key={item} title={item}>
+								<div className="w-50">
+									<ul className="form-layout">
+										{values[item].map((formItem) => {
+											return (
+												<React.Fragment
+													key={formItem.variable}
+												>
+													{renderFormItem(
+														formItem,
+														field,
+														globalCluster,
+														globalNamespace
+													)}
+												</React.Fragment>
+											);
+										})}
+									</ul>
+								</div>
+							</FormBlock>
+						);
+					})}
+				</div>
+			);
+		}
 	};
-
 	return (
 		<Page>
 			<Page.Header
@@ -554,7 +604,7 @@ const RedisCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入描述信息"
 											/>
 										</FormItem>
@@ -1279,6 +1329,7 @@ const RedisCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

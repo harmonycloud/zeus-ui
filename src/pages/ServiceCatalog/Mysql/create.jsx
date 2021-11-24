@@ -31,10 +31,11 @@ import {
 	getBackups,
 	addDisasterIns
 } from '@/services/middleware';
-import { getClusters, getNamespaces } from '@/services/common';
+import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import transUnit from '@/utils/transUnit';
 import moment from 'moment';
+import { renderFormItem } from '@/components/renderFormItem';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -59,6 +60,18 @@ const backupStatus = {
 	Failed: '运行失败',
 	Complete: '成功完成',
 	Unknow: '运行状态未知'
+};
+
+// * 获取customForm中的所有variable-递归
+export const getCustomFormKeys = (value) => {
+	let keys = [];
+	for (let i = 0; i < value.length; i++) {
+		if (value[i].subQuestions) {
+			keys = [...getCustomFormKeys(value[i].subQuestions), ...keys];
+		}
+		keys.push(value[i].variable);
+	}
+	return keys;
 };
 const MysqlCreate = (props) => {
 	const { cluster: globalCluster, namespace: globalNamespace } =
@@ -165,6 +178,8 @@ const MysqlCreate = (props) => {
 	const [relationNamespace, setRelataionNamespace] = useState();
 	const [originData, setOriginData] = useState();
 	const [reClusterFlag, setReClusterFlag] = useState(false);
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -177,6 +192,13 @@ const MysqlCreate = (props) => {
 					};
 				});
 				setDataSource(list);
+			}
+		});
+		getAspectFrom().then((res) => {
+			if (res.success) {
+				setCustomForm(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	}, []);
@@ -200,6 +222,7 @@ const MysqlCreate = (props) => {
 
 	const handleSubmit = () => {
 		field.validate((err, values) => {
+			console.log(values);
 			if (values.name === 'mysql') return;
 			if (!err) {
 				let sendData = {
@@ -212,6 +235,7 @@ const MysqlCreate = (props) => {
 					aliasName: values.aliasName,
 					labels: values.labels,
 					annotation: values.annotation,
+					description: values.description,
 					version: version,
 					charSet: charSet,
 					port: values.mysqlPort,
@@ -231,6 +255,19 @@ const MysqlCreate = (props) => {
 						type: 'master-master'
 					}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				// 主机亲和
 				if (affinity.flag) {
 					if (affinity.label === '') {
@@ -298,6 +335,7 @@ const MysqlCreate = (props) => {
 						type: 'mysql',
 						labels: values.labels,
 						annotation: values.annotation,
+						description: values.description,
 						version: version,
 						charSet: charSet,
 						port: values.mysqlPort,
@@ -326,6 +364,7 @@ const MysqlCreate = (props) => {
 						aliasName: originData.aliasName,
 						labels: originData.labels,
 						annotation: originData.annotation,
+						description: originData.description,
 						version: originData.version,
 						charSet: originData.charSet,
 						port: originData.mysqlPort,
@@ -358,6 +397,7 @@ const MysqlCreate = (props) => {
 							type: 'mysql',
 							labels: values.labels,
 							annotation: values.annotation,
+							description: values.description,
 							version: version,
 							charSet: charSet,
 							port: values.mysqlPort,
@@ -378,7 +418,7 @@ const MysqlCreate = (props) => {
 					};
 					sendData = sendDataTemp;
 				}
-				// console.log(sendData);
+				console.log(sendData);
 				if (disasterOriginName) {
 					addDisasterIns(sendData).then((res) => {
 						if (res.success) {
@@ -459,6 +499,7 @@ const MysqlCreate = (props) => {
 				// name: res.data.name,
 				labels: res.data.labels,
 				annotation: res.data.annotation,
+				description: res.data.description,
 				mysqlPort: res.data.port,
 				mysqlPwd: res.data.password,
 				cpu: res.data.quota.mysql.cpu,
@@ -486,6 +527,7 @@ const MysqlCreate = (props) => {
 				// name: res.data.name,
 				labels: '',
 				annotation: '',
+				description: '',
 				mysqlPort: '',
 				mysqlPwd: '',
 				cpu: '',
@@ -508,6 +550,7 @@ const MysqlCreate = (props) => {
 				// name: res.data.name,
 				labels: originData.labels,
 				annotation: originData.annotation,
+				description: originData.description,
 				mysqlPort: originData.port,
 				mysqlPwd: originData.password,
 				cpu: originData.quota.mysql.cpu,
@@ -606,6 +649,39 @@ const MysqlCreate = (props) => {
 				setDataSource(dsTemp);
 			}
 		});
+	};
+	const childrenRender = (values) => {
+		if (values) {
+			const keys = Object.keys(values);
+			return (
+				<div>
+					{keys.map((item) => {
+						return (
+							<FormBlock key={item} title={item}>
+								<div className="w-50">
+									<ul className="form-layout">
+										{values[item].map((formItem) => {
+											return (
+												<React.Fragment
+													key={formItem.variable}
+												>
+													{renderFormItem(
+														formItem,
+														field,
+														globalCluster,
+														globalNamespace
+													)}
+												</React.Fragment>
+											);
+										})}
+									</ul>
+								</div>
+							</FormBlock>
+						);
+					})}
+				</div>
+			);
+		}
 	};
 
 	return (
@@ -867,7 +943,7 @@ const MysqlCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入描述信息"
 											/>
 										</FormItem>
@@ -1513,6 +1589,7 @@ const MysqlCreate = (props) => {
 							</div>
 						</FormBlock>
 					) : null}
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"
