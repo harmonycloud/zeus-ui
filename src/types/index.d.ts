@@ -12,7 +12,8 @@ export interface clusterAddType {
 	cert: any | null;
 	dcId?: string;
 	host: string;
-	ingress?: ingressProps;
+	ingressList?: ingressProps[];
+	// ingress?: ingressProps;
 	logging?: any | null;
 	monitor?: monitorProps;
 	name: string;
