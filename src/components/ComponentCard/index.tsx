@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { Icon, Message } from '@alicloud/console-components';
+import { Message } from '@alicloud/console-components';
 import { showConfirmDialog } from '@alicloud/console-components-confirm';
+import { connect } from 'react-redux';
 import { postComponent, deleteComponent } from '@/services/common';
 import messageConfig from '../messageConfig';
-import CustomIcon from '../CustomIcon';
 import './index.scss';
 import InstallForm from './installForm';
 import AccessForm from './accessForm';
+import { setRefreshCluster } from '@/redux/globalVar/var';
+import MidCard from '../MidCard';
 
 interface ComponentCardProps {
 	title: string;
 	status: number;
 	clusterId: string;
 	onRefresh: () => void;
+	setRefreshCluster: (flag: boolean) => void;
 }
 export interface SendDataProps {
 	clusterId: string;
@@ -49,36 +52,9 @@ export enum icon {
 	'local-path' = 'icon-ziyuan-cunchu',
 	'middleware-controller' = 'icon-zhongjianjianguanli'
 }
-const iconRender = (status: number) => {
-	switch (status) {
-		case 3:
-			return (
-				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					运行正常
-				</>
-			);
-		case 4:
-			return (
-				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					运行异常
-				</>
-			);
-		default:
-			return null;
-	}
-};
+
 const ComponentCard = (props: ComponentCardProps) => {
-	const { title, status, clusterId, onRefresh } = props;
+	const { title, status, clusterId, onRefresh, setRefreshCluster } = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 	const installData = (data: SendDataProps) => {
@@ -110,6 +86,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						type: 'simple'
 					};
 					installData(sendData);
+					setRefreshCluster(true);
 				},
 				onCancel: () => console.log('弹窗取消')
 			});
@@ -144,6 +121,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 							messageConfig('success', '成功', `组件${msg}成功`)
 						);
 						onRefresh();
+						setRefreshCluster(true);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -152,100 +130,117 @@ const ComponentCard = (props: ComponentCardProps) => {
 			onCancel: () => console.log('弹窗取消')
 		});
 	};
-	return (
-		<div className="component-card-content">
-			<div className="component-card-display">
-				<div
-					className="component-card-icon"
-					style={{ backgroundColor: color[title] }}
-				>
-					<CustomIcon
-						type={icon[title]}
-						style={{ color: '#FFFFFF', width: 40, fontSize: 40 }}
+	const cardRender = () => {
+		switch (status) {
+			case 0:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={
+							title !== 'local-path' &&
+							title !== 'middleware-controller'
+								? 2
+								: 1
+						}
+						leftText="安装"
+						rightText="接入"
+						leftHandle={installComponent}
+						rightHandle={accessComponent}
+						centerText="安装"
+						centerHandle={installComponent}
 					/>
-				</div>
-				<div className="component-card-title">
-					<div>{name[title]}</div>
-					<div className="component-card-icon">
-						{iconRender(status)}
-					</div>
-				</div>
-			</div>
-			{status === 0 && (
-				<div className="component-card-action">
-					<div
-						className="component-card-install"
-						style={
+				);
+			case 1:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={2}
+						leftText="取消接入"
+						rightText="编辑"
+						leftHandle={uninstallComponent}
+						rightHandle={() => setAccessVisible(true)}
+					/>
+				);
+			case 2:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={1}
+						centerText="安装中"
+						centerStyle={{
+							background: '#0064C8',
+							color: '#ffffff',
+							border: 'none'
+						}}
+					/>
+				);
+			case 3:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={
 							title !== 'local-path' &&
 							title !== 'middleware-controller'
-								? {}
-								: { width: '100%', borderRight: 'none' }
+								? 2
+								: 1
 						}
-						onClick={installComponent}
-					>
-						安装
-					</div>
-					{title !== 'local-path' &&
-					title !== 'middleware-controller' ? (
-						<div
-							className="component-card-access"
-							onClick={accessComponent}
-						>
-							接入
-						</div>
-					) : null}
-				</div>
-			)}
-			{status === 1 && (
-				<div className="component-card-action">
-					<div
-						className="component-card-uninstall"
-						onClick={uninstallComponent}
-					>
-						取消接入
-					</div>
-					<div
-						className="component-card-edit"
-						onClick={() => setAccessVisible(true)}
-					>
-						编辑
-					</div>
-				</div>
-			)}
-			{status === 2 && (
-				<div className="component-card-installing">
-					<div>安装中</div>
-				</div>
-			)}
-			{(status === 3 || status === 4) && (
-				<div className="component-card-action">
-					<div
-						className={
-							title !== 'local-path' &&
-							title !== 'middleware-controller'
-								? 'component-card-uninstall'
-								: 'component-card-uninstall-one'
-						}
-						onClick={uninstallComponent}
-					>
-						卸载
-					</div>
-					{title !== 'local-path' &&
-					title !== 'middleware-controller' ? (
-						<div
-							className="component-card-edit"
-							onClick={() => setAccessVisible(true)}
-						>
-							编辑
-						</div>
-					) : null}
-				</div>
-			)}
-			{status === 5 && (
-				<div className="component-card-uninstalling">
-					<div>卸载中</div>
-				</div>
-			)}
+						leftText="卸载"
+						rightText="编辑"
+						leftHandle={uninstallComponent}
+						rightHandle={() => setAccessVisible(true)}
+						centerText="卸载"
+						centerHandle={uninstallComponent}
+					/>
+				);
+			case 4:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={2}
+						leftText="卸载"
+						rightText="编辑"
+						leftHandle={uninstallComponent}
+						rightHandle={() => setAccessVisible(true)}
+					/>
+				);
+			case 5:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={1}
+						centerText="卸载中"
+						centerStyle={{
+							background: '#C80000',
+							color: '#ffffff',
+							border: 'none'
+						}}
+					/>
+				);
+			default:
+				break;
+		}
+	};
+	return (
+		<>
+			{cardRender()}
 			{visible && (
 				<InstallForm
 					visible={visible}
@@ -253,6 +248,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 					onCreate={installData}
 					title={title}
 					clusterId={clusterId}
+					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
 			{accessVisible && (
@@ -262,9 +258,12 @@ const ComponentCard = (props: ComponentCardProps) => {
 					title={title}
 					clusterId={clusterId}
 					onRefresh={onRefresh}
+					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
-		</div>
+		</>
 	);
 };
-export default ComponentCard;
+export default connect(() => ({}), {
+	setRefreshCluster
+})(ComponentCard);

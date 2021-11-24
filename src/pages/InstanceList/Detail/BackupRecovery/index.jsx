@@ -5,6 +5,7 @@ import { useLocation } from 'react-router';
 import List from './list';
 import Config from './config';
 import DefaultPicture from '@/components/DefaultPicture';
+import ComponentNull from '@/components/ComponentsNull';
 const { Menu } = Page;
 export default function BackupRecovery(props) {
 	const location = useLocation();
@@ -12,6 +13,8 @@ export default function BackupRecovery(props) {
 	const [selectedKey, setSelectedKey] = useState('list');
 	const [customMid, setCustomMid] = useState(false);
 	const [capabilities, setCapabilities] = useState([]);
+	const { storage } = props;
+	console.log(storage);
 	useEffect(() => {
 		setCustomMid(props.customMid);
 		setCapabilities(props.capabilities || []);
@@ -38,6 +41,11 @@ export default function BackupRecovery(props) {
 			</Menu>
 		);
 	};
+	if (!storage.backup || !storage.backup.storage) {
+		return (
+			<ComponentNull title="该功能所需要备份存储工具支持，您可前往“资源池——>平台组件进行安装" />
+		);
+	}
 	if (customMid && !capabilities.includes('backup')) {
 		return <DefaultPicture />;
 	}
