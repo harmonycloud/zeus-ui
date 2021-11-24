@@ -234,7 +234,11 @@ const ServiceListByType = (props: serviceListProps) => {
 		currentService?.type === 'mysql'
 			? {
 					primary: (
-						<Button onClick={releaseMiddleware} type="primary">
+						<Button
+							onClick={releaseMiddleware}
+							type="primary"
+							disabled={currentService.name === undefined}
+						>
 							发布服务
 						</Button>
 					),
@@ -249,7 +253,11 @@ const ServiceListByType = (props: serviceListProps) => {
 			  }
 			: {
 					primary: (
-						<Button onClick={releaseMiddleware} type="primary">
+						<Button
+							onClick={releaseMiddleware}
+							type="primary"
+							disabled={currentService?.name === undefined}
+						>
 							发布服务
 						</Button>
 					)
