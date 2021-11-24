@@ -33,8 +33,8 @@ export default function BackupRecovery(props) {
 				onItemClick={menuSelect}
 				style={{ height: '100%' }}
 			>
-				<Menu.Item key="list">备份列表</Menu.Item>
-				<Menu.Item key="config">备份设置</Menu.Item>
+				<Menu.Item key="list">备份记录</Menu.Item>
+				<Menu.Item key="config">备份规则</Menu.Item>
 			</Menu>
 		);
 	};
@@ -45,10 +45,10 @@ export default function BackupRecovery(props) {
 		return (
 			<div>
 				<Tab>
-					<Tab.Item title="备份列表">
+					<Tab.Item title="备份记录">
 						<List {...props} />
 					</Tab.Item>
-					<Tab.Item title="备份设置">
+					<Tab.Item title="备份规则">
 						<Config {...props} />
 					</Tab.Item>
 				</Tab>

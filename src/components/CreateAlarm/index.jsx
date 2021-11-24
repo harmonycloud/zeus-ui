@@ -13,6 +13,7 @@ import {
 } from '@alicloud/console-components';
 import { getClusters } from '@/services/common.js';
 import CustomIcon from '../CustomIcon';
+import { createAlarms } from '@/services/middleware';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -153,7 +154,7 @@ function CreateAlarm(props) {
 	return (
 		<Page className="create-alarm">
 			<Header
-				title="新建系统告警规则"
+				title="新建告警规则"
 				hasBackArrow
 				renderBackArrow={(elem) => (
 					<span
@@ -193,7 +194,7 @@ function CreateAlarm(props) {
 					<Col span={4}>
 						<span>告警阈值</span>
 					</Col>
-					<Col span={4}>
+					<Col span={5}>
 						<span>触发规则</span>
 					</Col>
 					<Col span={3}>
@@ -205,7 +206,7 @@ function CreateAlarm(props) {
 					<Col span={4}>
 						<span>告警内容描述</span>
 					</Col>
-					<Col span={3}>
+					<Col span={2}>
 						<span>告警操作</span>
 					</Col>
 				</Row>
@@ -259,15 +260,15 @@ function CreateAlarm(props) {
 											})}
 										</Select>
 										<Input style={{ width: '57px' }} />
-										<span>100%</span>
+										<span className="info">%</span>
 									</Col>
-									<Col span={4}>
+									<Col span={5}>
 										<Input style={{ width: '46px' }} />
-										<span>分钟内触发</span>
+										<span className="info">分钟内触发</span>
 										<Input
 											style={{ width: '46px' }}
 										></Input>
-										<span>次</span>
+										<span className="info">次</span>
 									</Col>
 									<Col span={3}>
 										<Select
@@ -294,7 +295,7 @@ function CreateAlarm(props) {
 											style={{ width: 117 }}
 											value={item.symbol}
 										>
-											{symbols.map((i) => {
+											{times.map((i) => {
 												return (
 													<Option key={i} value={i}>
 														{i}
@@ -306,7 +307,7 @@ function CreateAlarm(props) {
 									<Col span={4}>
 										<Input style={{ width: 188 }} />
 									</Col>
-									<Col span={3}>
+									<Col span={2}>
 										<Button>
 											<CustomIcon
 												type="icon-fuzhi1"
@@ -338,14 +339,14 @@ function CreateAlarm(props) {
 						);
 					})}
 				<h2>告警通知</h2>
-				<div>
+				<div className="users">
 					<span
 						className="ne-required"
 						style={{ marginLeft: '10px' }}
 					>
 						通知方式
 					</span>
-					<Checkbox label="钉钉" />
+					<Checkbox label="钉钉" style={{margin: '0 30px 0 20px'}} />
 					<Checkbox label="邮箱" />
 				</div>
 			</Content>

@@ -30,11 +30,9 @@ function SystemAlarm() {
     const childrenRender = (key) => {
         switch (key) {
             case 'alarmRecord':
-                // return <AlarmRecord />
-                return <div>1111</div>
+                return <AlarmRecord />
             case 'highAvailability':
-                // return <Rules />
-                return <div>222</div>
+                return <Rules />
             case 'externalAccess':
                 return <AlarmSet />
         }

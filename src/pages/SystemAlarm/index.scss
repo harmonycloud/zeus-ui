@@ -12,8 +12,13 @@
             border-radius: 4px;
             border: 1px solid #ebebeb;
             padding: 24px;
+            &:first-child {
+                margin-bottom: 16px;
+            }
             .box-header {
+                width: 100%;
                 display: flex;
+                align-items: center;
                 .header-img {
                     width: 112px;
                     height: 112px;
@@ -21,6 +26,20 @@
                     border-radius: 4px;
                     line-height: 112px;
                     text-align: center;
+                }
+                .show-box {
+                    flex: 1;
+                    text-align: right;
+                    .show-icon {
+                        cursor: pointer;
+                        display: inline-block;
+                        border-radius: 50%;
+                        width: 24px;
+                        height: 24px;
+                        text-align: center;
+                        line-height: 22px;
+                        border: 1px solid #c0c6cc;
+                    }
                 }
                 .header-info {
                     margin-left: 24px;
@@ -116,6 +135,45 @@
                             background: #d1d5d9;
                             color: #fff;
                         }
+                    }
+                }
+                .form-btn {
+                    position: absolute;
+                    top: 8px;
+                    right: -48px;
+                    display: flex;
+                    button {
+                        width: 14px;
+                        height: 14px;
+                        padding: 0;
+                        border-radius: 7px;
+                        color: #fff;
+                        background: #c80000;
+                        min-width: auto !important;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        &.disabled {
+                            background: #cccccc;
+                        }
+                        span {
+                            margin-left: -1px;
+                        }
+                        &:first-child {
+                            background: #0064c8;
+                            margin-right: 10px;
+                        }
+                    }
+                }
+                .concat {
+                    position: absolute;
+                    top: 8px;
+                    left: -48px;
+                    .good {
+                        color: skyblue;
+                    }
+                    .bad {
+                        color: red;
                     }
                 }
             }

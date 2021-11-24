@@ -8,7 +8,11 @@ export const getMail = `${api}/mail/getMailInfo`;
 export const insertUser = `${api}/mail/insertUser`;
 // * 发送邮箱
 export const sendMail = `${api}/mail/sendMail`;
-// * 设置钉钉机器人
+// * 邮箱连接测试
+export const connectMail = `${api}/mail/connect`;
+// * 设置、获取钉钉机器人
 export const ding = `${api}/ding`;
 // * 钉钉告警
 export const sendDing = `${api}/ding/sendDing`;
+// * 钉钉连接测试
+export const connectDing = `${api}/ding/connect`;
