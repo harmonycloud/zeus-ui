@@ -30,6 +30,7 @@ const info = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
+	annotations: '',
 	description: ''
 };
 
@@ -59,6 +60,10 @@ const InfoConfig = [
 	{
 		dataIndex: 'hostAffinity',
 		label: '主机亲和'
+	},
+	{
+		dataIndex: 'annotations',
+		label: '注解'
 	},
 	{
 		dataIndex: 'description',
@@ -322,6 +327,7 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
+					annotations: data.annotations || '-',
 					disasterInstanceName: data.mysqlDTO.relationName || '',
 					description: data.annotation || '无'
 				});
@@ -339,6 +345,7 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
+					annotations: data.annotations || '-',
 					description: data.annotation || '无'
 				});
 			}
