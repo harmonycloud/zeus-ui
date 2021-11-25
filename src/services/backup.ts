@@ -18,7 +18,7 @@ interface useBackupParams {
 	aliasName: string;
 }
 export const getBackups = (params: listParams) => {
-	return Axios.get(BACKUP.getBackupList, params);
+	return Axios.get(BACKUP.backupList, params);
 };
 export const backupNow = (params: listParams) => {
 	return Axios.post(BACKUP.backups, params);
@@ -29,8 +29,11 @@ export const getBackupConfig = (params: listParams) => {
 export const addBackupConfig = (params: listParams) => {
 	return Axios.put(BACKUP.backups, params);
 };
-export const deleteBackups = (params: listParams) => {
+export const deleteBackupConfig = (params: listParams) => {
 	return Axios.delete(BACKUP.backups, params);
+};
+export const deleteBackups = (params: listParams) => {
+	return Axios.delete(BACKUP.backupList, params);
 };
 export const applyBackup = (params: useBackupParams) => {
 	return Axios.post(BACKUP.useBackup, params);

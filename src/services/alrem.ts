@@ -21,10 +21,23 @@ export const sendMail = (params: any) => {
 export const getInsertUser = (params: any) => {
 	return Axios.post(Alarm.insertUser, params);
 };
+
+export const connectMail = (params: any) => {
+	return Axios.get(Alarm.connectMail, params);
+};
+
 export const setDing = (params: any) => {
 	return Axios.json(Alarm.ding, params, {}, 'POST');
 };
 
+export const getDing = (params: any) => {
+	return Axios.get(Alarm.ding, params);
+};
+
 export const sendDing = (params: any) => {
 	return Axios.post(Alarm.sendDing, params);
+};
+
+export const connectDing = (params: any) => {
+	return Axios.json(Alarm.connectDing, params, {}, 'POST');
 };

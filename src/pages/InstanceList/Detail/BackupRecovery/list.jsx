@@ -7,6 +7,7 @@ import ComponentsLoading from '@/components/componentsLoading';
 import { getBackups, backupNow, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
+import { useHistory } from 'react-router';
 import moment from 'moment';
 
 export default function List(props) {
@@ -14,6 +15,7 @@ export default function List(props) {
 	const [backups, setBackups] = useState([]);
 	const [backupData, setBackupData] = useState();
 	const [useVisible, setUseVisible] = useState(false);
+	const history = useHistory();
 	useEffect(() => {
 		if (
 			clusterId !== undefined &&
@@ -129,9 +131,10 @@ export default function List(props) {
 			<Actions>
 				<LinkButton
 					disabled={record.backupName === ''}
-					onClick={() =>
-						toHandle(record.backupName, record.backupFileName)
-					}
+					onClick={() => {
+						history.push('/disasterBackup/dataSecurity/addBackup')
+						sessionStorage.setItem('detail',JSON.stringify({...props,isEdit: true}))
+					}}
 				>
 					使用备份
 				</LinkButton>
@@ -217,8 +220,8 @@ export default function List(props) {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setBackups([...tempDataSource]);
 		} else if (dataIndex === 'phrase') {
@@ -229,6 +232,14 @@ export default function List(props) {
 				return 0;
 			});
 			setBackups([...tempDataSource]);
+		}
+	};
+
+	const roleRender = (value, index, record) => {
+		if (value === 'Cluster') {
+			return "服务"
+		} else {
+			return "实例"
 		}
 	};
 
@@ -247,28 +258,33 @@ export default function List(props) {
 					onSort={onSort}
 				>
 					<Table.Column
-						title="备份时间"
-						dataIndex="backupTime"
+						title="备份对象"
+						dataIndex="backupType"
 						width={180}
 						sortable
-						// cell={dateRender}
+						cell={roleRender}
 					/>
-					{/* <Table.Column
-						title="类型"
-						dataIndex="type"
-						cell={typeRender}
-					/> */}
 					<Table.Column
-						title="状态"
+						title="备份源名称"
+						dataIndex="sourceName"
+					// cell={typeRender}
+					/>
+					<Table.Column
+						title="备份位置"
+						dataIndex="backupAddressList"
+						cell={addressListRender}
+					/>
+					<Table.Column
+						title="备份状态"
 						dataIndex="phrase"
 						cell={statusBackupRender}
 						width={150}
 						sortable
 					/>
 					<Table.Column
-						title="备份位置"
-						dataIndex="backupAddressList"
-						cell={addressListRender}
+						title="备份时间"
+						dataIndex="backupTime"
+						sortable
 					/>
 					<Table.Column
 						title="操作"

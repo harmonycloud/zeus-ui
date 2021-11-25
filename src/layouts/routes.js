@@ -38,6 +38,7 @@ import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
 import CreateAlarm from '@/components/CreateAlarm';
 import GuidePage from '@/pages/GuidePage';
+import BackupSetting from '@/pages/InstanceList/Detail/BackupRecovery/backupSetting';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -197,6 +198,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/disasterBackup/dataSecurity"
 					component={DataSecurity}
+					exact
+				/>
+				<Route
+					path="/disasterBackup/dataSecurity/addBackup"
+					component={BackupSetting}
 					exact
 				/>
 				{/* 基础资源——已废弃 */}

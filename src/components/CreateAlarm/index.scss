@@ -47,8 +47,15 @@
         }
         .next-col {
             padding: 10px;
+            display: flex;
+            vertical-align: baseline;
             .next-input {
                 min-width: auto;
+            }
+        }
+        .ne-required{
+            &::before{
+                top: 20px;
             }
         }
         .next-select-values{
@@ -62,5 +69,17 @@
             height: 24px;
             padding: 0 5px;
         }
+        .info{
+            display: inline-block;
+            background: #EBEBEB;
+            color: #C1C1C1;
+            height: 32px;
+            padding: 0 8px;
+            line-height: 32px;
+        }
+    }
+    .users{
+        display: flex;
+        align-items: center;
     }
 }

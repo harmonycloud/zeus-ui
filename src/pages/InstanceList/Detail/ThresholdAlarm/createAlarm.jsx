@@ -171,7 +171,7 @@ export default function CreateAlarm(props) {
 		}
 	};
 	const delAlarm = (i) => {
-		console.log(i);
+		// console.log(i);
 		const list = alarmRules.filter((item) => item.id !== i);
 		setAlarmRules(list);
 	};
