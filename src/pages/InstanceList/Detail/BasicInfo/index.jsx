@@ -5,12 +5,12 @@ import {
 	Switch,
 	Dialog,
 	Grid,
-	Message
+	Message,
+	Form,
+	Input
 } from '@alicloud/console-components';
 import { useParams } from 'react-router-dom';
 import DataFields from '@alicloud/console-components-data-fields';
-// import BalloonForm from '@/components/BalloonForm';
-// const FormItem = Form.Item;
 import DefaultPicture from '@/components/DefaultPicture';
 import { statusRender } from '@/utils/utils';
 import transTime from '@/utils/transTime';
@@ -20,8 +20,14 @@ import RocketAclEditForm from './rocketAclEditForm';
 import './basicinfo.scss';
 import { updateMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import { render } from '@testing-library/react';
+import BalloonForm from '@/components/BalloonForm';
 
+const formItemLayout = {
+	labelCol: { fixedSpan: 0 },
+	wrapperCol: { span: 24 }
+};
+
+const FormItem = Form.Item;
 const { Option } = Select;
 const { Row, Col } = Grid;
 const info = {
@@ -59,10 +65,6 @@ const InfoConfig = [
 	{
 		dataIndex: 'hostAffinity',
 		label: '主机亲和'
-	},
-	{
-		dataIndex: 'description',
-		label: '备注'
 	}
 ];
 
@@ -305,6 +307,33 @@ function BasicInfo(props) {
 			}
 		});
 	};
+	const editDescription = (value) => {
+		const sendData = {
+			clusterId: clusterId,
+			namespace: namespace,
+			middlewareName: middlewareName,
+			chartName: type,
+			chartVersion: chartVersion,
+			type: type,
+			description: value.description
+		};
+		updateMiddleware(sendData).then((res) => {
+			if (res.success) {
+				Message.show(
+					messageConfig(
+						'success',
+						'成功',
+						'备注修改成功,3秒后刷新页面'
+					)
+				);
+				setTimeout(() => {
+					onRefresh();
+				}, 3000);
+			} else {
+				Message.shoe(messageConfig('success', '失败', res));
+			}
+		});
+	};
 
 	useEffect(() => {
 		if (data !== undefined) {
@@ -467,6 +496,49 @@ function BasicInfo(props) {
 		) {
 			const list = infoConfigTemp.splice(5, 0, originInstanceConfig);
 			setInfoConfig(list);
+		}
+		if (!dataIndexList.includes('description')) {
+			const descriptionTemp = {
+				dataIndex: 'description',
+				label: '备注',
+				render: (val) => {
+					return (
+						<div className="display-flex">
+							<div>{val}</div>
+							<BalloonForm
+								closable={false}
+								trigger={
+									<Icon
+										type="edit"
+										size="xs"
+										style={{
+											marginLeft: 8,
+											cursor: 'pointer'
+										}}
+									/>
+								}
+								style={{
+									width: '284px'
+								}}
+								onConfirm={editDescription}
+								formProps={formItemLayout}
+							>
+								<FormItem
+									requiredMessage="请输入"
+									patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+								>
+									<Input
+										name="description"
+										placeholder="请输入"
+										defaultValue={val}
+									/>
+								</FormItem>
+							</BalloonForm>
+						</div>
+					);
+				}
+			};
+			infoConfigTemp.push(descriptionTemp);
 		}
 		setInfoConfig(infoConfigTemp);
 	}, [props]);
