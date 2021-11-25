@@ -529,6 +529,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			setShowDataSource([...tempDataSource]);
 		}
 	};
+	const exposeTypeRender = (value: string, index: number, record: any) => {
+		return `${value}/${record.ingressClassName || '-'}`;
+	};
 	return (
 		<Page>
 			<Header
@@ -594,6 +597,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
+						cell={exposeTypeRender}
 						width={110}
 						sortable={true}
 					/>
