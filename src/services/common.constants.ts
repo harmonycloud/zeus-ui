@@ -14,3 +14,6 @@ export const getComponents = `${api}/clusters/{clusterId}/components`;
 export const multipleComponents = `${api}/clusters/{clusterId}/components/multiple`;
 export const updateComponents = `${api}/clusters/{clusterId}/components/{componentName}`;
 export const getClusterJoinCommand = `${api}/clusters/clusterJoinCommand`;
+// * 多ingress支持
+export const getIngresses = `${api}/clusters/{clusterId}/ingress`;
+export const deleteIngress = `${api}/clusters/{clusterId}/ingress/{ingressName}`;

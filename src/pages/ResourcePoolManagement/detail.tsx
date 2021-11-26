@@ -5,6 +5,7 @@ import { Tab } from '@alicloud/console-components';
 import Overview from './tabs/overview';
 import Namespace from './tabs/namespace';
 import Component from './tabs/component';
+import Ingress from './tabs/ingress';
 import storage from '@/utils/storage';
 
 export interface paramsProps {
@@ -37,6 +38,9 @@ const ResourcePoolDetail = () => {
 					</Tab.Item>
 					<Tab.Item title="资源分区" key="namespace">
 						<Namespace />
+					</Tab.Item>
+					<Tab.Item title="负载均衡" key="ingress">
+						<Ingress />
 					</Tab.Item>
 					<Tab.Item title="平台组件" key="component">
 						<Component />

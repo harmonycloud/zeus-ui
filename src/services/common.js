@@ -88,3 +88,7 @@ export const mulInstallComponent = (params) => {
 export const getJoinCommand = (params) => {
 	return Axios.get(COMMON.getClusterJoinCommand, params);
 };
+// * 多Ingress接入-获取
+export const getIngresses = (params) => {
+	return Axios.get(COMMON.getIngresses, params);
+};
