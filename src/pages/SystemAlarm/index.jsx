@@ -1,16 +1,56 @@
 import React, { Component, useEffect, useState } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page'
 import AlarmRecord from './alarmRecord';
-import Rules from './rules';
 import AlarmSet from './alarmSet';
+import { Message } from '@alicloud/console-components';
+import messageConfig from '@/components/messageConfig';
+import { getMiddlewareDetail } from '@/services/middleware';
+import ServerAlarm from '@/pages/InstanceList/Detail/ServeAlarm'
 import './index.scss'
+import { connect } from 'react-redux';
 
 const { Menu } = Page;
-function SystemAlarm() {
+function SystemAlarm(props) {
     const [selectedKey, setSelectedKey] = useState();
-
+    const { cluster: globalCluster, namespace: globalNamespace } =
+        props.globalVar;
     const menuSelect = (selectedKeys) => {
         setSelectedKey(selectedKeys[0]);
+    };
+    const [data, setData] = useState();
+    const [basicData, setBasicData] = useState();
+    const [isService, setIsService] = useState(false);
+
+    const onChange = (
+        name,
+        type,
+        namespace,
+        cluster
+    ) => {
+        if (name !== null) {
+            setBasicData({
+                name,
+                type,
+                clusterId: cluster.id,
+                namespace,
+                storage: cluster.storage
+            });
+            getMiddlewareDetail({
+                clusterId: cluster.id,
+                namespace,
+                type,
+                middlewareName: name
+            }).then((res) => {
+                if (res.success) {
+                    setIsService(true);
+                    setData(res.data);
+                } else {
+                    Message.show(messageConfig('error', '失败', res));
+                }
+            });
+        } else {
+            setIsService(false);
+        }
     };
 
     const TabMenu = ({ selected, handleMenu }) => (
@@ -32,13 +72,14 @@ function SystemAlarm() {
             case 'alarmRecord':
                 return <AlarmRecord />
             case 'highAvailability':
-                return <Rules />
+                return <ServerAlarm alarmType={'service'} />
             case 'externalAccess':
                 return <AlarmSet />
         }
     }
 
     useEffect(() => {
+        console.log(props);
         setSelectedKey('alarmRecord');
     }, [])
 
@@ -58,4 +99,4 @@ function SystemAlarm() {
     )
 }
 
-export default SystemAlarm
+export default connect(({ globalVar }) => ({ globalVar }), {})(SystemAlarm);

@@ -36,7 +36,7 @@ import Personlization from '@/pages/Personalization/index';
 import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
-import CreateAlarm from '@/components/CreateAlarm';
+import CreateAlarm from '@/pages/InstanceList/Detail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
 import BackupSetting from '@/pages/InstanceList/Detail/BackupRecovery/backupSetting';
 // ! 已弃用组件
@@ -138,7 +138,7 @@ const Routes = withRouter((props) => {
 				/> */}
 				{/* 服务详情 - 版本管理*/}
 				<Route
-					path="/serviceList/ServerVersion/:type"
+					path="/ServerVersion/:type/:service"
 					component={ServiceVersion}
 				/>
 				{/* 服务详情 - 实例详情*/}

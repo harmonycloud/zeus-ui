@@ -68,8 +68,8 @@ const ServiceListByType = (props: serviceListProps) => {
 						type: currentService?.type
 					}).then((res) => {
 						if (res.success) {
-							setDataSource(res.data[0]);
-							setShowDataSource(res.data[0].serviceList);
+							res.data && setDataSource(res.data[0]);
+							res.data && setShowDataSource(res.data[0].serviceList);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -449,7 +449,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						参数设置
 					</span>
 				</LinkButton>
-				{/* <LinkButton key="version">版本管理</LinkButton> */}
+				<LinkButton onClick={() => history.push(`/ServerVersion/${record.type}/${record.aliasName}`)}>版本管理</LinkButton>
 				<LinkButton key="delete" onClick={() => deleteFn(record)}>
 					删除
 				</LinkButton>

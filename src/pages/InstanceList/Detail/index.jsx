@@ -10,6 +10,7 @@ import ExternalAccess from './ExternalAccess/index';
 import Monitor from './Monitor/index';
 import Log from './Log/index';
 import ThresholdAlarm from './ThresholdAlarm/index';
+import ServerAlarm from './ServeAlarm';
 import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';
 import { getMiddlewareDetail } from '@/services/middleware';
@@ -122,7 +123,7 @@ const InstanceDetails = (props) => {
 			direction="hoz"
 		>
 			<Menu.Item key="basicInfo">基本信息</Menu.Item>
-			<Menu.Item key="highAvailability">高可用性</Menu.Item>
+			<Menu.Item key="highAvailability">实例详情</Menu.Item>
 			{type === 'mysql' ? (
 				<Menu.Item key="backupRecovery">数据安全</Menu.Item>
 			) : null}
@@ -130,7 +131,7 @@ const InstanceDetails = (props) => {
 			<Menu.Item key="monitor">数据监控</Menu.Item>
 			<Menu.Item key="log">日志详情</Menu.Item>
 			<Menu.Item key="paramterSetting">参数设置</Menu.Item>
-			<Menu.Item key="alarm">阈值报警</Menu.Item>
+			<Menu.Item key="alarm">服务报警</Menu.Item>
 			{type === 'mysql' ? (
 				<Menu.Item key="disaster">灾备服务</Menu.Item>
 			) : null}
@@ -226,7 +227,7 @@ const InstanceDetails = (props) => {
 				);
 			case 'alarm':
 				return (
-					<ThresholdAlarm
+					<ServerAlarm
 						middlewareName={middlewareName}
 						clusterId={globalVar.cluster.id}
 						namespace={globalVar.namespace.name}
@@ -234,6 +235,7 @@ const InstanceDetails = (props) => {
 						customMid={customMid}
 						capabilities={(data && data.capabilities) || []}
 						monitor={globalVar.cluster.monitor}
+						alarmType={'service'}
 					/>
 				);
 			case 'disaster':

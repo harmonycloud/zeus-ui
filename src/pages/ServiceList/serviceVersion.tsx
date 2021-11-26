@@ -7,10 +7,10 @@ import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { StoreState, globalVarProps } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import {
-	getTypeVersion,
 	updateMiddleware,
 	shelvesTypeVersion
 } from '@/services/repository';
+import { getVersions } from '@/services/serviceList';
 import messageConfig from '@/components/messageConfig';
 import { middlewareProps } from './service.list';
 import Table from '@/components/MidTable';
@@ -30,59 +30,35 @@ enum versionStatus {
 	history = '历史版本',
 	updating = '升级中'
 }
-function MiddlewareVersion(props: versionProps): JSX.Element {
+function ServiceVersion(props: versionProps): JSX.Element {
 	const {
-		globalVar: { cluster }
+		globalVar: { cluster, namespace }
 	} = props;
 	const params: paramsProps = useParams();
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
-	useEffect(() => {
-		let mounted = true;
-		if (JSON.stringify(cluster) !== '{}') {
-			getTypeVersion({
-				clusterId: cluster.id,
-				type: params.type
-			}).then((res) => {
-				if (res.success) {
-					if (mounted) {
-						setOriginData(res.data);
-					}
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
-		}
-		return () => {
-			mounted = false;
-		};
-	}, [props]);
+	const url = window.location.href.split('/');
 	const getData = () => {
-		getTypeVersion({
+		getVersions({
 			clusterId: cluster.id,
-			type: params.type
+			middlewareName: url[url.length - 1],
+			namespace: namespace.name,
+			type: url[url.length - 2]
 		}).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
+				setDataSource(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
 	useEffect(() => {
-		setDataSource([...originData]);
-	}, [originData]);
+		getData()
+	}, []);
 	const onCreate = () => {
-		setVisible(false);
 		getData();
-	};
-	const Operation = {
-		primary: (
-			<Button onClick={() => setVisible(true)} type="primary">
-				上架新版本
-			</Button>
-		)
 	};
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
@@ -106,8 +82,8 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setDataSource([...dsTemp]);
 		}
@@ -121,14 +97,14 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 			value === 'now'
 				? '#00A7FA'
 				: value === ('future' || 'updating')
-				? '#52C41A'
-				: '#666666';
+					? '#52C41A'
+					: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
 				: value === ('future' || 'updating')
-				? '#F6FFED'
-				: '#F5F5F5';
+					? '#F6FFED'
+					: '#F5F5F5';
 		return (
 			<div
 				className="version-status-display"
@@ -151,19 +127,11 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 			<Actions>
 				{record.versionStatus === 'future' && (
 					<LinkButton onClick={() => installUpdate(record)}>
-						安装升级
+						升级
 					</LinkButton>
 				)}
 				{record.versionStatus === 'updating' && (
 					<LinkButton>升级中...</LinkButton>
-				)}
-				{record.versionStatus !== 'now' && (
-					<LinkButton
-						disabled={record.versionStatus === 'updating'}
-						onClick={() => shelves(record)}
-					>
-						下架
-					</LinkButton>
 				)}
 			</Actions>
 		);
@@ -238,7 +206,7 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title={`${params.type}版本管理`}
+				title={`服务版本管理`}
 				hasBackArrow={true}
 				onBackArrowClick={() => window.history.back()}
 			/>
@@ -255,10 +223,14 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 						showRefresh
 						onRefresh={getData}
 						primaryKey="key"
-						operation={Operation}
 						onFilter={onFilter}
 						onSort={onSort}
 					>
+						<Table.Column
+							title="服务名称/中文名称"
+							dataIndex="chartName"
+							cell={() => url[url.length -1]}
+						/>
 						<Table.Column
 							title="类型"
 							dataIndex="chartName"
@@ -316,4 +288,4 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 const mapStateToProps = (state: StoreState) => ({
 	globalVar: state.globalVar
 });
-export default connect(mapStateToProps, {})(MiddlewareVersion);
+export default connect(mapStateToProps, {})(ServiceVersion);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Message } from '@alicloud/console-components';
 import SecondLayout from '@/components/SecondLayout';
 import ThresholdAlarm from '@/pages/InstanceList/Detail/ThresholdAlarm';
+import ServerAlarm from '@/pages/InstanceList/Detail/ServeAlarm';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
@@ -45,13 +46,13 @@ function AlarmCenter(): JSX.Element {
 	};
 	return (
 		<SecondLayout
-			title="告警中心"
+			title="服务告警"
 			subTitle="中间件服务的相关运行指标可进行监测和告警"
 			hasBackArrow={true}
 			onChange={onChange}
 		>
 			{isService && JSON.stringify(data) !== '{}' && (
-				<ThresholdAlarm
+				<ServerAlarm
 					middlewareName={basicData?.name}
 					clusterId={basicData?.clusterId}
 					namespace={basicData?.namespace}

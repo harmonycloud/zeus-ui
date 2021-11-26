@@ -11,3 +11,8 @@ interface listParamsProps {
 export const getList = (params: listParamsProps) => {
 	return Axios.get(SERVICE.getServiceLit, params);
 };
+
+export const getVersions = (params: any) => {
+	return Axios.get(SERVICE.getServiceVersion, params);
+};
+

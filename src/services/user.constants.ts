@@ -26,3 +26,5 @@ export const getRoles = `${api}/role/list`;
 export const getPersonalConfig = `${api}/user/getPersonalConfig`;
 // * 添加个性化配置
 export const personalized = `${api}/user/personalized`;
+// * 获取登录用户列表及通知人列表
+export const users = `${api}/user/users`;

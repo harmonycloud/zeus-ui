@@ -89,3 +89,7 @@ export const personalized = (params: any) => {
 		'POST'
 	);
 };
+// * 获取登录用户列表及通知人列表
+export const getUsers = (params: any) => {
+	return Axios.get(USER.users, params);
+};
