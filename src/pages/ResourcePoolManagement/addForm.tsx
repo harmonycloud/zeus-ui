@@ -418,7 +418,7 @@ function AddForm(props: addFormProps): JSX.Element {
 				: `http://${window.location.hostname}:${window.location.port}/api`;
 		const sendData = {
 			name: quickName,
-			apiAddress: apiUrl
+			apiAddress: apiAddress
 		};
 		getJoinCommand(sendData).then((res) => {
 			if (res.success) {
