@@ -274,7 +274,7 @@ const RedisCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
 					description: values.description,
 					version: version,
 					password: values.pwd,
@@ -591,7 +591,7 @@ const RedisCreate = (props) => {
 											patternMessage="请输入key=value格式的标签，多个注释以英文逗号分隔"
 										>
 											<Input
-												name="annotation"
+												name="annotations"
 												placeholder="请输入key=value格式的标签，多个注释以英文逗号分隔"
 											/>
 										</FormItem>

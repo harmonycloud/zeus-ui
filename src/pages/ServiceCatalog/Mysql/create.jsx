@@ -234,7 +234,7 @@ const MysqlCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
 					description: values.description,
 					version: version,
 					charSet: charSet,
@@ -334,7 +334,7 @@ const MysqlCreate = (props) => {
 						chartVersion: chartVersion,
 						type: 'mysql',
 						labels: values.labels,
-						annotation: values.annotation,
+						annotations: values.annotations,
 						description: values.description,
 						version: version,
 						charSet: charSet,
@@ -363,7 +363,7 @@ const MysqlCreate = (props) => {
 						name: originData.name,
 						aliasName: originData.aliasName,
 						labels: originData.labels,
-						annotation: originData.annotation,
+						annotations: originData.annotations,
 						description: originData.description,
 						version: originData.version,
 						charSet: originData.charSet,
@@ -396,7 +396,7 @@ const MysqlCreate = (props) => {
 							chartVersion: chartVersion,
 							type: 'mysql',
 							labels: values.labels,
-							annotation: values.annotation,
+							annotations: values.annotations,
 							description: values.description,
 							version: version,
 							charSet: charSet,
@@ -498,7 +498,7 @@ const MysqlCreate = (props) => {
 				aliasName: res.data.aliasName,
 				// name: res.data.name,
 				labels: res.data.labels,
-				annotation: res.data.annotation,
+				annotations: res.data.annotations,
 				description: res.data.description,
 				mysqlPort: res.data.port,
 				mysqlPwd: res.data.password,
@@ -526,7 +526,7 @@ const MysqlCreate = (props) => {
 				aliasName: '',
 				// name: res.data.name,
 				labels: '',
-				annotation: '',
+				annotations: '',
 				description: '',
 				mysqlPort: '',
 				mysqlPwd: '',
@@ -549,7 +549,7 @@ const MysqlCreate = (props) => {
 				aliasName: originData.aliasName,
 				// name: res.data.name,
 				labels: originData.labels,
-				annotation: originData.annotation,
+				annotations: originData.annotations,
 				description: originData.description,
 				mysqlPort: originData.port,
 				mysqlPwd: originData.password,
@@ -930,7 +930,7 @@ const MysqlCreate = (props) => {
 											patternMessage="请输入key=value格式的标签，多个注释以英文逗号分隔"
 										>
 											<Input
-												name="annotation"
+												name="annotations"
 												placeholder="请输入key=value格式的标签，多个注释以英文逗号分隔"
 											/>
 										</FormItem>
