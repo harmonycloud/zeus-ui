@@ -91,8 +91,12 @@ function PlatformOverview(props) {
 	useEffect(() => {
 		getClusters().then((res) => {
 			// console.log(res.data);
-			res.data.unshift({ name: '全部', id: 'all' });
-			setPoolList(res.data);
+			if (res.success) {
+				res.data.unshift({ name: '全部', id: 'all' });
+				setPoolList(res.data);
+			} else {
+				setPoolList([{ name: '全部', id: 'all' }]);
+			}
 		});
 	}, []);
 	useEffect(() => {
@@ -241,7 +245,14 @@ function PlatformOverview(props) {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon type="icon-jiqun1" size={36} style={{ color: "#617BFF", marginTop: '12px' }} />
+										<CustomIcon
+											type="icon-jiqun1"
+											size={36}
+											style={{
+												color: '#617BFF',
+												marginTop: '12px'
+											}}
+										/>
 									</div>
 									<div>
 										<p className="value">
@@ -259,7 +270,14 @@ function PlatformOverview(props) {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon type="icon-mingmingkongjian" size={36} style={{ color: "#9661FF", marginTop: '12px' }} />
+										<CustomIcon
+											type="icon-mingmingkongjian"
+											size={36}
+											style={{
+												color: '#9661FF',
+												marginTop: '12px'
+											}}
+										/>
 									</div>
 									<div>
 										<p className="value">
@@ -277,7 +295,15 @@ function PlatformOverview(props) {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon type="icon-CPU" size={60} style={{ color: "#00C1D4", marginTop: '-10px', marginLeft: '2px' }} />
+										<CustomIcon
+											type="icon-CPU"
+											size={60}
+											style={{
+												color: '#00C1D4',
+												marginTop: '-10px',
+												marginLeft: '2px'
+											}}
+										/>
 									</div>
 									<div>
 										<div className="value percent">
@@ -311,7 +337,14 @@ function PlatformOverview(props) {
 							<div className="part">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon type="icon-memory" size={60} style={{ color: "#FF9861", marginTop: '-10px' }} />
+										<CustomIcon
+											type="icon-memory"
+											size={60}
+											style={{
+												color: '#FF9861',
+												marginTop: '-10px'
+											}}
+										/>
 									</div>
 									<div>
 										<div className="value percent">
@@ -373,7 +406,7 @@ function PlatformOverview(props) {
 															src={`${api}/images/middleware/${item.imagePath}`}
 														/>
 														{item.errServiceNum !==
-															0 ? (
+														0 ? (
 															<Tooltip
 																trigger={
 																	<span className="err-count">
@@ -481,7 +514,7 @@ function PlatformOverview(props) {
 																style={{
 																	color:
 																		value ===
-																			1
+																		1
 																			? '#00A700'
 																			: '#C80000',
 																	marginRight:

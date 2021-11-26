@@ -14,8 +14,14 @@ import RegistryNamespace from '../BasicResource/registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
 import './index.scss';
 import IngressForm from './ingressForm';
+// import { connect } from 'react-redux';
+// import { setRefreshCluster } from '@/redux/globalVar/var';
 
-export default function ResourcePoolManagement(): JSX.Element {
+// interface ResourcePoolManagement {
+// 	setRefreshCluster: (flag: boolean) => void;
+// }
+function ResourcePoolManagement(): JSX.Element {
+	// const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [dataSource, setDataSource] = useState<clusterType[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -368,3 +374,4 @@ export default function ResourcePoolManagement(): JSX.Element {
 		</Page>
 	);
 }
+export default ResourcePoolManagement;
