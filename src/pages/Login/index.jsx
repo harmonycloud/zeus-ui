@@ -132,8 +132,8 @@ export default function Login() {
 				<img
 					className={styles['logo']}
 					src={
-						data && data.homeLogoPath
-							? `${api}/images/middleware/${data.homeLogoPath}`
+						data && data.loginLogoPath
+							? `${api}/images/middleware/${data.loginLogoPath}`
 							: logo
 					}
 				/>

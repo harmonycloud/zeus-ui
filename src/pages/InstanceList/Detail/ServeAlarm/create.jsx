@@ -86,6 +86,7 @@ function CreateAlarm(props) {
     const [poolList, setPoolList] = useState([]);
     const [users, setUsers] = useState([]);
     const [insertUser,setInsertUser] = useState();
+    const [selectUser,setSelectUser] = useState();
 
     useEffect(() => {
 		getCanUse(clusterId, namespace, middlewareName, type);
@@ -239,12 +240,14 @@ function CreateAlarm(props) {
         });
         getUsers().then(res => {
             // console.log(res);
+            if(!res.data) return;
             setUsers(res.data.userBy.map((item, index) => {
                 return {
                     ...item,
                     value: index
                 }
             }))
+            setSelectUser(res.data.users.map(item => item.id))
         })
     }, []);
 
@@ -534,10 +537,10 @@ function CreateAlarm(props) {
                     </div>
                     <Transfer
                         showSearch
-                        defaultValue={[1]}
+                        defaultValue={selectUser}
                         titles={[<div><span>登陆账户</span><span>用户名</span><span>邮箱</span><span>手机号</span></div>,
                         <div><span>登陆账户</span><span>用户名</span><span>邮箱</span><span>手机号</span></div>]}
-                        defaultLeftChecked={[1]}
+                        defaultLeftChecked={selectUser}
                         dataSource={users}
                         itemRender={transferRender}
                         onChange={handleChange}

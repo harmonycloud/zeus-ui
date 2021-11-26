@@ -56,10 +56,10 @@ const header = (
 		<img
 			className={styles['logo-png']}
 			src={
-				personalization && personalization.loginLogoPath
+				personalization && personalization.homeLogoPath
 					? api +
 					  '/images/middleware/' +
-					  personalization.loginLogoPath
+					  personalization.homeLogoPath
 					: logo
 			}
 			alt=""
