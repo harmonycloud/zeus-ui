@@ -56,7 +56,7 @@ function AlarmRecord() {
         >
             <Table.Column title="告警ID" dataIndex="clusterId" />
             <Table.Column title="告警等级" dataIndex="level" />
-            <Table.Column title="告警内容" dataIndex="message" />
+            <Table.Column title="告警内容" dataIndex="message" width={600} />
             <Table.Column title="告警对象" dataIndex="name" />
             <Table.Column title="规则描述" dataIndex="x" />
             <Table.Column title="实际监测" dataIndex="x" />

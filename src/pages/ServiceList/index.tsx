@@ -619,7 +619,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						参数设置
 					</span>
 				</LinkButton>
-				{/* <LinkButton>版本管理</LinkButton> */}
+				<LinkButton onClick={() => history.push(`/ServerVersion/${record.type}/${record.aliasName}`)}>版本管理</LinkButton>
 				<LinkButton onClick={() => deleteFn(record)}>删除</LinkButton>
 			</Actions>
 		);

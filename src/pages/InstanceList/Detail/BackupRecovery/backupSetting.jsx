@@ -89,7 +89,7 @@ function BackupSetting(props) {
 		getPodList(sendData);
 	}, []);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		return () => {
 			storage.removeSession('detail');
 		}

@@ -32,6 +32,7 @@ function AlarmSet() {
 	const [dingData, setDingData] = useState();
 	const [dingFormList, setDingFormList] = useState([{ index: 0, id: Math.random() }]);
 	const [connect, setConnect] = useState();
+	const [dingConnect, setDingConnect] = useState();
 	const [show, setShow] = useState(true);
 	const [dingShow, setDingShow] = useState(true);
 
@@ -181,9 +182,9 @@ function AlarmSet() {
 					...data,
 				}
 			})
-			connectDing(arrs[0]).then(res => {
+			connectDing(arrs).then(res => {
 				// console.log(res);
-				res.success ? setConnect('good') : setConnect('bad');
+				setDingConnect(res.data.map(item => item.success))
 			})
 		});
 	}
@@ -320,11 +321,7 @@ function AlarmSet() {
 							设置一个或多个钉钉机器人，告警信息第一时间同步钉钉应用（最多添加10个Webhook）。
 						</p>
 					</div>
-					<div className="show-box">
-						<span className="show-icon" onClick={() => setDingShow(!dingShow)}>
-							<Icon type="angle-double-down" size="xs" style={{ color: '#C0C6CC' }} />
-						</span>
-					</div>
+
 				</div>
 				<div className="box-content" style={{ display: dingShow ? 'block' : 'none' }}>
 					<Row>
@@ -350,8 +347,8 @@ function AlarmSet() {
 														<Button onClick={() => reduceDingFormList(item.id)} className={index === 0 ? "disabled" : ''}>-</Button>
 													</div>
 													{
-														connect && <div className="concat">
-															<span className={connect === 'good' ? 'good' : 'bad'}>{connect === 'good' ? '可用' : '不可用'}</span>
+														dingConnect && <div className="concat">
+															<span className={dingConnect ? 'good' : 'bad'}>{dingConnect ? '可用' : '不可用'}</span>
 														</div>
 													}
 												</Form.Item>

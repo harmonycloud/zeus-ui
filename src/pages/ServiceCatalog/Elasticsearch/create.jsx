@@ -153,7 +153,7 @@ const ElasticsearchCreate = (props) => {
 		},
 		{
 			label: 'N主 N数据',
-			value: 'regular'
+			value: 'complex'
 		},
 		{
 			label: 'N主 N数据 N协调',
@@ -161,11 +161,11 @@ const ElasticsearchCreate = (props) => {
 		},
 		{
 			label: 'N主 N数据 N冷',
-			value: 'complex-cold'
+			value: 'complex'
 		},
 		{
 			label: 'N主 N数据 N冷 N协调',
-			value: 'cold-complex'
+			value: 'complex'
 		}
 	];
 	const [nodeObj, setNodeObj] = useState({
