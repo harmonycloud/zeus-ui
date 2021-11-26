@@ -28,3 +28,5 @@ export const getPersonalConfig = `${api}/user/getPersonalConfig`;
 export const personalized = `${api}/user/personalized`;
 // * 获取登录用户列表及通知人列表
 export const users = `${api}/user/users`;
+// * 选择被通知人
+export const insertUser = `${api}/mail/insertUser`;

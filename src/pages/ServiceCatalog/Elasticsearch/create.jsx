@@ -153,7 +153,7 @@ const ElasticsearchCreate = (props) => {
 		},
 		{
 			label: 'N主 N数据',
-			value: 'complex'
+			value: 'regular'
 		},
 		{
 			label: 'N主 N数据 N协调',
@@ -161,11 +161,11 @@ const ElasticsearchCreate = (props) => {
 		},
 		{
 			label: 'N主 N数据 N冷',
-			value: 'complex'
+			value: 'complex-cold'
 		},
 		{
 			label: 'N主 N数据 N冷 N协调',
-			value: 'complex'
+			value: 'cold-complex'
 		}
 	];
 	const [nodeObj, setNodeObj] = useState({
@@ -340,7 +340,7 @@ const ElasticsearchCreate = (props) => {
 					password: values.pwd,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode: mode.includes('complex') ? 'complex' : mode
+					mode: (mode.includes('complex') || mode.includes('regular')) ? 'complex' : mode
 				};
 				if (affinity.flag) {
 					if (!affinityLabels.length) {

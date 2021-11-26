@@ -93,6 +93,7 @@ export default function EsEditNodeSpe(props) {
 			data.disabled = false;
 			client.disabled = true;
 			cold.disabled = true;
+			setMode('complex');
 		} else if (data.mode === 'complex') {
 			if (cold.num !== 0 && client.num === 0) {
 				setMode('complex-cold');
@@ -123,7 +124,7 @@ export default function EsEditNodeSpe(props) {
 		},
 		{
 			label: 'N主 N数据',
-			value: 'complex'
+			value: 'regular'
 		},
 		{
 			label: 'N主 N数据 N协调',
@@ -131,11 +132,11 @@ export default function EsEditNodeSpe(props) {
 		},
 		{
 			label: 'N主 N数据 N冷',
-			value: 'complex'
+			value: 'complex-cold'
 		},
 		{
 			label: 'N主 N数据 N冷 N协调',
-			value: 'complex'
+			value: 'cold-complex'
 		}
 	];
 

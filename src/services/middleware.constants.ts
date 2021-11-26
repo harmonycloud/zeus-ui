@@ -28,14 +28,20 @@ export const switchMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespa
 export const middlewareMonitor = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/monitor`;
 // * 服务事件
 export const middlewareEvents = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/events`;
-// * 查询已设置的告警规则
+// * 查询已设置的告警规则-服务
 export const getUsedAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules/used`;
+// * 查询已设置的告警规则-系统
+export const getUsedAlarmRule = `${api}/clusters/{clusterId}/rules/used`;
 // * 查询可以设置的告警规则
 export const getCanUseAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules`;
-// * 创建告警规则
+// * 创建告警规则-服务
 export const addAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules`;
-// * 删除告警规则
+// * 创建告警规则-系统
+export const addAlarmRule = `${api}/clusters/{clusterId}/rules`;
+// * 删除告警规则-服务
 export const deleteAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules`;
+// * 删除告警规则-系统
+export const deleteAlarmRule = `${api}/clusters/{clusterId}/rules`;
 // * 获取自定义配置
 export const getCustomConfig = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/config`;
 // * 更新自定义配置

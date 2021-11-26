@@ -93,3 +93,7 @@ export const personalized = (params: any) => {
 export const getUsers = (params: any) => {
 	return Axios.get(USER.users, params);
 };
+// * 选择被通知人
+export const sendInsertUser = (params: any) => {
+	return Axios.json(USER.insertUser, params, {}, "POST");
+};

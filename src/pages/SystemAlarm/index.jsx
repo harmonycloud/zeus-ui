@@ -72,7 +72,7 @@ function SystemAlarm(props) {
             case 'alarmRecord':
                 return <AlarmRecord />
             case 'highAvailability':
-                return <ServerAlarm alarmType={'service'} />
+                return <ServerAlarm alarmType={'system'} clusterId={globalCluster.id} />
             case 'externalAccess':
                 return <AlarmSet />
         }

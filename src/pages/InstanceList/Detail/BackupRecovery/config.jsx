@@ -12,7 +12,7 @@ import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import BackupSettingForm from './backupSetting';
 import messageConfig from '@/components/messageConfig';
-import { getBackupConfig, addBackupConfig, backupNow } from '@/services/backup';
+import { getBackupConfig, addBackupConfig, backupNow, deleteBackupConfig } from '@/services/backup';
 import moment from 'moment';
 import transTime from '@/utils/transTime';
 import storage from '@/utils/storage';
@@ -339,6 +339,7 @@ export default function Config(props) {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
+						console.log(record);
 						Dialog.show({
 							title: '操作确认',
 							content: '备份删除后将无法恢复，请确认执行',
@@ -346,39 +347,37 @@ export default function Config(props) {
 								const sendData = {
 									clusterId,
 									namespace,
-									backupName: record.backupName,
-									middlewareName: listData.name,
 									type: listData.type,
-									backupFileName: record.backupFileName
+									backupScheduleName: record.backupScheduleName
 								};
 								// console.log(sendData);
-								// deleteBackups(sendData)
-								// 	.then((res) => {
-								// 		if (res.success) {
-								// 			Message.show(
-								// 				messageConfig(
-								// 					'success',
-								// 					'成功',
-								// 					'备份删除成功'
-								// 				)
-								// 			);
-								// 		} else {
-								// 			Message.show(
-								// 				messageConfig(
-								// 					'error',
-								// 					'失败',
-								// 					res
-								// 				)
-								// 			);
-								// 		}
-								// 	})
-								// 	.finally(() => {
-								// 		getData(
-								// 			clusterId,
-								// 			namespace,
-								// 			listData.name
-								// 		);
-								// 	});
+								deleteBackupConfig(sendData)
+									.then((res) => {
+										if (res.success) {
+											Message.show(
+												messageConfig(
+													'success',
+													'成功',
+													'备份删除成功'
+												)
+											);
+										} else {
+											Message.show(
+												messageConfig(
+													'error',
+													'失败',
+													res
+												)
+											);
+										}
+									})
+									.finally(() => {
+										getData(
+											clusterId,
+											namespace,
+											listData.name
+										);
+									});
 							}
 						});
 					}}

@@ -152,17 +152,17 @@ function Personlization(): JSX.Element {
 									name: 'IMG.png',
 									state: 'done',
 									size: 1024,
-									downloadURL: personalization.backgroundPath
+									downloadURL: personalization && personalization.backgroundPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.backgroundPath
 										: background,
-									fileURL: personalization.backgroundPath
+									fileURL: personalization && personalization.backgroundPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.backgroundPath
 										: background,
-									imgURL: personalization.backgroundPath
+									imgURL: personalization &&  personalization.backgroundPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.backgroundPath
@@ -198,7 +198,7 @@ function Personlization(): JSX.Element {
 									name: 'IMG.png',
 									state: 'done',
 									size: 1024,
-									url: personalization.homeLogoPath
+									url: personalization && personalization.homeLogoPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.homeLogoPath
@@ -266,17 +266,17 @@ function Personlization(): JSX.Element {
 									name: 'IMG.png',
 									state: 'done',
 									size: 1024,
-									downloadURL: personalization.loginLogoPath
+									downloadURL: personalization &&  personalization.loginLogoPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.loginLogoPath
 										: logo,
-									fileURL: personalization.loginLogoPath
+									fileURL: personalization && personalization.loginLogoPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.loginLogoPath
 										: logo,
-									imgURL: personalization.loginLogoPath
+									imgURL: personalization && personalization.loginLogoPath
 										? api +
 										  '/images/middleware/' +
 										  personalization.loginLogoPath
@@ -309,6 +309,7 @@ function Personlization(): JSX.Element {
 						<Radio.Group
 							name="status"
 							onChange={(value) => setStatus(value)}
+							defaultValue={'0'}
 						>
 							<Radio id="no" value="0">
 								否

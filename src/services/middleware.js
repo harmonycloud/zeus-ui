@@ -79,6 +79,9 @@ export const getMiddlewareEvents = (params) => {
 export const getUsedAlarms = (params) => {
 	return Axios.get(MIDDLEWARE.getUsedAlarmRules, params);
 };
+export const getUsedAlarm = (params) => {
+	return Axios.get(MIDDLEWARE.getUsedAlarmRule, params);
+};
 export const getCanUseAlarms = (params) => {
 	return Axios.get(MIDDLEWARE.getCanUseAlarmRules, params);
 };
@@ -86,8 +89,15 @@ export const createAlarms = (params) => {
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRules, params.url);
 	return Axios.json(restUrl, params.data);
 };
+export const createAlarm = (params) => {
+	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
+	return Axios.json(restUrl, params.data);
+};
 export const deleteAlarm = (params) => {
 	return Axios.delete(MIDDLEWARE.deleteAlarmRules, params);
+};
+export const deleteAlarms = (params) => {
+	return Axios.delete(MIDDLEWARE.deleteAlarmRule, params);
 };
 export const getConfigs = (params) => {
 	return Axios.get(MIDDLEWARE.getCustomConfig, params);

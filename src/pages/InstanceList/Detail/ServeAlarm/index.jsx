@@ -7,22 +7,23 @@ import { useHistory } from 'react-router';
 import { connect } from 'react-redux'
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
-import { deleteAlarm, getUsedAlarms } from '@/services/middleware';
+import { deleteAlarm, getUsedAlarms, getUsedAlarm } from '@/services/middleware';
 import storage from '@/utils/storage';
 
 function Rules(props) {
     const history = useHistory();
     const {
-		middlewareName,
-		clusterId,
-		namespace,
-		type,
-		customMid,
-		capabilities,
-		monitor
-	} = props;
+        middlewareName,
+        clusterId,
+        namespace,
+        type,
+        customMid,
+        capabilities,
+        monitor,
+        alarmType
+    } = props;
     const [searchText, setSearchText] = useState('');
-	const [dataSource, setDataSource] = useState([]);
+    const [dataSource, setDataSource] = useState([]);
 
     const onRefresh = () => {
         getData(clusterId, middlewareName, namespace, '');
@@ -39,20 +40,35 @@ function Rules(props) {
     }, []);
 
     const getData = (clusterId, middlewareName, namespace, keyword) => {
-        const sendData = {
-            clusterId,
-			keyword,
-			middlewareName,
-			namespace,
-            lay: 'service'
-        };
-        getUsedAlarms(sendData).then((res) => {
-            if (res.success) {
-                setDataSource(res.data);
-            } else {
-                Message.show(messageConfig('error', '失败', res));
-            }
-        });
+        if (alarmType === 'system') {
+            const sendData = {
+                clusterId,
+                keyword,
+                lay: 'system'
+            };
+            getUsedAlarm(sendData).then((res) => {
+                if (res.success) {
+                    setDataSource(res.data);
+                } else {
+                    Message.show(messageConfig('error', '失败', res));
+                }
+            });
+        } else {
+            const sendData = {
+                clusterId,
+                keyword,
+                middlewareName,
+                namespace,
+                lay: 'service'
+            };
+            getUsedAlarms(sendData).then((res) => {
+                if (res.success) {
+                    setDataSource(res.data);
+                } else {
+                    Message.show(messageConfig('error', '失败', res));
+                }
+            });
+        }
     };
 
     const actionRender = (value, index, record) => {
@@ -74,7 +90,7 @@ function Rules(props) {
                 type="primary"
                 onClick={() => {
                     history.push('/systemManagement/createAlarm');
-                    storage.setSession('alarm',props)
+                    storage.setSession('alarm', props)
                 }}
             >
                 新增
@@ -82,11 +98,11 @@ function Rules(props) {
         )
     };
 
-    const ruleRender = (value,index,record) => {
+    const ruleRender = (value, index, record) => {
         return `CPU使用率${record.symbol}${record.threshold}且${record.alertTime}内触发${record.alertTimes}次`
     }
 
-    const levelRender = (value,index,record) => {
+    const levelRender = (value, index, record) => {
         return value.severity
     }
 
@@ -113,18 +129,18 @@ function Rules(props) {
             operation={Operation}
         // onSort={onSort}
         >
-            <Table.Column title="规则ID" tabIndex="alertId" />
-            <Table.Column title="告警对象" tabIndex="symbol" />
-            <Table.Column title="告警规则" tabIndex="threshold" cell={ruleRender} />
-            <Table.Column title="告警等级" tabIndex="labels" cell={levelRender} />
-            <Table.Column title="告警间隔" tabIndex="silence" />
-            <Table.Column title="告警内容" tabIndex="content" />
+            <Table.Column title="规则ID" dataIndex="alertId" />
+            <Table.Column title="告警对象" dataIndex="symbol" />
+            <Table.Column title="告警规则" dataIndex="threshold" cell={ruleRender} />
+            <Table.Column title="告警等级" dataIndex="labels" cell={levelRender} />
+            <Table.Column title="告警间隔" dataIndex="silence" />
+            <Table.Column title="告警内容" dataIndex="content" />
             <Table.Column
                 title="创建时间"
-                tabIndex="createTime"
+                dataIndex="createTime"
                 cell={createTimeRender}
                 sortable />
-            <Table.Column title="启用" tabIndex="enable" />
+            <Table.Column title="启用" dataIndex="enable" />
             <Table.Column title="操作" cell={actionRender} />
         </Table>
     )

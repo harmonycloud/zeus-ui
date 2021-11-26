@@ -16,7 +16,7 @@ import { getClusters } from '@/services/common.js';
 import CustomIcon from '@/components/CustomIcon';
 import { Transfer } from '@alicloud/console-components'
 import { createAlarms, getCanUseAlarms } from '@/services/middleware';
-import { getUsers } from '@/services/user';
+import { getUsers, sendInsertUser } from '@/services/user';
 import './index.scss';
 import storage from '@/utils/storage';
 
@@ -45,6 +45,21 @@ const silences = [
     { value: '5d', label: '5天' },
     { value: '1w', label: '1周' }
 ];
+const alarmWarn = [
+    {
+		value: 'info',
+		label: '一般'
+	},
+	{
+		value: 'warning',
+		label: '重要'
+	},
+	{
+		value: 'critical',
+		label: '严重'
+	}
+]
+
 
 function CreateAlarm(props) {
     const {
@@ -70,6 +85,7 @@ function CreateAlarm(props) {
     const table = React.createRef();
     const [poolList, setPoolList] = useState([]);
     const [users, setUsers] = useState([]);
+    const [insertUser,setInsertUser] = useState();
 
     useEffect(() => {
 		getCanUse(clusterId, namespace, middlewareName, type);
@@ -118,8 +134,6 @@ function CreateAlarm(props) {
                     item.labels = filterItem[0].labels;
                     item.name = filterItem[0].name;
                     item.status = filterItem[0].status;
-                    item.symbol = filterItem[0].symbol;
-                    item.threshold = filterItem[0].threshold;
                     item.time = filterItem[0].time;
                     item.type = filterItem[0].type;
                     item.unit = filterItem[0].unit;
@@ -129,10 +143,40 @@ function CreateAlarm(props) {
                 }
             });
             setAlarmRules(list);
-        } else if (type === 'time') {
+        } else if (type === 'alarmTime') {
             const list = alarmRules.map((item) => {
                 if (item.id === record.id) {
-                    item.time = value;
+                    item.alarmTime = value;
+                    return item;
+                } else {
+                    return item;
+                }
+            });
+            setAlarmRules(list);
+        }else if (type === 'alarmTimes') {
+            const list = alarmRules.map((item) => {
+                if (item.id === record.id) {
+                    item.alarmTimes = value;
+                    return item;
+                } else {
+                    return item;
+                }
+            });
+            setAlarmRules(list);
+        }else if (type === 'severity') {
+            const list = alarmRules.map((item) => {
+                if (item.id === record.id) {
+                    item.severity = value;
+                    return item;
+                } else {
+                    return item;
+                }
+            });
+            setAlarmRules(list);
+        }else if (type === 'content') {
+            const list = alarmRules.map((item) => {
+                if (item.id === record.id) {
+                    item.content = value;
                     return item;
                 } else {
                     return item;
@@ -160,7 +204,15 @@ function CreateAlarm(props) {
             });
             setAlarmRules(list);
         } else if (type === 'silence') {
-            setSilence(value);
+            const list = alarmRules.map((item) => {
+                if (item.id === record.id) {
+                    item.silence = value;
+                    return item;
+                } else {
+                    return item;
+                }
+            });
+            setAlarmRules(list);
         }
     };
 
@@ -196,10 +248,12 @@ function CreateAlarm(props) {
         })
     }, []);
 
-    const handleChange = (value, data, extra) => { console.log(value, data, extra) }
+    const handleChange = (value, data, extra) => { 
+        // console.log(value, data, extra)
+        setInsertUser(data);
+     }
 
     const transferRender = (item) => {
-        console.log(item.label);
         return (
             <span>
                 <span className="item-content">{item.userName}</span>
@@ -232,11 +286,16 @@ function CreateAlarm(props) {
                 Message.show(messageConfig('error', '失败', res));
             }
         });
+        sendInsertUser(insertUser).then(res => {
+            console.log(res);
+        })
     };
 
     const onOk = () => {
         const list = alarmRules.map((item) => {
-            item.silence = silence;
+            item.labels = {severity: item.severity,...item.labels};
+            item.lay = 'service';
+            delete item.severity;
             return item;
         });
         const flag = alarmRules.every((item) => {
@@ -247,7 +306,6 @@ function CreateAlarm(props) {
             }
         });
         if (flag) {
-            console.log(list);
             onCreate(list);
         } else {
             Message.show(
@@ -369,29 +427,36 @@ function CreateAlarm(props) {
                                                 );
                                             })}
                                         </Select>
-                                        <Input style={{ width: '57px' }} />
+                                        <Input style={{ width: '57px' }} value={item.threshold} onChange={(value) => {
+                                            onChange(value, item, 'threshold')
+                                        }} />
                                         <span className="info">%</span>
                                     </Col>
                                     <Col span={5}>
-                                        <Input style={{ width: '46px' }} />
+                                        <Input style={{ width: '46px' }} value={item.alarmTime} onChange={(value) => {
+                                            onChange(value, item, 'alarmTime')
+                                        }} />
                                         <span className="info">分钟内触发</span>
                                         <Input
                                             style={{ width: '46px' }}
+                                            value={item.alarmTimes} onChange={(value) => {
+                                                onChange(value, item, 'alarmTimes')
+                                            }}
                                         ></Input>
                                         <span className="info">次</span>
                                     </Col>
                                     <Col span={3}>
                                         <Select
                                             onChange={(value) =>
-                                                onChange(value, item, 'symbol')
+                                                onChange(value, item, 'severity')
                                             }
                                             style={{ width: 62 }}
-                                            value={item.symbol}
+                                            value={item.severity}
                                         >
-                                            {symbols.map((i) => {
+                                            {alarmWarn.map((i) => {
                                                 return (
-                                                    <Option key={i} value={i}>
-                                                        {i}
+                                                    <Option key={i.label} value={i.value}>
+                                                        {i.label}
                                                     </Option>
                                                 );
                                             })}
@@ -400,22 +465,25 @@ function CreateAlarm(props) {
                                     <Col span={3}>
                                         <Select
                                             onChange={(value) =>
-                                                onChange(value, item, 'symbol')
+                                                onChange(value, item, 'silence')
                                             }
                                             style={{ width: 117 }}
-                                            value={item.symbol}
+                                            value={item.silence}
                                         >
                                             {times.map((i) => {
                                                 return (
-                                                    <Option key={i} value={i}>
-                                                        {i}
+                                                    <Option key={i.label} value={i.value}>
+                                                        {i.label}
                                                     </Option>
                                                 );
                                             })}
                                         </Select>
                                     </Col>
                                     <Col span={4}>
-                                        <Input style={{ width: 188 }} />
+                                        <Input style={{ width: 188 }} onChange={(value) =>
+                                                onChange(value, item, 'content')
+                                            }
+                                            value={item.content} />
                                     </Col>
                                     <Col span={2}>
                                         <Button>

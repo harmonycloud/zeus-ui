@@ -56,7 +56,7 @@ const header = (
 		<img
 			className={styles['logo-png']}
 			src={
-				personalization.loginLogoPath
+				personalization && personalization.loginLogoPath
 					? api +
 					  '/images/middleware/' +
 					  personalization.loginLogoPath
