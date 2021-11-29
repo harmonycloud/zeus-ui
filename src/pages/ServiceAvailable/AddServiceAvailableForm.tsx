@@ -243,7 +243,9 @@ export default function AddServiceAvailableForm(
 				</FormItem>
 				<FormItem
 					label="选择ingress"
+					required
 					labelTextAlign="left"
+					requiredMessage="请选择Ingress！"
 					asterisk={false}
 					className="ne-required-ingress"
 				>
