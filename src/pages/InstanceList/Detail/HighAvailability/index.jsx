@@ -89,7 +89,7 @@ export default function HighAvailability(props) {
 	const [customVisible, setCustomVisible] = useState(false);
 	const [quotaValue, setQuotaValue] = useState();
 	// * es专用 specificationConfig
-	const [esSpConfig] = useState([
+	const [esSpConfig, setEsSpConfig] = useState([
 		{
 			dataIndex: 'title',
 			render: (val) => (
@@ -119,7 +119,6 @@ export default function HighAvailability(props) {
 			render: () => {
 				const list = [];
 				if (data) {
-					console.log(data);
 					for (let i in data.quota) {
 						if (data.quota[i].num !== 0) {
 							list.push({
@@ -284,6 +283,79 @@ export default function HighAvailability(props) {
 				}
 				setSpConfig(spConfigTemp);
 			}
+			setEsSpConfig([
+				{
+					dataIndex: 'title',
+					render: (val) => (
+						<div className="title-content">
+							<div className="blue-line"></div>
+							<div className="detail-title">{val}</div>
+							<span
+								className="name-link ml-12"
+								onClick={() => setEsVisible(true)}
+							>
+								修改
+							</span>
+						</div>
+					),
+					span: 24
+				},
+				{
+					dataIndex: 'model',
+					label: '模式',
+					span: 9,
+					render: (val) => <div>{modelMap[val]}</div>
+				},
+				{
+					dataIndex: 'node',
+					label: '节点规格',
+					span: 15,
+					render: () => {
+						const list = [];
+						if (data) {
+							for (let i in data.quota) {
+								if (data.quota[i].num !== 0) {
+									list.push({
+										type: i,
+										...data.quota[i]
+									});
+								}
+							}
+							return (
+								<div>
+									{list &&
+										list.map((item) => {
+											return (
+												<Row key={item.type}>
+													<Col span={6}>
+														{esMap[item.type]} (
+														{item.num}):{' '}
+													</Col>
+													<Col>
+														{item.cpu}Core CPU{' '}
+														{item.memory} 内存{' '}
+														{item.type !== 'kibana'
+															? item.storageClassQuota ||
+															  0
+															: null}
+														{`${
+															item.type !==
+															'kibana'
+																? '存储'
+																: ''
+														}`}
+													</Col>{' '}
+												</Row>
+											);
+										})}
+								</div>
+							);
+						} else {
+							return '';
+						}
+					}
+				}
+			]);
 		}
 	}, [data]);
 
