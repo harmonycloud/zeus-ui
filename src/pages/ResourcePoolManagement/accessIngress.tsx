@@ -37,6 +37,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 		console.log('ok');
 		field.validate((errors, values) => {
 			// console.log(values);
+			if (errors) return;
 			const value: FieldProps = field.getValues();
 			const sendData = {
 				clusterId,

@@ -29,6 +29,7 @@ const InstallIngressForm = (props: IngressIngressProps) => {
 	const field = Field.useField();
 	const onOk = () => {
 		field.validate((errors, values) => {
+			if (errors) return;
 			installIngress({ ...values, clusterId }).then((res) => {
 				if (res.success) {
 					Message.show(
