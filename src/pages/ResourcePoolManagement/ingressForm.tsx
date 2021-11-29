@@ -85,6 +85,7 @@ const IngressForm = (props: IngressFormProps) => {
 								'该服务暴露删除成功'
 							)
 						);
+						getData();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
