@@ -6,12 +6,10 @@ import { Message, Button, Dialog } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { StoreState, globalVarProps } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import {
-	updateMiddleware,
-	shelvesTypeVersion
-} from '@/services/repository';
+import { upgradeChart } from '@/services/serviceList';
 import { getVersions } from '@/services/serviceList';
 import messageConfig from '@/components/messageConfig';
+import { useHistory } from 'react-router';
 import { middlewareProps } from './service.list';
 import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
@@ -28,7 +26,9 @@ enum versionStatus {
 	now = '当前版本',
 	future = '可安装升级版本',
 	history = '历史版本',
-	updating = '升级中'
+	updating = 'operator升级中',
+	needUpgradeOperator = '需要升级operator',
+	canUpgrade = '升级版本'
 }
 function ServiceVersion(props: versionProps): JSX.Element {
 	const {
@@ -39,6 +39,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const [dataSource, setDataSource] = useState<middlewareProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
 	const url = window.location.href.split('/');
+	const history = useHistory();
+	const [installNum, setInstallNum] = useState<number>();
 	const getData = () => {
 		getVersions({
 			clusterId: cluster.id,
@@ -125,83 +127,90 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	) => {
 		return (
 			<Actions>
-				{record.versionStatus === 'future' && (
-					<LinkButton onClick={() => installUpdate(record)}>
-						升级
-					</LinkButton>
-				)}
-				{record.versionStatus === 'updating' && (
-					<LinkButton>升级中...</LinkButton>
-				)}
+				{record.versionStatus === 'future' || record.versionStatus === 'needUpgradeOperator' ||
+					record.versionStatus === 'canUpgrade' || record.versionStatus === 'updating' &&
+					(
+						<LinkButton style={{ color: record.versionStatus !== 'future' ? '#3DBCFB' : '#cccccc' }} onClick={() => installUpdate(record)}>
+							升级{installNum ? '中(' + installNum + 's)' : ''}
+						</LinkButton>
+					)}
 			</Actions>
 		);
 	};
 	const installUpdate = (record: middlewareProps) => {
-		Dialog.show({
-			title: '操作确认',
-			content: '是否确认升级到该版本？',
-			onOk: () => {
-				return updateMiddleware({
-					clusterId: cluster.id,
-					chartName: record.chartName,
-					chartVersion: record.chartVersion
-				})
-					.then((res) => {
-						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'已升级到该版本'
-								)
-							);
-						} else {
-							const dialog = Dialog.show({
-								title: '失败',
-								content:
-									'升级失败，已维持升级前状态不变，可重试',
-								footer: (
-									<Button
-										type="primary"
-										onClick={() => dialog.hide()}
-									>
-										我知道了
-									</Button>
-								)
-							});
-							// Message.show(messageConfig('error', '失败', res));
-						}
+		if (record.versionStatus === 'needUpgradeOperator') {
+			const dialog = Dialog.show({
+				title: '操作确认',
+				content: '经系统检测，该版本的中间件还未安装，请到中间件市场进行升级安装',
+				footer: (
+					<>
+						<Button
+							type="primary"
+							onClick={() => dialog.hide()}
+						>
+							我知道了
+						</Button>
+						<Button
+							onClick={() => history.push(`middlewareRepository/versionManagement/${url[url.length - 2]}`)}
+						>
+							现在去升级
+						</Button>
+					</>
+				)
+			});
+		} else if (record.versionStatus) {
+			Dialog.show({
+				title: '操作确认',
+				content: '是否确认升级到该版本？',
+				onOk: () => {
+					return upgradeChart({
+						clusterId: cluster.id,
+						namespace: namespace.name,
+						middlewareName: url[url.length - 1],
+						type: url[url.length - 2],
+						chartName: record.chartName,
+						upgradeChartVersion: record.chartVersion
+					}).then((res) => {
+						let count: number = 6;
+						const timeout = setInterval(() => {
+							setInstallNum(--count);
+							if (count <= 0) {
+								clearInterval(timeout);
+								getData();
+							}
+						}, 1000)
 					})
-					.finally(() => {
-						getData();
-					});
-			}
-		});
+				}
+			});
+		} else if (record.versionStatus === 'canUpgrade') {
+			const dialog = Dialog.show({
+				title: '操作确认',
+				content: 'operator升级中,请稍后升级',
+				footer: (
+					<Button
+						type="primary"
+						onClick={() => dialog.hide()}
+					>
+						我知道了
+					</Button>
+				)
+			});
+		} else {
+			return;
+		}
 	};
-	const shelves = (record: middlewareProps) => {
-		Dialog.show({
-			title: '操作确认',
-			content: '是否确认下架该版本中间件？',
-			onOk: () => {
-				return shelvesTypeVersion({
-					chartName: record.chartName,
-					chartVersion: record.chartVersion
-				})
-					.then((res) => {
-						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '已下架该版本')
-							);
-						} else {
-							Message.show(messageConfig('error', '失败', res));
-						}
-					})
-					.finally(() => {
-						getData();
-					});
-			}
-		});
-	};
+
+	// useEffect(() => {
+	// 	const timeout = setTimeout(() => {
+	// 		let count: any = installNum;
+	// 		setInstallNum(count--);
+	// 		console.log(count);
+
+	// 		if(count <= 0){
+	// 			clearInterval(timeout)
+	// 		}
+	// 	},1000)
+	// },[installNum])
 
 	return (
 		<Page>
@@ -229,7 +238,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						<Table.Column
 							title="服务名称/中文名称"
 							dataIndex="chartName"
-							cell={() => url[url.length -1]}
+							cell={() => url[url.length - 1]}
 						/>
 						<Table.Column
 							title="类型"

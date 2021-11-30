@@ -131,7 +131,7 @@ const InstanceDetails = (props) => {
 			<Menu.Item key="monitor">数据监控</Menu.Item>
 			<Menu.Item key="log">日志详情</Menu.Item>
 			<Menu.Item key="paramterSetting">参数设置</Menu.Item>
-			<Menu.Item key="alarm">服务报警</Menu.Item>
+			<Menu.Item key="alarm">服务告警</Menu.Item>
 			{type === 'mysql' ? (
 				<Menu.Item key="disaster">灾备服务</Menu.Item>
 			) : null}

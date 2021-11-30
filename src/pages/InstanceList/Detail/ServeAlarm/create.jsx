@@ -15,8 +15,8 @@ import messageConfig from '@/components/messageConfig';
 import { getClusters } from '@/services/common.js';
 import CustomIcon from '@/components/CustomIcon';
 import { Transfer } from '@alicloud/console-components'
-import { createAlarms, getCanUseAlarms } from '@/services/middleware';
-import { getUsers, sendInsertUser } from '@/services/user';
+import { createAlarms, getCanUseAlarms, createAlarm, updateAlarm, updateAlarms } from '@/services/middleware';
+import { getUsers, sendInsertUser, insertDing } from '@/services/user';
 import './index.scss';
 import storage from '@/utils/storage';
 
@@ -47,19 +47,18 @@ const silences = [
 ];
 const alarmWarn = [
     {
-		value: 'info',
-		label: '一般'
-	},
-	{
-		value: 'warning',
-		label: '重要'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
+        value: 'info',
+        label: '一般'
+    },
+    {
+        value: 'warning',
+        label: '重要'
+    },
+    {
+        value: 'critical',
+        label: '严重'
+    }
 ]
-
 
 function CreateAlarm(props) {
     const {
@@ -67,7 +66,8 @@ function CreateAlarm(props) {
         namespace,
         middlewareName,
         type,
-        alarmType
+        alarmType,
+        record
     } = storage.getSession('alarm');
     const [alarms, setAlarms] = useState([
         {
@@ -75,53 +75,44 @@ function CreateAlarm(props) {
             description: null
         }
     ]);
-    const [alarmRules, setAlarmRules] = useState([
-        {
-            alert: null,
-            description: null
-        }
-    ]);
+    const [alarmRules, setAlarmRules] = useState([]);
     const [silence, setSilence] = useState(silences[0].value);
-    const table = React.createRef();
     const [poolList, setPoolList] = useState([]);
+    const [systemId, setSystemId] = useState();
     const [users, setUsers] = useState([]);
-    const [insertUser,setInsertUser] = useState();
-    const [selectUser,setSelectUser] = useState();
+    const [insertUser, setInsertUser] = useState();
+    const [selectUser, setSelectUser] = useState();
+    const [mailChecked, setMailChecked] = useState(false);
+    const [dingChecked, setDingChecked] = useState(false);
 
-    useEffect(() => {
-		getCanUse(clusterId, namespace, middlewareName, type);
-	}, []);
-
-	const getCanUse = (clusterId, namespace, middlewareName, type) => {
-		const sendData = {
-			clusterId,
-			namespace,
-			middlewareName,
-			type
-		};
-		getCanUseAlarms(sendData).then((res) => {
-			console.log(res);
-			if (res.success) {
-				setAlarms(JSON.parse(JSON.stringify(res.data)));
-				if (res.data.length > 0) {
-					const firstItem = res.data[0];
-					firstItem.id = Math.random() * 100;
-					setAlarmRules([firstItem]);
-				} else {
-					Message.show(
-						messageConfig(
-							'error',
-							'错误',
-							'当前中间件没有可以设置规则的监控项！'
-						)
-					);
-				}
-			}
-		});
-	};
+    const getCanUse = (clusterId, namespace, middlewareName, type) => {
+        const sendData = {
+            clusterId,
+            namespace,
+            middlewareName,
+            type
+        };
+        getCanUseAlarms(sendData).then((res) => {
+            if (res.success) {
+                setAlarms(JSON.parse(JSON.stringify(res.data)));
+                if (res.data.length > 0) {
+                    const firstItem = res.data[0];
+                    firstItem.id = Math.random() * 100;
+                    setAlarmRules([firstItem]);
+                } else {
+                    Message.show(
+                        messageConfig(
+                            'error',
+                            '错误',
+                            '当前中间件没有可以设置规则的监控项！'
+                        )
+                    );
+                }
+            }
+        });
+    };
 
     const onChange = (value, record, type) => {
-        console.log(value, record);
         if (type === 'alert') {
             const listTemp = alarms;
             const filterItem = listTemp.filter((item) => item.alert === value);
@@ -144,27 +135,27 @@ function CreateAlarm(props) {
                 }
             });
             setAlarmRules(list);
-        } else if (type === 'alarmTime') {
+        } else if (type === 'alertTime') {
             const list = alarmRules.map((item) => {
                 if (item.id === record.id) {
-                    item.alarmTime = value;
+                    item.alertTime = value;
                     return item;
                 } else {
                     return item;
                 }
             });
             setAlarmRules(list);
-        }else if (type === 'alarmTimes') {
+        } else if (type === 'alertTimes') {
             const list = alarmRules.map((item) => {
                 if (item.id === record.id) {
-                    item.alarmTimes = value;
+                    item.alertTimes = value;
                     return item;
                 } else {
                     return item;
                 }
             });
             setAlarmRules(list);
-        }else if (type === 'severity') {
+        } else if (type === 'severity') {
             const list = alarmRules.map((item) => {
                 if (item.id === record.id) {
                     item.severity = value;
@@ -174,7 +165,7 @@ function CreateAlarm(props) {
                 }
             });
             setAlarmRules(list);
-        }else if (type === 'content') {
+        } else if (type === 'content') {
             const list = alarmRules.map((item) => {
                 if (item.id === record.id) {
                     item.content = value;
@@ -232,29 +223,50 @@ function CreateAlarm(props) {
         setAlarmRules(list);
     };
 
-    useEffect(() => {
+    useEffect(async () => {
+        if (record) {
+            setAlarmRules([{...record,severity: record.labels.severity}]);
+        } else {
+            if (alarmType === 'system') {
+                setAlarms([{
+                    alert: 'memoryUsingRate',
+                    description: '内存使用率'
+                }, {
+                    alert: 'CPUUsingRate',
+                    description: 'CPU使用率'
+                }]);
+                setAlarmRules([{
+                    alert: 'CPUUsingRate',
+                    description: 'CPU使用率'
+                }])
+            } else {
+                await getCanUse(clusterId, namespace, middlewareName, type);
+            }
+        }
         getClusters().then((res) => {
             // console.log(res.data);
             if (!res.data) return;
             setPoolList(res.data);
+            setSystemId(res.data[0].id)
         });
-        getUsers().then(res => {
+        getUsers().then(async res => {
             // console.log(res);
-            if(!res.data) return;
-            setUsers(res.data.userBy.map((item, index) => {
+            if (!res.data) return;
+            await setSelectUser(res.data.userBy.map(item => item.id))
+            setUsers(res.data.users.map((item, index) => {
                 return {
                     ...item,
-                    value: index
+                    value: item.id,
+                    key: item.id
                 }
             }))
-            setSelectUser(res.data.users.map(item => item.id))
         })
     }, []);
 
-    const handleChange = (value, data, extra) => { 
+    const handleChange = (value, data, extra) => {
         // console.log(value, data, extra)
         setInsertUser(data);
-     }
+    }
 
     const transferRender = (item) => {
         return (
@@ -272,32 +284,95 @@ function CreateAlarm(props) {
     }, [])
 
     const onCreate = (value) => {
-        const sendData = {
-            url: {
-                clusterId: clusterId,
-                middlewareName: middlewareName,
-                namespace: namespace
-            },
-            data: value
-        };
-        createAlarms(sendData).then((res) => {
-            if (res.success) {
-                Message.show(
-                    messageConfig('success', '成功', '告警规则设置成功')
-                );
+        if (alarmType === 'system') {
+            const sendData = {
+                url: {
+                    clusterId: systemId
+                },
+                data: value
+            };
+            if (record) {
+                updateAlarm(sendData).then((res) => {
+                    if (res.success) {
+                        Message.show(
+                            messageConfig('success', '成功', '告警规则修改成功')
+                        );
+                    } else {
+                        Message.show(messageConfig('error', '失败', res));
+                    }
+                });
             } else {
-                Message.show(messageConfig('error', '失败', res));
+                createAlarm(sendData).then((res) => {
+                    if (res.success) {
+                        Message.show(
+                            messageConfig('success', '成功', '告警规则设置成功')
+                        );
+                    } else {
+                        Message.show(messageConfig('error', '失败', res));
+                    }
+                });
             }
-        });
-        sendInsertUser(insertUser).then(res => {
-            console.log(res);
-        })
+        } else {
+            const sendData = {
+                url: {
+                    clusterId: clusterId,
+                    middlewareName: middlewareName,
+                    namespace: namespace
+                },
+                data: value
+            };
+            if (record) {
+                updateAlarms(sendData).then((res) => {
+                    if (res.success) {
+                        Message.show(
+                            messageConfig('success', '成功', '告警规则修改成功')
+                        );
+                    } else {
+                        Message.show(messageConfig('error', '失败', res));
+                    }
+                });
+            }else{
+                createAlarms(sendData).then((res) => {
+                    if (res.success) {
+                        Message.show(
+                            messageConfig('success', '成功', '告警规则设置成功')
+                        );
+                    } else {
+                        Message.show(messageConfig('error', '失败', res));
+                    }
+                });
+            }
+        }
+        if (dingChecked && !mailChecked) {
+            insertDing([]).then(res => {
+                if (!res.success) return;
+            })
+        } else if (dingChecked && mailChecked) {
+            insertDing({ ...insertUser, ding: 'ding' }).then(res => {
+                if (!res.success) return;
+            })
+        } else {
+            sendInsertUser({ ...insertUser }).then(res => {
+                if (!res.success) return;
+            })
+        }
     };
 
     const onOk = () => {
         const list = alarmRules.map((item) => {
-            item.labels = {severity: item.severity,...item.labels};
+            item.labels = { severity: item.severity, ...item.labels };
             item.lay = 'service';
+            item.enable = 0;
+            delete item.severity;
+            return item;
+        });
+        const data = alarmRules.map((item) => {
+            item.labels = { severity: item.severity, ...item.labels };
+            item.annotations = {
+                message: item.content
+            }
+            item.lay = 'system';
+            item.enable = 0;
             delete item.severity;
             return item;
         });
@@ -308,18 +383,62 @@ function CreateAlarm(props) {
                 return false;
             }
         });
-        if (flag) {
-            onCreate(list);
+        if (alarmType === 'system') {
+            if (systemId) {
+                if (flag) {
+                    if (!mailChecked && !dingChecked) {
+                        Message.show(
+                            messageConfig('error', '失败', '请选择告警方式')
+                        );
+                    } else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
+                        if (insertUser) {
+                            onCreate(data);
+                        } else {
+                            Message.show(
+                                messageConfig('error', '失败', '请选择邮箱通知用户')
+                            );
+                        }
+                    } else if (dingChecked) {
+                        onCreate(data);
+                    }
+                } else {
+                    Message.show(
+                        messageConfig('error', '失败', '存在监控项缺少阈值')
+                    );
+                }
+            } else {
+                Message.show(
+                    messageConfig('error', '失败', '请选择资源池')
+                );
+            }
         } else {
-            Message.show(
-                messageConfig('error', '失败', '存在监控项缺少阈值！')
-            );
+            if (flag) {
+                if (!mailChecked && !dingChecked) {
+                    Message.show(
+                        messageConfig('error', '失败', '请选择告警方式')
+                    );
+                } else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
+                    if (insertUser) {
+                        onCreate(list);
+                    } else {
+                        Message.show(
+                            messageConfig('error', '失败', '请选择邮箱通知用户')
+                        );
+                    }
+                } else if (dingChecked) {
+                    onCreate(list);
+                }
+            } else {
+                Message.show(
+                    messageConfig('error', '失败', '存在监控项缺少阈值')
+                );
+            }
         }
     };
 
     return (
         <Page className="create-alarm">
-            {console.log(props)}
+            {console.log(record, alarmRules)}
             <Header
                 title="新建告警规则"
                 hasBackArrow
@@ -344,7 +463,9 @@ function CreateAlarm(props) {
                                 width: '380px',
                                 marginLeft: '50px'
                             }}
-                        // onChange={(value) => setType(value)}
+                            value={systemId}
+                            onChange={(value) => setSystemId(value)}
+                            disabled={record}
                         >
                             {poolList.length &&
                                 poolList.map((item) => {
@@ -436,14 +557,14 @@ function CreateAlarm(props) {
                                         <span className="info">%</span>
                                     </Col>
                                     <Col span={5}>
-                                        <Input style={{ width: '46px' }} value={item.alarmTime} onChange={(value) => {
-                                            onChange(value, item, 'alarmTime')
+                                        <Input style={{ width: '46px' }} value={item.alertTime} onChange={(value) => {
+                                            onChange(value, item, 'alertTime')
                                         }} />
                                         <span className="info">分钟内触发</span>
                                         <Input
                                             style={{ width: '46px' }}
-                                            value={item.alarmTimes} onChange={(value) => {
-                                                onChange(value, item, 'alarmTimes')
+                                            value={item.alertTimes} onChange={(value) => {
+                                                onChange(value, item, 'alertTimes')
                                             }}
                                         ></Input>
                                         <span className="info">次</span>
@@ -484,8 +605,8 @@ function CreateAlarm(props) {
                                     </Col>
                                     <Col span={4}>
                                         <Input style={{ width: 188 }} onChange={(value) =>
-                                                onChange(value, item, 'content')
-                                            }
+                                            onChange(value, item, 'content')
+                                        }
                                             value={item.content} />
                                     </Col>
                                     <Col span={2}>
@@ -527,25 +648,27 @@ function CreateAlarm(props) {
                     >
                         通知方式
                     </span>
-                    <Checkbox label="钉钉" style={{ margin: '0 30px 0 20px' }} />
-                    <Checkbox label="邮箱" />
+                    <Checkbox label="钉钉" style={{ margin: '0 30px 0 20px' }} onChange={(checked) => setDingChecked(checked)} />
+                    <Checkbox label="邮箱" onChange={(checked) => setMailChecked(checked)} />
                 </div>
-                <div className="transfer">
-                    <div className="transfer-header">
-                        <p className="transfer-title left">用户管理</p>
-                        <p className="transfer-title">用户管理</p>
+                {
+                    mailChecked && <div className="transfer">
+                        <div className="transfer-header">
+                            <p className="transfer-title left">用户管理</p>
+                            <p className="transfer-title">用户管理</p>
+                        </div>
+                        <Transfer
+                            showSearch
+                            // defaultValue={selectUser}
+                            titles={[<div><span>登陆账户</span><span>用户名</span><span>邮箱</span><span>手机号</span></div>,
+                            <div><span>登陆账户</span><span>用户名</span><span>邮箱</span><span>手机号</span></div>]}
+                            // defaultLeftChecked={selectUser}
+                            dataSource={users}
+                            itemRender={transferRender}
+                            onChange={handleChange}
+                        />
                     </div>
-                    <Transfer
-                        showSearch
-                        defaultValue={selectUser}
-                        titles={[<div><span>登陆账户</span><span>用户名</span><span>邮箱</span><span>手机号</span></div>,
-                        <div><span>登陆账户</span><span>用户名</span><span>邮箱</span><span>手机号</span></div>]}
-                        defaultLeftChecked={selectUser}
-                        dataSource={users}
-                        itemRender={transferRender}
-                        onChange={handleChange}
-                    />
-                </div>
+                }
                 <div style={{ padding: '16px 9px' }}>
                     <Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>确认</Button>
                     <Button>取消</Button>

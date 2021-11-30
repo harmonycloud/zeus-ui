@@ -325,17 +325,9 @@ export default function Config(props) {
 			<Actions>
 				<LinkButton onClick={() => {
 					history.push('/disasterBackup/dataSecurity/addBackup');
-					storage.setSession('detail', props)
+					storage.setSession('detail', {...props,record})
 				}}>
 					编辑
-				</LinkButton>
-				<LinkButton
-					disabled={record.backupName === ''}
-				// onClick={() =>
-				// 	toHandle(record.backupName, record.backupFileName)
-				// }
-				>
-					立即备份
 				</LinkButton>
 				<LinkButton
 					onClick={() => {

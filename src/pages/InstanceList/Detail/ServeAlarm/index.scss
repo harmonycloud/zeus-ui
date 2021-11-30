@@ -58,11 +58,14 @@
                 top: 20px;
             }
         }
-        .next-select-values {
-            padding: 0 10px;
-        }
         input {
-            padding: 0 10px;
+            padding: 0 10px !important;
+        }
+        .next-select-values {
+            padding: 0 10px !important;
+            input {
+                padding: 0 !important;
+            }
         }
         .next-btn {
             min-width: auto !important;
@@ -133,6 +136,33 @@
                     width: 150px;
                 }
             }
+        }
+    }
+}
+.next-table {
+    .level{
+        width: 40px;
+        height: 22px;
+        text-align: center;
+        line-height: 20px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        border-radius: 2px;
+        display: inline-block;
+        &.critical {
+            background: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffa39e;
+        }
+        &.warning {
+            background: #ffecc7;
+            color: #faa700;
+            border: 1px solid #ffdb94;
+        }
+        &.info {
+            background: #c7ecff;
+            color: #00a7fa;
+            border: 1px solid #94dbff;
         }
     }
 }

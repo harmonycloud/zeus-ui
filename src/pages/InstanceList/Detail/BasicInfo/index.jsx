@@ -36,6 +36,7 @@ const info = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
+	tolerations: '',
 	description: ''
 };
 
@@ -65,6 +66,10 @@ const InfoConfig = [
 	{
 		dataIndex: 'hostAffinity',
 		label: '主机亲和'
+	},
+	{
+		dataIndex: 'tolerations',
+		label: '主机容忍'
 	}
 ];
 
@@ -351,6 +356,7 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
+					tolerations: `${(data.tolerations && data.tolerations[0].label) || '/'}`,
 					disasterInstanceName: data.mysqlDTO.relationName || '',
 					description: data.annotation || '无'
 				});
@@ -368,6 +374,7 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
+					tolerations: `${(data.tolerations && data.tolerations[0].label) || '/'}`,
 					description: data.annotation || '无'
 				});
 			}

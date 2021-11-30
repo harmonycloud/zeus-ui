@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Message } from '@alicloud/console-components';
 import SecondLayout from '@/components/SecondLayout';
 import ThresholdAlarm from '@/pages/InstanceList/Detail/ThresholdAlarm';
-import ServerAlarm from '@/pages/InstanceList/Detail/ServeAlarm';
+import AlarmRecord from '@/pages/SystemAlarm/alarmRecord';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
@@ -52,7 +52,7 @@ function AlarmCenter(): JSX.Element {
 			onChange={onChange}
 		>
 			{isService && JSON.stringify(data) !== '{}' && (
-				<ServerAlarm
+				<AlarmRecord
 					middlewareName={basicData?.name}
 					clusterId={basicData?.clusterId}
 					namespace={basicData?.namespace}

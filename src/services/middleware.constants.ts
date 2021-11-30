@@ -36,12 +36,14 @@ export const getUsedAlarmRule = `${api}/clusters/{clusterId}/rules/used`;
 export const getCanUseAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules`;
 // * 创建告警规则-服务
 export const addAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules`;
-// * 创建告警规则-系统
-export const addAlarmRule = `${api}/clusters/{clusterId}/rules`;
+// * 创建、修改告警规则-系统
+export const addAlarmRule = `${api}/clusters/{clusterId}/rules/system`;
 // * 删除告警规则-服务
 export const deleteAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules`;
 // * 删除告警规则-系统
-export const deleteAlarmRule = `${api}/clusters/{clusterId}/rules`;
+export const deleteAlarmRule = `${api}/clusters/{clusterId}/rules/system`;
+// * 更新告警规则-服务
+export const updateAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules/update`;
 // * 获取自定义配置
 export const getCustomConfig = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/config`;
 // * 更新自定义配置

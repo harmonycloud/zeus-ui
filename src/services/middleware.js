@@ -93,10 +93,18 @@ export const createAlarm = (params) => {
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
 	return Axios.json(restUrl, params.data);
 };
-export const deleteAlarm = (params) => {
-	return Axios.delete(MIDDLEWARE.deleteAlarmRules, params);
+export const updateAlarms = (params) => {
+	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRules, params.url);
+	return Axios.json(restUrl, params.data[0]);
+};
+export const updateAlarm = (params) => {
+	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
+	return Axios.json(restUrl, params.data[0], {}, "PUT");
 };
 export const deleteAlarms = (params) => {
+	return Axios.delete(MIDDLEWARE.deleteAlarmRules, params);
+};
+export const deleteAlarm = (params) => {
 	return Axios.delete(MIDDLEWARE.deleteAlarmRule, params);
 };
 export const getConfigs = (params) => {

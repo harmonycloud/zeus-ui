@@ -47,7 +47,7 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(props) {
 	const field = Field.useField();
-	const { clusterId, namespace, data: listData, isEdit } = storage.getSession('detail');
+	const { clusterId, namespace, data: listData, isEdit, record } = storage.getSession('detail');
 	const [topoData, setTopoData] = useState();
 	const [backupData, setBackupData] = useState({
 		configed: false,
@@ -87,6 +87,11 @@ function BackupSetting(props) {
 			type: listData.type
 		};
 		getPodList(sendData);
+		record && field.setValues({
+			count: record.limitRecord,
+			cycle: record.cron.split(' ? ? ')[1].split(',').map(item => Number(item)),
+			time: record.cron.split(' ? ? ')[0].split(' ').reverse().map(item => item.length === 1 ? '0' + item : item).join(':')
+		});
 	}, []);
 
 	useEffect(() => {
@@ -111,14 +116,14 @@ function BackupSetting(props) {
 		const hour = moment(values.time).get('hour');
 		const week = values.cycle.join(',');
 		const cron = `${minute} ${hour} ? ? ${week}`;
-
+		
 		const sendData = {
 			clusterId,
 			namespace,
 			middlewareName: listData.name,
 			type: listData.type,
 			limitRecord: values.count,
-			cron
+			cron: (typeof values.time !== 'string') ? cron : `${values.time.substring(3,5)} ${values.time.substring(0,2)} ? ? ${week}`
 		};
 		if (!backupObj) {
 			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
@@ -145,7 +150,7 @@ function BackupSetting(props) {
 				.then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '备份设置成功')
+							messageConfig('success', '成功', '备份恢复成功')
 						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -168,6 +173,7 @@ function BackupSetting(props) {
 						backupObj={backupObj}
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
+						backupType={record.backupType}
 					/>
 				}
 				{
@@ -208,6 +214,7 @@ function BackupSetting(props) {
 						<Button>取消</Button>
 					</div> :
 						<div style={{ padding: '16px 9px' }}>
+							{listData.type === 'mysql' && <Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
 							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
 							<Button>取消</Button>
 						</div>
