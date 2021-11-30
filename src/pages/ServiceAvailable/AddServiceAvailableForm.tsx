@@ -241,27 +241,32 @@ export default function AddServiceAvailableForm(
 						<Option value="NodePort">NodePort</Option>
 					</Select>
 				</FormItem>
-				<FormItem
-					label="选择ingress"
-					required
-					labelTextAlign="left"
-					requiredMessage="请选择Ingress！"
-					asterisk={false}
-					className="ne-required-ingress"
-				>
-					<Select name="ingressClassName" style={{ width: '100%' }}>
-						{ingresses.map((item: IngressItemProps, index) => {
-							return (
-								<Option
-									key={index}
-									value={item.ingressClassName}
-								>
-									{item.ingressClassName}
-								</Option>
-							);
-						})}
-					</Select>
-				</FormItem>
+				{exposedWay === 'Ingress' && (
+					<FormItem
+						label="选择ingress"
+						required
+						labelTextAlign="left"
+						requiredMessage="请选择Ingress！"
+						asterisk={false}
+						className="ne-required-ingress"
+					>
+						<Select
+							name="ingressClassName"
+							style={{ width: '100%' }}
+						>
+							{ingresses.map((item: IngressItemProps, index) => {
+								return (
+									<Option
+										key={index}
+										value={item.ingressClassName}
+									>
+										{item.ingressClassName}
+									</Option>
+								);
+							})}
+						</Select>
+					</FormItem>
+				)}
 				<FormItem
 					label="对外协议"
 					labelTextAlign="left"

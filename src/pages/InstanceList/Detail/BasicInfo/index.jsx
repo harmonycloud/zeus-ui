@@ -20,7 +20,6 @@ import RocketAclEditForm from './rocketAclEditForm';
 import './basicinfo.scss';
 import { updateMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import { render } from '@testing-library/react';
 
 const { Option } = Select;
 const { Row, Col } = Grid;
@@ -63,11 +62,15 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'annotations',
-		label: '注解'
+		label: '注解',
+		span: 12,
+		render: (val) => <div className="annotation-content">{val}</div>
 	},
 	{
 		dataIndex: 'description',
-		label: '描述'
+		label: '描述',
+		span: 12,
+		wrap: true
 	}
 ];
 
