@@ -37,7 +37,7 @@ export default function MidTerminal(): JSX.Element {
 			},
 			windowsMode: true
 		});
-		// xterm 对websocket适用的插件，但在这里用的时候，在页面显示上有问题，就先注释了。
+		// xterm 对websocket适用的插件，但在这里用的时候，在页面显示上有问题，就先注解了。
 		// const attachAddon = new AttachAddon(socket);
 		// terminal.loadAddon(attachAddon);
 		// attachAddon.activate(socket);
