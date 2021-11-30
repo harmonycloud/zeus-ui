@@ -236,7 +236,7 @@ export default function EsEditNodeSpe(props) {
 					sendData.quota = {};
 					for (let key in nodeObj) {
 						if (!nodeObj[key].disabled) {
-							// 因为es规格配置不能修改存储类型和配额，这段代码暂时注释
+							// 因为es规格配置不能修改存储类型和配额，这段代码暂时注解
 							// if (nodeObj[key].storageClass === '') {
 							// 	Message.show(
 							// 		messageConfig(

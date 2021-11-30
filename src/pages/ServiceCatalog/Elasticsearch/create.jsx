@@ -335,12 +335,16 @@ const ElasticsearchCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
+					description: values.description,
 					version: version,
 					password: values.pwd,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode: (mode.includes('complex') || mode.includes('regular')) ? 'complex' : mode
+					mode:
+						mode.includes('complex') || mode.includes('regular')
+							? 'complex'
+							: mode
 				};
 				if (affinity.flag) {
 					if (!affinityLabels.length) {
@@ -574,11 +578,11 @@ const ElasticsearchCreate = (props) => {
 									<div className="form-content">
 										<FormItem
 											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注释，多个注释以英文逗号分隔"
+											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
 										>
 											<Input
-												name="annotation"
-												placeholder="请输入key=value格式的注视，多个注释以英文逗号分隔"
+												name="annotations"
+												placeholder="请输入key=value格式的注视，多个注解以英文逗号分隔"
 											/>
 										</FormItem>
 									</div>
@@ -590,7 +594,7 @@ const ElasticsearchCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入备注信息"
 											/>
 										</FormItem>
