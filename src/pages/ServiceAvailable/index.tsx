@@ -200,6 +200,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						exposeType: values.exposeType,
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
+						ingressClassName: values.ingressClassName,
 						protocol: values.protocol,
 						rules: [
 							{
@@ -220,6 +221,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						exposeType: values.exposeType,
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
+						ingressClassName: values.ingressClassName,
 						protocol: values.protocol,
 						serviceList: [
 							{
@@ -491,6 +493,13 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			setShowDataSource([...tempDataSource]);
 		}
 	};
+	const exposeTypeRedner = (
+		value: string,
+		index: number,
+		record: serviceAvailableItemProps
+	) => {
+		return `${value}/${record.ingressClassName || '-'}`;
+	};
 	return (
 		<Page>
 			<Header
@@ -559,7 +568,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
-						width={110}
+						cell={exposeTypeRedner}
+						width={210}
 						sortable={true}
 					/>
 					<Table.Column

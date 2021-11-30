@@ -54,3 +54,16 @@ export interface ComponentProp {
 	type: null | string;
 	protocol?: string | null;
 }
+
+export interface IngressItemProps {
+	address: string;
+	clusterId: string;
+	configMapName: string;
+	defaultServerPort: null | number;
+	healthzPort: null | number;
+	httpPort: null | number;
+	httpsPort: null | number;
+	ingressClassName: string;
+	namespace: string;
+	status: number;
+}
