@@ -976,7 +976,7 @@ function Visualization(props) {
 			<h2>{pathname.includes('addBackup') ? isEdit ? '选择要恢复的对象' : '选择备份对象' : '关系拓扑'}</h2>
 			<div className={styles['tools']}>
 				<Button>
-					<Icon type="arrows-alt" onClick={() => window.graph.downloadImage()} />
+					<Icon type="arrows-alt" />
 				</Button>
 				<Button>
 					<Icon

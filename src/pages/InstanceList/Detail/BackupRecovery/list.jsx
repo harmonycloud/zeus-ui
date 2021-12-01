@@ -133,7 +133,7 @@ export default function List(props) {
 					disabled={record.backupName === ''}
 					onClick={() => {
 						history.push('/disasterBackup/dataSecurity/addBackup')
-						sessionStorage.setItem('detail',JSON.stringify({...props,isEdit: true}))
+						sessionStorage.setItem('detail', JSON.stringify({ ...props, isEdit: true, backup: record }))
 					}}
 				>
 					使用备份

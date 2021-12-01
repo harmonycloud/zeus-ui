@@ -124,7 +124,7 @@ const InstanceDetails = (props) => {
 		>
 			<Menu.Item key="basicInfo">基本信息</Menu.Item>
 			<Menu.Item key="highAvailability">实例详情</Menu.Item>
-			{type === 'mysql' ? (
+			{type === 'mysql' || type === 'elasticsearch' ? (
 				<Menu.Item key="backupRecovery">数据安全</Menu.Item>
 			) : null}
 			<Menu.Item key="externalAccess">服务暴露</Menu.Item>

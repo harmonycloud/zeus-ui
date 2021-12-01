@@ -13,9 +13,10 @@ import moment from 'moment';
 import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
-import { addBackupConfig, backupNow } from '@/services/backup';
+import { addBackupConfig, backupNow, updateBackupConfig } from '@/services/backup';
 import { Page, Content } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
+import { useHistory } from 'react-router';
 import { Button } from '@alifd/next';
 
 const formItemLayout = {
@@ -47,7 +48,7 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(props) {
 	const field = Field.useField();
-	const { clusterId, namespace, data: listData, isEdit, record } = storage.getSession('detail');
+	const { clusterId, namespace, data: listData, isEdit, record, backup } = storage.getSession('detail');
 	const [topoData, setTopoData] = useState();
 	const [backupData, setBackupData] = useState({
 		configed: false,
@@ -58,6 +59,7 @@ function BackupSetting(props) {
 		pause: 'on',
 		canPause: true
 	});
+	const history = useHistory();
 	const [backupObj, setBackupObj] = useState();
 
 	const onOk = () => {
@@ -116,22 +118,21 @@ function BackupSetting(props) {
 		const hour = moment(values.time).get('hour');
 		const week = values.cycle.join(',');
 		const cron = `${minute} ${hour} ? ? ${week}`;
-		
-		const sendData = {
-			clusterId,
-			namespace,
-			middlewareName: listData.name,
-			type: listData.type,
-			limitRecord: values.count,
-			cron: (typeof values.time !== 'string') ? cron : `${values.time.substring(3,5)} ${values.time.substring(0,2)} ? ? ${week}`
-		};
+
 		if (!backupObj) {
 			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
 			return;
-		} else {
-			if (backupObj !== 'serve') sendData.pod = backupObj;
 		}
-		if (backupData.configed) {
+		if (!isEdit) {
+			const sendData = {
+				clusterId,
+				namespace,
+				middlewareName: listData.name,
+				type: listData.type,
+				limitRecord: values.count,
+				cron: (typeof values.time !== 'string') ? cron : `${values.time.substring(3, 5)} ${values.time.substring(0, 2)} ? ? ${week}`
+			};
+			if (backupObj !== 'serve') sendData.pod = backupObj;
 			addBackupConfig(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -146,7 +147,43 @@ function BackupSetting(props) {
 					// getData();
 				});
 		} else {
-			backupNow(sendData)
+			if (record) {
+				const sendData = {
+					clusterId,
+					namespace,
+					backupScheduleName: record.backupScheduleName,
+					type: listData.type,
+					limitRecord: values.count,
+					cron: (typeof values.time !== 'string') ? cron : `${values.time.substring(3, 5)} ${values.time.substring(0, 2)} ? ? ${week}`
+				};
+				updateBackupConfig(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', '备份设置成功')
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						// getData();
+					});
+			} else {
+				const sendData = {
+					clusterId,
+					namespace,
+					backupName: backup.backupName,
+					type: listData.type,
+					middlewareName: listData.name,
+					backupFileName: backup.backupFileName,
+				};
+				if (backupObj !== 'serve'){
+					sendData.pod = backupObj;
+				}else{
+					sendData.pod = listData.pods.map(item => item.podName);
+				}
+				backupNow(sendData)
 				.then((res) => {
 					if (res.success) {
 						Message.show(
@@ -159,6 +196,7 @@ function BackupSetting(props) {
 				.finally(() => {
 					// getData();
 				});
+			}
 		}
 	};
 
@@ -173,11 +211,10 @@ function BackupSetting(props) {
 						backupObj={backupObj}
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
-						backupType={record.backupType}
 					/>
 				}
 				{
-					!isEdit ? <Form {...formItemLayout} field={field} style={{ marginTop: '24px' }}>
+					!isEdit || record ? <Form {...formItemLayout} field={field} style={{ marginTop: '24px' }}>
 						<Form.Item
 							label="备份保留个数"
 							required
@@ -209,12 +246,12 @@ function BackupSetting(props) {
 					</Form> : null
 				}
 				{
-					!isEdit ? <div style={{ padding: '16px 9px', boxShadow: '0px -1px 0px 0px #E3E4E6' }}>
+					!isEdit || record ? <div style={{ padding: '16px 9px', boxShadow: '0px -1px 0px 0px #E3E4E6' }}>
 						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>确定</Button>
 						<Button>取消</Button>
 					</div> :
 						<div style={{ padding: '16px 9px' }}>
-							{listData.type === 'mysql' && <Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
+							{listData.type === 'mysql' && <Button onClick={() => history.push('/serviceList/mysqlCreate/MySQL/mysql/'+listData.chartVersion)} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
 							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
 							<Button>取消</Button>
 						</div>

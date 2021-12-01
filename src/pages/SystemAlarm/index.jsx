@@ -59,7 +59,6 @@ function SystemAlarm(props) {
             selectedKeys={selected}
             onSelect={handleMenu}
             direction="hoz"
-            className=""
         >
             <Menu.Item key="alarmRecord">系统告警记录</Menu.Item>
             <Menu.Item key="highAvailability">规则中心</Menu.Item>
@@ -70,7 +69,7 @@ function SystemAlarm(props) {
     const childrenRender = (key) => {
         switch (key) {
             case 'alarmRecord':
-                return <AlarmRecord />
+                return <AlarmRecord alarmType={'system'} clusterId={globalCluster.id} />
             case 'highAvailability':
                 return <ServerAlarm alarmType={'system'} clusterId={globalCluster.id} />
             case 'externalAccess':

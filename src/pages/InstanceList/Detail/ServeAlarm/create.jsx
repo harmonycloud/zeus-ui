@@ -218,7 +218,6 @@ function CreateAlarm(props) {
         }
     };
     const delAlarm = (i) => {
-        console.log(i);
         const list = alarmRules.filter((item) => item.id !== i);
         setAlarmRules(list);
     };
@@ -348,34 +347,17 @@ function CreateAlarm(props) {
                 if (!res.success) return;
             })
         } else if (dingChecked && mailChecked) {
-            insertDing({ ...insertUser, ding: 'ding' }).then(res => {
+            insertDing(insertUser).then(res => {
                 if (!res.success) return;
             })
         } else {
-            sendInsertUser({ ...insertUser }).then(res => {
+            sendInsertUser(insertUser).then(res => {
                 if (!res.success) return;
             })
         }
     };
 
     const onOk = () => {
-        const list = alarmRules.map((item) => {
-            item.labels = { severity: item.severity, ...item.labels };
-            item.lay = 'service';
-            item.enable = 0;
-            delete item.severity;
-            return item;
-        });
-        const data = alarmRules.map((item) => {
-            item.labels = { severity: item.severity, ...item.labels };
-            item.annotations = {
-                message: item.content
-            }
-            item.lay = 'system';
-            item.enable = 0;
-            delete item.severity;
-            return item;
-        });
         const flag = alarmRules.every((item) => {
             if (item.threshold !== null) {
                 return true;
@@ -384,6 +366,16 @@ function CreateAlarm(props) {
             }
         });
         if (alarmType === 'system') {
+            const data = alarmRules.map((item) => {
+                item.labels = { ...item.labels, severity: item.severity };
+                item.annotations = {
+                    message: item.content
+                }
+                item.lay = 'system';
+                item.enable = 0;
+                delete item.severity;
+                return item;
+            });
             if (systemId) {
                 if (flag) {
                     if (!mailChecked && !dingChecked) {
@@ -412,6 +404,13 @@ function CreateAlarm(props) {
                 );
             }
         } else {
+            const list = alarmRules.map((item) => {
+                item.labels = { severity: item.severity, ...item.labels };
+                item.lay = 'service';
+                item.enable = 0;
+                delete item.severity;
+                return item;
+            });
             if (flag) {
                 if (!mailChecked && !dingChecked) {
                     Message.show(
