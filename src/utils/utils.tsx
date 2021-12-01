@@ -3,6 +3,8 @@ import { Icon, Balloon } from '@alicloud/console-components';
 import { api } from '@/api.json';
 import JSEncrypt from 'jsencrypt';
 import moment from 'moment';
+import { renderFormItem } from '@/components/renderFormItem';
+import FormBlock from '@/pages/ServiceCatalog/components/FormBlock';
 
 // * 组件复用
 export const statusRender: (value: string) => JSX.Element = (value: string) => {
@@ -366,3 +368,53 @@ export const changeObjectIndex: (obj: any, prop: string, index: number) => any =
 			return obj;
 		}
 	};
+
+// * 获取customForm中的所有variable-递归
+export const getCustomFormKeys: (value: any) => string[] = (value: any) => {
+	let keys: string[] = [];
+	for (let i = 0; i < value.length; i++) {
+		if (value[i].subQuestions) {
+			keys = [...getCustomFormKeys(value[i].subQuestions), ...keys];
+		}
+		keys.push(value[i].variable);
+	}
+	return keys;
+};
+export const childrenRender = (
+	values: any,
+	field: any,
+	globalCluster: any,
+	globalNamespace: any
+) => {
+	if (values) {
+		const keys = Object.keys(values);
+		return (
+			<div>
+				{keys.map((item) => {
+					return (
+						<FormBlock key={item} title={item}>
+							<div className="w-50">
+								<ul className="form-layout">
+									{values[item].map((formItem: any) => {
+										return (
+											<React.Fragment
+												key={formItem.variable}
+											>
+												{renderFormItem(
+													formItem,
+													field,
+													globalCluster,
+													globalNamespace
+												)}
+											</React.Fragment>
+										);
+									})}
+								</ul>
+							</div>
+						</FormBlock>
+					);
+				})}
+			</div>
+		);
+	}
+};

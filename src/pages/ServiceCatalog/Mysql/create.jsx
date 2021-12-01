@@ -32,10 +32,12 @@ import {
 	getBackups,
 	addDisasterIns
 } from '@/services/middleware';
-import { getClusters, getNamespaces } from '@/services/common';
+import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import transUnit from '@/utils/transUnit';
 import moment from 'moment';
+// * 外接动态表单相关
+import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -181,6 +183,8 @@ const MysqlCreate = (props) => {
 	const [relationNamespace, setRelataionNamespace] = useState();
 	const [originData, setOriginData] = useState();
 	const [reClusterFlag, setReClusterFlag] = useState(false);
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -193,6 +197,13 @@ const MysqlCreate = (props) => {
 					};
 				});
 				setDataSource(list);
+			}
+		});
+		getAspectFrom().then((res) => {
+			if (res.success) {
+				setCustomForm(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	}, []);
@@ -247,6 +258,19 @@ const MysqlCreate = (props) => {
 						type: 'master-master'
 					}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				// 主机亲和
 				if (affinity.flag) {
 					if (!affinityLabels.length) {
@@ -342,6 +366,20 @@ const MysqlCreate = (props) => {
 							}
 						}
 					};
+					// * 动态表单相关
+					if (customForm) {
+						const dynamicValues = {};
+						let keys = [];
+						for (let i in customForm) {
+							const list = getCustomFormKeys(customForm[i]);
+							keys = [...list, ...keys];
+						}
+						keys.forEach((item) => {
+							dynamicValues[item] = values[item];
+						});
+						sendData.relationMiddleware.dynamicValues =
+							dynamicValues;
+					}
 				}
 				// 灾备服务-在已有源服务上创建备服务
 				if (disasterOriginName) {
@@ -408,6 +446,21 @@ const MysqlCreate = (props) => {
 							}
 						}
 					};
+					// * 动态表单相关
+					if (customForm) {
+						const dynamicValues = {};
+						let keys = [];
+						for (let i in customForm) {
+							const list = getCustomFormKeys(customForm[i]);
+							keys = [...list, ...keys];
+						}
+						keys.forEach((item) => {
+							dynamicValues[item] = values[item];
+						});
+						sendData.dynamicValues = dynamicValues;
+						sendData.relationMiddleware.dynamicValues =
+							dynamicValues;
+					}
 					sendData = sendDataTemp;
 				}
 				// console.log(sendData);
@@ -505,6 +558,11 @@ const MysqlCreate = (props) => {
 					'Gi'
 				)
 			});
+			if (res.data.dynamicValues) {
+				for (let i in res.data.dynamicValues) {
+					field.setValue(i, res.data.dynamicValues[i]);
+				}
+			}
 		});
 	};
 	const handleReuse = (checked) => {
@@ -530,6 +588,16 @@ const MysqlCreate = (props) => {
 				storageClass: '',
 				storageQuota: ''
 			});
+			if (customForm) {
+				let keys = [];
+				for (let i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					field.setValue(item, '');
+				});
+			}
 		} else {
 			if (originData.nodeAffinity) {
 				setAffinity({
@@ -559,6 +627,16 @@ const MysqlCreate = (props) => {
 					'Gi'
 				)
 			});
+			if (customForm) {
+				let keys = [];
+				for (let i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					field.setValue(item, originData.dynamicValues[item]);
+				});
+			}
 		}
 	};
 
@@ -1714,6 +1792,7 @@ const MysqlCreate = (props) => {
 							</div>
 						</FormBlock>
 					) : null}
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"
