@@ -8,7 +8,7 @@ import {
 	TimePicker,
 	Message
 } from '@alicloud/console-components';
-import Visualization from '../HighAvailability/visualization'
+import Visualization from '../HighAvailability/visualization';
 import moment from 'moment';
 import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
@@ -47,7 +47,13 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(props) {
 	const field = Field.useField();
-	const { clusterId, namespace, data: listData, isEdit } = storage.getSession('detail');
+	const {
+		clusterId,
+		namespace,
+		data: listData,
+		isEdit,
+		record
+	} = storage.getSession('detail');
 	const [topoData, setTopoData] = useState();
 	const [backupData, setBackupData] = useState({
 		configed: false,
@@ -87,12 +93,26 @@ function BackupSetting(props) {
 			type: listData.type
 		};
 		getPodList(sendData);
+		record &&
+			field.setValues({
+				count: record.limitRecord,
+				cycle: record.cron
+					.split(' ? ? ')[1]
+					.split(',')
+					.map((item) => Number(item)),
+				time: record.cron
+					.split(' ? ? ')[0]
+					.split(' ')
+					.reverse()
+					.map((item) => (item.length === 1 ? '0' + item : item))
+					.join(':')
+			});
 	}, []);
 
 	useEffect(() => {
 		return () => {
 			storage.removeSession('detail');
-		}
+		};
 	}, []);
 
 	// * 获取pod列表
@@ -118,7 +138,13 @@ function BackupSetting(props) {
 			middlewareName: listData.name,
 			type: listData.type,
 			limitRecord: values.count,
-			cron
+			cron:
+				typeof values.time !== 'string'
+					? cron
+					: `${values.time.substring(3, 5)} ${values.time.substring(
+							0,
+							2
+					  )} ? ? ${week}`
 		};
 		if (!backupObj) {
 			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
@@ -145,7 +171,7 @@ function BackupSetting(props) {
 				.then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '备份设置成功')
+							messageConfig('success', '成功', '备份恢复成功')
 						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -157,21 +183,25 @@ function BackupSetting(props) {
 		}
 	};
 
-
 	return (
 		<Page>
 			<Content>
-				{
-					topoData && <Visualization
+				{topoData && (
+					<Visualization
 						serverData={listData}
 						topoData={topoData}
 						backupObj={backupObj}
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
+						backupType={record.backupType}
 					/>
-				}
-				{
-					!isEdit ? <Form {...formItemLayout} field={field} style={{ marginTop: '24px' }}>
+				)}
+				{!isEdit ? (
+					<Form
+						{...formItemLayout}
+						field={field}
+						style={{ marginTop: '24px' }}
+					>
 						<Form.Item
 							label="备份保留个数"
 							required
@@ -198,20 +228,51 @@ function BackupSetting(props) {
 							required
 							requiredMessage="备份时间不能为空"
 						>
-							<TimePicker name="time" minuteStep={30} format="HH:mm" />
+							<TimePicker
+								name="time"
+								minuteStep={30}
+								format="HH:mm"
+							/>
 						</Form.Item>
-					</Form> : null
-				}
-				{
-					!isEdit ? <div style={{ padding: '16px 9px', boxShadow: '0px -1px 0px 0px #E3E4E6' }}>
-						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>确定</Button>
+					</Form>
+				) : null}
+				{!isEdit ? (
+					<div
+						style={{
+							padding: '16px 9px',
+							boxShadow: '0px -1px 0px 0px #E3E4E6'
+						}}
+					>
+						<Button
+							onClick={onOk}
+							type="primary"
+							style={{ marginRight: '9px' }}
+						>
+							确定
+						</Button>
 						<Button>取消</Button>
-					</div> :
-						<div style={{ padding: '16px 9px' }}>
-							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
-							<Button>取消</Button>
-						</div>
-				}
+					</div>
+				) : (
+					<div style={{ padding: '16px 9px' }}>
+						{listData.type === 'mysql' && (
+							<Button
+								onClick={onOk}
+								type="primary"
+								style={{ marginRight: '9px' }}
+							>
+								克隆
+							</Button>
+						)}
+						<Button
+							onClick={onOk}
+							type="primary"
+							style={{ marginRight: '9px' }}
+						>
+							覆盖
+						</Button>
+						<Button>取消</Button>
+					</div>
+				)}
 			</Content>
 		</Page>
 	);

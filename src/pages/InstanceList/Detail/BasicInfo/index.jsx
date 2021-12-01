@@ -37,7 +37,8 @@ const info = {
 	label: '',
 	hostAffinity: '',
 	description: '',
-	annotations: ''
+	annotations: '',
+	tolerations: ''
 };
 
 const InfoConfig = [
@@ -70,6 +71,10 @@ const InfoConfig = [
 	{
 		dataIndex: 'annotations',
 		label: '注解'
+	},
+	{
+		dataIndex: 'tolerations',
+		label: '主机容忍'
 	}
 ];
 
@@ -323,7 +328,10 @@ function BasicInfo(props) {
 					})`,
 					disasterInstanceName: data.mysqlDTO.relationName || '-',
 					annotations: data.annotations || '-',
-					description: data.description || '无'
+					description: data.description || '无',
+					tolerations: `${
+						(data.tolerations && data.tolerations[0].label) || '/'
+					}`
 				});
 			} else {
 				setBasicData({
@@ -340,6 +348,9 @@ function BasicInfo(props) {
 							: '非强制'
 					})`,
 					annotations: data.annotations || '-',
+					tolerations: `${
+						(data.tolerations && data.tolerations[0].label) || '/'
+					}`,
 					description: data.annotation || '无'
 				});
 			}

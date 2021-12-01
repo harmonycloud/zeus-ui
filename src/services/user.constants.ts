@@ -30,3 +30,5 @@ export const personalized = `${api}/user/personalized`;
 export const users = `${api}/user/users`;
 // * 选择被通知人
 export const insertUser = `${api}/mail/insertUser`;
+// * 选择被通知人
+export const insertDing = `${api}/mail/ding/insertUser`;

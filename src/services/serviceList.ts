@@ -16,3 +16,6 @@ export const getVersions = (params: any) => {
 	return Axios.get(SERVICE.getServiceVersion, params);
 };
 
+export const upgradeChart = (params: any) => {
+	return Axios.get(SERVICE.upgradeChart, params);
+};
