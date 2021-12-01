@@ -29,6 +29,9 @@ import {
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
+// * 外接动态表单相关
+import { getAspectFrom } from '@/services/common';
+import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -236,7 +239,8 @@ const ElasticsearchCreate = (props) => {
 	const [nodeNum, setNodeNum] = useState(0);
 	const [specId, setSpecId] = useState('1');
 	const [storageClassList, setStorageClassList] = useState([]);
-
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 	const formHandle = (obj, item) => {
 		if (
 			['cpu', 'memory', 'storageClass', 'storageQuota'].indexOf(
@@ -335,13 +339,30 @@ const ElasticsearchCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
+					description: values.description,
 					version: version,
 					password: values.pwd,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode: (mode.includes('complex') || mode.includes('regular')) ? 'complex' : mode
+					mode:
+						mode.includes('complex') || mode.includes('regular')
+							? 'complex'
+							: mode
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				if (affinity.flag) {
 					if (!affinityLabels.length) {
 						Message.show(
@@ -430,11 +451,22 @@ const ElasticsearchCreate = (props) => {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setLabelList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setTolerationList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
+			getAspectFrom().then((res) => {
+				if (res.success) {
+					setCustomForm(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 		}
@@ -574,11 +606,11 @@ const ElasticsearchCreate = (props) => {
 									<div className="form-content">
 										<FormItem
 											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注释，多个注释以英文逗号分隔"
+											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
 										>
 											<Input
-												name="annotation"
-												placeholder="请输入key=value格式的注视，多个注释以英文逗号分隔"
+												name="annotations"
+												placeholder="请输入key=value格式的注视，多个注解以英文逗号分隔"
 											/>
 										</FormItem>
 									</div>
@@ -590,7 +622,7 @@ const ElasticsearchCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入备注信息"
 											/>
 										</FormItem>
@@ -1243,6 +1275,7 @@ const ElasticsearchCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

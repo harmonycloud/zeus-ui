@@ -29,6 +29,9 @@ import {
 import messageConfig from '@/components/messageConfig';
 import RocketACLForm from '@/components/RocketACLForm';
 import { judgeObjArrayAttrIsNull } from '@/utils/utils';
+// * 外接动态表单相关
+import { getAspectFrom } from '@/services/common';
+import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -177,6 +180,8 @@ const RocketMQCreate = (props) => {
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
 	// * acl相关
 	const [aclCheck, setAclCheck] = useState(false);
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -207,7 +212,8 @@ const RocketMQCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
+					description: values.description,
 					version: version,
 					mode: mode,
 					filelogEnabled: fileLog,
@@ -224,6 +230,19 @@ const RocketMQCreate = (props) => {
 						}
 					}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				if (affinity.flag) {
 					if (affinity.label === '') {
 						Message.show(
@@ -329,11 +348,22 @@ const RocketMQCreate = (props) => {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setLabelList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setTolerationList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
+			getAspectFrom().then((res) => {
+				if (res.success) {
+					setCustomForm(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 		}
@@ -458,11 +488,11 @@ const RocketMQCreate = (props) => {
 									<div className="form-content">
 										<FormItem
 											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注释，多个注释以英文逗号分隔"
+											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
 										>
 											<Input
-												name="annotation"
-												placeholder="请输入key=value格式的注视，多个注释以英文逗号分隔"
+												name="annotations"
+												placeholder="请输入key=value格式的注视，多个注解以英文逗号分隔"
 											/>
 										</FormItem>
 									</div>
@@ -474,7 +504,7 @@ const RocketMQCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入备注信息"
 											/>
 										</FormItem>
@@ -1230,6 +1260,7 @@ const RocketMQCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

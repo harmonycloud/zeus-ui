@@ -100,7 +100,7 @@ export const updateAlarms = (params) => {
 export const updateAlarm = (params) => {
 	console.log(params);
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
-	return Axios.json(restUrl, params.data[0], {}, "PUT");
+	return Axios.json(restUrl, params.data[0], {}, 'PUT');
 };
 export const deleteAlarms = (params) => {
 	return Axios.delete(MIDDLEWARE.deleteAlarmRules, params);

@@ -92,7 +92,17 @@ const modelMap = {
 };
 
 function Visualization(props) {
-	const { topoData, serverData, setBackupObj, isEdit, openSSL, reStart, editConfiguration, setEsVisible, backupType } = props;
+	const {
+		topoData,
+		serverData,
+		setBackupObj,
+		isEdit,
+		openSSL,
+		reStart,
+		editConfiguration,
+		setEsVisible,
+		backupType
+	} = props;
 	const location = useLocation();
 	const { pathname } = location;
 	// console.log(serverData.type);
@@ -156,8 +166,8 @@ function Visualization(props) {
 	};
 
 	const isSelect = () => {
-		return backupType === 'Cluser' ? true : false
-	}
+		return backupType === 'Cluser' ? true : false;
+	};
 
 	useEffect(() => {
 		let url = window.location.href.split('/');
@@ -177,10 +187,10 @@ function Visualization(props) {
 							x: 0,
 							y: 0,
 							width: 228,
-							height: 100,
+							height: 100
 							// opacity: isSelect && !cfg.depth ? 1 : 0.6
 						},
-						name: 'rect-shape',
+						name: 'rect-shape'
 					});
 					const boxWidth = box.getBBox().width;
 					group.addShape('rect', {
@@ -191,10 +201,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
-								)[0].color
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+								  )[0].color
 								: '#FFC440',
 							x: 0,
 							y: 0,
@@ -212,10 +222,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
-								)[0].image
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+								  )[0].image
 								: NotReady,
 							x: 12,
 							y: 42,
@@ -238,7 +248,7 @@ function Visualization(props) {
 							lineHeight: 18,
 							fontFamily: 'PingFangSC-Medium, PingFang SC'
 						},
-						name: 'text-shape1',
+						name: 'text-shape1'
 					});
 					if (cfg.depth) {
 						group.addShape('text', {
@@ -252,8 +262,7 @@ function Visualization(props) {
 								lineHeight: 18,
 								fontFamily: 'PingFangSC-Medium, PingFang SC'
 							},
-							name: 'text-shape3',
-
+							name: 'text-shape3'
 						});
 					}
 					group.addShape('text', {
@@ -261,18 +270,21 @@ function Visualization(props) {
 							text: !cfg.depth
 								? serverData.aliasName
 								: '资源/存储: ' +
-								cfg.resources.cpu +
-								'C/' +
-								cfg.resources.memory +
-								'G' + '/' +
-								(cfg.resources.storageClassQuota ? cfg.resources.storageClassQuota : ''),
+								  cfg.resources.cpu +
+								  'C/' +
+								  cfg.resources.memory +
+								  'G' +
+								  '/' +
+								  (cfg.resources.storageClassQuota
+										? cfg.resources.storageClassQuota
+										: ''),
 							x: 45,
 							y: !cfg.depth ? 55 : 70,
 							textBaseline: 'middle',
 							fill: '#666',
 							fontWeight: 400
 						},
-						name: 'text-shape2',
+						name: 'text-shape2'
 					});
 					group.addShape('image', {
 						attrs: {
@@ -283,7 +295,7 @@ function Visualization(props) {
 							height: 32
 						},
 						visible: !cfg.depth,
-						name: 'status-image',
+						name: 'status-image'
 					});
 					group.addShape('rect', {
 						attrs: {
@@ -294,7 +306,7 @@ function Visualization(props) {
 							fill: '#6236FF'
 						},
 						visible: hasConfigBackup(cfg),
-						name: 'right',
+						name: 'right'
 					});
 					group.addShape('text', {
 						attrs: {
@@ -304,7 +316,7 @@ function Visualization(props) {
 							fill: '#fff'
 						},
 						visible: hasConfigBackup(cfg),
-						name: 'text1',
+						name: 'text1'
 					});
 					group.addShape('text', {
 						attrs: {
@@ -314,15 +326,14 @@ function Visualization(props) {
 							fill: '#fff'
 						},
 						visible: hasConfigBackup(cfg),
-						name: 'text2',
+						name: 'text2'
 					});
 					group.addShape('text', {
 						attrs: {
 							text: '置',
 							x: 212,
 							y: 66,
-							fill: '#fff',
-
+							fill: '#fff'
 						},
 						visible: hasConfigBackup(cfg),
 						name: 'text3'
@@ -362,7 +373,7 @@ function Visualization(props) {
 								height: 12
 							},
 							visible: false,
-							name: 'restart',
+							name: 'restart'
 						});
 						group.addShape('text', {
 							attrs: {
@@ -385,7 +396,7 @@ function Visualization(props) {
 								height: 100,
 								fill: '#000',
 								opacity: 0.65,
-								cursor: 'pointer',
+								cursor: 'pointer'
 							},
 							visible: false,
 							name: 'button2'
@@ -399,7 +410,7 @@ function Visualization(props) {
 								height: 12
 							},
 							visible: false,
-							name: 'edit',
+							name: 'edit'
 						});
 						group.addShape('text', {
 							attrs: {
@@ -436,7 +447,7 @@ function Visualization(props) {
 								height: 12
 							},
 							visible: false,
-							name: 'control',
+							name: 'control'
 						});
 						group.addShape('text', {
 							attrs: {
@@ -472,11 +483,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status ===
-										serverData.status
-								)[0].title
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+								  )[0].title
 								: '运行异常',
 							fill: '#666',
 							x: 0,
@@ -496,10 +506,10 @@ function Visualization(props) {
 									serverData.type !== 'redis'
 										? modelMap[serverData.mode]
 										: serverData.mode === 'sentinel'
-											? '哨兵'
-											: serverData.quota.redis.num === 6
-												? '三主三从'
-												: '五主五从' || '',
+										? '哨兵'
+										: serverData.quota.redis.num === 6
+										? '三主三从'
+										: '五主五从' || '',
 								fill: 'rgba(0, 0, 0, .65)',
 								x: boxWidth + 35,
 								y: 44,
@@ -518,9 +528,9 @@ function Visualization(props) {
 								x: 229,
 								y: 50,
 								width: 70,
-								height: 0,
+								height: 0
 							},
-							name: 'line',
+							name: 'line'
 						});
 					}
 					// 实例模式
@@ -622,18 +632,15 @@ function Visualization(props) {
 			fitViewPadding: [20, 30, 20, 30],
 			plugins: [minimap],
 			modes: {
-				default: [
-					'drag-canvas',
-					'zoom-canvas'
-				]
+				default: ['drag-canvas', 'zoom-canvas']
 			},
 			nodeStateStyles: {
 				hover: {
-					fill: '#fff',
+					fill: '#fff'
 					// opacity: 0.7
 				},
 				select: {
-					stroke: '#0064C8',
+					stroke: '#0064C8'
 				}
 			},
 			defaultNode: {
@@ -674,7 +681,9 @@ function Visualization(props) {
 		};
 		topoData.pods
 			? (res.children = topoData.pods)
-			: (res.children = [].concat(...topoData.listChildGroup.map((item) => item.pods)));
+			: (res.children = [].concat(
+					...topoData.listChildGroup.map((item) => item.pods)
+			  ));
 		graph.data(res);
 		graph.render();
 		graph.fitCenter();
@@ -756,7 +765,7 @@ function Visualization(props) {
 		graph.on('node:click', (evt) => {
 			const { item } = evt;
 			const group = item.getContainer();
-			const nodes = graph.getNodes();;
+			const nodes = graph.getNodes();
 			const selectImage = group.find(
 				(e) => e.get('name') === 'select-image'
 			);
@@ -765,30 +774,30 @@ function Visualization(props) {
 			if (serverData.type === 'mysql') {
 				if (item._cfg.model.depth) {
 					Message.show(
-						messageConfig(
-							'warning',
-							'提示',
-							'mysql只支持服务备份'
-						)
+						messageConfig('warning', '提示', 'mysql只支持服务备份')
 					);
 					return;
 				}
 			}
 			if (!evt.target.cfg.modelId) {
-				if (item._cfg.states.find(arr => arr === 'select')) {
-					setBackupObj(null)
+				if (item._cfg.states.find((arr) => arr === 'select')) {
+					setBackupObj(null);
 					graph.setItemState(item, 'select', false);
 					selectImage.cfg.visible = false;
 				} else {
-					if (nodes.some(str => str._cfg.states.find(obj => obj === 'select'))) {
-						nodes.map(obj => {
+					if (
+						nodes.some((str) =>
+							str._cfg.states.find((obj) => obj === 'select')
+						)
+					) {
+						nodes.map((obj) => {
 							// graph.setItemState(obj, 'select', true);
 							const x = obj.getContainer();
 							const y = x.find(
 								(e) => e.get('name') === 'select-image'
 							);
 							y.cfg.visible = true;
-						})
+						});
 						// const group = item.getContainer();
 						// const box = group.find((e) => e.get('name') === 'rect-shape');
 						// graph.updateItem(item, {
@@ -798,7 +807,9 @@ function Visualization(props) {
 						// });
 						return;
 					}
-					!evt.item._cfg.model.depth ? setBackupObj('serve') : setBackupObj(evt.item._cfg.model.podName);
+					!evt.item._cfg.model.depth
+						? setBackupObj('serve')
+						: setBackupObj(evt.item._cfg.model.podName);
 					graph.setItemState(item, 'select', true);
 					selectImage.cfg.visible = true;
 				}
@@ -886,39 +897,39 @@ function Visualization(props) {
 		graph.on('button1:click', (evt) => {
 			if (!reStart) return;
 			const { item } = evt;
-			reStart(item.getModel())
+			reStart(item.getModel());
 		});
 		graph.on('button2:click', (evt) => {
 			if (!setEsVisible && !editConfiguration) return;
 			console.log(111);
 			if (serverData.type === 'elasticsearch') {
-				setEsVisible()
+				setEsVisible();
 			} else {
-				editConfiguration()
+				editConfiguration();
 			}
 		});
 		graph.on('button3:click', (evt) => {
 			if (!openSSL) return;
 			const { item } = evt;
-			openSSL(item.getModel())
+			openSSL(item.getModel());
 		});
 		graph.on('text-button1:click', (evt) => {
 			if (!reStart) return;
 			const { item } = evt;
-			reStart(item.getModel())
+			reStart(item.getModel());
 		});
 		graph.on('text-button2:click', (evt) => {
 			if (!setEsVisible && !editConfiguration) return;
 			if (serverData.type === 'elasticsearch') {
-				setEsVisible()
+				setEsVisible();
 			} else {
-				editConfiguration()
+				editConfiguration();
 			}
 		});
 		graph.on('text-button3:click', (evt) => {
 			if (!openSSL) return;
 			const { item } = evt;
-			openSSL(item.getModel())
+			openSSL(item.getModel());
 		});
 
 		window.graph = graph;
@@ -945,13 +956,13 @@ function Visualization(props) {
 				anchorPoints:
 					value === 'TB'
 						? [
-							[0.5, 0],
-							[0.5, 1]
-						]
+								[0.5, 0],
+								[0.5, 1]
+						  ]
 						: [
-							[0, 0.5],
-							[1, 0.5]
-						]
+								[0, 0.5],
+								[1, 0.5]
+						  ]
 			},
 			getId: function getId(d) {
 				return d.id;
@@ -973,7 +984,13 @@ function Visualization(props) {
 
 	return (
 		<div className={styles['visualization']}>
-			<h2>{pathname.includes('addBackup') ? isEdit ? '选择要恢复的对象' : '选择备份对象' : '关系拓扑'}</h2>
+			<h2>
+				{pathname.includes('addBackup')
+					? isEdit
+						? '选择要恢复的对象'
+						: '选择备份对象'
+					: '关系拓扑'}
+			</h2>
 			<div className={styles['tools']}>
 				<Button>
 					<Icon type="arrows-alt" />
@@ -1007,14 +1024,8 @@ function Visualization(props) {
 					/>
 				</Button>
 			</div>
-			<div
-				id="topology"
-				style={{ background: '#f9f9f9' }}
-			></div>
-			<div
-				id="minimap"
-				style={{ background: '#f9f9f9' }}
-			></div>
+			<div id="topology" style={{ background: '#f9f9f9' }}></div>
+			<div id="minimap" style={{ background: '#f9f9f9' }}></div>
 		</div>
 	);
 }

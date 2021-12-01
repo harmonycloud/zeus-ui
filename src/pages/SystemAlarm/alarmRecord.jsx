@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Table from '@/components/MidTable';
 import moment from 'moment';
-import {getEvent} from '@/services/platformOverview'
+import { getEvent } from '@/services/platformOverview';
 import { Divider } from '@alifd/next';
 
 const alarmWarn = [
@@ -20,29 +20,29 @@ const alarmWarn = [
 ]
 
 function AlarmRecord(props) {
-    const {
-        middlewareName,
-        clusterId,
-        namespace,
-        type,
-        customMid,
-        capabilities,
-        monitor,
-        alarmType
-    } = props;
-    const [current, setCurrent] = useState(1); // 页码 current
+	const {
+		middlewareName,
+		clusterId,
+		namespace,
+		type,
+		customMid,
+		capabilities,
+		monitor,
+		alarmType
+	} = props;
+	const [current, setCurrent] = useState(1); // 页码 current
 	const [level, setLevel] = useState(''); // level
 	const [total, setTotal] = useState(10); // 总数
 	const [eventData, setEventData] = useState([]);
 
-    const onRefresh = () => {
-       getData();
-    }
+	const onRefresh = () => {
+		getData();
+	};
 
-    const createTimeRender = (value) => {
-        if (!value) return '/';
-        return moment(value).format('YYYY-MM-DD HH:mm:ss');
-    };
+	const createTimeRender = (value) => {
+		if (!value) return '/';
+		return moment(value).format('YYYY-MM-DD HH:mm:ss');
+	};
 
     useEffect(() => {
         getData();
@@ -121,4 +121,4 @@ function AlarmRecord(props) {
     )
 }
 
-export default AlarmRecord
+export default AlarmRecord;

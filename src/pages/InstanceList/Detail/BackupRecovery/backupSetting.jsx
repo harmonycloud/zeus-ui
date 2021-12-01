@@ -8,7 +8,7 @@ import {
 	TimePicker,
 	Message
 } from '@alicloud/console-components';
-import Visualization from '../HighAvailability/visualization'
+import Visualization from '../HighAvailability/visualization';
 import moment from 'moment';
 import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
@@ -89,17 +89,26 @@ function BackupSetting(props) {
 			type: listData.type
 		};
 		getPodList(sendData);
-		record && field.setValues({
-			count: record.limitRecord,
-			cycle: record.cron.split(' ? ? ')[1].split(',').map(item => Number(item)),
-			time: record.cron.split(' ? ? ')[0].split(' ').reverse().map(item => item.length === 1 ? '0' + item : item).join(':')
-		});
+		record &&
+			field.setValues({
+				count: record.limitRecord,
+				cycle: record.cron
+					.split(' ? ? ')[1]
+					.split(',')
+					.map((item) => Number(item)),
+				time: record.cron
+					.split(' ? ? ')[0]
+					.split(' ')
+					.reverse()
+					.map((item) => (item.length === 1 ? '0' + item : item))
+					.join(':')
+			});
 	}, []);
 
 	useEffect(() => {
 		return () => {
 			storage.removeSession('detail');
-		}
+		};
 	}, []);
 
 	// * 获取pod列表
@@ -200,19 +209,18 @@ function BackupSetting(props) {
 		}
 	};
 
-
 	return (
 		<Page>
 			<Content>
-				{
-					topoData && <Visualization
+				{topoData && (
+					<Visualization
 						serverData={listData}
 						topoData={topoData}
 						backupObj={backupObj}
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
 					/>
-				}
+				)}
 				{
 					!isEdit || record ? <Form {...formItemLayout} field={field} style={{ marginTop: '24px' }}>
 						<Form.Item
@@ -241,7 +249,11 @@ function BackupSetting(props) {
 							required
 							requiredMessage="备份时间不能为空"
 						>
-							<TimePicker name="time" minuteStep={30} format="HH:mm" />
+							<TimePicker
+								name="time"
+								minuteStep={30}
+								format="HH:mm"
+							/>
 						</Form.Item>
 					</Form> : null
 				}

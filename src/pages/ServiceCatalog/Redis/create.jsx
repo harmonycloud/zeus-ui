@@ -30,6 +30,9 @@ import {
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
+// * 外接动态表单相关
+import { getAspectFrom } from '@/services/common';
+import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 
 // const { Group: TagGroup, Closable: ClosableTag } = Tag;
 
@@ -172,7 +175,8 @@ const RedisCreate = (props) => {
 	const [storageClassList, setStorageClassList] = useState([]);
 	const [maxCpu, setMaxCpu] = useState({}); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
-
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -289,7 +293,8 @@ const RedisCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
+					description: values.description,
 					version: version,
 					password: values.pwd,
 					mode: mode,
@@ -297,6 +302,19 @@ const RedisCreate = (props) => {
 					stdoutEnabled: standardLog,
 					quota: {}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				if (affinity.flag) {
 					if (affinity.label === '') {
 						Message.show(
@@ -423,11 +441,22 @@ const RedisCreate = (props) => {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setLabelList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setTolerationList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
+			getAspectFrom().then((res) => {
+				if (res.success) {
+					setCustomForm(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 		}
@@ -550,11 +579,11 @@ const RedisCreate = (props) => {
 									<div className="form-content">
 										<FormItem
 											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注释，多个注释以英文逗号分隔"
+											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
 										>
 											<Input
-												name="annotation"
-												placeholder="请输入key=value格式的注视，多个注释以英文逗号分隔"
+												name="annotations"
+												placeholder="请输入key=value格式的注视，多个注解以英文逗号分隔"
 											/>
 										</FormItem>
 									</div>
@@ -566,7 +595,7 @@ const RedisCreate = (props) => {
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入备注信息"
 											/>
 										</FormItem>
@@ -1065,12 +1094,6 @@ const RedisCreate = (props) => {
 															onChange={(
 																values
 															) => {
-																// console.log(values);
-																// console.log(key);
-																// console.log({
-																// 	...nodeObj,
-																// 	[key]: values
-																// });
 																setNodeObj({
 																	...nodeObj,
 																	[key]: values
@@ -1289,6 +1312,7 @@ const RedisCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

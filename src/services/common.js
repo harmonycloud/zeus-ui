@@ -92,3 +92,16 @@ export const getJoinCommand = (params) => {
 export const getIngresses = (params) => {
 	return Axios.get(COMMON.getIngresses, params);
 };
+export const deleteIngress = (params) => {
+	return Axios.delete(COMMON.deleteIngress, params);
+};
+export const installIngress = (params) => {
+	return Axios.json(COMMON.getIngresses, params, {}, 'POST');
+};
+export const accessIngress = (params) => {
+	return Axios.json(COMMON.getIngresses, params, {}, 'PUT');
+};
+// * 获取外接动态表单
+export const getAspectFrom = () => {
+	return Axios.get(COMMON.getAspectFrom);
+};

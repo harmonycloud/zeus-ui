@@ -36,8 +36,9 @@ const info = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
-	tolerations: '',
-	description: ''
+	description: '',
+	annotations: '',
+	tolerations: ''
 };
 
 const InfoConfig = [
@@ -66,6 +67,10 @@ const InfoConfig = [
 	{
 		dataIndex: 'hostAffinity',
 		label: '主机亲和'
+	},
+	{
+		dataIndex: 'annotations',
+		label: '注解'
 	},
 	{
 		dataIndex: 'tolerations',
@@ -185,41 +190,6 @@ function BasicInfo(props) {
 	const [dynamicConfig, setDynamicConfig] = useState([titleConfig]);
 	// * mq acl 认证相关
 	const [aclCheck, setACLCheck] = useState(false);
-	// const editTitleConfig = {
-	// 	dataIndex: 'title',
-	// 	render: (val) => (
-	// 		<div className="title-content">
-	// 			<div className="blue-line"></div>
-	// 			<div className="detail-title">{val}</div>
-	// 			<span
-	// 				className="name-link ml-12"
-	// 				onClick={() => setVisible(true)}
-	// 			>
-	// 				<Icon
-	// 					type="edit"
-	// 					style={{ marginRight: 8, verticalAlign: 'middle' }}
-	// 				/>
-	// 				编辑
-	// 			</span>
-	// 			{/* <div>
-	// 				<span className="acl-title-flag">
-	// 					{aclCheck ? '已开启' : '已关闭'}
-	// 					<Switch
-	// 						style={{
-	// 							marginLeft: 16,
-	// 							verticalAlign: 'middle'
-	// 						}}
-	// 						size="small"
-	// 						checked={aclCheck}
-	// 						onChange={aclSwitchChange}
-	// 					/>
-	// 				</span>
-	// 			</div> */}
-	// 		</div>
-	// 	),
-	// 	span: 24
-	// };
-	// const [aclConfig] = useState([editTitleConfig, globalIpsConfig]);
 	const [aclData, setAclData] = useState({
 		title: '访问权限控制认证',
 		globalIps: ''
@@ -356,9 +326,12 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
-					tolerations: `${(data.tolerations && data.tolerations[0].label) || '/'}`,
-					disasterInstanceName: data.mysqlDTO.relationName || '',
-					description: data.annotation || '无'
+					disasterInstanceName: data.mysqlDTO.relationName || '-',
+					annotations: data.annotations || '-',
+					description: data.description || '无',
+					tolerations: `${
+						(data.tolerations && data.tolerations[0].label) || '/'
+					}`
 				});
 			} else {
 				setBasicData({
@@ -374,7 +347,10 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
-					tolerations: `${(data.tolerations && data.tolerations[0].label) || '/'}`,
+					annotations: data.annotations || '-',
+					tolerations: `${
+						(data.tolerations && data.tolerations[0].label) || '/'
+					}`,
 					description: data.annotation || '无'
 				});
 			}

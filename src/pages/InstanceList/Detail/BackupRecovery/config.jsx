@@ -6,7 +6,7 @@ import {
 	Message,
 	Switch,
 	Balloon,
-	Button,
+	Button
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
@@ -233,18 +233,21 @@ export default function Config(props) {
 					? 1
 					: -1
 				: result > 0
-					? -1
-					: 1;
+				? -1
+				: 1;
 		});
 		setBackups([...tempDataSource]);
 	};
 
 	const Operation = {
 		primary: (
-			<Button type="primary" onClick={() => {
-				history.push('/disasterBackup/dataSecurity/addBackup');
-				storage.setSession('detail', props)
-			}}>
+			<Button
+				type="primary"
+				onClick={() => {
+					history.push('/disasterBackup/dataSecurity/addBackup');
+					storage.setSession('detail', props);
+				}}
+			>
 				新建
 			</Button>
 		)
@@ -258,12 +261,12 @@ export default function Config(props) {
 				unCheckedChildren="关"
 				defaultChecked={value !== 'off'}
 			/>
-		)
-	}
+		);
+	};
 
 	const roleRender = (value, index, record) => {
 		if (value === 'Cluster') {
-			return "服务"
+			return '服务';
 		} else {
 			if (record.podRole.includes('exporter')) {
 				return 'exporter';
@@ -325,7 +328,8 @@ export default function Config(props) {
 									clusterId,
 									namespace,
 									type: listData.type,
-									backupScheduleName: record.backupScheduleName
+									backupScheduleName:
+										record.backupScheduleName
 								};
 								// console.log(sendData);
 								deleteBackupConfig(sendData)
@@ -378,8 +382,7 @@ export default function Config(props) {
 				operation={Operation}
 				onSort={onSort}
 				search={{
-					placeholder:
-						'请输入备份源名称检索',
+					placeholder: '请输入备份源名称检索'
 					// onSearch: handleSearch,
 					// onChange: handleChange,
 					// value: keyword
@@ -393,18 +396,18 @@ export default function Config(props) {
 					dataIndex="backupType"
 					cell={roleRender}
 				/>
-				<Table.Column
-					title="备份源名称"
-					dataIndex="sourceName"
-				/>
-				<Table.Column
-					title="备份保留个数"
-					dataIndex="limitRecord"
-				/>
+				<Table.Column title="备份源名称" dataIndex="sourceName" />
+				<Table.Column title="备份保留个数" dataIndex="limitRecord" />
 				<Table.Column
 					title="备份周期"
 					dataIndex="cron"
-					cell={(value) => value.split(' ? ? ')[1].split(',').map((item) => weekMap[item]).join('、')}
+					cell={(value) =>
+						value
+							.split(' ? ? ')[1]
+							.split(',')
+							.map((item) => weekMap[item])
+							.join('、')
+					}
 				/>
 				<Table.Column
 					title="执行状态"
@@ -417,11 +420,7 @@ export default function Config(props) {
 					dataIndex="createTime"
 					sortable
 				/>
-				<Table.Column
-					title="操作"
-					cell={actionRender}
-					width={180}
-				/>
+				<Table.Column title="操作" cell={actionRender} width={180} />
 			</Table>
 			{/* <div className="backup-display-content">
 				<div className="backup-setting">

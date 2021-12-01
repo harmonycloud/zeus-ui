@@ -18,6 +18,7 @@ export interface serviceAvailableItemProps {
 	serviceList: any[];
 	servicePort: string;
 	imagePath?: string | null;
+	ingressClassName: string | null;
 }
 export interface serviceAvailablesProps {
 	chartName: string;
