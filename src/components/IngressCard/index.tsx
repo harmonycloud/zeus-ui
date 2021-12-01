@@ -71,6 +71,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="接入"
 						leftHandle={() => setInstallVisible(false)}
 						rightHandle={() => setAccessVisible(false)}
+						titleStyle={{ fontSize: '12px' }}
 					/>
 				);
 			case 1:
@@ -85,6 +86,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
+						titleStyle={{ fontSize: '12px' }}
 					/>
 				);
 			case 2:
@@ -101,6 +103,7 @@ const IngressCard = (props: IngressCardProps) => {
 							color: '#ffffff',
 							border: 'none'
 						}}
+						titleStyle={{ fontSize: '12px' }}
 					/>
 				);
 			case 3:
@@ -115,6 +118,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
+						titleStyle={{ fontSize: '12px' }}
 					/>
 				);
 			case 4:
@@ -129,6 +133,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
+						titleStyle={{ fontSize: '12px' }}
 					/>
 				);
 			case 5:
@@ -145,6 +150,7 @@ const IngressCard = (props: IngressCardProps) => {
 							color: '#ffffff',
 							border: 'none'
 						}}
+						titleStyle={{ fontSize: '12px' }}
 					/>
 				);
 			default:

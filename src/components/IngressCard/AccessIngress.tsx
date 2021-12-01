@@ -6,7 +6,7 @@ import {
 	Field,
 	Input
 } from '@alicloud/console-components';
-import { accessIngress } from '@/services/common';
+import { accessIngress, updateIngress } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 
@@ -32,6 +32,15 @@ interface FieldProps {
 	configMapName: string;
 }
 const FormItem = Form.Item;
+interface SendDataProps {
+	clusterId: string;
+	address: string;
+	namespace: string;
+	ingressClassName: string;
+	configMapName: string;
+	id?: number;
+	ingressName?: string;
+}
 const AccessIngressForm = (props: AccessIngressProps) => {
 	const { visible, onCancel, clusterId, onRefresh, data } = props;
 	const field = Field.useField();
@@ -44,30 +53,39 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 		field.validate((errors, values) => {
 			if (errors) return;
 			const value: FieldProps = field.getValues();
-			const sendData = {
+			const sendData: SendDataProps = {
 				clusterId,
-				ingressList: [
-					{
-						address: value.address,
-						ingressClassName: value.ingressClassName,
-						tcp: {
-							configMapName: value.configMapName,
-							namespace: value.namespace
-						}
-					}
-				]
+				...value
 			};
-			accessIngress(sendData).then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '服务暴露接入成功')
-					);
-					onCancel();
-					onRefresh();
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
+			if (data) {
+				sendData.id = data.id;
+				sendData.ingressName = value.ingressClassName;
+			}
+			if (data) {
+				updateIngress(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '服务暴露修改成功')
+						);
+						onCancel();
+						onRefresh();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			} else {
+				accessIngress(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '服务暴露接入成功')
+						);
+						onCancel();
+						onRefresh();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
 		});
 	};
 	return (

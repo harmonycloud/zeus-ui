@@ -17,6 +17,7 @@ interface MidCardProps {
 	actionCount: number;
 	centerStyle?: any;
 	addTitle?: string;
+	titleStyle?: any;
 }
 export const iconRender = (status: number | undefined) => {
 	switch (status) {
@@ -60,7 +61,8 @@ const MidCard = (props: MidCardProps) => {
 		centerText,
 		centerHandle,
 		centerStyle,
-		addTitle
+		addTitle,
+		titleStyle
 	} = props;
 	const [borderColor, setBorderColor] = useState<string>('#E9E9E9');
 	const [titleColor, setTitleColor] = useState<string>('#333333');
@@ -111,7 +113,7 @@ const MidCard = (props: MidCardProps) => {
 							/>
 						</div>
 						<div className="mid-card-title">
-							<div>{title}</div>
+							<div style={titleStyle}>{title}</div>
 							<div className="mid-card-icon">
 								{iconRender(status)}
 							</div>

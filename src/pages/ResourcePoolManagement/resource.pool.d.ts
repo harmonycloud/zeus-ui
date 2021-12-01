@@ -66,4 +66,5 @@ export interface IngressItemProps {
 	ingressClassName: string;
 	namespace: string;
 	status: number;
+	id: number;
 }
