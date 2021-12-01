@@ -4,6 +4,21 @@ import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
 import { Divider } from '@alifd/next';
 
+const alarmWarn = [
+	{
+		value: 'info',
+		label: '一般'
+	},
+	{
+		value: 'warning',
+		label: '重要'
+	},
+	{
+		value: 'critical',
+		label: '严重'
+	}
+];
+
 function AlarmRecord(props) {
 	const {
 		middlewareName,
@@ -31,19 +46,46 @@ function AlarmRecord(props) {
 
 	useEffect(() => {
 		getData();
-	}, []);
+	}, [middlewareName]);
 
 	const getData = () => {
-		const sendData = {
-			current: current,
-			size: 10,
-			level: level
-		};
-		getEvent(sendData).then((res) => {
-			console.log(res);
-			setEventData(res.data ? res.data.list : []);
-			setTotal(res.data ? res.data.total : 0);
-		});
+		if (alarmType === 'system') {
+			const sendData = {
+				current: current,
+				size: 10,
+				level: level,
+				clusterId,
+				lay: 'system'
+			};
+			getEvent(sendData).then((res) => {
+				setEventData(res.data ? res.data.list : []);
+				setTotal(res.data ? res.data.total : 0);
+			});
+		} else {
+			const sendData = {
+				current: current,
+				size: 10,
+				level: level,
+				middlewareName,
+				clusterId,
+				namespace,
+				lay: 'service'
+			};
+			getEvent(sendData).then((res) => {
+				setEventData(res.data ? res.data.list : []);
+				setTotal(res.data ? res.data.total : 0);
+			});
+		}
+	};
+
+	const levelRender = (value, index, record) => {
+		return (
+			<span className={value + ' level'}>
+				{value && alarmWarn.find((item) => item.value === value)
+					? alarmWarn.find((item) => item.value === value).label
+					: ''}
+			</span>
+		);
 	};
 
 	return (
@@ -57,7 +99,7 @@ function AlarmRecord(props) {
 			onRefresh={onRefresh}
 			primaryKey="key"
 			search={{
-				placeholder: '请输入告警ID、告警内容、告警规则/实际监测搜索'
+				placeholder: '请输入告警ID搜索'
 				// onSearch: handleSearch,
 				// onChange: handleChange,
 				// value: keyword
@@ -68,11 +110,16 @@ function AlarmRecord(props) {
 			// onSort={onSort}
 		>
 			<Table.Column title="告警ID" dataIndex="alertId" width={100} />
-			<Table.Column title="告警等级" dataIndex="level" width={100} />
-			<Table.Column title="告警内容" dataIndex="message" width={400} />
+			<Table.Column
+				title="告警等级"
+				dataIndex="level"
+				width={100}
+				cell={levelRender}
+			/>
+			<Table.Column title="告警内容" dataIndex="content" />
 			<Table.Column title="告警对象" dataIndex="clusterId" width={100} />
 			<Table.Column title="规则描述" dataIndex="expr" width={160} />
-			<Table.Column title="实际监测" dataIndex="summary" width={160} />
+			<Table.Column title="实际监测" dataIndex="summary" />
 			<Table.Column
 				title="告警时间"
 				dataIndex="x"

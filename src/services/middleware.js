@@ -94,10 +94,14 @@ export const createAlarm = (params) => {
 	return Axios.json(restUrl, params.data);
 };
 export const updateAlarms = (params) => {
-	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRules, params.url);
+	const { restUrl } = Axios.restfulAPI(
+		MIDDLEWARE.updateAlarmRules,
+		params.url
+	);
 	return Axios.json(restUrl, params.data[0]);
 };
 export const updateAlarm = (params) => {
+	console.log(params);
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
 	return Axios.json(restUrl, params.data[0], {}, 'PUT');
 };

@@ -993,10 +993,7 @@ function Visualization(props) {
 			</h2>
 			<div className={styles['tools']}>
 				<Button>
-					<Icon
-						type="arrows-alt"
-						onClick={() => window.graph.downloadImage()}
-					/>
+					<Icon type="arrows-alt" />
 				</Button>
 				<Button>
 					<Icon

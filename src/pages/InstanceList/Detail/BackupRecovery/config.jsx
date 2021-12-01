@@ -16,7 +16,8 @@ import {
 	getBackupConfig,
 	addBackupConfig,
 	backupNow,
-	deleteBackupConfig
+	deleteBackupConfig,
+	updateBackupConfig
 } from '@/services/backup';
 import moment from 'moment';
 import transTime from '@/utils/transTime';
@@ -138,7 +139,7 @@ export default function Config(props) {
 		setVisible(false);
 	};
 
-	const backupStatusChange = (checked) => {
+	const backupStatusChange = (checked, record) => {
 		if (listData.type === 'elasticsearch') {
 			const list = [];
 			for (let i in listData.quota) {
@@ -178,69 +179,51 @@ export default function Config(props) {
 				return;
 			}
 		}
-		if (!backupData.configed) {
-			Message.show(messageConfig('error', '失败', '请先配置备份信息！'));
-			return;
-		}
-		const arr = backupData.time.split(':');
-		const week = backupData.cycle
-			.split(',')
-			.map((item) => listMap[item])
-			.join(',');
-		const cron = `${arr[1]} ${arr[0]} ? ? ${week}`;
+
 		Dialog.show({
 			title: '操作确认',
 			content: checked
 				? '请确认是否打开备份设置？'
 				: '请确认是否关闭备份设置',
 			onOk: () => {
-				if (backupData.configed) {
-					const sendData = {
-						clusterId,
-						namespace,
-						middlewareName: listData.name,
-						type: listData.type,
-						limitRecord: backupData.limitRecord,
-						pause: checked ? 'off' : 'on',
-						cron
-					};
-					if (!checked && !backupData.canPause) {
+				const sendData = {
+					clusterId,
+					namespace,
+					backupScheduleName: record.backupScheduleName,
+					type: listData.type,
+					limitRecord: record.limitRecord,
+					pause: checked ? 'off' : 'on',
+					cron: record.cron
+				};
+				if (checked && !record.canPause) {
+					Message.show(
+						messageConfig('error', '失败', '当前中间件不支持此操作')
+					);
+					getData();
+					return;
+				}
+				updateBackupConfig(sendData).then((res) => {
+					if (res.success) {
 						Message.show(
 							messageConfig(
-								'error',
-								'失败',
-								'当前中间件不支持此操作'
+								'success',
+								'成功',
+								`${
+									checked
+										? '备份设置开启成功'
+										: '备份设置关闭成功'
+								}`
 							)
 						);
-						return;
+						setBackupData({
+							...backupData,
+							pause: checked ? 'off' : 'on'
+						});
+						getData();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
 					}
-					addBackupConfig(sendData).then((res) => {
-						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									`${
-										checked
-											? '备份设置开启成功'
-											: '备份设置关闭成功'
-									}`
-								)
-							);
-							setBackupData({
-								...backupData,
-								pause: checked ? 'off' : 'on'
-							});
-							getData();
-						} else {
-							Message.show(messageConfig('error', '失败', res));
-						}
-					});
-				} else {
-					Message.show(
-						messageConfig('error', '失败', '请先配置备份信息！')
-					);
-				}
+				});
 			}
 		});
 	};
@@ -273,13 +256,13 @@ export default function Config(props) {
 		)
 	};
 
-	const statusRender = (value) => {
+	const statusRender = (value, index, record) => {
 		return (
 			<Switch
-				// onChange={backupStatusChange}
+				onChange={(checked) => backupStatusChange(checked, record)}
 				checkedChildren="开"
 				unCheckedChildren="关"
-				checked={value === 'off'}
+				defaultChecked={value !== 'off'}
 			/>
 		);
 	};
@@ -335,14 +318,17 @@ export default function Config(props) {
 				<LinkButton
 					onClick={() => {
 						history.push('/disasterBackup/dataSecurity/addBackup');
-						storage.setSession('detail', { ...props, record });
+						storage.setSession('detail', {
+							...props,
+							record,
+							isEdit: true
+						});
 					}}
 				>
 					编辑
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						console.log(record);
 						Dialog.show({
 							title: '操作确认',
 							content: '备份删除后将无法恢复，请确认执行',

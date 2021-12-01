@@ -27,6 +27,9 @@ export const getBackupConfig = (params: listParams) => {
 	return Axios.get(BACKUP.backups, params);
 };
 export const addBackupConfig = (params: listParams) => {
+	return Axios.post(BACKUP.backups, params);
+};
+export const updateBackupConfig = (params: listParams) => {
 	return Axios.put(BACKUP.backups, params);
 };
 export const deleteBackupConfig = (params: listParams) => {

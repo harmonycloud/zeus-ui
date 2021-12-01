@@ -97,7 +97,7 @@ export const getUsers = (params: any) => {
 export const sendInsertUser = (params: any) => {
 	return Axios.json(USER.insertUser, params, {}, 'POST');
 };
-// * 选择钉钉告警
+// * 选择钉钉、或者钉钉邮箱告警告警
 export const insertDing = (params: any) => {
 	return Axios.json(USER.insertDing, params, {}, 'POST');
 };

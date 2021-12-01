@@ -13,9 +13,14 @@ import moment from 'moment';
 import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
-import { addBackupConfig, backupNow } from '@/services/backup';
+import {
+	addBackupConfig,
+	backupNow,
+	updateBackupConfig
+} from '@/services/backup';
 import { Page, Content } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
+import { useHistory } from 'react-router';
 import { Button } from '@alifd/next';
 
 const formItemLayout = {
@@ -52,7 +57,8 @@ function BackupSetting(props) {
 		namespace,
 		data: listData,
 		isEdit,
-		record
+		record,
+		backup
 	} = storage.getSession('detail');
 	const [topoData, setTopoData] = useState();
 	const [backupData, setBackupData] = useState({
@@ -64,6 +70,7 @@ function BackupSetting(props) {
 		pause: 'on',
 		canPause: true
 	});
+	const history = useHistory();
 	const [backupObj, setBackupObj] = useState();
 
 	const onOk = () => {
@@ -132,27 +139,26 @@ function BackupSetting(props) {
 		const week = values.cycle.join(',');
 		const cron = `${minute} ${hour} ? ? ${week}`;
 
-		const sendData = {
-			clusterId,
-			namespace,
-			middlewareName: listData.name,
-			type: listData.type,
-			limitRecord: values.count,
-			cron:
-				typeof values.time !== 'string'
-					? cron
-					: `${values.time.substring(3, 5)} ${values.time.substring(
-							0,
-							2
-					  )} ? ? ${week}`
-		};
 		if (!backupObj) {
 			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
 			return;
-		} else {
-			if (backupObj !== 'serve') sendData.pod = backupObj;
 		}
-		if (backupData.configed) {
+		if (!isEdit) {
+			const sendData = {
+				clusterId,
+				namespace,
+				middlewareName: listData.name,
+				type: listData.type,
+				limitRecord: values.count,
+				cron:
+					typeof values.time !== 'string'
+						? cron
+						: `${values.time.substring(
+								3,
+								5
+						  )} ${values.time.substring(0, 2)} ? ? ${week}`
+			};
+			if (backupObj !== 'serve') sendData.pod = backupObj;
 			addBackupConfig(sendData)
 				.then((res) => {
 					if (res.success) {
@@ -167,19 +173,62 @@ function BackupSetting(props) {
 					// getData();
 				});
 		} else {
-			backupNow(sendData)
-				.then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份恢复成功')
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				})
-				.finally(() => {
-					// getData();
-				});
+			if (record) {
+				const sendData = {
+					clusterId,
+					namespace,
+					backupScheduleName: record.backupScheduleName,
+					type: listData.type,
+					limitRecord: values.count,
+					cron:
+						typeof values.time !== 'string'
+							? cron
+							: `${values.time.substring(
+									3,
+									5
+							  )} ${values.time.substring(0, 2)} ? ? ${week}`
+				};
+				updateBackupConfig(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', '备份设置成功')
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						// getData();
+					});
+			} else {
+				const sendData = {
+					clusterId,
+					namespace,
+					backupName: backup.backupName,
+					type: listData.type,
+					middlewareName: listData.name,
+					backupFileName: backup.backupFileName
+				};
+				if (backupObj !== 'serve') {
+					sendData.pod = backupObj;
+				} else {
+					sendData.pod = listData.pods.map((item) => item.podName);
+				}
+				backupNow(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', '备份恢复成功')
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						// getData();
+					});
+			}
 		}
 	};
 
@@ -193,10 +242,9 @@ function BackupSetting(props) {
 						backupObj={backupObj}
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
-						backupType={record.backupType}
 					/>
 				)}
-				{!isEdit ? (
+				{!isEdit || record ? (
 					<Form
 						{...formItemLayout}
 						field={field}
@@ -236,7 +284,7 @@ function BackupSetting(props) {
 						</Form.Item>
 					</Form>
 				) : null}
-				{!isEdit ? (
+				{!isEdit || record ? (
 					<div
 						style={{
 							padding: '16px 9px',
@@ -256,7 +304,12 @@ function BackupSetting(props) {
 					<div style={{ padding: '16px 9px' }}>
 						{listData.type === 'mysql' && (
 							<Button
-								onClick={onOk}
+								onClick={() =>
+									history.push(
+										'/serviceList/mysqlCreate/MySQL/mysql/' +
+											listData.chartVersion
+									)
+								}
 								type="primary"
 								style={{ marginRight: '9px' }}
 							>

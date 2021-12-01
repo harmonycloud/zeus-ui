@@ -10,7 +10,9 @@ import {
 	deleteAlarm,
 	deleteAlarms,
 	getUsedAlarms,
-	getUsedAlarm
+	getUsedAlarm,
+	updateAlarms,
+	updateAlarm
 } from '@/services/middleware';
 import storage from '@/utils/storage';
 
@@ -170,7 +172,56 @@ function Rules(props) {
 	};
 
 	const enableRender = (value, index, record) => {
-		return <Switch checked={Number(value) === 1} />;
+		return (
+			<Switch
+				defaultChecked={Number(value) === 1}
+				onChange={(checked) => {
+					if (alarmType === 'system') {
+						const sendData = {
+							url: {
+								clusterId: record.labels.clusterId
+							},
+							data: [{ ...record, enable: checked ? 1 : 0 }]
+						};
+						updateAlarm(sendData).then((res) => {
+							if (res.success) {
+								getData(
+									clusterId,
+									middlewareName,
+									namespace,
+									''
+								);
+								Message.show(
+									messageConfig('success', '成功', '修改成功')
+								);
+							}
+						});
+					} else {
+						const sendData = {
+							url: {
+								clusterId,
+								namespace,
+								middlewareName
+							},
+							data: [{ ...record, enable: checked ? 1 : 0 }]
+						};
+						updateAlarms(sendData).then((res) => {
+							if (res.success) {
+								getData(
+									clusterId,
+									middlewareName,
+									namespace,
+									''
+								);
+								Message.show(
+									messageConfig('success', '成功', '修改成功')
+								);
+							}
+						});
+					}
+				}}
+			/>
+		);
 	};
 
 	return (

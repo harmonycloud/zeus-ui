@@ -45,7 +45,7 @@ export default function DataSecurity(): JSX.Element {
 	};
 	const NotSupport = () => (
 		<h3 style={{ textAlign: 'center' }}>
-			该中间件类型不支持该功能，请选择mysql类型的中间件
+			该中间件类型不支持该功能，请选择mysql或者elasticsearch类型的中间件
 		</h3>
 	);
 	return (
@@ -55,20 +55,23 @@ export default function DataSecurity(): JSX.Element {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{basicData?.type !== 'mysql' && isService && <NotSupport />}
-			{basicData?.type === 'mysql' &&
-				isService &&
-				JSON.stringify(data) !== '{}' && (
-					<BackupRecovery
-						type={basicData?.type}
-						data={data}
-						storage={basicData?.storage}
-						clusterId={basicData?.clusterId}
-						namespace={basicData?.namespace}
-						customMid={data?.dynamicValues !== null}
-						capabilities={(data && data.capabilities) || []}
-					/>
-				)}
+			{basicData?.type !== 'mysql' &&
+				basicData?.type !== 'elasticsearch' &&
+				isService && <NotSupport />}
+			{basicData?.type === 'mysql' ||
+				(basicData?.type === 'elasticsearch' &&
+					isService &&
+					JSON.stringify(data) !== '{}' && (
+						<BackupRecovery
+							type={basicData?.type}
+							data={data}
+							storage={basicData?.storage}
+							clusterId={basicData?.clusterId}
+							namespace={basicData?.namespace}
+							customMid={data?.dynamicValues !== null}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					))}
 			{!isService && <NoService />}
 		</SecondLayout>
 	);
