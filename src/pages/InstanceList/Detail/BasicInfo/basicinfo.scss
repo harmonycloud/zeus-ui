@@ -26,9 +26,21 @@
 	text-align: center;
 	color: #666666;
 }
+@media screen and (max-width: 1920px) {
+	.annotation-content{
+		word-wrap: break-word;
+		width: 90%;
+	}
+}
+@media screen and (max-width: 1840px) {
+	.annotation-content{
+		word-wrap: break-word;
+		width: 80%;
+	}
+}
 @media screen and (max-width: 1650px) {
 	.annotation-content{
 		word-wrap: break-word;
-		width: 77%;
+		width: 60%;
 	}
 }
