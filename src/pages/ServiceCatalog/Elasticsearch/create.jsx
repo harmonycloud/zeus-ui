@@ -1275,7 +1275,12 @@ const ElasticsearchCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
-					{childrenRender(customForm)}
+					{childrenRender(
+						customForm,
+						field,
+						globalCluster,
+						globalNamespace
+					)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"
