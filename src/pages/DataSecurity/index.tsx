@@ -55,20 +55,23 @@ export default function DataSecurity(): JSX.Element {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{(basicData?.type !== 'mysql' && basicData?.type !== 'elasticsearch') && isService && <NotSupport />}
-			{basicData?.type === 'mysql' || basicData?.type === 'elasticsearch' &&
-				isService &&
-				JSON.stringify(data) !== '{}' && (
-					<BackupRecovery
-						type={basicData?.type}
-						data={data}
-						storage={basicData?.storage}
-						clusterId={basicData?.clusterId}
-						namespace={basicData?.namespace}
-						customMid={data?.dynamicValues !== null}
-						capabilities={(data && data.capabilities) || []}
-					/>
-				)}
+			{basicData?.type !== 'mysql' &&
+				basicData?.type !== 'elasticsearch' &&
+				isService && <NotSupport />}
+			{basicData?.type === 'mysql' ||
+				(basicData?.type === 'elasticsearch' &&
+					isService &&
+					JSON.stringify(data) !== '{}' && (
+						<BackupRecovery
+							type={basicData?.type}
+							data={data}
+							storage={basicData?.storage}
+							clusterId={basicData?.clusterId}
+							namespace={basicData?.namespace}
+							customMid={data?.dynamicValues !== null}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					))}
 			{!isService && <NoService />}
 		</SecondLayout>
 	);

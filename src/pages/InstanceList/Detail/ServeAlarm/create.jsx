@@ -206,19 +206,19 @@ function CreateAlarm(props) {
 		}
 	};
 
-    const addAlarm = (index) => {
-        if (alarms && alarms.length > 0) {
-            const addItem = alarmRules[index];
-            setAlarmRules([
-                ...alarmRules,
-                { ...addItem, id: Math.random() * 100 }
-            ]);
-        }
-    };
-    const delAlarm = (i) => {
-        const list = alarmRules.filter((item) => item.id !== i);
-        setAlarmRules(list);
-    };
+	const addAlarm = (index) => {
+		if (alarms && alarms.length > 0) {
+			const addItem = alarmRules[index];
+			setAlarmRules([
+				...alarmRules,
+				{ ...addItem, id: Math.random() * 100 }
+			]);
+		}
+	};
+	const delAlarm = (i) => {
+		const list = alarmRules.filter((item) => item.id !== i);
+		setAlarmRules(list);
+	};
 
 	useEffect(() => {
 		if (record) {
@@ -287,80 +287,80 @@ function CreateAlarm(props) {
 		return () => storage.removeSession('alarm');
 	}, []);
 
-    const onCreate = (value) => {
-        if (alarmType === 'system') {
-            const sendData = {
-                url: {
-                    clusterId: systemId
-                },
-                data: value
-            };
-            if (record) {
-                updateAlarm(sendData).then((res) => {
-                    if (res.success) {
-                        Message.show(
-                            messageConfig('success', '成功', '告警规则修改成功')
-                        );
-                    } else {
-                        Message.show(messageConfig('error', '失败', res));
-                    }
-                });
-            } else {
-                createAlarm(sendData).then((res) => {
-                    if (res.success) {
-                        Message.show(
-                            messageConfig('success', '成功', '告警规则设置成功')
-                        );
-                    } else {
-                        Message.show(messageConfig('error', '失败', res));
-                    }
-                });
-            }
-        } else {
-            const sendData = {
-                url: {
-                    clusterId: clusterId,
-                    middlewareName: middlewareName,
-                    namespace: namespace
-                },
-                data: value
-            };
-            if (record) {
-                updateAlarms(sendData).then((res) => {
-                    if (res.success) {
-                        Message.show(
-                            messageConfig('success', '成功', '告警规则修改成功')
-                        );
-                    } else {
-                        Message.show(messageConfig('error', '失败', res));
-                    }
-                });
-            }else{
-                createAlarms(sendData).then((res) => {
-                    if (res.success) {
-                        Message.show(
-                            messageConfig('success', '成功', '告警规则设置成功')
-                        );
-                    } else {
-                        Message.show(messageConfig('error', '失败', res));
-                    }
-                });
-            }
-        }
-        if (dingChecked && !mailChecked) {
-            insertDing([]).then(res => {
-                if (!res.success) return;
-            })
-        } else if (dingChecked && mailChecked) {
-            insertDing(insertUser).then(res => {
-                if (!res.success) return;
-            })
-        } else {
-            sendInsertUser(insertUser).then(res => {
-                if (!res.success) return;
-            })
-        }
-    };
+	const onCreate = (value) => {
+		if (alarmType === 'system') {
+			const sendData = {
+				url: {
+					clusterId: systemId
+				},
+				data: value
+			};
+			if (record) {
+				updateAlarm(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '告警规则修改成功')
+						);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			} else {
+				createAlarm(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '告警规则设置成功')
+						);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		} else {
+			const sendData = {
+				url: {
+					clusterId: clusterId,
+					middlewareName: middlewareName,
+					namespace: namespace
+				},
+				data: value
+			};
+			if (record) {
+				updateAlarms(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '告警规则修改成功')
+						);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			} else {
+				createAlarms(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '告警规则设置成功')
+						);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		}
+		if (dingChecked && !mailChecked) {
+			insertDing([]).then((res) => {
+				if (!res.success) return;
+			});
+		} else if (dingChecked && mailChecked) {
+			insertDing(insertUser).then((res) => {
+				if (!res.success) return;
+			});
+		} else {
+			sendInsertUser(insertUser).then((res) => {
+				if (!res.success) return;
+			});
+		}
+	};
 
     const onOk = () => {
         const flag = alarmRules.every((item) => {

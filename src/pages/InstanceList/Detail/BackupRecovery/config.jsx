@@ -12,7 +12,13 @@ import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import BackupSettingForm from './backupSetting';
 import messageConfig from '@/components/messageConfig';
-import { getBackupConfig, addBackupConfig, backupNow, deleteBackupConfig, updateBackupConfig } from '@/services/backup';
+import {
+	getBackupConfig,
+	addBackupConfig,
+	backupNow,
+	deleteBackupConfig,
+	updateBackupConfig
+} from '@/services/backup';
 import moment from 'moment';
 import transTime from '@/utils/transTime';
 import storage from '@/utils/storage';
@@ -191,11 +197,7 @@ export default function Config(props) {
 				};
 				if (!record.canPause) {
 					Message.show(
-						messageConfig(
-							'error',
-							'失败',
-							'当前中间件不支持此操作'
-						)
+						messageConfig('error', '失败', '当前中间件不支持此操作')
 					);
 					getData();
 					return;
@@ -206,9 +208,10 @@ export default function Config(props) {
 							messageConfig(
 								'success',
 								'成功',
-								`${checked
-									? '备份设置开启成功'
-									: '备份设置关闭成功'
+								`${
+									checked
+										? '备份设置开启成功'
+										: '备份设置关闭成功'
 								}`
 							)
 						);
@@ -312,10 +315,16 @@ export default function Config(props) {
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => {
-					history.push('/disasterBackup/dataSecurity/addBackup');
-					storage.setSession('detail', { ...props, record, isEdit: true })
-				}}>
+				<LinkButton
+					onClick={() => {
+						history.push('/disasterBackup/dataSecurity/addBackup');
+						storage.setSession('detail', {
+							...props,
+							record,
+							isEdit: true
+						});
+					}}
+				>
 					编辑
 				</LinkButton>
 				<LinkButton

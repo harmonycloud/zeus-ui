@@ -101,6 +101,9 @@ export const installIngress = (params) => {
 export const accessIngress = (params) => {
 	return Axios.json(COMMON.getIngresses, params, {}, 'PUT');
 };
+export const updateIngress = (params) => {
+	return Axios.json(COMMON.deleteIngress, params, {}, 'PUT');
+};
 // * 获取外接动态表单
 export const getAspectFrom = () => {
 	return Axios.get(COMMON.getAspectFrom);

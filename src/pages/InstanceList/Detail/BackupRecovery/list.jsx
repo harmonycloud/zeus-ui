@@ -132,8 +132,15 @@ export default function List(props) {
 				<LinkButton
 					disabled={record.backupName === ''}
 					onClick={() => {
-						history.push('/disasterBackup/dataSecurity/addBackup')
-						sessionStorage.setItem('detail', JSON.stringify({ ...props, isEdit: true, backup: record }))
+						history.push('/disasterBackup/dataSecurity/addBackup');
+						sessionStorage.setItem(
+							'detail',
+							JSON.stringify({
+								...props,
+								isEdit: true,
+								backup: record
+							})
+						);
 					}}
 				>
 					使用备份
@@ -220,8 +227,8 @@ export default function List(props) {
 						? 1
 						: -1
 					: result > 0
-						? -1
-						: 1;
+					? -1
+					: 1;
 			});
 			setBackups([...tempDataSource]);
 		} else if (dataIndex === 'phrase') {
@@ -237,9 +244,9 @@ export default function List(props) {
 
 	const roleRender = (value, index, record) => {
 		if (value === 'Cluster') {
-			return "服务"
+			return '服务';
 		} else {
-			return "实例"
+			return '实例';
 		}
 	};
 
@@ -267,7 +274,7 @@ export default function List(props) {
 					<Table.Column
 						title="备份源名称"
 						dataIndex="sourceName"
-					// cell={typeRender}
+						// cell={typeRender}
 					/>
 					<Table.Column
 						title="备份位置"
