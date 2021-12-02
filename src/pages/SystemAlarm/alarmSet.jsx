@@ -159,6 +159,11 @@ function AlarmSet() {
 		let sendData = { email: field.getValues().userName };
 		connectMail(sendData).then(res => {
 			// console.log(res);
+			if (res.success) {
+				Message.show(
+					messageConfig('success', '成功', '测试完成')
+				);
+			}
 			res.success ? setConnect('good') : setConnect('bad');
 		})
 	}
@@ -183,7 +188,12 @@ function AlarmSet() {
 				}
 			})
 			connectDing(arrs).then(res => {
-				// console.log(res);
+				console.log(res);
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '测试完成')
+					);
+				}
 				setDingConnect(res.data.map(item => item.success))
 			})
 		});
@@ -347,8 +357,8 @@ function AlarmSet() {
 														<Button onClick={() => reduceDingFormList(item.id)} className={index === 0 ? "disabled" : ''}>-</Button>
 													</div>
 													{
-														dingConnect && <div className="concat">
-															<span className={dingConnect ? 'good' : 'bad'}>{dingConnect ? '可用' : '不可用'}</span>
+														dingConnect && typeof dingConnect[index] !== 'undefined' && <div className="concat">
+															<span className={dingConnect[index] ? 'good' : 'bad'}>{dingConnect[index] ? '可用' : '不可用'}</span>
 														</div>
 													}
 												</Form.Item>

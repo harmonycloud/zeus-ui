@@ -48,35 +48,35 @@ function AlarmRecord(props) {
 		getData();
 	}, [middlewareName]);
 
-	const getData = () => {
-		if (alarmType === 'system') {
-			const sendData = {
-				current: current,
-				size: 10,
-				level: level,
-				clusterId,
-				lay: 'system'
-			};
-			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.list : []);
-				setTotal(res.data ? res.data.total : 0);
-			});
-		} else {
-			const sendData = {
-				current: current,
-				size: 10,
-				level: level,
-				middlewareName,
-				clusterId,
-				namespace,
-				lay: 'service'
-			};
-			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.list : []);
-				setTotal(res.data ? res.data.total : 0);
-			});
-		}
-	};
+    const getData = () => {
+        if(alarmType === 'system'){
+            const sendData = {
+                // current: current,
+                // size: 10,
+                level: level,
+                clusterId,
+                lay: 'system'
+            };
+            getEvent(sendData).then((res) => {
+                setEventData(res.data ? res.data.list : []);
+                setTotal(res.data ? res.data.total : 0);
+            });
+        }else{
+            const sendData = {
+                // current: current,
+                // size: 10,
+                level: level,
+                middlewareName,
+                clusterId,
+                namespace,
+                lay: 'service'
+            };
+            getEvent(sendData).then((res) => {
+                setEventData(res.data ? res.data.list : []);
+                setTotal(res.data ? res.data.total : 0);
+            });
+        }
+    }
 
 	const levelRender = (value, index, record) => {
 		return (

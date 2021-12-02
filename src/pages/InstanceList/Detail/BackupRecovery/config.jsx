@@ -195,7 +195,7 @@ export default function Config(props) {
 					pause: checked ? 'off' : 'on',
 					cron: record.cron
 				};
-				if (checked && !record.canPause) {
+				if (!record.canPause) {
 					Message.show(
 						messageConfig('error', '失败', '当前中间件不支持此操作')
 					);
@@ -262,7 +262,7 @@ export default function Config(props) {
 				onChange={(checked) => backupStatusChange(checked, record)}
 				checkedChildren="开"
 				unCheckedChildren="关"
-				defaultChecked={value !== 'off'}
+				checked={value === 'off'}
 			/>
 		);
 	};
