@@ -350,6 +350,20 @@ const MysqlCreate = (props) => {
 							}
 						}
 					};
+					// * 动态表单相关
+					if (customForm) {
+						const dynamicValues = {};
+						let keys = [];
+						for (let i in customForm) {
+							const list = getCustomFormKeys(customForm[i]);
+							keys = [...list, ...keys];
+						}
+						keys.forEach((item) => {
+							dynamicValues[item] = values[item];
+						});
+						sendData.relationMiddleware.dynamicValues =
+							dynamicValues;
+					}
 				}
 				// 灾备服务-在已有源服务上创建备服务
 				if (disasterOriginName) {
@@ -416,6 +430,21 @@ const MysqlCreate = (props) => {
 							}
 						}
 					};
+					// * 动态表单相关
+					if (customForm) {
+						const dynamicValues = {};
+						let keys = [];
+						for (let i in customForm) {
+							const list = getCustomFormKeys(customForm[i]);
+							keys = [...list, ...keys];
+						}
+						keys.forEach((item) => {
+							dynamicValues[item] = values[item];
+						});
+						sendData.dynamicValues = dynamicValues;
+						sendData.relationMiddleware.dynamicValues =
+							dynamicValues;
+					}
 					sendData = sendDataTemp;
 				}
 				console.log(sendData);
@@ -510,6 +539,11 @@ const MysqlCreate = (props) => {
 					'Gi'
 				)
 			});
+			if (res.data.dynamicValues) {
+				for (let i in res.data.dynamicValues) {
+					field.setValue(i, res.data.dynamicValues[i]);
+				}
+			}
 		});
 	};
 	const handleReuse = (checked) => {
@@ -535,6 +569,16 @@ const MysqlCreate = (props) => {
 				storageClass: '',
 				storageQuota: ''
 			});
+			if (customForm) {
+				let keys = [];
+				for (let i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					field.setValue(item, '');
+				});
+			}
 		} else {
 			if (originData.nodeAffinity) {
 				setAffinity({
@@ -564,6 +608,16 @@ const MysqlCreate = (props) => {
 					'Gi'
 				)
 			});
+			if (customForm) {
+				let keys = [];
+				for (let i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					field.setValue(item, originData.dynamicValues[item]);
+				});
+			}
 		}
 	};
 
