@@ -51,8 +51,8 @@ function AlarmRecord(props) {
     const getData = () => {
         if(alarmType === 'system'){
             const sendData = {
-                current: current,
-                size: 10,
+                // current: current,
+                // size: 10,
                 level: level,
                 clusterId,
                 lay: 'system'
@@ -63,8 +63,8 @@ function AlarmRecord(props) {
             });
         }else{
             const sendData = {
-                current: current,
-                size: 10,
+                // current: current,
+                // size: 10,
                 level: level,
                 middlewareName,
                 clusterId,

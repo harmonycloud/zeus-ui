@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import {
-	Form,
 	Select,
 	Input,
-	Table,
 	Button,
 	Grid,
 	Icon,
@@ -23,8 +21,8 @@ import {
 	updateAlarms
 } from '@/services/middleware';
 import { getUsers, sendInsertUser, insertDing } from '@/services/user';
-import './index.scss';
 import storage from '@/utils/storage';
+import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -222,7 +220,7 @@ function CreateAlarm(props) {
         setAlarmRules(list);
     };
 
-	useEffect(async () => {
+	useEffect(() => {
 		if (record) {
 			setAlarmRules([{ ...record, severity: record.labels.severity }]);
 		} else {
@@ -244,7 +242,7 @@ function CreateAlarm(props) {
 					}
 				]);
 			} else {
-				await getCanUse(clusterId, namespace, middlewareName, type);
+				getCanUse(clusterId, namespace, middlewareName, type);
 			}
 		}
 		getClusters().then((res) => {
@@ -256,7 +254,7 @@ function CreateAlarm(props) {
 		getUsers().then(async (res) => {
 			// console.log(res);
 			if (!res.data) return;
-			await setSelectUser(res.data.userBy.map((item) => item.id));
+			setSelectUser(res.data.userBy.map((item) => item.id));
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
@@ -412,7 +410,7 @@ function CreateAlarm(props) {
             }
         } else {
             const list = alarmRules.map((item) => {
-                item.labels = { severity: item.severity, ...item.labels };
+                item.labels = { ...item.labels, severity: item.severity };
                 item.lay = 'service';
                 item.enable = 0;
                 delete item.severity;
@@ -444,9 +442,8 @@ function CreateAlarm(props) {
 
 	return (
 		<Page className="create-alarm">
-			{console.log(record, alarmRules)}
 			<Header
-				title="新建告警规则"
+				title={record ? "修改告警规则" : "新建告警规则"}
 				hasBackArrow
 				renderBackArrow={(elem) => (
 					<span

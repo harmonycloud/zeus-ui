@@ -123,16 +123,15 @@ function BackupSetting(props) {
 	};
 
 	const onCreate = (values) => {
-		const minute = moment(values.time).get('minute');
-		const hour = moment(values.time).get('hour');
-		const week = values.cycle.join(',');
-		const cron = `${minute} ${hour} ? ? ${week}`;
-
 		if (!backupObj) {
 			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
 			return;
 		}
 		if (!isEdit) {
+			const minute = moment(values.time).get('minute');
+			const hour = moment(values.time).get('hour');
+			const week = values.cycle.join(',');
+			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
 				clusterId,
 				namespace,
@@ -157,6 +156,10 @@ function BackupSetting(props) {
 				});
 		} else {
 			if (record) {
+				const minute = moment(values.time).get('minute');
+				const hour = moment(values.time).get('hour');
+				const week = values.cycle.join(',');
+				const cron = `${minute} ${hour} ? ? ${week}`;
 				const sendData = {
 					clusterId,
 					namespace,
@@ -169,7 +172,7 @@ function BackupSetting(props) {
 					.then((res) => {
 						if (res.success) {
 							Message.show(
-								messageConfig('success', '成功', '备份设置成功')
+								messageConfig('success', '成功', '备份修改成功')
 							);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
@@ -187,24 +190,24 @@ function BackupSetting(props) {
 					middlewareName: listData.name,
 					backupFileName: backup.backupFileName,
 				};
-				if (backupObj !== 'serve'){
+				if (backupObj !== 'serve') {
 					sendData.pod = backupObj;
-				}else{
+				} else {
 					sendData.pod = listData.pods.map(item => item.podName);
 				}
 				backupNow(sendData)
-				.then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份恢复成功')
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				})
-				.finally(() => {
-					// getData();
-				});
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', '备份恢复成功')
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						// getData();
+					});
 			}
 		}
 	};
@@ -263,7 +266,7 @@ function BackupSetting(props) {
 						<Button>取消</Button>
 					</div> :
 						<div style={{ padding: '16px 9px' }}>
-							{listData.type === 'mysql' && <Button onClick={() => history.push('/serviceList/mysqlCreate/MySQL/mysql/'+listData.chartVersion)} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
+							{listData.type === 'mysql' && <Button onClick={() => history.push('/serviceList/mysqlCreate/MySQL/mysql/' + listData.chartVersion)} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
 							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
 							<Button>取消</Button>
 						</div>
