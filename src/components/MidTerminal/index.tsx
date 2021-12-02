@@ -29,7 +29,7 @@ export default function MidTerminal(): JSX.Element {
 	useEffect(() => {
 		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
 		const terminal = new Terminal({
-			cursorStyle: 'underline',
+			cursorStyle: 'block',
 			cursorBlink: true,
 			theme: {
 				foreground: '#dddddd',
