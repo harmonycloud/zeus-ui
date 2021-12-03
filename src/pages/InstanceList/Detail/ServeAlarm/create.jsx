@@ -26,28 +26,17 @@ import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
-const times = [
-	{ label: '实时触发', value: '0s' },
-	{ label: '持续30秒', value: '30s' },
-	{ label: '持续1分钟', value: '1m' },
-	{ label: '持续2分钟', value: '2m' },
-	{ label: '持续5分钟', value: '5m' },
-	{ label: '持续15分钟', value: '15m' },
-	{ label: '持续30分钟', value: '30m' }
-];
 const symbols = ['>=', '>', '==', '<', '<=', '!='];
 const silences = [
-	{ value: '1m', label: '1分钟' },
 	{ value: '5m', label: '5分钟' },
 	{ value: '10m', label: '10分钟' },
+	{ value: '15m', label: '15分钟' },
 	{ value: '30m', label: '30分钟' },
 	{ value: '1h', label: '1小时' },
+	{ value: '2h', label: '2小时' },
+	{ value: '3h', label: '3小时' },
 	{ value: '6h', label: '6小时' },
 	{ value: '12h', label: '12小时' },
-	{ value: '1d', label: '1天' },
-	{ value: '3d', label: '3天' },
-	{ value: '5d', label: '5天' },
-	{ value: '1w', label: '1周' }
 ];
 const alarmWarn = [
 	{
@@ -74,7 +63,6 @@ function CreateAlarm(props) {
 		}
 	]);
 	const [alarmRules, setAlarmRules] = useState([]);
-	const [silence, setSilence] = useState(silences[0].value);
 	const [poolList, setPoolList] = useState([]);
 	const [systemId, setSystemId] = useState();
 	const [users, setUsers] = useState([]);
@@ -114,7 +102,6 @@ function CreateAlarm(props) {
 		if (type === 'alert') {
 			const listTemp = alarms;
 			const filterItem = listTemp.filter((item) => item.alert === value);
-			console.log(filterItem);
 			const list = alarmRules.map((item) => {
 				if (item.id === record.id) {
 					item.alert = value;
@@ -362,83 +349,83 @@ function CreateAlarm(props) {
 		}
 	};
 
-    const onOk = () => {
-        const flag = alarmRules.every((item) => {
-            if (item.threshold !== null) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-        if (alarmType === 'system') {
-            const data = alarmRules.map((item) => {
-                item.labels = { ...item.labels, severity: item.severity };
-                item.annotations = {
-                    message: item.content
-                }
-                item.lay = 'system';
-                item.enable = 0;
-                delete item.severity;
-                return item;
-            });
-            if (systemId) {
-                if (flag) {
-                    if (!mailChecked && !dingChecked) {
-                        Message.show(
-                            messageConfig('error', '失败', '请选择告警方式')
-                        );
-                    } else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
-                        if (insertUser) {
-                            onCreate(data);
-                        } else {
-                            Message.show(
-                                messageConfig('error', '失败', '请选择邮箱通知用户')
-                            );
-                        }
-                    } else if (dingChecked) {
-                        onCreate(data);
-                    }
-                } else {
-                    Message.show(
-                        messageConfig('error', '失败', '存在监控项缺少阈值')
-                    );
-                }
-            } else {
-                Message.show(
-                    messageConfig('error', '失败', '请选择资源池')
-                );
-            }
-        } else {
-            const list = alarmRules.map((item) => {
-                item.labels = { ...item.labels, severity: item.severity };
-                item.lay = 'service';
-                item.enable = 0;
-                delete item.severity;
-                return item;
-            });
-            if (flag) {
-                if (!mailChecked && !dingChecked) {
-                    Message.show(
-                        messageConfig('error', '失败', '请选择告警方式')
-                    );
-                } else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
-                    if (insertUser) {
-                        onCreate(list);
-                    } else {
-                        Message.show(
-                            messageConfig('error', '失败', '请选择邮箱通知用户')
-                        );
-                    }
-                } else if (dingChecked) {
-                    onCreate(list);
-                }
-            } else {
-                Message.show(
-                    messageConfig('error', '失败', '存在监控项缺少阈值')
-                );
-            }
-        }
-    };
+	const onOk = () => {
+		const flag = alarmRules.every((item) => {
+			if (item.threshold !== null) {
+				return true;
+			} else {
+				return false;
+			}
+		});
+		if (alarmType === 'system') {
+			const data = alarmRules.map((item) => {
+				item.labels = { ...item.labels, severity: item.severity };
+				item.annotations = {
+					message: item.content
+				}
+				item.lay = 'system';
+				item.enable = 0;
+				delete item.severity;
+				return item;
+			});
+			if (systemId) {
+				if (flag) {
+					if (!mailChecked && !dingChecked) {
+						Message.show(
+							messageConfig('error', '失败', '请选择告警方式')
+						);
+					} else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
+						if (insertUser) {
+							onCreate(data);
+						} else {
+							Message.show(
+								messageConfig('error', '失败', '请选择邮箱通知用户')
+							);
+						}
+					} else if (dingChecked) {
+						onCreate(data);
+					}
+				} else {
+					Message.show(
+						messageConfig('error', '失败', '存在监控项缺少阈值')
+					);
+				}
+			} else {
+				Message.show(
+					messageConfig('error', '失败', '请选择资源池')
+				);
+			}
+		} else {
+			const list = alarmRules.map((item) => {
+				item.labels = { ...item.labels, severity: item.severity };
+				item.lay = 'service';
+				item.enable = 0;
+				delete item.severity;
+				return item;
+			});
+			if (flag) {
+				if (!mailChecked && !dingChecked) {
+					Message.show(
+						messageConfig('error', '失败', '请选择告警方式')
+					);
+				} else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
+					if (insertUser) {
+						onCreate(list);
+					} else {
+						Message.show(
+							messageConfig('error', '失败', '请选择邮箱通知用户')
+						);
+					}
+				} else if (dingChecked) {
+					onCreate(list);
+				}
+			} else {
+				Message.show(
+					messageConfig('error', '失败', '存在监控项缺少阈值')
+				);
+			}
+		}
+	};
 
 	return (
 		<Page className="create-alarm">
@@ -523,7 +510,7 @@ function CreateAlarm(props) {
 												onChange(value, item, 'alert')
 											}
 											placeholder="CPU使用率"
-											style={{ marginRight: 8 }}
+											style={{ marginRight: 8, width: '100%' }}
 											value={item.alert}
 										>
 											{alarms &&
@@ -545,7 +532,7 @@ function CreateAlarm(props) {
 												onChange(value, item, 'symbol')
 											}
 											style={{
-												width: 83,
+												width: '60%',
 												minWidth: 'auto'
 											}}
 											placeholder=">="
@@ -561,7 +548,7 @@ function CreateAlarm(props) {
 											})}
 										</Select>
 										<Input
-											style={{ width: '57px' }}
+											style={{ width: '30%' }}
 											value={item.threshold}
 											onChange={(value) => {
 												onChange(
@@ -575,7 +562,7 @@ function CreateAlarm(props) {
 									</Col>
 									<Col span={5}>
 										<Input
-											style={{ width: '46px' }}
+											style={{ width: '25%' }}
 											value={item.alertTime}
 											onChange={(value) => {
 												onChange(
@@ -587,7 +574,7 @@ function CreateAlarm(props) {
 										/>
 										<span className="info">分钟内触发</span>
 										<Input
-											style={{ width: '46px' }}
+											style={{ width: '25%' }}
 											value={item.alertTimes}
 											onChange={(value) => {
 												onChange(
@@ -608,7 +595,7 @@ function CreateAlarm(props) {
 													'severity'
 												)
 											}
-											style={{ width: 62 }}
+											style={{ width: '100%' }}
 											value={item.severity}
 										>
 											{alarmWarn.map((i) => {
@@ -628,13 +615,13 @@ function CreateAlarm(props) {
 											onChange={(value) =>
 												onChange(value, item, 'silence')
 											}
-											style={{ width: 117 }}
+											style={{ width: '100%' }}
 											value={item.silence}
 										>
-											{times.map((i) => {
+											{silences.map((i) => {
 												return (
 													<Option
-														key={i.label}
+														key={i.value}
 														value={i.value}
 													>
 														{i.label}
@@ -645,11 +632,12 @@ function CreateAlarm(props) {
 									</Col>
 									<Col span={4}>
 										<Input
-											style={{ width: 188 }}
+											style={{ width: '100%' }}
 											onChange={(value) =>
 												onChange(value, item, 'content')
 											}
 											value={item.content}
+											maxLength={10}
 										/>
 									</Col>
 									<Col span={2}>

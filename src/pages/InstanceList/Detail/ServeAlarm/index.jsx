@@ -171,6 +171,10 @@ function Rules(props) {
 		);
 	};
 
+	const nameRender = (value, index, record) => {
+		return alarmType === 'system' ? record.labels.clusterId : value
+	}
+
 	const enableRender = (value, index, record) => {
 		return (
 			<Switch
@@ -224,6 +228,24 @@ function Rules(props) {
 		);
 	};
 
+	
+	const onSort = (dataIndex, order) => {
+		if (dataIndex === 'createTime') {
+			const dsTemp = dataSource.sort((a, b) => {
+				const result =
+					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setDataSource([...dsTemp]);
+		}
+	};
+
 	return (
 		<Table
 			dataSource={dataSource}
@@ -244,10 +266,10 @@ function Rules(props) {
 				width: '360px'
 			}}
 			operation={Operation}
-			// onSort={onSort}
+			onSort={onSort}
 		>
 			<Table.Column title="规则ID" dataIndex="alertId" />
-			<Table.Column title="告警对象" dataIndex="name" />
+			<Table.Column title="告警对象" dataIndex="name" cell={nameRender} />
 			<Table.Column
 				title="告警规则"
 				dataIndex="threshold"

@@ -101,10 +101,12 @@ function Visualization(props) {
 		reStart,
 		editConfiguration,
 		setEsVisible,
-		backupType
+		selectObj
 	} = props;
 	const location = useLocation();
 	const { pathname } = location;
+	const [option, setOption] = useState();
+	const [treeOption, setTreeOption] = useState();
 	// console.log(serverData.type);
 
 	const roleRender = (value, index, record) => {
@@ -165,8 +167,28 @@ function Visualization(props) {
 		}
 	};
 
-	const isSelect = () => {
-		return backupType === 'Cluser' ? true : false;
+	const isSelect = (cfg) => {
+		if (!isEdit) {
+			if (hasConfigBackup(cfg)) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			if (!cfg.depth) {
+				if (cfg.name === selectObj) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (cfg.podName === selectObj) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
 	};
 
 	useEffect(() => {
@@ -178,17 +200,16 @@ function Visualization(props) {
 			'tree-node',
 			{
 				drawShape: function drawShape(cfg, group) {
-					// console.log(cfg, serverData, group);
+					console.log(cfg, serverData, group);
 					const box = group.addShape('rect', {
 						attrs: {
-							fill: '#fff',
-							// fill: isSelect && !cfg.depth ? '#fff' : '#EBEBEB',
+							fill: isSelect(cfg) ? '#fff' : '#EBEBEB',
 							stroke: '#666',
 							x: 0,
 							y: 0,
 							width: 228,
-							height: 100
-							// opacity: isSelect && !cfg.depth ? 1 : 0.6
+							height: 100,
+							opacity: isSelect(cfg) ? 1 : 0.6
 						},
 						name: 'rect-shape'
 					});
@@ -201,10 +222,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-								  )[0].color
+									(item) =>
+										item.status === cfg.status ||
+										item.status === serverData.status
+								)[0].color
 								: '#FFC440',
 							x: 0,
 							y: 0,
@@ -222,10 +243,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-								  )[0].image
+									(item) =>
+										item.status === cfg.status ||
+										item.status === serverData.status
+								)[0].image
 								: NotReady,
 							x: 12,
 							y: 42,
@@ -241,7 +262,7 @@ function Visualization(props) {
 								? serverData.name
 								: 'IP: ' + cfg.podIp,
 							x: 45,
-							y: 30,
+							y: !cfg.depth ? 40 : 30,
 							textBaseline: 'middle',
 							fill: '#333',
 							fontWeight: 500,
@@ -270,16 +291,16 @@ function Visualization(props) {
 							text: !cfg.depth
 								? serverData.aliasName
 								: '资源/存储: ' +
-								  cfg.resources.cpu +
-								  'C/' +
-								  cfg.resources.memory +
-								  'G' +
-								  '/' +
-								  (cfg.resources.storageClassQuota
-										? cfg.resources.storageClassQuota
-										: ''),
+								cfg.resources.cpu +
+								'C/' +
+								cfg.resources.memory +
+								'G' +
+								'/' +
+								(cfg.resources.storageClassQuota
+									? cfg.resources.storageClassQuota
+									: ''),
 							x: 45,
-							y: !cfg.depth ? 55 : 70,
+							y: !cfg.depth ? 60 : 70,
 							textBaseline: 'middle',
 							fill: '#666',
 							fontWeight: 400
@@ -289,7 +310,7 @@ function Visualization(props) {
 					group.addShape('image', {
 						attrs: {
 							img: `${api}/images/middleware/${imagePath}`,
-							x: 130,
+							x: 160,
 							y: 34,
 							width: 32,
 							height: 32
@@ -483,10 +504,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-								  )[0].title
+									(item) =>
+										item.status === cfg.status ||
+										item.status === serverData.status
+								)[0].title
 								: '运行异常',
 							fill: '#666',
 							x: 0,
@@ -506,10 +527,10 @@ function Visualization(props) {
 									serverData.type !== 'redis'
 										? modelMap[serverData.mode]
 										: serverData.mode === 'sentinel'
-										? '哨兵'
-										: serverData.quota.redis.num === 6
-										? '三主三从'
-										: '五主五从' || '',
+											? '哨兵'
+											: serverData.quota.redis.num === 6
+												? '三主三从'
+												: '五主五从' || '',
 								fill: 'rgba(0, 0, 0, .65)',
 								x: boxWidth + 35,
 								y: 44,
@@ -636,8 +657,8 @@ function Visualization(props) {
 			},
 			nodeStateStyles: {
 				hover: {
-					fill: '#fff'
-					// opacity: 0.7
+					// fill: '#fff'
+					opacity: 0.7
 				},
 				select: {
 					stroke: '#0064C8'
@@ -677,13 +698,14 @@ function Visualization(props) {
 			}
 		});
 		let res = {
-			id: 'tree'
+			id: 'tree',
+			name: serverData.name
 		};
 		topoData.pods
 			? (res.children = topoData.pods)
 			: (res.children = [].concat(
-					...topoData.listChildGroup.map((item) => item.pods)
-			  ));
+				...topoData.listChildGroup.map((item) => item.pods)
+			));
 		graph.data(res);
 		graph.render();
 		graph.fitCenter();
@@ -769,7 +791,10 @@ function Visualization(props) {
 			const selectImage = group.find(
 				(e) => e.get('name') === 'select-image'
 			);
-			console.log(item, evt);
+			const box = group.find(
+				(e) => e.get('name') === 'rect-shape'
+			);
+			// console.log(item, evt);
 			if (!setBackupObj) return;
 			if (serverData.type === 'mysql') {
 				if (item._cfg.model.depth) {
@@ -779,6 +804,15 @@ function Visualization(props) {
 					return;
 				}
 			}
+			if (item._cfg.model.depth) {
+				if (!item._cfg.model.resources.isLvmStorage) {
+					Message.show(
+						messageConfig('warning', '提示', '存储不使用lvm时，不支持备份设置功能')
+					);
+					return;
+				}
+			}
+			if (box.attrs.fill === "#EBEBEB") return;
 			if (!evt.target.cfg.modelId) {
 				if (item._cfg.states.find((arr) => arr === 'select')) {
 					setBackupObj(null);
@@ -936,6 +970,10 @@ function Visualization(props) {
 	}, []);
 
 	const reset = () => {
+		window.graph.changeSize(1180,480);
+		setOption({
+			position: 'static',
+		});
 		window.graph.fitCenter();
 	};
 
@@ -956,13 +994,13 @@ function Visualization(props) {
 				anchorPoints:
 					value === 'TB'
 						? [
-								[0.5, 0],
-								[0.5, 1]
-						  ]
+							[0.5, 0],
+							[0.5, 1]
+						]
 						: [
-								[0, 0.5],
-								[1, 0.5]
-						  ]
+							[0, 0.5],
+							[1, 0.5]
+						]
 			},
 			getId: function getId(d) {
 				return d.id;
@@ -991,41 +1029,54 @@ function Visualization(props) {
 						: '选择备份对象'
 					: '关系拓扑'}
 			</h2>
-			<div className={styles['tools']}>
-				<Button>
-					<Icon type="arrows-alt" />
-				</Button>
-				<Button>
-					<Icon
-						type="Directory-tree"
-						onClick={() => changeTree('LR')}
-					/>
-				</Button>
-				<Button>
-					<CustomIcon
-						type="icon-shuxiangjiegou"
-						size={12}
-						style={{ color: '#000000' }}
-						onClick={() => changeTree('TB')}
-					/>
-				</Button>
-				<Button>
-					<Icon type="add" onClick={bingger} />
-				</Button>
-				<Button>
-					<Icon type="minus" onClick={smaller} />
-				</Button>
-				<Button>
-					<CustomIcon
-						type="icon-double-circle"
-						size={12}
-						style={{ color: '#000000' }}
-						onClick={reset}
-					/>
-				</Button>
+			<div style={{ background: '#f9f9f9', ...option }}>
+				<div className={styles['tools']}>
+					<Button>
+						<Icon type="arrows-alt" onClick={() => {
+							setOption({
+								width: window.innerWidth,
+								height: window.innerHeight,
+								position: 'fixed',
+								top: 0,
+								left: 0,
+								zIndex: 999
+							});
+							window.graph.changeSize(window.innerWidth,window.innerHeight);
+							window.graph.fitCenter();
+						}} />
+					</Button>
+					<Button>
+						<Icon
+							type="Directory-tree"
+							onClick={() => changeTree('LR')}
+						/>
+					</Button>
+					<Button>
+						<CustomIcon
+							type="icon-shuxiangjiegou"
+							size={12}
+							style={{ color: '#000000' }}
+							onClick={() => changeTree('TB')}
+						/>
+					</Button>
+					<Button>
+						<Icon type="add" onClick={bingger} />
+					</Button>
+					<Button>
+						<Icon type="minus" onClick={smaller} />
+					</Button>
+					<Button>
+						<CustomIcon
+							type="icon-double-circle"
+							size={12}
+							style={{ color: '#000000' }}
+							onClick={reset}
+						/>
+					</Button>
+				</div>
+				<div id="topology" style={{...treeOption}}></div>
+				<div id="minimap"></div>
 			</div>
-			<div id="topology" style={{ background: '#f9f9f9' }}></div>
-			<div id="minimap" style={{ background: '#f9f9f9' }}></div>
 		</div>
 	);
 }

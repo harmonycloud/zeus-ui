@@ -17,5 +17,5 @@ export const getVersions = (params: any) => {
 };
 
 export const upgradeChart = (params: any) => {
-	return Axios.get(SERVICE.upgradeChart, params);
+	return Axios.post(SERVICE.upgradeChart, params);
 };

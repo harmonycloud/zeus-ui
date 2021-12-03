@@ -48,7 +48,7 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(props) {
 	const field = Field.useField();
-	const { clusterId, namespace, data: listData, isEdit, record, backup } = storage.getSession('detail');
+	const { clusterId, namespace, data: listData, isEdit, record, backup, selectObj } = storage.getSession('detail');
 	const [topoData, setTopoData] = useState();
 	const [backupData, setBackupData] = useState({
 		configed: false,
@@ -147,13 +147,11 @@ function BackupSetting(props) {
 						Message.show(
 							messageConfig('success', '成功', '备份设置成功')
 						);
+						history.push('/disasterBackup/dataSecurity');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
 				})
-				.finally(() => {
-					// getData();
-				});
 		} else {
 			if (record) {
 				const minute = moment(values.time).get('minute');
@@ -174,13 +172,11 @@ function BackupSetting(props) {
 							Message.show(
 								messageConfig('success', '成功', '备份修改成功')
 							);
+							history.push('/disasterBackup/dataSecurity');
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					})
-					.finally(() => {
-						// getData();
-					});
 			} else {
 				const sendData = {
 					clusterId,
@@ -201,13 +197,11 @@ function BackupSetting(props) {
 							Message.show(
 								messageConfig('success', '成功', '备份恢复成功')
 							);
+							history.push('/disasterBackup/dataSecurity');
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					})
-					.finally(() => {
-						// getData();
-					});
 			}
 		}
 	};
@@ -222,6 +216,7 @@ function BackupSetting(props) {
 						backupObj={backupObj}
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
+						selectObj={selectObj}
 					/>
 				)}
 				{

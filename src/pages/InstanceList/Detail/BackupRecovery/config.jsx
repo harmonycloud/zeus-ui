@@ -321,7 +321,8 @@ export default function Config(props) {
 						storage.setSession('detail', {
 							...props,
 							record,
-							isEdit: true
+							isEdit: true,
+							selectObj: record.sourceName
 						});
 					}}
 				>

@@ -138,7 +138,8 @@ export default function List(props) {
 							JSON.stringify({
 								...props,
 								isEdit: true,
-								backup: record
+								backup: record,
+								selectObj: record.sourceName
 							})
 						);
 					}}
@@ -242,11 +243,49 @@ export default function List(props) {
 		}
 	};
 
+	
 	const roleRender = (value, index, record) => {
 		if (value === 'Cluster') {
 			return '服务';
 		} else {
-			return '实例';
+			if (record.podRole.includes('exporter')) {
+				return 'exporter';
+			} else {
+				if (listData.type === 'elasticsearch') {
+					if (record.podRole.includes('kibana')) {
+						return 'kibana';
+					} else if (record.podRole.includes('client')) {
+						return '协调节点';
+					} else if (record.podRole.includes('master')) {
+						return '主节点';
+					} else if (record.podRole.includes('data')) {
+						return '数据节点';
+					} else if (record.podRole.includes('cold')) {
+						return '冷节点';
+					}
+				} else {
+					switch (value) {
+						case 'master':
+							return '主节点';
+						case 'slave':
+							return '从节点';
+						case 'data':
+							return '数据节点';
+						case 'client':
+							return '协调节点';
+						case 'cold':
+							return '冷节点';
+						case 'kibana':
+							return 'kibana';
+						case 'nameserver':
+							return 'nameserver';
+						case 'exporter':
+							return 'exporter';
+						default:
+							return '未知';
+					}
+				}
+			}
 		}
 	};
 
@@ -268,7 +307,6 @@ export default function List(props) {
 						title="备份对象"
 						dataIndex="backupType"
 						width={180}
-						sortable
 						cell={roleRender}
 					/>
 					<Table.Column

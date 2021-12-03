@@ -58,8 +58,8 @@ export default function DataSecurity(): JSX.Element {
 			{basicData?.type !== 'mysql' &&
 				basicData?.type !== 'elasticsearch' &&
 				isService && <NotSupport />}
-			{basicData?.type === 'mysql' ||
-				(basicData?.type === 'elasticsearch' &&
+			{(basicData?.type === 'mysql' ||
+				basicData?.type === 'elasticsearch') &&
 					isService &&
 					JSON.stringify(data) !== '{}' && (
 						<BackupRecovery
@@ -71,7 +71,7 @@ export default function DataSecurity(): JSX.Element {
 							customMid={data?.dynamicValues !== null}
 							capabilities={(data && data.capabilities) || []}
 						/>
-					))}
+					)}
 			{!isService && <NoService />}
 		</SecondLayout>
 	);
