@@ -27,7 +27,7 @@ export default {
 	userManagement: '用户管理',
 	roleManagement: '角色管理',
 	operationAudit: '操作审计',
-	resourcePoolManagement: '资源池管理',
+	resourcePoolManagement: '资源池',
 	versionManagement: '版本管理',
 	basicInfo: '服务详情',
 	highAvailability: '服务详情',

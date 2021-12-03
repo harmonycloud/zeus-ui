@@ -481,15 +481,24 @@ function AddForm(props: addFormProps): JSX.Element {
 								labelTextAlign="left"
 								asterisk={false}
 							>
-								<Input
-									value={quickName}
-									trim={true}
-									placeholder="请输入英文简称"
-									onChange={(value: string) =>
-										setQuickName(value)
-									}
-									onBlur={onBlur}
-								/>
+								<div className="display-flex">
+									<Input
+										value={quickName}
+										trim={true}
+										placeholder="请输入英文简称"
+										onChange={(value: string) =>
+											setQuickName(value)
+										}
+										// onBlur={onBlur}
+										style={{
+											width: 'calc(100% - 100px)',
+											marginRight: 8
+										}}
+									/>
+									<Button type="primary" onClick={onBlur}>
+										生成
+									</Button>
+								</div>
 							</FormItem>
 							<div className="quick-model-content">
 								<div className="quick-model-title">

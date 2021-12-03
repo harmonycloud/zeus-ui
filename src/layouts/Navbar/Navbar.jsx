@@ -28,7 +28,9 @@ const disabledRoute = [
 	'/serviceList/rocketmqCreate',
 	'/serviceList/dynamicForm',
 	'/serviceList/versionManagement',
-	'/instanceList/detail'
+	'/instanceList/detail',
+	'/serviceList/basicInfo',
+	'/serviceList/paramterSetting'
 ];
 
 // 资源池、分区不显示路由名单
@@ -57,9 +59,7 @@ const header = (
 			className={styles['logo-png']}
 			src={
 				personalization && personalization.homeLogoPath
-					? api +
-					  '/images/middleware/' +
-					  personalization.homeLogoPath
+					? api + '/images/middleware/' + personalization.homeLogoPath
 					: logo
 			}
 			alt=""
