@@ -34,6 +34,7 @@ function AlarmRecord(props) {
 	const [level, setLevel] = useState(''); // level
 	const [total, setTotal] = useState(10); // 总数
 	const [eventData, setEventData] = useState([]);
+	const [keyword, setKeyword] = useState('');
 
 	const onRefresh = () => {
 		getData();
@@ -55,7 +56,8 @@ function AlarmRecord(props) {
                 // size: 10,
                 level: level,
                 clusterId,
-                lay: 'system'
+                lay: 'system',
+				keyword
             };
             getEvent(sendData).then((res) => {
                 setEventData(res.data ? res.data.list : []);
@@ -88,6 +90,23 @@ function AlarmRecord(props) {
 		);
 	};
 
+	const onSort = (dataIndex, order) => {
+		if (dataIndex === 'createTime') {
+			const dsTemp = eventData.sort((a, b) => {
+				const result =
+					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setEventData([...dsTemp]);
+		}
+	};
+
 	return (
 		<Table
 			dataSource={eventData}
@@ -99,15 +118,15 @@ function AlarmRecord(props) {
 			onRefresh={onRefresh}
 			primaryKey="key"
 			search={{
-				placeholder: '请输入告警ID搜索'
-				// onSearch: handleSearch,
-				// onChange: handleChange,
-				// value: keyword
+				placeholder: '请输入告警ID搜索',
+				onSearch: onRefresh,
+				onChange: (value) => setKeyword(value),
+				value: keyword
 			}}
 			searchStyle={{
 				width: '360px'
 			}}
-			// onSort={onSort}
+			onSort={onSort}
 		>
 			<Table.Column title="告警ID" dataIndex="alertId" width={100} />
 			<Table.Column
@@ -117,12 +136,12 @@ function AlarmRecord(props) {
 				cell={levelRender}
 			/>
 			<Table.Column title="告警内容" dataIndex="content" />
-			<Table.Column title="告警对象" dataIndex="clusterId" width={100} />
+			<Table.Column title="告警对象" dataIndex="clusterId" />
 			<Table.Column title="规则描述" dataIndex="expr" width={160} />
 			<Table.Column title="实际监测" dataIndex="summary" />
 			<Table.Column
 				title="告警时间"
-				dataIndex="x"
+				dataIndex="time"
 				cell={createTimeRender}
 				sortable
 			/>

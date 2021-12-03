@@ -6,8 +6,7 @@ import { Message, Button, Dialog } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { StoreState, globalVarProps } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import { upgradeChart } from '@/services/serviceList';
-import { getVersions } from '@/services/serviceList';
+import { getVersions, upgradeChart } from '@/services/serviceList';
 import messageConfig from '@/components/messageConfig';
 import { useHistory } from 'react-router';
 import { middlewareProps } from './service.list';
@@ -127,14 +126,14 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	) => {
 		return (
 			<Actions>
-				{record.versionStatus === 'future' ||
+				{(record.versionStatus === 'future' ||
 					record.versionStatus === 'needUpgradeOperator' ||
 					record.versionStatus === 'canUpgrade' ||
-					(record.versionStatus === 'updating' && (
+					record.versionStatus === 'updating') && (
 						<LinkButton
 							style={{
 								color:
-									record.versionStatus !== 'future'
+									record.versionStatus === 'future'
 										? '#3DBCFB'
 										: '#cccccc'
 							}}
@@ -142,7 +141,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						>
 							升级{installNum ? '中(' + installNum + 's)' : ''}
 						</LinkButton>
-					))}
+					)}
 			</Actions>
 		);
 	};
@@ -210,18 +209,6 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		}
 	};
 
-	// useEffect(() => {
-	// 	const timeout = setTimeout(() => {
-	// 		let count: any = installNum;
-	// 		setInstallNum(count--);
-	// 		console.log(count);
-
-	// 		if(count <= 0){
-	// 			clearInterval(timeout)
-	// 		}
-	// 	},1000)
-	// },[installNum])
-
 	return (
 		<Page>
 			<Header
@@ -242,7 +229,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						showRefresh
 						onRefresh={getData}
 						primaryKey="key"
-						onFilter={onFilter}
+						// onFilter={onFilter}
 						onSort={onSort}
 					>
 						<Table.Column

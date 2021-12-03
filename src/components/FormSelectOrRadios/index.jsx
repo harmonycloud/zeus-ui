@@ -23,9 +23,10 @@ export default function FormSelectOrRadios(props) {
 	}
 
 	useEffect(() => {
-		props.field.setValues({
-			[`${props.variable}`]: props.defaultValue
-		});
+		console.log(props);
+		// props.field.setValues({
+		// 	[`${props.variable}`]: props.defaultValue
+		// });
 	}, []);
 
 	const handleSelectBlock = (value) => {

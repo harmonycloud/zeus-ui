@@ -28,10 +28,10 @@ function AlarmTimeLine(props) {
 		return (
 			<div className={`${value}-tip`}>
 				{value === 'info'
-					? '提示'
+					? '一般'
 					: value === 'warning'
-					? '告警'
-					: '严重'}
+						? '重要'
+						: '严重'}
 			</div>
 		);
 	};
@@ -109,12 +109,12 @@ function AlarmTimeLine(props) {
 								key={index}
 								title={
 									<span
-										className={`time-line-title ${
-											item.chartVersion ? 'active' : ''
-										}`}
+										className={`time-line-title ${item.chartVersion ? 'active' : ''
+											}`}
 										onClick={() => toDetail(item)}
 									>
-										{item.name}
+										{item.lay === 'system' ? '(系统级)' : '(服务级)'}
+										{' ' + item.name}
 									</span>
 								}
 								dot={dotRender(item.level)}
@@ -128,9 +128,10 @@ function AlarmTimeLine(props) {
 												className="details-summary"
 												title={item.summary}
 											>
-												{item.summary}
+												<span>{item.content ? item.connect + '；' : item.connect}</span>
+												<span>{item.summary}</span>
 											</div>
-											<Tooltip
+											{/* <Tooltip
 												align="l"
 												trigger={
 													<span className="details-color">
@@ -139,7 +140,7 @@ function AlarmTimeLine(props) {
 												}
 											>
 												{item.message}
-											</Tooltip>
+											</Tooltip> */}
 										</div>
 									</>
 								}
