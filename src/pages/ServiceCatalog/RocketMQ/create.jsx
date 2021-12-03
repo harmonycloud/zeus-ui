@@ -182,6 +182,8 @@ const RocketMQCreate = (props) => {
 	const [aclCheck, setAclCheck] = useState(false);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState();
+	// * 集群外访问
+	const [hostNetwork, setHostNetwork] = useState();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -218,6 +220,7 @@ const RocketMQCreate = (props) => {
 					mode: mode,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
+					hostNetwork: hostNetwork,
 					quota: {
 						rocketmq: {
 							storageClassName: values.storageClass,
@@ -390,19 +393,19 @@ const RocketMQCreate = (props) => {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆服务
-			if (backupFileName) {
-				getMiddlewareDetail({
-					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
-					middlewareName: middlewareName,
-					type: 'rocketmq'
-				}).then((res) => {
-					console.log(res.data);
-				});
-			}
-		}
+		// if (JSON.stringify(globalNamespace) !== '{}') {
+		// 	// 克隆服务
+		// 	if (backupFileName) {
+		// 		getMiddlewareDetail({
+		// 			clusterId: globalCluster.id,
+		// 			namespace: globalNamespace.name,
+		// 			middlewareName: middlewareName,
+		// 			type: 'rocketmq'
+		// 		}).then((res) => {
+		// 			console.log(res.data);
+		// 		});
+		// 	}
+		// }
 	}, [globalNamespace]);
 
 	// * acl 相关
@@ -1255,6 +1258,34 @@ const RocketMQCreate = (props) => {
 												addonTextAfter="GB"
 											/>
 										</FormItem>
+									</div>
+								</li>
+								<li
+									className="display-flex form-li"
+									style={{ alignItems: 'center' }}
+								>
+									<label className="form-name">
+										<span className="ne-required">
+											集群外访问
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['standard-log']}`}
+									>
+										<div className={styles['switch']}>
+											{hostNetwork ? '已开启' : '关闭'}
+											<Switch
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+											/>
+										</div>
 									</div>
 								</li>
 							</ul>
