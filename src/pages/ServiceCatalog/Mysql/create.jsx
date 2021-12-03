@@ -436,6 +436,7 @@ const MysqlCreate = (props) => {
 							filelogEnabled: fileLog,
 							stdoutEnabled: standardLog,
 							backupFileName: values.dataSource,
+							dynamicValues: null,
 							quota: {
 								mysql: {
 									cpu: sendData.quota.mysql.cpu,
@@ -457,8 +458,8 @@ const MysqlCreate = (props) => {
 						keys.forEach((item) => {
 							dynamicValues[item] = values[item];
 						});
-						sendData.dynamicValues = dynamicValues;
-						sendData.relationMiddleware.dynamicValues =
+						sendDataTemp.dynamicValues = dynamicValues;
+						sendDataTemp.relationMiddleware.dynamicValues =
 							dynamicValues;
 					}
 					sendData = sendDataTemp;
