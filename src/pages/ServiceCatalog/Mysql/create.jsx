@@ -1792,7 +1792,12 @@ const MysqlCreate = (props) => {
 							</div>
 						</FormBlock>
 					) : null}
-					{childrenRender(customForm)}
+					{childrenRender(
+						customForm,
+						field,
+						globalCluster,
+						globalNamespace
+					)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

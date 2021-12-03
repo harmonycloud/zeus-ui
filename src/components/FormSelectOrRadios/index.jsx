@@ -41,11 +41,17 @@ export default function FormSelectOrRadios(props) {
 			<div className="display-flex flex-column">
 				<label
 					className="dynamic-form-name"
-					style={keys.includes('required') ? { paddingLeft: 8 } : {}}
+					style={
+						keys.includes('required') && props.required
+							? { paddingLeft: 8 }
+							: {}
+					}
 				>
 					<span
 						className={
-							keys.includes('required') ? 'ne-required' : ''
+							keys.includes('required') && props.required
+								? 'ne-required'
+								: ''
 						}
 					>
 						{props.label}
@@ -69,9 +75,9 @@ export default function FormSelectOrRadios(props) {
 				</label>
 				<div className="form-content">
 					<FormItem
-						required={keys.includes('required')}
+						required={keys.includes('required') && props.required}
 						requiredMessage={
-							keys.includes('required')
+							keys.includes('required') && props.required
 								? `请选择${props.label}`
 								: ''
 						}
@@ -116,11 +122,17 @@ export default function FormSelectOrRadios(props) {
 			<div className="display-flex flex-column">
 				<label
 					className="dynamic-form-name"
-					style={keys.includes('required') ? { paddingLeft: 8 } : {}}
+					style={
+						keys.includes('required') && props.required
+							? { paddingLeft: 8 }
+							: {}
+					}
 				>
 					<span
 						className={
-							keys.includes('required') ? 'ne-required' : ''
+							keys.includes('required') && props.required
+								? 'ne-required'
+								: ''
 						}
 					>
 						{props.label}
