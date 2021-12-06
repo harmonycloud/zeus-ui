@@ -691,15 +691,18 @@ const ElasticsearchCreate = (props) => {
 															marginLeft: '4px',
 															padding: '0 9px'
 														}}
-														onClick={() =>
-															setAffinityLabels([
-																...affinityLabels,
-																{
-																	label: affinity.label,
-																	id: Math.random()
-																}
-															])
-														}
+														onClick={() => {
+															if (!affinityLabels.find(item => item.label === affinity.label)) {
+																setAffinityLabels([
+																	...affinityLabels,
+																	{
+																		label: affinity.label,
+																		id: Math.random()
+																	}
+																])
+																changeAffinity('', 'label')
+															}
+														}}
 													>
 														<Icon
 															style={{
@@ -744,15 +747,20 @@ const ElasticsearchCreate = (props) => {
 														className={
 															styles['tag-close']
 														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
+														onClick={() => {
+															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+																setAffinityLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
 																)
-															)
-														}
+																changeAffinity('', 'label')
+															}
+														}}
 													/>
 												</p>
 											);
@@ -814,17 +822,20 @@ const ElasticsearchCreate = (props) => {
 															marginLeft: '4px',
 															padding: '0 9px'
 														}}
-														onClick={() =>
-															setTolerationsLabels(
-																[
-																	...tolerationsLabels,
-																	{
-																		label: tolerations.label,
-																		id: Math.random()
-																	}
-																]
-															)
-														}
+														onClick={() => {
+															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																)
+																changeTolerations('', 'label')
+															}
+														}}
 													>
 														<Icon
 															style={{
