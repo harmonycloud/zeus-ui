@@ -400,6 +400,9 @@ function IngressList(props) {
 			}
 		});
 	};
+	const exposeTypeRender = (value, index, record) => {
+		return `${record.exposeType}/${record.ingressClassName || '-'}`;
+	};
 
 	return (
 		<Page>
@@ -452,14 +455,15 @@ function IngressList(props) {
 						dataIndex="middlewareType"
 						filters={entry === 'detail' ? null : instanceType}
 						filterMode="single"
-						width={200}
+						width={150}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
 						filters={entry === 'detail' ? null : exposedWay}
 						filterMode="single"
-						width={150}
+						width={200}
+						cell={exposeTypeRender}
 					/>
 					<Table.Column
 						title="协议"
