@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Button, Icon } from '@alicloud/console-components';
 import { Page, Content } from '@alicloud/console-components-page';
 import { useParams } from 'react-router';
 import { paramsProps } from '../detail';
@@ -7,17 +8,37 @@ import { Message } from '@alifd/next';
 import messageConfig from '@/components/messageConfig';
 import { IngressItemProps } from '../resource.pool';
 import IngressCard from '@/components/IngressCard';
+import { connect } from 'react-redux';
+import { setRefreshCluster } from '@/redux/globalVar/var';
 
-const Ingress = () => {
+interface IngressProps {
+	setRefreshCluster: (flag: boolean) => void;
+}
+
+const Ingress = (props: IngressProps) => {
+	const { setRefreshCluster } = props;
 	const { id }: paramsProps = useParams();
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
 	useEffect(() => {
-		getData();
+		let mounted = true;
+		getIngresses({ clusterId: id }).then((res) => {
+			if (res.success) {
+				if (mounted) {
+					setIngresses(res.data);
+				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+		return () => {
+			mounted = false;
+		};
 	}, []);
 	const getData = () => {
 		getIngresses({ clusterId: id }).then((res) => {
 			if (res.success) {
 				setIngresses(res.data);
+				setRefreshCluster(true);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -27,6 +48,12 @@ const Ingress = () => {
 	return (
 		<Page>
 			<Content>
+				<div className="flex-space-between">
+					<div></div>
+					<Button onClick={getData}>
+						<Icon type="refresh" />
+					</Button>
+				</div>
 				<div className="ingresses-content">
 					<IngressCard
 						status={-1}
@@ -50,4 +77,6 @@ const Ingress = () => {
 		</Page>
 	);
 };
-export default Ingress;
+export default connect(() => ({}), {
+	setRefreshCluster
+})(Ingress);

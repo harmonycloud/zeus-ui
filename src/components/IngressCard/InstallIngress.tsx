@@ -45,7 +45,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 	};
 	return (
 		<Dialog
-			title="接入服务暴露"
+			title="安装服务暴露"
 			style={{ width: 640 }}
 			visible={visible}
 			onCancel={onCancel}
