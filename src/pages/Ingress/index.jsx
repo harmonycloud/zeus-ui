@@ -350,6 +350,7 @@ function IngressList(props) {
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
+						ingressClassName: values.ingressClassName,
 						rules: [
 							{
 								domain: values.domain,
@@ -370,6 +371,7 @@ function IngressList(props) {
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
+						ingressClassName: values.ingressClassName,
 						serviceList: [
 							{
 								exposePort: values.exposePort,
@@ -398,6 +400,9 @@ function IngressList(props) {
 			}
 		});
 	};
+	const exposeTypeRender = (value, index, record) => {
+		return `${record.exposeType}/${record.ingressClassName || '-'}`;
+	};
 
 	return (
 		<Page>
@@ -407,24 +412,6 @@ function IngressList(props) {
 			<Page.Content
 				style={entry !== 'detail' ? {} : { padding: '0 0', margin: 0 }}
 			>
-				{/* <div className="header-tips">
-					对外路由功能说明
-					<br />
-					基于平台内置的负载均衡器，可创建对外访问的规则，使平台创建的中间件可以提供对外访问入口，详情参加
-					<span
-						className="name-link"
-						onClick={() =>
-							window.open(
-								'https://www.yuque.com/fiidi3/to4o93/nqgkpf',
-								'_blank'
-							)
-						}
-					>
-						《中间件对外访问配置说明》
-					</span>
-				</div> */}
-				{/* {
-					globalVar.cluster.ingress ? */}
 				<Table
 					dataSource={showDataSource}
 					exact
@@ -468,14 +455,15 @@ function IngressList(props) {
 						dataIndex="middlewareType"
 						filters={entry === 'detail' ? null : instanceType}
 						filterMode="single"
-						width={200}
+						width={150}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
 						filters={entry === 'detail' ? null : exposedWay}
 						filterMode="single"
-						width={150}
+						width={200}
+						cell={exposeTypeRender}
 					/>
 					<Table.Column
 						title="协议"
@@ -501,9 +489,6 @@ function IngressList(props) {
 						lock="right"
 					/>
 				</Table>
-				{/* :
-					<ComponentsLoading type="ingress" />
-				} */}
 			</Page.Content>
 			{active && (
 				<AddServiceAvailableForm
