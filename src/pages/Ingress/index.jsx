@@ -350,6 +350,7 @@ function IngressList(props) {
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
+						ingressClassName: values.ingressClassName,
 						rules: [
 							{
 								domain: values.domain,
@@ -370,6 +371,7 @@ function IngressList(props) {
 						middlewareName: values.selectedInstance.name,
 						middlewareType: values.selectedInstance.type,
 						protocol: values.protocol,
+						ingressClassName: values.ingressClassName,
 						serviceList: [
 							{
 								exposePort: values.exposePort,
@@ -407,24 +409,6 @@ function IngressList(props) {
 			<Page.Content
 				style={entry !== 'detail' ? {} : { padding: '0 0', margin: 0 }}
 			>
-				{/* <div className="header-tips">
-					对外路由功能说明
-					<br />
-					基于平台内置的负载均衡器，可创建对外访问的规则，使平台创建的中间件可以提供对外访问入口，详情参加
-					<span
-						className="name-link"
-						onClick={() =>
-							window.open(
-								'https://www.yuque.com/fiidi3/to4o93/nqgkpf',
-								'_blank'
-							)
-						}
-					>
-						《中间件对外访问配置说明》
-					</span>
-				</div> */}
-				{/* {
-					globalVar.cluster.ingress ? */}
 				<Table
 					dataSource={showDataSource}
 					exact
@@ -501,9 +485,6 @@ function IngressList(props) {
 						lock="right"
 					/>
 				</Table>
-				{/* :
-					<ComponentsLoading type="ingress" />
-				} */}
 			</Page.Content>
 			{active && (
 				<AddServiceAvailableForm
