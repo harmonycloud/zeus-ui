@@ -56,12 +56,7 @@ export default function AddServiceAvailableForm(
 		serviceName: '',
 		portDetailDtoList: []
 	});
-	const [ingressTcpFlag] = useState(
-		(cluster.ingress &&
-			cluster.ingress.tcp &&
-			cluster.ingress.tcp.enabled) ||
-			false
-	);
+	const [ingressTcpFlag] = useState(cluster.ingressList || false);
 	const [data, setData] = useState([]);
 	const [current, setCurrent] = useState<string>();
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);

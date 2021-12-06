@@ -972,7 +972,7 @@ const MysqlCreate = (props) => {
 										>
 											<Input
 												name="annotations"
-												placeholder="请输入key=value格式的注视，多个注解以英文逗号分隔"
+												placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔"
 											/>
 										</FormItem>
 									</div>

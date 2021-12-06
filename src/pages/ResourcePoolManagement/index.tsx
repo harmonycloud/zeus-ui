@@ -13,6 +13,7 @@ import DeleteCard from '../BasicResource/DeleteCard';
 import RegistryNamespace from '../BasicResource/registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
 import './index.scss';
+import storage from '@/utils/storage';
 
 export default function ResourcePoolManagement(): JSX.Element {
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
@@ -162,12 +163,25 @@ export default function ResourcePoolManagement(): JSX.Element {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
+						history.push(
+							`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
+						);
+						storage.setLocal(
+							'cluster-detail-current-tab',
+							'ingress'
+						);
+					}}
+				>
+					服务暴露
+				</LinkButton>
+				{/* <LinkButton
+					onClick={() => {
 						setNamespaceVisible(true);
 						setData(record);
 					}}
 				>
 					分区
-				</LinkButton>
+				</LinkButton> */}
 				<LinkButton
 					onClick={() => {
 						if (record.removable) {
