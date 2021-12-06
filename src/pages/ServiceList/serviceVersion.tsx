@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Message, Button, Dialog } from '@alicloud/console-components';
+import { Message, Button, Dialog, Balloon } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { StoreState, globalVarProps } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
@@ -14,6 +14,8 @@ import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 // import './index.scss';
+
+const { Tooltip } = Balloon;
 
 interface versionProps {
 	globalVar: globalVarProps;
@@ -83,8 +85,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setDataSource([...dsTemp]);
 		}
@@ -98,14 +100,14 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			value === 'now'
 				? '#00A7FA'
 				: value === ('future' || 'updating')
-				? '#52C41A'
-				: '#666666';
+					? '#52C41A'
+					: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
 				: value === ('future' || 'updating')
-				? '#F6FFED'
-				: '#F5F5F5';
+					? '#F6FFED'
+					: '#F5F5F5';
 		return (
 			<div
 				className="version-status-display"
@@ -130,17 +132,25 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					record.versionStatus === 'needUpgradeOperator' ||
 					record.versionStatus === 'canUpgrade' ||
 					record.versionStatus === 'updating') && (
-						<LinkButton
-							style={{
-								color:
-									record.versionStatus === 'future'
-										? '#3DBCFB'
-										: '#cccccc'
-							}}
+						record.versionStatus === 'future' ? <LinkButton
+							style={{ color: '#3DBCFB' }}
 							onClick={() => installUpdate(record)}
 						>
 							升级{installNum ? '中(' + installNum + 's)' : ''}
-						</LinkButton>
+						</LinkButton> :
+							<Tooltip
+								trigger={
+									<LinkButton
+										style={{ color: '#cccccc' }}
+										onClick={() => installUpdate(record)}
+									>
+										升级{installNum ? '中(' + installNum + 's)' : ''}
+									</LinkButton>
+								}
+								align="t"
+							>
+								不可跨版本升级
+							</Tooltip>
 					)}
 			</Actions>
 		);
@@ -159,8 +169,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						<Button
 							onClick={() =>
 								history.push(
-									`middlewareRepository/versionManagement/${
-										url[url.length - 2]
+									`middlewareRepository/versionManagement/${url[url.length - 2]
 									}`
 								)
 							}
@@ -229,7 +238,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						showRefresh
 						onRefresh={getData}
 						primaryKey="key"
-						// onFilter={onFilter}
+						onFilter={onFilter}
 						onSort={onSort}
 					>
 						<Table.Column

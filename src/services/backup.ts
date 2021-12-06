@@ -21,7 +21,7 @@ export const getBackups = (params: listParams) => {
 	return Axios.get(BACKUP.backupList, params);
 };
 export const backupNow = (params: listParams) => {
-	return Axios.post(BACKUP.backups, params);
+	return Axios.post(BACKUP.useBackup, params);
 };
 export const getBackupConfig = (params: listParams) => {
 	return Axios.get(BACKUP.backups, params);

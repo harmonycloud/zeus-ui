@@ -6,7 +6,8 @@ import {
 	Button,
 	Grid,
 	Icon,
-	Checkbox
+	Checkbox,
+	Balloon
 } from '@alicloud/console-components';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
@@ -26,6 +27,7 @@ import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
+const { Tooltip } = Balloon
 const symbols = ['>=', '>', '==', '<', '<=', '!='];
 const silences = [
 	{ value: '5m', label: '5分钟' },
@@ -67,7 +69,7 @@ function CreateAlarm(props) {
 	const [systemId, setSystemId] = useState();
 	const [users, setUsers] = useState([]);
 	const [insertUser, setInsertUser] = useState();
-	const [selectUser, setSelectUser] = useState();
+	const [selectUser, setSelectUser] = useState([]);
 	const [mailChecked, setMailChecked] = useState(false);
 	const [dingChecked, setDingChecked] = useState(false);
 
@@ -241,7 +243,7 @@ function CreateAlarm(props) {
 		getUsers().then(async (res) => {
 			// console.log(res);
 			if (!res.data) return;
-			setSelectUser(res.data.userBy.map((item) => item.id));
+			setSelectUser(res.data.userBy.map((item) => Number(item.id)));
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
@@ -255,13 +257,15 @@ function CreateAlarm(props) {
 	}, []);
 
 	const handleChange = (value, data, extra) => {
-		// console.log(value, data, extra)
-		setInsertUser(data);
+		console.log(value, data, extra)
+		// setInsertUser(data);
 	};
 
 	const transferRender = (item) => {
 		return (
-			<span>
+			<span key={item.id}>
+				<Checkbox style={{ marginRight: '5px' }} />
+				<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
 				<span className="item-content">{item.userName}</span>
 				<span className="item-content">{item.aliasName}</span>
 				<span className="item-content">{item.email}</span>
@@ -350,8 +354,8 @@ function CreateAlarm(props) {
 	};
 
 	const onOk = () => {
-		const flag = alarmRules.every((item) => {
-			if (item.threshold !== null) {
+		const flag = alarmRules.map((item) => {
+			if (item.alert && item.alertTimes && item.alertTime && item.symbol && item.threshold) {
 				return true;
 			} else {
 				return false;
@@ -369,7 +373,7 @@ function CreateAlarm(props) {
 				return item;
 			});
 			if (systemId) {
-				if (flag) {
+				if (flag[0]) {
 					if (!mailChecked && !dingChecked) {
 						Message.show(
 							messageConfig('error', '失败', '请选择告警方式')
@@ -403,7 +407,7 @@ function CreateAlarm(props) {
 				delete item.severity;
 				return item;
 			});
-			if (flag) {
+			if (flag[0]) {
 				if (!mailChecked && !dingChecked) {
 					Message.show(
 						messageConfig('error', '失败', '请选择告警方式')
@@ -484,193 +488,212 @@ function CreateAlarm(props) {
 					</Col>
 					<Col span={5}>
 						<span>触发规则</span>
+						<Tooltip
+							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#33' }} />}
+							align="t"
+						>
+							待定时间&gt;=设定的触发次数，则预警一次
+						</Tooltip>
 					</Col>
 					<Col span={3}>
 						<span>告警等级</span>
 					</Col>
 					<Col span={3}>
 						<span>告警间隔</span>
+						<Tooltip
+							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333' }} />}
+							align="t"
+						>
+							预警一次过后，间隔多久后再次执行预警监测，防止预警信息爆炸
+						</Tooltip>
 					</Col>
 					<Col span={4}>
 						<span>告警内容描述</span>
+						<Tooltip
+							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333' }} />}
+							align="t"
+						>
+							对已经设定的监控对象进行自定义描述，发生告警时可作为一种信息提醒
+						</Tooltip>
 					</Col>
 					<Col span={2}>
 						<span>告警操作</span>
 					</Col>
 				</Row>
-				{alarmRules &&
-					alarmRules.map((item, index) => {
-						return (
-							<div key={item.id}>
-								<Row>
-									<Col span={3}>
-										<span className="ne-required"></span>
-										<Select
-											onChange={(value) =>
-												onChange(value, item, 'alert')
-											}
-											placeholder="CPU使用率"
-											style={{ marginRight: 8, width: '100%' }}
-											value={item.alert}
-										>
-											{alarms &&
-												alarms.map((i) => {
+				<div style={{ maxHeight: '470px', overflowY: 'auto' }}>
+					{alarmRules &&
+						alarmRules.map((item, index) => {
+							return (
+								<div key={item.id}>
+									<Row>
+										<Col span={3}>
+											<span className="ne-required"></span>
+											<Select
+												onChange={(value) =>
+													onChange(value, item, 'alert')
+												}
+												placeholder="CPU使用率"
+												style={{ marginRight: 8, width: '100%' }}
+												value={item.alert}
+											>
+												{alarms &&
+													alarms.map((i) => {
+														return (
+															<Option
+																key={i.alert}
+																value={i.alert}
+															>
+																{i.description}
+															</Option>
+														);
+													})}
+											</Select>
+										</Col>
+										<Col span={4}>
+											<Select
+												onChange={(value) =>
+													onChange(value, item, 'symbol')
+												}
+												style={{
+													width: '60%',
+													minWidth: 'auto'
+												}}
+												autoWidth={true}
+												value={item.symbol}
+											>
+												{symbols.map((i) => {
 													return (
-														<Option
-															key={i.alert}
-															value={i.alert}
-														>
-															{i.description}
+														<Option key={i} value={i}>
+															{i}
 														</Option>
 													);
 												})}
-										</Select>
-									</Col>
-									<Col span={4}>
-										<Select
-											onChange={(value) =>
-												onChange(value, item, 'symbol')
-											}
-											style={{
-												width: '60%',
-												minWidth: 'auto'
-											}}
-											placeholder=">="
-											autoWidth={true}
-											value={item.symbol}
-										>
-											{symbols.map((i) => {
-												return (
-													<Option key={i} value={i}>
-														{i}
-													</Option>
-												);
-											})}
-										</Select>
-										<Input
-											style={{ width: '30%' }}
-											value={item.threshold}
-											onChange={(value) => {
-												onChange(
-													value,
-													item,
-													'threshold'
-												);
-											}}
-										/>
-										<span className="info">%</span>
-									</Col>
-									<Col span={5}>
-										<Input
-											style={{ width: '25%' }}
-											value={item.alertTime}
-											onChange={(value) => {
-												onChange(
-													value,
-													item,
-													'alertTime'
-												);
-											}}
-										/>
-										<span className="info">分钟内触发</span>
-										<Input
-											style={{ width: '25%' }}
-											value={item.alertTimes}
-											onChange={(value) => {
-												onChange(
-													value,
-													item,
-													'alertTimes'
-												);
-											}}
-										></Input>
-										<span className="info">次</span>
-									</Col>
-									<Col span={3}>
-										<Select
-											onChange={(value) =>
-												onChange(
-													value,
-													item,
-													'severity'
-												)
-											}
-											style={{ width: '100%' }}
-											value={item.severity}
-										>
-											{alarmWarn.map((i) => {
-												return (
-													<Option
-														key={i.label}
-														value={i.value}
-													>
-														{i.label}
-													</Option>
-												);
-											})}
-										</Select>
-									</Col>
-									<Col span={3}>
-										<Select
-											onChange={(value) =>
-												onChange(value, item, 'silence')
-											}
-											style={{ width: '100%' }}
-											value={item.silence}
-										>
-											{silences.map((i) => {
-												return (
-													<Option
-														key={i.value}
-														value={i.value}
-													>
-														{i.label}
-													</Option>
-												);
-											})}
-										</Select>
-									</Col>
-									<Col span={4}>
-										<Input
-											style={{ width: '100%' }}
-											onChange={(value) =>
-												onChange(value, item, 'content')
-											}
-											value={item.content}
-											maxLength={10}
-										/>
-									</Col>
-									<Col span={2}>
-										<Button>
-											<CustomIcon
-												type="icon-fuzhi1"
-												size={12}
-												style={{ color: '#0064C8' }}
+											</Select>
+											<Input
+												style={{ width: '30%' }}
+												value={item.threshold}
+												onChange={(value) => {
+													onChange(
+														value,
+														item,
+														'threshold'
+													);
+												}}
 											/>
-										</Button>
-										<Button onClick={() => addAlarm(index)}>
-											<Icon
-												type="plus"
-												style={{ color: '#0064C8' }}
+											<span className="info">%</span>
+										</Col>
+										<Col span={5}>
+											<Input
+												style={{ width: '25%' }}
+												value={item.alertTime}
+												onChange={(value) => {
+													onChange(
+														value,
+														item,
+														'alertTime'
+													);
+												}}
 											/>
-										</Button>
-										{index !== 0 && (
-											<Button
-												onClick={() =>
-													delAlarm(item.id)
+											<span className="info">分钟内触发</span>
+											<Input
+												style={{ width: '25%' }}
+												value={item.alertTimes}
+												onChange={(value) => {
+													onChange(
+														value,
+														item,
+														'alertTimes'
+													);
+												}}
+											></Input>
+											<span className="info">次</span>
+										</Col>
+										<Col span={3}>
+											<Select
+												onChange={(value) =>
+													onChange(
+														value,
+														item,
+														'severity'
+													)
 												}
+												style={{ width: '100%' }}
+												value={item.severity}
 											>
-												<Icon
-													type="wind-minus"
+												{alarmWarn.map((i) => {
+													return (
+														<Option
+															key={i.label}
+															value={i.value}
+														>
+															{i.label}
+														</Option>
+													);
+												})}
+											</Select>
+										</Col>
+										<Col span={3}>
+											<Select
+												onChange={(value) =>
+													onChange(value, item, 'silence')
+												}
+												style={{ width: '100%' }}
+												value={item.silence}
+											>
+												{silences.map((i) => {
+													return (
+														<Option
+															key={i.value}
+															value={i.value}
+														>
+															{i.label}
+														</Option>
+													);
+												})}
+											</Select>
+										</Col>
+										<Col span={4}>
+											<Input
+												style={{ width: '100%' }}
+												onChange={(value) =>
+													onChange(value, item, 'content')
+												}
+												value={item.content}
+												maxLength={10}
+											/>
+										</Col>
+										<Col span={2}>
+											<Button>
+												<CustomIcon
+													type="icon-fuzhi1"
+													size={12}
 													style={{ color: '#0064C8' }}
 												/>
 											</Button>
-										)}
-									</Col>
-								</Row>
-							</div>
-						);
-					})}
+											<Button disabled={record} onClick={() => addAlarm(index)}>
+												<Icon
+													type="plus"
+													style={{ color: '#0064C8' }}
+												/>
+											</Button>
+											{index !== 0 && (
+												<Button
+													onClick={() =>
+														delAlarm(item.id)
+													}
+												>
+													<Icon
+														type="wind-minus"
+														style={{ color: '#0064C8' }}
+													/>
+												</Button>
+											)}
+										</Col>
+									</Row>
+								</div>
+							);
+						})}
+				</div>
 				<h2>告警通知</h2>
 				<div className="users">
 					<span
@@ -697,7 +720,8 @@ function CreateAlarm(props) {
 						</div>
 						<Transfer
 							showSearch
-							// defaultValue={selectUser}
+							defaultValue={selectUser}
+							mode="simple"
 							titles={[
 								<div key="left">
 									<span key="account">登陆账户</span>
@@ -712,7 +736,6 @@ function CreateAlarm(props) {
 									<span key="tel">手机号</span>
 								</div>
 							]}
-							// defaultLeftChecked={selectUser}
 							dataSource={users}
 							itemRender={transferRender}
 							onChange={handleChange}
