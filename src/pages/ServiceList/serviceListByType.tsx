@@ -69,7 +69,8 @@ const ServiceListByType = (props: serviceListProps) => {
 					}).then((res) => {
 						if (res.success) {
 							res.data && setDataSource(res.data[0]);
-							res.data && setShowDataSource(res.data[0].serviceList);
+							res.data &&
+								setShowDataSource(res.data[0].serviceList);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -237,7 +238,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<Button
 							onClick={releaseMiddleware}
 							type="primary"
-							disabled={currentService.name === undefined}
+							disabled={!dataSource}
 						>
 							发布服务
 						</Button>
@@ -256,7 +257,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<Button
 							onClick={releaseMiddleware}
 							type="primary"
-							disabled={currentService?.name === undefined}
+							disabled={!dataSource}
 						>
 							发布服务
 						</Button>
@@ -457,7 +458,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						参数设置
 					</span>
 				</LinkButton>
-				<LinkButton onClick={() => history.push(`/ServerVersion/${record.type}/${record.aliasName}`)}>版本管理</LinkButton>
+				<LinkButton
+					onClick={() =>
+						history.push(
+							`/ServerVersion/${record.type}/${record.aliasName}`
+						)
+					}
+				>
+					版本管理
+				</LinkButton>
 				<LinkButton key="delete" onClick={() => deleteFn(record)}>
 					删除
 				</LinkButton>
