@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Table from '@/components/MidTable';
 import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
-import { Divider } from '@alifd/next';
 
 const alarmWarn = [
 	{
@@ -34,6 +33,7 @@ function AlarmRecord(props) {
 	const [level, setLevel] = useState(''); // level
 	const [total, setTotal] = useState(10); // 总数
 	const [eventData, setEventData] = useState([]);
+	const [originData, setOriginData] = useState([]);
 	const [keyword, setKeyword] = useState('');
 
 	const onRefresh = () => {
@@ -49,36 +49,37 @@ function AlarmRecord(props) {
 		getData();
 	}, [middlewareName]);
 
-    const getData = () => {
-        if(alarmType === 'system'){
-            const sendData = {
-                // current: current,
-                // size: 10,
-                level: level,
-                clusterId,
-                lay: 'system',
+	const getData = () => {
+		if (alarmType === 'system') {
+			const sendData = {
+				// current: current,
+				// size: 10,
+				level: level,
+				clusterId,
+				lay: 'system',
 				keyword
-            };
-            getEvent(sendData).then((res) => {
-                setEventData(res.data ? res.data.list : []);
-                setTotal(res.data ? res.data.total : 0);
-            });
-        }else{
-            const sendData = {
-                // current: current,
-                // size: 10,
-                level: level,
-                middlewareName,
-                clusterId,
-                namespace,
-                lay: 'service'
-            };
-            getEvent(sendData).then((res) => {
-                setEventData(res.data ? res.data.list : []);
-                setTotal(res.data ? res.data.total : 0);
-            });
-        }
-    }
+			};
+			getEvent(sendData).then((res) => {
+				setEventData(res.data ? res.data.list : []);
+				setTotal(res.data ? res.data.total : 0);
+			});
+		} else {
+			const sendData = {
+				// current: current,
+				// size: 10,
+				level: level,
+				middlewareName,
+				clusterId,
+				namespace,
+				lay: 'service'
+			};
+			getEvent(sendData).then((res) => {
+				setEventData(res.data ? res.data.list : []);
+				setOriginData(res.data ? res.data.list : []);
+				setTotal(res.data ? res.data.total : 0);
+			});
+		}
+	}
 
 	const levelRender = (value, index, record) => {
 		return (
@@ -100,10 +101,25 @@ function AlarmRecord(props) {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setEventData([...dsTemp]);
+		}
+	};
+
+	const onFilter = (filterParams) => {
+		let {
+			level: { selectedKeys }
+		} = filterParams;
+		if (selectedKeys.length === 0) {
+			setEventData(originData);
+		} else {
+			let tempData = null;
+			tempData = originData.filter((item) => {
+				return item.level === selectedKeys[0];
+			});
+			setEventData(tempData);
 		}
 	};
 
@@ -127,12 +143,15 @@ function AlarmRecord(props) {
 				width: '360px'
 			}}
 			onSort={onSort}
+			onFilter={onFilter}
 		>
 			<Table.Column title="告警ID" dataIndex="alertId" width={100} />
 			<Table.Column
 				title="告警等级"
 				dataIndex="level"
-				width={100}
+				width={150}
+				filters={alarmWarn}
+				filterMode="single"
 				cell={levelRender}
 			/>
 			<Table.Column title="告警内容" dataIndex="content" />

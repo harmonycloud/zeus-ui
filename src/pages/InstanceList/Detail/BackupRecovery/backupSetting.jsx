@@ -217,6 +217,7 @@ function BackupSetting(props) {
 						setBackupObj={(value) => setBackupObj(value)}
 						isEdit={isEdit}
 						selectObj={selectObj}
+						backup={backup}
 					/>
 				)}
 				{

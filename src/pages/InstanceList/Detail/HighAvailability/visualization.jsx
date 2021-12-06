@@ -101,7 +101,8 @@ function Visualization(props) {
 		reStart,
 		editConfiguration,
 		setEsVisible,
-		selectObj
+		selectObj,
+		backup
 	} = props;
 	const location = useLocation();
 	const { pathname } = location;
@@ -1024,7 +1025,7 @@ function Visualization(props) {
 		<div className={styles['visualization']}>
 			<h2>
 				{pathname.includes('addBackup')
-					? isEdit
+					? backup
 						? '选择要恢复的对象'
 						: '选择备份对象'
 					: '关系拓扑'}

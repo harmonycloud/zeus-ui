@@ -9,7 +9,6 @@ import BackupRecovery from './BackupRecovery/index';
 import ExternalAccess from './ExternalAccess/index';
 import Monitor from './Monitor/index';
 import Log from './Log/index';
-import ThresholdAlarm from './ThresholdAlarm/index';
 import ServerAlarm from './ServeAlarm';
 import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';

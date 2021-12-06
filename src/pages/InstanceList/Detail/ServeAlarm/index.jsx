@@ -30,6 +30,17 @@ const alarmWarn = [
 		label: '严重'
 	}
 ];
+const silences = [
+	{ value: '5m', label: '5分钟' },
+	{ value: '10m', label: '10分钟' },
+	{ value: '15m', label: '15分钟' },
+	{ value: '30m', label: '30分钟' },
+	{ value: '1h', label: '1小时' },
+	{ value: '2h', label: '2小时' },
+	{ value: '3h', label: '3小时' },
+	{ value: '6h', label: '6小时' },
+	{ value: '12h', label: '12小时' },
+];
 
 function Rules(props) {
 	const history = useHistory();
@@ -45,6 +56,7 @@ function Rules(props) {
 	} = props;
 	const [searchText, setSearchText] = useState('');
 	const [dataSource, setDataSource] = useState([]);
+	const [originData, setOriginData] = useState([]);
 
 	const onRefresh = () => {
 		getData(clusterId, middlewareName, namespace, searchText);
@@ -69,6 +81,7 @@ function Rules(props) {
 			getUsedAlarm(sendData).then((res) => {
 				if (res.success) {
 					setDataSource(res.data.list);
+					setOriginData(res.data.list);
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -84,6 +97,7 @@ function Rules(props) {
 			getUsedAlarms(sendData).then((res) => {
 				if (res.success) {
 					setDataSource(res.data.list);
+					setOriginData(res.data.list);
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -163,9 +177,9 @@ function Rules(props) {
 		return (
 			<span className={value.severity + ' level'}>
 				{value &&
-				alarmWarn.find((item) => item.value === value.severity)
+					alarmWarn.find((item) => item.value === value.severity)
 					? alarmWarn.find((item) => item.value === value.severity)
-							.label
+						.label
 					: ''}
 			</span>
 		);
@@ -228,7 +242,37 @@ function Rules(props) {
 		);
 	};
 
-	
+	const onFilter = (filterParams) => {
+		if (filterParams.labels) {
+			let {
+				labels: { selectedKeys }
+			} = filterParams;
+			if (selectedKeys.length === 0) {
+				setDataSource(originData);
+			} else {
+				let tempData = null;
+				tempData = originData.filter((item) => {
+					return item.labels.severity === selectedKeys[0];
+				});
+				setDataSource(tempData);
+			}
+		} else if (filterParams.silence) {
+			let {
+				silence: { selectedKeys }
+			} = filterParams;
+			if (selectedKeys.length === 0) {
+				setDataSource(originData);
+			} else {
+				let tempData = null;
+				tempData = originData.filter((item) => {
+					console.log(item, selectedKeys[0]);
+					return item.silence === selectedKeys[0];
+				});
+				setDataSource(tempData);
+			}
+		}
+	};
+
 	const onSort = (dataIndex, order) => {
 		if (dataIndex === 'createTime') {
 			const dsTemp = dataSource.sort((a, b) => {
@@ -239,8 +283,8 @@ function Rules(props) {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setDataSource([...dsTemp]);
 		}
@@ -267,6 +311,7 @@ function Rules(props) {
 			}}
 			operation={Operation}
 			onSort={onSort}
+			onFilter={onFilter}
 		>
 			<Table.Column title="规则ID" dataIndex="alertId" />
 			<Table.Column title="告警对象" dataIndex="name" cell={nameRender} />
@@ -278,9 +323,16 @@ function Rules(props) {
 			<Table.Column
 				title="告警等级"
 				dataIndex="labels"
+				filters={alarmWarn}
+				filterMode="single"
 				cell={levelRender}
 			/>
-			<Table.Column title="告警间隔" dataIndex="silence" />
+			<Table.Column
+				title="告警间隔"
+				dataIndex="silence"
+				filters={silences}
+				filterMode="single"
+			/>
 			<Table.Column title="告警内容" dataIndex="content" />
 			<Table.Column
 				title="创建时间"

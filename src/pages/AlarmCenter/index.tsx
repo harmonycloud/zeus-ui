@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Message } from '@alicloud/console-components';
 import SecondLayout from '@/components/SecondLayout';
-import ThresholdAlarm from '@/pages/InstanceList/Detail/ThresholdAlarm';
 import AlarmRecord from '@/pages/SystemAlarm/alarmRecord';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
@@ -47,7 +46,7 @@ function AlarmCenter(): JSX.Element {
 	return (
 		<SecondLayout
 			title="服务告警"
-			subTitle="中间件服务的相关运行指标可进行监测和告警"
+			subTitle="中间件服务层面的告警"
 			hasBackArrow={true}
 			onChange={onChange}
 		>
