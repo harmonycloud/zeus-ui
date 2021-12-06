@@ -298,12 +298,12 @@ function BasicInfo(props) {
 					messageConfig(
 						'success',
 						'成功',
-						'备注修改成功,3秒后刷新页面'
+						'备注修改成功,5秒后刷新页面'
 					)
 				);
 				setTimeout(() => {
 					onRefresh();
-				}, 3000);
+				}, 5000);
 			} else {
 				Message.shoe(messageConfig('success', '失败', res));
 			}

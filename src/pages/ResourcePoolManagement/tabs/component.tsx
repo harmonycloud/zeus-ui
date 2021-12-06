@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Message } from '@alicloud/console-components';
+import { Button, Message, Icon } from '@alicloud/console-components';
 import { Page, Content } from '@alicloud/console-components-page';
 import { useParams } from 'react-router';
 import { paramsProps } from '../detail';
@@ -8,8 +8,15 @@ import { ComponentProp } from '../resource.pool';
 import messageConfig from '@/components/messageConfig';
 import ComponentCard from '@/components/ComponentCard';
 import BatchInstall from './batchInstall';
+import { connect } from 'react-redux';
+import { setRefreshCluster } from '@/redux/globalVar/var';
 
-const Component = () => {
+interface ComponentProps {
+	setRefreshCluster: (flag: boolean) => void;
+}
+
+const Component = (props: ComponentProps) => {
+	const { setRefreshCluster } = props;
 	const { id, nickname }: paramsProps = useParams();
 	const [components, setComponents] = useState<ComponentProp[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -32,6 +39,7 @@ const Component = () => {
 		getComponents({ clusterId: id }).then((res) => {
 			if (res.success) {
 				setComponents(res.data);
+				setRefreshCluster(true);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -40,9 +48,14 @@ const Component = () => {
 	return (
 		<Page>
 			<Content>
-				<Button type="primary" onClick={() => setVisible(true)}>
-					批量安装
-				</Button>
+				<div className="flex-space-between">
+					<Button type="primary" onClick={() => setVisible(true)}>
+						批量安装
+					</Button>
+					<Button onClick={getData}>
+						<Icon type="refresh" />
+					</Button>
+				</div>
 				<div className="component-plugging-content">
 					{components.map((item) => {
 						return (
@@ -69,4 +82,6 @@ const Component = () => {
 		</Page>
 	);
 };
-export default Component;
+export default connect(() => ({}), {
+	setRefreshCluster
+})(Component);
