@@ -179,10 +179,10 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					</>
 				)
 			});
-		} else if (record.versionStatus) {
+		} else if (record.versionStatus === 'canUpgrade') {
 			Dialog.show({
 				title: '操作确认',
-				content: '是否确认升级到该版本？',
+				content: '是否确认升级版本？',
 				onOk: () => {
 					return upgradeChart({
 						clusterId: cluster.id,
@@ -203,7 +203,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					});
 				}
 			});
-		} else if (record.versionStatus === 'canUpgrade') {
+		} else if (record.versionStatus === 'updating') {
 			const dialog = Dialog.show({
 				title: '操作确认',
 				content: 'operator升级中,请稍后升级',

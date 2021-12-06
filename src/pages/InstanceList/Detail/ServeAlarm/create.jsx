@@ -39,6 +39,7 @@ const silences = [
 	{ value: '3h', label: '3小时' },
 	{ value: '6h', label: '6小时' },
 	{ value: '12h', label: '12小时' },
+	{ value: '24h', label: '24小时' },
 ];
 const alarmWarn = [
 	{
@@ -243,7 +244,8 @@ function CreateAlarm(props) {
 		getUsers().then(async (res) => {
 			// console.log(res);
 			if (!res.data) return;
-			setSelectUser(res.data.userBy.map((item) => Number(item.id)));
+			res.data.userBy && res.data.userBy.length && res.data.userBy.find((item) => item.email) && 
+			setSelectUser(res.data.userBy.find((item) => item.email).id);
 			res.data.userBy && res.data.userBy.length && res.data.userBy.map(item => {
 				res.data.users.map(arr => {
 					if(arr.id === item.id){
@@ -256,7 +258,8 @@ function CreateAlarm(props) {
 					return {
 						...item,
 						value: item.id,
-						key: item.id
+						key: item.id,
+						disabled: !item.email
 					};
 				})
 			);
@@ -270,12 +273,12 @@ function CreateAlarm(props) {
 
 	const transferRender = (item) => {
 		return (
-			<span key={item.id} style={{width: '445px', overflowX: 'auto', color: item.email ? '#ccc' : '#000'}}>
-				<Checkbox style={{ marginRight: '5px' }} />
+			<span key={item.id} style={{width: '445px', overflowX: 'auto'}} className={item.email ? '' : "disabled"}>
+				<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
 				<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
 				<span className="item-content">{item.userName}</span>
 				<span className="item-content">{item.aliasName}</span>
-				<span className="item-content">{item.email}</span>
+				<span className="item-content">{item.email ? item.email : '/'}</span>
 				<span className="item-content">{item.phone}</span>
 			</span>
 		);
@@ -441,7 +444,7 @@ function CreateAlarm(props) {
 	return (
 		<Page className="create-alarm">
 			<Header
-				title={record ? "修改告警规则" : "新建告警规则"}
+				title={record ? "修改告警规则" : `新建告警规则${namespace ? '(' + namespace + ')' : ''}`}
 				hasBackArrow
 				renderBackArrow={(elem) => (
 					<span
@@ -666,7 +669,7 @@ function CreateAlarm(props) {
 													onChange(value, item, 'content')
 												}
 												value={item.content}
-												maxLength={10}
+												maxLength={100}
 											/>
 										</Col>
 										<Col span={2}>
@@ -725,6 +728,9 @@ function CreateAlarm(props) {
 							<p className="transfer-title left">用户管理</p>
 							<p className="transfer-title">用户管理</p>
 						</div>
+						{
+							console.log(selectUser)
+						}
 						<Transfer
 							showSearch
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
