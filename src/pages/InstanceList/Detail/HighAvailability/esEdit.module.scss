@@ -79,6 +79,9 @@
 		padding: 10px 30px;
 		box-sizing: border-box;
 		background-color: #f9f9f9;
+		.rotate{
+			transform: rotate(-90deg);
+		}
 		button {
 			min-width: 24px !important;
 			width: 24px;

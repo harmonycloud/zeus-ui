@@ -49,13 +49,16 @@ export default function FormNodeAffinity(props) {
 	};
 
 	const addAffinityLabels = () => {
-		setAffinityLabels([...affinityLabels,{label: affinity.nodeAffinityLabel,id: Math.random()}]);
-		props.field.setValues({affinityLabels: [...affinityLabels,{label: affinity.nodeAffinityLabel,id: Math.random()}]});
+		if (!affinityLabels.find(item => item.label === affinity.nodeAffinityLabel)) {
+			setAffinityLabels([...affinityLabels, { label: affinity.nodeAffinityLabel, id: Math.random() }]);
+			props.field.setValues({ affinityLabels: [...affinityLabels, { label: affinity.nodeAffinityLabel, id: Math.random() }] });
+			changeAffinity('', 'nodeAffinityLabel')
+		}
 	}
 
 	const reduceAffinityLabels = (item) => {
 		setAffinityLabels(affinityLabels.filter(arr => arr.id !== item.id));
-		props.field.setValues({affinityLabels: affinityLabels.filter(arr => arr.id !== item.id)});
+		props.field.setValues({ affinityLabels: affinityLabels.filter(arr => arr.id !== item.id) });
 	}
 
 	return (

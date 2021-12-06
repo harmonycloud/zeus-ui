@@ -27,7 +27,7 @@ import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
-const { Tooltip } = Balloon
+const { Tooltip } = Balloon;
 const symbols = ['>=', '>', '==', '<', '<=', '!='];
 const silences = [
 	{ value: '5m', label: '5分钟' },
@@ -244,6 +244,13 @@ function CreateAlarm(props) {
 			// console.log(res);
 			if (!res.data) return;
 			setSelectUser(res.data.userBy.map((item) => Number(item.id)));
+			res.data.userBy && res.data.userBy.length && res.data.userBy.map(item => {
+				res.data.users.map(arr => {
+					if(arr.id === item.id){
+						setInsertUser(item)
+					}
+				})
+			});
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
@@ -257,13 +264,13 @@ function CreateAlarm(props) {
 	}, []);
 
 	const handleChange = (value, data, extra) => {
-		console.log(value, data, extra)
-		// setInsertUser(data);
+		// console.log(value, data, extra);
+		setInsertUser(data);
 	};
 
 	const transferRender = (item) => {
 		return (
-			<span key={item.id}>
+			<span key={item.id} style={{width: '445px', overflowX: 'auto', color: item.email ? '#ccc' : '#000'}}>
 				<Checkbox style={{ marginRight: '5px' }} />
 				<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
 				<span className="item-content">{item.userName}</span>
@@ -492,7 +499,7 @@ function CreateAlarm(props) {
 							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#33' }} />}
 							align="t"
 						>
-							待定时间&gt;=设定的触发次数，则预警一次
+							特定时间≥设定的触发次数，则预警一次
 						</Tooltip>
 					</Col>
 					<Col span={3}>
@@ -720,6 +727,7 @@ function CreateAlarm(props) {
 						</div>
 						<Transfer
 							showSearch
+							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
 							defaultValue={selectUser}
 							mode="simple"
 							titles={[
@@ -750,7 +758,7 @@ function CreateAlarm(props) {
 					>
 						确认
 					</Button>
-					<Button>取消</Button>
+					<Button onClick={() => window.history.back()}>取消</Button>
 				</div>
 			</Content>
 		</Page>

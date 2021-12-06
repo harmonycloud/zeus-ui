@@ -49,13 +49,17 @@ export default function FormTolerations(props) {
 	};
 
 	const addTolerationsLabels = () => {
-		setTolerationsLabels([...tolerationsLabels,{label: tolerations.nodeTolerationsLabel,id: Math.random()}]);
-		props.field.setValues({tolerationsLabels: [...tolerationsLabels,{label: tolerations.nodeTolerationsLabel,id: Math.random()}]});
+		if (!tolerationsLabels.find(item => item.label === tolerations.nodeTolerationsLabel)) {
+			setTolerationsLabels([...tolerationsLabels, { label: tolerations.nodeTolerationsLabel, id: Math.random() }]);
+			props.field.setValues({ tolerationsLabels: [...tolerationsLabels, { label: tolerations.nodeTolerationsLabel, id: Math.random() }] });
+			changeTolerations('','nodeTolerationsLabel'
+			)
+		}
 	}
 
 	const reduceTolerationsLabels = (item) => {
 		setTolerationsLabels(tolerationsLabels.filter(arr => arr.id !== item.id));
-		props.field.setValues({tolerationsLabels: tolerationsLabels.filter(arr => arr.id !== item.id)});
+		props.field.setValues({ tolerationsLabels: tolerationsLabels.filter(arr => arr.id !== item.id) });
 	}
 
 	return (
@@ -68,7 +72,7 @@ export default function FormTolerations(props) {
 					className={keys.includes('required') ? 'ne-required' : ''}
 				>
 					{/* {props.label} */}
-                    主机容忍
+					主机容忍
 				</span>
 			</label>
 			<div className="form-content">
@@ -95,7 +99,7 @@ export default function FormTolerations(props) {
 					/>
 					{tolerations.nodeTolerations ? (
 						<>
-							<div className="dynamic-form-node-tolerations-content">
+							<div className="dynamic-form-node-tolerations-content" style={{marginLeft: 24}}>
 								<Select.AutoComplete
 									value={tolerations.nodeTolerationsLabel}
 									onChange={(value) =>

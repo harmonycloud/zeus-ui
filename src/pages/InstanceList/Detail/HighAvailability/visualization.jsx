@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './esEdit.module.scss';
 import G6 from '@antv/g6';
-import { Button, Icon } from '@alicloud/console-components';
+import { Button, Icon, Balloon } from '@alicloud/console-components';
 import CustomIcon from '@/components/CustomIcon';
 import { api } from '@/api.json';
 import select from '@/assets/images/tree-select.svg';
@@ -39,6 +39,8 @@ insertCss(`
 }
 `);
 
+const { Tooltip } = Balloon;
+
 const podStatus = [
 	{
 		status: 'Completed',
@@ -62,13 +64,13 @@ const podStatus = [
 		status: 'NotReady',
 		color: '#FFC440',
 		image: NotReady,
-		title: '未准备好'
+		title: '运行异常'
 	},
 	{
 		status: 'Creating',
 		color: '#1E8E3E',
 		image: Completed,
-		title: '启动中'
+		title: '即将完成'
 	},
 	{
 		status: 'RunningError',
@@ -971,7 +973,7 @@ function Visualization(props) {
 	}, []);
 
 	const reset = () => {
-		window.graph.changeSize(1180,480);
+		window.graph.changeSize(1180, 480);
 		setOption({
 			position: 'static',
 		});
@@ -979,12 +981,34 @@ function Visualization(props) {
 	};
 
 	const bingger = () => {
-		window.graph.zoom(window.graph.getZoom() * 1.2);
+		window.graph.zoom(window.graph.getZoom() * 1.2,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
 	};
 
 	const smaller = () => {
-		window.graph.zoom(window.graph.getZoom() * 0.8);
+		window.graph.zoom(window.graph.getZoom() * 0.8,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
 	};
+
+	const scale = () => {
+		console.log(window.graph.getWidth(), window.innerWidth);
+		if (window.graph.getWidth() !== window.innerWidth) {
+			setOption({
+				width: window.innerWidth,
+				height: window.innerHeight,
+				position: 'fixed',
+				top: 0,
+				left: 0,
+				zIndex: 999
+			});
+			window.graph.changeSize(window.innerWidth, window.innerHeight);
+			window.graph.fitCenter();
+		} else {
+			window.graph.changeSize(1180, 480);
+			setOption({
+				position: 'static',
+			});
+			window.graph.fitCenter();
+		}
+	}
 
 	const changeTree = (value) => {
 		window.graph.updateLayout({
@@ -1019,6 +1043,7 @@ function Visualization(props) {
 				return 80;
 			}
 		});
+		window.graph.fitCenter();
 	};
 
 	return (
@@ -1032,50 +1057,69 @@ function Visualization(props) {
 			</h2>
 			<div style={{ background: '#f9f9f9', ...option }}>
 				<div className={styles['tools']}>
-					<Button>
-						<Icon type="arrows-alt" onClick={() => {
-							setOption({
-								width: window.innerWidth,
-								height: window.innerHeight,
-								position: 'fixed',
-								top: 0,
-								left: 0,
-								zIndex: 999
-							});
-							window.graph.changeSize(window.innerWidth,window.innerHeight);
-							window.graph.fitCenter();
-						}} />
-					</Button>
-					<Button>
-						<Icon
-							type="Directory-tree"
-							onClick={() => changeTree('LR')}
-						/>
-					</Button>
-					<Button>
-						<CustomIcon
-							type="icon-shuxiangjiegou"
-							size={12}
-							style={{ color: '#000000' }}
-							onClick={() => changeTree('TB')}
-						/>
-					</Button>
-					<Button>
-						<Icon type="add" onClick={bingger} />
-					</Button>
-					<Button>
-						<Icon type="minus" onClick={smaller} />
-					</Button>
-					<Button>
-						<CustomIcon
-							type="icon-double-circle"
-							size={12}
-							style={{ color: '#000000' }}
-							onClick={reset}
-						/>
-					</Button>
+					<Tooltip
+						trigger={<Button onClick={scale}><Icon type="arrows-alt" size="xs" /></Button>}
+						align="b"
+					>
+						{window.graph && window.graph.getWidth() !== window.innerWidth ? '全屏' : '退出全屏'}
+					</Tooltip>
+					<Tooltip
+						trigger={
+							<Button onClick={() => changeTree('LR')}>
+								<CustomIcon
+									type="icon-shuxiangjiegou"
+									size={12}
+									style={{ color: '#000000' }}
+									className={styles['rotate']}
+								/>
+							</Button>
+						}
+						align="b"
+					>
+						横向排列
+					</Tooltip>
+					<Tooltip
+						trigger={
+							<Button onClick={() => changeTree('TB')}>
+								<CustomIcon
+									type="icon-shuxiangjiegou"
+									size={12}
+									style={{ color: '#000000' }}
+								/>
+							</Button>
+						}
+						align="b"
+					>
+						竖向排列
+					</Tooltip>
+					<Tooltip
+						trigger={<Button onClick={bingger}><Icon type="add" /></Button>}
+						align="b"
+					>
+						放大
+					</Tooltip>
+					<Tooltip
+						trigger={<Button onClick={smaller}><Icon type="minus" /></Button>}
+						align="b"
+					>
+						缩小
+					</Tooltip>
+					<Tooltip
+						trigger={
+							<Button onClick={reset}>
+								<CustomIcon
+									type="icon-double-circle"
+									size={12}
+									style={{ color: '#000000' }}
+								/>
+							</Button>
+						}
+						align="b"
+					>
+						回到原点
+					</Tooltip>
 				</div>
-				<div id="topology" style={{...treeOption}}></div>
+				<div id="topology" style={{ ...treeOption }}></div>
 				<div id="minimap"></div>
 			</div>
 		</div>
