@@ -39,6 +39,7 @@ const silences = [
 	{ value: '3h', label: '3小时' },
 	{ value: '6h', label: '6小时' },
 	{ value: '12h', label: '12小时' },
+	{ value: '24h', label: '24小时' }
 ];
 const alarmWarn = [
 	{
@@ -243,20 +244,26 @@ function CreateAlarm(props) {
 		getUsers().then(async (res) => {
 			// console.log(res);
 			if (!res.data) return;
-			setSelectUser(res.data.userBy.map((item) => Number(item.id)));
-			res.data.userBy && res.data.userBy.length && res.data.userBy.map(item => {
-				res.data.users.map(arr => {
-					if(arr.id === item.id){
-						setInsertUser(item)
-					}
-				})
-			});
+			res.data.userBy &&
+				res.data.userBy.length &&
+				res.data.userBy.find((item) => item.email) &&
+				setSelectUser(res.data.userBy.find((item) => item.email).id);
+			res.data.userBy &&
+				res.data.userBy.length &&
+				res.data.userBy.map((item) => {
+					res.data.users.map((arr) => {
+						if (arr.id === item.id) {
+							setInsertUser(item);
+						}
+					});
+				});
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
 						...item,
 						value: item.id,
-						key: item.id
+						key: item.id,
+						disabled: !item.email
 					};
 				})
 			);
@@ -270,12 +277,26 @@ function CreateAlarm(props) {
 
 	const transferRender = (item) => {
 		return (
-			<span key={item.id} style={{width: '445px', overflowX: 'auto', color: item.email ? '#ccc' : '#000'}}>
-				<Checkbox style={{ marginRight: '5px' }} />
-				<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
+			<span
+				key={item.id}
+				style={{ width: '445px', overflowX: 'auto' }}
+				className={item.email ? '' : 'disabled'}
+			>
+				<Checkbox
+					style={{ marginRight: '5px' }}
+					disabled={!item.email}
+				/>
+				<Icon
+					className="label"
+					type="ashbin1"
+					size="xs"
+					style={{ color: '#0070CC', marginRight: '10px' }}
+				/>
 				<span className="item-content">{item.userName}</span>
 				<span className="item-content">{item.aliasName}</span>
-				<span className="item-content">{item.email}</span>
+				<span className="item-content">
+					{item.email ? item.email : '/'}
+				</span>
 				<span className="item-content">{item.phone}</span>
 			</span>
 		);
@@ -362,7 +383,13 @@ function CreateAlarm(props) {
 
 	const onOk = () => {
 		const flag = alarmRules.map((item) => {
-			if (item.alert && item.alertTimes && item.alertTime && item.symbol && item.threshold) {
+			if (
+				item.alert &&
+				item.alertTimes &&
+				item.alertTime &&
+				item.symbol &&
+				item.threshold
+			) {
 				return true;
 			} else {
 				return false;
@@ -373,7 +400,7 @@ function CreateAlarm(props) {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.annotations = {
 					message: item.content
-				}
+				};
 				item.lay = 'system';
 				item.enable = 0;
 				delete item.severity;
@@ -385,12 +412,19 @@ function CreateAlarm(props) {
 						Message.show(
 							messageConfig('error', '失败', '请选择告警方式')
 						);
-					} else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
+					} else if (
+						(mailChecked && dingChecked) ||
+						(mailChecked && !dingChecked)
+					) {
 						if (insertUser) {
 							onCreate(data);
 						} else {
 							Message.show(
-								messageConfig('error', '失败', '请选择邮箱通知用户')
+								messageConfig(
+									'error',
+									'失败',
+									'请选择邮箱通知用户'
+								)
 							);
 						}
 					} else if (dingChecked) {
@@ -402,9 +436,7 @@ function CreateAlarm(props) {
 					);
 				}
 			} else {
-				Message.show(
-					messageConfig('error', '失败', '请选择资源池')
-				);
+				Message.show(messageConfig('error', '失败', '请选择资源池'));
 			}
 		} else {
 			const list = alarmRules.map((item) => {
@@ -419,7 +451,10 @@ function CreateAlarm(props) {
 					Message.show(
 						messageConfig('error', '失败', '请选择告警方式')
 					);
-				} else if ((mailChecked && dingChecked) || (mailChecked && !dingChecked)) {
+				} else if (
+					(mailChecked && dingChecked) ||
+					(mailChecked && !dingChecked)
+				) {
 					if (insertUser) {
 						onCreate(list);
 					} else {
@@ -441,7 +476,13 @@ function CreateAlarm(props) {
 	return (
 		<Page className="create-alarm">
 			<Header
-				title={record ? "修改告警规则" : "新建告警规则"}
+				title={
+					record
+						? '修改告警规则'
+						: `新建告警规则${
+								namespace ? '(' + namespace + ')' : ''
+						  }`
+				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
 					<span
@@ -496,7 +537,13 @@ function CreateAlarm(props) {
 					<Col span={5}>
 						<span>触发规则</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#33' }} />}
+							trigger={
+								<Icon
+									type="question-circle"
+									size="xs"
+									style={{ marginLeft: '5px', color: '#33' }}
+								/>
+							}
 							align="t"
 						>
 							特定时间≥设定的触发次数，则预警一次
@@ -508,7 +555,13 @@ function CreateAlarm(props) {
 					<Col span={3}>
 						<span>告警间隔</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333' }} />}
+							trigger={
+								<Icon
+									type="question-circle"
+									size="xs"
+									style={{ marginLeft: '5px', color: '#333' }}
+								/>
+							}
 							align="t"
 						>
 							预警一次过后，间隔多久后再次执行预警监测，防止预警信息爆炸
@@ -517,7 +570,13 @@ function CreateAlarm(props) {
 					<Col span={4}>
 						<span>告警内容描述</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333' }} />}
+							trigger={
+								<Icon
+									type="question-circle"
+									size="xs"
+									style={{ marginLeft: '5px', color: '#333' }}
+								/>
+							}
 							align="t"
 						>
 							对已经设定的监控对象进行自定义描述，发生告警时可作为一种信息提醒
@@ -537,10 +596,17 @@ function CreateAlarm(props) {
 											<span className="ne-required"></span>
 											<Select
 												onChange={(value) =>
-													onChange(value, item, 'alert')
+													onChange(
+														value,
+														item,
+														'alert'
+													)
 												}
 												placeholder="CPU使用率"
-												style={{ marginRight: 8, width: '100%' }}
+												style={{
+													marginRight: 8,
+													width: '100%'
+												}}
 												value={item.alert}
 											>
 												{alarms &&
@@ -559,7 +625,11 @@ function CreateAlarm(props) {
 										<Col span={4}>
 											<Select
 												onChange={(value) =>
-													onChange(value, item, 'symbol')
+													onChange(
+														value,
+														item,
+														'symbol'
+													)
 												}
 												style={{
 													width: '60%',
@@ -570,7 +640,10 @@ function CreateAlarm(props) {
 											>
 												{symbols.map((i) => {
 													return (
-														<Option key={i} value={i}>
+														<Option
+															key={i}
+															value={i}
+														>
 															{i}
 														</Option>
 													);
@@ -601,7 +674,9 @@ function CreateAlarm(props) {
 													);
 												}}
 											/>
-											<span className="info">分钟内触发</span>
+											<span className="info">
+												分钟内触发
+											</span>
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
@@ -642,7 +717,11 @@ function CreateAlarm(props) {
 										<Col span={3}>
 											<Select
 												onChange={(value) =>
-													onChange(value, item, 'silence')
+													onChange(
+														value,
+														item,
+														'silence'
+													)
 												}
 												style={{ width: '100%' }}
 												value={item.silence}
@@ -663,10 +742,14 @@ function CreateAlarm(props) {
 											<Input
 												style={{ width: '100%' }}
 												onChange={(value) =>
-													onChange(value, item, 'content')
+													onChange(
+														value,
+														item,
+														'content'
+													)
 												}
 												value={item.content}
-												maxLength={10}
+												maxLength={100}
 											/>
 										</Col>
 										<Col span={2}>
@@ -677,7 +760,10 @@ function CreateAlarm(props) {
 													style={{ color: '#0064C8' }}
 												/>
 											</Button>
-											<Button disabled={record} onClick={() => addAlarm(index)}>
+											<Button
+												disabled={record}
+												onClick={() => addAlarm(index)}
+											>
 												<Icon
 													type="plus"
 													style={{ color: '#0064C8' }}
@@ -691,7 +777,9 @@ function CreateAlarm(props) {
 												>
 													<Icon
 														type="wind-minus"
-														style={{ color: '#0064C8' }}
+														style={{
+															color: '#0064C8'
+														}}
 													/>
 												</Button>
 											)}
@@ -725,6 +813,7 @@ function CreateAlarm(props) {
 							<p className="transfer-title left">用户管理</p>
 							<p className="transfer-title">用户管理</p>
 						</div>
+						{console.log(selectUser)}
 						<Transfer
 							showSearch
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"

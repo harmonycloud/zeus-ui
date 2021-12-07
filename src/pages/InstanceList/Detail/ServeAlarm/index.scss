@@ -130,6 +130,11 @@
                     .label {
                         display: none;
                     }
+                    .disabled{
+                        .item-content{
+                            color: #ddd;
+                        }
+                    }
                 }
                 &:nth-of-type(3) {
                     label {
@@ -142,7 +147,7 @@
                     background-color: #fbfcfd;
                     padding: 16px 30px 16px 45px;
                     span {
-                        width: 90px;
+                        width: 80px;
                         display: inline-block;
                         font-size: 12px;
                         font-family: PingFangSC-Medium, PingFang SC;
@@ -164,9 +169,11 @@
                     font-weight: 400;
                     color: #333333;
                     line-height: 18px;
-                    width: 90px;
+                    width: 80px;
+                    word-break:break-all;
                     &:nth-of-type(3) {
                         width: 150px;
+                        overflow-x: auto;
                     }
                 }
             }
