@@ -86,6 +86,8 @@ const AccessForm = (props: AccessFormProps) => {
 	}, []);
 	const onOk = () => {
 		field.validate((errors, values: any) => {
+			console.log(values);
+			console.log(title);
 			if (errors) return;
 			// console.log({ ...values, title });
 			const sendData: any = {
@@ -133,7 +135,7 @@ const AccessForm = (props: AccessFormProps) => {
 						logCollect: values.logCollect
 					}
 				};
-			} else if (title === 'alertManager') {
+			} else if (title === 'alertmanager') {
 				sendData.monitor = {
 					grafana: {
 						host: values.hostAlert,
