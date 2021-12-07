@@ -351,7 +351,7 @@ function BasicInfo(props) {
 					tolerations: `${
 						(data.tolerations && data.tolerations[0].label) || '/'
 					}`,
-					description: data.annotation || '无'
+					description: data.description || '无'
 				});
 			}
 			setConfigData({
