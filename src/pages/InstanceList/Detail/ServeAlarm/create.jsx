@@ -73,6 +73,8 @@ function CreateAlarm(props) {
 	const [selectUser, setSelectUser] = useState([]);
 	const [mailChecked, setMailChecked] = useState(false);
 	const [dingChecked, setDingChecked] = useState(false);
+	const [copyIndex, setCopyIndex] = useState();
+	const [isRule, setIsRule] = useState();
 
 	const getCanUse = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -84,11 +86,7 @@ function CreateAlarm(props) {
 		getCanUseAlarms(sendData).then((res) => {
 			if (res.success) {
 				setAlarms(JSON.parse(JSON.stringify(res.data)));
-				if (res.data.length > 0) {
-					const firstItem = res.data[0];
-					firstItem.id = Math.random() * 100;
-					setAlarmRules([firstItem]);
-				} else {
+				if (!(res.data.length < 0)) {
 					Message.show(
 						messageConfig(
 							'error',
@@ -196,13 +194,18 @@ function CreateAlarm(props) {
 		}
 	};
 
-	const addAlarm = (index) => {
+	const addAlarm = () => {
 		if (alarms && alarms.length > 0) {
-			const addItem = alarmRules[index];
-			setAlarmRules([
-				...alarmRules,
-				{ ...addItem, id: Math.random() * 100 }
-			]);
+			const addItem = alarmRules[copyIndex];
+			console.log(typeof copyIndex === 'undefined');
+			if (typeof copyIndex === 'undefined') {
+				setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
+			} else {
+				setAlarmRules([
+					...alarmRules,
+					{ ...addItem, id: Math.random() * 100 }
+				]);
+			}
 		}
 	};
 	const delAlarm = (i) => {
@@ -225,12 +228,7 @@ function CreateAlarm(props) {
 						description: 'CPU使用率'
 					}
 				]);
-				setAlarmRules([
-					{
-						alert: 'CPUUsingRate',
-						description: 'CPU使用率'
-					}
-				]);
+				setAlarmRules([{}]);
 			} else {
 				getCanUse(clusterId, namespace, middlewareName, type);
 			}
@@ -244,11 +242,11 @@ function CreateAlarm(props) {
 		getUsers().then(async (res) => {
 			// console.log(res);
 			if (!res.data) return;
-			res.data.userBy && res.data.userBy.length && res.data.userBy.find((item) => item.email) && 
-			setSelectUser(res.data.userBy.find((item) => item.email).id);
+			res.data.userBy && res.data.userBy.length && res.data.userBy.find((item) => item.email) &&
+				setSelectUser(res.data.userBy.find((item) => item.email).id);
 			res.data.userBy && res.data.userBy.length && res.data.userBy.map(item => {
 				res.data.users.map(arr => {
-					if(arr.id === item.id){
+					if (arr.id === item.id) {
 						setInsertUser(item)
 					}
 				})
@@ -273,7 +271,7 @@ function CreateAlarm(props) {
 
 	const transferRender = (item) => {
 		return (
-			<span key={item.id} style={{width: '445px', overflowX: 'auto'}} className={item.email ? '' : "disabled"}>
+			<span key={item.id} style={{ width: '445px', overflowX: 'auto' }} className={item.email ? '' : "disabled"}>
 				<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
 				<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
 				<span className="item-content">{item.userName}</span>
@@ -302,6 +300,7 @@ function CreateAlarm(props) {
 						Message.show(
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
+						window.history.back();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -312,6 +311,7 @@ function CreateAlarm(props) {
 						Message.show(
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
+						window.history.back();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -332,6 +332,7 @@ function CreateAlarm(props) {
 						Message.show(
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
+						window.history.back();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -342,6 +343,7 @@ function CreateAlarm(props) {
 						Message.show(
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
+						window.history.back();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -365,7 +367,7 @@ function CreateAlarm(props) {
 
 	const onOk = () => {
 		const flag = alarmRules.map((item) => {
-			if (item.alert && item.alertTimes && item.alertTime && item.symbol && item.threshold) {
+			if (item.alert && item.alertTimes && item.alertTime && item.symbol && item.threshold && item.severity && item.silence) {
 				return true;
 			} else {
 				return false;
@@ -401,7 +403,7 @@ function CreateAlarm(props) {
 					}
 				} else {
 					Message.show(
-						messageConfig('error', '失败', '存在监控项缺少阈值')
+						messageConfig('error', '失败', '缺少监控项或者不符合规则')
 					);
 				}
 			} else {
@@ -497,9 +499,9 @@ function CreateAlarm(props) {
 						<span>告警阈值</span>
 					</Col>
 					<Col span={5}>
-						<span>触发规则</span>
+						<span >触发规则</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#33' }} />}
+							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#33', cursor: 'pointer' }} />}
 							align="t"
 						>
 							特定时间≥设定的触发次数，则预警一次
@@ -511,16 +513,16 @@ function CreateAlarm(props) {
 					<Col span={3}>
 						<span>告警间隔</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333' }} />}
+							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333', cursor: 'pointer' }} />}
 							align="t"
 						>
 							预警一次过后，间隔多久后再次执行预警监测，防止预警信息爆炸
 						</Tooltip>
 					</Col>
 					<Col span={4}>
-						<span>告警内容描述</span>
+						<span >告警内容描述</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333' }} />}
+							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333', cursor: 'pointer' }} />}
 							align="t"
 						>
 							对已经设定的监控对象进行自定义描述，发生告警时可作为一种信息提醒
@@ -594,8 +596,12 @@ function CreateAlarm(props) {
 										</Col>
 										<Col span={5}>
 											<Input
+												htmlType="number"
+												max={1440}
+												min={1}
 												style={{ width: '25%' }}
 												value={item.alertTime}
+												state={item.alertTime > 1440 || item.alertTime < 0}
 												onChange={(value) => {
 													onChange(
 														value,
@@ -678,9 +684,10 @@ function CreateAlarm(props) {
 													type="icon-fuzhi1"
 													size={12}
 													style={{ color: '#0064C8' }}
+													onClick={() => setCopyIndex(index)}
 												/>
 											</Button>
-											<Button disabled={record} onClick={() => addAlarm(index)}>
+											<Button disabled={record} onClick={() => addAlarm()}>
 												<Icon
 													type="plus"
 													style={{ color: '#0064C8' }}
@@ -700,6 +707,15 @@ function CreateAlarm(props) {
 											)}
 										</Col>
 									</Row>
+									{
+										((Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) || (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1)) &&
+										<Row>
+											<Col>
+												{(Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) && <span>分钟数的范围是1-1440</span>}
+												{(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) && <span>次数数的范围是1-1000</span>}
+											</Col>
+										</Row>
+									}
 								</div>
 							);
 						})}
