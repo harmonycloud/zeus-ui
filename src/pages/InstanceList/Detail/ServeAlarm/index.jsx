@@ -4,6 +4,7 @@ import moment from 'moment';
 import { LinkButton, Actions } from '@alicloud/console-components-actions';
 import { Button, Switch } from '@alifd/next';
 import { useHistory } from 'react-router';
+import { getClusters } from '@/services/common.js';
 import { Message, Dialog } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
 import {
@@ -57,6 +58,7 @@ function Rules(props) {
 	const [searchText, setSearchText] = useState('');
 	const [dataSource, setDataSource] = useState([]);
 	const [originData, setOriginData] = useState([]);
+	const [poolList, setPoolList] = useState([]);
 
 	const onRefresh = () => {
 		getData(clusterId, middlewareName, namespace, searchText);
@@ -69,6 +71,10 @@ function Rules(props) {
 
 	useEffect(() => {
 		getData(clusterId, middlewareName, namespace, searchText);
+		getClusters().then((res) => {
+			if (!res.data) return;
+			setPoolList(res.data.map(item => { return { label: item.id, value: item.id } }));
+		});
 	}, []);
 
 	const getData = (clusterId, middlewareName, namespace, keyword) => {
@@ -182,7 +188,11 @@ function Rules(props) {
 	};
 
 	const ruleRender = (value, index, record) => {
-		return `CPU使用率${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
+		if (alarmType === 'system') {
+			return `CPU使用率${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
+		} else {
+			return record.description
+		}
 	};
 
 	const levelRender = (value, index, record) => {
@@ -282,6 +292,20 @@ function Rules(props) {
 				});
 				setDataSource(tempData);
 			}
+		} else if (filterParams.name) {
+			let {
+				name: { selectedKeys }
+			} = filterParams;
+			if (selectedKeys.length === 0) {
+				setDataSource(originData);
+			} else {
+				let tempData = null;
+				tempData = originData.filter((item) => {
+					console.log(item, selectedKeys[0]);
+					return item.name === selectedKeys[0];
+				});
+				setDataSource(tempData);
+			}
 		}
 	};
 
@@ -326,7 +350,13 @@ function Rules(props) {
 			onFilter={onFilter}
 		>
 			<Table.Column title="规则ID" dataIndex="alertId" />
-			<Table.Column title="告警对象" dataIndex="name" cell={nameRender} />
+			<Table.Column
+				title="告警对象"
+				dataIndex="name"
+				filters={poolList}
+				filterMode="single"
+				cell={nameRender}
+			/>
 			<Table.Column
 				title="告警规则"
 				dataIndex="threshold"

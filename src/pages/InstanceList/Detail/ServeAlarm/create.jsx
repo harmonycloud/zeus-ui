@@ -86,7 +86,8 @@ function CreateAlarm(props) {
 		getCanUseAlarms(sendData).then((res) => {
 			if (res.success) {
 				setAlarms(JSON.parse(JSON.stringify(res.data)));
-				if (!(res.data.length < 0)) {
+				setAlarmRules([{}]);
+				if (res.data.length < 0) {
 					Message.show(
 						messageConfig(
 							'error',
@@ -197,7 +198,6 @@ function CreateAlarm(props) {
 	const addAlarm = () => {
 		if (alarms && alarms.length > 0) {
 			const addItem = alarmRules[copyIndex];
-			console.log(typeof copyIndex === 'undefined');
 			if (typeof copyIndex === 'undefined') {
 				setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
 			} else {
@@ -383,7 +383,7 @@ function CreateAlarm(props) {
 				};
 				item.lay = 'system';
 				item.enable = 0;
-				delete item.severity;
+				// delete item.severity;
 				return item;
 			});
 			if (systemId) {
@@ -423,7 +423,7 @@ function CreateAlarm(props) {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
 				item.enable = 0;
-				delete item.severity;
+				// delete item.severity;
 				return item;
 			});
 			if (flag[0]) {
@@ -460,7 +460,7 @@ function CreateAlarm(props) {
 					record
 						? '修改告警规则'
 						: `新建告警规则${
-								namespace ? '(' + namespace + ')' : ''
+								middlewareName ? '(' + middlewareName + ')' : ''
 						  }`
 				}
 				hasBackArrow
@@ -752,7 +752,7 @@ function CreateAlarm(props) {
 									{
 										((Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) || (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1)) &&
 										<Row>
-											<Col>
+											<Col className="error-info">
 												{(Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) && <span>分钟数的范围是1-1440</span>}
 												{(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) && <span>次数数的范围是1-1000</span>}
 											</Col>

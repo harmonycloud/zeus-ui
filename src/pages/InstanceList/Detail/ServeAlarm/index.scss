@@ -80,6 +80,11 @@
             padding: 0 8px;
             line-height: 32px;
         }
+        .error-info{
+            span{
+                color: #c80000;
+            }
+        }
     }
     .users {
         display: flex;

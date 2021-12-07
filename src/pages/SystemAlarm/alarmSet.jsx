@@ -36,12 +36,6 @@ function AlarmSet() {
 	const [show, setShow] = useState(true);
 	const [dingShow, setDingShow] = useState(true);
 
-	// field.validate((value, error) => {
-	//     console.log(error);
-	//     if (error) return;
-	//     setBtnStatus(true);
-	// })
-
 	useEffect(() => {
 		getMailInfo().then(async (res) => {
 			if (!res.data) return;
