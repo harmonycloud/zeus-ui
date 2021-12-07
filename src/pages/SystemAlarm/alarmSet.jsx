@@ -44,14 +44,14 @@ function AlarmSet() {
 
 	useEffect(() => {
 		getMailInfo().then(async (res) => {
-			if (res.code) return;
+			if (!res.data) return;
 			// console.log(res);
 			await field.setValues(res.data);
 			checkBtn();
 			setData(res.data);
 		});
 		getDing().then(res => {
-			if (res.code) return;
+			if (!res.data || !res.data.length) return;
 			// console.log(res);
 			dingField.setValues(Object.assign(...res.data.map((item, index) => {
 				return {
