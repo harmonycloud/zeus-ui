@@ -4,7 +4,7 @@ import moment from 'moment';
 import { LinkButton, Actions } from '@alicloud/console-components-actions';
 import { Button, Switch } from '@alifd/next';
 import { useHistory } from 'react-router';
-import { Message } from '@alicloud/console-components';
+import { Message, Dialog } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
 import {
 	deleteAlarm,
@@ -111,12 +111,18 @@ function Rules(props) {
 				clusterId,
 				alert
 			};
-			deleteAlarm(sendData).then((res) => {
-				if (res.success) {
-					getData(clusterId, middlewareName, namespace, '');
-					Message.show(messageConfig('success', '成功', '删除成功'));
-				} else {
-					Message.show(messageConfig('error', '失败', res));
+			Dialog.show({
+				title: '操作确认',
+				content: '是否确认删除?',
+				onOk: () => {
+					deleteAlarm(sendData).then((res) => {
+						if (res.success) {
+							getData(clusterId, middlewareName, namespace, '');
+							Message.show(messageConfig('success', '成功', '删除成功'));
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					});
 				}
 			});
 		} else {
@@ -126,12 +132,18 @@ function Rules(props) {
 				namespace,
 				alert
 			};
-			deleteAlarms(sendData).then((res) => {
-				if (res.success) {
-					getData(clusterId, middlewareName, namespace, '');
-					Message.show(messageConfig('success', '成功', '删除成功'));
-				} else {
-					Message.show(messageConfig('error', '失败', res));
+			Dialog.show({
+				title: '操作确认',
+				content: '是否确认删除?',
+				onOk: () => {
+					deleteAlarms(sendData).then((res) => {
+						if (res.success) {
+							getData(clusterId, middlewareName, namespace, '');
+							Message.show(messageConfig('success', '成功', '删除成功'));
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					});
 				}
 			});
 		}
@@ -175,7 +187,7 @@ function Rules(props) {
 
 	const levelRender = (value, index, record) => {
 		return (
-			<span className={value.severity + ' level'}>
+			<span className={value && value.severity + ' level'}>
 				{value &&
 					alarmWarn.find((item) => item.value === value.severity)
 					? alarmWarn.find((item) => item.value === value.severity)

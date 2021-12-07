@@ -340,9 +340,11 @@ function BasicInfo(props) {
 					annotations: data.annotations || '-',
 					description: data.description || '无',
 					tolerations: `${
-						(data.tolerations && data.tolerations[0].label) || '/'
+						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`
 				});
+				console.log(data);
+
 			} else {
 				setBasicData({
 					title: '规格配置',
@@ -359,7 +361,7 @@ function BasicInfo(props) {
 					})`,
 					annotations: data.annotations || '-',
 					tolerations: `${
-						(data.tolerations && data.tolerations[0].label) || '/'
+						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`,
 					description: data.description || '无'
 				});

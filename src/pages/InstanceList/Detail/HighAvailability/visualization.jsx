@@ -203,7 +203,7 @@ function Visualization(props) {
 			'tree-node',
 			{
 				drawShape: function drawShape(cfg, group) {
-					console.log(cfg, serverData, group);
+					// console.log(cfg, serverData, group);
 					const box = group.addShape('rect', {
 						attrs: {
 							fill: isSelect(cfg) ? '#fff' : '#EBEBEB',
@@ -899,7 +899,7 @@ function Visualization(props) {
 			graph.setItemState(item, 'select', false);
 		};
 		graph.on('collapse-text:click', (e) => {
-			console.log(e.target);
+			// console.log(e.target);
 			const { item } = e;
 			const group = item.getContainer();
 			const collapseText = group.find(
@@ -938,7 +938,6 @@ function Visualization(props) {
 		});
 		graph.on('button2:click', (evt) => {
 			if (!setEsVisible && !editConfiguration) return;
-			console.log(111);
 			if (serverData.type === 'elasticsearch') {
 				setEsVisible();
 			} else {
@@ -973,23 +972,19 @@ function Visualization(props) {
 	}, []);
 
 	const reset = () => {
-		window.graph.changeSize(1180, 480);
-		setOption({
-			position: 'static',
-		});
 		window.graph.fitCenter();
 	};
 
 	const bingger = () => {
-		window.graph.zoom(window.graph.getZoom() * 1.2,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
+		window.graph.zoomTo(window.graph.getZoom() * 1.1,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
 	};
 
 	const smaller = () => {
-		window.graph.zoom(window.graph.getZoom() * 0.8,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
+		window.graph.zoomTo(window.graph.getZoom() * 0.9,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
 	};
 
 	const scale = () => {
-		console.log(window.graph.getWidth(), window.innerWidth);
+		// console.log(window.graph.getWidth(), window.innerWidth);
 		if (window.graph.getWidth() !== window.innerWidth) {
 			setOption({
 				width: window.innerWidth,
@@ -1058,7 +1053,7 @@ function Visualization(props) {
 			<div style={{ background: '#f9f9f9', ...option }}>
 				<div className={styles['tools']}>
 					<Tooltip
-						trigger={<Button onClick={scale}><Icon type="arrows-alt" size="xs" /></Button>}
+						trigger={<Button onClick={scale} iconSize="xs"><Icon type="arrows-alt" /></Button>}
 						align="b"
 					>
 						{window.graph && window.graph.getWidth() !== window.innerWidth ? '全屏' : '退出全屏'}
