@@ -126,7 +126,7 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				if (item.id === record.id) {
 					item.alertTime = value;
-					if(Number(item.alertTime) > 1440 || Number(item.alertTime) < 1){
+					if (Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) {
 						setIsRule(true);
 					}
 					return item;
@@ -139,7 +139,7 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				if (item.id === record.id) {
 					item.alertTimes = value;
-					if(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1){
+					if (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) {
 						setIsRule(true);
 					}
 					return item;
@@ -209,7 +209,7 @@ function CreateAlarm(props) {
 			} else {
 				setAlarmRules([
 					...alarmRules,
-					{ ...addItem, id: Math.random() * 100 }
+					{ ...addItem, id: Math.random() * 100, alert: '', content: '' }
 				]);
 			}
 		}
@@ -277,16 +277,34 @@ function CreateAlarm(props) {
 
 	const transferRender = (item) => {
 		return (
-			<span key={item.id} style={{ width: '445px', overflowX: 'auto' }} className={item.email ? '' : "disabled"}>
-				<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
-				<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
-				<span className="item-content">{item.userName}</span>
-				<span className="item-content">{item.aliasName}</span>
-				<span className="item-content">
-					{item.email ? item.email : '/'}
-				</span>
-				<span className="item-content">{item.phone}</span>
-			</span>
+			item.email ?
+				<span key={item.id} style={{ width: '445px', overflowX: 'auto' }} className={item.email ? '' : "disabled"}>
+					<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
+					<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
+					<span className="item-content">{item.userName}</span>
+					<span className="item-content">{item.aliasName}</span>
+					<span className="item-content">
+						{item.email ? item.email : '/'}
+					</span>
+					<span className="item-content">{item.phone}</span>
+				</span> :
+				<Tooltip
+					trigger={
+						<span key={item.id} style={{ width: '445px', overflowX: 'auto' }} className={item.email ? '' : "disabled"}>
+							<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
+							<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
+							<span className="item-content">{item.userName}</span>
+							<span className="item-content">{item.aliasName}</span>
+							<span className="item-content">
+								{item.email ? item.email : '/'}
+							</span>
+							<span className="item-content">{item.phone}</span>
+						</span>
+					}
+					align="t"
+				>
+					用户邮箱为空，不可选择
+				</Tooltip>
 		);
 	};
 
@@ -381,7 +399,7 @@ function CreateAlarm(props) {
 				return false;
 			}
 		});
-		if(isRule){
+		if (isRule) {
 			Message.show(
 				messageConfig('error', '失败', '监控项不符合规则')
 			);
@@ -465,15 +483,26 @@ function CreateAlarm(props) {
 		}
 	};
 
+	const onFilter = (value,position) => {
+		console.log(value,position);
+		if(position === 'left'){
+			const newUsers =  users.filter(item => item.phone && item.phone.indexOf(value) !== -1)
+			console.log(newUsers);
+			setUsers(newUsers);
+		}
+	}
+
 	return (
 		<Page className="create-alarm">
+			{
+				console.log(users)
+			}
 			<Header
 				title={
 					record
 						? '修改告警规则'
-						: `新建告警规则${
-								middlewareName ? '(' + middlewareName + ')' : ''
-						  }`
+						: `新建告警规则${middlewareName ? '(' + middlewareName + ')' : ''
+						}`
 				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
@@ -764,7 +793,7 @@ function CreateAlarm(props) {
 										<Row>
 											<Col className="error-info">
 												{(Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) && <span>分钟数的范围是1-1440</span>}
-												{(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) && <span style={{marginLeft: '16px'}}>次数数的范围是1-1000</span>}
+												{(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) && <span style={{ marginLeft: '16px' }}>次数数的范围是1-1000</span>}
 											</Col>
 										</Row>
 									}
@@ -801,6 +830,7 @@ function CreateAlarm(props) {
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
 							defaultValue={selectUser}
 							mode="simple"
+							onSearch={onFilter}
 							titles={[
 								<div key="left">
 									<span key="account">登陆账户</span>

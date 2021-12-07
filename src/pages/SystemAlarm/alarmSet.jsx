@@ -286,6 +286,7 @@ function AlarmSet() {
 										}
 										disabled={btnStatus}
 										onClick={testMail}
+										type="primary"
 									>
 										连接测试
 									</Button>
@@ -297,6 +298,7 @@ function AlarmSet() {
 										}
 										disabled={btnStatus}
 										onClick={submit}
+										type="primary"
 									>
 										保存
 									</Button>
@@ -397,6 +399,7 @@ function AlarmSet() {
 										}
 										disabled={dingBtnStatus}
 										onClick={testDing}
+										type="primary"
 									>
 										连接测试
 									</Button>
@@ -408,6 +411,7 @@ function AlarmSet() {
 										}
 										disabled={dingBtnStatus}
 										onClick={dingSubmit}
+										type="primary"
 									>
 										保存
 									</Button>
