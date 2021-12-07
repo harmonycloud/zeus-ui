@@ -70,11 +70,21 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'annotations',
-		label: '注解'
+		label: '注解',
+		render: (val) => (
+			<div className="annotation-content" title={val}>
+				{val}
+			</div>
+		)
 	},
 	{
 		dataIndex: 'tolerations',
-		label: '主机容忍'
+		label: '主机容忍',
+		render: (val) => (
+			<div className="annotation-content" title={val}>
+				{val}
+			</div>
+		)
 	}
 ];
 
@@ -353,7 +363,7 @@ function BasicInfo(props) {
 					tolerations: `${
 						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`,
-					description: data.annotation || '无'
+					description: data.description || '无'
 				});
 			}
 			setConfigData({

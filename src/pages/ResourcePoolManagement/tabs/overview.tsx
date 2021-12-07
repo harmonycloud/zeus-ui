@@ -121,7 +121,16 @@ const Overview = () => {
 	const getMiddleware = () => {
 		getMiddlewareResource({ clusterId: id }).then((res) => {
 			if (res.success) {
+				setOriginData(res.data);
 				setDataSource(res.data);
+				setNamespaceFilter(
+					res.data.map((item: MiddlewareResourceProps) => {
+						return {
+							label: item.namespace,
+							value: item.namespace
+						};
+					})
+				);
 			} else {
 				setDataSource([]);
 				Message.show(messageConfig('error', '失败', res));
@@ -151,6 +160,15 @@ const Overview = () => {
 						memoryRate: item.memoryRate
 					};
 				});
+				setNamespaceFilter(
+					res.data.map((item: MiddlewareResourceProps) => {
+						return {
+							label: item.name,
+							value: item.name
+						};
+					})
+				);
+				setOriginData(list);
 				setDataSource(list);
 			} else {
 				setDataSource([]);
@@ -371,7 +389,7 @@ const Overview = () => {
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = dataSource.filter(
+			const list = originData.filter(
 				(item: MiddlewareResourceProps) =>
 					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
 			);

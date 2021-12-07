@@ -5,7 +5,8 @@ import {
 	Button,
 	Message,
 	Dialog,
-	Checkbox
+	Checkbox,
+	Balloon
 } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
@@ -28,7 +29,9 @@ import {
 	setRefreshCluster
 } from '@/redux/globalVar/var';
 import storage from '@/utils/storage';
+import { getComponents } from '@/services/common';
 
+const Tooltip = Balloon.Tooltip;
 interface paramsProps {
 	name: string;
 	aliasName: string;
@@ -47,6 +50,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
 	const [selectedKeys, setSelectKeys] = useState<string[]>([]);
+	const [cantRelease, setCantRelease] = useState<boolean>(false);
 	const history = useHistory();
 	const params: paramsProps = useParams();
 	const { name, aliasName } = params;
@@ -76,6 +80,22 @@ const ServiceListByType = (props: serviceListProps) => {
 						}
 					});
 				}
+				getComponents({ clusterId: cluster.id }).then((res) => {
+					if (res.success) {
+						const temp = res.data.find(
+							(item: any) =>
+								item.component === 'middleware-controller'
+						);
+						console.log(temp);
+						if (temp.status === 3) {
+							setCantRelease(false);
+						} else {
+							setCantRelease(true);
+						}
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
 			}
 		}
 		return () => {
@@ -231,15 +251,104 @@ const ServiceListByType = (props: serviceListProps) => {
 			);
 		}
 	};
-	const Operation =
-		currentService?.type === 'mysql'
-			? {
+	const operation = () => {
+		if (cantRelease) {
+			if (currentService?.type === 'mysql') {
+				return {
 					primary: (
-						<Button
-							onClick={releaseMiddleware}
-							type="primary"
-							disabled={!dataSource}
+						<Tooltip
+							trigger={
+								<Button
+									onClick={releaseMiddleware}
+									type="primary"
+									disabled={cantRelease}
+								>
+									发布服务
+								</Button>
+							}
 						>
+							请前往平台组件界面安装中间件管理组件！
+						</Tooltip>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
+					)
+				};
+			} else {
+				return {
+					primary: (
+						<Tooltip
+							trigger={
+								<Button
+									onClick={releaseMiddleware}
+									type="primary"
+									disabled={cantRelease}
+								>
+									发布服务
+								</Button>
+							}
+						>
+							请前往平台组件界面安装中间件管理组件！
+						</Tooltip>
+					)
+				};
+			}
+		} else if (!dataSource) {
+			if (currentService?.type === 'mysql') {
+				return {
+					primary: (
+						<Tooltip
+							trigger={
+								<Button
+									onClick={releaseMiddleware}
+									type="primary"
+									disabled={!dataSource}
+								>
+									发布服务
+								</Button>
+							}
+						>
+							数据加载中，请稍后...
+						</Tooltip>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
+					)
+				};
+			} else {
+				return {
+					primary: (
+						<Tooltip
+							trigger={
+								<Button
+									onClick={releaseMiddleware}
+									type="primary"
+									disabled={!dataSource}
+								>
+									发布服务
+								</Button>
+							}
+						>
+							数据加载中，请稍后...
+						</Tooltip>
+					)
+				};
+			}
+		} else {
+			if (currentService?.type === 'mysql') {
+				return {
+					primary: (
+						<Button onClick={releaseMiddleware} type="primary">
 							发布服务
 						</Button>
 					),
@@ -251,8 +360,9 @@ const ServiceListByType = (props: serviceListProps) => {
 							灾备服务
 						</Checkbox>
 					)
-			  }
-			: {
+				};
+			} else {
+				return {
 					primary: (
 						<Button
 							onClick={releaseMiddleware}
@@ -262,7 +372,10 @@ const ServiceListByType = (props: serviceListProps) => {
 							发布服务
 						</Button>
 					)
-			  };
+				};
+			}
+		}
+	};
 	const actionRender = (
 		value: string,
 		index: number,
@@ -573,7 +686,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					showRefresh
 					onRefresh={getData}
 					primaryKey="name"
-					operation={Operation}
+					operation={operation()}
 					search={{
 						value: keyword,
 						onChange: handleChange,
