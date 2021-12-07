@@ -19,10 +19,12 @@ const IngressCard = (props: IngressCardProps) => {
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 
-	const uninstallComponent = () => {
+	const uninstallComponent = (type = 'install') => {
 		Dialog.show({
 			title: '操作确认',
-			content: '确认是否删除该服务暴露',
+			content: `确认是否${
+				type === 'install' ? '卸载' : '取消接入'
+			}该服务暴露`,
 			onOk: () => {
 				deleteIngress({
 					clusterId,
@@ -33,7 +35,9 @@ const IngressCard = (props: IngressCardProps) => {
 							messageConfig(
 								'success',
 								'成功',
-								'该服务暴露删除成功'
+								`该服务暴露${
+									type === 'install' ? '卸载' : '取消接入'
+								}成功`
 							)
 						);
 						onRefresh();
@@ -84,7 +88,7 @@ const IngressCard = (props: IngressCardProps) => {
 						actionCount={2}
 						leftText="取消接入"
 						rightText="编辑"
-						leftHandle={uninstallComponent}
+						leftHandle={() => uninstallComponent('access')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
 					/>
@@ -116,7 +120,7 @@ const IngressCard = (props: IngressCardProps) => {
 						actionCount={2}
 						leftText="卸载"
 						rightText="编辑"
-						leftHandle={uninstallComponent}
+						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
 					/>
@@ -131,7 +135,7 @@ const IngressCard = (props: IngressCardProps) => {
 						actionCount={2}
 						leftText="卸载"
 						rightText="编辑"
-						leftHandle={uninstallComponent}
+						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
 					/>
