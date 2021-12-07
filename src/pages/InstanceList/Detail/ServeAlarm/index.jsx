@@ -41,6 +41,7 @@ const silences = [
 	{ value: '3h', label: '3小时' },
 	{ value: '6h', label: '6小时' },
 	{ value: '12h', label: '12小时' },
+	{ value: '24h', label: '24小时' }
 ];
 
 function Rules(props) {
@@ -73,7 +74,11 @@ function Rules(props) {
 		getData(clusterId, middlewareName, namespace, searchText);
 		getClusters().then((res) => {
 			if (!res.data) return;
-			setPoolList(res.data.map(item => { return { label: item.id, value: item.id } }));
+			setPoolList(
+				res.data.map((item) => {
+					return { label: item.id, value: item.id };
+				})
+			);
 		});
 	}, []);
 
@@ -124,7 +129,9 @@ function Rules(props) {
 					deleteAlarm(sendData).then((res) => {
 						if (res.success) {
 							getData(clusterId, middlewareName, namespace, '');
-							Message.show(messageConfig('success', '成功', '删除成功'));
+							Message.show(
+								messageConfig('success', '成功', '删除成功')
+							);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -145,7 +152,9 @@ function Rules(props) {
 					deleteAlarms(sendData).then((res) => {
 						if (res.success) {
 							getData(clusterId, middlewareName, namespace, '');
-							Message.show(messageConfig('success', '成功', '删除成功'));
+							Message.show(
+								messageConfig('success', '成功', '删除成功')
+							);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -191,7 +200,7 @@ function Rules(props) {
 		if (alarmType === 'system') {
 			return `CPU使用率${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
 		} else {
-			return record.description
+			return record.description;
 		}
 	};
 
@@ -199,17 +208,17 @@ function Rules(props) {
 		return (
 			<span className={value && value.severity + ' level'}>
 				{value &&
-					alarmWarn.find((item) => item.value === value.severity)
+				alarmWarn.find((item) => item.value === value.severity)
 					? alarmWarn.find((item) => item.value === value.severity)
-						.label
+							.label
 					: ''}
 			</span>
 		);
 	};
 
 	const nameRender = (value, index, record) => {
-		return alarmType === 'system' ? record.labels.clusterId : value
-	}
+		return alarmType === 'system' ? record.labels.clusterId : value;
+	};
 
 	const enableRender = (value, index, record) => {
 		return (
@@ -319,8 +328,8 @@ function Rules(props) {
 						? 1
 						: -1
 					: result > 0
-						? -1
-						: 1;
+					? -1
+					: 1;
 			});
 			setDataSource([...dsTemp]);
 		}
