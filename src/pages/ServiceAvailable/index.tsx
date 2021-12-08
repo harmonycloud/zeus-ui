@@ -27,6 +27,7 @@ import CustomIcon from '@/components/CustomIcon';
 import { getIngresses, deleteIngress, addIngress } from '@/services/ingress';
 import AddServiceAvailableForm from './AddServiceAvailableForm';
 import storage from '@/utils/storage';
+import { getList } from '@/services/serviceList';
 
 interface stateProps {
 	middlewareName: string;
@@ -56,6 +57,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	);
 	const [iconVisible, setIconVisible] = useState<boolean>(false);
 	const [adress, setAdress] = useState<string>('');
+	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -67,7 +69,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				}).then((res) => {
 					if (res.success) {
 						setOriginData(res.data);
-						const listTemp = [...list];
+						const listTemp = [{ name: '全部服务', count: 0 }];
 						res.data.forEach((item: serviceAvailablesProps) => {
 							listTemp.push({
 								name: item.name,
@@ -81,6 +83,24 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							0
 						);
 						setList(listTemp);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+						setOriginData([]);
+						setList([{ name: '全部服务', count: 0 }]);
+					}
+				});
+				getList({
+					clusterId: cluster.id,
+					namespace: namespace.name,
+					keyword: ''
+				}).then((res) => {
+					if (res.success) {
+						const flag = res.data.every(
+							(item: any) => item.serviceNum === 0
+						);
+						setVisibleFlag(flag);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
 					}
 				});
 			}
@@ -248,7 +268,22 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	};
 	const Operation = {
 		primary: (
-			<Button onClick={() => setVisible(true)} type="primary">
+			<Button
+				onClick={() => {
+					if (visibleFlag) {
+						Message.show(
+							messageConfig(
+								'error',
+								'失败',
+								'当前资源分区下无服务'
+							)
+						);
+					} else {
+						setVisible(true);
+					}
+				}}
+				type="primary"
+			>
 				暴露服务
 			</Button>
 		)
