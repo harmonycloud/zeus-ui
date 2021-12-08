@@ -116,6 +116,9 @@ function Navbar(props) {
 					setCluster(res.data[0]);
 					storage.setLocal('cluster', JSON.stringify(res.data[0]));
 				}
+			} else {
+				setCurrentCluster({});
+				storage.removeSession('cluster');
 			}
 			setClusterList(res.data);
 			setGlobalClusterList(res.data);

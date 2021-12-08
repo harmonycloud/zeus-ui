@@ -273,54 +273,60 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					.then((res) => {
 						if (res.success) {
 							Message.show(
-								messageConfig('success', '成功', '删除成功')
+								messageConfig(
+									'success',
+									'成功',
+									'删除成功, 3秒后刷新'
+								)
 							);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					})
 					.finally(() => {
-						getData();
+						setTimeout(() => {
+							getData();
+						}, 3000);
 					});
 			}
 		});
 	};
-	const createService = () => {
-		if (selected === '全部服务') {
-			history.push('/middlewareRepository');
-		} else {
-			const { chartVersion, chartName, version } = originData.filter(
-				(item) => item.name === selected
-			)[0];
-			switch (selected) {
-				case 'mysql':
-					history.push(
-						`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}`
-					);
-					break;
-				case 'redis':
-					history.push(
-						`/middlewareRepository/redisCreate/${chartName}/${chartVersion}`
-					);
-					break;
-				case 'elasticsearch':
-					history.push(
-						`/middlewareRepository/elasticsearchCreate/${chartName}/${chartVersion}`
-					);
-					break;
-				case 'rocketmq':
-					history.push(
-						`/middlewareRepository/rocketmqCreate/${chartName}/${chartVersion}`
-					);
-					break;
-				default:
-					history.push(
-						`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
-					);
-					break;
-			}
-		}
-	};
+	// const createService = () => {
+	// 	if (selected === '全部服务') {
+	// 		history.push('/middlewareRepository');
+	// 	} else {
+	// 		const { chartVersion, chartName, version } = originData.filter(
+	// 			(item) => item.name === selected
+	// 		)[0];
+	// 		switch (selected) {
+	// 			case 'mysql':
+	// 				history.push(
+	// 					`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}`
+	// 				);
+	// 				break;
+	// 			case 'redis':
+	// 				history.push(
+	// 					`/middlewareRepository/redisCreate/${chartName}/${chartVersion}`
+	// 				);
+	// 				break;
+	// 			case 'elasticsearch':
+	// 				history.push(
+	// 					`/middlewareRepository/elasticsearchCreate/${chartName}/${chartVersion}`
+	// 				);
+	// 				break;
+	// 			case 'rocketmq':
+	// 				history.push(
+	// 					`/middlewareRepository/rocketmqCreate/${chartName}/${chartVersion}`
+	// 				);
+	// 				break;
+	// 			default:
+	// 				history.push(
+	// 					`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
+	// 				);
+	// 				break;
+	// 		}
+	// 	}
+	// };
 	const Operation = {
 		primary: (
 			<Button

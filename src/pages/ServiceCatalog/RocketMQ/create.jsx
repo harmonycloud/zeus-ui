@@ -28,6 +28,9 @@ import {
 import messageConfig from '@/components/messageConfig';
 import RocketACLForm from '@/components/RocketACLForm';
 import { judgeObjArrayAttrIsNull } from '@/utils/utils';
+import { getCustomFormKeys } from '../Mysql/create';
+import { renderFormItem } from '@/components/renderFormItem';
+import { getAspectFrom } from '@/services/common';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -157,6 +160,10 @@ const RocketMQCreate = (props) => {
 	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
 	// * acl相关
 	const [aclCheck, setAclCheck] = useState(false);
+	// * 外接的动态表单
+	const [customForm, setCustomForm] = useState();
+	// * 集群外访问
+	const [hostNetwork, setHostNetwork] = useState();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -188,11 +195,13 @@ const RocketMQCreate = (props) => {
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
-					annotation: values.annotation,
+					annotations: values.annotations,
+					description: values.description,
 					version: version,
 					mode: mode,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
+					hostNetwork: hostNetwork,
 					quota: {
 						rocketmq: {
 							storageClassName: values.storageClass,
@@ -205,6 +214,19 @@ const RocketMQCreate = (props) => {
 						}
 					}
 				};
+				// * 动态表单相关
+				if (customForm) {
+					const dynamicValues = {};
+					let keys = [];
+					for (let i in customForm) {
+						const list = getCustomFormKeys(customForm[i]);
+						keys = [...list, ...keys];
+					}
+					keys.forEach((item) => {
+						dynamicValues[item] = values[item];
+					});
+					sendData.dynamicValues = dynamicValues;
+				}
 				if (affinity.flag) {
 					if (affinity.label === '') {
 						Message.show(
@@ -302,6 +324,13 @@ const RocketMQCreate = (props) => {
 				}
 			});
 		}
+		getAspectFrom().then((res) => {
+			if (res.success) {
+				setCustomForm(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	}, [globalCluster]);
 
 	// 全局分区更新
@@ -325,26 +354,58 @@ const RocketMQCreate = (props) => {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆服务
-			if (backupFileName) {
-				getMiddlewareDetail({
-					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
-					middlewareName: middlewareName,
-					type: 'rocketmq'
-				}).then((res) => {
-					console.log(res.data);
-				});
-			}
-		}
+		// if (JSON.stringify(globalNamespace) !== '{}') {
+		// 	// 克隆服务
+		// 	if (backupFileName) {
+		// 		getMiddlewareDetail({
+		// 			clusterId: globalCluster.id,
+		// 			namespace: globalNamespace.name,
+		// 			middlewareName: middlewareName,
+		// 			type: 'rocketmq'
+		// 		}).then((res) => {
+		// 			console.log(res.data);
+		// 		});
+		// 	}
+		// }
 	}, [globalNamespace]);
 
 	// * acl 相关
 	const aclSwitchChange = (checked) => {
 		setAclCheck(checked);
 	};
-
+	const childrenRender = (values) => {
+		if (values) {
+			const keys = Object.keys(values);
+			return (
+				<div>
+					{keys.map((item) => {
+						return (
+							<FormBlock key={item} title={item}>
+								<div className="w-50">
+									<ul className="form-layout">
+										{values[item].map((formItem) => {
+											return (
+												<React.Fragment
+													key={formItem.variable}
+												>
+													{renderFormItem(
+														formItem,
+														field,
+														globalCluster,
+														globalNamespace
+													)}
+												</React.Fragment>
+											);
+										})}
+									</ul>
+								</div>
+							</FormBlock>
+						);
+					})}
+				</div>
+			);
+		}
+	};
 	return (
 		<Page>
 			<Page.Header
@@ -434,12 +495,28 @@ const RocketMQCreate = (props) => {
 								</li>
 								<li className="display-flex">
 									<label className="form-name">
+										<span>注解</span>
+									</label>
+									<div className="form-content">
+										<FormItem
+											pattern={pattern.labels}
+											patternMessage="请输入key=value格式的标签，多个注解以英文逗号分隔"
+										>
+											<Input
+												name="annotations"
+												placeholder="请输入key=value格式的标签，多个注解以英文逗号分隔"
+											/>
+										</FormItem>
+									</div>
+								</li>
+								<li className="display-flex">
+									<label className="form-name">
 										<span>描述</span>
 									</label>
 									<div className="form-content">
 										<FormItem>
 											<Input.TextArea
-												name="annotation"
+												name="description"
 												placeholder="请输入描述信息"
 											/>
 										</FormItem>
@@ -1053,9 +1130,38 @@ const RocketMQCreate = (props) => {
 										</FormItem>
 									</div>
 								</li>
+								<li
+									className="display-flex form-li"
+									style={{ alignItems: 'center' }}
+								>
+									<label className="form-name">
+										<span className="ne-required">
+											集群外访问
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['standard-log']}`}
+									>
+										<div className={styles['switch']}>
+											{hostNetwork ? '已开启' : '关闭'}
+											<Switch
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+											/>
+										</div>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
+					{childrenRender(customForm)}
 					<div className={styles['summit-box']}>
 						<Form.Submit
 							type="primary"

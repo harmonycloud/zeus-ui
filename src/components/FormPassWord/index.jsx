@@ -12,10 +12,18 @@ export default function FormPassword(props) {
 		<div className="display-flex flex-column">
 			<label
 				className="dynamic-form-name"
-				style={keys.includes('required') ? { paddingLeft: 8 } : {}}
+				style={
+					keys.includes('required') && props.required
+						? { paddingLeft: 8 }
+						: {}
+				}
 			>
 				<span
-					className={keys.includes('required') ? 'ne-required' : ''}
+					className={
+						keys.includes('required') && props.required
+							? 'ne-required'
+							: ''
+					}
 				>
 					{props.label}
 				</span>
@@ -38,18 +46,17 @@ export default function FormPassword(props) {
 			</label>
 			<div className="form-content">
 				<FormItem
-					required={keys.includes('required')}
+					required={keys.includes('required') && props.required}
 					requiredMessage={
-						keys.includes('required') ? `请输入${props.label}` : ''
+						keys.includes('required') && props.required
+							? `请输入${props.label}`
+							: ''
 					}
-					// pattern={pattern.name}
-					// patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 				>
 					<Input.Password
 						style={{ width: '390px' }}
 						defaultValue={props.defaultValue}
 						name={props.variable}
-						// placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
 						trim
 					/>
 				</FormItem>

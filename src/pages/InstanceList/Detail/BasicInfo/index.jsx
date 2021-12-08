@@ -20,7 +20,6 @@ import RocketAclEditForm from './rocketAclEditForm';
 import './basicinfo.scss';
 import { updateMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import { render } from '@testing-library/react';
 
 const { Option } = Select;
 const { Row, Col } = Grid;
@@ -30,6 +29,7 @@ const info = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
+	annotations: '',
 	description: ''
 };
 
@@ -61,8 +61,16 @@ const InfoConfig = [
 		label: '主机亲和'
 	},
 	{
+		dataIndex: 'annotations',
+		label: '注解',
+		span: 12,
+		render: (val) => <div className="annotation-content">{val}</div>
+	},
+	{
 		dataIndex: 'description',
-		label: '描述'
+		label: '描述',
+		span: 12,
+		wrap: true
 	}
 ];
 
@@ -322,6 +330,7 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
+					annotations: data.annotations || '-',
 					disasterInstanceName: data.mysqlDTO.relationName || '',
 					description: data.annotation || '无'
 				});
@@ -339,6 +348,7 @@ function BasicInfo(props) {
 							? '强制'
 							: '非强制'
 					})`,
+					annotations: data.annotations || '-',
 					description: data.annotation || '无'
 				});
 			}

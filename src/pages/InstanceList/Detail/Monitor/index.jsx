@@ -20,6 +20,7 @@ const Monitor = (props) => {
 		chartVersion
 	} = props;
 	const [url, setUrl] = useState('');
+	// const [token, setToken] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
 	console.log(props);
 	useEffect(() => {
@@ -34,6 +35,8 @@ const Monitor = (props) => {
 				}).then((res) => {
 					if (res.success) {
 						setUrl(res.data.url);
+						// setUrl(`${res.data.url}?auth_token=${res.data.authorization}`);
+						// setToken(res.data.authorization);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -44,8 +47,20 @@ const Monitor = (props) => {
 
 	useEffect(() => {
 		if (url) {
+			console.log(url);
+			// console.log(token);
 			let iframe = document.getElementById('iframe');
+			// let iframeDocument =
+			// 	document.getElementsByTagName('iframe')[0].contentDocument;
+			// console.log(iframeDocument);
 			iframe.onload = function () {
+				// iframe.contentWindow.init(token);
+				// console.log(iframeDocument);
+				// document.domain = 'http://10.1.30.70:31900';
+				// document.cookie =
+				// 	'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; Domain=10.1.30.70;';
+				// iframeDocument.cookie =
+				// 	'grafana_session=247db337806bd10b81bc5fc77681f67b; SameSite=None; Secure; domain=http://10.1.30.70:31900';
 				iframe.contentWindow.postMessage({ showMenu: false }, '*');
 			};
 		}
@@ -87,6 +102,7 @@ const Monitor = (props) => {
 								frameBorder="no"
 								border="0"
 								scrolling="no"
+								// referrerPolicy="origin-when-cross-origin"
 								style={{
 									width: '100%',
 									height: '100%',

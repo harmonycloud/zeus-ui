@@ -120,12 +120,13 @@ function AddForm(props: addFormProps): JSX.Element {
 						if (res.data.ingress) {
 							setIsInstallIngress('false');
 							field.setValues({
-								ingressAddress: res.data.ingress.address,
+								ingressAddress: res.data.ingressList[0].address,
 								ingressClassName:
-									res.data.ingress.ingressClassName,
-								namespace: res.data.ingress.tcp.namespace,
+									res.data.ingressList[0].ingressClassName,
+								namespace:
+									res.data.ingressList[0].tcp.namespace,
 								configMapName:
-									res.data.ingress.tcp.configMapName
+									res.data.ingressList[0].tcp.configMapName
 							});
 						}
 						if (
@@ -195,10 +196,8 @@ function AddForm(props: addFormProps): JSX.Element {
 	};
 	const onOk = () => {
 		field.validate((errors) => {
-			console.log(errors);
 			if (errors) return;
 			const values: valuesProps = field.getValues();
-			console.log(values);
 			const sendData: clusterAddType = {
 				cert: {
 					certificate: values.cert
@@ -219,15 +218,17 @@ function AddForm(props: addFormProps): JSX.Element {
 				}
 			};
 			if (isInstallIngress === 'false') {
-				sendData.ingress = {
-					address: values.ingressAddress,
-					ingressClassName: values.ingressClassName,
-					tcp: {
-						enabled: true,
-						namespace: values.namespace,
-						configMapName: values.configMapName
+				sendData.ingressList = [
+					{
+						address: values.ingressAddress,
+						ingressClassName: values.ingressClassName,
+						tcp: {
+							enabled: true,
+							namespace: values.namespace,
+							configMapName: values.configMapName
+						}
 					}
-				};
+				];
 			}
 			if (isInstallLogging === 'false') {
 				sendData.logging = {

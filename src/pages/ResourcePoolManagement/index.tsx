@@ -13,14 +13,22 @@ import DeleteCard from '../BasicResource/DeleteCard';
 import RegistryNamespace from '../BasicResource/registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
 import './index.scss';
+import IngressForm from './ingressForm';
+// import { connect } from 'react-redux';
+// import { setRefreshCluster } from '@/redux/globalVar/var';
 
-export default function ResourcePoolManagement(): JSX.Element {
+// interface ResourcePoolManagement {
+// 	setRefreshCluster: (flag: boolean) => void;
+// }
+function ResourcePoolManagement(): JSX.Element {
+	// const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [dataSource, setDataSource] = useState<clusterType[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
 	const [namespaceVisible, setNamespaceVisible] = useState<boolean>(false);
 	const [data, setData] = useState<clusterType>();
 	const [key, setKey] = useState<string>('');
+	const [ingressVisible, setIngressVisible] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		let mounted = true;
@@ -167,6 +175,14 @@ export default function ResourcePoolManagement(): JSX.Element {
 					}}
 				>
 					分区
+				</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setIngressVisible(true);
+						setData(record);
+					}}
+				>
+					服务暴露
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -348,6 +364,14 @@ export default function ResourcePoolManagement(): JSX.Element {
 					updateFn={() => getData(key)}
 				/>
 			)}
+			{ingressVisible && data && (
+				<IngressForm
+					visible={ingressVisible}
+					clusterId={data.id}
+					onCancel={() => setIngressVisible(false)}
+				/>
+			)}
 		</Page>
 	);
 }
+export default ResourcePoolManagement;

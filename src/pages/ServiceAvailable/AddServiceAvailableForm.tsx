@@ -15,6 +15,8 @@ import { clusterType } from '@/types';
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
 import { filtersProps } from '@/types/comment';
+import { getIngresses } from '@/services/common';
+import { IngressItemProps } from '@/pages/ResourcePoolManagement/ingressForm';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -54,14 +56,10 @@ export default function AddServiceAvailableForm(
 		serviceName: '',
 		portDetailDtoList: []
 	});
-	const [ingressTcpFlag] = useState(
-		(cluster.ingress &&
-			cluster.ingress.tcp &&
-			cluster.ingress.tcp.enabled) ||
-			false
-	);
+	const [ingressTcpFlag] = useState(cluster.ingressList || false);
 	const [data, setData] = useState([]);
 	const [current, setCurrent] = useState<string>();
+	const [ingresses, setIngresses] = useState([]);
 	const field = Field.useField();
 	useEffect(() => {
 		if (JSON.stringify(namespace) !== '{}') {
@@ -120,6 +118,13 @@ export default function AddServiceAvailableForm(
 						selectedInstanceTemp.name,
 						selectedInstanceTemp.type
 					);
+				}
+			});
+			getIngresses({ clusterId: cluster.id }).then((res) => {
+				if (res.success) {
+					setIngresses(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
 				}
 			});
 		}
@@ -231,6 +236,32 @@ export default function AddServiceAvailableForm(
 						<Option value="NodePort">NodePort</Option>
 					</Select>
 				</FormItem>
+				{exposedWay === 'Ingress' && (
+					<FormItem
+						label="选择ingress"
+						required
+						labelTextAlign="left"
+						requiredMessage="请选择Ingress！"
+						asterisk={false}
+						className="ne-required-ingress"
+					>
+						<Select
+							name="ingressClassName"
+							style={{ width: '100%' }}
+						>
+							{ingresses.map((item: IngressItemProps, index) => {
+								return (
+									<Option
+										key={index}
+										value={item.ingressClassName}
+									>
+										{item.ingressClassName}
+									</Option>
+								);
+							})}
+						</Select>
+					</FormItem>
+				)}
 				<FormItem
 					label="对外协议"
 					labelTextAlign="left"

@@ -89,7 +89,7 @@ export default function HighAvailability(props) {
 	const [customVisible, setCustomVisible] = useState(false);
 	const [quotaValue, setQuotaValue] = useState();
 	// * es专用 specificationConfig
-	const [esSpConfig] = useState([
+	const [esSpConfig, setEsSpConfig] = useState([
 		{
 			dataIndex: 'title',
 			render: (val) => (
@@ -266,61 +266,6 @@ export default function HighAvailability(props) {
 				});
 			}
 			setQuotaValue(data.quota[type]);
-			// * 自定义中间件 有operator，无operator
-			// if (customMid && data.quota[type] !== null) {
-			// 	setConfig({
-			// 		title: '规格配置',
-			// 		model: data.mode || '',
-			// 		node: `${
-			// 			data.quota[type].cpu.charAt(
-			// 				data.quota[type].cpu.length - 1
-			// 			) === 'm'
-			// 				? data.quota[type].cpu
-			// 				: `${data.quota[type].cpu} Core`
-			// 		} CPU ${data.quota[type].memory} 内存`
-			// 	});
-			// 	setQuotaValue(data.quota[type]);
-			// } else {
-			// 	// * mysql redis es mq
-			// 	if (type !== 'elasticsearch') {
-			// 		// * mysql redis mq
-			// 		setConfig({
-			// 			title: '规格配置',
-			// 			model:
-			// 				type === 'redis'
-			// 					? data.quota.redis.num
-			// 					: data.mode || '',
-			// 			node: `${
-			// 				data.quota[type].cpu.charAt(
-			// 					data.quota[type].cpu.length - 1
-			// 				) === 'm'
-			// 					? data.quota[type].cpu
-			// 					: `${data.quota[type].cpu} Core`
-			// 			} CPU ${data.quota[type].memory} 内存 ${
-			// 				data.quota[type].storageClassQuota
-			// 			} 存储`
-			// 		});
-			// 		setQuotaValue(data.quota[type]);
-			// 	} else {
-			// 		// es
-			// 		let mode = data.mode;
-			// 		if (
-			// 			data.quota.client.num !== 0 &&
-			// 			data.quota.cold.num !== 0
-			// 		) {
-			// 			mode = 'cold-complex';
-			// 		} else if (
-			// 			data.quota.client.num === 0 &&
-			// 			data.quota.cold.num !== 0
-			// 		) {
-			// 			mode = 'complex-cold';
-			// 		}
-			// 		setConfig({
-			// 			title: '规格配置',
-			// 			model: mode
-			// 		});
-			// 	}
-			// }
 		}
 	}, [data]);
 
@@ -338,6 +283,79 @@ export default function HighAvailability(props) {
 				}
 				setSpConfig(spConfigTemp);
 			}
+			setEsSpConfig([
+				{
+					dataIndex: 'title',
+					render: (val) => (
+						<div className="title-content">
+							<div className="blue-line"></div>
+							<div className="detail-title">{val}</div>
+							<span
+								className="name-link ml-12"
+								onClick={() => setEsVisible(true)}
+							>
+								修改
+							</span>
+						</div>
+					),
+					span: 24
+				},
+				{
+					dataIndex: 'model',
+					label: '模式',
+					span: 9,
+					render: (val) => <div>{modelMap[val]}</div>
+				},
+				{
+					dataIndex: 'node',
+					label: '节点规格',
+					span: 15,
+					render: () => {
+						const list = [];
+						if (data) {
+							for (let i in data.quota) {
+								if (data.quota[i].num !== 0) {
+									list.push({
+										type: i,
+										...data.quota[i]
+									});
+								}
+							}
+							return (
+								<div>
+									{list &&
+										list.map((item) => {
+											return (
+												<Row key={item.type}>
+													<Col span={6}>
+														{esMap[item.type]} (
+														{item.num}):{' '}
+													</Col>
+													<Col>
+														{item.cpu}Core CPU{' '}
+														{item.memory} 内存{' '}
+														{item.type !== 'kibana'
+															? item.storageClassQuota ||
+															  0
+															: null}
+														{`${
+															item.type !==
+															'kibana'
+																? '存储'
+																: ''
+														}`}
+													</Col>{' '}
+												</Row>
+											);
+										})}
+								</div>
+							);
+						} else {
+							return '';
+						}
+					}
+				}
+			]);
 		}
 	}, [data]);
 
