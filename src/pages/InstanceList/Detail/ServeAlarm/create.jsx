@@ -75,6 +75,7 @@ function CreateAlarm(props) {
 	const [dingChecked, setDingChecked] = useState(false);
 	const [copyIndex, setCopyIndex] = useState();
 	const [isRule, setIsRule] = useState();
+	const [newUsers, setNewUsers] = useState([]);
 
 	const getCanUse = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -128,6 +129,8 @@ function CreateAlarm(props) {
 					item.alertTime = value;
 					if (Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) {
 						setIsRule(true);
+					}else{
+						setIsRule(false);
 					}
 					return item;
 				} else {
@@ -141,6 +144,8 @@ function CreateAlarm(props) {
 					item.alertTimes = value;
 					if (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) {
 						setIsRule(true);
+					}else{
+						setIsRule(false);
 					}
 					return item;
 				} else {
@@ -263,7 +268,19 @@ function CreateAlarm(props) {
 						...item,
 						value: item.id,
 						key: item.id,
-						disabled: !item.email
+						disabled: !item.email,
+						label: item.email + item.phone + item.userName + item.aliasName
+					};
+				})
+			);
+			setNewUsers(
+				res.data.users.map((item, index) => {
+					return {
+						...item,
+						value: item.id,
+						key: item.id,
+						disabled: !item.email,
+						label: item.email + item.phone + item.userName + item.aliasName
 					};
 				})
 			);
@@ -483,20 +500,8 @@ function CreateAlarm(props) {
 		}
 	};
 
-	const onFilter = (value,position) => {
-		console.log(value,position);
-		if(position === 'left'){
-			const newUsers =  users.filter(item => item.phone && item.phone.indexOf(value) !== -1)
-			console.log(newUsers);
-			setUsers(newUsers);
-		}
-	}
-
 	return (
 		<Page className="create-alarm">
-			{
-				console.log(users)
-			}
 			<Header
 				title={
 					record
@@ -684,7 +689,7 @@ function CreateAlarm(props) {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
-												state={(Number(item.alertTime) > 1000 || Number(item.alertTime) < 1) && 'error'}
+												state={(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) && 'error'}
 												onChange={(value) => {
 													onChange(
 														value,
@@ -830,7 +835,6 @@ function CreateAlarm(props) {
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
 							defaultValue={selectUser}
 							mode="simple"
-							onSearch={onFilter}
 							titles={[
 								<div key="left">
 									<span key="account">登陆账户</span>
@@ -849,6 +853,9 @@ function CreateAlarm(props) {
 							itemRender={transferRender}
 							onChange={handleChange}
 						/>
+						{
+							console.log(users)
+						}
 					</div>
 				)}
 				<div style={{ padding: '16px 9px' }}>

@@ -171,6 +171,7 @@ function Visualization(props) {
 	};
 
 	const isSelect = (cfg) => {
+		console.log(selectObj);
 		if (!isEdit) {
 			if (hasConfigBackup(cfg)) {
 				return false;
@@ -178,17 +179,37 @@ function Visualization(props) {
 				return true;
 			}
 		} else {
-			if (!cfg.depth) {
-				if (cfg.name === selectObj) {
-					return true;
+			if (backup) {
+				if (serverData.name === selectObj) {
+					if (serverData.type === 'mysql') {
+						return !cfg.depth ? true : false;
+					} else {
+						return true;
+					}
 				} else {
-					return false;
+					if (!cfg.depth) {
+						return false;
+					} else {
+						if (cfg.podName === selectObj) {
+							return true;
+						} else {
+							return false;
+						}
+					}
 				}
 			} else {
-				if (cfg.podName === selectObj) {
-					return true;
+				if (!cfg.depth) {
+					if (cfg.name === selectObj) {
+						return true;
+					} else {
+						return false;
+					}
 				} else {
-					return false;
+					if (cfg.podName === selectObj) {
+						return true;
+					} else {
+						return false;
+					}
 				}
 			}
 		}
@@ -976,11 +997,11 @@ function Visualization(props) {
 	};
 
 	const bingger = () => {
-		window.graph.zoomTo(window.graph.getZoom() * 1.1,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
+		window.graph.zoomTo(window.graph.getZoom() * 1.1, { x: window.graph.getWidth() / 2, y: window.graph.getHeight() / 2 });
 	};
 
 	const smaller = () => {
-		window.graph.zoomTo(window.graph.getZoom() * 0.9,{x: window.graph.getWidth() / 2,y: window.graph.getHeight() / 2});
+		window.graph.zoomTo(window.graph.getZoom() * 0.9, { x: window.graph.getWidth() / 2, y: window.graph.getHeight() / 2 });
 	};
 
 	const scale = () => {

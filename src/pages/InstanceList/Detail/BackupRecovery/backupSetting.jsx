@@ -61,6 +61,8 @@ function BackupSetting(props) {
 	});
 	const history = useHistory();
 	const [backupObj, setBackupObj] = useState();
+	const [checks, setChecks] = useState();
+	const [allChecked, setAllChecked] = useState();
 
 	const onOk = () => {
 		field.validate((error, values) => {
@@ -70,18 +72,6 @@ function BackupSetting(props) {
 		});
 	};
 	useEffect(() => {
-		// if (data.pause === 'off') {
-		// 	const arr = data.time.split(':');
-		// 	const obj = {
-		// 		hour: arr[0],
-		// 		minute: arr[1]
-		// 	};
-		// 	field.setValues({
-		// 		count: data.limitRecord,
-		// 		cycle: data.cycle.split(',').map((item) => listMap[item]),
-		// 		time: moment(obj)
-		// 	});
-		// }
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
@@ -89,6 +79,8 @@ function BackupSetting(props) {
 			type: listData.type
 		};
 		getPodList(sendData);
+		record && setChecks(record.cron.split(' ? ? ')[1].split(',').map((item) => Number(item)));
+		record && record.cron.split(' ? ? ')[1].split(',').map(item => Number(item)).join(',') === '0,1,2,3,4,5,6' && setAllChecked(true);
 		record &&
 			field.setValues({
 				count: record.limitRecord,
@@ -241,7 +233,23 @@ function BackupSetting(props) {
 							required
 							requiredMessage="备份周期不能为空！"
 						>
-							<CheckboxGroup name="cycle" dataSource={list} />
+							<Checkbox
+								label="全选"
+								style={{ marginRight: '12px' }}
+								onChange={(value) => {
+									value ? setChecks([0, 1, 2, 3, 4, 5, 6]) : setChecks();
+									setAllChecked(value);
+								}}
+								checked={allChecked}
+							/>
+							<CheckboxGroup
+								name="cycle"
+								dataSource={list}
+								value={checks}
+								onChange={(value) => {
+									setChecks(value)
+									value.sort((a, b) => a - b).join(',') === '0,1,2,3,4,5,6' ? setAllChecked(true) : setAllChecked(false);
+								}} />
 						</Form.Item>
 						<Form.Item
 							label="备份时间"
@@ -259,12 +267,26 @@ function BackupSetting(props) {
 				{
 					!isEdit || record ? <div style={{ padding: '16px 9px', boxShadow: '0px -1px 0px 0px #E3E4E6' }}>
 						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>确定</Button>
-						<Button>取消</Button>
+						<Button
+							onClick={() => {
+								field.reset();
+								setChecks();
+							}}
+						>
+							取消
+						</Button>
 					</div> :
 						<div style={{ padding: '16px 9px' }}>
 							{listData.type === 'mysql' && <Button onClick={() => history.push('/serviceList/mysqlCreate/MySQL/mysql/' + listData.chartVersion)} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
 							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
-							<Button>取消</Button>
+							<Button
+								onClick={() => {
+									field.reset();
+									setChecks();
+								}}
+							>
+								取消
+							</Button>
 						</div>
 				}
 			</Content>

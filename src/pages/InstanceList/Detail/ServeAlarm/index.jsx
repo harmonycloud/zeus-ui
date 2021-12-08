@@ -198,7 +198,7 @@ function Rules(props) {
 
 	const ruleRender = (value, index, record) => {
 		if (alarmType === 'system') {
-			return `CPU使用率${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
+			return `${record.description}${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
 		} else {
 			return record.description;
 		}
