@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Table from '@/components/MidTable';
 import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
+import { getClusters } from '@/services/common.js';
 
 const alarmWarn = [
 	{
@@ -35,6 +36,7 @@ function AlarmRecord(props) {
 	const [eventData, setEventData] = useState([]);
 	const [originData, setOriginData] = useState([]);
 	const [keyword, setKeyword] = useState('');
+	const [poolList, setPoolList] = useState([]);
 
 	const onRefresh = () => {
 		getData();
@@ -47,6 +49,10 @@ function AlarmRecord(props) {
 
 	useEffect(() => {
 		getData();
+		getClusters().then((res) => {
+			if (!res.data) return;
+			setPoolList(res.data.map(item => { return { label: item.id, value: item.id } }));
+		});
 	}, [middlewareName]);
 
 	const getData = () => {
@@ -109,17 +115,32 @@ function AlarmRecord(props) {
 	};
 
 	const onFilter = (filterParams) => {
-		let {
-			level: { selectedKeys }
-		} = filterParams;
-		if (selectedKeys.length === 0) {
-			setEventData(originData);
-		} else {
-			let tempData = null;
-			tempData = originData.filter((item) => {
-				return item.level === selectedKeys[0];
-			});
-			setEventData(tempData);
+		if(filterParams.level){
+			let {
+				level: { selectedKeys }
+			} = filterParams;
+			if (selectedKeys.length === 0) {
+				setEventData(originData);
+			} else {
+				let tempData = null;
+				tempData = originData.filter((item) => {
+					return item.level === selectedKeys[0];
+				});
+				setEventData(tempData);
+			}
+		}else if (filterParams.clusterId) {
+			let {
+				clusterId: { selectedKeys }
+			} = filterParams;
+			if (selectedKeys.length === 0) {
+				setEventData(originData);
+			} else {
+				let tempData = null;
+				tempData = originData.filter((item) => {
+					return item.clusterId === selectedKeys[0];
+				});
+				setEventData(tempData);
+			}
 		}
 	};
 
@@ -134,7 +155,7 @@ function AlarmRecord(props) {
 			onRefresh={onRefresh}
 			primaryKey="key"
 			search={{
-				placeholder: '请输入告警ID搜索',
+				placeholder: '请输入告警ID、告警内容、规则描述、实际监测搜索',
 				onSearch: onRefresh,
 				onChange: (value) => setKeyword(value),
 				value: keyword
@@ -155,7 +176,12 @@ function AlarmRecord(props) {
 				cell={levelRender}
 			/>
 			<Table.Column title="告警内容" dataIndex="content" />
-			<Table.Column title="告警对象" dataIndex="clusterId" />
+			<Table.Column
+				title="告警对象"
+				dataIndex="clusterId"
+				filters={poolList}
+				filterMode="single"
+			/>
 			<Table.Column title="规则描述" dataIndex="expr" width={160} />
 			<Table.Column title="实际监测" dataIndex="summary" />
 			<Table.Column

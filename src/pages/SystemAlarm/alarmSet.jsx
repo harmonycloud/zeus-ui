@@ -36,12 +36,6 @@ function AlarmSet() {
 	const [show, setShow] = useState(true);
 	const [dingShow, setDingShow] = useState(true);
 
-	// field.validate((value, error) => {
-	//     console.log(error);
-	//     if (error) return;
-	//     setBtnStatus(true);
-	// })
-
 	useEffect(() => {
 		getMailInfo().then(async (res) => {
 			if (!res.data) return;
@@ -67,7 +61,6 @@ function AlarmSet() {
 
 	const submit = () => {
 		field.validate((error, value) => {
-			console.log(error);
 			if (error) return;
 			setMail(value).then((res) => {
 				// console.log(res);
@@ -141,7 +134,7 @@ function AlarmSet() {
 	};
 
 	const addDingFormList = () => {
-		if (dingFormList.length <= 10) {
+		if (dingFormList.length < 10) {
 			setDingFormList([...dingFormList, { index: dingFormList.length, id: Math.random() }]);
 		} else {
 			Message.show(
@@ -150,15 +143,14 @@ function AlarmSet() {
 		}
 	}
 
-	const reduceDingFormList = (id) => {
+	const reduceDingFormList = (id, index) => {
 		dingFormList.length > 1 && setDingFormList(dingFormList.filter(arr => id !== arr.id));
-		checkDingBtn();
+		dingConnect && dingFormList.length > 1 && setDingConnect(dingConnect.filter((arr,i) => i !== index));
 	}
 
 	const testMail = () => {
 		let sendData = { email: field.getValues().userName };
 		connectMail(sendData).then(res => {
-			// console.log(res);
 			if (res.success) {
 				Message.show(
 					messageConfig('success', '成功', '测试完成')
@@ -281,6 +273,7 @@ function AlarmSet() {
 										onClick={() => {
 											field.reset();
 											checkBtn();
+											setConnect();
 										}}
 									>
 										取消
@@ -293,6 +286,7 @@ function AlarmSet() {
 										}
 										disabled={btnStatus}
 										onClick={testMail}
+										type="primary"
 									>
 										连接测试
 									</Button>
@@ -304,6 +298,7 @@ function AlarmSet() {
 										}
 										disabled={btnStatus}
 										onClick={submit}
+										type="primary"
 									>
 										保存
 									</Button>
@@ -331,7 +326,11 @@ function AlarmSet() {
 							设置一个或多个钉钉机器人，告警信息第一时间同步钉钉应用（最多添加10个Webhook）。
 						</p>
 					</div>
-
+					<div className="show-box">
+						<span className="show-icon" onClick={() => setDingShow(!dingShow)}>
+							<Icon type="angle-double-down" size="xs" style={{ color: '#C0C6CC' }} />
+						</span>
+					</div>
 				</div>
 				<div className="box-content" style={{ display: dingShow ? 'block' : 'none' }}>
 					<Row>
@@ -344,9 +343,14 @@ function AlarmSet() {
 									dingFormList && dingFormList.map((item, index) => {
 										return (
 											<div key={item.id}>
-												<Form.Item required label="Webhook地址1" style={{ position: "relative" }}
+												<Form.Item
+													required
+													requiredMessage={"Webhook地址" + (index + 1) + "是必填字段"}
+													label={"Webhook地址" + (index + 1)}
+													style={{ position: "relative" }}
 													labelCol={{ span: 5 }}
-													wrapperCol={{ span: 19 }}>
+													wrapperCol={{ span: 19 }}
+												>
 													<Input
 														placeholder="请输入Webhook地址"
 														name={"webhook" + index}
@@ -354,7 +358,7 @@ function AlarmSet() {
 													/>
 													<div className="form-btn">
 														<Button onClick={addDingFormList}>+</Button>
-														<Button onClick={() => reduceDingFormList(item.id)} className={index === 0 ? "disabled" : ''}>-</Button>
+														<Button onClick={() => reduceDingFormList(item.id, index)} className={index === 0 ? "disabled" : ''}>-</Button>
 													</div>
 													{
 														dingConnect && typeof dingConnect[index] !== 'undefined' && <div className="concat">
@@ -382,6 +386,7 @@ function AlarmSet() {
 										onClick={() => {
 											dingField.reset();
 											setDingBtnStatus(true);
+											setDingConnect();
 										}}
 									>
 										取消
@@ -394,6 +399,7 @@ function AlarmSet() {
 										}
 										disabled={dingBtnStatus}
 										onClick={testDing}
+										type="primary"
 									>
 										连接测试
 									</Button>
@@ -405,6 +411,7 @@ function AlarmSet() {
 										}
 										disabled={dingBtnStatus}
 										onClick={dingSubmit}
+										type="primary"
 									>
 										保存
 									</Button>

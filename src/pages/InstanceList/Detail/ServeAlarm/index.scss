@@ -80,6 +80,11 @@
             padding: 0 8px;
             line-height: 32px;
         }
+        .error-info{
+            span{
+                color: #c80000;
+            }
+        }
     }
     .users {
         display: flex;
@@ -173,7 +178,6 @@
                     word-break:break-all;
                     &:nth-of-type(3) {
                         width: 150px;
-                        overflow-x: auto;
                     }
                 }
             }

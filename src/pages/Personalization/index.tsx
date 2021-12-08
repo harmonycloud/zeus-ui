@@ -104,7 +104,6 @@ function Personlization(): JSX.Element {
 			delete values.backgroundImage;
 			delete values.loginLogo;
 			delete values.homeLogo;
-			console.log();
 
 			if (values.status === '1') {
 				values.status = 'init';
@@ -112,8 +111,12 @@ function Personlization(): JSX.Element {
 				values.status = '';
 			}
 			personalized(values).then((res) => {
-				if (res.code) return;
-				getData();
+				if(res.success){
+					Message.show(
+						messageConfig('success', '成功', '个性化设置成功')
+					);
+					getData();
+				}
 			});
 		});
 	};

@@ -4,7 +4,7 @@ import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import ComponentsLoading from '@/components/componentsLoading';
-import { getBackups, backupNow, deleteBackups } from '@/services/backup';
+import { getBackups, addBackupConfig, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
 import { useHistory } from 'react-router';
@@ -103,7 +103,7 @@ export default function List(props) {
 					middlewareName: listData.name,
 					type: listData.type
 				};
-				backupNow(sendData)
+				addBackupConfig(sendData)
 					.then((res) => {
 						if (res.success) {
 							Message.show(
