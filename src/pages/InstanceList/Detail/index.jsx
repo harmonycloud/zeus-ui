@@ -60,6 +60,8 @@ const InstanceDetails = (props) => {
 	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
+	const backKey = storage.getLocal('backKey');
+
 	useEffect(() => {
 		if (
 			JSON.stringify(globalVar.cluster) !== '{}' &&
@@ -80,11 +82,21 @@ const InstanceDetails = (props) => {
 				window.location.reload();
 			}
 		}
+		backKey
+			? backKey === 'alarm' && setSelectedKey('alarm')
+			: setSelectedKey('basicInfo');
+		backKey
+			? backKey === 'backupRecovery' && setSelectedKey('backupRecovery')
+			: setSelectedKey('basicInfo');
 	}, [location]);
 
 	const menuSelect = (selectedKeys) => {
 		setSelectedKey(selectedKeys[0]);
 	};
+
+	useEffect(() => {
+		return () => storage.setLocal('backKey', '');
+	}, []);
 
 	const getData = (clusterId, namespace) => {
 		const sendData = {

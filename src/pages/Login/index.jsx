@@ -143,7 +143,7 @@ export default function Login() {
 				</span>
 			</div>
 			<div className={styles['slogan']}>
-				{(data && data.slogan) || '我是slogan，产品介绍描述'}
+				{(data && data.slogan) || '我是slogan，让IT更美好'}
 			</div>
 			<form className={styles['login-form']}>
 				<header className={styles['login-header']}>
@@ -259,7 +259,7 @@ export default function Login() {
 			)}
 			<div className={styles['copy']}>
 				{(data && data.copyrightNotice) ||
-					'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight © 2021 杭州谐云科技有限公司 All rightsreserved.'}
+					'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.'}
 			</div>
 		</div>
 	);

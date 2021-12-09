@@ -196,13 +196,8 @@ function Rules(props) {
 		)
 	};
 
-	const ruleRender = (value, index, record) => {
-		if (alarmType === 'system') {
-			return `CPU使用率${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
-		} else {
-			return record.description;
-		}
-	};
+	const ruleRender = (value, index, record) =>
+		`${record.description}${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
 
 	const levelRender = (value, index, record) => {
 		return (
@@ -223,7 +218,7 @@ function Rules(props) {
 	const enableRender = (value, index, record) => {
 		return (
 			<Switch
-				defaultChecked={Number(value) === 1}
+				checked={Number(value) === 1}
 				onChange={(checked) => {
 					if (alarmType === 'system') {
 						const sendData = {

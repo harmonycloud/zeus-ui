@@ -22,6 +22,7 @@ import {
 	updateAlarms
 } from '@/services/middleware';
 import { getUsers, sendInsertUser, insertDing } from '@/services/user';
+import { getMailInfo, getDing } from '@/services/alrem';
 import storage from '@/utils/storage';
 import './index.scss';
 
@@ -75,6 +76,8 @@ function CreateAlarm(props) {
 	const [dingChecked, setDingChecked] = useState(false);
 	const [copyIndex, setCopyIndex] = useState();
 	const [isRule, setIsRule] = useState();
+	const [dingDisabled, setDingDisabled] = useState(false);
+	const [mailDisabled, setMailDisabled] = useState(false);
 
 	const getCanUse = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -126,8 +129,13 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				if (item.id === record.id) {
 					item.alertTime = value;
-					if (Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) {
+					if (
+						Number(item.alertTime) > 1440 ||
+						Number(item.alertTime) < 1
+					) {
 						setIsRule(true);
+					} else {
+						setIsRule(false);
 					}
 					return item;
 				} else {
@@ -139,8 +147,13 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				if (item.id === record.id) {
 					item.alertTimes = value;
-					if (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) {
+					if (
+						Number(item.alertTimes) > 1000 ||
+						Number(item.alertTimes) < 1
+					) {
 						setIsRule(true);
+					} else {
+						setIsRule(false);
 					}
 					return item;
 				} else {
@@ -209,7 +222,12 @@ function CreateAlarm(props) {
 			} else {
 				setAlarmRules([
 					...alarmRules,
-					{ ...addItem, id: Math.random() * 100, alert: '', content: '' }
+					{
+						...addItem,
+						id: Math.random() * 100,
+						alert: '',
+						content: ''
+					}
 				]);
 			}
 		}
@@ -245,28 +263,48 @@ function CreateAlarm(props) {
 			setPoolList(res.data);
 			setSystemId(res.data[0].id);
 		});
-		getUsers().then(async (res) => {
+		getUsers().then((res) => {
 			// console.log(res);
 			if (!res.data) return;
-			res.data.userBy && res.data.userBy.length && res.data.userBy.find((item) => item.email) &&
-				setSelectUser(res.data.userBy.find((item) => item.email).id);
-			res.data.userBy && res.data.userBy.length && res.data.userBy.map(item => {
-				res.data.users.map(arr => {
-					if (arr.id === item.id) {
-						setInsertUser(item)
-					}
-				})
-			});
+			res.data.userBy &&
+				res.data.userBy.length &&
+				res.data.userBy.find((item) => item.email) &&
+				setSelectUser(
+					res.data.userBy
+						.filter((item) => item.email)
+						.map((item) => item.userId)
+				);
+			res.data.userBy &&
+				res.data.userBy.length &&
+				res.data.userBy.find((item) => item.email) &&
+				setInsertUser(res.data.userBy.filter((item) => item.email));
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
 						...item,
-						value: item.id,
-						key: item.id,
-						disabled: !item.email
+						value: item.userId,
+						key: item.userId,
+						disabled: !item.email,
+						label:
+							item.email +
+							item.phone +
+							item.userName +
+							item.aliasName
 					};
 				})
 			);
+		});
+		getMailInfo().then((res) => {
+			if (res.success) {
+				res.data ? setMailDisabled(false) : setMailDisabled(true);
+			}
+		});
+		getDing().then((res) => {
+			if (res.success) {
+				res.data && res.data.length
+					? setDingDisabled(false)
+					: setDingDisabled(true);
+			}
 		});
 	}, []);
 
@@ -276,35 +314,59 @@ function CreateAlarm(props) {
 	};
 
 	const transferRender = (item) => {
-		return (
-			item.email ?
-				<span key={item.id} style={{ width: '445px', overflowX: 'auto' }} className={item.email ? '' : "disabled"}>
-					<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
-					<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
-					<span className="item-content">{item.userName}</span>
-					<span className="item-content">{item.aliasName}</span>
-					<span className="item-content">
-						{item.email ? item.email : '/'}
-					</span>
-					<span className="item-content">{item.phone}</span>
-				</span> :
-				<Tooltip
-					trigger={
-						<span key={item.id} style={{ width: '445px', overflowX: 'auto' }} className={item.email ? '' : "disabled"}>
-							<Checkbox style={{ marginRight: '5px' }} disabled={!item.email} />
-							<Icon className="label" type="ashbin1" size="xs" style={{ color: '#0070CC', marginRight: '10px' }} />
-							<span className="item-content">{item.userName}</span>
-							<span className="item-content">{item.aliasName}</span>
-							<span className="item-content">
-								{item.email ? item.email : '/'}
-							</span>
-							<span className="item-content">{item.phone}</span>
+		return item.email ? (
+			<span
+				key={item.id}
+				style={{ width: '445px', overflowX: 'auto' }}
+				className={item.email ? '' : 'disabled'}
+			>
+				<Checkbox
+					style={{ marginRight: '5px' }}
+					disabled={!item.email}
+				/>
+				<Icon
+					className="label"
+					type="ashbin1"
+					size="xs"
+					style={{ color: '#0070CC', marginRight: '10px' }}
+				/>
+				<span className="item-content">{item.userName}</span>
+				<span className="item-content">{item.aliasName}</span>
+				<span className="item-content">
+					{item.email ? item.email : '/'}
+				</span>
+				<span className="item-content">{item.phone}</span>
+			</span>
+		) : (
+			<Tooltip
+				trigger={
+					<span
+						key={item.id}
+						style={{ width: '445px', overflowX: 'auto' }}
+						className={item.email ? '' : 'disabled'}
+					>
+						<Checkbox
+							style={{ marginRight: '5px' }}
+							disabled={!item.email}
+						/>
+						<Icon
+							className="label"
+							type="ashbin1"
+							size="xs"
+							style={{ color: '#0070CC', marginRight: '10px' }}
+						/>
+						<span className="item-content">{item.userName}</span>
+						<span className="item-content">{item.aliasName}</span>
+						<span className="item-content">
+							{item.email ? item.email : '/'}
 						</span>
-					}
-					align="t"
-				>
-					用户邮箱为空，不可选择
-				</Tooltip>
+						<span className="item-content">{item.phone}</span>
+					</span>
+				}
+				align="t"
+			>
+				用户邮箱为空，不可选择
+			</Tooltip>
 		);
 	};
 
@@ -327,6 +389,12 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
+						storage.setLocal(
+							'backKey',
+							alarmType === 'system'
+								? 'highAvailability'
+								: 'alarm'
+						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -338,6 +406,12 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
+						storage.setLocal(
+							'backKey',
+							alarmType === 'system'
+								? 'highAvailability'
+								: 'alarm'
+						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -359,6 +433,12 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
+						storage.setLocal(
+							'backKey',
+							alarmType === 'system'
+								? 'highAvailability'
+								: 'alarm'
+						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -370,6 +450,12 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
+						storage.setLocal(
+							'backKey',
+							alarmType === 'system'
+								? 'highAvailability'
+								: 'alarm'
+						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -393,18 +479,24 @@ function CreateAlarm(props) {
 
 	const onOk = () => {
 		const flag = alarmRules.map((item) => {
-			if (item.alert && item.alertTimes && item.alertTime && item.symbol && item.threshold && item.severity && item.silence) {
+			if (
+				item.alert &&
+				item.alertTimes &&
+				item.alertTime &&
+				item.symbol &&
+				item.threshold &&
+				item.severity &&
+				item.silence
+			) {
 				return true;
 			} else {
 				return false;
 			}
 		});
 		if (isRule) {
-			Message.show(
-				messageConfig('error', '失败', '监控项不符合规则')
-			);
+			Message.show(messageConfig('error', '失败', '监控项不符合规则'));
 			return;
-		};
+		}
 		if (alarmType === 'system') {
 			const data = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
@@ -418,14 +510,7 @@ function CreateAlarm(props) {
 			});
 			if (systemId) {
 				if (flag[0]) {
-					if (!mailChecked && !dingChecked) {
-						Message.show(
-							messageConfig('error', '失败', '请选择告警方式')
-						);
-					} else if (
-						(mailChecked && dingChecked) ||
-						(mailChecked && !dingChecked)
-					) {
+					if (dingChecked) {
 						if (insertUser) {
 							onCreate(data);
 						} else {
@@ -437,13 +522,11 @@ function CreateAlarm(props) {
 								)
 							);
 						}
-					} else if (dingChecked) {
+					} else {
 						onCreate(data);
 					}
 				} else {
-					Message.show(
-						messageConfig('error', '失败', '缺少监控项')
-					);
+					Message.show(messageConfig('error', '失败', '缺少监控项'));
 				}
 			} else {
 				Message.show(messageConfig('error', '失败', '请选择资源池'));
@@ -457,14 +540,7 @@ function CreateAlarm(props) {
 				return item;
 			});
 			if (flag[0]) {
-				if (!mailChecked && !dingChecked) {
-					Message.show(
-						messageConfig('error', '失败', '请选择告警方式')
-					);
-				} else if (
-					(mailChecked && dingChecked) ||
-					(mailChecked && !dingChecked)
-				) {
+				if (dingChecked) {
 					if (insertUser) {
 						onCreate(list);
 					} else {
@@ -472,7 +548,7 @@ function CreateAlarm(props) {
 							messageConfig('error', '失败', '请选择邮箱通知用户')
 						);
 					}
-				} else if (dingChecked) {
+				} else {
 					onCreate(list);
 				}
 			} else {
@@ -483,32 +559,29 @@ function CreateAlarm(props) {
 		}
 	};
 
-	const onFilter = (value,position) => {
-		console.log(value,position);
-		if(position === 'left'){
-			const newUsers =  users.filter(item => item.phone && item.phone.indexOf(value) !== -1)
-			console.log(newUsers);
-			setUsers(newUsers);
-		}
-	}
-
 	return (
 		<Page className="create-alarm">
-			{
-				console.log(users)
-			}
 			<Header
 				title={
 					record
 						? '修改告警规则'
-						: `新建告警规则${middlewareName ? '(' + middlewareName + ')' : ''
-						}`
+						: `新建告警规则${
+								middlewareName ? '(' + middlewareName + ')' : ''
+						  }`
 				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
 					<span
 						className="details-go-back"
-						onClick={() => window.history.back()}
+						onClick={() => {
+							window.history.back();
+							storage.setLocal(
+								'backKey',
+								alarmType === 'system'
+									? 'highAvailability'
+									: 'alarm'
+							);
+						}}
 					>
 						{elem}
 					</span>
@@ -556,9 +629,19 @@ function CreateAlarm(props) {
 						<span>告警阈值</span>
 					</Col>
 					<Col span={5}>
-						<span >触发规则</span>
+						<span>触发规则</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#33', cursor: 'pointer' }} />}
+							trigger={
+								<Icon
+									type="question-circle"
+									size="xs"
+									style={{
+										marginLeft: '5px',
+										color: '#33',
+										cursor: 'pointer'
+									}}
+								/>
+							}
 							align="t"
 						>
 							特定时间≥设定的触发次数，则预警一次
@@ -570,16 +653,36 @@ function CreateAlarm(props) {
 					<Col span={3}>
 						<span>告警间隔</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333', cursor: 'pointer' }} />}
+							trigger={
+								<Icon
+									type="question-circle"
+									size="xs"
+									style={{
+										marginLeft: '5px',
+										color: '#333',
+										cursor: 'pointer'
+									}}
+								/>
+							}
 							align="t"
 						>
 							预警一次过后，间隔多久后再次执行预警监测，防止预警信息爆炸
 						</Tooltip>
 					</Col>
 					<Col span={4}>
-						<span >告警内容描述</span>
+						<span>告警内容描述</span>
 						<Tooltip
-							trigger={<Icon type="question-circle" size="xs" style={{ marginLeft: '5px', color: '#333', cursor: 'pointer' }} />}
+							trigger={
+								<Icon
+									type="question-circle"
+									size="xs"
+									style={{
+										marginLeft: '5px',
+										color: '#333',
+										cursor: 'pointer'
+									}}
+								/>
+							}
 							align="t"
 						>
 							对已经设定的监控对象进行自定义描述，发生告警时可作为一种信息提醒
@@ -669,7 +772,13 @@ function CreateAlarm(props) {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTime}
-												state={(Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) && 'error'}
+												state={
+													(Number(item.alertTime) >
+														1440 ||
+														Number(item.alertTime) <
+															1) &&
+													'error'
+												}
 												onChange={(value) => {
 													onChange(
 														value,
@@ -684,7 +793,14 @@ function CreateAlarm(props) {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
-												state={(Number(item.alertTime) > 1000 || Number(item.alertTime) < 1) && 'error'}
+												state={
+													(Number(item.alertTimes) >
+														1000 ||
+														Number(
+															item.alertTimes
+														) < 1) &&
+													'error'
+												}
 												onChange={(value) => {
 													onChange(
 														value,
@@ -763,10 +879,15 @@ function CreateAlarm(props) {
 													type="icon-fuzhi1"
 													size={12}
 													style={{ color: '#0064C8' }}
-													onClick={() => setCopyIndex(index)}
+													onClick={() =>
+														setCopyIndex(index)
+													}
 												/>
 											</Button>
-											<Button disabled={record} onClick={() => addAlarm()}>
+											<Button
+												disabled={record}
+												onClick={() => addAlarm()}
+											>
 												<Icon
 													type="plus"
 													style={{ color: '#0064C8' }}
@@ -788,35 +909,52 @@ function CreateAlarm(props) {
 											)}
 										</Col>
 									</Row>
-									{
-										((Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) || (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1)) &&
+									{(Number(item.alertTime) > 1440 ||
+										Number(item.alertTime) < 1 ||
+										Number(item.alertTimes) > 1000 ||
+										Number(item.alertTimes) < 1) && (
 										<Row>
 											<Col className="error-info">
-												{(Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) && <span>分钟数的范围是1-1440</span>}
-												{(Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) && <span style={{ marginLeft: '16px' }}>次数数的范围是1-1000</span>}
+												{(Number(item.alertTime) >
+													1440 ||
+													Number(item.alertTime) <
+														1) && (
+													<span>
+														分钟数的范围是1-1440
+													</span>
+												)}
+												{(Number(item.alertTimes) >
+													1000 ||
+													Number(item.alertTimes) <
+														1) && (
+													<span
+														style={{
+															marginLeft: '16px'
+														}}
+													>
+														次数数的范围是1-1000
+													</span>
+												)}
 											</Col>
 										</Row>
-									}
+									)}
 								</div>
 							);
 						})}
 				</div>
 				<h2>告警通知</h2>
 				<div className="users">
-					<span
-						className="ne-required"
-						style={{ marginLeft: '10px' }}
-					>
-						通知方式
-					</span>
-					<Checkbox
-						label="钉钉"
-						style={{ margin: '0 30px 0 20px' }}
-						onChange={(checked) => setDingChecked(checked)}
-					/>
+					<span style={{ marginLeft: '10px' }}>通知方式</span>
 					<Checkbox
 						label="邮箱"
+						style={{ margin: '0 30px 0 20px' }}
 						onChange={(checked) => setMailChecked(checked)}
+						disabled={mailDisabled}
+					/>
+					<Checkbox
+						label="钉钉"
+						onChange={(checked) => setDingChecked(checked)}
+						disabled={dingDisabled}
 					/>
 				</div>
 				{mailChecked && (
@@ -830,7 +968,6 @@ function CreateAlarm(props) {
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
 							defaultValue={selectUser}
 							mode="simple"
-							onSearch={onFilter}
 							titles={[
 								<div key="left">
 									<span key="account">登陆账户</span>
@@ -859,7 +996,19 @@ function CreateAlarm(props) {
 					>
 						确认
 					</Button>
-					<Button onClick={() => window.history.back()}>取消</Button>
+					<Button
+						onClick={() => {
+							window.history.back();
+							storage.setLocal(
+								'backKey',
+								alarmType === 'system'
+									? 'highAvailability'
+									: 'alarm'
+							);
+						}}
+					>
+						取消
+					</Button>
 				</div>
 			</Content>
 		</Page>

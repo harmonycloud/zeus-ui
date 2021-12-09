@@ -41,6 +41,10 @@ function Personlization(): JSX.Element {
 	const [data, setData] = useState<personalizationProps>();
 	const personalization = storage.getLocal('personalization');
 	const [status, setStatus] = useState<number | string | boolean>('0');
+	const [bgSelect, setBgSelect] = useState(false);
+	const [loginSelect, setLoginSelect] = useState(false);
+	const [homeSelect, setHomeSelect] = useState(false);
+	const [imgRule, setImgRule] = useState(false);
 
 	useEffect(() => {
 		getData();
@@ -48,13 +52,19 @@ function Personlization(): JSX.Element {
 
 	const getData = () => {
 		getPersonalConfig({}).then((res) => {
-			if (!res.data) return;
-			setData(res.data);
-			setStatus(res.data.status);
-			storage.setLocal('personalization', res.data);
-			field.setValues(res.data);
-			document.title =
-				res.data && res.data.title ? res.data.title : 'Zeus';
+			if (res.success) {
+				if (res.data) {
+					setData(res.data);
+					setStatus(res.data.status);
+					storage.setLocal('personalization', res.data);
+					field.setValues(res.data);
+					document.title =
+						res.data && res.data.title ? res.data.title : 'Zeus';
+				} else {
+					field.reset();
+					field.setValues({ status: '0' });
+				}
+			}
 		});
 	};
 
@@ -63,6 +73,7 @@ function Personlization(): JSX.Element {
 
 		if (info.size / 1024 / 1024 > 2) {
 			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 		if (
@@ -71,6 +82,7 @@ function Personlization(): JSX.Element {
 			info.type !== 'image/png'
 		) {
 			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 	};
@@ -80,10 +92,12 @@ function Personlization(): JSX.Element {
 
 		if (info.size / 1024 / 1024 > 2) {
 			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 		if (info.type !== 'image/svg+xml') {
 			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 	};
@@ -92,12 +106,14 @@ function Personlization(): JSX.Element {
 		// console.log('onSuccess : ', info);
 		if (info) {
 			Message.show(messageConfig('success', '成功', '图片上传成功'));
+			setImgRule(false);
 		}
 	};
 
 	const onSubmit = () => {
 		field.validate((errors, values: any) => {
-			if (errors) return;
+			if (errors || bgSelect || homeSelect || loginSelect || imgRule)
+				return;
 			delete values.backgroundPath;
 			delete values.loginLogoPath;
 			delete values.homeLogoPath;
@@ -111,7 +127,7 @@ function Personlization(): JSX.Element {
 				values.status = '';
 			}
 			personalized(values).then((res) => {
-				if(res.success){
+				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '个性化设置成功')
 					);
@@ -149,27 +165,40 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							headers={headers}
 							beforeUpload={beforeUpload}
+							onChange={(value) => {
+								!value.length
+									? setBgSelect(true)
+									: setBgSelect(false);
+							}}
 							onSuccess={onSuccess}
 							defaultValue={[
 								{
-									name: 'IMG.png',
+									name: personalization
+										? personalization.backgroundPath
+										: 'IMG.PNG',
 									state: 'done',
 									size: 1024,
-									downloadURL: personalization && personalization.backgroundPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.backgroundPath
-										: background,
-									fileURL: personalization && personalization.backgroundPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.backgroundPath
-										: background,
-									imgURL: personalization &&  personalization.backgroundPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.backgroundPath
-										: background
+									downloadURL:
+										personalization &&
+										personalization.backgroundPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.backgroundPath
+											: background,
+									fileURL:
+										personalization &&
+										personalization.backgroundPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.backgroundPath
+											: background,
+									imgURL:
+										personalization &&
+										personalization.backgroundPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.backgroundPath
+											: background
 								}
 							]}
 						>
@@ -181,6 +210,9 @@ function Personlization(): JSX.Element {
 						<p className="upload-info">
 							图片支持2M以下的jpg、svg、png格式
 						</p>
+						{bgSelect && (
+							<div style={{ color: '#D93026' }}>请上传图片</div>
+						)}
 					</Form.Item>
 					<Form.Item
 						label="登陆页logo"
@@ -196,16 +228,26 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							headers={headers}
 							beforeUpload={logoBeforeUpload}
+							onSuccess={onSuccess}
+							onChange={(value) => {
+								!value.length
+									? setLoginSelect(true)
+									: setLoginSelect(false);
+							}}
 							defaultValue={[
 								{
-									name: 'IMG.png',
+									name: personalization
+										? personalization.loginLogoPath
+										: 'IMG.PNG',
 									state: 'done',
 									size: 1024,
-									url: personalization && personalization.homeLogoPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.homeLogoPath
-										: homeLogo
+									url:
+										personalization &&
+										personalization.loginLogoPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.loginLogoPath
+											: logo
 								}
 							]}
 						>
@@ -215,6 +257,9 @@ function Personlization(): JSX.Element {
 							</Button>
 						</Upload>
 						<p className="upload-info">图片支持2M以下的svg格式</p>
+						{loginSelect && (
+							<div style={{ color: '#D93026' }}>请上传图片</div>
+						)}
 					</Form.Item>
 					<Form.Item
 						label="平台名称"
@@ -264,26 +309,40 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							limit={1}
 							beforeUpload={logoBeforeUpload}
+							onSuccess={onSuccess}
+							onChange={(value) => {
+								!value.length
+									? setHomeSelect(true)
+									: setHomeSelect(false);
+							}}
 							defaultValue={[
 								{
-									name: 'IMG.png',
+									name: personalization
+										? personalization.homeLogoPath
+										: 'IMG.PNG',
 									state: 'done',
 									size: 1024,
-									downloadURL: personalization &&  personalization.loginLogoPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.loginLogoPath
-										: logo,
-									fileURL: personalization && personalization.loginLogoPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.loginLogoPath
-										: logo,
-									imgURL: personalization && personalization.loginLogoPath
-										? api +
-										  '/images/middleware/' +
-										  personalization.loginLogoPath
-										: logo
+									downloadURL:
+										personalization &&
+										personalization.homeLogoPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.homeLogoPath
+											: homeLogo,
+									fileURL:
+										personalization &&
+										personalization.homeLogoPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.homeLogoPath
+											: homeLogo,
+									imgURL:
+										personalization &&
+										personalization.homeLogoPath
+											? api +
+											  '/images/middleware/' +
+											  personalization.homeLogoPath
+											: homeLogo
 								}
 							]}
 						>
@@ -293,6 +352,9 @@ function Personlization(): JSX.Element {
 							</div>
 						</Upload>
 						<p className="upload-info">图片支持2M以下的svg格式</p>
+						{homeSelect && (
+							<div style={{ color: '#D93026' }}>请上传图片</div>
+						)}
 					</Form.Item>
 					<Form.Item
 						label="浏览器tab标题"
@@ -307,7 +369,7 @@ function Personlization(): JSX.Element {
 							placeholder="我是浏览器标题，字数限制在20字符"
 						/>
 					</Form.Item>
-					<h2>恢复出厂设置</h2>
+					<h2>恢复初始化设置</h2>
 					<Form.Item label="是否恢复初始化" labelTextAlign="left">
 						<Radio.Group
 							name="status"
@@ -328,8 +390,8 @@ function Personlization(): JSX.Element {
 					{Number(status) ? (
 						<Confirm
 							type="notice"
-							title="确认恢复"
-							content="确认恢复出厂设置？"
+							title="操作提示"
+							content="您之前所有自定义已做修改的地方将恢复至出厂状态，是否继续？"
 							onConfirm={onSubmit}
 						>
 							<Button type="primary">提交</Button>
