@@ -25,7 +25,7 @@ interface paramsProps {
 }
 enum versionStatus {
 	now = '当前版本',
-	future = '可安装升级版本',
+	future = '可升级版本',
 	history = '历史版本',
 	updating = 'operator升级中',
 	needUpgradeOperator = '需要升级operator',
@@ -264,9 +264,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							cell={versionStatusRender}
 							filters={[
 								{ label: '当前版本', value: 'now' },
-								{ label: '可安装升级版本', value: 'future' },
-								{ label: '历史版本', value: 'history' },
-								{ label: '升级中', value: '升级中' }
+								{ label: '可升级版本', value: 'future' },
+								{ label: '历史版本', value: 'history' }
 							]}
 							filterMode="single"
 							width={200}
