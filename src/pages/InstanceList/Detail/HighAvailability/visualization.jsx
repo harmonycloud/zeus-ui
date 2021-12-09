@@ -246,10 +246,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
-								)[0].color
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+								  )[0].color
 								: '#FFC440',
 							x: 0,
 							y: 0,
@@ -267,10 +267,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
-								)[0].image
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+								  )[0].image
 								: NotReady,
 							x: 12,
 							y: 42,
@@ -315,14 +315,14 @@ function Visualization(props) {
 							text: !cfg.depth
 								? serverData.aliasName
 								: '资源/存储: ' +
-								cfg.resources.cpu +
-								'C/' +
-								cfg.resources.memory +
-								'G' +
-								'/' +
-								(cfg.resources.storageClassQuota
-									? cfg.resources.storageClassQuota
-									: ''),
+								  cfg.resources.cpu +
+								  'C/' +
+								  cfg.resources.memory +
+								  'G' +
+								  '/' +
+								  (cfg.resources.storageClassQuota
+										? cfg.resources.storageClassQuota
+										: ''),
 							x: 45,
 							y: !cfg.depth ? 60 : 70,
 							textBaseline: 'middle',
@@ -528,10 +528,10 @@ function Visualization(props) {
 									item.status === serverData.status
 							)[0]
 								? podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
-								)[0].title
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+								  )[0].title
 								: '运行异常',
 							fill: '#666',
 							x: 0,
@@ -551,10 +551,10 @@ function Visualization(props) {
 									serverData.type !== 'redis'
 										? modelMap[serverData.mode]
 										: serverData.mode === 'sentinel'
-											? '哨兵'
-											: serverData.quota.redis.num === 6
-												? '三主三从'
-												: '五主五从' || '',
+										? '哨兵'
+										: serverData.quota.redis.num === 6
+										? '三主三从'
+										: '五主五从' || '',
 								fill: 'rgba(0, 0, 0, .65)',
 								x: boxWidth + 35,
 								y: 44,
@@ -728,13 +728,12 @@ function Visualization(props) {
 		topoData.pods
 			? (res.children = topoData.pods)
 			: (res.children = [].concat(
-				...topoData.listChildGroup.map((item) => item.pods)
-			));
+					...topoData.listChildGroup.map((item) => item.pods)
+			  ));
 		graph.data(res);
 		graph.render();
 		graph.fitCenter();
 		graph.on('node:mouseenter', (evt) => {
-			if (pathname.includes('addBackup')) return;
 			const { item } = evt;
 			const group = item.getContainer();
 			const button1 = group.find((e) => e.get('name') === 'button1');
@@ -759,6 +758,7 @@ function Visualization(props) {
 				info.cfg.visible = true;
 				infoText.cfg.visible = true;
 			}
+			if (pathname.includes('addBackup')) return;
 			if (evt.target.cfg.name === 'rect-shape' && button1) {
 				button1.cfg.visible = true;
 				button2.cfg.visible = true;
@@ -772,7 +772,6 @@ function Visualization(props) {
 			}
 		});
 		graph.on('node:mouseleave', (evt) => {
-			if (pathname.includes('addBackup')) return;
 			const { item } = evt;
 			const group = item.getContainer();
 			const button1 = group.find((e) => e.get('name') === 'button1');
@@ -815,9 +814,7 @@ function Visualization(props) {
 			const selectImage = group.find(
 				(e) => e.get('name') === 'select-image'
 			);
-			const box = group.find(
-				(e) => e.get('name') === 'rect-shape'
-			);
+			const box = group.find((e) => e.get('name') === 'rect-shape');
 			// console.log(item, evt);
 			if (!setBackupObj) return;
 			if (serverData.type === 'mysql') {
@@ -831,12 +828,16 @@ function Visualization(props) {
 			if (item._cfg.model.depth) {
 				if (!item._cfg.model.resources.isLvmStorage) {
 					Message.show(
-						messageConfig('warning', '提示', '存储不使用lvm时，不支持备份设置功能')
+						messageConfig(
+							'warning',
+							'提示',
+							'存储不使用lvm时，不支持备份设置功能'
+						)
 					);
 					return;
 				}
 			}
-			if (box.attrs.fill === "#EBEBEB") return;
+			if (box.attrs.fill === '#EBEBEB') return;
 			if (!evt.target.cfg.modelId) {
 				if (item._cfg.states.find((arr) => arr === 'select')) {
 					setBackupObj(null);
@@ -997,11 +998,17 @@ function Visualization(props) {
 	};
 
 	const bingger = () => {
-		window.graph.zoomTo(window.graph.getZoom() * 1.1, { x: window.graph.getWidth() / 2, y: window.graph.getHeight() / 2 });
+		window.graph.zoomTo(window.graph.getZoom() * 1.1, {
+			x: window.graph.getWidth() / 2,
+			y: window.graph.getHeight() / 2
+		});
 	};
 
 	const smaller = () => {
-		window.graph.zoomTo(window.graph.getZoom() * 0.9, { x: window.graph.getWidth() / 2, y: window.graph.getHeight() / 2 });
+		window.graph.zoomTo(window.graph.getZoom() * 0.9, {
+			x: window.graph.getWidth() / 2,
+			y: window.graph.getHeight() / 2
+		});
 	};
 
 	const scale = () => {
@@ -1020,11 +1027,11 @@ function Visualization(props) {
 		} else {
 			window.graph.changeSize(1180, 480);
 			setOption({
-				position: 'static',
+				position: 'static'
 			});
 			window.graph.fitCenter();
 		}
-	}
+	};
 
 	const changeTree = (value) => {
 		window.graph.updateLayout({
@@ -1035,13 +1042,13 @@ function Visualization(props) {
 				anchorPoints:
 					value === 'TB'
 						? [
-							[0.5, 0],
-							[0.5, 1]
-						]
+								[0.5, 0],
+								[0.5, 1]
+						  ]
 						: [
-							[0, 0.5],
-							[1, 0.5]
-						]
+								[0, 0.5],
+								[1, 0.5]
+						  ]
 			},
 			getId: function getId(d) {
 				return d.id;
@@ -1074,10 +1081,17 @@ function Visualization(props) {
 			<div style={{ background: '#f9f9f9', ...option }}>
 				<div className={styles['tools']}>
 					<Tooltip
-						trigger={<Button onClick={scale} iconSize="xs"><Icon type="arrows-alt" /></Button>}
+						trigger={
+							<Button onClick={scale} iconSize="xs">
+								<Icon type="arrows-alt" />
+							</Button>
+						}
 						align="b"
 					>
-						{window.graph && window.graph.getWidth() !== window.innerWidth ? '全屏' : '退出全屏'}
+						{window.graph &&
+						window.graph.getWidth() !== window.innerWidth
+							? '全屏'
+							: '退出全屏'}
 					</Tooltip>
 					<Tooltip
 						trigger={
@@ -1109,13 +1123,21 @@ function Visualization(props) {
 						竖向排列
 					</Tooltip>
 					<Tooltip
-						trigger={<Button onClick={bingger}><Icon type="add" /></Button>}
+						trigger={
+							<Button onClick={bingger}>
+								<Icon type="add" />
+							</Button>
+						}
 						align="b"
 					>
 						放大
 					</Tooltip>
 					<Tooltip
-						trigger={<Button onClick={smaller}><Icon type="minus" /></Button>}
+						trigger={
+							<Button onClick={smaller}>
+								<Icon type="minus" />
+							</Button>
+						}
 						align="b"
 					>
 						缩小
