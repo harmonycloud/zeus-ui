@@ -22,6 +22,7 @@ import {
 	updateAlarms
 } from '@/services/middleware';
 import { getUsers, sendInsertUser, insertDing } from '@/services/user';
+import { getMailInfo, getDing } from '@/services/alrem';
 import storage from '@/utils/storage';
 import './index.scss';
 
@@ -75,7 +76,9 @@ function CreateAlarm(props) {
 	const [dingChecked, setDingChecked] = useState(false);
 	const [copyIndex, setCopyIndex] = useState();
 	const [isRule, setIsRule] = useState();
-	const [newUsers, setNewUsers] = useState([]);
+	const [dingDisabled, serDingDisabled] = useState(false);
+	const [mailDisabled, setMailDisabled] = useState(false);
+
 
 	const getCanUse = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -129,7 +132,7 @@ function CreateAlarm(props) {
 					item.alertTime = value;
 					if (Number(item.alertTime) > 1440 || Number(item.alertTime) < 1) {
 						setIsRule(true);
-					}else{
+					} else {
 						setIsRule(false);
 					}
 					return item;
@@ -144,7 +147,7 @@ function CreateAlarm(props) {
 					item.alertTimes = value;
 					if (Number(item.alertTimes) > 1000 || Number(item.alertTimes) < 1) {
 						setIsRule(true);
-					}else{
+					} else {
 						setIsRule(false);
 					}
 					return item;
@@ -250,41 +253,36 @@ function CreateAlarm(props) {
 			setPoolList(res.data);
 			setSystemId(res.data[0].id);
 		});
-		getUsers().then(async (res) => {
+		getUsers().then(res => {
 			// console.log(res);
 			if (!res.data) return;
 			res.data.userBy && res.data.userBy.length && res.data.userBy.find((item) => item.email) &&
-				setSelectUser(res.data.userBy.find((item) => item.email).id);
-			res.data.userBy && res.data.userBy.length && res.data.userBy.map(item => {
-				res.data.users.map(arr => {
-					if (arr.id === item.id) {
-						setInsertUser(item)
-					}
-				})
-			});
+				setSelectUser((res.data.userBy.filter((item) => item.email).map(item => item.userId)));
+			res.data.userBy && res.data.userBy.length && res.data.userBy.find((item) => item.email) &&
+				setInsertUser((res.data.userBy.filter((item) => item.email)));
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
 						...item,
-						value: item.id,
-						key: item.id,
-						disabled: !item.email,
-						label: item.email + item.phone + item.userName + item.aliasName
-					};
-				})
-			);
-			setNewUsers(
-				res.data.users.map((item, index) => {
-					return {
-						...item,
-						value: item.id,
-						key: item.id,
+						value: item.userId,
+						key: item.userId,
 						disabled: !item.email,
 						label: item.email + item.phone + item.userName + item.aliasName
 					};
 				})
 			);
 		});
+		getMailInfo().then(res => {
+			if (res.success) {
+				res.data ? setMailDisabled(false) : setMailDisabled(true);
+			}
+		});
+		getDing().then(res => {
+			if (res.success) {
+				res.data && res.data.length ? setMailDisabled(false) : setMailDisabled(true);
+			}
+		})
+
 	}, []);
 
 	const handleChange = (value, data, extra) => {
@@ -344,6 +342,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
+						storage.setLocal('backKey', alarmType === 'system' ? 'highAvailability' : 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -355,6 +354,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
+						storage.setLocal('backKey', alarmType === 'system' ? 'highAvailability' : 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -376,6 +376,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
+						storage.setLocal('backKey', alarmType === 'system' ? 'highAvailability' : 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -387,6 +388,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
+						storage.setLocal('backKey', alarmType === 'system' ? 'highAvailability' : 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -435,14 +437,7 @@ function CreateAlarm(props) {
 			});
 			if (systemId) {
 				if (flag[0]) {
-					if (!mailChecked && !dingChecked) {
-						Message.show(
-							messageConfig('error', '失败', '请选择告警方式')
-						);
-					} else if (
-						(mailChecked && dingChecked) ||
-						(mailChecked && !dingChecked)
-					) {
+					if (dingChecked) {
 						if (insertUser) {
 							onCreate(data);
 						} else {
@@ -454,7 +449,7 @@ function CreateAlarm(props) {
 								)
 							);
 						}
-					} else if (dingChecked) {
+					} else {
 						onCreate(data);
 					}
 				} else {
@@ -474,22 +469,19 @@ function CreateAlarm(props) {
 				return item;
 			});
 			if (flag[0]) {
-				if (!mailChecked && !dingChecked) {
-					Message.show(
-						messageConfig('error', '失败', '请选择告警方式')
-					);
-				} else if (
-					(mailChecked && dingChecked) ||
-					(mailChecked && !dingChecked)
-				) {
+				if (dingChecked) {
 					if (insertUser) {
 						onCreate(list);
 					} else {
 						Message.show(
-							messageConfig('error', '失败', '请选择邮箱通知用户')
+							messageConfig(
+								'error',
+								'失败',
+								'请选择邮箱通知用户'
+							)
 						);
 					}
-				} else if (dingChecked) {
+				} else {
 					onCreate(list);
 				}
 			} else {
@@ -513,7 +505,10 @@ function CreateAlarm(props) {
 				renderBackArrow={(elem) => (
 					<span
 						className="details-go-back"
-						onClick={() => window.history.back()}
+						onClick={() => {
+							window.history.back();
+							storage.setLocal('backKey', alarmType === 'system' ? 'highAvailability' : 'alarm');
+						}}
 					>
 						{elem}
 					</span>
@@ -808,10 +803,7 @@ function CreateAlarm(props) {
 				</div>
 				<h2>告警通知</h2>
 				<div className="users">
-					<span
-						className="ne-required"
-						style={{ marginLeft: '10px' }}
-					>
+					<span style={{ marginLeft: '10px' }}>
 						通知方式
 					</span>
 					<Checkbox
@@ -866,7 +858,13 @@ function CreateAlarm(props) {
 					>
 						确认
 					</Button>
-					<Button onClick={() => window.history.back()}>取消</Button>
+					<Button onClick={() => {
+						window.history.back();
+						storage.setLocal('backKey', alarmType === 'system' ? 'highAvailability' : 'alarm');
+					}}
+					>
+						取消
+					</Button>
 				</div>
 			</Content>
 		</Page>

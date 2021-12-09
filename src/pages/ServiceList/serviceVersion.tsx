@@ -42,6 +42,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const url = window.location.href.split('/');
 	const history = useHistory();
 	const [installNum, setInstallNum] = useState<number>();
+	const [curIndex, setCurIndex] = useState<number>();
+
 	const getData = () => {
 		getVersions({
 			clusterId: cluster.id,
@@ -66,11 +68,20 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = originData.filter(
-				(item) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setDataSource(list);
+			let type = filterParams[keys[0]].selectedKeys[0];
+			if (type === 'future' || type === 'updating' || type === 'needUpgradeOperator') {
+				const list = originData.filter(
+					(item) =>
+						item[keys[0]] === 'future' || item[keys[0]] === 'updating' || item[keys[0]] === 'needUpgradeOperator'
+				);
+				setDataSource(list);
+			} else {
+				const list = originData.filter(
+					(item) =>
+						item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+				);
+				setDataSource(list);
+			}
 		} else {
 			setDataSource(originData);
 		}
@@ -85,8 +96,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setDataSource([...dsTemp]);
 		}
@@ -99,15 +110,21 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		const color =
 			value === 'now'
 				? '#00A7FA'
-				: value === ('future' || 'updating')
-				? '#52C41A'
-				: '#666666';
+				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator')
+					? '#52C41A'
+					: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
-				: value === ('future' || 'updating')
-				? '#F6FFED'
-				: '#F5F5F5';
+				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator')
+					? '#F6FFED'
+					: '#F5F5F5';
+		const text =
+			value === 'now'
+				? '当前版本'
+				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator')
+					? '可升级版本'
+					: '历史版本';
 		return (
 			<div
 				className="version-status-display"
@@ -117,7 +134,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					borderColor: color
 				}}
 			>
-				{versionStatus[value]}
+				{text}
 			</div>
 		);
 	};
@@ -132,24 +149,21 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					record.versionStatus === 'needUpgradeOperator' ||
 					record.versionStatus === 'canUpgrade' ||
 					record.versionStatus === 'updating') &&
-					(record.versionStatus === 'future' ? (
+					(record.versionStatus !== 'future' ? (
 						<LinkButton
 							style={{ color: '#3DBCFB' }}
-							onClick={() => installUpdate(record)}
+							onClick={() => installUpdate(index, record)}
 						>
-							升级{installNum ? '中(' + installNum + 's)' : ''}
+							升级{index === curIndex && installNum ? '中(' + installNum + 's)' : ''}
 						</LinkButton>
 					) : (
 						<Tooltip
 							trigger={
 								<LinkButton
 									style={{ color: '#cccccc' }}
-									onClick={() => installUpdate(record)}
+									onClick={() => installUpdate(index, record)}
 								>
 									升级
-									{installNum
-										? '中(' + installNum + 's)'
-										: ''}
 								</LinkButton>
 							}
 							align="t"
@@ -160,7 +174,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			</Actions>
 		);
 	};
-	const installUpdate = (record: middlewareProps) => {
+	const installUpdate = (index: number, record: middlewareProps) => {
 		if (record.versionStatus === 'needUpgradeOperator') {
 			const dialog = Dialog.show({
 				title: '操作确认',
@@ -172,13 +186,13 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							我知道了
 						</Button>
 						<Button
-							onClick={() =>
+							onClick={() => {
+								dialog.hide();
 								history.push(
-									`middlewareRepository/versionManagement/${
-										url[url.length - 2]
+									`/middlewareRepository/versionManagement/${url[url.length - 2]
 									}`
 								)
-							}
+							}}
 						>
 							现在去升级
 						</Button>
@@ -199,6 +213,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						upgradeChartVersion: record.chartVersion
 					}).then((res) => {
 						let count = 6;
+						setCurIndex(index);
 						const timeout = setInterval(() => {
 							setInstallNum(--count);
 							if (count <= 0) {

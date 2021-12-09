@@ -14,7 +14,7 @@ import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
 import { addBackupConfig, backupNow, updateBackupConfig } from '@/services/backup';
-import { Page, Content } from '@alicloud/console-components-page';
+import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
 import { useHistory } from 'react-router';
 import { Button } from '@alifd/next';
@@ -139,7 +139,8 @@ function BackupSetting(props) {
 						Message.show(
 							messageConfig('success', '成功', '备份设置成功')
 						);
-						history.push('/disasterBackup/dataSecurity');
+						window.history.back();
+						storage.setLocal('backKey', 'backupRecovery');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -164,7 +165,8 @@ function BackupSetting(props) {
 							Message.show(
 								messageConfig('success', '成功', '备份修改成功')
 							);
-							history.push('/disasterBackup/dataSecurity');
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -189,7 +191,8 @@ function BackupSetting(props) {
 							Message.show(
 								messageConfig('success', '成功', '备份恢复成功')
 							);
-							history.push('/disasterBackup/dataSecurity');
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -200,6 +203,21 @@ function BackupSetting(props) {
 
 	return (
 		<Page>
+			<Header
+				title={!isEdit ? '新建备份': backup ? '恢复备份' : '修改备份'}
+				hasBackArrow
+				renderBackArrow={(elem) => (
+					<span
+						className="details-go-back"
+						onClick={() => {
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
+						}}
+					>
+						{elem}
+					</span>
+				)}
+			/>
 			<Content>
 				{topoData && (
 					<Visualization
@@ -267,11 +285,10 @@ function BackupSetting(props) {
 				{
 					!isEdit || record ? <div style={{ padding: '16px 9px', boxShadow: '0px -1px 0px 0px #E3E4E6' }}>
 						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>确定</Button>
-						<Button
-							onClick={() => {
-								field.reset();
-								setChecks();
-							}}
+						<Button onClick={() => {
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
+						}}
 						>
 							取消
 						</Button>
@@ -279,11 +296,10 @@ function BackupSetting(props) {
 						<div style={{ padding: '16px 9px' }}>
 							{listData.type === 'mysql' && <Button onClick={() => history.push('/serviceList/mysqlCreate/MySQL/mysql/' + listData.chartVersion)} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
 							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
-							<Button
-								onClick={() => {
-									field.reset();
-									setChecks();
-								}}
+							<Button onClick={() => {
+								window.history.back();
+								storage.setLocal('backKey', 'backupRecovery');
+							}}
 							>
 								取消
 							</Button>

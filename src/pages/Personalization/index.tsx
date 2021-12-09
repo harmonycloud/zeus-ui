@@ -44,6 +44,7 @@ function Personlization(): JSX.Element {
 	const [bgSelect, setBgSelect] = useState(false);
 	const [loginSelect, setLoginSelect] = useState(false);
 	const [homeSelect, setHomeSelect] = useState(false);
+	const [imgRule, setImgRule] = useState(false);
 
 	useEffect(() => {
 		getData();
@@ -72,14 +73,12 @@ function Personlization(): JSX.Element {
 
 		if (info.size / 1024 / 1024 > 2) {
 			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			setImgRule(true);
 			return false;
-		}
-		if (
-			info.type !== 'image/svg+xml' &&
-			info.type !== 'image/jpeg' &&
-			info.type !== 'image/png'
-		) {
+		} 
+		if (info.type !== 'image/svg+xml' && info.type !== 'image/jpeg' && info.type !== 'image/png') {
 			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 	};
@@ -89,10 +88,12 @@ function Personlization(): JSX.Element {
 
 		if (info.size / 1024 / 1024 > 2) {
 			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 		if (info.type !== 'image/svg+xml') {
 			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			setImgRule(true);
 			return false;
 		}
 	};
@@ -101,12 +102,13 @@ function Personlization(): JSX.Element {
 		// console.log('onSuccess : ', info);
 		if (info) {
 			Message.show(messageConfig('success', '成功', '图片上传成功'));
+			setImgRule(false);
 		}
 	};
 
 	const onSubmit = () => {
 		field.validate((errors, values: any) => {
-			if (errors || bgSelect || homeSelect || loginSelect) return;
+			if (errors || bgSelect || homeSelect || loginSelect || imgRule) return;
 			delete values.backgroundPath;
 			delete values.loginLogoPath;
 			delete values.homeLogoPath;
@@ -209,6 +211,7 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							headers={headers}
 							beforeUpload={logoBeforeUpload}
+							onSuccess={onSuccess}
 							onChange={(value) => {
 								!value.length ? setLoginSelect(true) : setLoginSelect(false);
 							}}
@@ -281,6 +284,7 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							limit={1}
 							beforeUpload={logoBeforeUpload}
+							onSuccess={onSuccess}
 							onChange={(value) => {
 								!value.length ? setHomeSelect(true) : setHomeSelect(false);
 							}}
@@ -328,7 +332,7 @@ function Personlization(): JSX.Element {
 							placeholder="我是浏览器标题，字数限制在20字符"
 						/>
 					</Form.Item>
-					<h2>恢复出厂设置</h2>
+					<h2>恢复初始化设置</h2>
 					<Form.Item label="是否恢复初始化" labelTextAlign="left">
 						<Radio.Group
 							name="status"
@@ -349,8 +353,8 @@ function Personlization(): JSX.Element {
 					{Number(status) ? (
 						<Confirm
 							type="notice"
-							title="确认恢复"
-							content="确认恢复出厂设置？"
+							title="操作提示"
+							content="您之前所有自定义已做修改的地方将恢复至出厂状态，是否继续？"
 							onConfirm={onSubmit}
 						>
 							<Button type="primary">提交</Button>
