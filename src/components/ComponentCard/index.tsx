@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Message } from '@alicloud/console-components';
 import { showConfirmDialog } from '@alicloud/console-components-confirm';
 import { connect } from 'react-redux';
@@ -7,8 +7,10 @@ import messageConfig from '../messageConfig';
 import './index.scss';
 import InstallForm from './installForm';
 import AccessForm from './accessForm';
+import LvmInstallForm from './lvmInstallForm';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import MidCard from '../MidCard';
+import moment from 'moment';
 
 interface ComponentCardProps {
 	title: string;
@@ -16,11 +18,14 @@ interface ComponentCardProps {
 	clusterId: string;
 	onRefresh: () => void;
 	setRefreshCluster: (flag: boolean) => void;
+	createTime: string | null;
 }
 export interface SendDataProps {
 	clusterId: string;
 	componentName: string;
-	type: string;
+	type?: string;
+	vgName?: string;
+	size?: number;
 }
 export enum name {
 	alertmanager = '监控告警',
@@ -30,7 +35,8 @@ export enum name {
 	grafana = '监控面板',
 	ingress = '负载均衡',
 	'local-path' = '资源存储',
-	'middleware-controller' = '中间件管理'
+	'middleware-controller' = '中间件管理',
+	lvm = 'lvm(存储相关)'
 }
 export enum color {
 	alertmanager = '#12C1C6',
@@ -40,7 +46,8 @@ export enum color {
 	grafana = '#60C1FF',
 	ingress = '#FFAA3A',
 	'local-path' = '#E871AF',
-	'middleware-controller' = '#C5D869'
+	'middleware-controller' = '#C5D869',
+	lvm = '#EAC110'
 }
 export enum icon {
 	alertmanager = 'icon-gaojingshijian1',
@@ -50,13 +57,22 @@ export enum icon {
 	grafana = 'icon-shujujiankong',
 	ingress = 'icon-fuzaijunheng',
 	'local-path' = 'icon-ziyuan-cunchu',
-	'middleware-controller' = 'icon-zhongjianjianguanli'
+	'middleware-controller' = 'icon-zhongjianjianguanli',
+	'lvm' = 'icon-cunchu1'
 }
 
 const ComponentCard = (props: ComponentCardProps) => {
-	const { title, status, clusterId, onRefresh, setRefreshCluster } = props;
+	const {
+		title,
+		status,
+		clusterId,
+		onRefresh,
+		setRefreshCluster,
+		createTime
+	} = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
+	const [lvmVisible, setLvmVisible] = useState<boolean>(false);
 	const installData = (data: SendDataProps) => {
 		postComponent(data).then((res) => {
 			if (res.success) {
@@ -141,7 +157,8 @@ const ComponentCard = (props: ComponentCardProps) => {
 						status={status}
 						actionCount={
 							title !== 'local-path' &&
-							title !== 'middleware-controller'
+							title !== 'middleware-controller' &&
+							title !== 'lvm'
 								? 2
 								: 1
 						}
@@ -150,7 +167,12 @@ const ComponentCard = (props: ComponentCardProps) => {
 						leftHandle={installComponent}
 						rightHandle={accessComponent}
 						centerText="安装"
-						centerHandle={installComponent}
+						centerHandle={() => {
+							title !== 'lvm'
+								? installComponent()
+								: setLvmVisible(true);
+						}}
+						createTime={createTime}
 					/>
 				);
 			case 1:
@@ -165,6 +187,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
+						createTime={createTime}
 					/>
 				);
 			case 2:
@@ -176,11 +199,13 @@ const ComponentCard = (props: ComponentCardProps) => {
 						status={status}
 						actionCount={1}
 						centerText="安装中"
+						createTime={createTime}
 						centerStyle={{
 							background: '#0064C8',
 							color: '#ffffff',
 							border: 'none'
 						}}
+						onRefresh={onRefresh}
 					/>
 				);
 			case 3:
@@ -192,7 +217,8 @@ const ComponentCard = (props: ComponentCardProps) => {
 						status={status}
 						actionCount={
 							title !== 'local-path' &&
-							title !== 'middleware-controller'
+							title !== 'middleware-controller' &&
+							title !== 'lvm'
 								? 2
 								: 1
 						}
@@ -202,6 +228,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						rightHandle={() => setAccessVisible(true)}
 						centerText="卸载"
 						centerHandle={uninstallComponent}
+						createTime={createTime}
 					/>
 				);
 			case 4:
@@ -211,11 +238,20 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={2}
+						actionCount={
+							title !== 'local-path' &&
+							title !== 'middleware-controller' &&
+							title !== 'lvm'
+								? 2
+								: 1
+						}
 						leftText="卸载"
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
+						centerText="卸载"
+						centerHandle={uninstallComponent}
+						createTime={createTime}
 					/>
 				);
 			case 5:
@@ -232,6 +268,30 @@ const ComponentCard = (props: ComponentCardProps) => {
 							color: '#ffffff',
 							border: 'none'
 						}}
+						createTime={createTime}
+					/>
+				);
+			case 6:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={
+							title !== 'local-path' &&
+							title !== 'middleware-controller' &&
+							title !== 'lvm'
+								? 2
+								: 1
+						}
+						leftText="卸载"
+						rightText="编辑"
+						leftHandle={uninstallComponent}
+						rightHandle={() => setAccessVisible(true)}
+						centerText="卸载"
+						centerHandle={uninstallComponent}
+						createTime={createTime}
 					/>
 				);
 			default:
@@ -255,6 +315,17 @@ const ComponentCard = (props: ComponentCardProps) => {
 				<AccessForm
 					visible={accessVisible}
 					onCancel={() => setAccessVisible(false)}
+					title={title}
+					clusterId={clusterId}
+					onRefresh={onRefresh}
+					setRefreshCluster={setRefreshCluster}
+				/>
+			)}
+			{lvmVisible && (
+				<LvmInstallForm
+					visible={lvmVisible}
+					onCancel={() => setLvmVisible(false)}
+					onCreate={installData}
 					title={title}
 					clusterId={clusterId}
 					onRefresh={onRefresh}

@@ -53,6 +53,9 @@ export interface ComponentProp {
 	status: number;
 	type: null | string;
 	protocol?: string | null;
+	createTime: string | null;
+	vgName: string | null;
+	size: number | null;
 }
 
 export interface IngressItemProps {
@@ -67,4 +70,5 @@ export interface IngressItemProps {
 	namespace: string;
 	status: number;
 	id: number;
+	createTime: string | null;
 }
