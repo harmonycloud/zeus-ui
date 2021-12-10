@@ -280,21 +280,13 @@ function CreateAlarm(props) {
 				);
 			res.data.userBy &&
 				res.data.userBy.length &&
-				res.data.userBy.find((item) => item.email) &&
-				setInsertUser(
-					res.data.userBy
-						.filter((item) => item.email)
-						.map((item) => item.userId)
-				);
+				res.data.users.map((item) => {
+					res.data.userBy.map((arr) => {
+						item.userId === arr.userId && user.push(item);
+					});
+				});
 			setIsReady(true);
-			// res.data.userBy &&
-			// 	res.data.userBy.length &&
-			// 	res.data.users.map(item => {
-			// 		res.data.userBy(arr => {
-			// 			item.userId === arr.userId && user.push(item)
-			// 		})
-			// 	})
-			// setInsertUser(user);
+			setInsertUser(user);
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
@@ -521,9 +513,9 @@ function CreateAlarm(props) {
 					message: item.content
 				};
 				item.lay = 'system';
-				record ? item.enable = record.enable : item.enable = 0;
-				dingChecked ? item.ding = 'ding' : delete item.ding;
-				mailChecked ? item.mail = 'mail' : delete item.mail;
+				record ? (item.enable = record.enable) : (item.enable = 0);
+				dingChecked ? (item.ding = 'ding') : delete item.ding;
+				mailChecked ? (item.mail = 'mail') : delete item.mail;
 				return item;
 			});
 			if (systemId) {
@@ -554,8 +546,8 @@ function CreateAlarm(props) {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
 				item.enable = 0;
-				dingChecked ? item.ding = 'ding' : item.ding = null;
-				mailChecked ? item.mail = 'mail' : item.mail = null;
+				dingChecked ? (item.ding = 'ding') : (item.ding = null);
+				mailChecked ? (item.mail = 'mail') : (item.mail = null);
 				return item;
 			});
 			if (flag[0]) {
@@ -584,8 +576,9 @@ function CreateAlarm(props) {
 				title={
 					record
 						? '修改告警规则'
-						: `新建告警规则${middlewareName ? '(' + middlewareName + ')' : ''
-						}`
+						: `新建告警规则${
+								middlewareName ? '(' + middlewareName + ')' : ''
+						  }`
 				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
@@ -794,7 +787,7 @@ function CreateAlarm(props) {
 													(Number(item.alertTime) >
 														1440 ||
 														Number(item.alertTime) <
-														1) &&
+															1) &&
 													'error'
 												}
 												onChange={(value) => {
@@ -931,31 +924,31 @@ function CreateAlarm(props) {
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||
 										Number(item.alertTimes) < 1) && (
-											<Row>
-												<Col className="error-info">
-													{(Number(item.alertTime) >
-														1440 ||
-														Number(item.alertTime) <
+										<Row>
+											<Col className="error-info">
+												{(Number(item.alertTime) >
+													1440 ||
+													Number(item.alertTime) <
 														1) && (
-															<span>
-																分钟数的范围是1-1440
-															</span>
-														)}
-													{(Number(item.alertTimes) >
-														1000 ||
-														Number(item.alertTimes) <
+													<span>
+														分钟数的范围是1-1440
+													</span>
+												)}
+												{(Number(item.alertTimes) >
+													1000 ||
+													Number(item.alertTimes) <
 														1) && (
-															<span
-																style={{
-																	marginLeft: '16px'
-																}}
-															>
-																次数数的范围是1-1000
-															</span>
-														)}
-												</Col>
-											</Row>
-										)}
+													<span
+														style={{
+															marginLeft: '16px'
+														}}
+													>
+														次数数的范围是1-1000
+													</span>
+												)}
+											</Col>
+										</Row>
+									)}
 								</div>
 							);
 						})}
@@ -983,9 +976,7 @@ function CreateAlarm(props) {
 							<p className="transfer-title left">用户管理</p>
 							<p className="transfer-title">用户管理</p>
 						</div>
-						{
-							console.log(selectUser)
-						}
+						{console.log(selectUser)}
 						<Transfer
 							showSearch
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
