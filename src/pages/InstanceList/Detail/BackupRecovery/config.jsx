@@ -332,7 +332,7 @@ export default function Config(props) {
 					onClick={() => {
 						Dialog.show({
 							title: '操作确认',
-							content: '备份删除后将无法恢复，请确认执行',
+							content: '删除后，本地数据将被清空，无法找回，是否继续？',
 							onOk: () => {
 								const sendData = {
 									clusterId,

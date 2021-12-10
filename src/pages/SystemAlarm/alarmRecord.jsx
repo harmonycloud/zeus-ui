@@ -98,7 +98,7 @@ function AlarmRecord(props) {
 	};
 
 	const onSort = (dataIndex, order) => {
-		if (dataIndex === 'createTime') {
+		if (dataIndex === 'time') {
 			const dsTemp = eventData.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();

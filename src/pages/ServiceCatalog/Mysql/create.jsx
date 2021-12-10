@@ -544,8 +544,8 @@ const MysqlCreate = (props) => {
 				setVersion(res.data.version);
 			}
 			field.setValues({
-				aliasName: res.data.aliasName,
-				// name: res.data.name,
+				// aliasName: res.data.aliasName,
+				name: res.data.name + '-backup',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
@@ -727,6 +727,9 @@ const MysqlCreate = (props) => {
 
 	return (
 		<Page>
+			{
+				console.log(useParams())
+			}
 			<Page.Header
 				title="发布MySQL服务"
 				className="page-header"
@@ -1185,7 +1188,7 @@ const MysqlCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if(!tolerationsLabels.find(item => item.label === tolerations.label)){
+															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
 																setTolerationsLabels(
 																	[
 																		...tolerationsLabels,
@@ -1195,7 +1198,7 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																)
-																changeTolerations('','label')
+																changeTolerations('', 'label')
 															}
 														}}
 													>

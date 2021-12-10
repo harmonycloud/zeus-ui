@@ -47,9 +47,9 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const getData = () => {
 		getVersions({
 			clusterId: cluster.id,
-			middlewareName: url[url.length - 1],
+			middlewareName: url[url.length - 2],
 			namespace: namespace.name,
-			type: url[url.length - 2]
+			type: url[url.length - 3]
 		}).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
@@ -110,19 +110,19 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		const color =
 			value === 'now'
 				? '#00A7FA'
-				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator')
+				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator' || value === 'canUpgrade')
 					? '#52C41A'
 					: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
-				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator')
+				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator' || value === 'canUpgrade')
 					? '#F6FFED'
 					: '#F5F5F5';
 		const text =
 			value === 'now'
 				? '当前版本'
-				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator')
+				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator' || value === 'canUpgrade')
 					? '可升级版本'
 					: '历史版本';
 		return (
@@ -189,7 +189,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							onClick={() => {
 								dialog.hide();
 								history.push(
-									`/middlewareRepository/versionManagement/${url[url.length - 2]
+									`/middlewareRepository/versionManagement/${url[url.length - 3]
 									}`
 								)
 							}}
@@ -202,13 +202,13 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		} else if (record.versionStatus === 'canUpgrade') {
 			Dialog.show({
 				title: '操作确认',
-				content: '是否确认升级版本？',
+				content: '是否确认升级新版本？',
 				onOk: () => {
 					return upgradeChart({
 						clusterId: cluster.id,
 						namespace: namespace.name,
-						middlewareName: url[url.length - 1],
-						type: url[url.length - 2],
+						middlewareName: url[url.length - 2],
+						type: url[url.length - 3],
 						chartName: record.chartName,
 						upgradeChartVersion: record.chartVersion
 					}).then((res) => {
@@ -265,7 +265,12 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						<Table.Column
 							title="服务名称/中文名称"
 							dataIndex="chartName"
-							cell={() => url[url.length - 1]}
+							cell={
+								<div>
+									<p>{url[url.length - 2]}</p>
+									<p>{url[url.length - 1]}</p>
+								</div>
+							}
 						/>
 						<Table.Column
 							title="类型"

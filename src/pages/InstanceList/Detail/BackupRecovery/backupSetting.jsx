@@ -185,18 +185,26 @@ function BackupSetting(props) {
 				} else {
 					sendData.pod = listData.pods.map(item => item.podName);
 				}
-				backupNow(sendData)
-					.then((res) => {
-						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '备份恢复成功')
-							);
-							window.history.back();
-							storage.setLocal('backKey', 'backupRecovery');
-						} else {
-							Message.show(messageConfig('error', '失败', res));
-						}
-					})
+				Dialog.show({
+					title: '操作确认',
+					content: '请确认是否覆盖？',
+					onOk: () => {
+						backupNow(sendData)
+							.then((res) => {
+								if (res.success) {
+									Message.show(
+										messageConfig('success', '成功', '备份恢复成功，5秒之后跳转')
+									);
+									setTimeout(() => {
+										window.history.back();
+										storage.setLocal('backKey', 'backupRecovery');
+									}, 5000);
+								} else {
+									Message.show(messageConfig('error', '失败', res));
+								}
+							})
+					}
+				});
 			}
 		}
 	};
@@ -204,7 +212,7 @@ function BackupSetting(props) {
 	return (
 		<Page>
 			<Header
-				title={!isEdit ? '新建备份': backup ? '恢复备份' : '修改备份'}
+				title={!isEdit ? '新建备份' : backup ? '恢复备份' : '修改备份'}
 				hasBackArrow
 				renderBackArrow={(elem) => (
 					<span
@@ -294,7 +302,20 @@ function BackupSetting(props) {
 						</Button>
 					</div> :
 						<div style={{ padding: '16px 9px' }}>
-							{listData.type === 'mysql' && <Button onClick={() => history.push('/serviceList/mysqlCreate/MySQL/mysql/' + listData.chartVersion)} type="primary" style={{ marginRight: '9px' }}>克隆</Button>}
+							{listData.type === 'mysql' && <Button onClick={() => {
+								console.log(listData);
+								if (!backupObj) {
+									Message.show(messageConfig('warning', '提示', '请选择实例对象'));
+									return;
+								} else {
+									history.push(`/serviceList/mysqlCreate/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`);
+								}
+							}}
+								type="primary"
+								style={{ marginRight: '9px' }}
+							>
+								克隆
+							</Button>}
 							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
 							<Button onClick={() => {
 								window.history.back();
