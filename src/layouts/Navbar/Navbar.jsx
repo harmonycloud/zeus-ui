@@ -124,9 +124,15 @@ function Navbar(props) {
 						return item.id === JSON.parse(jsonLocalCluster).id;
 					})
 				) {
-					getClusterId(JSON.parse(jsonLocalCluster).id);
-					setCurrentCluster(JSON.parse(jsonLocalCluster));
-					setCluster(JSON.parse(jsonLocalCluster));
+					const localClusterTemp = res.data.find(
+						(item) => item.id === JSON.parse(jsonLocalCluster).id
+					);
+					getClusterId(localClusterTemp.id);
+					// getClusterId(JSON.parse(jsonLocalCluster).id);
+					setCurrentCluster(localClusterTemp);
+					// setCurrentCluster(JSON.parse(jsonLocalCluster));
+					setCluster(localClusterTemp);
+					// setCluster(JSON.parse(jsonLocalCluster));
 				} else {
 					setCurrentCluster(res.data[0]);
 					setCluster(res.data[0]);
