@@ -38,7 +38,9 @@ const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
 const BatchInstall = (props: BatchInstallProps) => {
 	const { visible, onCancel, components, clusterId, onRefresh } = props;
-	const [data, setData] = useState<ComponentProp[]>(components);
+	const [data, setData] = useState<ComponentProp[]>(
+		components.filter((item) => item.component !== 'lvm')
+	);
 	const [controllers, setControllers] = useState<ControllerItemProps[]>([]);
 	const [controllerCheck, setControllerCheck] = useState<boolean>(false);
 	const [selectController, setSelectController] = useState<string[]>([]);
@@ -254,6 +256,9 @@ const BatchInstall = (props: BatchInstallProps) => {
 					/>
 				</div>
 			</div>
+			{controllers.length === 0 && (
+				<p style={{ textAlign: 'center' }}>无可安装的中间件控制器</p>
+			)}
 			<CheckboxGroup value={selectController} onChange={onChange}>
 				{controllers.map((item: ControllerItemProps, index: number) => {
 					return (

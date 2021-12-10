@@ -13,9 +13,10 @@ interface IngressCardProps {
 	onRefresh: () => void;
 	clusterId: string;
 	data?: IngressItemProps;
+	createTime: string | null;
 }
 const IngressCard = (props: IngressCardProps) => {
-	const { status, title, onRefresh, clusterId, data } = props;
+	const { status, title, onRefresh, clusterId, data, createTime } = props;
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 
@@ -61,6 +62,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightHandle={() => setAccessVisible(true)}
 						status={-1}
 						addTitle="新增负载均衡"
+						createTime={createTime}
 					/>
 				);
 			case 0:
@@ -76,6 +78,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftHandle={() => setInstallVisible(false)}
 						rightHandle={() => setAccessVisible(false)}
 						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
 					/>
 				);
 			case 1:
@@ -91,6 +94,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftHandle={() => uninstallComponent('access')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
 					/>
 				);
 			case 2:
@@ -108,6 +112,8 @@ const IngressCard = (props: IngressCardProps) => {
 							border: 'none'
 						}}
 						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
+						onRefresh={onRefresh}
 					/>
 				);
 			case 3:
@@ -123,6 +129,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
 					/>
 				);
 			case 4:
@@ -138,6 +145,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
 					/>
 				);
 			case 5:
@@ -155,6 +163,26 @@ const IngressCard = (props: IngressCardProps) => {
 							border: 'none'
 						}}
 						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
+					/>
+				);
+			case 6:
+				return (
+					<MidCard
+						icon="icon-fuzaijunheng"
+						color="#FFAA3A"
+						title={title}
+						status={status}
+						actionCount={1}
+						centerText="卸载"
+						centerHandle={() => uninstallComponent('install')}
+						// centerStyle={{
+						// 	background: '#C80000',
+						// 	color: '#ffffff',
+						// 	border: 'none'
+						// }}
+						titleStyle={{ fontSize: '12px' }}
+						createTime={createTime}
 					/>
 				);
 			default:

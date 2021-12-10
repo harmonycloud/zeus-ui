@@ -13,7 +13,11 @@ import moment from 'moment';
 import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
-import { addBackupConfig, backupNow, updateBackupConfig } from '@/services/backup';
+import {
+	addBackupConfig,
+	backupNow,
+	updateBackupConfig
+} from '@/services/backup';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
 import { useHistory } from 'react-router';
@@ -48,7 +52,15 @@ const listMap = {
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(props) {
 	const field = Field.useField();
-	const { clusterId, namespace, data: listData, isEdit, record, backup, selectObj } = storage.getSession('detail');
+	const {
+		clusterId,
+		namespace,
+		data: listData,
+		isEdit,
+		record,
+		backup,
+		selectObj
+	} = storage.getSession('detail');
 	const [topoData, setTopoData] = useState();
 	const [backupData, setBackupData] = useState({
 		configed: false,
@@ -79,8 +91,20 @@ function BackupSetting(props) {
 			type: listData.type
 		};
 		getPodList(sendData);
-		record && setChecks(record.cron.split(' ? ? ')[1].split(',').map((item) => Number(item)));
-		record && record.cron.split(' ? ? ')[1].split(',').map(item => Number(item)).join(',') === '0,1,2,3,4,5,6' && setAllChecked(true);
+		record &&
+			setChecks(
+				record.cron
+					.split(' ? ? ')[1]
+					.split(',')
+					.map((item) => Number(item))
+			);
+		record &&
+			record.cron
+				.split(' ? ? ')[1]
+				.split(',')
+				.map((item) => Number(item))
+				.join(',') === '0,1,2,3,4,5,6' &&
+			setAllChecked(true);
 		record &&
 			field.setValues({
 				count: record.limitRecord,
@@ -130,21 +154,26 @@ function BackupSetting(props) {
 				middlewareName: listData.name,
 				type: listData.type,
 				limitRecord: values.count,
-				cron: (typeof values.time !== 'string') ? cron : `${values.time.substring(3, 5)} ${values.time.substring(0, 2)} ? ? ${week}`
+				cron:
+					typeof values.time !== 'string'
+						? cron
+						: `${values.time.substring(
+							3,
+							5
+						)} ${values.time.substring(0, 2)} ? ? ${week}`
 			};
 			if (backupObj !== 'serve') sendData.pod = backupObj;
-			addBackupConfig(sendData)
-				.then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份设置成功')
-						);
-						window.history.back();
-						storage.setLocal('backKey', 'backupRecovery');
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				})
+			addBackupConfig(sendData).then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '备份设置成功')
+					);
+					window.history.back();
+					storage.setLocal('backKey', 'backupRecovery');
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
 		} else {
 			if (record) {
 				const minute = moment(values.time).get('minute');
@@ -157,20 +186,25 @@ function BackupSetting(props) {
 					backupScheduleName: record.backupScheduleName,
 					type: listData.type,
 					limitRecord: values.count,
-					cron: (typeof values.time !== 'string') ? cron : `${values.time.substring(3, 5)} ${values.time.substring(0, 2)} ? ? ${week}`
+					cron:
+						typeof values.time !== 'string'
+							? cron
+							: `${values.time.substring(
+								3,
+								5
+							)} ${values.time.substring(0, 2)} ? ? ${week}`
 				};
-				updateBackupConfig(sendData)
-					.then((res) => {
-						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '备份修改成功')
-							);
-							window.history.back();
-							storage.setLocal('backKey', 'backupRecovery');
-						} else {
-							Message.show(messageConfig('error', '失败', res));
-						}
-					})
+				updateBackupConfig(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '备份修改成功')
+						);
+						window.history.back();
+						storage.setLocal('backKey', 'backupRecovery');
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
 			} else {
 				const sendData = {
 					clusterId,
@@ -178,12 +212,12 @@ function BackupSetting(props) {
 					backupName: backup.backupName,
 					type: listData.type,
 					middlewareName: listData.name,
-					backupFileName: backup.backupFileName,
+					backupFileName: backup.backupFileName
 				};
 				if (backupObj !== 'serve') {
 					sendData.pod = backupObj;
 				} else {
-					sendData.pod = listData.pods.map(item => item.podName);
+					sendData.pod = listData.pods.map((item) => item.podName);
 				}
 				Dialog.show({
 					title: '操作确认',
@@ -238,8 +272,12 @@ function BackupSetting(props) {
 						backup={backup}
 					/>
 				)}
-				{
-					!isEdit || record ? <Form {...formItemLayout} field={field} style={{ marginTop: '24px' }}>
+				{!isEdit || record ? (
+					<Form
+						{...formItemLayout}
+						field={field}
+						style={{ marginTop: '24px' }}
+					>
 						<Form.Item
 							label="备份保留个数"
 							required
@@ -263,7 +301,9 @@ function BackupSetting(props) {
 								label="全选"
 								style={{ marginRight: '12px' }}
 								onChange={(value) => {
-									value ? setChecks([0, 1, 2, 3, 4, 5, 6]) : setChecks();
+									value
+										? setChecks([0, 1, 2, 3, 4, 5, 6])
+										: setChecks();
 									setAllChecked(value);
 								}}
 								checked={allChecked}
@@ -273,9 +313,13 @@ function BackupSetting(props) {
 								dataSource={list}
 								value={checks}
 								onChange={(value) => {
-									setChecks(value)
-									value.sort((a, b) => a - b).join(',') === '0,1,2,3,4,5,6' ? setAllChecked(true) : setAllChecked(false);
-								}} />
+									setChecks(value);
+									value.sort((a, b) => a - b).join(',') ===
+										'0,1,2,3,4,5,6'
+										? setAllChecked(true)
+										: setAllChecked(false);
+								}}
+							/>
 						</Form.Item>
 						<Form.Item
 							label="备份时间"
@@ -288,11 +332,22 @@ function BackupSetting(props) {
 								format="HH:mm"
 							/>
 						</Form.Item>
-					</Form> : null
-				}
-				{
-					!isEdit || record ? <div style={{ padding: '16px 9px', boxShadow: '0px -1px 0px 0px #E3E4E6' }}>
-						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>确定</Button>
+					</Form>
+				) : null}
+				{!isEdit || record ?
+					<div
+						style={{
+							padding: '16px 9px',
+							boxShadow: '0px -1px 0px 0px #E3E4E6'
+						}}
+					>
+						<Button
+							onClick={onOk}
+							type="primary"
+							style={{ marginRight: '9px' }}
+						>
+							确定
+						</Button>
 						<Button onClick={() => {
 							window.history.back();
 							storage.setLocal('backKey', 'backupRecovery');
@@ -301,30 +356,30 @@ function BackupSetting(props) {
 							取消
 						</Button>
 					</div> :
-						<div style={{ padding: '16px 9px' }}>
-							{listData.type === 'mysql' && <Button onClick={() => {
-								console.log(listData);
-								if (!backupObj) {
-									Message.show(messageConfig('warning', '提示', '请选择实例对象'));
-									return;
-								} else {
-									history.push(`/serviceList/mysqlCreate/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`);
-								}
-							}}
-								type="primary"
-								style={{ marginRight: '9px' }}
-							>
-								克隆
-							</Button>}
-							<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
-							<Button onClick={() => {
-								window.history.back();
-								storage.setLocal('backKey', 'backupRecovery');
-							}}
-							>
-								取消
-							</Button>
-						</div>
+					<div style={{ padding: '16px 9px' }}>
+						{listData.type === 'mysql' && <Button onClick={() => {
+							console.log(listData);
+							if (!backupObj) {
+								Message.show(messageConfig('warning', '提示', '请选择实例对象'));
+								return;
+							} else {
+								history.push(`/serviceList/mysqlCreate/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`);
+							}
+						}}
+							type="primary"
+							style={{ marginRight: '9px' }}
+						>
+							克隆
+						</Button>}
+						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
+						<Button onClick={() => {
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
+						}}
+						>
+							取消
+						</Button>
+					</div>
 				}
 			</Content>
 		</Page>

@@ -47,6 +47,9 @@ const Overview = () => {
 	const [tableType, setTableType] = useState<string>('cpu');
 	const [originData, setOriginData] = useState<MiddlewareResourceProps[]>([]);
 	const [dataSource, setDataSource] = useState<MiddlewareResourceProps[]>([]);
+	const [nodeOriginData, setNodeOriginData] = useState<NodeResourceProps[]>(
+		[]
+	);
 	const [nodeDataSource, setNodeDataSource] = useState<NodeResourceProps[]>(
 		[]
 	);
@@ -89,6 +92,7 @@ const Overview = () => {
 		getNodeResource({ clusterId: id }).then((res) => {
 			if (res.success) {
 				if (mounted) {
+					setNodeOriginData(res.data);
 					setNodeDataSource(res.data);
 				}
 			} else {
@@ -140,6 +144,7 @@ const Overview = () => {
 	const getNode = () => {
 		getNodeResource({ clusterId: id }).then((res) => {
 			if (res.success) {
+				setNodeOriginData(res.data);
 				setNodeDataSource(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -370,6 +375,18 @@ const Overview = () => {
 		});
 		setNodeDataSource([...temp]);
 	};
+	const onNodeFilter = (filterParams: any) => {
+		const keys = Object.keys(filterParams);
+		if (filterParams[keys[0]].selectedKeys.length > 0) {
+			const list = nodeOriginData.filter(
+				(item: NodeResourceProps) =>
+					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+			);
+			setNodeDataSource(list);
+		} else {
+			setNodeDataSource(nodeOriginData);
+		}
+	};
 	const onSort = (dataIndex: string, order: string) => {
 		const temp = originData.sort(function (
 			a: MiddlewareResourceProps,
@@ -571,6 +588,7 @@ const Overview = () => {
 					primaryKey="key"
 					operation={NodeOperation}
 					onSort={onNodeSort}
+					onFilter={onNodeFilter}
 				>
 					<Table.Column title="节点IP" dataIndex="ip" />
 					<Table.Column
@@ -589,6 +607,10 @@ const Overview = () => {
 						title="状态"
 						dataIndex="status"
 						cell={statusRender}
+						filters={[
+							{ label: '成功', value: 'True' },
+							{ label: '失败', value: 'False' }
+						]}
 					/>
 					<Table.Column
 						title="创建时间"

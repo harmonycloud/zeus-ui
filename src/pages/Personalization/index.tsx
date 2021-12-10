@@ -75,8 +75,12 @@ function Personlization(): JSX.Element {
 			Message.show(messageConfig('warning', '图片过大，请重新上传'));
 			setImgRule(true);
 			return false;
-		} 
-		if (info.type !== 'image/svg+xml' && info.type !== 'image/jpeg' && info.type !== 'image/png') {
+		}
+		if (
+			info.type !== 'image/svg+xml' &&
+			info.type !== 'image/jpeg' &&
+			info.type !== 'image/png'
+		) {
 			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
 			setImgRule(true);
 			return false;
@@ -108,7 +112,8 @@ function Personlization(): JSX.Element {
 
 	const onSubmit = () => {
 		field.validate((errors, values: any) => {
-			if (errors || bgSelect || homeSelect || loginSelect || imgRule) return;
+			if (errors || bgSelect || homeSelect || loginSelect || imgRule)
+				return;
 			delete values.backgroundPath;
 			delete values.loginLogoPath;
 			delete values.homeLogoPath;
@@ -161,29 +166,39 @@ function Personlization(): JSX.Element {
 							headers={headers}
 							beforeUpload={beforeUpload}
 							onChange={(value) => {
-								!value.length ? setBgSelect(true) : setBgSelect(false);
+								!value.length
+									? setBgSelect(true)
+									: setBgSelect(false);
 							}}
 							onSuccess={onSuccess}
 							defaultValue={[
 								{
-									name: personalization ? personalization.backgroundPath : 'IMG.PNG',
+									name: personalization
+										? personalization.backgroundPath
+										: 'IMG.PNG',
 									state: 'done',
 									size: 1024,
-									downloadURL: personalization && personalization.backgroundPath
-										? api +
-										'/images/middleware/' +
+									downloadURL:
+										personalization &&
 										personalization.backgroundPath
-										: background,
-									fileURL: personalization && personalization.backgroundPath
-										? api +
-										'/images/middleware/' +
+											? api +
+											  '/images/middleware/' +
+											  personalization.backgroundPath
+											: background,
+									fileURL:
+										personalization &&
 										personalization.backgroundPath
-										: background,
-									imgURL: personalization && personalization.backgroundPath
-										? api +
-										'/images/middleware/' +
+											? api +
+											  '/images/middleware/' +
+											  personalization.backgroundPath
+											: background,
+									imgURL:
+										personalization &&
 										personalization.backgroundPath
-										: background
+											? api +
+											  '/images/middleware/' +
+											  personalization.backgroundPath
+											: background
 								}
 							]}
 						>
@@ -195,7 +210,9 @@ function Personlization(): JSX.Element {
 						<p className="upload-info">
 							图片支持2M以下的jpg、svg、png格式
 						</p>
-						{bgSelect && <div style={{ color: '#D93026' }}>请上传图片</div>}
+						{bgSelect && (
+							<div style={{ color: '#D93026' }}>请上传图片</div>
+						)}
 					</Form.Item>
 					<Form.Item
 						label="登陆页logo"
@@ -213,18 +230,24 @@ function Personlization(): JSX.Element {
 							beforeUpload={logoBeforeUpload}
 							onSuccess={onSuccess}
 							onChange={(value) => {
-								!value.length ? setLoginSelect(true) : setLoginSelect(false);
+								!value.length
+									? setLoginSelect(true)
+									: setLoginSelect(false);
 							}}
 							defaultValue={[
 								{
-									name: personalization ? personalization.loginLogoPath : 'IMG.PNG',
+									name: personalization
+										? personalization.loginLogoPath
+										: 'IMG.PNG',
 									state: 'done',
 									size: 1024,
-									url: personalization && personalization.loginLogoPath
-										? api +
-										'/images/middleware/' +
+									url:
+										personalization &&
 										personalization.loginLogoPath
-										: logo
+											? api +
+											  '/images/middleware/' +
+											  personalization.loginLogoPath
+											: logo
 								}
 							]}
 						>
@@ -234,7 +257,9 @@ function Personlization(): JSX.Element {
 							</Button>
 						</Upload>
 						<p className="upload-info">图片支持2M以下的svg格式</p>
-						{loginSelect && <div style={{ color: '#D93026' }}>请上传图片</div>}
+						{loginSelect && (
+							<div style={{ color: '#D93026' }}>请上传图片</div>
+						)}
 					</Form.Item>
 					<Form.Item
 						label="平台名称"
@@ -286,28 +311,38 @@ function Personlization(): JSX.Element {
 							beforeUpload={logoBeforeUpload}
 							onSuccess={onSuccess}
 							onChange={(value) => {
-								!value.length ? setHomeSelect(true) : setHomeSelect(false);
+								!value.length
+									? setHomeSelect(true)
+									: setHomeSelect(false);
 							}}
 							defaultValue={[
 								{
-									name: personalization ? personalization.homeLogoPath : 'IMG.PNG',
+									name: personalization
+										? personalization.homeLogoPath
+										: 'IMG.PNG',
 									state: 'done',
 									size: 1024,
-									downloadURL: personalization && personalization.homeLogoPath
-										? api +
-										'/images/middleware/' +
+									downloadURL:
+										personalization &&
 										personalization.homeLogoPath
-										: homeLogo,
-									fileURL: personalization && personalization.homeLogoPath
-										? api +
-										'/images/middleware/' +
+											? api +
+											  '/images/middleware/' +
+											  personalization.homeLogoPath
+											: homeLogo,
+									fileURL:
+										personalization &&
 										personalization.homeLogoPath
-										: homeLogo,
-									imgURL: personalization && personalization.homeLogoPath
-										? api +
-										'/images/middleware/' +
+											? api +
+											  '/images/middleware/' +
+											  personalization.homeLogoPath
+											: homeLogo,
+									imgURL:
+										personalization &&
 										personalization.homeLogoPath
-										: homeLogo
+											? api +
+											  '/images/middleware/' +
+											  personalization.homeLogoPath
+											: homeLogo
 								}
 							]}
 						>
@@ -317,7 +352,9 @@ function Personlization(): JSX.Element {
 							</div>
 						</Upload>
 						<p className="upload-info">图片支持2M以下的svg格式</p>
-						{homeSelect && <div style={{ color: '#D93026' }}>请上传图片</div>}
+						{homeSelect && (
+							<div style={{ color: '#D93026' }}>请上传图片</div>
+						)}
 					</Form.Item>
 					<Form.Item
 						label="浏览器tab标题"

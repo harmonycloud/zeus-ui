@@ -68,11 +68,17 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			let type = filterParams[keys[0]].selectedKeys[0];
-			if (type === 'future' || type === 'updating' || type === 'needUpgradeOperator') {
+			const type = filterParams[keys[0]].selectedKeys[0];
+			if (
+				type === 'future' ||
+				type === 'updating' ||
+				type === 'needUpgradeOperator'
+			) {
 				const list = originData.filter(
 					(item) =>
-						item[keys[0]] === 'future' || item[keys[0]] === 'updating' || item[keys[0]] === 'needUpgradeOperator'
+						item[keys[0]] === 'future' ||
+						item[keys[0]] === 'updating' ||
+						item[keys[0]] === 'needUpgradeOperator'
 				);
 				setDataSource(list);
 			} else {
@@ -96,8 +102,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						? 1
 						: -1
 					: result > 0
-						? -1
-						: 1;
+					? -1
+					: 1;
 			});
 			setDataSource([...dsTemp]);
 		}
@@ -154,7 +160,10 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							style={{ color: '#3DBCFB' }}
 							onClick={() => installUpdate(index, record)}
 						>
-							升级{index === curIndex && installNum ? '中(' + installNum + 's)' : ''}
+							升级
+							{index === curIndex && installNum
+								? '中(' + installNum + 's)'
+								: ''}
 						</LinkButton>
 					) : (
 						<Tooltip
@@ -191,7 +200,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 								history.push(
 									`/middlewareRepository/versionManagement/${url[url.length - 3]
 									}`
-								)
+								);
 							}}
 						>
 							现在去升级

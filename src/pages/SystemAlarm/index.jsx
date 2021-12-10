@@ -52,7 +52,9 @@ function SystemAlarm(props) {
 	};
 
 	useEffect(() => {
-		backKey && backKey === 'highAvailability' ? setSelectedKey('highAvailability') : setSelectedKey('alarmRecord');
+		backKey && backKey === 'highAvailability'
+			? setSelectedKey('highAvailability')
+			: setSelectedKey('alarmRecord');
 	}, []);
 
 	useEffect(() => {

@@ -44,7 +44,6 @@ export default function ComponentsLoading(props) {
 	};
 
 	const onCreate = (values) => {
-		// console.log(values);
 		if (type === 'monitor') {
 			const sendData = {
 				url: {
@@ -112,32 +111,6 @@ export default function ComponentsLoading(props) {
 				}
 			});
 		}
-		// else if( type === 'ingress'){
-		// 	const sendData = {
-		// 		url:{
-		// 			clusterId:clusterId,
-		// 			componentName:'monitor',
-		// 		},
-		// 		data:{
-		// 			ingress: {
-		// 				address: values.address,
-		// 				tcp: {
-		// 				  enabled: values.enabled,
-		// 				  configMapName: values.configMapName,
-		// 				  namespace: values.namespace
-		// 				}
-		// 			},
-		// 		}
-		// 	}
-		// 	console.log(sendData);
-		// 	dockComponent(sendData).then(res=>{
-		// 		if(res.success){
-		// 			Message.show(messageConfig('success','成功','组件对接成功'));
-		// 		}else{
-		// 			Message.show(messageConfig('error','失败',res));
-		// 		}
-		// 	})
-		// }
 	};
 
 	const deployComponents = (values) => {
@@ -195,15 +168,6 @@ export default function ComponentsLoading(props) {
 				}
 			});
 		}
-		// else if(type === 'ingress'){
-		// 	deployComponent({clusterId:clusterId,componentName:'ingress'}).then(res=>{
-		// 		if(res.success){
-		// 			Message.show(messageConfig('success','成功','组件部署成功'));
-		// 		}else{
-		// 			Message.show(messageConfig('error','失败',res));
-		// 		}
-		// 	})
-		// }
 	};
 
 	return (
@@ -232,15 +196,6 @@ export default function ComponentsLoading(props) {
 					onCancel={() => setBackupVisible(false)}
 				/>
 			)}
-			{/* {
-				type === 'ingress' &&
-				ingressVisible === true &&
-				<IngressForm
-					visible={ingressVisible}
-					onCreate={onCreate}
-					onCancel={() => setIngressVisible(false)}
-				/>
-			} */}
 			{type === 'monitor' && deployMonitorVisible === true && (
 				<DeployMonitorForm
 					visible={deployMonitorVisible}

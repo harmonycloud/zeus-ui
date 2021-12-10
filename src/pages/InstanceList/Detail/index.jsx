@@ -59,8 +59,8 @@ const InstanceDetails = (props) => {
 	const [reason, setReason] = useState('');
 	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
-	const location = useLocation();	
-	const backKey = storage.getLocal('backKey')
+	const location = useLocation();
+	const backKey = storage.getLocal('backKey');
 
 	useEffect(() => {
 		if (
@@ -69,7 +69,6 @@ const InstanceDetails = (props) => {
 		) {
 			getData(globalVar.cluster.id, globalVar.namespace.name);
 		}
-		
 	}, [globalVar]);
 
 	useEffect(() => {
@@ -83,8 +82,12 @@ const InstanceDetails = (props) => {
 				window.location.reload();
 			}
 		}
-		backKey ? backKey === 'alarm' && setSelectedKey('alarm') : setSelectedKey('basicInfo');
-		backKey ? backKey === 'backupRecovery' && setSelectedKey('backupRecovery') : setSelectedKey('basicInfo');
+		backKey
+			? backKey === 'alarm' && setSelectedKey('alarm')
+			: setSelectedKey('basicInfo');
+		backKey
+			? backKey === 'backupRecovery' && setSelectedKey('backupRecovery')
+			: setSelectedKey('basicInfo');
 	}, [location]);
 
 	const menuSelect = (selectedKeys) => {
