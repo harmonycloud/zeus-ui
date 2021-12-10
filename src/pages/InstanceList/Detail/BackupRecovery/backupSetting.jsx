@@ -158,9 +158,9 @@ function BackupSetting(props) {
 					typeof values.time !== 'string'
 						? cron
 						: `${values.time.substring(
-								3,
-								5
-						  )} ${values.time.substring(0, 2)} ? ? ${week}`
+							3,
+							5
+						)} ${values.time.substring(0, 2)} ? ? ${week}`
 			};
 			if (backupObj !== 'serve') sendData.pod = backupObj;
 			addBackupConfig(sendData).then((res) => {
@@ -190,9 +190,9 @@ function BackupSetting(props) {
 						typeof values.time !== 'string'
 							? cron
 							: `${values.time.substring(
-									3,
-									5
-							  )} ${values.time.substring(0, 2)} ? ? ${week}`
+								3,
+								5
+							)} ${values.time.substring(0, 2)} ? ? ${week}`
 				};
 				updateBackupConfig(sendData).then((res) => {
 					if (res.success) {
@@ -219,15 +219,24 @@ function BackupSetting(props) {
 				} else {
 					sendData.pod = listData.pods.map((item) => item.podName);
 				}
-				backupNow(sendData).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份恢复成功')
-						);
-						window.history.back();
-						storage.setLocal('backKey', 'backupRecovery');
-					} else {
-						Message.show(messageConfig('error', '失败', res));
+				Dialog.show({
+					title: '操作确认',
+					content: '请确认是否覆盖？',
+					onOk: () => {
+						backupNow(sendData)
+							.then((res) => {
+								if (res.success) {
+									Message.show(
+										messageConfig('success', '成功', '备份恢复成功，5秒之后跳转')
+									);
+									setTimeout(() => {
+										window.history.back();
+										storage.setLocal('backKey', 'backupRecovery');
+									}, 5000);
+								} else {
+									Message.show(messageConfig('error', '失败', res));
+								}
+							})
 					}
 				});
 			}
@@ -306,7 +315,7 @@ function BackupSetting(props) {
 								onChange={(value) => {
 									setChecks(value);
 									value.sort((a, b) => a - b).join(',') ===
-									'0,1,2,3,4,5,6'
+										'0,1,2,3,4,5,6'
 										? setAllChecked(true)
 										: setAllChecked(false);
 								}}
@@ -325,7 +334,7 @@ function BackupSetting(props) {
 						</Form.Item>
 					</Form>
 				) : null}
-				{!isEdit || record ? (
+				{!isEdit || record ?
 					<div
 						style={{
 							padding: '16px 9px',
@@ -339,48 +348,39 @@ function BackupSetting(props) {
 						>
 							确定
 						</Button>
-						<Button
-							onClick={() => {
-								window.history.back();
-								storage.setLocal('backKey', 'backupRecovery');
-							}}
+						<Button onClick={() => {
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
+						}}
 						>
 							取消
 						</Button>
-					</div>
-				) : (
+					</div> :
 					<div style={{ padding: '16px 9px' }}>
-						{listData.type === 'mysql' && (
-							<Button
-								onClick={() =>
-									history.push(
-										'/serviceList/mysqlCreate/MySQL/mysql/' +
-											listData.chartVersion
-									)
-								}
-								type="primary"
-								style={{ marginRight: '9px' }}
-							>
-								克隆
-							</Button>
-						)}
-						<Button
-							onClick={onOk}
+						{listData.type === 'mysql' && <Button onClick={() => {
+							console.log(listData);
+							if (!backupObj) {
+								Message.show(messageConfig('warning', '提示', '请选择实例对象'));
+								return;
+							} else {
+								history.push(`/serviceList/mysqlCreate/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`);
+							}
+						}}
 							type="primary"
 							style={{ marginRight: '9px' }}
 						>
-							覆盖
-						</Button>
-						<Button
-							onClick={() => {
-								window.history.back();
-								storage.setLocal('backKey', 'backupRecovery');
-							}}
+							克隆
+						</Button>}
+						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
+						<Button onClick={() => {
+							window.history.back();
+							storage.setLocal('backKey', 'backupRecovery');
+						}}
 						>
 							取消
 						</Button>
 					</div>
-				)}
+				}
 			</Content>
 		</Page>
 	);

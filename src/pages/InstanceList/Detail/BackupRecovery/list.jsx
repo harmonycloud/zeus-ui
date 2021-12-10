@@ -55,22 +55,7 @@ export default function List(props) {
 
 	const backupOnNow = () => {
 		if (listData.type === 'elasticsearch') {
-			const list = [];
-			for (let i in listData.quota) {
-				list.push(listData.quota[i].storageClassName);
-			}
-			if (list.includes('local-path')) {
-				Message.show(
-					messageConfig(
-						'error',
-						'失败',
-						'存储类型为local-path时不支持立即备份功能'
-					)
-				);
-				return;
-			}
-		} else {
-			if (listData.type === 'mysql' && !listData.mysqlDTO.isLvmStorage) {
+			if (!listData.isAllLvmStorage) {
 				Message.show(
 					messageConfig(
 						'error',
@@ -80,14 +65,13 @@ export default function List(props) {
 				);
 				return;
 			}
-			if (
-				listData.quota[listData.type].storageClassName === 'local-path'
-			) {
+		} else {
+			if (listData.type === 'mysql' && !listData.isAllLvmStorage) {
 				Message.show(
 					messageConfig(
 						'error',
 						'失败',
-						'存储类型为local-path时不支持立即备份功能'
+						'存储不使用lvm时，不支持立即备份功能'
 					)
 				);
 				return;
