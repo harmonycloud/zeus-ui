@@ -208,10 +208,9 @@ export default function Config(props) {
 							messageConfig(
 								'success',
 								'成功',
-								`${
-									checked
-										? '备份设置开启成功'
-										: '备份设置关闭成功'
+								`${checked
+									? '备份设置开启成功'
+									: '备份设置关闭成功'
 								}`
 							)
 						);
@@ -236,8 +235,8 @@ export default function Config(props) {
 					? 1
 					: -1
 				: result > 0
-				? -1
-				: 1;
+					? -1
+					: 1;
 		});
 		setBackups([...tempDataSource]);
 	};
@@ -247,6 +246,29 @@ export default function Config(props) {
 			<Button
 				type="primary"
 				onClick={() => {
+					if (listData.type === 'elasticsearch') {
+						if (!listData.isAllLvmStorage) {
+							Message.show(
+								messageConfig(
+									'error',
+									'失败',
+									'存储不使用lvm时，不支持立即备份功能'
+								)
+							);
+							return;
+						}
+					} else {
+						if (listData.type === 'mysql' && !listData.isAllLvmStorage) {
+							Message.show(
+								messageConfig(
+									'error',
+									'失败',
+									'存储不使用lvm时，不支持立即备份功能'
+								)
+							);
+							return;
+						}
+					}
 					history.push('/disasterBackup/dataSecurity/addBackup');
 					storage.setSession('detail', props);
 				}}

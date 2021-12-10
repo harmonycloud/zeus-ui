@@ -104,7 +104,8 @@ function Visualization(props) {
 		editConfiguration,
 		setEsVisible,
 		selectObj,
-		backup
+		backup,
+		record
 	} = props;
 	const location = useLocation();
 	const { pathname } = location;
@@ -391,7 +392,7 @@ function Visualization(props) {
 							height: 24,
 							img: select
 						},
-						visible: false,
+						visible: record && cfg.podName === selectObj ? true : false,
 						name: 'select-image'
 					});
 					const hasChildren = cfg.children && cfg.children.length > 0;
