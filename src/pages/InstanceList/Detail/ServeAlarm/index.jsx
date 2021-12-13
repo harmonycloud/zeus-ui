@@ -238,6 +238,10 @@ function Rules(props) {
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
+							}else{
+								Message.show(
+									messageConfig('error', '失败', res.errorMsg || '修改失败')
+								)
 							}
 						});
 					} else {
@@ -260,6 +264,10 @@ function Rules(props) {
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
+							}else{
+								Message.show(
+									messageConfig('error', '失败', res.errorMsg || '修改失败')
+								)
 							}
 						});
 					}

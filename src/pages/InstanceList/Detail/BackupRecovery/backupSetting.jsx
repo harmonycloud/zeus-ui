@@ -270,6 +270,7 @@ function BackupSetting(props) {
 						isEdit={isEdit}
 						selectObj={selectObj}
 						backup={backup}
+						record={record}
 					/>
 				)}
 				{!isEdit || record ? (

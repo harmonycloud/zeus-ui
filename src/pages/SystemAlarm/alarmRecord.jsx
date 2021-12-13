@@ -67,6 +67,7 @@ function AlarmRecord(props) {
 			};
 			getEvent(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);
+				setOriginData(res.data ? res.data.list : []);
 				setTotal(res.data ? res.data.total : 0);
 			});
 		} else {
@@ -77,7 +78,8 @@ function AlarmRecord(props) {
 				middlewareName,
 				clusterId,
 				namespace,
-				lay: 'service'
+				lay: 'service',
+				keyword
 			};
 			getEvent(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);

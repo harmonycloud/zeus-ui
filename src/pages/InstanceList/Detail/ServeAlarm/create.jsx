@@ -78,6 +78,7 @@ function CreateAlarm(props) {
 	const [isRule, setIsRule] = useState();
 	const [dingDisabled, setDingDisabled] = useState(false);
 	const [mailDisabled, setMailDisabled] = useState(false);
+	const [isReady, setIsReady] = useState(false);
 
 	const getCanUse = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -240,6 +241,8 @@ function CreateAlarm(props) {
 	useEffect(() => {
 		if (record) {
 			setAlarmRules([{ ...record, severity: record.labels.severity }]);
+			record.ding ? setDingChecked(true) : setDingChecked(false);
+			record.mail ? setMailChecked(true) : setMailChecked(false);
 		} else {
 			if (alarmType === 'system') {
 				setAlarms([
@@ -266,6 +269,7 @@ function CreateAlarm(props) {
 		getUsers().then((res) => {
 			// console.log(res);
 			if (!res.data) return;
+			const user = [];
 			res.data.userBy &&
 				res.data.userBy.length &&
 				res.data.userBy.find((item) => item.email) &&
@@ -276,8 +280,13 @@ function CreateAlarm(props) {
 				);
 			res.data.userBy &&
 				res.data.userBy.length &&
-				res.data.userBy.find((item) => item.email) &&
-				setInsertUser(res.data.userBy.filter((item) => item.email));
+				res.data.users.map((item) => {
+					res.data.userBy.map((arr) => {
+						item.userId === arr.userId && user.push(item);
+					});
+				});
+			setIsReady(true);
+			setInsertUser(user);
 			setUsers(
 				res.data.users.map((item, index) => {
 					return {
@@ -504,14 +513,15 @@ function CreateAlarm(props) {
 					message: item.content
 				};
 				item.lay = 'system';
-				item.enable = 0;
-				// delete item.severity;
+				record ? (item.enable = record.enable) : (item.enable = 0);
+				dingChecked ? (item.ding = 'ding') : delete item.ding;
+				mailChecked ? (item.mail = 'mail') : delete item.mail;
 				return item;
 			});
 			if (systemId) {
 				if (flag[0]) {
-					if (dingChecked) {
-						if (insertUser) {
+					if (mailChecked) {
+						if (insertUser && insertUser.length) {
 							onCreate(data);
 						} else {
 							Message.show(
@@ -536,12 +546,13 @@ function CreateAlarm(props) {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
 				item.enable = 0;
-				// delete item.severity;
+				dingChecked ? (item.ding = 'ding') : (item.ding = null);
+				mailChecked ? (item.mail = 'mail') : (item.mail = null);
 				return item;
 			});
 			if (flag[0]) {
-				if (dingChecked) {
-					if (insertUser) {
+				if (mailChecked) {
+					if (insertUser && insertUser.length) {
 						onCreate(list);
 					} else {
 						Message.show(
@@ -948,21 +959,24 @@ function CreateAlarm(props) {
 					<Checkbox
 						label="邮箱"
 						style={{ margin: '0 30px 0 20px' }}
+						checked={mailChecked}
 						onChange={(checked) => setMailChecked(checked)}
 						disabled={mailDisabled}
 					/>
 					<Checkbox
 						label="钉钉"
+						checked={dingChecked}
 						onChange={(checked) => setDingChecked(checked)}
 						disabled={dingDisabled}
 					/>
 				</div>
-				{mailChecked && (
+				{mailChecked && isReady && (
 					<div className="transfer">
 						<div className="transfer-header">
 							<p className="transfer-title left">用户管理</p>
 							<p className="transfer-title">用户管理</p>
 						</div>
+						{console.log(selectUser)}
 						<Transfer
 							showSearch
 							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
