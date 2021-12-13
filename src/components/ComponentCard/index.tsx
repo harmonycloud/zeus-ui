@@ -19,6 +19,7 @@ interface ComponentCardProps {
 	onRefresh: () => void;
 	setRefreshCluster: (flag: boolean) => void;
 	createTime: string | null;
+	seconds: number;
 }
 export interface SendDataProps {
 	clusterId: string;
@@ -68,7 +69,8 @@ const ComponentCard = (props: ComponentCardProps) => {
 		clusterId,
 		onRefresh,
 		setRefreshCluster,
-		createTime
+		createTime,
+		seconds
 	} = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
@@ -173,6 +175,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 								: setLvmVisible(true);
 						}}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 1:
@@ -188,6 +191,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 2:
@@ -206,6 +210,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 							border: 'none'
 						}}
 						onRefresh={onRefresh}
+						seconds={seconds}
 					/>
 				);
 			case 3:
@@ -229,6 +234,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						centerText="卸载"
 						centerHandle={uninstallComponent}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 4:
@@ -252,6 +258,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						centerText="卸载"
 						centerHandle={uninstallComponent}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 5:
@@ -269,6 +276,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 							border: 'none'
 						}}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 6:
@@ -292,6 +300,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						centerText="卸载"
 						centerHandle={uninstallComponent}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			default:

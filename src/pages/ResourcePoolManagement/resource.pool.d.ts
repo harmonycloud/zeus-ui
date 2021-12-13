@@ -56,6 +56,7 @@ export interface ComponentProp {
 	createTime: string | null;
 	vgName: string | null;
 	size: number | null;
+	seconds: number;
 }
 
 export interface IngressItemProps {
@@ -71,4 +72,5 @@ export interface IngressItemProps {
 	status: number;
 	id: number;
 	createTime: string | null;
+	seconds: number;
 }

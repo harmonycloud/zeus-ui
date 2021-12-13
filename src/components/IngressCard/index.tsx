@@ -14,9 +14,11 @@ interface IngressCardProps {
 	clusterId: string;
 	data?: IngressItemProps;
 	createTime: string | null;
+	seconds: number;
 }
 const IngressCard = (props: IngressCardProps) => {
-	const { status, title, onRefresh, clusterId, data, createTime } = props;
+	const { status, title, onRefresh, clusterId, data, createTime, seconds } =
+		props;
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 
@@ -63,6 +65,7 @@ const IngressCard = (props: IngressCardProps) => {
 						status={-1}
 						addTitle="新增负载均衡"
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 0:
@@ -79,6 +82,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightHandle={() => setAccessVisible(false)}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 1:
@@ -95,6 +99,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 2:
@@ -114,6 +119,7 @@ const IngressCard = (props: IngressCardProps) => {
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						onRefresh={onRefresh}
+						seconds={seconds}
 					/>
 				);
 			case 3:
@@ -130,6 +136,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 4:
@@ -146,6 +153,7 @@ const IngressCard = (props: IngressCardProps) => {
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 5:
@@ -164,6 +172,7 @@ const IngressCard = (props: IngressCardProps) => {
 						}}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			case 6:
@@ -176,13 +185,9 @@ const IngressCard = (props: IngressCardProps) => {
 						actionCount={1}
 						centerText="卸载"
 						centerHandle={() => uninstallComponent('install')}
-						// centerStyle={{
-						// 	background: '#C80000',
-						// 	color: '#ffffff',
-						// 	border: 'none'
-						// }}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
+						seconds={seconds}
 					/>
 				);
 			default:
