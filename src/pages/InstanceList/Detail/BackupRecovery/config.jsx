@@ -47,6 +47,7 @@ export default function Config(props) {
 	const [visible, setVisible] = useState(false);
 	const [backups, setBackups] = useState([]);
 	const history = useHistory();
+	const [keyword, setKeyword] = useState();
 	const [backupData, setBackupData] = useState({
 		configed: false,
 		limitRecord: 0,
@@ -72,7 +73,8 @@ export default function Config(props) {
 			clusterId,
 			namespace,
 			middlewareName: listData.name,
-			type: listData.type
+			type: listData.type,
+			keyword
 		};
 		getBackupConfig(sendData).then((res) => {
 			if (res.success) {
@@ -401,6 +403,10 @@ export default function Config(props) {
 		);
 	};
 
+	const onRefresh = () => {
+		getData();
+	}
+
 	return (
 		<div style={{ marginTop: 24 }}>
 			<Table
@@ -408,16 +414,16 @@ export default function Config(props) {
 				exact
 				fixedBarExpandWidth={[24]}
 				showRefresh
-				onRefresh={getData}
+				onRefresh={onRefresh}
 				affixActionBar
 				primaryKey="key"
 				operation={Operation}
 				onSort={onSort}
 				search={{
-					placeholder: '请输入备份源名称检索'
-					// onSearch: handleSearch,
-					// onChange: handleChange,
-					// value: keyword
+					placeholder: '请输入备份源名称检索',
+					onSearch: onRefresh,
+					onChange: (value) => setKeyword(value),
+					value: keyword
 				}}
 				searchStyle={{
 					width: '360px'
@@ -427,9 +433,10 @@ export default function Config(props) {
 					title="备份对象"
 					dataIndex="backupType"
 					cell={roleRender}
+					width={100}
 				/>
-				<Table.Column title="备份源名称" dataIndex="sourceName" />
-				<Table.Column title="备份保留个数" dataIndex="limitRecord" />
+				<Table.Column title="备份源名称" dataIndex="sourceName" width={100} />
+				<Table.Column title="备份保留个数" dataIndex="limitRecord" width={110} />
 				<Table.Column
 					title="备份周期"
 					dataIndex="cron"
@@ -445,14 +452,15 @@ export default function Config(props) {
 					title="执行状态"
 					dataIndex="pause"
 					cell={statusRender}
-					width={150}
+					width={100}
 				/>
 				<Table.Column
 					title="备份时间"
 					dataIndex="createTime"
 					sortable
+					width={150}
 				/>
-				<Table.Column title="操作" cell={actionRender} width={180} />
+				<Table.Column title="操作" cell={actionRender} width={100} />
 			</Table>
 			{/* <div className="backup-display-content">
 				<div className="backup-setting">

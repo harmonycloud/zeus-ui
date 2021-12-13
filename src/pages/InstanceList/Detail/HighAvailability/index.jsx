@@ -362,7 +362,7 @@ export default function HighAvailability(props) {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				setPods(res.data.pods);
-				setTopoData(res.data.podInfoGroup);
+				setTopoData(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}

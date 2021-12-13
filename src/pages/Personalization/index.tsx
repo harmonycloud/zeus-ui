@@ -61,8 +61,13 @@ function Personlization(): JSX.Element {
 					document.title =
 						res.data && res.data.title ? res.data.title : 'Zeus';
 				} else {
-					field.reset();
-					field.setValues({ status: '0' });
+					field.setValues({ 
+						status: '0',
+						title: 'Zeus',
+						slogan: '我是Slogan，让IT更美好',
+						copyrightNotice: 'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
+						platformName: 'Zeus | 中间件管理一体化平台'
+					});
 				}
 			}
 		});
