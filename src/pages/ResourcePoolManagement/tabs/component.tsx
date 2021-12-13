@@ -64,6 +64,7 @@ const Component = (props: ComponentProps) => {
 								title={item.component}
 								status={item.status}
 								createTime={item.createTime}
+								seconds={item.seconds}
 								clusterId={id}
 								onRefresh={getData}
 							/>

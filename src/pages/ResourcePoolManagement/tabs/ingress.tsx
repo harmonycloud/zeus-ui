@@ -59,6 +59,7 @@ const Ingress = (props: IngressProps) => {
 						status={-1}
 						onRefresh={getData}
 						clusterId={id}
+						seconds={0}
 						createTime={null}
 					/>
 					{ingresses.map((item, index) => {
@@ -68,6 +69,7 @@ const Ingress = (props: IngressProps) => {
 								title={item.ingressClassName}
 								status={item.status}
 								createTime={item.createTime}
+								seconds={item.seconds}
 								onRefresh={getData}
 								clusterId={id}
 								data={item}

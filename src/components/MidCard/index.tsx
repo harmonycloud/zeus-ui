@@ -19,9 +19,9 @@ interface MidCardProps {
 	centerStyle?: any;
 	addTitle?: string;
 	titleStyle?: any;
-	loading?: number;
 	createTime: string | null;
 	onRefresh?: () => void;
+	seconds: number;
 }
 export const iconRender = (status: number | undefined) => {
 	switch (status) {
@@ -78,9 +78,9 @@ const MidCard = (props: MidCardProps) => {
 		centerStyle,
 		addTitle,
 		titleStyle,
-		loading,
 		onRefresh,
-		createTime
+		createTime,
+		seconds
 	} = props;
 	const [borderColor, setBorderColor] = useState<string>('#E9E9E9');
 	const [titleColor, setTitleColor] = useState<string>('#333333');
@@ -88,16 +88,17 @@ const MidCard = (props: MidCardProps) => {
 	const [countDown, setCountDown] = useState<number>(-1);
 	const [time, setTime] = useState<number>(0);
 	useEffect(() => {
-		if (createTime && status === 2) {
-			// console.log(createTime);
-			const plus1min = moment(createTime).valueOf() + 39000;
-			const now = moment(new Date()).valueOf();
-			// console.log(now, plus1min, pre);
-			if (now < plus1min) {
-				const countDownTemp = Math.trunc((plus1min - now) / 1000);
-				// console.log(countDownTemp);
-				setCountDown(countDownTemp);
-			}
+		if (seconds !== 0 && status === 2) {
+			const msToSecond = Math.floor(seconds / 1000);
+			// const plus1min = moment(createTime).valueOf() + 39000;
+			// const now = moment(new Date()).valueOf();
+			// console.log(now, plus1min);
+			// if (now < plus1min) {
+			// 	const countDownTemp = Math.trunc((plus1min - now) / 1000);
+			// 	console.log(countDownTemp);
+			// 	setCountDown(countDownTemp);
+			// }
+			setCountDown(60 - msToSecond);
 		} else {
 			setCountDown(-1);
 		}
@@ -107,7 +108,6 @@ const MidCard = (props: MidCardProps) => {
 	}, [countDown]);
 	useEffect(() => {
 		let timer: any = null;
-		// console.log(countDown);
 		if (countDown !== -1) {
 			let count = time;
 			timer = setInterval(() => {
@@ -116,7 +116,6 @@ const MidCard = (props: MidCardProps) => {
 					timer = null;
 					onRefresh && onRefresh();
 				} else {
-					// console.log(count);
 					setTime(count--);
 				}
 			}, 800);
