@@ -1,8 +1,38 @@
 .role-modal{
-    width: 420px;
-    height: 400px;
-    .next-dialog-body{
-        height: 298px;
-        overflow-y: auto;
-    }
+	width: 540px;
+	height: 430px;
+	.next-dialog-body{
+		height: 320px;
+		overflow-y: auto;
+		& > p {
+			line-height: 32px;
+		}
+	}
+}
+.role-management-role-content {
+	border: 1px solid #dedede;
+	padding: 10px;
+}
+.role-management-content {
+	display: flex;
+	.role-management-namespace,
+	.role-management-cluster {
+		height: 200px;
+		width: 243px;
+		border: 1px solid #dedede;
+		border-right: none;
+		.role-management-title{
+			height: 32px;
+			line-height: 32px;
+			padding-left: 8px;
+			border-bottom:1px solid #dedede ;
+		}
+		.role-management-check-content{
+			padding: 6px 8px;
+			overflow-y: auto;
+		}
+	}
+	.role-management-namespace {
+		border-right: 1px solid #dedede;
+	}
 }

@@ -1,10 +1,27 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Tree, Dialog, Message } from '@alicloud/console-components';
+import { Tree, Dialog, Message, Checkbox } from '@alicloud/console-components';
 import { roleProps, roleTree } from './role';
 import messageConfig from '@/components/messageConfig';
 import { updateRole } from '@/services/role';
 
+const { Group: CheckboxGroup } = Checkbox;
+const list = [
+	{
+		value: 'apple',
+		label: 'Apple',
+		disabled: false
+	},
+	{
+		value: 'pear',
+		label: 'Pear'
+	},
+	{
+		value: 'orange',
+		label: 'Orange',
+		disabled: true
+	}
+];
 interface RolePermissionProps {
 	visible: true;
 	onCreate: () => void;
@@ -140,6 +157,10 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 		}
 	};
 
+	const onChange = (selectedItems: string[]) => {
+		console.log(selectedItems);
+	};
+
 	return (
 		<Dialog
 			title="分配角色"
@@ -149,13 +170,41 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			className="role-modal"
 			onOk={onOk}
 		>
-			<Tree
-				defaultExpandAll
-				checkable
-				checkedKeys={checkedKeys}
-				onCheck={handleCheck}
-				dataSource={treeData}
-			/>
+			<p>菜单权限分配：</p>
+			<div className="role-management-role-content">
+				<Tree
+					defaultExpandAll
+					checkable
+					checkedKeys={checkedKeys}
+					onCheck={handleCheck}
+					dataSource={treeData}
+				/>
+			</div>
+			<p>资源池权限分配：</p>
+			<div className="role-management-content">
+				<div className="role-management-cluster">
+					<div className="role-management-title">资源池</div>
+					<div className="role-management-check-content">
+						<CheckboxGroup
+							defaultValue={['apple']}
+							dataSource={list}
+							onChange={onChange}
+							itemDirection="ver"
+						/>
+					</div>
+				</div>
+				<div className="role-management-namespace">
+					<div className="role-management-title">资源分区</div>
+					<div className="role-management-check-content">
+						<CheckboxGroup
+							defaultValue={['apple']}
+							dataSource={list}
+							onChange={onChange}
+							itemDirection="ver"
+						/>
+					</div>
+				</div>
+			</div>
 		</Dialog>
 	);
 }
