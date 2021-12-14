@@ -6,6 +6,7 @@ export interface roleProps {
 	name?: string;
 	createTime: string | null | undefined;
 	menu: any[] | undefined;
+	clusterList: any[];
 	[propsName: string]: any;
 }
 export interface roleTree {

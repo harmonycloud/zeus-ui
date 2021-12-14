@@ -30,6 +30,13 @@
 		.role-management-check-content{
 			padding: 6px 8px;
 			overflow-y: auto;
+			.role-management-label {
+				height: 28px;
+				line-height: 28px;
+			}
+			.role-management-checkout-content{
+				padding-left: 20px;
+			}
 		}
 	}
 	.role-management-namespace {
