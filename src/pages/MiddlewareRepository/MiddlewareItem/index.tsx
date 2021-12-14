@@ -111,7 +111,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 		menu
 	} = props;
 	const history = useHistory();
-	console.log(setMenuRefresh, menu);
+	// console.log(setMenuRefresh, menu);
 	const toVersion = () => {
 		history.push(`/middlewareRepository/versionManagement/${chartName}`);
 	};
