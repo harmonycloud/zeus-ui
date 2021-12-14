@@ -86,7 +86,7 @@ const InstanceDetails = (props) => {
 			? backKey === 'alarm' && setSelectedKey('alarm')
 			: setSelectedKey('basicInfo');
 		backKey
-			? backKey === 'backupRecovery' && setSelectedKey('backupRecovery')
+			? backKey.indexOf('backupRecovery') !== -1 && setSelectedKey('backupRecovery')
 			: setSelectedKey('basicInfo');
 	}, [location]);
 

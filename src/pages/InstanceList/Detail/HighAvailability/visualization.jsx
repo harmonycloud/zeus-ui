@@ -91,7 +91,7 @@ const modelMap = {
 	'2m-noslave': '两主',
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
-	null: ''
+	null: '未知'
 };
 
 function Visualization(props) {
@@ -242,10 +242,12 @@ function Visualization(props) {
 						const circle = group.addShape('rect', {
 							attrs: {
 								stroke: '#666',
+								fill: '#fff',
 								width: 60,
 								height: 30,
 								radius: 15,
 								y: 35,
+								x: cfg.level === 'pod' ? cfg.children.length > 1 ? 30: 100 : 0,
 								cursor: 'pointer'
 							},
 							modelId: cfg.id,
@@ -253,22 +255,48 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text: cfg.level === 'serve' ? serveRender() : roleRender(cfg.adentify, '', cfg),
+								text: cfg.level === 'serve' ? cfg.adentify : roleRender(cfg.adentify, '', cfg),
 								fill: 'rgba(0, 0, 0, .65)',
 								fontSize: 10,
 								textAlign: 'center',
 								width: 60,
 								height: 30,
-								x: 30,
+								x: cfg.level === 'pod' ? cfg.children.length > 1 ? 60: 130 : 30,
+								// x: 35,
 								y: 55
 							},
 							modelId: cfg.id,
 							name: 'circle-text'
 						});
+						if (cfg.level === 'serve') {
+							group.addShape('rect', {
+								attrs: {
+									stroke: '#A3B1BF',
+									x: 60,
+									y: 50,
+									width: cfg.children.length > 1 ? 100 : 26,
+									height: 0
+								},
+								name: 'line'
+							});
+						}
+						if (cfg.level === 'pod') {
+							group.addShape('rect', {
+								attrs: {
+									stroke: '#A3B1BF',
+									x: cfg.children.length > 1 ? 90 : 160,
+									y: 50,
+									width: cfg.children.length > 1 ? 130 : 60,
+									height: 0
+								},
+								name: 'line'
+							});
+						}
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
-									x: 245,
+									x: cfg.level === 'serve' ? cfg.children.length > 1 ? 152: 86 : 217,
+									// x: 120,
 									y: 42,
 									width: 16,
 									height: 16,
@@ -282,7 +310,8 @@ function Visualization(props) {
 							});
 							group.addShape('text', {
 								attrs: {
-									x: 253,
+									x: cfg.level === 'serve' ? cfg.children.length > 1 ? 160: 94 : 225,
+									// x: 128,
 									y: 48,
 									textAlign: 'center',
 									textBaseline: 'middle',
@@ -309,7 +338,6 @@ function Visualization(props) {
 							},
 							name: 'rect-shape'
 						});
-						const boxWidth = box.getBBox().width;
 						group.addShape('rect', {
 							attrs: {
 								fill: podStatus.filter(
@@ -412,7 +440,7 @@ function Visualization(props) {
 								height: 32
 							},
 							visible: !cfg.depth,
-							name: 'status-image'
+							name: 'type-image'
 						});
 						group.addShape('rect', {
 							attrs: {
@@ -463,10 +491,11 @@ function Visualization(props) {
 								height: 24,
 								img: select
 							},
-							// visible: record && cfg.podName === selectObj ? true : false,
-							visible: false,
+							visible: record && (cfg.podName === selectObj || selectObj === cfg.name) ? true : false,
+							// visible: false,
 							name: 'select-image'
 						});
+						console.log(cfg.podName, selectObj);
 						const hasChildren = cfg.children && cfg.children.length > 0;
 						if (!hasChildren && cfg.depth) {
 							group.addShape('rect', {
@@ -710,7 +739,7 @@ function Visualization(props) {
 				const endPoint = cfg.endPoint;
 
 				const { style } = cfg;
-				// console.log(startPoint, endPoint);
+				console.log(cfg, startPoint, endPoint);
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
@@ -784,28 +813,28 @@ function Visualization(props) {
 				getHeight: function getHeight() {
 					return 100;
 				},
-				getWidth: function getWidth() {
-					return 220;
+				getWidth: function getWidth(d) {
+					return d.level==='serve' ? 60 : 220;
 				},
 				getVGap: function getVGap() {
 					return 20;
 				},
-				getHGap: function getHGap() {
-					return 80;
+				getHGap: function getHGap(d) {
+					return 20;
 				}
 			}
 		});
 		const pods = [];
-		topoData.pods.forEach(el => {
-		   if(!el.role) el.role = roleRender('','', el);
-           if(pods.every(els => els.role != el.role)) pods.push({ adentify: el.role, role: el.role, podName: el.podName, level: 'pod'}); 
+		topoData.pods && topoData.pods.forEach(el => {
+			if (!el.role) el.role = roleRender('', '', el);
+			if (pods.every(els => els.role != el.role)) pods.push({ adentify: el.role, role: el.role, podName: el.podName, level: 'pod' });
 		})
 		pods.forEach(el => (el.children = topoData.pods.filter(els => els.role == el.role)));
 		const res = {
 			id: 'tree',
 			name: serverData.name,
 			children: [{
-				adentify: serverData.mode,
+				adentify: serveRender(),
 				level: 'serve',
 				children: pods
 			}]
@@ -938,23 +967,6 @@ function Visualization(props) {
 							str._cfg.states.find((obj) => obj === 'select')
 						)
 					) {
-						// nodes.map((obj) => {
-						// 	// graph.setItemState(obj, 'select', true);
-						// 	const x = obj.getContainer();
-						// 	const y = x.find(
-						// 		(e) => e.get('name') === 'rect-shape'
-						// 	);
-						// 	y.cfg.attrs.fill = '#aaa';
-						// 	y.attrs.fill = '#aaa';
-						// 	console.log(y);
-						// });
-						// const group = item.getContainer();
-						// const box = group.find((e) => e.get('name') === 'rect-shape');
-						// graph.updateItem(box, {
-						// 	style: {
-						// 		fill: 'red'
-						// 	}
-						// });
 						return;
 					}
 					!evt.item._cfg.model.depth
@@ -1105,20 +1117,26 @@ function Visualization(props) {
 							[1, 0.5]
 						]
 			},
+			defaultEdge: {
+				type: 'polyline',
+				style: {
+					stroke: '#A3B1BF'
+				}
+			},
 			getId: function getId(d) {
 				return d.id;
 			},
 			getHeight: function getHeight() {
 				return 100;
 			},
-			getWidth: function getWidth() {
-				return 220;
+			getWidth: function getWidth(d) {
+				return d.level==='serve' ? 60 : 220;
 			},
 			getVGap: function getVGap() {
-				return 30;
+				return 20;
 			},
-			getHGap: function getHGap() {
-				return 80;
+			getHGap: function getHGap(d) {
+				return 20;
 			}
 		});
 		window.graph.fitCenter();

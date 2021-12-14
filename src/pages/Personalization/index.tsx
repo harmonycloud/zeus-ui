@@ -14,8 +14,8 @@ import {
 import Confirm from '@alicloud/console-components-confirm';
 import { personalizationProps } from './personalization';
 import background from '../../assets/images/login_bg.svg';
-import homeLogo from '@/assets/images/logo.svg';
-import logo from '@/assets/images/navbar/zeus-logo-small.svg';
+import logo from '@/assets/images/logo.svg';
+import homeLogo from '@/assets/images/navbar/zeus-logo-small.svg';
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
 import { api } from '@/api.json';
@@ -291,8 +291,8 @@ function Personlization(): JSX.Element {
 					<Form.Item
 						label="版本声明"
 						labelTextAlign="left"
-						maxLength={30}
-						minmaxLengthMessage="长度不能超过30个字符"
+						maxLength={60}
+						minmaxLengthMessage="长度不能超过60个字符"
 					>
 						<Input
 							name="copyrightNotice"

@@ -132,7 +132,7 @@ function BackupSetting(props) {
 	const getPodList = (sendData) => {
 		getPods(sendData).then((res) => {
 			if (res.success) {
-				setTopoData(res.data.podInfoGroup);
+				setTopoData(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -170,7 +170,7 @@ function BackupSetting(props) {
 						messageConfig('success', '成功', '备份设置成功')
 					);
 					window.history.back();
-					storage.setLocal('backKey', 'backupRecovery');
+					storage.setLocal('backKey', 'backupRecovery-config');
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -201,7 +201,7 @@ function BackupSetting(props) {
 							messageConfig('success', '成功', '备份修改成功')
 						);
 						window.history.back();
-						storage.setLocal('backKey', 'backupRecovery');
+						storage.setLocal('backKey', 'backupRecovery-config');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -232,7 +232,7 @@ function BackupSetting(props) {
 									);
 									setTimeout(() => {
 										window.history.back();
-										storage.setLocal('backKey', 'backupRecovery');
+										storage.setLocal('backKey', 'backupRecovery-list');
 									}, 5000);
 								} else {
 									Message.show(messageConfig('error', '失败', res));
@@ -254,7 +254,7 @@ function BackupSetting(props) {
 						className="details-go-back"
 						onClick={() => {
 							window.history.back();
-							storage.setLocal('backKey', 'backupRecovery');
+							storage.setLocal('backKey', `backupRecovery-${backup && isEdit ? 'list' : 'config'}`);
 						}}
 					>
 						{elem}
@@ -352,7 +352,7 @@ function BackupSetting(props) {
 						</Button>
 						<Button onClick={() => {
 							window.history.back();
-							storage.setLocal('backKey', 'backupRecovery');
+							storage.setLocal('backKey', 'backupRecovery-config');
 						}}
 						>
 							取消
@@ -376,7 +376,7 @@ function BackupSetting(props) {
 						<Button onClick={onOk} type="primary" style={{ marginRight: '9px' }}>覆盖</Button>
 						<Button onClick={() => {
 							window.history.back();
-							storage.setLocal('backKey', 'backupRecovery');
+							storage.setLocal('backKey', 'backupRecovery-list');
 						}}
 						>
 							取消

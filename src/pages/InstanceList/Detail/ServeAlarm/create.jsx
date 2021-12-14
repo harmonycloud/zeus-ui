@@ -511,6 +511,7 @@ function CreateAlarm(props) {
 			const data = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.annotations = {
+					...record.annotations,
 					message: item.content
 				};
 				item.lay = 'system';
@@ -547,8 +548,8 @@ function CreateAlarm(props) {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
 				item.enable = 0;
-				dingChecked ? (item.ding = 'ding') : (item.ding = null);
-				mailChecked ? (item.mail = 'mail') : (item.mail = null);
+				dingChecked ? item.ding = 'ding' : item.ding = '';
+				mailChecked ? item.mail = 'mail' : item.mail = '';
 				return item;
 			});
 			if (flag[0]) {

@@ -149,7 +149,7 @@ function AlarmSet() {
 	}
 
 	const testMail = () => {
-		let sendData = { email: field.getValues().userName };
+		let sendData = { email: field.getValues().userName, password: field.getValues().password };
 		connectMail(sendData).then(res => {
 			if (res.success) {
 				Message.show(

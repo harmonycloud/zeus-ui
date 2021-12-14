@@ -307,7 +307,7 @@ export default function List(props) {
 						title="备份状态"
 						dataIndex="phrase"
 						cell={statusBackupRender}
-						width={100}
+						width={120}
 						sortable
 					/>
 					<Table.Column
@@ -320,7 +320,7 @@ export default function List(props) {
 					<Table.Column
 						title="操作"
 						cell={actionRender}
-						width={100}
+						width={120}
 					/>
 				</Table>
 			) : (
