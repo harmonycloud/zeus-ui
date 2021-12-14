@@ -11,7 +11,12 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import RapidScreening from '@/components/RapidScreening';
-import { getList, deleteMiddlewareStorage } from '@/services/serviceList';
+import {
+	getList,
+	deleteMiddlewareStorage,
+	recoveryMiddleware,
+	ParamsProps
+} from '@/services/serviceList';
 import { deleteMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import { serviceListStatusRender } from '@/utils/utils';
@@ -128,9 +133,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			}
 		}
 	}, [selected]);
-	// useEffect(() => {
-	// 	getData();
-	// }, [keyword]);
 	const getData: () => void = () => {
 		if (JSON.stringify(namespace) !== '{}') {
 			const sendData = {
@@ -232,6 +234,11 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			setShowDataSource(tempData);
 		}
 	};
+	const onRowProps = (record: serviceProps) => {
+		if (record.status === 'deleted') {
+			return { style: { background: '#F8F8F9', color: '#CCCCCC' } };
+		}
+	};
 	const toDetail = (record: any) => {
 		if (!record.mysqlDTO.relationExist) {
 			Message.show(
@@ -291,42 +298,6 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			}
 		});
 	};
-	// const createService = () => {
-	// 	if (selected === '全部服务') {
-	// 		history.push('/middlewareRepository');
-	// 	} else {
-	// 		const { chartVersion, chartName, version } = originData.filter(
-	// 			(item) => item.name === selected
-	// 		)[0];
-	// 		switch (selected) {
-	// 			case 'mysql':
-	// 				history.push(
-	// 					`/middlewareRepository/mysqlCreate/${chartName}/${chartVersion}`
-	// 				);
-	// 				break;
-	// 			case 'redis':
-	// 				history.push(
-	// 					`/middlewareRepository/redisCreate/${chartName}/${chartVersion}`
-	// 				);
-	// 				break;
-	// 			case 'elasticsearch':
-	// 				history.push(
-	// 					`/middlewareRepository/elasticsearchCreate/${chartName}/${chartVersion}`
-	// 				);
-	// 				break;
-	// 			case 'rocketmq':
-	// 				history.push(
-	// 					`/middlewareRepository/rocketmqCreate/${chartName}/${chartVersion}`
-	// 				);
-	// 				break;
-	// 			default:
-	// 				history.push(
-	// 					`/middlewareRepository/dynamicForm/${chartName}/${chartVersion}/${version}`
-	// 				);
-	// 				break;
-	// 		}
-	// 	}
-	// };
 	const Operation = {
 		primary: (
 			<Button
@@ -346,6 +317,14 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	};
 
 	const nameRender = (value: string, index: number, record: serviceProps) => {
+		if (record.status === 'deleted') {
+			return (
+				<div>
+					<div className="displayed-name">{record.name}</div>
+					<div>{record.aliasName}</div>
+				</div>
+			);
+		}
 		return (
 			<div className="display-flex flex-align">
 				{record?.mysqlDTO ? (
@@ -370,6 +349,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			</div>
 		);
 	};
+
 	const podNumRender = (
 		value: string,
 		index: number,
@@ -434,11 +414,71 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			}
 		}
 	};
+	const recoveryService = (record: serviceProps) => {
+		const sendData: ParamsProps = {
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			chartName: record.type,
+			chartVersion: record.chartVersion || null,
+			middlewareName: record.name,
+			type: record.type
+		};
+		Dialog.show({
+			title: '操作确认',
+			content: '请确认是否恢复该服务！',
+			onOk: () => {
+				recoveryMiddleware(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '该服务已彻底删除')
+						);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		});
+	};
+	const deleteStorage = (record: serviceProps) => {
+		const sendData: ParamsProps = {
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			middlewareName: record.name,
+			type: record.type
+		};
+		Dialog.show({
+			title: '操作确认',
+			content: '删除后无法恢复该服务，请谨慎操作！',
+			onOk: () => {
+				deleteMiddlewareStorage(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '该服务已彻底删除')
+						);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		});
+	};
 	const actionRender = (
 		value: string,
 		index: number,
 		record: serviceProps
 	) => {
+		if (record.status === 'deleted') {
+			return (
+				<Actions>
+					<LinkButton onClick={() => recoveryService(record)}>
+						恢复服务
+					</LinkButton>
+					<LinkButton onClick={() => deleteStorage(record)}>
+						彻底删除
+					</LinkButton>
+				</Actions>
+			);
+		}
 		return (
 			<Actions>
 				<LinkButton
@@ -663,6 +703,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 					}}
 					onSort={onSort}
 					onFilter={onFilter}
+					rowProps={onRowProps}
 				>
 					<Table.Column
 						title="服务名称/中文别名"

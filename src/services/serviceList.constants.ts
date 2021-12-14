@@ -4,3 +4,5 @@ export const getServiceLit = `${api}/clusters/{clusterId}/namespaces/{namespace}
 
 // * 删除中间件相关存储
 export const deleteMiddlewareStorage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/storage`;
+// * 恢复中间件
+export const recoveryMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/storage`;
