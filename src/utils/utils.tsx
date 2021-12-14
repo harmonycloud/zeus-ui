@@ -355,7 +355,7 @@ export const judgeObjArrayHeavyByAttr: (arr: any[], attr: string) => boolean = (
 export const changeObjectIndex: (obj: any, prop: string, index: number) => any =
 	(obj: any, prop: string, index: number) => {
 		const keyArr = Object.keys(obj);
-		if (keyArr.length > 0) {
+		if (keyArr.length > 1) {
 			const propIndex = keyArr.indexOf(prop);
 			keyArr.splice(propIndex, 1);
 			keyArr.splice(index, 0, prop);
