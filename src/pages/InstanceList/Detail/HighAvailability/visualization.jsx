@@ -16,6 +16,7 @@ import { useLocation } from 'react-router';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
 import insertCss from 'insert-css';
+import { type } from 'os';
 
 insertCss(`
 .tooltip {
@@ -155,6 +156,16 @@ function Visualization(props) {
 		}
 	};
 
+	const serveRender = () => {
+		return serverData.type !== 'redis'
+			? modelMap[serverData.mode]
+			: serverData.mode === 'sentinel'
+				? '哨兵'
+				: serverData.quota.redis.num === 6
+					? '三主三从'
+					: '五主五从' || ''
+	}
+
 	const hasConfigBackup = (cfg) => {
 		if (!cfg.depth) {
 			if (serverData.hasConfigBackup) {
@@ -226,406 +237,468 @@ function Visualization(props) {
 			{
 				drawShape: function drawShape(cfg, group) {
 					// console.log(cfg, serverData, group);
-					const box = group.addShape('rect', {
-						attrs: {
-							fill: isSelect(cfg) ? '#fff' : '#EBEBEB',
-							stroke: '#666',
-							x: 0,
-							y: 0,
-							width: 228,
-							height: 100,
-							opacity: isSelect(cfg) ? 1 : 0.6
-						},
-						name: 'rect-shape'
-					});
-					const boxWidth = box.getBBox().width;
-					group.addShape('rect', {
-						attrs: {
-							fill: podStatus.filter(
-								(item) =>
-									item.status === cfg.status ||
-									item.status === serverData.status
-							)[0]
-								? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-								  )[0].color
-								: '#FFC440',
-							x: 0,
-							y: 0,
-							width: 40,
-							height: 100,
-							cursor: 'pointer'
-						},
-						name: 'status'
-					});
-					group.addShape('image', {
-						attrs: {
-							img: podStatus.filter(
-								(item) =>
-									item.status === cfg.status ||
-									item.status === serverData.status
-							)[0]
-								? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-								  )[0].image
-								: NotReady,
-							x: 12,
-							y: 42,
-							width: 16,
-							height: 16,
-							cursor: 'pointer'
-						},
-						name: 'status-image'
-					});
-					group.addShape('text', {
-						attrs: {
-							text: !cfg.depth
-								? serverData.name
-								: 'IP: ' + cfg.podIp,
-							x: 45,
-							y: !cfg.depth ? 40 : 30,
-							textBaseline: 'middle',
-							fill: '#333',
-							fontWeight: 500,
-							lineHeight: 18,
-							fontFamily: 'PingFangSC-Medium, PingFang SC'
-						},
-						name: 'text-shape1'
-					});
-					if (cfg.depth) {
+					if (cfg.adentify) {
+						console.log(cfg.level, cfg.adentify);
+						const circle = group.addShape('rect', {
+							attrs: {
+								stroke: '#666',
+								width: 60,
+								height: 30,
+								radius: 15,
+								y: 35,
+								cursor: 'pointer'
+							},
+							modelId: cfg.id,
+							name: 'circle'
+						});
 						group.addShape('text', {
 							attrs: {
-								text: cfg.podName,
+								text: cfg.level === 'serve' ? serveRender() : roleRender(cfg.adentify, '', cfg),
+								fill: 'rgba(0, 0, 0, .65)',
+								fontSize: 10,
+								textAlign: 'center',
+								width: 60,
+								height: 30,
+								x: 30,
+								y: 55
+							},
+							modelId: cfg.id,
+							name: 'circle-text'
+						});
+						if (cfg.children && cfg.children.length) {
+							group.addShape('rect', {
+								attrs: {
+									x: 245,
+									y: 42,
+									width: 16,
+									height: 16,
+									radius: 8,
+									stroke: 'rgba(0, 0, 0, 0.25)',
+									cursor: 'pointer',
+									fill: '#fff'
+								},
+								name: 'collapse-back',
+								modelId: cfg.id
+							});
+							group.addShape('text', {
+								attrs: {
+									x: 253,
+									y: 48,
+									textAlign: 'center',
+									textBaseline: 'middle',
+									text: '+',
+									fontSize: 16,
+									cursor: 'pointer',
+									fill: 'rgba(0, 0, 0, 0.25)'
+								},
+								name: 'collapse-text',
+								modelId: cfg.id
+							});
+						}
+						return circle;
+					} else {
+						const box = group.addShape('rect', {
+							attrs: {
+								fill: isSelect(cfg) ? '#fff' : '#EBEBEB',
+								stroke: '#666',
+								x: 0,
+								y: 0,
+								width: 228,
+								height: 100,
+								opacity: isSelect(cfg) ? 1 : 0.6
+							},
+							name: 'rect-shape'
+						});
+						const boxWidth = box.getBBox().width;
+						group.addShape('rect', {
+							attrs: {
+								fill: podStatus.filter(
+									(item) =>
+										item.status === cfg.status ||
+										item.status === serverData.status
+								)[0]
+									? podStatus.filter(
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+									)[0].color
+									: '#FFC440',
+								x: 0,
+								y: 0,
+								width: 40,
+								height: 100,
+								cursor: 'pointer'
+							},
+							name: 'status'
+						});
+						group.addShape('image', {
+							attrs: {
+								img: podStatus.filter(
+									(item) =>
+										item.status === cfg.status ||
+										item.status === serverData.status
+								)[0]
+									? podStatus.filter(
+										(item) =>
+											item.status === cfg.status ||
+											item.status === serverData.status
+									)[0].image
+									: NotReady,
+								x: 12,
+								y: 42,
+								width: 16,
+								height: 16,
+								cursor: 'pointer'
+							},
+							name: 'status-image'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: !cfg.depth
+									? serverData.name
+									: 'IP: ' + cfg.podIp,
 								x: 45,
-								y: 50,
+								y: !cfg.depth ? 40 : 30,
 								textBaseline: 'middle',
 								fill: '#333',
 								fontWeight: 500,
 								lineHeight: 18,
 								fontFamily: 'PingFangSC-Medium, PingFang SC'
 							},
-							name: 'text-shape3'
+							name: 'text-shape1'
 						});
-					}
-					group.addShape('text', {
-						attrs: {
-							text: !cfg.depth
-								? serverData.aliasName
-								: '资源/存储: ' +
-								  cfg.resources.cpu +
-								  'C/' +
-								  cfg.resources.memory +
-								  'G' +
-								  '/' +
-								  (cfg.resources.storageClassQuota
+						if (cfg.depth) {
+							group.addShape('text', {
+								attrs: {
+									text: cfg.podName,
+									x: 45,
+									y: 50,
+									textBaseline: 'middle',
+									fill: '#333',
+									fontWeight: 500,
+									lineHeight: 18,
+									fontFamily: 'PingFangSC-Medium, PingFang SC'
+								},
+								name: 'text-shape3'
+							});
+						}
+						group.addShape('text', {
+							attrs: {
+								text: !cfg.depth
+									? serverData.aliasName
+									: '资源/存储: ' +
+									cfg.resources.cpu +
+									'C/' +
+									cfg.resources.memory +
+									'G' +
+									'/' +
+									(cfg.resources.storageClassQuota
 										? cfg.resources.storageClassQuota
 										: ''),
-							x: 45,
-							y: !cfg.depth ? 60 : 70,
-							textBaseline: 'middle',
-							fill: '#666',
-							fontWeight: 400
-						},
-						name: 'text-shape2'
-					});
-					group.addShape('image', {
-						attrs: {
-							img: `${api}/images/middleware/${imagePath}`,
-							x: 160,
-							y: 34,
-							width: 32,
-							height: 32
-						},
-						visible: !cfg.depth,
-						name: 'status-image'
-					});
-					group.addShape('rect', {
-						attrs: {
-							x: 208,
-							y: 0,
-							width: 20,
-							height: 100,
-							fill: '#6236FF'
-						},
-						visible: hasConfigBackup(cfg),
-						name: 'right'
-					});
-					group.addShape('text', {
-						attrs: {
-							text: '已',
-							x: 212,
-							y: 42,
-							fill: '#fff'
-						},
-						visible: hasConfigBackup(cfg),
-						name: 'text1'
-					});
-					group.addShape('text', {
-						attrs: {
-							text: '设',
-							x: 212,
-							y: 54,
-							fill: '#fff'
-						},
-						visible: hasConfigBackup(cfg),
-						name: 'text2'
-					});
-					group.addShape('text', {
-						attrs: {
-							text: '置',
-							x: 212,
-							y: 66,
-							fill: '#fff'
-						},
-						visible: hasConfigBackup(cfg),
-						name: 'text3'
-					});
-					group.addShape('image', {
-						attrs: {
-							x: 204,
-							y: 76,
-							width: 24,
-							height: 24,
-							img: select
-						},
-						visible: record && cfg.podName === selectObj ? true : false,
-						name: 'select-image'
-					});
-					const hasChildren = cfg.children && cfg.children.length > 0;
-					if (!hasChildren && cfg.depth) {
-						group.addShape('rect', {
-							attrs: {
-								x: 0,
-								y: 0,
-								width: 76,
-								height: 100,
-								fill: '#000',
-								opacity: 0.65,
-								cursor: 'pointer'
+								x: 45,
+								y: !cfg.depth ? 60 : 70,
+								textBaseline: 'middle',
+								fill: '#666',
+								fontWeight: 400
 							},
-							name: 'button1',
-							visible: false
+							name: 'text-shape2'
 						});
 						group.addShape('image', {
 							attrs: {
-								img: Restart,
-								x: 19,
-								y: 44,
-								width: 12,
-								height: 12
+								img: `${api}/images/middleware/${imagePath}`,
+								x: 160,
+								y: 34,
+								width: 32,
+								height: 32
 							},
-							visible: false,
-							name: 'restart'
-						});
-						group.addShape('text', {
-							attrs: {
-								text: '重启',
-								x: 46,
-								y: 50,
-								textAlign: 'center',
-								textBaseline: 'middle',
-								fill: '#fff',
-								cursor: 'pointer'
-							},
-							name: 'text-button1',
-							visible: false
+							visible: !cfg.depth,
+							name: 'status-image'
 						});
 						group.addShape('rect', {
 							attrs: {
-								x: 76,
+								x: 208,
 								y: 0,
-								width: 76,
+								width: 20,
 								height: 100,
-								fill: '#000',
-								opacity: 0.65,
-								cursor: 'pointer'
+								fill: '#6236FF'
 							},
-							visible: false,
-							name: 'button2'
-						});
-						group.addShape('image', {
-							attrs: {
-								img: Edit,
-								x: 82,
-								y: 44,
-								width: 12,
-								height: 12
-							},
-							visible: false,
-							name: 'edit'
+							visible: hasConfigBackup(cfg),
+							name: 'right'
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '修改规格',
-								x: 119,
-								y: 50,
-								textAlign: 'center',
-								textBaseline: 'middle',
-								fill: '#fff',
-								cursor: 'pointer'
+								text: '已',
+								x: 212,
+								y: 42,
+								fill: '#fff'
 							},
-							visible: false,
-							name: 'text-button2'
+							visible: hasConfigBackup(cfg),
+							name: 'text1'
 						});
+						group.addShape('text', {
+							attrs: {
+								text: '设',
+								x: 212,
+								y: 54,
+								fill: '#fff'
+							},
+							visible: hasConfigBackup(cfg),
+							name: 'text2'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '置',
+								x: 212,
+								y: 66,
+								fill: '#fff'
+							},
+							visible: hasConfigBackup(cfg),
+							name: 'text3'
+						});
+						group.addShape('image', {
+							attrs: {
+								x: 204,
+								y: 76,
+								width: 24,
+								height: 24,
+								img: select
+							},
+							// visible: record && cfg.podName === selectObj ? true : false,
+							visible: false,
+							name: 'select-image'
+						});
+						const hasChildren = cfg.children && cfg.children.length > 0;
+						if (!hasChildren && cfg.depth) {
+							group.addShape('rect', {
+								attrs: {
+									x: 0,
+									y: 0,
+									width: 76,
+									height: 100,
+									fill: '#000',
+									opacity: 0.65,
+									cursor: 'pointer'
+								},
+								name: 'button1',
+								visible: false
+							});
+							group.addShape('image', {
+								attrs: {
+									img: Restart,
+									x: 19,
+									y: 44,
+									width: 12,
+									height: 12
+								},
+								visible: false,
+								name: 'restart'
+							});
+							group.addShape('text', {
+								attrs: {
+									text: '重启',
+									x: 46,
+									y: 50,
+									textAlign: 'center',
+									textBaseline: 'middle',
+									fill: '#fff',
+									cursor: 'pointer'
+								},
+								name: 'text-button1',
+								visible: false
+							});
+							group.addShape('rect', {
+								attrs: {
+									x: 76,
+									y: 0,
+									width: 76,
+									height: 100,
+									fill: '#000',
+									opacity: 0.65,
+									cursor: 'pointer'
+								},
+								visible: false,
+								name: 'button2'
+							});
+							group.addShape('image', {
+								attrs: {
+									img: Edit,
+									x: 82,
+									y: 44,
+									width: 12,
+									height: 12
+								},
+								visible: false,
+								name: 'edit'
+							});
+							group.addShape('text', {
+								attrs: {
+									text: '修改规格',
+									x: 119,
+									y: 50,
+									textAlign: 'center',
+									textBaseline: 'middle',
+									fill: '#fff',
+									cursor: 'pointer'
+								},
+								visible: false,
+								name: 'text-button2'
+							});
+							group.addShape('rect', {
+								attrs: {
+									x: 152,
+									y: 0,
+									width: 76,
+									height: 100,
+									fill: '#000',
+									opacity: 0.65,
+									cursor: 'pointer'
+								},
+								visible: false,
+								name: 'button3'
+							});
+							group.addShape('image', {
+								attrs: {
+									img: Control,
+									x: 165,
+									y: 44,
+									width: 12,
+									height: 12
+								},
+								visible: false,
+								name: 'control'
+							});
+							group.addShape('text', {
+								attrs: {
+									text: '控制台',
+									x: 197,
+									y: 50,
+									textAlign: 'center',
+									textBaseline: 'middle',
+									fill: '#fff',
+									cursor: 'pointer'
+								},
+								name: 'text-button3',
+								visible: false
+							});
+						}
 						group.addShape('rect', {
 							attrs: {
-								x: 152,
-								y: 0,
-								width: 76,
-								height: 100,
-								fill: '#000',
-								opacity: 0.65,
-								cursor: 'pointer'
+								fill: '#fff',
+								stroke: '#ccc',
+								x: -20,
+								y: 65,
+								width: 70,
+								height: 25
 							},
-							visible: false,
-							name: 'button3'
-						});
-						group.addShape('image', {
-							attrs: {
-								img: Control,
-								x: 165,
-								y: 44,
-								width: 12,
-								height: 12
-							},
-							visible: false,
-							name: 'control'
+							name: 'info',
+							visible: false
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '控制台',
-								x: 197,
-								y: 50,
-								textAlign: 'center',
-								textBaseline: 'middle',
-								fill: '#fff',
-								cursor: 'pointer'
-							},
-							name: 'text-button3',
-							visible: false
-						});
-					}
-					group.addShape('rect', {
-						attrs: {
-							fill: '#fff',
-							stroke: '#ccc',
-							x: -20,
-							y: 65,
-							width: 70,
-							height: 25
-						},
-						name: 'info',
-						visible: false
-					});
-					group.addShape('text', {
-						attrs: {
-							text: podStatus.filter(
-								(item) =>
-									item.status === cfg.status ||
-									item.status === serverData.status
-							)[0]
-								? podStatus.filter(
+								text: podStatus.filter(
+									(item) =>
+										item.status === cfg.status ||
+										item.status === serverData.status
+								)[0]
+									? podStatus.filter(
 										(item) =>
 											item.status === cfg.status ||
 											item.status === serverData.status
-								  )[0].title
-								: '运行异常',
-							fill: '#666',
-							x: 0,
-							y: 83,
-							fontWeight: 500,
-							lineHeight: 18,
-							fontFamily: 'PingFangSC-Medium, PingFang SC'
-						},
-						name: 'info-text',
-						visible: false
-					});
-					// 服务模式
-					if (hasChildren && !cfg.depth) {
-						group.addShape('text', {
-							attrs: {
-								text:
-									serverData.type !== 'redis'
-										? modelMap[serverData.mode]
-										: serverData.mode === 'sentinel'
-										? '哨兵'
-										: serverData.quota.redis.num === 6
-										? '三主三从'
-										: '五主五从' || '',
-								fill: 'rgba(0, 0, 0, .65)',
-								x: boxWidth + 35,
-								y: 44,
-								fontSize: 10,
-								width: 12,
-								textAlign: 'center',
-								cursor: 'pointer'
+									)[0].title
+									: '运行异常',
+								fill: '#666',
+								x: 0,
+								y: 83,
+								fontWeight: 500,
+								lineHeight: 18,
+								fontFamily: 'PingFangSC-Medium, PingFang SC'
 							},
-							name: 'serve',
-							visible: true,
-							modelId: cfg.id
+							name: 'info-text',
+							visible: false
 						});
-						group.addShape('rect', {
-							attrs: {
-								stroke: '#A3B1BF',
-								x: 229,
-								y: 50,
-								width: 70,
-								height: 0
-							},
-							name: 'line'
-						});
+						// 服务模式
+						// if (hasChildren && !cfg.depth) {
+						// 	group.addShape('text', {
+						// 		attrs: {
+						// 			text:
+						// 				serverData.type !== 'redis'
+						// 					? modelMap[serverData.mode]
+						// 					: serverData.mode === 'sentinel'
+						// 						? '哨兵'
+						// 						: serverData.quota.redis.num === 6
+						// 							? '三主三从'
+						// 							: '五主五从' || '',
+						// 			fill: 'rgba(0, 0, 0, .65)',
+						// 			x: boxWidth + 35,
+						// 			y: 44,
+						// 			fontSize: 10,
+						// 			width: 12,
+						// 			textAlign: 'center',
+						// 			cursor: 'pointer'
+						// 		},
+						// 		name: 'serve',
+						// 		visible: true,
+						// 		modelId: cfg.id
+						// 	});
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: 229,
+						// 			y: 50,
+						// 			width: 70,
+						// 			height: 0
+						// 		},
+						// 		name: 'line'
+						// 	});
+						// }
+						// 实例模式
+						// if (!hasChildren && cfg.depth) {
+						// 	group.addShape('text', {
+						// 		attrs: {
+						// 			text: roleRender(cfg.role, '', cfg),
+						// 			fill: 'rgba(0, 0, 0, .65)',
+						// 			x: -40,
+						// 			y: 44,
+						// 			fontSize: 10,
+						// 			width: 12,
+						// 			textAlign: 'center',
+						// 			cursor: 'pointer'
+						// 		},
+						// 		name: 'pod'
+						// 	});
+						// }
+						// if (cfg.children && cfg.children.length) {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			x: boxWidth + 60,
+						// 			y: 42,
+						// 			width: 16,
+						// 			height: 16,
+						// 			radius: 8,
+						// 			stroke: 'rgba(0, 0, 0, 0.25)',
+						// 			cursor: 'pointer',
+						// 			fill: '#fff'
+						// 		},
+						// 		name: 'collapse-back',
+						// 		modelId: cfg.id
+						// 	});
+						// 	group.addShape('text', {
+						// 		attrs: {
+						// 			x: boxWidth + 68,
+						// 			y: 48,
+						// 			textAlign: 'center',
+						// 			textBaseline: 'middle',
+						// 			text: '+',
+						// 			fontSize: 16,
+						// 			cursor: 'pointer',
+						// 			fill: 'rgba(0, 0, 0, 0.25)'
+						// 		},
+						// 		name: 'collapse-text',
+						// 		modelId: cfg.id
+						// 	});
+						// }
+						return box;
 					}
-					// 实例模式
-					if (!hasChildren && cfg.depth) {
-						group.addShape('text', {
-							attrs: {
-								text: roleRender(cfg.role, '', cfg),
-								fill: 'rgba(0, 0, 0, .65)',
-								x: -40,
-								y: 44,
-								fontSize: 10,
-								width: 12,
-								textAlign: 'center',
-								cursor: 'pointer'
-							},
-							name: 'pod'
-						});
-					}
-					if (cfg.children && cfg.children.length) {
-						group.addShape('rect', {
-							attrs: {
-								x: boxWidth + 60,
-								y: 42,
-								width: 16,
-								height: 16,
-								radius: 8,
-								stroke: 'rgba(0, 0, 0, 0.25)',
-								cursor: 'pointer',
-								fill: '#fff'
-							},
-							name: 'collapse-back',
-							modelId: cfg.id
-						});
-						group.addShape('text', {
-							attrs: {
-								x: boxWidth + 68,
-								y: 48,
-								textAlign: 'center',
-								textBaseline: 'middle',
-								text: '+',
-								fontSize: 16,
-								cursor: 'pointer',
-								fill: 'rgba(0, 0, 0, 0.25)'
-							},
-							name: 'collapse-text',
-							modelId: cfg.id
-						});
-					}
-					return box;
 				}
 			},
 			'single-node'
@@ -678,7 +751,7 @@ function Visualization(props) {
 			fitViewPadding: [20, 30, 20, 30],
 			plugins: [minimap],
 			modes: {
-				default: ['drag-canvas', 'zoom-canvas']
+				default: ['drag-canvas']
 			},
 			nodeStateStyles: {
 				hover: {
@@ -722,89 +795,103 @@ function Visualization(props) {
 				}
 			}
 		});
-		let res = {
+		const pods = [];
+		topoData.pods.forEach(el => {
+		   if(!el.role) el.role = roleRender('','', el);
+           if(pods.every(els => els.role != el.role)) pods.push({ adentify: el.role, role: el.role, podName: el.podName, level: 'pod'}); 
+		})
+		pods.forEach(el => (el.children = topoData.pods.filter(els => els.role == el.role)));
+		const res = {
 			id: 'tree',
-			name: serverData.name
+			name: serverData.name,
+			children: [{
+				adentify: serverData.mode,
+				level: 'serve',
+				children: pods
+			}]
 		};
-		topoData.pods
-			? (res.children = topoData.pods)
-			: (res.children = [].concat(
-					...topoData.listChildGroup.map((item) => item.pods)
-			  ));
+		// res.children = topoData.pods;
+		console.log(res);
 		graph.data(res);
 		graph.render();
 		graph.fitCenter();
 		graph.on('node:mouseenter', (evt) => {
-			const { item } = evt;
-			const group = item.getContainer();
-			const button1 = group.find((e) => e.get('name') === 'button1');
-			const button2 = group.find((e) => e.get('name') === 'button2');
-			const button3 = group.find((e) => e.get('name') === 'button3');
-			const restart = group.find((e) => e.get('name') === 'restart');
-			const edit = group.find((e) => e.get('name') === 'edit');
-			const control = group.find((e) => e.get('name') === 'control');
-			const info = group.find((e) => e.get('name') === 'info');
-			const textButton1 = group.find(
-				(e) => e.get('name') === 'text-button1'
-			);
-			const textButton2 = group.find(
-				(e) => e.get('name') === 'text-button2'
-			);
-			const textButton3 = group.find(
-				(e) => e.get('name') === 'text-button3'
-			);
-			const infoText = group.find((e) => e.get('name') === 'info-text');
-			graph.setItemState(item, 'hover', true);
-			if (evt.target.cfg.name === 'status') {
-				info.cfg.visible = true;
-				infoText.cfg.visible = true;
-			}
-			if (pathname.includes('addBackup')) return;
-			if (evt.target.cfg.name === 'rect-shape' && button1) {
-				button1.cfg.visible = true;
-				button2.cfg.visible = true;
-				button3.cfg.visible = true;
-				restart.cfg.visible = true;
-				edit.cfg.visible = true;
-				control.cfg.visible = true;
-				textButton1.cfg.visible = true;
-				textButton2.cfg.visible = true;
-				textButton3.cfg.visible = true;
+			if (!evt.target.cfg.modelId) {
+				const { item } = evt;
+				const group = item.getContainer();
+				const button1 = group.find((e) => e.get('name') === 'button1');
+				const button2 = group.find((e) => e.get('name') === 'button2');
+				const button3 = group.find((e) => e.get('name') === 'button3');
+				const restart = group.find((e) => e.get('name') === 'restart');
+				const edit = group.find((e) => e.get('name') === 'edit');
+				const control = group.find((e) => e.get('name') === 'control');
+				const info = group.find((e) => e.get('name') === 'info');
+				const textButton1 = group.find(
+					(e) => e.get('name') === 'text-button1'
+				);
+				const textButton2 = group.find(
+					(e) => e.get('name') === 'text-button2'
+				);
+				const textButton3 = group.find(
+					(e) => e.get('name') === 'text-button3'
+				);
+				const infoText = group.find((e) => e.get('name') === 'info-text');
+				graph.setItemState(item, 'hover', true);
+				if (evt.target.cfg.name === 'status') {
+					info.cfg.visible = true;
+					infoText.cfg.visible = true;
+				}
+				if (pathname.includes('addBackup')) return;
+				if (evt.target.cfg.name === 'rect-shape' && button1) {
+					button1.cfg.visible = true;
+					button2.cfg.visible = true;
+					button3.cfg.visible = true;
+					restart.cfg.visible = true;
+					edit.cfg.visible = true;
+					control.cfg.visible = true;
+					textButton1.cfg.visible = true;
+					textButton2.cfg.visible = true;
+					textButton3.cfg.visible = true;
+				}
 			}
 		});
 		graph.on('node:mouseleave', (evt) => {
-			const { item } = evt;
-			const group = item.getContainer();
-			const button1 = group.find((e) => e.get('name') === 'button1');
-			const button2 = group.find((e) => e.get('name') === 'button2');
-			const button3 = group.find((e) => e.get('name') === 'button3');
-			const restart = group.find((e) => e.get('name') === 'restart');
-			const edit = group.find((e) => e.get('name') === 'edit');
-			const control = group.find((e) => e.get('name') === 'control');
-			const info = group.find((e) => e.get('name') === 'info');
-			const textButton1 = group.find(
-				(e) => e.get('name') === 'text-button1'
-			);
-			const textButton2 = group.find(
-				(e) => e.get('name') === 'text-button2'
-			);
-			const textButton3 = group.find(
-				(e) => e.get('name') === 'text-button3'
-			);
-			const infoText = group.find((e) => e.get('name') === 'info-text');
-			graph.setItemState(item, 'hover', false);
-			info.cfg.visible = false;
-			infoText.cfg.visible = false;
-			if (button1) {
-				button1.cfg.visible = false;
-				button2.cfg.visible = false;
-				button3.cfg.visible = false;
-				restart.cfg.visible = false;
-				edit.cfg.visible = false;
-				control.cfg.visible = false;
-				textButton1.cfg.visible = false;
-				textButton2.cfg.visible = false;
-				textButton3.cfg.visible = false;
+			if (!evt.target.cfg.modelId) {
+				const { item } = evt;
+				const group = item.getContainer();
+				const button1 = group.find((e) => e.get('name') === 'button1');
+				const button2 = group.find((e) => e.get('name') === 'button2');
+				const button3 = group.find((e) => e.get('name') === 'button3');
+				const restart = group.find((e) => e.get('name') === 'restart');
+				const edit = group.find((e) => e.get('name') === 'edit');
+				const control = group.find((e) => e.get('name') === 'control');
+				const info = group.find((e) => e.get('name') === 'info');
+				const textButton1 = group.find(
+					(e) => e.get('name') === 'text-button1'
+				);
+				const textButton2 = group.find(
+					(e) => e.get('name') === 'text-button2'
+				);
+				const textButton3 = group.find(
+					(e) => e.get('name') === 'text-button3'
+				);
+				const infoText = group.find((e) => e.get('name') === 'info-text');
+				graph.setItemState(item, 'hover', false);
+				if (info) {
+					info.cfg.visible = false;
+					infoText.cfg.visible = false;
+				}
+				if (button1) {
+					button1.cfg.visible = false;
+					button2.cfg.visible = false;
+					button3.cfg.visible = false;
+					restart.cfg.visible = false;
+					edit.cfg.visible = false;
+					control.cfg.visible = false;
+					textButton1.cfg.visible = false;
+					textButton2.cfg.visible = false;
+					textButton3.cfg.visible = false;
+				}
 			}
 		});
 
@@ -818,6 +905,7 @@ function Visualization(props) {
 			const box = group.find((e) => e.get('name') === 'rect-shape');
 			// console.log(item, evt);
 			if (!setBackupObj) return;
+			if (evt.target.cfg.modelId) return;
 			if (serverData.type === 'mysql') {
 				if (item._cfg.model.depth) {
 					Message.show(
@@ -850,17 +938,19 @@ function Visualization(props) {
 							str._cfg.states.find((obj) => obj === 'select')
 						)
 					) {
-						nodes.map((obj) => {
-							// graph.setItemState(obj, 'select', true);
-							const x = obj.getContainer();
-							const y = x.find(
-								(e) => e.get('name') === 'select-image'
-							);
-							y.cfg.visible = true;
-						});
+						// nodes.map((obj) => {
+						// 	// graph.setItemState(obj, 'select', true);
+						// 	const x = obj.getContainer();
+						// 	const y = x.find(
+						// 		(e) => e.get('name') === 'rect-shape'
+						// 	);
+						// 	y.cfg.attrs.fill = '#aaa';
+						// 	y.attrs.fill = '#aaa';
+						// 	console.log(y);
+						// });
 						// const group = item.getContainer();
 						// const box = group.find((e) => e.get('name') === 'rect-shape');
-						// graph.updateItem(item, {
+						// graph.updateItem(box, {
 						// 	style: {
 						// 		fill: 'red'
 						// 	}
@@ -875,42 +965,6 @@ function Visualization(props) {
 				}
 			}
 		});
-		// graph.on('button1:mouseenter', (evt) => {
-		//     const { item } = evt;
-		//     const group = item.getContainer();
-		//     const button1 = group.find((e) => e.get('name') === 'button1');
-		//     button1.attrs.fill = '#000';
-		// })
-		// graph.on('button1:mouseleave', (evt) => {
-		//     const { item } = evt;
-		//     const group = item.getContainer();
-		//     const button1 = group.find((e) => e.get('name') === 'button1');
-		//     button1.attrs.fill = '#595959';
-		// })
-		// graph.on('button2:mouseenter', (evt) => {
-		//     const { item } = evt;
-		//     const group = item.getContainer();
-		//     const button2 = group.find((e) => e.get('name') === 'button2');
-		//     button2.attrs.fill = '#000';
-		// })
-		// graph.on('button2:mouseleave', (evt) => {
-		//     const { item } = evt;
-		//     const group = item.getContainer();
-		//     const button2 = group.find((e) => e.get('name') === 'button2');
-		//     button2.attrs.fill = '#595959';
-		// })
-		// graph.on('button3:mouseenter', (evt) => {
-		//     const { item } = evt;
-		//     const group = item.getContainer();
-		//     const button3 = group.find((e) => e.get('name') === 'button3');
-		//     button3.attrs.fill = '#000';
-		// })
-		// graph.on('button3:mouseleave', (evt) => {
-		//     const { item } = evt;
-		//     const group = item.getContainer();
-		//     const button3 = group.find((e) => e.get('name') === 'button3');
-		//     button3.attrs.fill = '#595959';
-		// })
 		const handleCollapse = (e) => {
 			const target = e.target;
 			const id = target.get('modelId');
@@ -928,14 +982,14 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			const serve = group.find((e) => e.get('name') === 'serve');
+			// const serve = group.find((e) => e.get('name') === 'serve');
 			const text = collapseText.cfg.attrs.text;
 			text === '-'
 				? (collapseText.attrs.text = '+')
 				: (collapseText.attrs.text = '-');
-			text === '-'
-				? (serve.cfg.visible = false)
-				: (serve.cfg.visible = true);
+			// text === '-'
+			// 	? (serve.cfg.visible = false)
+			// 	: (serve.cfg.visible = true);
 			handleCollapse(e);
 		});
 		graph.on('collapse-back:click', (e) => {
@@ -944,14 +998,14 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			const serve = group.find((e) => e.get('name') === 'serve');
+			// const serve = group.find((e) => e.get('name') === 'serve');
 			const text = collapseText.cfg.attrs.text;
 			text === '-'
 				? (collapseText.attrs.text = '+')
 				: (collapseText.attrs.text = '-');
-			text === '-'
-				? (serve.cfg.visible = false)
-				: (serve.cfg.visible = true);
+			// text === '-'
+			// 	? (serve.cfg.visible = false)
+			// 	: (serve.cfg.visible = true);
 			handleCollapse(e);
 		});
 		graph.on('button1:click', (evt) => {
@@ -1043,13 +1097,13 @@ function Visualization(props) {
 				anchorPoints:
 					value === 'TB'
 						? [
-								[0.5, 0],
-								[0.5, 1]
-						  ]
+							[0.5, 0],
+							[0.5, 1]
+						]
 						: [
-								[0, 0.5],
-								[1, 0.5]
-						  ]
+							[0, 0.5],
+							[1, 0.5]
+						]
 			},
 			getId: function getId(d) {
 				return d.id;
@@ -1090,7 +1144,7 @@ function Visualization(props) {
 						align="b"
 					>
 						{window.graph &&
-						window.graph.getWidth() !== window.innerWidth
+							window.graph.getWidth() !== window.innerWidth
 							? '全屏'
 							: '退出全屏'}
 					</Tooltip>

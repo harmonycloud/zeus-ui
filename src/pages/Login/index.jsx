@@ -143,7 +143,7 @@ export default function Login() {
 				</span>
 			</div>
 			<div className={styles['slogan']}>
-				{(data && data.slogan) || '我是slogan，让IT更美好'}
+				{(data && data.slogan) || '我是Slogan，让IT更美好'}
 			</div>
 			<form className={styles['login-form']}>
 				<header className={styles['login-header']}>

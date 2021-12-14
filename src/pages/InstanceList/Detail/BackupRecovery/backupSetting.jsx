@@ -119,6 +119,7 @@ function BackupSetting(props) {
 					.map((item) => (item.length === 1 ? '0' + item : item))
 					.join(':')
 			});
+		record && setBackupObj(selectObj);
 	}, []);
 
 	useEffect(() => {

@@ -282,7 +282,7 @@ function CreateAlarm(props) {
 				res.data.userBy.length &&
 				res.data.users.map((item) => {
 					res.data.userBy.map((arr) => {
-						item.userId === arr.userId && user.push(item);
+						arr.email && item.userId === arr.userId && user.push(item);
 					});
 				});
 			setIsReady(true);
@@ -495,7 +495,8 @@ function CreateAlarm(props) {
 				item.symbol &&
 				item.threshold &&
 				item.severity &&
-				item.silence
+				item.silence && 
+				item.content
 			) {
 				return true;
 			} else {
@@ -514,8 +515,8 @@ function CreateAlarm(props) {
 				};
 				item.lay = 'system';
 				record ? (item.enable = record.enable) : (item.enable = 0);
-				dingChecked ? (item.ding = 'ding') : delete item.ding;
-				mailChecked ? (item.mail = 'mail') : delete item.mail;
+				dingChecked ? item.ding = 'ding' : item.ding = '';
+				mailChecked ? item.mail = 'mail' : item.mail = '';
 				return item;
 			});
 			if (systemId) {
