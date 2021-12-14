@@ -11,7 +11,7 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import RapidScreening from '@/components/RapidScreening';
-import { getList } from '@/services/serviceList';
+import { getList, deleteMiddlewareStorage } from '@/services/serviceList';
 import { deleteMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import { serviceListStatusRender } from '@/utils/utils';
