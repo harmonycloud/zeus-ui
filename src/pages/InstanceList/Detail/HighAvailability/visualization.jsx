@@ -1046,8 +1046,8 @@ function Visualization(props) {
 			console.log(text, collapseText, group);
 			// collapseText.cfg.attrs.text = '-'
 			text === '-'
-				? collapseText.attr(text, '+')
-				: collapseText.attr(text, '-');
+				? collapseText.attr('text', '+')
+				: collapseText.attr('text', '-');
 			// text === '-'
 			// 	? (serve.cfg.visible = false)
 			// 	: (serve.cfg.visible = true);
@@ -1062,8 +1062,8 @@ function Visualization(props) {
 			// const serve = group.find((e) => e.get('name') === 'serve');
 			const text = collapseText.cfg.attrs.text;
 			text === '-'
-				? collapseText.attr(text, '+')
-				: collapseText.attr(text, '-');
+				? collapseText.attr('text', '+')
+				: collapseText.attr('text', '-');
 			// text === '-'
 			// 	? (serve.cfg.visible = false)
 			// 	: (serve.cfg.visible = true);

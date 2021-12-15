@@ -555,7 +555,7 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
-				item.enable = 0;
+				record ? (item.enable = record.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				return item;
