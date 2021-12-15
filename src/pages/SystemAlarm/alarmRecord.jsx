@@ -37,6 +37,10 @@ function AlarmRecord(props) {
 	const [originData, setOriginData] = useState([]);
 	const [keyword, setKeyword] = useState('');
 	const [poolList, setPoolList] = useState([]);
+	const objFilter = {
+		filters: alarmType === 'system' ? poolList : null,
+		filterMode: alarmType === 'system' ? 'single' : null
+	};
 
 	const onRefresh = () => {
 		getData();
@@ -51,7 +55,11 @@ function AlarmRecord(props) {
 		getData();
 		getClusters().then((res) => {
 			if (!res.data) return;
-			setPoolList(res.data.map(item => { return { label: item.id, value: item.id } }));
+			setPoolList(
+				res.data.map((item) => {
+					return { label: item.id, value: item.id };
+				})
+			);
 		});
 	}, [middlewareName]);
 
@@ -87,7 +95,7 @@ function AlarmRecord(props) {
 				setTotal(res.data ? res.data.total : 0);
 			});
 		}
-	}
+	};
 
 	const levelRender = (value, index, record) => {
 		return (
@@ -109,15 +117,15 @@ function AlarmRecord(props) {
 						? 1
 						: -1
 					: result > 0
-						? -1
-						: 1;
+					? -1
+					: 1;
 			});
 			setEventData([...dsTemp]);
 		}
 	};
 
 	const onFilter = (filterParams) => {
-		if(filterParams.level){
+		if (filterParams.level) {
 			let {
 				level: { selectedKeys }
 			} = filterParams;
@@ -130,7 +138,7 @@ function AlarmRecord(props) {
 				});
 				setEventData(tempData);
 			}
-		}else if (filterParams.clusterId) {
+		} else if (filterParams.clusterId) {
 			let {
 				clusterId: { selectedKeys }
 			} = filterParams;
@@ -181,8 +189,7 @@ function AlarmRecord(props) {
 			<Table.Column
 				title="告警对象"
 				dataIndex="clusterId"
-				filters={poolList}
-				filterMode="single"
+				{...objFilter}
 			/>
 			<Table.Column title="规则描述" dataIndex="expr" width={160} />
 			<Table.Column title="实际监测" dataIndex="summary" />

@@ -60,6 +60,10 @@ function Rules(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [originData, setOriginData] = useState([]);
 	const [poolList, setPoolList] = useState([]);
+	const objFilter = {
+		filters: alarmType === 'system' ? poolList : null,
+		filterMode: alarmType === 'system' ? 'single' : null
+	};
 
 	const onRefresh = () => {
 		getData(clusterId, middlewareName, namespace, searchText);
@@ -238,10 +242,14 @@ function Rules(props) {
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
-							}else{
+							} else {
 								Message.show(
-									messageConfig('error', '失败', res.errorMsg || '修改失败')
-								)
+									messageConfig(
+										'error',
+										'失败',
+										res.errorMsg || '修改失败'
+									)
+								);
 							}
 						});
 					} else {
@@ -264,10 +272,14 @@ function Rules(props) {
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
-							}else{
+							} else {
 								Message.show(
-									messageConfig('error', '失败', res.errorMsg || '修改失败')
-								)
+									messageConfig(
+										'error',
+										'失败',
+										res.errorMsg || '修改失败'
+									)
+								);
 							}
 						});
 					}
@@ -363,11 +375,10 @@ function Rules(props) {
 		>
 			<Table.Column title="规则ID" dataIndex="alertId" />
 			<Table.Column
+				{...objFilter}
+				cell={nameRender}
 				title="告警对象"
 				dataIndex="name"
-				filters={poolList}
-				filterMode="single"
-				cell={nameRender}
 			/>
 			<Table.Column
 				title="告警规则"
