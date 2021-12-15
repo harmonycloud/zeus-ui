@@ -10,7 +10,14 @@ import {
 } from '@alicloud/console-components';
 import Ding from '@/assets/images/ding.svg';
 import Email from '@/assets/images/email.svg';
-import { getMailInfo, setDing, setMail, getDing, connectDing, connectMail } from '@/services/alrem';
+import {
+	getMailInfo,
+	setDing,
+	setMail,
+	getDing,
+	connectDing,
+	connectMail
+} from '@/services/alrem';
 import messageConfig from '@/components/messageConfig';
 
 const { Row, Col } = Grid;
@@ -30,7 +37,9 @@ function AlarmSet() {
 	const [dingBtnStatus, setDingBtnStatus] = useState(true);
 	const [data, setData] = useState();
 	const [dingData, setDingData] = useState();
-	const [dingFormList, setDingFormList] = useState([{ index: 0, id: Math.random() }]);
+	const [dingFormList, setDingFormList] = useState([
+		{ index: 0, id: Math.random() }
+	]);
 	const [connect, setConnect] = useState();
 	const [dingConnect, setDingConnect] = useState();
 	const [show, setShow] = useState(true);
@@ -44,19 +53,23 @@ function AlarmSet() {
 			checkBtn();
 			setData(res.data);
 		});
-		getDing().then(res => {
+		getDing().then((res) => {
 			if (!res.data || !res.data.length) return;
 			// console.log(res);
-			dingField.setValues(Object.assign(...res.data.map((item, index) => {
-				return {
-					['webhook' + index]: item.webhook,
-					['secretKey' + index]: item.secretKey
-				}
-			})));
+			dingField.setValues(
+				Object.assign(
+					...res.data.map((item, index) => {
+						return {
+							['webhook' + index]: item.webhook,
+							['secretKey' + index]: item.secretKey
+						};
+					})
+				)
+			);
 			setDingFormList(res.data);
 			checkDingBtn();
 			setDingData(res.data);
-		})
+		});
 	}, []);
 
 	const submit = () => {
@@ -78,18 +91,22 @@ function AlarmSet() {
 			let arr2 = [];
 			for (let x in value) {
 				if (x.substring(0, x.length - 1) === 'webhook') {
-					arr1.splice(x.substring(x.length - 1, x.length), 0, { [x.substring(0, x.length - 1)]: value[x] });
+					arr1.splice(x.substring(x.length - 1, x.length), 0, {
+						[x.substring(0, x.length - 1)]: value[x]
+					});
 				} else {
-					arr2.splice(x.substring(x.length - 1, x.length), 0, { [x.substring(0, x.length - 1)]: value[x] });
+					arr2.splice(x.substring(x.length - 1, x.length), 0, {
+						[x.substring(0, x.length - 1)]: value[x]
+					});
 				}
 			}
 			const arrs = arr1.map((item, index) => {
-				const data = arr2.find((i, key) => index == key)
+				const data = arr2.find((i, key) => index == key);
 				return {
 					...item,
-					...data,
-				}
-			})
+					...data
+				};
+			});
 			console.log(arrs);
 			setDing(arrs).then((res) => {
 				// console.log(res);
@@ -121,44 +138,53 @@ function AlarmSet() {
 	const checkDingBtn = () => {
 		let obj = {};
 		let arr = [];
-		dingField.getNames().map(item => {
+		dingField.getNames().map((item) => {
 			obj = {
 				[item]: null,
 				...dingField.getValues()
-			}
-		})
+			};
+		});
 		for (let key in obj) {
 			key.indexOf('secretKey') === -1 && arr.push(obj[key]);
 		}
-		arr.every((item) => item) ? setDingBtnStatus(false) : setDingBtnStatus(true);
+		arr.every((item) => item)
+			? setDingBtnStatus(false)
+			: setDingBtnStatus(true);
 	};
 
 	const addDingFormList = () => {
 		if (dingFormList.length < 10) {
-			setDingFormList([...dingFormList, { index: dingFormList.length, id: Math.random() }]);
+			setDingFormList([
+				...dingFormList,
+				{ index: dingFormList.length, id: Math.random() }
+			]);
 		} else {
 			Message.show(
 				messageConfig('warning', '提示', '最多只能添加10个Webhook')
 			);
 		}
-	}
+	};
 
 	const reduceDingFormList = (id, index) => {
-		dingFormList.length > 1 && setDingFormList(dingFormList.filter(arr => id !== arr.id));
-		dingConnect && dingFormList.length > 1 && setDingConnect(dingConnect.filter((arr,i) => i !== index));
-	}
+		dingFormList.length > 1 &&
+			setDingFormList(dingFormList.filter((arr) => id !== arr.id));
+		dingConnect &&
+			dingFormList.length > 1 &&
+			setDingConnect(dingConnect.filter((arr, i) => i !== index));
+	};
 
 	const testMail = () => {
-		let sendData = { email: field.getValues().userName, password: field.getValues().password };
-		connectMail(sendData).then(res => {
-			if (res.success) {
-				Message.show(
-					messageConfig('success', '成功', '测试完成')
-				);
+		let sendData = {
+			email: field.getValues().userName,
+			password: field.getValues().password
+		};
+		connectMail(sendData).then((res) => {
+			if (res.data) {
+				Message.show(messageConfig('success', '成功', '测试完成'));
 			}
-			res.success ? setConnect('good') : setConnect('bad');
-		})
-	}
+			res.data ? setConnect('good') : setConnect('bad');
+		});
+	};
 
 	const testDing = () => {
 		dingField.validate((error, value) => {
@@ -167,29 +193,30 @@ function AlarmSet() {
 			let arr2 = [];
 			for (let x in value) {
 				if (x.substring(0, x.length - 1) === 'webhook') {
-					arr1.splice(x.substring(x.length - 1, x.length), 0, { [x.substring(0, x.length - 1)]: value[x] });
+					arr1.splice(x.substring(x.length - 1, x.length), 0, {
+						[x.substring(0, x.length - 1)]: value[x]
+					});
 				} else {
-					arr2.splice(x.substring(x.length - 1, x.length), 0, { [x.substring(0, x.length - 1)]: value[x] });
+					arr2.splice(x.substring(x.length - 1, x.length), 0, {
+						[x.substring(0, x.length - 1)]: value[x]
+					});
 				}
 			}
 			const arrs = arr1.map((item, index) => {
-				const data = arr2.find((i, key) => index == key)
+				const data = arr2.find((i, key) => index == key);
 				return {
 					...item,
-					...data,
-				}
-			})
-			connectDing(arrs).then(res => {
-				console.log(res);
+					...data
+				};
+			});
+			connectDing(arrs).then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '测试完成')
-					);
+					Message.show(messageConfig('success', '成功', '测试完成'));
 				}
-				setDingConnect(res.data.map(item => item.success))
-			})
+				setDingConnect(res.data.map((item) => item.success));
+			});
 		});
-	}
+	};
 
 	return (
 		<div className="alarm-set">
@@ -210,12 +237,22 @@ function AlarmSet() {
 						</p>
 					</div>
 					<div className="show-box">
-						<span className="show-icon" onClick={() => setShow(!show)}>
-							<Icon type="angle-double-down" size="xs" style={{ color: '#C0C6CC' }} />
+						<span
+							className="show-icon"
+							onClick={() => setShow(!show)}
+						>
+							<Icon
+								type="angle-double-down"
+								size="xs"
+								style={{ color: '#C0C6CC' }}
+							/>
 						</span>
 					</div>
 				</div>
-				<div className="box-content" style={{ display: show ? 'block' : 'none' }}>
+				<div
+					className="box-content"
+					style={{ display: show ? 'block' : 'none' }}
+				>
 					<Row>
 						<Col span={13} offset={4}>
 							<Form
@@ -223,17 +260,31 @@ function AlarmSet() {
 								{...formItemLayout}
 								style={{ padding: '24px' }}
 							>
-								<Form.Item required label="邮箱服务器" style={{ position: 'relative' }}>
+								<Form.Item
+									required
+									label="邮箱服务器"
+									style={{ position: 'relative' }}
+								>
 									<Input
 										placeholder="请输入邮箱服务器"
 										name="mailServer"
 										onChange={checkBtn}
 									/>
-									{
-										connect && <div className="concat">
-											<span className={connect === 'good' ? 'good' : 'bad'}>{connect === 'good' ? '可用' : '不可用'}</span>
+									{connect && (
+										<div className="concat">
+											<span
+												className={
+													connect === 'good'
+														? 'good'
+														: 'bad'
+												}
+											>
+												{connect === 'good'
+													? '可用'
+													: '不可用'}
+											</span>
 										</div>
-									}
+									)}
 								</Form.Item>
 								<Form.Item required label="端口">
 									<Input
@@ -327,60 +378,117 @@ function AlarmSet() {
 						</p>
 					</div>
 					<div className="show-box">
-						<span className="show-icon" onClick={() => setDingShow(!dingShow)}>
-							<Icon type="angle-double-down" size="xs" style={{ color: '#C0C6CC' }} />
+						<span
+							className="show-icon"
+							onClick={() => setDingShow(!dingShow)}
+						>
+							<Icon
+								type="angle-double-down"
+								size="xs"
+								style={{ color: '#C0C6CC' }}
+							/>
 						</span>
 					</div>
 				</div>
-				<div className="box-content" style={{ display: dingShow ? 'block' : 'none' }}>
+				<div
+					className="box-content"
+					style={{ display: dingShow ? 'block' : 'none' }}
+				>
 					<Row>
 						<Col span={13} offset={4}>
-							<Form
-								field={dingField}
-								style={{ padding: '24px' }}
-							>
-								{
-									dingFormList && dingFormList.map((item, index) => {
+							<Form field={dingField} style={{ padding: '24px' }}>
+								{dingFormList &&
+									dingFormList.map((item, index) => {
 										return (
 											<div key={item.id}>
 												<Form.Item
 													required
-													requiredMessage={"Webhook地址" + (index + 1) + "是必填字段"}
-													label={"Webhook地址" + (index + 1)}
-													style={{ position: "relative" }}
+													requiredMessage={
+														'Webhook地址' +
+														(index + 1) +
+														'是必填字段'
+													}
+													label={
+														'Webhook地址' +
+														(index + 1)
+													}
+													style={{
+														position: 'relative'
+													}}
 													labelCol={{ span: 5 }}
 													wrapperCol={{ span: 19 }}
 												>
 													<Input
 														placeholder="请输入Webhook地址"
-														name={"webhook" + index}
+														name={'webhook' + index}
 														onChange={checkDingBtn}
 													/>
 													<div className="form-btn">
-														<Button onClick={addDingFormList}>+</Button>
-														<Button onClick={() => reduceDingFormList(item.id, index)} className={index === 0 ? "disabled" : ''}>-</Button>
+														<Button
+															onClick={
+																addDingFormList
+															}
+														>
+															+
+														</Button>
+														<Button
+															onClick={() =>
+																reduceDingFormList(
+																	item.id,
+																	index
+																)
+															}
+															className={
+																index === 0
+																	? 'disabled'
+																	: ''
+															}
+														>
+															-
+														</Button>
 													</div>
-													{
-														dingConnect && typeof dingConnect[index] !== 'undefined' && <div className="concat">
-															<span className={dingConnect[index] ? 'good' : 'bad'}>{dingConnect[index] ? '可用' : '不可用'}</span>
-														</div>
-													}
+													{dingConnect &&
+														typeof dingConnect[
+															index
+														] !== 'undefined' && (
+															<div className="concat">
+																<span
+																	className={
+																		dingConnect[
+																			index
+																		]
+																			? 'good'
+																			: 'bad'
+																	}
+																>
+																	{dingConnect[
+																		index
+																	]
+																		? '可用'
+																		: '不可用'}
+																</span>
+															</div>
+														)}
 												</Form.Item>
 												<Form.Item
 													label="加签密钥"
-													labelCol={{ span: 3, offset: 11 }}
+													labelCol={{
+														span: 3,
+														offset: 11
+													}}
 													wrapperCol={{ span: 10 }}
 												>
 													<Input
 														placeholder="请输入加签密钥"
-														name={"secretKey" + index}
+														name={
+															'secretKey' + index
+														}
 														onChange={checkDingBtn}
 													/>
 												</Form.Item>
 											</div>
-										)
-									})
-								}
+										);
+									})}
 								<div className="btns">
 									<Button
 										onClick={() => {

@@ -216,7 +216,9 @@ function Rules(props) {
 	};
 
 	const nameRender = (value, index, record) => {
-		return alarmType === 'system' ? record.labels.clusterId : value;
+		return alarmType === 'system'
+			? record.labels.clusterId
+			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
 	};
 
 	const enableRender = (value, index, record) => {

@@ -112,7 +112,6 @@ function Visualization(props) {
 	const { pathname } = location;
 	const [option, setOption] = useState();
 	const [treeOption, setTreeOption] = useState();
-	// console.log(serverData.type);
 
 	const roleRender = (value, index, record) => {
 		// console.log(record, 'ppp', value);
@@ -160,11 +159,11 @@ function Visualization(props) {
 		return serverData.type !== 'redis'
 			? modelMap[serverData.mode]
 			: serverData.mode === 'sentinel'
-				? '哨兵'
-				: serverData.quota.redis.num === 6
-					? '三主三从'
-					: '五主五从' || ''
-	}
+			? '哨兵'
+			: serverData.quota.redis.num === 6
+			? '三主三从'
+			: '五主五从' || '';
+	};
 
 	const hasConfigBackup = (cfg) => {
 		if (!cfg.depth) {
@@ -183,7 +182,6 @@ function Visualization(props) {
 	};
 
 	const isSelect = (cfg) => {
-		console.log(selectObj);
 		if (!isEdit) {
 			if (hasConfigBackup(cfg)) {
 				return false;
@@ -238,7 +236,7 @@ function Visualization(props) {
 				drawShape: function drawShape(cfg, group) {
 					// console.log(cfg, serverData, group);
 					if (cfg.adentify) {
-						console.log(cfg.level, cfg.adentify);
+						// console.log(cfg.level, cfg.adentify);
 						const circle = group.addShape('rect', {
 							attrs: {
 								stroke: '#666',
@@ -247,7 +245,12 @@ function Visualization(props) {
 								height: 30,
 								radius: 15,
 								y: 35,
-								x: cfg.level === 'pod' ? cfg.children.length > 1 ? 30: 100 : 0,
+								x:
+									cfg.level === 'pod'
+										? cfg.children.length > 1
+											? 30
+											: 100
+										: 0,
 								cursor: 'pointer'
 							},
 							modelId: cfg.id,
@@ -255,13 +258,21 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text: cfg.level === 'serve' ? cfg.adentify : roleRender(cfg.adentify, '', cfg),
+								text:
+									cfg.level === 'serve'
+										? cfg.adentify
+										: roleRender(cfg.adentify, '', cfg),
 								fill: 'rgba(0, 0, 0, .65)',
 								fontSize: 10,
 								textAlign: 'center',
 								width: 60,
 								height: 30,
-								x: cfg.level === 'pod' ? cfg.children.length > 1 ? 60: 130 : 30,
+								x:
+									cfg.level === 'pod'
+										? cfg.children.length > 1
+											? 60
+											: 130
+										: 30,
 								// x: 35,
 								y: 55
 							},
@@ -295,7 +306,12 @@ function Visualization(props) {
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
-									x: cfg.level === 'serve' ? cfg.children.length > 1 ? 152: 86 : 217,
+									x:
+										cfg.level === 'serve'
+											? cfg.children.length > 1
+												? 152
+												: 86
+											: 217,
 									// x: 120,
 									y: 42,
 									width: 16,
@@ -310,7 +326,12 @@ function Visualization(props) {
 							});
 							group.addShape('text', {
 								attrs: {
-									x: cfg.level === 'serve' ? cfg.children.length > 1 ? 160: 94 : 225,
+									x:
+										cfg.level === 'serve'
+											? cfg.children.length > 1
+												? 160
+												: 94
+											: 225,
 									// x: 128,
 									y: 48,
 									textAlign: 'center',
@@ -346,10 +367,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-									)[0].color
+											(item) =>
+												item.status === cfg.status ||
+												item.status ===
+													serverData.status
+									  )[0].color
 									: '#FFC440',
 								x: 0,
 								y: 0,
@@ -367,10 +389,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-									)[0].image
+											(item) =>
+												item.status === cfg.status ||
+												item.status ===
+													serverData.status
+									  )[0].image
 									: NotReady,
 								x: 12,
 								y: 42,
@@ -415,14 +438,14 @@ function Visualization(props) {
 								text: !cfg.depth
 									? serverData.aliasName
 									: '资源/存储: ' +
-									cfg.resources.cpu +
-									'C/' +
-									cfg.resources.memory +
-									'G' +
-									'/' +
-									(cfg.resources.storageClassQuota
-										? cfg.resources.storageClassQuota
-										: ''),
+									  cfg.resources.cpu +
+									  'C/' +
+									  cfg.resources.memory +
+									  'G' +
+									  '/' +
+									  (cfg.resources.storageClassQuota
+											? cfg.resources.storageClassQuota
+											: ''),
 								x: 45,
 								y: !cfg.depth ? 60 : 70,
 								textBaseline: 'middle',
@@ -491,12 +514,17 @@ function Visualization(props) {
 								height: 24,
 								img: select
 							},
-							visible: record && (cfg.podName === selectObj || selectObj === cfg.name) ? true : false,
+							visible:
+								record &&
+								(cfg.podName === selectObj ||
+									selectObj === cfg.name)
+									? true
+									: false,
 							// visible: false,
 							name: 'select-image'
 						});
-						console.log(cfg.podName, selectObj);
-						const hasChildren = cfg.children && cfg.children.length > 0;
+						const hasChildren =
+							cfg.children && cfg.children.length > 0;
 						if (!hasChildren && cfg.depth) {
 							group.addShape('rect', {
 								attrs: {
@@ -630,10 +658,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-									)[0].title
+											(item) =>
+												item.status === cfg.status ||
+												item.status ===
+													serverData.status
+									  )[0].title
 									: '运行异常',
 								fill: '#666',
 								x: 0,
@@ -739,7 +768,7 @@ function Visualization(props) {
 				const endPoint = cfg.endPoint;
 
 				const { style } = cfg;
-				console.log(cfg, startPoint, endPoint);
+				// console.log(cfg, startPoint, endPoint);
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
@@ -814,7 +843,7 @@ function Visualization(props) {
 					return 100;
 				},
 				getWidth: function getWidth(d) {
-					return d.level==='serve' ? 60 : 220;
+					return d.level === 'serve' ? 60 : 220;
 				},
 				getVGap: function getVGap() {
 					return 20;
@@ -825,19 +854,33 @@ function Visualization(props) {
 			}
 		});
 		const pods = [];
-		topoData.pods && topoData.pods.forEach(el => {
-			if (!el.role) el.role = roleRender('', '', el);
-			if (pods.every(els => els.role != el.role)) pods.push({ adentify: el.role, role: el.role, podName: el.podName, level: 'pod' });
-		})
-		pods.forEach(el => (el.children = topoData.pods.filter(els => els.role == el.role)));
+		topoData.pods &&
+			topoData.pods.forEach((el) => {
+				if (!el.role) el.role = roleRender('', '', el);
+				if (pods.every((els) => els.role != el.role))
+					pods.push({
+						adentify: el.role,
+						role: el.role,
+						podName: el.podName,
+						level: 'pod'
+					});
+			});
+		pods.forEach(
+			(el) =>
+				(el.children = topoData.pods.filter(
+					(els) => els.role == el.role
+				))
+		);
 		const res = {
 			id: 'tree',
 			name: serverData.name,
-			children: [{
-				adentify: serveRender(),
-				level: 'serve',
-				children: pods
-			}]
+			children: [
+				{
+					adentify: serveRender(),
+					level: 'serve',
+					children: pods
+				}
+			]
 		};
 		// res.children = topoData.pods;
 		console.log(res);
@@ -864,7 +907,9 @@ function Visualization(props) {
 				const textButton3 = group.find(
 					(e) => e.get('name') === 'text-button3'
 				);
-				const infoText = group.find((e) => e.get('name') === 'info-text');
+				const infoText = group.find(
+					(e) => e.get('name') === 'info-text'
+				);
 				graph.setItemState(item, 'hover', true);
 				if (evt.target.cfg.name === 'status') {
 					info.cfg.visible = true;
@@ -904,7 +949,9 @@ function Visualization(props) {
 				const textButton3 = group.find(
 					(e) => e.get('name') === 'text-button3'
 				);
-				const infoText = group.find((e) => e.get('name') === 'info-text');
+				const infoText = group.find(
+					(e) => e.get('name') === 'info-text'
+				);
 				graph.setItemState(item, 'hover', false);
 				if (info) {
 					info.cfg.visible = false;
@@ -995,10 +1042,12 @@ function Visualization(props) {
 				(e) => e.get('name') === 'collapse-text'
 			);
 			// const serve = group.find((e) => e.get('name') === 'serve');
-			const text = collapseText.cfg.attrs.text;
+			const text = collapseText.attr('text');
+			console.log(text, collapseText, group);
+			// collapseText.cfg.attrs.text = '-'
 			text === '-'
-				? (collapseText.attrs.text = '+')
-				: (collapseText.attrs.text = '-');
+				? collapseText.attr(text, '+')
+				: collapseText.attr(text, '-');
 			// text === '-'
 			// 	? (serve.cfg.visible = false)
 			// 	: (serve.cfg.visible = true);
@@ -1013,8 +1062,8 @@ function Visualization(props) {
 			// const serve = group.find((e) => e.get('name') === 'serve');
 			const text = collapseText.cfg.attrs.text;
 			text === '-'
-				? (collapseText.attrs.text = '+')
-				: (collapseText.attrs.text = '-');
+				? collapseText.attr(text, '+')
+				: collapseText.attr(text, '-');
 			// text === '-'
 			// 	? (serve.cfg.visible = false)
 			// 	: (serve.cfg.visible = true);
@@ -1079,7 +1128,6 @@ function Visualization(props) {
 	};
 
 	const scale = () => {
-		// console.log(window.graph.getWidth(), window.innerWidth);
 		if (window.graph.getWidth() !== window.innerWidth) {
 			setOption({
 				width: window.innerWidth,
@@ -1109,13 +1157,13 @@ function Visualization(props) {
 				anchorPoints:
 					value === 'TB'
 						? [
-							[0.5, 0],
-							[0.5, 1]
-						]
+								[0.5, 0],
+								[0.5, 1]
+						  ]
 						: [
-							[0, 0.5],
-							[1, 0.5]
-						]
+								[0, 0.5],
+								[1, 0.5]
+						  ]
 			},
 			defaultEdge: {
 				type: 'polyline',
@@ -1130,7 +1178,7 @@ function Visualization(props) {
 				return 100;
 			},
 			getWidth: function getWidth(d) {
-				return d.level==='serve' ? 60 : 220;
+				return d.level === 'serve' ? 60 : 220;
 			},
 			getVGap: function getVGap() {
 				return 20;
@@ -1162,7 +1210,7 @@ function Visualization(props) {
 						align="b"
 					>
 						{window.graph &&
-							window.graph.getWidth() !== window.innerWidth
+						window.graph.getWidth() !== window.innerWidth
 							? '全屏'
 							: '退出全屏'}
 					</Tooltip>

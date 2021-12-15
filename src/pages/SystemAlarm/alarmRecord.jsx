@@ -154,6 +154,12 @@ function AlarmRecord(props) {
 		}
 	};
 
+	const nameRender = (value) => {
+		return alarmType === 'system'
+			? value
+			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
+	};
+
 	return (
 		<Table
 			dataSource={eventData}
@@ -189,6 +195,7 @@ function AlarmRecord(props) {
 			<Table.Column
 				title="告警对象"
 				dataIndex="clusterId"
+				cell={nameRender}
 				{...objFilter}
 			/>
 			<Table.Column title="规则描述" dataIndex="expr" width={160} />
