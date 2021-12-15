@@ -393,22 +393,25 @@ function Rules(props) {
 				filters={alarmWarn}
 				filterMode="single"
 				cell={levelRender}
+				width={110}
 			/>
 			<Table.Column
 				title="告警间隔"
 				dataIndex="silence"
 				filters={silences}
 				filterMode="single"
+				width={110}
 			/>
-			<Table.Column title="告警内容" dataIndex="content" />
+			<Table.Column title="告警内容" dataIndex="content" width={110} />
 			<Table.Column
 				title="创建时间"
 				dataIndex="createTime"
 				cell={createTimeRender}
 				sortable
+				width={160}
 			/>
-			<Table.Column title="启用" dataIndex="enable" cell={enableRender} />
-			<Table.Column title="操作" dataIndex="option" cell={actionRender} />
+			<Table.Column title="启用" dataIndex="enable" cell={enableRender} width={100} />
+			<Table.Column title="操作" dataIndex="option" cell={actionRender} width={100} />
 		</Table>
 	);
 }

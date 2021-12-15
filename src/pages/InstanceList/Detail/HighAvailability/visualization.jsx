@@ -159,10 +159,10 @@ function Visualization(props) {
 		return serverData.type !== 'redis'
 			? modelMap[serverData.mode]
 			: serverData.mode === 'sentinel'
-			? '哨兵'
-			: serverData.quota.redis.num === 6
-			? '三主三从'
-			: '五主五从' || '';
+				? '哨兵'
+				: serverData.quota.redis.num === 6
+					? '三主三从'
+					: '五主五从' || '';
 	};
 
 	const hasConfigBackup = (cfg) => {
@@ -273,7 +273,6 @@ function Visualization(props) {
 											? 60
 											: 130
 										: 30,
-								// x: 35,
 								y: 55
 							},
 							modelId: cfg.id,
@@ -312,7 +311,6 @@ function Visualization(props) {
 												? 152
 												: 86
 											: 217,
-									// x: 120,
 									y: 42,
 									width: 16,
 									height: 16,
@@ -332,11 +330,10 @@ function Visualization(props) {
 												? 160
 												: 94
 											: 225,
-									// x: 128,
 									y: 48,
 									textAlign: 'center',
 									textBaseline: 'middle',
-									text: '+',
+									text: '-',
 									fontSize: 16,
 									cursor: 'pointer',
 									fill: 'rgba(0, 0, 0, 0.25)'
@@ -367,11 +364,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-											(item) =>
-												item.status === cfg.status ||
-												item.status ===
-													serverData.status
-									  )[0].color
+										(item) =>
+											item.status === cfg.status ||
+											item.status ===
+											serverData.status
+									)[0].color
 									: '#FFC440',
 								x: 0,
 								y: 0,
@@ -389,11 +386,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-											(item) =>
-												item.status === cfg.status ||
-												item.status ===
-													serverData.status
-									  )[0].image
+										(item) =>
+											item.status === cfg.status ||
+											item.status ===
+											serverData.status
+									)[0].image
 									: NotReady,
 								x: 12,
 								y: 42,
@@ -438,14 +435,14 @@ function Visualization(props) {
 								text: !cfg.depth
 									? serverData.aliasName
 									: '资源/存储: ' +
-									  cfg.resources.cpu +
-									  'C/' +
-									  cfg.resources.memory +
-									  'G' +
-									  '/' +
-									  (cfg.resources.storageClassQuota
-											? cfg.resources.storageClassQuota
-											: ''),
+									cfg.resources.cpu +
+									'C/' +
+									cfg.resources.memory +
+									'G' +
+									'/' +
+									(cfg.resources.storageClassQuota
+										? cfg.resources.storageClassQuota
+										: ''),
 								x: 45,
 								y: !cfg.depth ? 60 : 70,
 								textBaseline: 'middle',
@@ -516,8 +513,8 @@ function Visualization(props) {
 							},
 							visible:
 								record &&
-								(cfg.podName === selectObj ||
-									selectObj === cfg.name)
+									(cfg.podName === selectObj ||
+										selectObj === cfg.name)
 									? true
 									: false,
 							// visible: false,
@@ -658,11 +655,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-											(item) =>
-												item.status === cfg.status ||
-												item.status ===
-													serverData.status
-									  )[0].title
+										(item) =>
+											item.status === cfg.status ||
+											item.status ===
+											serverData.status
+									)[0].title
 									: '运行异常',
 								fill: '#666',
 								x: 0,
@@ -768,7 +765,7 @@ function Visualization(props) {
 				const endPoint = cfg.endPoint;
 
 				const { style } = cfg;
-				// console.log(cfg, startPoint, endPoint);
+				console.log(cfg, startPoint, endPoint);
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
@@ -813,7 +810,7 @@ function Visualization(props) {
 			},
 			nodeStateStyles: {
 				hover: {
-					// fill: '#fff'
+					// fill: '#EBEBEB',
 					opacity: 0.7
 				},
 				select: {
@@ -867,13 +864,14 @@ function Visualization(props) {
 			});
 		pods.forEach(
 			(el) =>
-				(el.children = topoData.pods.filter(
-					(els) => els.role == el.role
-				))
+			(el.children = topoData.pods.filter(
+				(els) => els.role == el.role
+			))
 		);
 		const res = {
 			id: 'tree',
 			name: serverData.name,
+			hasConfigBackup: topoData.hasConfigBackup,
 			children: [
 				{
 					adentify: serveRender(),
@@ -915,6 +913,7 @@ function Visualization(props) {
 					info.cfg.visible = true;
 					infoText.cfg.visible = true;
 				}
+				// if (box.attrs.fill === '#EBEBEB') item.enableCapture(false);
 				if (pathname.includes('addBackup')) return;
 				if (evt.target.cfg.name === 'rect-shape' && button1) {
 					button1.cfg.visible = true;
@@ -1008,12 +1007,16 @@ function Visualization(props) {
 					setBackupObj(null);
 					graph.setItemState(item, 'select', false);
 					selectImage.cfg.visible = false;
+					nodes.some(str => {
+						if (!str.hasState('select') && !str.getModel().adentify && !isEdit && !str.getModel().hasConfigBackup) {
+							const group = str.getContainer();
+							const box = group.find(data => data.name = 'rect-shape');
+							box.attr('fill', '#ffffff');
+							str.enableCapture(true);
+						}
+					});
 				} else {
-					if (
-						nodes.some((str) =>
-							str._cfg.states.find((obj) => obj === 'select')
-						)
-					) {
+					if (nodes.some(str => str._cfg.states.find((obj) => obj === 'select'))) {
 						return;
 					}
 					!evt.item._cfg.model.depth
@@ -1021,6 +1024,14 @@ function Visualization(props) {
 						: setBackupObj(evt.item._cfg.model.podName);
 					graph.setItemState(item, 'select', true);
 					selectImage.cfg.visible = true;
+					nodes.some(str => {
+						if (!str.hasState('select') && !str.getModel().adentify && !isEdit && !str.getModel().hasConfigBackup) {
+							const group = str.getContainer();
+							const box = group.find(data => data.name = 'rect-shape');
+							box.attr('fill', '#EBEBEB');
+							str.enableCapture(false);
+						}
+					});
 				}
 			}
 		});
@@ -1041,16 +1052,11 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			// const serve = group.find((e) => e.get('name') === 'serve');
 			const text = collapseText.attr('text');
-			console.log(text, collapseText, group);
-			// collapseText.cfg.attrs.text = '-'
 			text === '-'
 				? collapseText.attr('text', '+')
 				: collapseText.attr('text', '-');
-			// text === '-'
-			// 	? (serve.cfg.visible = false)
-			// 	: (serve.cfg.visible = true);
+			graph.refreshItem(item);
 			handleCollapse(e);
 		});
 		graph.on('collapse-back:click', (e) => {
@@ -1059,14 +1065,11 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			// const serve = group.find((e) => e.get('name') === 'serve');
-			const text = collapseText.cfg.attrs.text;
+			const text = collapseText.attr('text');
 			text === '-'
 				? collapseText.attr('text', '+')
 				: collapseText.attr('text', '-');
-			// text === '-'
-			// 	? (serve.cfg.visible = false)
-			// 	: (serve.cfg.visible = true);
+			graph.refreshItem(item);
 			handleCollapse(e);
 		});
 		graph.on('button1:click', (evt) => {
@@ -1157,13 +1160,13 @@ function Visualization(props) {
 				anchorPoints:
 					value === 'TB'
 						? [
-								[0.5, 0],
-								[0.5, 1]
-						  ]
+							[0.5, 0],
+							[0.5, 1]
+						]
 						: [
-								[0, 0.5],
-								[1, 0.5]
-						  ]
+							[0, 0.5],
+							[1, 0.5]
+						]
 			},
 			defaultEdge: {
 				type: 'polyline',
@@ -1187,6 +1190,8 @@ function Visualization(props) {
 				return 20;
 			}
 		});
+		window.graph.refresh();
+		// window.graph.layout();
 		window.graph.fitCenter();
 	};
 
@@ -1210,7 +1215,7 @@ function Visualization(props) {
 						align="b"
 					>
 						{window.graph &&
-						window.graph.getWidth() !== window.innerWidth
+							window.graph.getWidth() !== window.innerWidth
 							? '全屏'
 							: '退出全屏'}
 					</Tooltip>
