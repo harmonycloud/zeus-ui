@@ -235,7 +235,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		}
 	};
 	const onRowProps = (record: serviceProps) => {
-		if (record.status === 'deleted') {
+		if (record.status === 'Deleted') {
 			return { style: { background: '#F8F8F9', color: '#CCCCCC' } };
 		}
 	};
@@ -317,7 +317,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	};
 
 	const nameRender = (value: string, index: number, record: serviceProps) => {
-		if (record.status === 'deleted') {
+		if (record.status === 'Deleted') {
 			return (
 				<div>
 					<div className="displayed-name">{record.name}</div>
@@ -467,7 +467,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 		index: number,
 		record: serviceProps
 	) => {
-		if (record.status === 'deleted') {
+		if (record.status === 'Deleted') {
 			return (
 				<Actions>
 					<LinkButton onClick={() => recoveryService(record)}>

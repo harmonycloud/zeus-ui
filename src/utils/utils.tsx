@@ -252,7 +252,7 @@ export const serviceListStatusRender: (
 					</span>
 				</Balloon>
 			);
-		case 'deleted':
+		case 'Deleted':
 			return (
 				<>
 					<Icon
