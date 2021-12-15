@@ -427,15 +427,25 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			title: '操作确认',
 			content: '请确认是否恢复该服务！',
 			onOk: () => {
-				recoveryMiddleware(sendData).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '该服务已彻底删除')
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
+				return recoveryMiddleware(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'该服务已恢复,3秒后刷新'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						setTimeout(() => {
+							getData();
+						}, 3000);
+					});
 			}
 		});
 	};
@@ -450,15 +460,25 @@ function ServiceList(props: serviceListProps): JSX.Element {
 			title: '操作确认',
 			content: '删除后无法恢复该服务，请谨慎操作！',
 			onOk: () => {
-				deleteMiddlewareStorage(sendData).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '该服务已彻底删除')
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
+				return deleteMiddlewareStorage(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'该服务已彻底删除,3秒后刷新'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						setTimeout(() => {
+							getData();
+						}, 3000);
+					});
 			}
 		});
 	};
