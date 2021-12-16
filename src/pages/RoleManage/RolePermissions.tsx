@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Tree, Dialog, Message, Checkbox } from '@alicloud/console-components';
+import {
+	Tree,
+	Dialog,
+	Message,
+	Checkbox,
+	Loading
+} from '@alicloud/console-components';
 import { roleProps, roleTree } from './role';
 import messageConfig from '@/components/messageConfig';
 import { updateRole } from '@/services/role';
@@ -31,6 +37,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 	const [clusters, setClusters] = useState<string[]>([]);
 	const [namespaceList, setNamespaceList] = useState({});
 	const [namespaces, setNamespaces] = useState<string[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		const menu: roleTree[] | undefined = data?.menu;
@@ -77,6 +84,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 	useEffect(() => {
 		getClusters({ detail: true }).then((res) => {
 			if (res.success) {
+				setLoading(false);
 				if (res.data.length !== 0) {
 					setOriginData(res.data);
 					const listTemp = res.data.map((item: any) => {
@@ -239,57 +247,61 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 				/>
 			</div>
 			<p>资源池权限分配：</p>
-			<div className="role-management-content">
-				<div className="role-management-cluster">
-					<div className="role-management-title">资源池</div>
-					<div className="role-management-check-content">
-						<CheckboxGroup
-							value={clusters}
-							dataSource={clusterList}
-							onChange={(selectedItems) =>
-								onChange(selectedItems, 'cluster')
-							}
-							direction="ver"
-						/>
+			<Loading tip="加载中，请稍后" size="medium" visible={loading}>
+				<div className="role-management-content">
+					<div className="role-management-cluster">
+						<div className="role-management-title">资源池</div>
+						<div className="role-management-check-content">
+							<CheckboxGroup
+								value={clusters}
+								dataSource={clusterList}
+								onChange={(selectedItems) =>
+									onChange(selectedItems, 'cluster')
+								}
+								direction="ver"
+							/>
+						</div>
+					</div>
+					<div className="role-management-namespace">
+						<div className="role-management-title">资源分区</div>
+						<div className="role-management-check-content">
+							<CheckboxGroup
+								value={namespaces}
+								onChange={(selectedItems) =>
+									onChange(selectedItems, 'namespace')
+								}
+							>
+								{Object.keys(namespaceList).map((key) => {
+									return (
+										<div key={key}>
+											<div className="role-management-label">
+												{key}:
+											</div>
+											<div className="role-management-checkout-content">
+												{namespaceList[key].map(
+													(namespace: any) => {
+														return (
+															<Checkbox
+																key={
+																	namespace.name
+																}
+																value={`${namespace.name}/${key}`}
+															>
+																{namespace.aliasName ||
+																	namespace.name}
+															</Checkbox>
+														);
+													}
+												)}
+											</div>
+										</div>
+									);
+								})}
+							</CheckboxGroup>
+						</div>
 					</div>
 				</div>
-				<div className="role-management-namespace">
-					<div className="role-management-title">资源分区</div>
-					<div className="role-management-check-content">
-						<CheckboxGroup
-							value={namespaces}
-							onChange={(selectedItems) =>
-								onChange(selectedItems, 'namespace')
-							}
-						>
-							{Object.keys(namespaceList).map((key) => {
-								return (
-									<div key={key}>
-										<div className="role-management-label">
-											{key}:
-										</div>
-										<div className="role-management-checkout-content">
-											{namespaceList[key].map(
-												(namespace: any) => {
-													return (
-														<Checkbox
-															key={namespace.name}
-															value={`${namespace.name}/${key}`}
-														>
-															{namespace.aliasName ||
-																namespace.name}
-														</Checkbox>
-													);
-												}
-											)}
-										</div>
-									</div>
-								);
-							})}
-						</CheckboxGroup>
-					</div>
-				</div>
-			</div>
+			</Loading>
 		</Dialog>
 	);
 }
