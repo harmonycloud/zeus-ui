@@ -87,6 +87,7 @@ function PlatformOverview(props) {
 	const history = useHistory();
 	const [pieOption, setPieOption] = useState({});
 	const [lineOption, setLineOption] = useState({});
+	const [chart, setChart] = useState(null);
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -118,32 +119,39 @@ function PlatformOverview(props) {
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(getLineOption(res.data.alertSummary));
-			const chart = echarts.init(document.getElementById('id'));
-			chart.setOption(getPieOption(res.data.operatorDTO));
+			setChart(echarts.init(document.getElementById('id')));
+			// const chart = echarts.init(document.getElementById('id'));
+			echarts
+				.init(document.getElementById('id'))
+				.setOption(getPieOption(res.data.operatorDTO));
 
-			chart.on('legendselectchanged', (obj) => {
-				if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
-					x = res.data.operatorDTO.operatorList.filter(
-						(item) => item.status === 1
-					);
-				} else if (
-					!obj.selected['运行正常'] &&
-					obj.selected['运行异常']
-				) {
-					x = res.data.operatorDTO.operatorList.filter(
-						(item) => item.status !== 1
-					);
-				} else if (
-					obj.selected['运行正常'] &&
-					obj.selected['运行异常']
-				) {
-					x = res.data.operatorDTO.operatorList;
-				} else {
-					x = [];
-				}
-				setOperatorList(x);
-			});
-			window.onresize = chart.resize;
+			echarts
+				.init(document.getElementById('id'))
+				.on('legendselectchanged', (obj) => {
+					if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
+						x = res.data.operatorDTO.operatorList.filter(
+							(item) => item.status === 1
+						);
+					} else if (
+						!obj.selected['运行正常'] &&
+						obj.selected['运行异常']
+					) {
+						x = res.data.operatorDTO.operatorList.filter(
+							(item) => item.status !== 1
+						);
+					} else if (
+						obj.selected['运行正常'] &&
+						obj.selected['运行异常']
+					) {
+						x = res.data.operatorDTO.operatorList;
+					} else {
+						x = [];
+					}
+					setOperatorList(x);
+				});
+			window.onresize = echarts.init(
+				document.getElementById('id')
+			).resize;
 		});
 		getServers({ clusterId }).then((res) => {
 			res.data && setBriefInfoList(res.data.briefInfoList);
