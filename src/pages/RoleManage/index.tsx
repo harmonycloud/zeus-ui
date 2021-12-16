@@ -107,23 +107,37 @@ function RoleManage(): JSX.Element {
 	const actionRender = (value: string, index: number, record: roleProps) => {
 		return (
 			<Actions>
-				<Balloon
-					trigger={
-						<LinkButton
-							style={{
-								color: record.id === 1 ? '#ddd' : '#0070cc',
-								cursor:
-									record.id === 1 ? 'not-allowed' : 'pointer'
-							}}
-							onClick={() => edit(record)}
-						>
-							编辑
-						</LinkButton>
-					}
-					closable={false}
-				>
-					系统初始化最高权限角色，不可操作
-				</Balloon>
+				{record.id === 1 ? (
+					<Balloon
+						trigger={
+							<LinkButton
+								style={{
+									color: record.id === 1 ? '#ddd' : '#0070cc',
+									cursor:
+										record.id === 1
+											? 'not-allowed'
+											: 'pointer'
+								}}
+								onClick={() => edit(record)}
+							>
+								编辑
+							</LinkButton>
+						}
+						closable={false}
+					>
+						系统初始化最高权限角色，不可操作
+					</Balloon>
+				) : (
+					<LinkButton
+						style={{
+							color: record.id === 1 ? '#ddd' : '#0070cc',
+							cursor: record.id === 1 ? 'not-allowed' : 'pointer'
+						}}
+						onClick={() => edit(record)}
+					>
+						编辑
+					</LinkButton>
+				)}
 				{Number(roleId) === record.id ? (
 					<Balloon
 						trigger={
@@ -187,7 +201,7 @@ function RoleManage(): JSX.Element {
 								}}
 								onClick={() => permissionEdit(record)}
 							>
-								分配角色权限
+								分配角色 & 分区
 							</LinkButton>
 						}
 						closable={false}
