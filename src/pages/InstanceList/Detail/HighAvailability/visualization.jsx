@@ -269,30 +269,30 @@ function Visualization(props) {
 							modelId: cfg.id,
 							name: 'circle-text'
 						});
-						if (cfg.level === 'serve') {
-							group.addShape('rect', {
-								attrs: {
-									stroke: '#A3B1BF',
-									x: 60,
-									y: 50,
-									width: 26,
-									height: 0
-								},
-								name: 'serve-line'
-							});
-						}
-						if (cfg.level === 'pod') {
-							group.addShape('rect', {
-								attrs: {
-									stroke: '#A3B1BF',
-									x: 90,
-									y: 50,
-									width: 90,
-									height: 0
-								},
-								name: 'pod-line'
-							});
-						}
+						// if (cfg.level === 'serve') {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: 60,
+						// 			y: 50,
+						// 			width: 26,
+						// 			height: 0
+						// 		},
+						// 		name: 'serve-line'
+						// 	});
+						// }
+						// if (cfg.level === 'pod') {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: 90,
+						// 			y: 50,
+						// 			width: 90,
+						// 			height: 0
+						// 		},
+						// 		name: 'pod-line'
+						// 	});
+						// }
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
@@ -1094,20 +1094,10 @@ function Visualization(props) {
 			type: 'compactBox',
 			direction: value,
 			defaultNode: {
-				type: 'tree-node',
-				anchorPoints:
-					value === 'TB'
-						? [
-								[0.5, 0],
-								[0.5, 1]
-						  ]
-						: [
-								[0.5, 0.5],
-								[0.5, 0.5]
-						  ]
+				type: 'tree-node'
 			},
 			defaultEdge: {
-				type: 'line',
+				type: 'polyline',
 				style: {
 					stroke: '#A3B1BF'
 				}
@@ -1132,18 +1122,33 @@ function Visualization(props) {
 		// edges.map(item => {
 		// 	console.log(item.getSource());
 		// })
+		// if(value === 'TB'){
 		const nodes = window.graph.getNodes();
-		nodes.map((item) => {
-			window.graph.updateItem(item, {
-				anchorPoints: [
-					[0, 0.5],
-					[1, 0.5]
-				]
-			});
-		});
-		// window.graph.layout();
+		// nodes.map((item) => {
+		// 	const group = item.getContainer();
+		// 	const pods = group.find((e) => e.get('name') === 'circle');
+		// 	const podTexts = group.find((e) => e.get('name') === 'circle-text');
+		// 	window.graph.updateItem(item, {
+		// 		anchorPoints: value === 'TB' ? [
+		// 			[0.5, 1],
+		// 			[1, 0.5]
+		// 		] : [
+		// 			[0, 0.5],
+		// 			[1, 0.5]
+		// 		]
+		// 	});
+		// 	console.log(item);
+		// 	if (item.getModel().level === 'pod'){
+		// 		pods.attr({
+		// 			'x': 95,
+		// 			'y': 0
+		// 		});
+		// 		podTexts.attr('x', 120);
+		// 	}
+		// });
+		// }
+		window.graph.layout();
 		setDirection(value);
-		window.graph.refreshPositions();
 		window.graph.fitCenter();
 	};
 

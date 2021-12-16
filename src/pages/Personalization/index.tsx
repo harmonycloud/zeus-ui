@@ -9,9 +9,9 @@ import {
 	Input,
 	Radio,
 	Field,
-	Message
+	Message,
+	Dialog
 } from '@alicloud/console-components';
-import Confirm from '@alicloud/console-components-confirm';
 import { personalizationProps } from './personalization';
 import background from '../../assets/images/login_bg.svg';
 import logo from '@/assets/images/logo.svg';
@@ -45,6 +45,7 @@ function Personlization(): JSX.Element {
 	const [loginSelect, setLoginSelect] = useState(false);
 	const [homeSelect, setHomeSelect] = useState(false);
 	const [imgRule, setImgRule] = useState(false);
+	const [checkOk, setCheckOk] = useState(false);
 
 	useEffect(() => {
 		getData();
@@ -61,11 +62,12 @@ function Personlization(): JSX.Element {
 					document.title =
 						res.data && res.data.title ? res.data.title : 'Zeus';
 				} else {
-					field.setValues({ 
+					field.setValues({
 						status: '0',
 						title: 'Zeus',
 						slogan: '我是Slogan，让IT更美好',
-						copyrightNotice: 'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
+						copyrightNotice:
+							'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
 						platformName: 'Zeus | 中间件管理一体化平台'
 					});
 				}
@@ -128,17 +130,35 @@ function Personlization(): JSX.Element {
 
 			if (values.status === '1') {
 				values.status = 'init';
+				Dialog.show({
+					title: '操作确认',
+					content: '删除将无法找回，是否继续?',
+					onOk: () => {
+						personalized(values).then((res) => {
+							if (res.success) {
+								Message.show(
+									messageConfig(
+										'success',
+										'成功',
+										'个性化设置成功'
+									)
+								);
+								getData();
+							}
+						});
+					}
+				});
 			} else {
 				values.status = '';
+				personalized(values).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '个性化设置成功')
+						);
+						getData();
+					}
+				});
 			}
-			personalized(values).then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '个性化设置成功')
-					);
-					getData();
-				}
-			});
 		});
 	};
 
@@ -296,7 +316,7 @@ function Personlization(): JSX.Element {
 					>
 						<Input
 							name="copyrightNotice"
-							placeholder="我是版权声明，支持空格，限定在30字符内"
+							placeholder="我是版权声明，支持空格，限定在60字符内"
 						/>
 					</Form.Item>
 					<h2>登陆后系统页配置</h2>
@@ -392,20 +412,9 @@ function Personlization(): JSX.Element {
 				</Form>
 				<div className="detail-divider" />
 				<div>
-					{Number(status) ? (
-						<Confirm
-							type="notice"
-							title="操作提示"
-							content="您之前所有自定义已做修改的地方将恢复至出厂状态，是否继续？"
-							onConfirm={onSubmit}
-						>
-							<Button type="primary">提交</Button>
-						</Confirm>
-					) : (
-						<Button type="primary" onClick={onSubmit}>
-							提交
-						</Button>
-					)}
+					<Button type="primary" onClick={onSubmit}>
+						提交
+					</Button>
 					<Button
 						style={{ marginLeft: '5px' }}
 						onClick={() => field.reset()}
