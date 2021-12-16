@@ -1132,6 +1132,15 @@ function Visualization(props) {
 		// edges.map(item => {
 		// 	console.log(item.getSource());
 		// })
+		const nodes = window.graph.getNodes();
+		nodes.map((item) => {
+			window.graph.updateItem(item, {
+				anchorPoints: [
+					[0, 0.5],
+					[1, 0.5]
+				]
+			});
+		});
 		// window.graph.layout();
 		setDirection(value);
 		window.graph.refreshPositions();
