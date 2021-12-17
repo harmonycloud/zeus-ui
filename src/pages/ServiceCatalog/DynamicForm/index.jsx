@@ -163,7 +163,7 @@ function DynamicForm(props) {
 				if (values.tolerationsLabels) {
 					sendData.tolerations = values.tolerationsLabels.map(
 						(item) => {
-							return { label: item.label };
+							return item.label
 						}
 					);
 				} else {
