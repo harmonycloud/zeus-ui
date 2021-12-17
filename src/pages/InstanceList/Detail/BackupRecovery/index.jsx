@@ -18,6 +18,7 @@ export default function BackupRecovery(props) {
 	useEffect(() => {
 		setCustomMid(props.customMid);
 		setCapabilities(props.capabilities || []);
+		localStorage.getItem("backKey") && localStorage.getItem("backKey").indexOf('config') !== -1 ? setSelectedKey('config') : setSelectedKey('list')
 	}, [props]);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
@@ -57,7 +58,7 @@ export default function BackupRecovery(props) {
 	if (pathname.includes('disasterBackup')) {
 		return (
 			<div>
-				<Tab>
+				<Tab defaultActiveKey={selectedKey === 'list' ? 0 : 1}>
 					<Tab.Item title="备份记录">
 						<List {...props} />
 					</Tab.Item>

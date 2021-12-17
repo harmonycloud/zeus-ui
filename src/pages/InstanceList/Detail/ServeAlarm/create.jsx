@@ -282,7 +282,9 @@ function CreateAlarm(props) {
 				res.data.userBy.length &&
 				res.data.users.map((item) => {
 					res.data.userBy.map((arr) => {
-						arr.email && item.userId === arr.userId && user.push(item);
+						arr.email &&
+							item.userId === arr.userId &&
+							user.push(item);
 					});
 				});
 			setIsReady(true);
@@ -495,7 +497,7 @@ function CreateAlarm(props) {
 				item.symbol &&
 				item.threshold &&
 				item.severity &&
-				item.silence && 
+				item.silence &&
 				item.content
 			) {
 				return true;
@@ -510,13 +512,20 @@ function CreateAlarm(props) {
 		if (alarmType === 'system') {
 			const data = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
-				item.annotations = {
-					message: item.content
-				};
+				if (record) {
+					item.annotations = {
+						...record.annotations,
+						message: item.content
+					};
+				} else {
+					item.annotations = {
+						message: item.content
+					};
+				}
 				item.lay = 'system';
 				record ? (item.enable = record.enable) : (item.enable = 0);
-				dingChecked ? item.ding = 'ding' : item.ding = '';
-				mailChecked ? item.mail = 'mail' : item.mail = '';
+				dingChecked ? (item.ding = 'ding') : (item.ding = '');
+				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				return item;
 			});
 			if (systemId) {
@@ -546,9 +555,9 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
-				item.enable = 0;
-				dingChecked ? (item.ding = 'ding') : (item.ding = null);
-				mailChecked ? (item.mail = 'mail') : (item.mail = null);
+				record ? (item.enable = record.enable) : (item.enable = 0);
+				dingChecked ? (item.ding = 'ding') : (item.ding = '');
+				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				return item;
 			});
 			if (flag[0]) {

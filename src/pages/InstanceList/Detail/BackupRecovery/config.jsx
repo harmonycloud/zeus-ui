@@ -210,9 +210,10 @@ export default function Config(props) {
 							messageConfig(
 								'success',
 								'成功',
-								`${checked
-									? '备份设置开启成功'
-									: '备份设置关闭成功'
+								`${
+									checked
+										? '备份设置开启成功'
+										: '备份设置关闭成功'
 								}`
 							)
 						);
@@ -237,8 +238,8 @@ export default function Config(props) {
 					? 1
 					: -1
 				: result > 0
-					? -1
-					: 1;
+				? -1
+				: 1;
 		});
 		setBackups([...tempDataSource]);
 	};
@@ -260,7 +261,10 @@ export default function Config(props) {
 							return;
 						}
 					} else {
-						if (listData.type === 'mysql' && !listData.isAllLvmStorage) {
+						if (
+							listData.type === 'mysql' &&
+							!listData.isAllLvmStorage
+						) {
 							Message.show(
 								messageConfig(
 									'error',
@@ -356,7 +360,8 @@ export default function Config(props) {
 					onClick={() => {
 						Dialog.show({
 							title: '操作确认',
-							content: '删除后，本地数据将被清空，无法找回，是否继续？',
+							content:
+								'删除后，本地数据将被清空，无法找回，是否继续？',
 							onOk: () => {
 								const sendData = {
 									clusterId,
@@ -405,7 +410,7 @@ export default function Config(props) {
 
 	const onRefresh = () => {
 		getData();
-	}
+	};
 
 	return (
 		<div style={{ marginTop: 24 }}>
@@ -435,8 +440,16 @@ export default function Config(props) {
 					cell={roleRender}
 					width={100}
 				/>
-				<Table.Column title="备份源名称" dataIndex="sourceName" width={100} />
-				<Table.Column title="备份保留个数" dataIndex="limitRecord" width={110} />
+				<Table.Column
+					title="备份源名称"
+					dataIndex="sourceName"
+					width={100}
+				/>
+				<Table.Column
+					title="备份保留个数"
+					dataIndex="limitRecord"
+					width={110}
+				/>
 				<Table.Column
 					title="备份周期"
 					dataIndex="cron"
@@ -458,7 +471,7 @@ export default function Config(props) {
 					title="备份时间"
 					dataIndex="createTime"
 					sortable
-					width={150}
+					width={160}
 				/>
 				<Table.Column title="操作" cell={actionRender} width={100} />
 			</Table>

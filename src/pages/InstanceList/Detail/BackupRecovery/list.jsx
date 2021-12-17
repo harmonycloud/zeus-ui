@@ -212,8 +212,8 @@ export default function List(props) {
 						? 1
 						: -1
 					: result > 0
-						? -1
-						: 1;
+					? -1
+					: 1;
 			});
 			setBackups([...tempDataSource]);
 		} else if (dataIndex === 'phrase') {
@@ -226,7 +226,6 @@ export default function List(props) {
 			setBackups([...tempDataSource]);
 		}
 	};
-
 
 	const roleRender = (value, index, record) => {
 		if (value === 'Cluster') {
@@ -307,20 +306,19 @@ export default function List(props) {
 						title="备份状态"
 						dataIndex="phrase"
 						cell={statusBackupRender}
-						width={100}
+						width={120}
 						sortable
 					/>
 					<Table.Column
 						title="备份时间"
 						dataIndex="backupTime"
 						sortable
-						width={150}
-
+						width={160}
 					/>
 					<Table.Column
 						title="操作"
 						cell={actionRender}
-						width={100}
+						width={120}
 					/>
 				</Table>
 			) : (

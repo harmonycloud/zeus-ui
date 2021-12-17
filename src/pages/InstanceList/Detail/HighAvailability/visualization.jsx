@@ -91,7 +91,7 @@ const modelMap = {
 	'2m-noslave': '两主',
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
-	null: ''
+	null: '未知'
 };
 
 function Visualization(props) {
@@ -112,7 +112,7 @@ function Visualization(props) {
 	const { pathname } = location;
 	const [option, setOption] = useState();
 	const [treeOption, setTreeOption] = useState();
-	// console.log(serverData.type);
+	const [direction, setDirection] = useState('LR');
 
 	const roleRender = (value, index, record) => {
 		// console.log(record, 'ppp', value);
@@ -160,11 +160,11 @@ function Visualization(props) {
 		return serverData.type !== 'redis'
 			? modelMap[serverData.mode]
 			: serverData.mode === 'sentinel'
-				? '哨兵'
-				: serverData.quota.redis.num === 6
-					? '三主三从'
-					: '五主五从' || ''
-	}
+			? '哨兵'
+			: serverData.quota.redis.num === 6
+			? '三主三从'
+			: '五主五从' || '';
+	};
 
 	const hasConfigBackup = (cfg) => {
 		if (!cfg.depth) {
@@ -183,7 +183,6 @@ function Visualization(props) {
 	};
 
 	const isSelect = (cfg) => {
-		console.log(selectObj);
 		if (!isEdit) {
 			if (hasConfigBackup(cfg)) {
 				return false;
@@ -236,16 +235,18 @@ function Visualization(props) {
 			'tree-node',
 			{
 				drawShape: function drawShape(cfg, group) {
-					// console.log(cfg, serverData, group);
+					console.log(cfg, serverData, group);
 					if (cfg.adentify) {
-						console.log(cfg.level, cfg.adentify);
+						// console.log(cfg.level, cfg.adentify);
 						const circle = group.addShape('rect', {
 							attrs: {
 								stroke: '#666',
+								fill: '#fff',
 								width: 60,
 								height: 30,
 								radius: 15,
 								y: 35,
+								x: cfg.level === 'pod' ? 30 : 0,
 								cursor: 'pointer'
 							},
 							modelId: cfg.id,
@@ -253,22 +254,49 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text: cfg.level === 'serve' ? serveRender() : roleRender(cfg.adentify, '', cfg),
+								text:
+									cfg.level === 'serve'
+										? cfg.adentify
+										: roleRender(cfg.adentify, '', cfg),
 								fill: 'rgba(0, 0, 0, .65)',
 								fontSize: 10,
 								textAlign: 'center',
 								width: 60,
 								height: 30,
-								x: 30,
+								x: cfg.level === 'pod' ? 60 : 30,
 								y: 55
 							},
 							modelId: cfg.id,
 							name: 'circle-text'
 						});
+						// if (cfg.level === 'serve') {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: 60,
+						// 			y: 50,
+						// 			width: 26,
+						// 			height: 0
+						// 		},
+						// 		name: 'serve-line'
+						// 	});
+						// }
+						// if (cfg.level === 'pod') {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: 90,
+						// 			y: 50,
+						// 			width: 90,
+						// 			height: 0
+						// 		},
+						// 		name: 'pod-line'
+						// 	});
+						// }
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
-									x: 245,
+									x: cfg.level === 'serve' ? 87 : 168,
 									y: 42,
 									width: 16,
 									height: 16,
@@ -282,11 +310,11 @@ function Visualization(props) {
 							});
 							group.addShape('text', {
 								attrs: {
-									x: 253,
+									x: cfg.level === 'serve' ? 95 : 176,
 									y: 48,
 									textAlign: 'center',
 									textBaseline: 'middle',
-									text: '+',
+									text: '-',
 									fontSize: 16,
 									cursor: 'pointer',
 									fill: 'rgba(0, 0, 0, 0.25)'
@@ -309,7 +337,6 @@ function Visualization(props) {
 							},
 							name: 'rect-shape'
 						});
-						const boxWidth = box.getBBox().width;
 						group.addShape('rect', {
 							attrs: {
 								fill: podStatus.filter(
@@ -318,10 +345,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-									)[0].color
+											(item) =>
+												item.status === cfg.status ||
+												item.status ===
+													serverData.status
+									  )[0].color
 									: '#FFC440',
 								x: 0,
 								y: 0,
@@ -339,10 +367,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-									)[0].image
+											(item) =>
+												item.status === cfg.status ||
+												item.status ===
+													serverData.status
+									  )[0].image
 									: NotReady,
 								x: 12,
 								y: 42,
@@ -387,14 +416,14 @@ function Visualization(props) {
 								text: !cfg.depth
 									? serverData.aliasName
 									: '资源/存储: ' +
-									cfg.resources.cpu +
-									'C/' +
-									cfg.resources.memory +
-									'G' +
-									'/' +
-									(cfg.resources.storageClassQuota
-										? cfg.resources.storageClassQuota
-										: ''),
+									  cfg.resources.cpu +
+									  'C/' +
+									  cfg.resources.memory +
+									  'G' +
+									  '/' +
+									  (cfg.resources.storageClassQuota
+											? cfg.resources.storageClassQuota
+											: ''),
 								x: 45,
 								y: !cfg.depth ? 60 : 70,
 								textBaseline: 'middle',
@@ -412,7 +441,7 @@ function Visualization(props) {
 								height: 32
 							},
 							visible: !cfg.depth,
-							name: 'status-image'
+							name: 'type-image'
 						});
 						group.addShape('rect', {
 							attrs: {
@@ -463,11 +492,17 @@ function Visualization(props) {
 								height: 24,
 								img: select
 							},
-							// visible: record && cfg.podName === selectObj ? true : false,
-							visible: false,
+							visible:
+								record &&
+								(cfg.podName === selectObj ||
+									selectObj === cfg.name)
+									? true
+									: false,
+							// visible: false,
 							name: 'select-image'
 						});
-						const hasChildren = cfg.children && cfg.children.length > 0;
+						const hasChildren =
+							cfg.children && cfg.children.length > 0;
 						if (!hasChildren && cfg.depth) {
 							group.addShape('rect', {
 								attrs: {
@@ -601,10 +636,11 @@ function Visualization(props) {
 										item.status === serverData.status
 								)[0]
 									? podStatus.filter(
-										(item) =>
-											item.status === cfg.status ||
-											item.status === serverData.status
-									)[0].title
+											(item) =>
+												item.status === cfg.status ||
+												item.status ===
+													serverData.status
+									  )[0].title
 									: '运行异常',
 								fill: '#666',
 								x: 0,
@@ -616,87 +652,6 @@ function Visualization(props) {
 							name: 'info-text',
 							visible: false
 						});
-						// 服务模式
-						// if (hasChildren && !cfg.depth) {
-						// 	group.addShape('text', {
-						// 		attrs: {
-						// 			text:
-						// 				serverData.type !== 'redis'
-						// 					? modelMap[serverData.mode]
-						// 					: serverData.mode === 'sentinel'
-						// 						? '哨兵'
-						// 						: serverData.quota.redis.num === 6
-						// 							? '三主三从'
-						// 							: '五主五从' || '',
-						// 			fill: 'rgba(0, 0, 0, .65)',
-						// 			x: boxWidth + 35,
-						// 			y: 44,
-						// 			fontSize: 10,
-						// 			width: 12,
-						// 			textAlign: 'center',
-						// 			cursor: 'pointer'
-						// 		},
-						// 		name: 'serve',
-						// 		visible: true,
-						// 		modelId: cfg.id
-						// 	});
-						// 	group.addShape('rect', {
-						// 		attrs: {
-						// 			stroke: '#A3B1BF',
-						// 			x: 229,
-						// 			y: 50,
-						// 			width: 70,
-						// 			height: 0
-						// 		},
-						// 		name: 'line'
-						// 	});
-						// }
-						// 实例模式
-						// if (!hasChildren && cfg.depth) {
-						// 	group.addShape('text', {
-						// 		attrs: {
-						// 			text: roleRender(cfg.role, '', cfg),
-						// 			fill: 'rgba(0, 0, 0, .65)',
-						// 			x: -40,
-						// 			y: 44,
-						// 			fontSize: 10,
-						// 			width: 12,
-						// 			textAlign: 'center',
-						// 			cursor: 'pointer'
-						// 		},
-						// 		name: 'pod'
-						// 	});
-						// }
-						// if (cfg.children && cfg.children.length) {
-						// 	group.addShape('rect', {
-						// 		attrs: {
-						// 			x: boxWidth + 60,
-						// 			y: 42,
-						// 			width: 16,
-						// 			height: 16,
-						// 			radius: 8,
-						// 			stroke: 'rgba(0, 0, 0, 0.25)',
-						// 			cursor: 'pointer',
-						// 			fill: '#fff'
-						// 		},
-						// 		name: 'collapse-back',
-						// 		modelId: cfg.id
-						// 	});
-						// 	group.addShape('text', {
-						// 		attrs: {
-						// 			x: boxWidth + 68,
-						// 			y: 48,
-						// 			textAlign: 'center',
-						// 			textBaseline: 'middle',
-						// 			text: '+',
-						// 			fontSize: 16,
-						// 			cursor: 'pointer',
-						// 			fill: 'rgba(0, 0, 0, 0.25)'
-						// 		},
-						// 		name: 'collapse-text',
-						// 		modelId: cfg.id
-						// 	});
-						// }
 						return box;
 					}
 				}
@@ -710,24 +665,44 @@ function Visualization(props) {
 				const endPoint = cfg.endPoint;
 
 				const { style } = cfg;
-				// console.log(startPoint, endPoint);
+				// console.log(cfg, startPoint, endPoint);
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
-						path: [
-							['M', startPoint.x, startPoint.y],
-							[
-								'L',
-								endPoint.x / 2 + (2 / 3) * startPoint.x,
-								startPoint.y
-							], // 二分之一处
-							[
-								'L',
-								endPoint.x / 2 + (2 / 3) * startPoint.x,
-								endPoint.y
-							], // 二分之二处
-							['L', endPoint.x, endPoint.y]
-						]
+						path:
+							direction === 'LR'
+								? [
+										['M', startPoint.x, startPoint.y],
+										[
+											'L',
+											endPoint.x / 2 +
+												(1 / 2) * startPoint.x,
+											startPoint.y
+										], // 二分之一处
+										[
+											'L',
+											endPoint.x / 2 +
+												(1 / 2) * startPoint.x,
+											endPoint.y
+										], // 二分之二处
+										['L', endPoint.x, endPoint.y]
+								  ]
+								: [
+										['M', startPoint.x, startPoint.y],
+										[
+											'L',
+											endPoint.x / 3 +
+												(1 / 4) * startPoint.x,
+											startPoint.y
+										],
+										[
+											'L',
+											endPoint.x / 3 +
+												(1 / 4) * startPoint.x,
+											endPoint.y
+										], // 二分之二处
+										['L', endPoint.x, endPoint.y]
+								  ]
 					}
 				});
 
@@ -755,7 +730,7 @@ function Visualization(props) {
 			},
 			nodeStateStyles: {
 				hover: {
-					// fill: '#fff'
+					// fill: '#EBEBEB',
 					opacity: 0.7
 				},
 				select: {
@@ -784,31 +759,46 @@ function Visualization(props) {
 				getHeight: function getHeight() {
 					return 100;
 				},
-				getWidth: function getWidth() {
-					return 220;
+				getWidth: function getWidth(d) {
+					return d.level === 'serve' ? 60 : 220;
 				},
 				getVGap: function getVGap() {
-					return 20;
+					return 10;
 				},
-				getHGap: function getHGap() {
-					return 80;
+				getHGap: function getHGap(d) {
+					return 20;
 				}
 			}
 		});
 		const pods = [];
-		topoData.pods.forEach(el => {
-		   if(!el.role) el.role = roleRender('','', el);
-           if(pods.every(els => els.role != el.role)) pods.push({ adentify: el.role, role: el.role, podName: el.podName, level: 'pod'}); 
-		})
-		pods.forEach(el => (el.children = topoData.pods.filter(els => els.role == el.role)));
+		topoData.pods &&
+			topoData.pods.forEach((el) => {
+				if (!el.role) el.role = roleRender('', '', el);
+				if (pods.every((els) => els.role != el.role))
+					pods.push({
+						adentify: el.role,
+						role: el.role,
+						podName: el.podName,
+						level: 'pod'
+					});
+			});
+		pods.forEach(
+			(el) =>
+				(el.children = topoData.pods.filter(
+					(els) => els.role == el.role
+				))
+		);
 		const res = {
 			id: 'tree',
 			name: serverData.name,
-			children: [{
-				adentify: serverData.mode,
-				level: 'serve',
-				children: pods
-			}]
+			hasConfigBackup: topoData.hasConfigBackup,
+			children: [
+				{
+					adentify: serveRender(),
+					level: 'serve',
+					children: pods
+				}
+			]
 		};
 		// res.children = topoData.pods;
 		console.log(res);
@@ -835,12 +825,15 @@ function Visualization(props) {
 				const textButton3 = group.find(
 					(e) => e.get('name') === 'text-button3'
 				);
-				const infoText = group.find((e) => e.get('name') === 'info-text');
+				const infoText = group.find(
+					(e) => e.get('name') === 'info-text'
+				);
 				graph.setItemState(item, 'hover', true);
 				if (evt.target.cfg.name === 'status') {
 					info.cfg.visible = true;
 					infoText.cfg.visible = true;
 				}
+				// if (box.attrs.fill === '#EBEBEB') item.enableCapture(false);
 				if (pathname.includes('addBackup')) return;
 				if (evt.target.cfg.name === 'rect-shape' && button1) {
 					button1.cfg.visible = true;
@@ -875,7 +868,9 @@ function Visualization(props) {
 				const textButton3 = group.find(
 					(e) => e.get('name') === 'text-button3'
 				);
-				const infoText = group.find((e) => e.get('name') === 'info-text');
+				const infoText = group.find(
+					(e) => e.get('name') === 'info-text'
+				);
 				graph.setItemState(item, 'hover', false);
 				if (info) {
 					info.cfg.visible = false;
@@ -932,29 +927,27 @@ function Visualization(props) {
 					setBackupObj(null);
 					graph.setItemState(item, 'select', false);
 					selectImage.cfg.visible = false;
+					nodes.some((str) => {
+						if (
+							!str.hasState('select') &&
+							!str.getModel().adentify &&
+							!isEdit &&
+							!str.getModel().hasConfigBackup
+						) {
+							const group = str.getContainer();
+							const box = group.find(
+								(data) => (data.name = 'rect-shape')
+							);
+							box.attr('fill', '#ffffff');
+							str.enableCapture(true);
+						}
+					});
 				} else {
 					if (
 						nodes.some((str) =>
 							str._cfg.states.find((obj) => obj === 'select')
 						)
 					) {
-						// nodes.map((obj) => {
-						// 	// graph.setItemState(obj, 'select', true);
-						// 	const x = obj.getContainer();
-						// 	const y = x.find(
-						// 		(e) => e.get('name') === 'rect-shape'
-						// 	);
-						// 	y.cfg.attrs.fill = '#aaa';
-						// 	y.attrs.fill = '#aaa';
-						// 	console.log(y);
-						// });
-						// const group = item.getContainer();
-						// const box = group.find((e) => e.get('name') === 'rect-shape');
-						// graph.updateItem(box, {
-						// 	style: {
-						// 		fill: 'red'
-						// 	}
-						// });
 						return;
 					}
 					!evt.item._cfg.model.depth
@@ -962,6 +955,21 @@ function Visualization(props) {
 						: setBackupObj(evt.item._cfg.model.podName);
 					graph.setItemState(item, 'select', true);
 					selectImage.cfg.visible = true;
+					nodes.some((str) => {
+						if (
+							!str.hasState('select') &&
+							!str.getModel().adentify &&
+							!isEdit &&
+							!str.getModel().hasConfigBackup
+						) {
+							const group = str.getContainer();
+							const box = group.find(
+								(data) => (data.name = 'rect-shape')
+							);
+							box.attr('fill', '#EBEBEB');
+							str.enableCapture(false);
+						}
+					});
 				}
 			}
 		});
@@ -982,14 +990,10 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			// const serve = group.find((e) => e.get('name') === 'serve');
-			const text = collapseText.cfg.attrs.text;
-			text === '-'
-				? (collapseText.attrs.text = '+')
-				: (collapseText.attrs.text = '-');
-			// text === '-'
-			// 	? (serve.cfg.visible = false)
-			// 	: (serve.cfg.visible = true);
+			const text = collapseText.attr('text');
+			text === '-' && collapseText.attr('text', '+');
+			text === '+' && collapseText.attr('text', '-');
+			graph.refreshItem(item);
 			handleCollapse(e);
 		});
 		graph.on('collapse-back:click', (e) => {
@@ -998,14 +1002,10 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			// const serve = group.find((e) => e.get('name') === 'serve');
-			const text = collapseText.cfg.attrs.text;
-			text === '-'
-				? (collapseText.attrs.text = '+')
-				: (collapseText.attrs.text = '-');
-			// text === '-'
-			// 	? (serve.cfg.visible = false)
-			// 	: (serve.cfg.visible = true);
+			const text = collapseText.attr('text');
+			text === '-' && collapseText.attr('text', '+');
+			text === '+' && collapseText.attr('text', '-');
+			graph.refreshItem(item);
 			handleCollapse(e);
 		});
 		graph.on('button1:click', (evt) => {
@@ -1067,7 +1067,6 @@ function Visualization(props) {
 	};
 
 	const scale = () => {
-		// console.log(window.graph.getWidth(), window.innerWidth);
 		if (window.graph.getWidth() !== window.innerWidth) {
 			setOption({
 				width: window.innerWidth,
@@ -1089,21 +1088,19 @@ function Visualization(props) {
 	};
 
 	const changeTree = (value) => {
+		window.graph.clear();
+
 		window.graph.updateLayout({
 			type: 'compactBox',
 			direction: value,
 			defaultNode: {
-				type: 'tree-node',
-				anchorPoints:
-					value === 'TB'
-						? [
-							[0.5, 0],
-							[0.5, 1]
-						]
-						: [
-							[0, 0.5],
-							[1, 0.5]
-						]
+				type: 'tree-node'
+			},
+			defaultEdge: {
+				type: 'polyline',
+				style: {
+					stroke: '#A3B1BF'
+				}
 			},
 			getId: function getId(d) {
 				return d.id;
@@ -1111,16 +1108,47 @@ function Visualization(props) {
 			getHeight: function getHeight() {
 				return 100;
 			},
-			getWidth: function getWidth() {
-				return 220;
+			getWidth: function getWidth(d) {
+				return d.level === 'serve' ? 60 : 220;
 			},
 			getVGap: function getVGap() {
-				return 30;
+				return 10;
 			},
-			getHGap: function getHGap() {
-				return 80;
+			getHGap: function getHGap(d) {
+				return 20;
 			}
 		});
+		// const edges = window.graph.getEdges();
+		// edges.map(item => {
+		// 	console.log(item.getSource());
+		// })
+		// if(value === 'TB'){
+		const nodes = window.graph.getNodes();
+		// nodes.map((item) => {
+		// 	const group = item.getContainer();
+		// 	const pods = group.find((e) => e.get('name') === 'circle');
+		// 	const podTexts = group.find((e) => e.get('name') === 'circle-text');
+		// 	window.graph.updateItem(item, {
+		// 		anchorPoints: value === 'TB' ? [
+		// 			[0.5, 1],
+		// 			[1, 0.5]
+		// 		] : [
+		// 			[0, 0.5],
+		// 			[1, 0.5]
+		// 		]
+		// 	});
+		// 	console.log(item);
+		// 	if (item.getModel().level === 'pod'){
+		// 		pods.attr({
+		// 			'x': 95,
+		// 			'y': 0
+		// 		});
+		// 		podTexts.attr('x', 120);
+		// 	}
+		// });
+		// }
+		window.graph.layout();
+		setDirection(value);
 		window.graph.fitCenter();
 	};
 
@@ -1144,7 +1172,7 @@ function Visualization(props) {
 						align="b"
 					>
 						{window.graph &&
-							window.graph.getWidth() !== window.innerWidth
+						window.graph.getWidth() !== window.innerWidth
 							? '全屏'
 							: '退出全屏'}
 					</Tooltip>
