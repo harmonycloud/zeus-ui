@@ -40,7 +40,8 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				name: data.name,
 				description: data.description,
 				createTime: data.createTime,
-				roleId: data.id
+				roleId: data.id,
+				menu: data.menu
 			});
 		}
 	}, [data]);
@@ -54,7 +55,6 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				// * 修改用户
 				delete sendData.createTime;
 				updateRole(sendData).then((res) => {
-					console.log(res);
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户修改成功')

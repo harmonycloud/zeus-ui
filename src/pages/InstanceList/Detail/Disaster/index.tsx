@@ -251,9 +251,10 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		}
 	];
 	const toCreateBackup: () => void = () => {
-		history.push(
-			`/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}`
-		);
+		history.push({
+			pathname: `/serviceList/mysqlCreate/${chartName}/${chartVersion}/${middlewareName}`,
+			state: {disasterOriginName: middlewareName}
+		});
 	};
 	const deleteInstance: () => void = () => {
 		Dialog.show({

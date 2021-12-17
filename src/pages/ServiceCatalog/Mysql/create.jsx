@@ -71,9 +71,9 @@ const MysqlCreate = (props) => {
 		chartVersion,
 		middlewareName,
 		backupFileName,
-		disasterOriginName,
 		aliasName
 	} = useParams();
+	const { state } = props.location;
 	const field = Field.useField();
 	const history = useHistory();
 	// 主机亲和
@@ -382,7 +382,7 @@ const MysqlCreate = (props) => {
 					}
 				}
 				// 灾备服务-在已有源服务上创建备服务
-				if (disasterOriginName) {
+				if (state && state.disasterOriginName) {
 					const sendDataTemp = {
 						chartName: chartName,
 						chartVersion: originData.chartVersion,
@@ -465,7 +465,7 @@ const MysqlCreate = (props) => {
 					sendData = sendDataTemp;
 				}
 				// console.log(sendData);
-				if (disasterOriginName) {
+				if (state && state.disasterOriginName) {
 					addDisasterIns(sendData).then((res) => {
 						if (res.success) {
 							Message.show(
@@ -545,7 +545,7 @@ const MysqlCreate = (props) => {
 			}
 			field.setValues({
 				// aliasName: res.data.aliasName,
-				name: res.data.name + '-backup',
+				name: backupFileName ? res.data.name + '-backup' : res.data.name,
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
@@ -661,32 +661,32 @@ const MysqlCreate = (props) => {
 		}
 		if (JSON.stringify(globalNamespace) !== '{}') {
 			// 灾备服务
-			if (disasterOriginName) {
-				const sendData = {
-					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
-					mysqlName: disasterOriginName
-				};
-				getBackups(sendData).then((res) => {
-					if (res.success) {
-						const list = res.data?.map((item) => {
-							return {
-								id: Math.random() * 100,
-								...item,
-								date: moment(item.date).format(
-									'YYYY-MM-DD HH:mm:ss'
-								),
-								type:
-									item.type === 'all'
-										? '全量备份'
-										: '全量备份',
-								status: backupStatus[item.status]
-							};
-						});
-						setBackupSources(list || []);
-					}
-				});
-				getMiddlewareDetailAndSetForm(disasterOriginName);
+			if (state && state.disasterOriginName) {
+				// const sendData = {
+				// 	clusterId: globalCluster.id,
+				// 	namespace: globalNamespace.name,
+				// 	mysqlName: state.disasterOriginName
+				// };
+				// getBackups(sendData).then((res) => {
+				// 	if (res.success) {
+				// 		const list = res.data?.map((item) => {
+				// 			return {
+				// 				id: Math.random() * 100,
+				// 				...item,
+				// 				date: moment(item.date).format(
+				// 					'YYYY-MM-DD HH:mm:ss'
+				// 				),
+				// 				type:
+				// 					item.type === 'all'
+				// 						? '全量备份'
+				// 						: '全量备份',
+				// 				status: backupStatus[item.status]
+				// 			};
+				// 		});
+				// 		setBackupSources(list || []);
+				// 	}
+				// });
+				getMiddlewareDetailAndSetForm(state.disasterOriginName);
 			}
 		}
 	}, [globalNamespace]);
@@ -727,9 +727,6 @@ const MysqlCreate = (props) => {
 
 	return (
 		<Page>
-			{
-				console.log(useParams())
-			}
 			<Page.Header
 				title="发布MySQL服务"
 				className="page-header"
@@ -740,7 +737,7 @@ const MysqlCreate = (props) => {
 			/>
 			<Page.Content>
 				<Form {...formItemLayout} field={field}>
-					{disasterOriginName ? (
+					{state && state.disasterOriginName ? (
 						<>
 							<FormBlock title="源服务信息">
 								<div className={styles['origin-info']}>
@@ -1658,7 +1655,7 @@ const MysqlCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
-					{!disasterOriginName ? (
+					{!state || !state.disasterOriginName ? (
 						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
 								<ul className="form-layout">

@@ -1122,31 +1122,34 @@ function Visualization(props) {
 		// edges.map(item => {
 		// 	console.log(item.getSource());
 		// })
-		// if(value === 'TB'){
+		if(value === 'TB'){
 		const nodes = window.graph.getNodes();
-		// nodes.map((item) => {
-		// 	const group = item.getContainer();
-		// 	const pods = group.find((e) => e.get('name') === 'circle');
-		// 	const podTexts = group.find((e) => e.get('name') === 'circle-text');
-		// 	window.graph.updateItem(item, {
-		// 		anchorPoints: value === 'TB' ? [
-		// 			[0.5, 1],
-		// 			[1, 0.5]
-		// 		] : [
-		// 			[0, 0.5],
-		// 			[1, 0.5]
-		// 		]
-		// 	});
-		// 	console.log(item);
-		// 	if (item.getModel().level === 'pod'){
-		// 		pods.attr({
-		// 			'x': 95,
-		// 			'y': 0
-		// 		});
-		// 		podTexts.attr('x', 120);
-		// 	}
-		// });
-		// }
+		nodes.map((item) => {
+			const group = item.getContainer();
+			const pods = group.find((e) => e.get('name') === 'circle');
+			const podTexts = group.find((e) => e.get('name') === 'circle-text');
+			window.graph.updateItem(item, {
+				anchorPoints: value === 'TB' ? [
+					[0.5, 1],
+					[1, 0.5]
+				] : [
+					[0, 0.5],
+					[1, 0.5]
+				]
+			});
+			console.log(item);
+			if (item.getModel().level === 'pod'){
+				pods.attr({
+					'x': 95,
+					'y': 0
+				});
+				podTexts.attr({
+					'x': 120,
+					'y': 0
+				});
+			}
+		});
+		}
 		window.graph.layout();
 		setDirection(value);
 		window.graph.fitCenter();

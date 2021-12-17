@@ -90,7 +90,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/mysqlCreate/:chartName/:chartVersion/:disasterOriginName"
+					path="/serviceList/mysqlCreate/:chartName/:chartVersion"
 					component={MysqlCreate}
 					exact
 				/>
