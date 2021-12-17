@@ -293,36 +293,36 @@ function Visualization(props) {
 						// 		name: 'pod-line'
 						// 	});
 						// }
-						if (cfg.children && cfg.children.length) {
-							group.addShape('rect', {
-								attrs: {
-									x: cfg.level === 'serve' ? 87 : 168,
-									y: 42,
-									width: 16,
-									height: 16,
-									radius: 8,
-									stroke: 'rgba(0, 0, 0, 0.25)',
-									cursor: 'pointer',
-									fill: '#fff'
-								},
-								name: 'collapse-back',
-								modelId: cfg.id
-							});
-							group.addShape('text', {
-								attrs: {
-									x: cfg.level === 'serve' ? 95 : 176,
-									y: 48,
-									textAlign: 'center',
-									textBaseline: 'middle',
-									text: '-',
-									fontSize: 16,
-									cursor: 'pointer',
-									fill: 'rgba(0, 0, 0, 0.25)'
-								},
-								name: 'collapse-text',
-								modelId: cfg.id
-							});
-						}
+						// if (cfg.children && cfg.children.length) {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			x: cfg.level === 'serve' ? 87 : 168,
+						// 			y: 42,
+						// 			width: 16,
+						// 			height: 16,
+						// 			radius: 8,
+						// 			stroke: 'rgba(0, 0, 0, 0.25)',
+						// 			cursor: 'pointer',
+						// 			fill: '#fff'
+						// 		},
+						// 		name: 'collapse-back',
+						// 		modelId: cfg.id
+						// 	});
+						// 	group.addShape('text', {
+						// 		attrs: {
+						// 			x: cfg.level === 'serve' ? 95 : 176,
+						// 			y: 48,
+						// 			textAlign: 'center',
+						// 			textBaseline: 'middle',
+						// 			text: '-',
+						// 			fontSize: 16,
+						// 			cursor: 'pointer',
+						// 			fill: 'rgba(0, 0, 0, 0.25)'
+						// 		},
+						// 		name: 'collapse-text',
+						// 		modelId: cfg.id
+						// 	});
+						// }
 						return circle;
 					} else {
 						const box = group.addShape('rect', {
@@ -669,41 +669,24 @@ function Visualization(props) {
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
-						path:
-							direction === 'LR'
-								? [
-										['M', startPoint.x, startPoint.y],
-										[
-											'L',
-											endPoint.x / 2 +
-												(1 / 2) * startPoint.x,
-											startPoint.y
-										], // 二分之一处
-										[
-											'L',
-											endPoint.x / 2 +
-												(1 / 2) * startPoint.x,
-											endPoint.y
-										], // 二分之二处
-										['L', endPoint.x, endPoint.y]
-								  ]
-								: [
-										['M', startPoint.x, startPoint.y],
-										[
-											'L',
-											endPoint.x / 3 +
-												(1 / 4) * startPoint.x,
-											startPoint.y
-										],
-										[
-											'L',
-											endPoint.x / 3 +
-												(1 / 4) * startPoint.x,
-											endPoint.y
-										], // 二分之二处
-										['L', endPoint.x, endPoint.y]
-								  ]
-					}
+						path: [
+							['M', startPoint.x, startPoint.y],
+							[
+								'L',
+								endPoint.x / 2 +
+									(1 / 2) * startPoint.x,
+								startPoint.y
+							], // 二分之一处
+							[
+								'L',
+								endPoint.x / 2 +
+									(1 / 2) * startPoint.x,
+								endPoint.y
+							], // 二分之二处
+							['L', endPoint.x, endPoint.y]
+					  ]
+					},
+					name: 'path'
 				});
 
 				return shape;
@@ -1117,13 +1100,15 @@ function Visualization(props) {
 			getHGap: function getHGap(d) {
 				return 20;
 			}
-		});
-		// const edges = window.graph.getEdges();
-		// edges.map(item => {
-		// 	console.log(item.getSource());
-		// })
-		if(value === 'TB'){
+		})
 		const nodes = window.graph.getNodes();
+		const edges = window.graph.getEdges();
+		edges.map(item => {
+			const group = item.getContainer();
+			const path = group.find((e) => e.get('name') === 'path');
+
+			console.log(path);
+		})
 		nodes.map((item) => {
 			const group = item.getContainer();
 			const pods = group.find((e) => e.get('name') === 'circle');
@@ -1131,27 +1116,26 @@ function Visualization(props) {
 			window.graph.updateItem(item, {
 				anchorPoints: value === 'TB' ? [
 					[0.5, 1],
-					[1, 0.5]
+					[0.5, 0]
 				] : [
 					[0, 0.5],
 					[1, 0.5]
 				]
 			});
-			console.log(item);
-			if (item.getModel().level === 'pod'){
-				pods.attr({
-					'x': 95,
-					'y': 0
-				});
-				podTexts.attr({
-					'x': 120,
-					'y': 0
-				});
+			if(value === 'TB'){
+				if (item.getModel().level === 'pod'){
+					pods.attr({
+						'x': 95,
+						'y': 0
+					});
+					podTexts.attr({
+						'x': 120,
+						'y': 20
+					});
+				}
 			}
 		});
-		}
-		window.graph.layout();
-		setDirection(value);
+		// window.graph.layout();
 		window.graph.fitCenter();
 	};
 
