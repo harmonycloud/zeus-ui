@@ -40,7 +40,9 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				name: data.name,
 				description: data.description,
 				createTime: data.createTime,
-				roleId: data.id
+				roleId: data.id,
+				clusterList: data.clusterList,
+				menu: data.menu
 			});
 		}
 	}, [data]);
