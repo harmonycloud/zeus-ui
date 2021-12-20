@@ -163,13 +163,14 @@ function DynamicForm(props) {
 				if (values.tolerationsLabels) {
 					sendData.tolerations = values.tolerationsLabels.map(
 						(item) => {
-							return item.label
+							return item.label;
 						}
 					);
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机容忍。')
 					);
+					return;
 				}
 			}
 			// console.log(sendData);
@@ -271,7 +272,7 @@ function DynamicForm(props) {
 										<FormItem>
 											<Input.TextArea
 												style={{ width: '390px' }}
-												name="annotation"
+												name="description"
 												placeholder="请输入备注信息"
 											/>
 										</FormItem>

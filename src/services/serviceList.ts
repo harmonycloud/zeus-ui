@@ -8,6 +8,15 @@ interface listParamsProps {
 	type?: string;
 }
 
+export interface ParamsProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	type: string;
+	chartName?: string;
+	chartVersion?: string | null;
+}
+
 export const getList = (params: listParamsProps) => {
 	return Axios.get(SERVICE.getServiceLit, params);
 };
@@ -18,4 +27,12 @@ export const getVersions = (params: any) => {
 
 export const upgradeChart = (params: any) => {
 	return Axios.post(SERVICE.upgradeChart, params);
+};
+
+export const deleteMiddlewareStorage = (params: ParamsProps) => {
+	return Axios.delete(SERVICE.deleteMiddlewareStorage, params);
+};
+
+export const recoveryMiddleware = (params: ParamsProps) => {
+	return Axios.json(SERVICE.recoveryMiddleware, params, {}, 'POST');
 };

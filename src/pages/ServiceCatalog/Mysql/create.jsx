@@ -123,7 +123,7 @@ const MysqlCreate = (props) => {
 	// };
 
 	// MySQL配置
-	const [version, setVersion] = useState('5.7.21');
+	const [version, setVersion] = useState('5.7');
 	const versionList = [
 		// 暂时隐藏8.0.21版本
 		// {
@@ -131,8 +131,8 @@ const MysqlCreate = (props) => {
 		// 	value: '8.0.21'
 		// },
 		{
-			label: '5.7.21',
-			value: '5.7.21'
+			label: '5.7',
+			value: '5.7'
 		}
 	];
 	const [charSet, setCharSet] = useState('utf8mb4');
@@ -545,7 +545,7 @@ const MysqlCreate = (props) => {
 			}
 			field.setValues({
 				// aliasName: res.data.aliasName,
-				name: backupFileName ? res.data.name + '-backup' : res.data.name,
+				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
@@ -1059,15 +1059,26 @@ const MysqlCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!affinityLabels.find(item => item.label === affinity.label)) {
-																setAffinityLabels([
-																	...affinityLabels,
-																	{
-																		label: affinity.label,
-																		id: Math.random()
-																	}
-																])
-																changeAffinity('', 'label')
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
+																)
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>
@@ -1185,7 +1196,13 @@ const MysqlCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+															if (
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
 																setTolerationsLabels(
 																	[
 																		...tolerationsLabels,
@@ -1194,8 +1211,11 @@ const MysqlCreate = (props) => {
 																			id: Math.random()
 																		}
 																	]
-																)
-																changeTolerations('', 'label')
+																);
+																changeTolerations(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>

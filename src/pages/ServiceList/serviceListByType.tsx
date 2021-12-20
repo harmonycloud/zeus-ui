@@ -17,7 +17,12 @@ import {
 	CurrentService
 } from './service.list';
 import { StoreState } from '@/types/index';
-import { getList } from '@/services/serviceList';
+import {
+	getList,
+	deleteMiddlewareStorage,
+	recoveryMiddleware,
+	ParamsProps
+} from '@/services/serviceList';
 import { deleteMiddleware } from '@/services/middleware';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender } from '@/utils/utils';
@@ -111,7 +116,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
-				setShowDataSource(res.data[0].serviceList);
+				res.data[0] && setShowDataSource(res.data[0].serviceList);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -137,14 +142,20 @@ const ServiceListByType = (props: serviceListProps) => {
 					.then((res) => {
 						if (res.success) {
 							Message.show(
-								messageConfig('success', '成功', '删除成功')
+								messageConfig(
+									'success',
+									'成功',
+									'删除成功, 3秒后刷新'
+								)
 							);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					})
 					.finally(() => {
-						getData();
+						setTimeout(() => {
+							getData();
+						}, 3000);
 					});
 			}
 		});
@@ -190,6 +201,11 @@ const ServiceListByType = (props: serviceListProps) => {
 				);
 			}
 			setShowDataSource(tempData || []);
+		}
+	};
+	const onRowProps = (record: serviceProps) => {
+		if (record.status === 'deleted') {
+			return { style: { background: '#F8F8F9', color: '#CCCCCC' } };
 		}
 	};
 	const handleFilterBackup = (checked: boolean) => {
@@ -250,6 +266,74 @@ const ServiceListByType = (props: serviceListProps) => {
 				`/serviceList/dynamicForm/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
 			);
 		}
+	};
+	const recoveryService = (record: serviceProps) => {
+		const sendData: ParamsProps = {
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			chartName: record.type,
+			chartVersion: record.chartVersion || null,
+			middlewareName: record.name,
+			type: record.type
+		};
+		Dialog.show({
+			title: '操作确认',
+			content: '请确认是否恢复该服务！',
+			onOk: () => {
+				return recoveryMiddleware(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'该服务已恢复,3秒后刷新'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						setTimeout(() => {
+							getData();
+						}, 3000);
+					});
+			}
+		});
+	};
+	const deleteStorage = (record: serviceProps) => {
+		const sendData: ParamsProps = {
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			middlewareName: record.name,
+			type: record.type
+		};
+		Dialog.show({
+			title: '操作确认',
+			content: '删除后无法恢复该服务，请谨慎操作！',
+			onOk: () => {
+				return deleteMiddlewareStorage(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'该服务已彻底删除,3秒后刷新'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						setTimeout(() => {
+							getData();
+						}, 3000);
+					});
+			}
+		});
 	};
 	const operation = () => {
 		if (cantRelease) {
@@ -381,12 +465,27 @@ const ServiceListByType = (props: serviceListProps) => {
 		index: number,
 		record: serviceProps
 	) => {
+		if (record.status === 'Deleted') {
+			return (
+				<Actions>
+					<LinkButton onClick={() => recoveryService(record)}>
+						恢复服务
+					</LinkButton>
+					<LinkButton onClick={() => deleteStorage(record)}>
+						彻底删除
+					</LinkButton>
+				</Actions>
+			);
+		}
 		return (
-			<Actions key={index}>
+			<Actions>
 				<LinkButton
-					key="high"
 					disabled={tabJudge(record, 'high')}
 					onClick={() => {
+						storage.setSession(
+							'service-available-current',
+							record.type
+						);
 						history.push({
 							pathname: '/serviceAvailable',
 							state: {
@@ -406,7 +505,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="monitoring"
 					disabled={tabJudge(record, 'monitoring')}
 					onClick={() => {
 						history.push({
@@ -429,7 +527,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="log"
 					disabled={tabJudge(record, 'log')}
 					onClick={() =>
 						history.push({
@@ -452,7 +549,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="platform"
 					disabled={!record.managePlatform}
 					onClick={() => {
 						if (record.managePlatformAddress === '') {
@@ -484,7 +580,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="disaster"
 					disabled={record.type !== 'mysql'}
 					onClick={() => {
 						history.push({
@@ -507,7 +602,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="alert"
 					disabled={tabJudge(record, 'alert')}
 					onClick={() =>
 						history.push({
@@ -530,7 +624,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="backup"
 					disabled={tabJudge(record, 'backup')}
 					onClick={() => {
 						history.push({
@@ -553,7 +646,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					key="config"
 					disabled={tabJudge(record, 'config')}
 					onClick={() => {
 						history.push(
@@ -580,9 +672,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				>
 					版本管理
 				</LinkButton>
-				<LinkButton key="delete" onClick={() => deleteFn(record)}>
-					删除
-				</LinkButton>
+				<LinkButton onClick={() => deleteFn(record)}>删除</LinkButton>
 			</Actions>
 		);
 	};
@@ -695,6 +785,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					}}
 					onSort={onSort}
 					onFilter={onFilter}
+					rowProps={onRowProps}
 				>
 					<Table.Column
 						title="服务名称/中文别名"

@@ -1,10 +1,18 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Tree, Dialog, Message } from '@alicloud/console-components';
+import {
+	Tree,
+	Dialog,
+	Message,
+	Checkbox,
+	Loading
+} from '@alicloud/console-components';
 import { roleProps, roleTree } from './role';
 import messageConfig from '@/components/messageConfig';
 import { updateRole } from '@/services/role';
+import { getClusters } from '@/services/common';
 
+const { Group: CheckboxGroup } = Checkbox;
 interface RolePermissionProps {
 	visible: true;
 	onCreate: () => void;
@@ -18,11 +26,18 @@ interface treeData {
 }
 function RolePermissions(props: RolePermissionProps): JSX.Element {
 	const { onCancel, onCreate, visible, data } = props;
+	console.log(data);
 	const [treeData, setTreeData] = useState<treeData[] | undefined>();
 	const [checkedKeys, setCheckedKeys] = useState<any | undefined[]>([]);
 	const [harfCheckedKeys, setHarfCheckedKeys] = useState<any | undefined[]>(
 		[]
 	);
+	const [originData, setOriginData] = useState([]);
+	const [clusterList, setClusterList] = useState([]);
+	const [clusters, setClusters] = useState<string[]>([]);
+	const [namespaceList, setNamespaceList] = useState({});
+	const [namespaces, setNamespaces] = useState<string[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		const menu: roleTree[] | undefined = data?.menu;
@@ -55,8 +70,6 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			}
 		});
 		setTreeData(menuTree);
-		console.log(menuTree);
-
 		menuTree &&
 			menuTree.map((item) => {
 				if (
@@ -66,11 +79,59 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 					defaultCheckedKeys && defaultCheckedKeys.push(item.key);
 				}
 			});
-
-		console.log(defaultCheckedKeys);
-
 		setCheckedKeys(defaultCheckedKeys);
 	}, []);
+	useEffect(() => {
+		getClusters({ detail: true }).then((res) => {
+			if (res.success) {
+				setLoading(false);
+				if (res.data.length !== 0) {
+					setOriginData(res.data);
+					const listTemp = res.data.map((item: any) => {
+						return {
+							value: `${item.id}/${item.name}`,
+							label: item.name
+						};
+					});
+					setClusterList(listTemp);
+				} else {
+					setOriginData([]);
+					setClusterList([]);
+					setNamespaceList({});
+				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	}, []);
+	useEffect(() => {
+		if (data?.clusterList) {
+			const clustersTemp = data.clusterList.map(
+				(item: any) => `${item.id}/${item.name}`
+			);
+			setClusters(clustersTemp);
+			const namespacesTemp: string[] = [];
+			data.clusterList.map((item: any) => {
+				item.namespaceList.map((i: any) => {
+					namespacesTemp.push(`${i.name}/${item.name}`);
+				});
+			});
+			setNamespaces(namespacesTemp);
+		}
+	}, [originData]);
+	useEffect(() => {
+		if (originData.length > 0) {
+			const obj = {};
+			clusters.map((item) => {
+				const [clusterId, clusterName] = item.split('/');
+				const current: any = originData.find(
+					(o: any) => clusterId === o.id
+				);
+				obj[current.name] = current.namespaceList;
+			});
+			setNamespaceList(obj);
+		}
+	}, [clusters]);
 	const filterArray = (arr: any[] | undefined) => {
 		const temp: any[] = [];
 		arr &&
@@ -109,7 +170,24 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 		setHarfCheckedKeys(okr.indeterminateKeys);
 	};
 	const onOk = () => {
-		// console.log(checkedKeys,harfCheckedKeys);
+		const clusterListTemp = clusters.map((item) => {
+			const [clusterId, clusterName] = item.split('/');
+			return {
+				id: clusterId,
+				namespaceList: namespaces
+					.filter((i) => {
+						const [name, clusterNameTemp] = i.split('/');
+						if (clusterNameTemp === clusterName) return i;
+					})
+					.map((i) => {
+						const [name] = i.split('/');
+						return {
+							name: name
+						};
+					})
+			};
+		});
+		// console.log(clusterListTemp);
 		if (data) {
 			const sendData: roleProps = data;
 			data.menu &&
@@ -124,6 +202,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 						item.own = false;
 					}
 				});
+			data.clusterList = clusterListTemp;
 			delete sendData.createTime;
 			sendData.roleId = sendData.id;
 			updateRole(sendData).then((res) => {
@@ -140,22 +219,89 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 		}
 	};
 
+	const onChange = (selectedItems: string[], type: string) => {
+		if (type === 'cluster') {
+			setClusters(selectedItems);
+		} else {
+			setNamespaces(selectedItems);
+		}
+	};
+
 	return (
 		<Dialog
-			title="分配角色"
+			title="分配角色 & 分区"
 			visible={visible}
 			onCancel={onCancel}
 			onClose={onCancel}
 			className="role-modal"
 			onOk={onOk}
 		>
-			<Tree
-				defaultExpandAll
-				checkable
-				checkedKeys={checkedKeys}
-				onCheck={handleCheck}
-				dataSource={treeData}
-			/>
+			<p>菜单权限分配：</p>
+			<div className="role-management-role-content">
+				<Tree
+					defaultExpandAll
+					checkable
+					checkedKeys={checkedKeys}
+					onCheck={handleCheck}
+					dataSource={treeData}
+				/>
+			</div>
+			<p>资源池权限分配：</p>
+			<Loading tip="加载中，请稍后" size="medium" visible={loading}>
+				<div className="role-management-content">
+					<div className="role-management-cluster">
+						<div className="role-management-title">资源池</div>
+						<div className="role-management-check-content">
+							<CheckboxGroup
+								value={clusters}
+								dataSource={clusterList}
+								onChange={(selectedItems) =>
+									onChange(selectedItems, 'cluster')
+								}
+								direction="ver"
+							/>
+						</div>
+					</div>
+					<div className="role-management-namespace">
+						<div className="role-management-title">资源分区</div>
+						<div className="role-management-check-content">
+							<CheckboxGroup
+								value={namespaces}
+								onChange={(selectedItems) =>
+									onChange(selectedItems, 'namespace')
+								}
+							>
+								{Object.keys(namespaceList).map((key) => {
+									return (
+										<div key={key}>
+											<div className="role-management-label">
+												{key}:
+											</div>
+											<div className="role-management-checkout-content">
+												{namespaceList[key].map(
+													(namespace: any) => {
+														return (
+															<Checkbox
+																key={
+																	namespace.name
+																}
+																value={`${namespace.name}/${key}`}
+															>
+																{namespace.aliasName ||
+																	namespace.name}
+															</Checkbox>
+														);
+													}
+												)}
+											</div>
+										</div>
+									);
+								})}
+							</CheckboxGroup>
+						</div>
+					</div>
+				</div>
+			</Loading>
 		</Dialog>
 	);
 }

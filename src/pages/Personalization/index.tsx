@@ -132,7 +132,8 @@ function Personlization(): JSX.Element {
 				values.status = 'init';
 				Dialog.show({
 					title: '操作确认',
-					content: '您之前所有自定义已做修改的地方将恢复至出厂状态，是否继续？',
+					content:
+						'您之前所有自定义已做修改的地方将恢复至出厂状态，是否继续？',
 					onOk: () => {
 						personalized(values).then((res) => {
 							if (res.success) {
