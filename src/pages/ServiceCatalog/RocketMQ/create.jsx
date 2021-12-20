@@ -141,11 +141,11 @@ const RocketMQCreate = (props) => {
 	// };
 
 	// MySQL配置
-	const [version, setVersion] = useState('4.5.0');
+	const [version, setVersion] = useState('4.8');
 	const versionList = [
 		{
-			label: '4.5.0',
-			value: '4.5.0'
+			label: '4.8',
+			value: '4.8'
 		}
 	];
 	const [mode, setMode] = useState('2m-noslave');
@@ -636,15 +636,26 @@ const RocketMQCreate = (props) => {
 															styles['tag-close']
 														}
 														onClick={() => {
-															if (!affinityLabels.find(item => item.label === affinity.label)) {
-																setAffinityLabels([
-																	...affinityLabels,
-																	{
-																		label: affinity.label,
-																		id: Math.random()
-																	}
-																])
-																changeAffinity('', 'label')
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
+																)
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													/>
@@ -709,7 +720,13 @@ const RocketMQCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+															if (
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
 																setTolerationsLabels(
 																	[
 																		...tolerationsLabels,
@@ -718,8 +735,11 @@ const RocketMQCreate = (props) => {
 																			id: Math.random()
 																		}
 																	]
-																)
-																changeTolerations('', 'label')
+																);
+																changeTolerations(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>

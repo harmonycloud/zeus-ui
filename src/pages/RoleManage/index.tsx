@@ -226,7 +226,7 @@ function RoleManage(): JSX.Element {
 						}}
 						onClick={() => permissionEdit(record)}
 					>
-						分配角色权限
+						分配角色 & 分区
 					</LinkButton>
 				)}
 			</Actions>

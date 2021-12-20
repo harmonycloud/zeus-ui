@@ -141,11 +141,11 @@ const ElasticsearchCreate = (props) => {
 	// };
 
 	// Elasticsearch配置
-	const [version, setVersion] = useState('6.8.10');
+	const [version, setVersion] = useState('6.8');
 	const versionList = [
 		{
-			label: '6.8.10',
-			value: '6.8.10'
+			label: '6.8',
+			value: '6.8'
 		}
 	];
 	const [mode, setMode] = useState('simple');
@@ -692,15 +692,26 @@ const ElasticsearchCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!affinityLabels.find(item => item.label === affinity.label)) {
-																setAffinityLabels([
-																	...affinityLabels,
-																	{
-																		label: affinity.label,
-																		id: Math.random()
-																	}
-																])
-																changeAffinity('', 'label')
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
+																)
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>
@@ -748,7 +759,13 @@ const ElasticsearchCreate = (props) => {
 															styles['tag-close']
 														}
 														onClick={() => {
-															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+															if (
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
 																setAffinityLabels(
 																	[
 																		...tolerationsLabels,
@@ -757,8 +774,11 @@ const ElasticsearchCreate = (props) => {
 																			id: Math.random()
 																		}
 																	]
-																)
-																changeAffinity('', 'label')
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													/>
@@ -823,7 +843,13 @@ const ElasticsearchCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+															if (
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
 																setTolerationsLabels(
 																	[
 																		...tolerationsLabels,
@@ -832,8 +858,11 @@ const ElasticsearchCreate = (props) => {
 																			id: Math.random()
 																		}
 																	]
-																)
-																changeTolerations('', 'label')
+																);
+																changeTolerations(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>

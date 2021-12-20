@@ -743,7 +743,12 @@ function CreateAlarm(props) {
 																key={i.alert}
 																value={i.alert}
 															>
-																{i.description}
+																{alarmType ===
+																	'service' &&
+																type ===
+																	'zookeeper'
+																	? i.alert
+																	: i.description}
 															</Option>
 														);
 													})}

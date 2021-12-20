@@ -5,3 +5,7 @@ export const getServiceLit = `${api}/clusters/{clusterId}/namespaces/{namespace}
 export const getServiceVersion = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/version`;
 // * 服务版本升级
 export const upgradeChart = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/upgradeChart`;
+// * 删除中间件相关存储
+export const deleteMiddlewareStorage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/storage`;
+// * 恢复中间件
+export const recoveryMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/recovery`;

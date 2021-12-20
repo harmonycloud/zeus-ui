@@ -77,18 +77,16 @@ const InstanceDetails = (props) => {
 			setSelectedKey(query.key);
 		}
 		// * 强制刷新
-		if (location.state) {
-			if (location.state.flag) {
-				window.location.reload();
-			}
-		}
-		backKey
-			? backKey === 'alarm' && setSelectedKey('alarm')
-			: setSelectedKey('basicInfo');
-		backKey
-			? backKey.indexOf('backupRecovery') !== -1 && setSelectedKey('backupRecovery')
-			: setSelectedKey('basicInfo');
-	}, [location]);
+		// if (location.state) {
+		// 	if (location.state.flag) {
+		// 		window.location.reload();
+		// 	}
+		// }
+		backKey && backKey === 'alarm' && setSelectedKey('alarm');
+		backKey &&
+			backKey.indexOf('backupRecovery') !== -1 &&
+			setSelectedKey('backupRecovery');
+	}, []);
 
 	const menuSelect = (selectedKeys) => {
 		setSelectedKey(selectedKeys[0]);

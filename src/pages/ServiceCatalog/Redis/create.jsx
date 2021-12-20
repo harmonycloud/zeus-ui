@@ -106,11 +106,11 @@ const RedisCreate = (props) => {
 	// };
 
 	// MySQL配置
-	const [version, setVersion] = useState('5.0.8');
+	const [version, setVersion] = useState('5.0');
 	const versionList = [
 		{
-			label: '5.0.8',
-			value: '5.0.8'
+			label: '5.0',
+			value: '5.0'
 		}
 	];
 	const [mode, setMode] = useState('cluster');
@@ -670,15 +670,26 @@ const RedisCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!affinityLabels.find(item => item.label === affinity.label)) {
-																setAffinityLabels([
-																	...affinityLabels,
-																	{
-																		label: affinity.label,
-																		id: Math.random()
-																	}
-																])
-																changeAffinity('', 'label')
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
+																)
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>
@@ -796,7 +807,13 @@ const RedisCreate = (props) => {
 															padding: '0 9px'
 														}}
 														onClick={() => {
-															if (!tolerationsLabels.find(item => item.label === tolerations.label)) {
+															if (
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
 																setTolerationsLabels(
 																	[
 																		...tolerationsLabels,
@@ -805,8 +822,11 @@ const RedisCreate = (props) => {
 																			id: Math.random()
 																		}
 																	]
-																)
-																changeTolerations('', 'label')
+																);
+																changeTolerations(
+																	'',
+																	'label'
+																);
 															}
 														}}
 													>
@@ -1175,11 +1195,11 @@ const RedisCreate = (props) => {
 													</div>
 												) : null}
 												{instanceSpec ===
-													'Customize' ? (
+												'Customize' ? (
 													<div
 														className={
 															styles[
-															'spec-custom'
+																'spec-custom'
 															]
 														}
 													>
