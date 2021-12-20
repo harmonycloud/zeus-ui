@@ -325,6 +325,10 @@ table.table-list tbody tr td {
   color: #0070cc;
   cursor: pointer;
 }
+.displayed-name {
+	color: #CCCCCC;
+	cursor: not-allowed;
+}
 .name-disabled-link {
 	color: #C0C6CC;
 	cursor: pointer;

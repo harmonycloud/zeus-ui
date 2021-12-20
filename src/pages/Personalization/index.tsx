@@ -45,7 +45,9 @@ function Personlization(): JSX.Element {
 	const [loginSelect, setLoginSelect] = useState(false);
 	const [homeSelect, setHomeSelect] = useState(false);
 	const [imgRule, setImgRule] = useState(false);
-	const [checkOk, setCheckOk] = useState(false);
+	const [backgroundValue, setBackgroundValue] = useState<any>();
+	const [loginValue, setLoginValue] = useState<any>();
+	const [homeValue, setHomeValue] = useState<any>();
 
 	useEffect(() => {
 		getData();
@@ -59,6 +61,66 @@ function Personlization(): JSX.Element {
 					setStatus(res.data.status);
 					storage.setLocal('personalization', res.data);
 					field.setValues(res.data);
+					res.data.backgroundPath &&
+						setBackgroundValue([
+							{
+								name: 'background.svg',
+								state: 'done',
+								size: 1024,
+								downloadURL:
+									api +
+									'/images/middleware/' +
+									res.data.backgroundPath,
+								fileURL:
+									api +
+									'/images/middleware/' +
+									res.data.backgroundPath,
+								imgURL:
+									api +
+									'/images/middleware/' +
+									res.data.backgroundPath
+							}
+						]);
+					res.data.loginLogoPath &&
+						setLoginValue([
+							{
+								name: 'login.svg',
+								state: 'done',
+								size: 1024,
+								downloadURL:
+									api +
+									'/images/middleware/' +
+									res.data.loginLogoPath,
+								fileURL:
+									api +
+									'/images/middleware/' +
+									res.data.loginLogoPath,
+								imgURL:
+									api +
+									'/images/middleware/' +
+									res.data.loginLogoPath
+							}
+						]);
+					res.data.homeLogoPath &&
+						setHomeValue([
+							{
+								name: 'home.svg',
+								state: 'done',
+								size: 1024,
+								downloadURL:
+									api +
+									'/images/middleware/' +
+									res.data.homeLogoPath,
+								fileURL:
+									api +
+									'/images/middleware/' +
+									res.data.homeLogoPath,
+								imgURL:
+									api +
+									'/images/middleware/' +
+									res.data.homeLogoPath
+							}
+						]);
 					document.title =
 						res.data && res.data.title ? res.data.title : 'Zeus';
 				} else {
@@ -70,6 +132,34 @@ function Personlization(): JSX.Element {
 							'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
 						platformName: 'Zeus | 中间件管理一体化平台'
 					});
+					setBackgroundValue([
+						{
+							name: 'background.svg',
+							state: 'done',
+							size: 1024,
+							downloadURL: background,
+							fileURL: background,
+							imgURL: background
+						}
+					]);
+					setLoginValue([
+						{
+							name: 'login.svg',
+							state: 'done',
+							size: 1024,
+							url: logo
+						}
+					]);
+					setHomeValue([
+						{
+							name: 'home.svg',
+							state: 'done',
+							size: 1024,
+							downloadURL: homeLogo,
+							fileURL: homeLogo,
+							imgURL: homeLogo
+						}
+					]);
 				}
 			}
 		});
@@ -94,6 +184,10 @@ function Personlization(): JSX.Element {
 		}
 	};
 
+	const onRemove = (info: any) => {
+		field.setValues({ background: null });
+	};
+
 	const logoBeforeUpload = (info: any) => {
 		// console.log(info);
 
@@ -109,10 +203,43 @@ function Personlization(): JSX.Element {
 		}
 	};
 
-	const onSuccess = (info: any) => {
-		// console.log('onSuccess : ', info);
+	const onSuccess = (type: string, info: any) => {
+		console.log(info);
+
 		if (info) {
 			Message.show(messageConfig('success', '成功', '图片上传成功'));
+			if (type === 'background') {
+				setBackgroundValue([
+					{
+						name: info.name,
+						state: 'done',
+						size: info.size,
+						downloadURL: api + '/images/middleware/' + info.name,
+						fileURL: api + '/images/middleware/' + info.name,
+						imgURL: api + '/images/middleware/' + info.name
+					}
+				]);
+			} else if (type === 'home') {
+				setHomeValue([
+					{
+						name: info.name,
+						state: 'done',
+						size: info.size,
+						downloadURL: api + '/images/middleware/' + info.name,
+						fileURL: api + '/images/middleware/' + info.name,
+						imgURL: api + '/images/middleware/' + info.name
+					}
+				]);
+			} else {
+				setLoginValue([
+					{
+						name: info.name,
+						state: 'done',
+						size: info.size,
+						url: api + '/images/middleware/' + info.name
+					}
+				]);
+			}
 			setImgRule(false);
 		}
 	};
@@ -191,42 +318,14 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							headers={headers}
 							beforeUpload={beforeUpload}
+							onRemove={onRemove}
 							onChange={(value) => {
 								!value.length
 									? setBgSelect(true)
 									: setBgSelect(false);
 							}}
-							onSuccess={onSuccess}
-							defaultValue={[
-								{
-									name: personalization
-										? personalization.backgroundPath
-										: 'IMG.PNG',
-									state: 'done',
-									size: 1024,
-									downloadURL:
-										personalization &&
-										personalization.backgroundPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.backgroundPath
-											: background,
-									fileURL:
-										personalization &&
-										personalization.backgroundPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.backgroundPath
-											: background,
-									imgURL:
-										personalization &&
-										personalization.backgroundPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.backgroundPath
-											: background
-								}
-							]}
+							onSuccess={(info) => onSuccess('background', info)}
+							value={backgroundValue}
 						>
 							<div className="next-upload-card">
 								<Icon type="upload" size="large" />
@@ -254,28 +353,13 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							headers={headers}
 							beforeUpload={logoBeforeUpload}
-							onSuccess={onSuccess}
+							onSuccess={(info) => onSuccess('login', info)}
 							onChange={(value) => {
 								!value.length
 									? setLoginSelect(true)
 									: setLoginSelect(false);
 							}}
-							defaultValue={[
-								{
-									name: personalization
-										? personalization.loginLogoPath
-										: 'IMG.PNG',
-									state: 'done',
-									size: 1024,
-									url:
-										personalization &&
-										personalization.loginLogoPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.loginLogoPath
-											: logo
-								}
-							]}
+							value={loginValue}
 						>
 							<Button>
 								<Icon type="upload" />
@@ -335,42 +419,13 @@ function Personlization(): JSX.Element {
 							useDataURL={true}
 							limit={1}
 							beforeUpload={logoBeforeUpload}
-							onSuccess={onSuccess}
+							onSuccess={(info) => onSuccess('home', info)}
 							onChange={(value) => {
 								!value.length
 									? setHomeSelect(true)
 									: setHomeSelect(false);
 							}}
-							defaultValue={[
-								{
-									name: personalization
-										? personalization.homeLogoPath
-										: 'IMG.PNG',
-									state: 'done',
-									size: 1024,
-									downloadURL:
-										personalization &&
-										personalization.homeLogoPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.homeLogoPath
-											: homeLogo,
-									fileURL:
-										personalization &&
-										personalization.homeLogoPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.homeLogoPath
-											: homeLogo,
-									imgURL:
-										personalization &&
-										personalization.homeLogoPath
-											? api +
-											  '/images/middleware/' +
-											  personalization.homeLogoPath
-											: homeLogo
-								}
-							]}
+							value={homeValue}
 						>
 							<div className="next-upload-card">
 								<Icon type="upload" size="large" />

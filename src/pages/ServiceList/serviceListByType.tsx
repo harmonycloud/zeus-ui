@@ -736,6 +736,14 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const nameRender = (value: string, index: number, record: serviceProps) => {
+		if (record.status === 'Deleted') {
+			return (
+				<div>
+					<div className="displayed-name">{record.name}</div>
+					<div>{record.aliasName}</div>
+				</div>
+			);
+		}
 		return (
 			<div className="display-flex flex-align">
 				{record?.mysqlDTO ? (

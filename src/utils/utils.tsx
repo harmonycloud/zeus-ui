@@ -254,6 +254,17 @@ export const serviceListStatusRender: (
 					</span>
 				</Balloon>
 			);
+		case 'Deleted':
+			return (
+				<>
+					<Icon
+						type="ashbin1"
+						size="xs"
+						style={{ color: '#888888' }}
+					/>{' '}
+					已删除
+				</>
+			);
 		case '':
 			return <></>;
 		default:

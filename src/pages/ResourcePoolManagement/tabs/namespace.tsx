@@ -31,6 +31,13 @@ const Namespace = () => {
 		}).then((res) => {
 			if (res.success) {
 				if (mounted) {
+					const temp = res.data.sort(function (a: any, b: any) {
+						const result =
+							Number(a.middlewareReplicas || null) -
+							Number(b.middlewareReplicas || null);
+						return result > 0 ? -1 : 1;
+					});
+					setDataSource([...temp]);
 					setDataSource(res.data);
 				}
 			} else {
@@ -50,7 +57,13 @@ const Namespace = () => {
 			keyword: keyword
 		}).then((res) => {
 			if (res.success) {
-				setDataSource(res.data);
+				const temp = res.data.sort(function (a: any, b: any) {
+					const result =
+						Number(a.middlewareReplicas || null) -
+						Number(b.middlewareReplicas || null);
+					return result > 0 ? -1 : 1;
+				});
+				setDataSource([...temp]);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
