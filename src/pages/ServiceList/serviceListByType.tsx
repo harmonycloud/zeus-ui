@@ -91,7 +91,6 @@ const ServiceListByType = (props: serviceListProps) => {
 							(item: any) =>
 								item.component === 'middleware-controller'
 						);
-						console.log(temp);
 						if (temp.status === 3) {
 							setCantRelease(false);
 						} else {
@@ -115,7 +114,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			type: currentService?.type
 		}).then((res) => {
 			if (res.success) {
-				setDataSource(res.data);
+				setDataSource(res.data[0]);
 				res.data[0] && setShowDataSource(res.data[0].serviceList);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -432,7 +431,11 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (currentService?.type === 'mysql') {
 				return {
 					primary: (
-						<Button onClick={releaseMiddleware} type="primary">
+						<Button
+							onClick={releaseMiddleware}
+							type="primary"
+							disabled={!dataSource}
+						>
 							发布服务
 						</Button>
 					),
