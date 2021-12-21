@@ -72,5 +72,9 @@ export const initMenu = [
 	{
 		id: 16,
 		own: false
+	},
+	{
+		id: 17,
+		own: false
 	}
 ];

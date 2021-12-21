@@ -221,7 +221,7 @@ function AlarmSet() {
 	return (
 		<div className="alarm-set">
 			<div className="box">
-				<div className="box-header">
+				<div className="box-header" onClick={() => setShow(!show)}>
 					<div className="header-img">
 						<img src={Email} />
 					</div>
@@ -237,10 +237,7 @@ function AlarmSet() {
 						</p>
 					</div>
 					<div className="show-box">
-						<span
-							className="show-icon"
-							onClick={() => setShow(!show)}
-						>
+						<span className="show-icon">
 							<Icon
 								type="angle-double-down"
 								size="xs"
@@ -327,7 +324,7 @@ function AlarmSet() {
 											setConnect();
 										}}
 									>
-										取消
+										重置
 									</Button>
 									<Button
 										className={
@@ -360,7 +357,10 @@ function AlarmSet() {
 				</div>
 			</div>
 			<div className="box">
-				<div className="box-header">
+				<div
+					className="box-header"
+					onClick={() => setDingShow(!dingShow)}
+				>
 					<div className="header-img">
 						<img src={Ding} />
 					</div>
@@ -378,10 +378,7 @@ function AlarmSet() {
 						</p>
 					</div>
 					<div className="show-box">
-						<span
-							className="show-icon"
-							onClick={() => setDingShow(!dingShow)}
-						>
+						<span className="show-icon">
 							<Icon
 								type="angle-double-down"
 								size="xs"
@@ -497,7 +494,7 @@ function AlarmSet() {
 											setDingConnect();
 										}}
 									>
-										取消
+										重置
 									</Button>
 									<Button
 										className={

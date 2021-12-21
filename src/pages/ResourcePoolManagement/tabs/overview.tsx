@@ -417,7 +417,7 @@ const Overview = () => {
 	};
 	return (
 		<div>
-			<FormBlock title="资源信息">
+			<FormBlock title="资源信息" className="resource-pool-info">
 				<div className="resource-pool-info-content">
 					<div className="resource-pool-gauge-content">
 						<div className="resource-pool-gauge-item">

@@ -68,7 +68,6 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				// * 创建用户
 				sendData.menu = initMenu;
 				createRole(sendData).then((res) => {
-					console.log(res);
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户创建成功')

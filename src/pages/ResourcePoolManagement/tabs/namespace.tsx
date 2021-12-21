@@ -33,8 +33,7 @@ const Namespace = () => {
 				if (mounted) {
 					const temp = res.data.sort(function (a: any, b: any) {
 						const result =
-							Number(a.middlewareReplicas || null) -
-							Number(b.middlewareReplicas || null);
+							Number(a.registered) - Number(b.registered);
 						return result > 0 ? -1 : 1;
 					});
 					setDataSource([...temp]);
@@ -58,9 +57,7 @@ const Namespace = () => {
 		}).then((res) => {
 			if (res.success) {
 				const temp = res.data.sort(function (a: any, b: any) {
-					const result =
-						Number(a.middlewareReplicas || null) -
-						Number(b.middlewareReplicas || null);
+					const result = Number(a.registered) - Number(b.registered);
 					return result > 0 ? -1 : 1;
 				});
 				setDataSource([...temp]);

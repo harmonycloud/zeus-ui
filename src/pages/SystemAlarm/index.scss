@@ -19,6 +19,7 @@
                 width: 100%;
                 display: flex;
                 align-items: center;
+                cursor: pointer;
                 .header-img {
                     width: 112px;
                     height: 112px;
@@ -146,13 +147,13 @@
                         width: 14px;
                         height: 14px;
                         padding: 0;
+                        border: none;
                         border-radius: 7px;
                         color: #fff;
                         background: #c80000;
                         min-width: auto !important;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+                        text-align: center;
+                        line-height: 12px;
                         &.disabled {
                             background: #cccccc;
                         }

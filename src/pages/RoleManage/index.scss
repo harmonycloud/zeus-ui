@@ -1,7 +1,7 @@
-.role-modal{
+.role-modal {
 	width: 540px;
 	height: 430px;
-	.next-dialog-body{
+	.next-dialog-body {
 		height: 320px;
 		overflow-y: auto;
 		& > p {
@@ -21,21 +21,26 @@
 		width: 243px;
 		border: 1px solid #dedede;
 		border-right: none;
-		.role-management-title{
+		.role-management-title {
 			height: 32px;
 			line-height: 32px;
 			padding-left: 8px;
-			border-bottom:1px solid #dedede ;
+			border-bottom: 1px solid #dedede;
 		}
-		.role-management-check-content{
+		.role-management-check-content {
 			padding: 6px 8px;
 			overflow-y: auto;
+			max-height: 166px;
 			.role-management-label {
 				height: 16px;
 				line-height: 14px;
 			}
-			.role-management-checkout-content{
+			.role-management-checkout-content {
 				padding-left: 24px;
+				.next-checkbox-wrapper  {
+					display: block;
+					margin-right: 0;
+				}
 			}
 		}
 	}
