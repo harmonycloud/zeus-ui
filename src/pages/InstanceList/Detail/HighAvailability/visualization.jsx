@@ -665,7 +665,7 @@ function Visualization(props) {
 				const endPoint = cfg.endPoint;
 
 				const { style } = cfg;
-				// console.log(cfg, startPoint, endPoint);
+				// console.log(cfg, group, startPoint, endPoint);
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
@@ -1099,14 +1099,72 @@ function Visualization(props) {
 				return 20;
 			}
 		});
+
 		const nodes = window.graph.getNodes();
 		const edges = window.graph.getEdges();
 		edges.map((item) => {
 			const group = item.getContainer();
 			const path = group.find((e) => e.get('name') === 'path');
+			// console.log(item.getSource().getAnchorPoints(), item.getTarget().getAnchorPoints());
+			console.log(path.cfg.attrs);
+			// console.log(path.attrs.path);
 
-			console.log(path);
+			path.cfg.attrs.path = [
+				[
+					'M',
+					item.getSource().getAnchorPoints()[0].x,
+					item.getSource().getAnchorPoints()[0].y
+				],
+				[
+					'L',
+					item.getSource().getAnchorPoints()[0].x,
+					item.getTarget().getAnchorPoints()[0].y / 2 +
+						(1 / 2) * item.getSource().getAnchorPoints()[0].y
+				], // 二分之一处
+				[
+					'L',
+					item.getTarget().getAnchorPoints()[0].x,
+					item.getTarget().getAnchorPoints()[0].y / 2 +
+						(1 / 2) * item.getSource().getAnchorPoints()[0].y
+				], // 二分之二处
+				[
+					'L',
+					item.getTarget().getAnchorPoints()[0].x,
+					item.getTarget().getAnchorPoints()[0].y
+				]
+			];
+			path.attr({
+				path: [
+					[
+						'M',
+						item.getSource().getAnchorPoints()[0].x,
+						item.getSource().getAnchorPoints()[0].y
+					],
+					[
+						'L',
+						item.getSource().getAnchorPoints()[0].x,
+						item.getTarget().getAnchorPoints()[0].y / 2 +
+							(1 / 2) * item.getSource().getAnchorPoints()[0].y
+					], // 二分之一处
+					[
+						'L',
+						item.getTarget().getAnchorPoints()[0].x,
+						item.getTarget().getAnchorPoints()[0].y / 2 +
+							(1 / 2) * item.getSource().getAnchorPoints()[0].y
+					], // 二分之二处
+					[
+						'L',
+						item.getTarget().getAnchorPoints()[0].x,
+						item.getTarget().getAnchorPoints()[0].y
+					]
+				]
+			});
+
+			// console.log(path.attrs.path);
+			item.refresh();
+			window.graph.paint();
 		});
+
 		nodes.map((item) => {
 			const group = item.getContainer();
 			const pods = group.find((e) => e.get('name') === 'circle');
@@ -1119,6 +1177,7 @@ function Visualization(props) {
 			);
 			const serveLine = group.find((e) => e.get('name') === 'serve-line');
 			const podLine = group.find((e) => e.get('name') === 'pod-line');
+			console.log(item.getAnchorPoints());
 			window.graph.updateItem(item, {
 				anchorPoints:
 					value === 'TB'
@@ -1134,11 +1193,21 @@ function Visualization(props) {
 			if (value === 'TB') {
 				if (item.getModel().level === 'pod') {
 					pods.attr({
-						x: 95,
+						x: 84,
 						y: 0
 					});
 					podTexts.attr({
-						x: 120,
+						x: 114,
+						y: 20
+					});
+				}
+				if (item.getModel().level === 'serve') {
+					pods.attr({
+						x: 4,
+						y: 0
+					});
+					podTexts.attr({
+						x: 34,
 						y: 20
 					});
 				}
@@ -1149,6 +1218,7 @@ function Visualization(props) {
 			}
 		});
 		// window.graph.layout();
+		setDirection(value);
 		window.graph.fitCenter();
 	};
 

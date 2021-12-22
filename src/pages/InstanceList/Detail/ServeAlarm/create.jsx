@@ -276,7 +276,7 @@ function CreateAlarm(props) {
 				setSelectUser(
 					res.data.userBy
 						.filter((item) => item.email)
-						.map((item) => item.userId)
+						.map((item) => String(item.userId))
 				);
 			res.data.userBy &&
 				res.data.userBy.length &&
@@ -328,7 +328,7 @@ function CreateAlarm(props) {
 		return item.email ? (
 			<span
 				key={item.id}
-				style={{ width: '445px', overflowX: 'auto' }}
+				style={{ width: '100%', overflowX: 'auto' }}
 				className={item.email ? '' : 'disabled'}
 			>
 				<Checkbox
@@ -353,7 +353,7 @@ function CreateAlarm(props) {
 				trigger={
 					<span
 						key={item.id}
-						style={{ width: '445px', overflowX: 'auto' }}
+						style={{ width: '100%', overflowX: 'auto' }}
 						className={item.email ? '' : 'disabled'}
 					>
 						<Checkbox
@@ -971,53 +971,92 @@ function CreateAlarm(props) {
 				<h2>告警通知</h2>
 				<div className="users">
 					<span style={{ marginLeft: '10px' }}>通知方式</span>
-					<Checkbox
-						label="邮箱"
-						style={{ margin: '0 30px 0 20px' }}
-						checked={mailChecked}
-						onChange={(checked) => setMailChecked(checked)}
-						disabled={mailDisabled}
-					/>
-					<Checkbox
-						label="钉钉"
-						checked={dingChecked}
-						onChange={(checked) => setDingChecked(checked)}
-						disabled={dingDisabled}
-					/>
+					{mailDisabled ? (
+						<Tooltip
+							trigger={
+								<Checkbox
+									label="邮箱"
+									style={{ margin: '0 30px 0 20px' }}
+									checked={mailChecked}
+									onChange={(checked) =>
+										setMailChecked(checked)
+									}
+									disabled={mailDisabled}
+								/>
+							}
+							align="t"
+						>
+							请前往系统管理--系统告警设置
+						</Tooltip>
+					) : (
+						<Checkbox
+							label="邮箱"
+							style={{ margin: '0 30px 0 20px' }}
+							checked={mailChecked}
+							onChange={(checked) => setMailChecked(checked)}
+							disabled={mailDisabled}
+						/>
+					)}
+					{dingDisabled ? (
+						<Tooltip
+							trigger={
+								<Checkbox
+									label="钉钉"
+									checked={dingChecked}
+									onChange={(checked) =>
+										setDingChecked(checked)
+									}
+									disabled={dingDisabled}
+								/>
+							}
+							align="t"
+						>
+							请前往系统管理--系统告警设置
+						</Tooltip>
+					) : (
+						<Checkbox
+							label="钉钉"
+							checked={dingChecked}
+							onChange={(checked) => setDingChecked(checked)}
+							disabled={dingDisabled}
+						/>
+					)}
 				</div>
 				{mailChecked && isReady && (
 					<div className="transfer">
-						<div className="transfer-header">
-							<p className="transfer-title left">用户管理</p>
-							<p className="transfer-title">用户管理</p>
+						<div className="ne-required">邮箱告警</div>
+						<div className="transfer-container">
+							<div className="transfer-header">
+								<p className="transfer-title left">用户管理</p>
+								<p className="transfer-title">用户管理</p>
+							</div>
+							<Transfer
+								showSearch
+								searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
+								defaultValue={selectUser}
+								mode="simple"
+								titles={[
+									<div key="left">
+										<span key="account">登陆账户</span>
+										<span key="username">用户名</span>
+										<span key="email">邮箱</span>
+										<span key="tel">手机号</span>
+									</div>,
+									<div key="right">
+										<span key="account">登陆账户</span>
+										<span key="username">用户名</span>
+										<span key="email">邮箱</span>
+										<span key="tel">手机号</span>
+									</div>
+								]}
+								dataSource={users}
+								itemRender={transferRender}
+								onChange={handleChange}
+							/>
 						</div>
-						{console.log(selectUser)}
-						<Transfer
-							showSearch
-							searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
-							defaultValue={selectUser}
-							mode="simple"
-							titles={[
-								<div key="left">
-									<span key="account">登陆账户</span>
-									<span key="username">用户名</span>
-									<span key="email">邮箱</span>
-									<span key="tel">手机号</span>
-								</div>,
-								<div key="right">
-									<span key="account">登陆账户</span>
-									<span key="username">用户名</span>
-									<span key="email">邮箱</span>
-									<span key="tel">手机号</span>
-								</div>
-							]}
-							dataSource={users}
-							itemRender={transferRender}
-							onChange={handleChange}
-						/>
 					</div>
 				)}
-				<div style={{ padding: '16px 9px' }}>
+				<div className="alarm-bottom">
 					<Button
 						onClick={onOk}
 						type="primary"

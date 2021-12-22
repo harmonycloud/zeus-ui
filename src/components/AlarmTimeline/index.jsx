@@ -30,8 +30,8 @@ function AlarmTimeLine(props) {
 				{value === 'info'
 					? '一般'
 					: value === 'warning'
-						? '重要'
-						: '严重'}
+					? '重要'
+					: '严重'}
 			</div>
 		);
 	};
@@ -52,10 +52,10 @@ function AlarmTimeLine(props) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
 						history.push({
-							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`,
-							state: {
-								flag: true
-							}
+							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
+							// state: {
+							// 	flag: true
+							// }
 						});
 					}
 				});
@@ -75,10 +75,10 @@ function AlarmTimeLine(props) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
 						history.push({
-							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`,
-							state: {
-								flag: true
-							}
+							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
+							// state: {
+							// 	flag: true
+							// }
 						});
 					}
 				});
@@ -109,11 +109,14 @@ function AlarmTimeLine(props) {
 								key={index}
 								title={
 									<span
-										className={`time-line-title ${item.chartVersion ? 'active' : ''
-											}`}
+										className={`time-line-title ${
+											item.chartVersion ? 'active' : ''
+										}`}
 										onClick={() => toDetail(item)}
 									>
-										{item.lay === 'system' ? '(系统级)' : '(服务级)'}
+										{item.lay === 'system'
+											? '(系统级)'
+											: '(服务级)'}
 										{' ' + item.name}
 									</span>
 								}
@@ -124,12 +127,15 @@ function AlarmTimeLine(props) {
 											{transTime.gmt2local(item.time)}
 										</div>
 										<div className="details-msg">
-											<div
-												className="details-summary"
-												title={item.summary}
-											>
-												<span>{item.content ? item.connect + '；' : item.connect}</span>
-												<span>{item.summary}</span>
+											<div className="details-summary">
+												<span title={item.summary}>
+													{item.content
+														? item.content + '；'
+														: ''}
+												</span>
+												<span title={item.summary}>
+													{item.summary || ''}
+												</span>
 											</div>
 											{/* <Tooltip
 												align="l"

@@ -304,7 +304,7 @@ export const iconTypeRender = (value: string, index: number, record: any) => {
 	);
 };
 export const timeRender = (value: string, index: number, record: any) => {
-	return moment(value).format('YYYY-MM-DD HH:mm:ss');
+	return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '/';
 };
 // * 简单表格列为空
 export const nullRender: (value: string | null) => string = (
