@@ -91,7 +91,7 @@ function DisasterCenter(props: disasterCenterProps) {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/instanceList/detail/${
+			pathname: `/serviceList/basicInfo/${
 				(data as middlewareDetailProps).mysqlDTO.relationName
 			}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 				(data as middlewareDetailProps).chartVersion
