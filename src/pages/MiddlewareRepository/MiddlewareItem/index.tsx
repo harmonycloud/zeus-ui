@@ -299,7 +299,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 				className="middleware-item-status"
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
-				{name === 'kafka' || name === 'mysql'
+				{name === 'kafka' || name === 'rocketmq'
 					? '消息类型'
 					: '数据库类型'}
 				&nbsp;&nbsp;

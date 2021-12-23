@@ -6,6 +6,7 @@ import { Button, Switch } from '@alifd/next';
 import { useHistory } from 'react-router';
 import { getClusters } from '@/services/common.js';
 import { Message, Dialog } from '@alicloud/console-components';
+import ComponentsNull from '@/components/ComponentsNull';
 import messageConfig from '@/components/messageConfig';
 import {
 	deleteAlarm,
@@ -352,6 +353,12 @@ function Rules(props) {
 		}
 	};
 
+	if (!monitor || !monitor.alertManager) {
+		return (
+			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+		);
+	}
+
 	return (
 		<Table
 			dataSource={dataSource}
@@ -410,8 +417,18 @@ function Rules(props) {
 				sortable
 				width={160}
 			/>
-			<Table.Column title="启用" dataIndex="enable" cell={enableRender} width={100} />
-			<Table.Column title="操作" dataIndex="option" cell={actionRender} width={100} />
+			<Table.Column
+				title="启用"
+				dataIndex="enable"
+				cell={enableRender}
+				width={100}
+			/>
+			<Table.Column
+				title="操作"
+				dataIndex="option"
+				cell={actionRender}
+				width={100}
+			/>
 		</Table>
 	);
 }

@@ -242,11 +242,19 @@ function Visualization(props) {
 		}
 	};
 
-	const collapseBack = (direction, cfg) => {
+	const collapseBackX = (direction, cfg) => {
 		if (direction === 'LR') {
-			return cfg.level === 'pod' ? { x: 1, y: 2 } : { x: 1, y: 2 };
+			return cfg.level === 'serve' ? 87 : 168;
 		} else {
-			return cfg.level === 'pod' ? 114 : 34;
+			return cfg.level === 'serve' ? 27 : 106;
+		}
+	};
+
+	const collapseTextX = (direction, cfg) => {
+		if (direction === 'LR') {
+			return cfg.level === 'serve' ? 95 : 176;
+		} else {
+			return cfg.level === 'serve' ? 35 : 114;
 		}
 	};
 
@@ -293,39 +301,34 @@ function Visualization(props) {
 							modelId: cfg.id,
 							name: 'circle-text'
 						});
-						// if (cfg.level === 'serve') {
-						// 	group.addShape('rect', {
-						// 		attrs: {
-						// 			stroke: '#A3B1BF',
-						// 			x: 60,
-						// 			y: 50,
-						// 			width: 26,
-						// 			height: 0
-						// 		},
-						// 		name: 'serve-line'
-						// 	});
-						// }
-						// if (cfg.level === 'pod') {
-						// 	group.addShape('rect', {
-						// 		attrs: {
-						// 			stroke: '#A3B1BF',
-						// 			x: 90,
-						// 			y: 50,
-						// 			width: 90,
-						// 			height: 0
-						// 		},
-						// 		name: 'pod-line'
-						// 	});
-						// }
+						if (cfg.level === 'serve') {
+							group.addShape('rect', {
+								attrs: {
+									stroke: '#A3B1BF',
+									x: direction === 'LR' ? 60 : 34,
+									y: direction === 'LR' ? 50 : 30,
+									width: direction === 'LR' ? 26 : 0,
+									height: direction === 'LR' ? 0 : 36
+								},
+								name: 'serve-line'
+							});
+						}
+						if (cfg.level === 'pod') {
+							group.addShape('rect', {
+								attrs: {
+									stroke: '#A3B1BF',
+									x: direction === 'LR' ? 90 : 114,
+									y: direction === 'LR' ? 50 : 30,
+									width: direction === 'LR' ? 90 : 0,
+									height: direction === 'LR' ? 0 : 36
+								},
+								name: 'pod-line'
+							});
+						}
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
-									x:
-										direction === 'LR'
-											? cfg.level === 'serve'
-												? 87
-												: 168
-											: 30,
+									x: collapseBackX(direction, cfg),
 									y: direction === 'LR' ? 42 : 67,
 									width: 16,
 									height: 16,
@@ -335,18 +338,12 @@ function Visualization(props) {
 									fill: '#fff'
 								},
 								name: 'collapse-back',
-								modelId: cfg.id,
-								visible: direction === 'LR' ? true : false
+								modelId: cfg.id
 							});
 							group.addShape('text', {
 								attrs: {
-									x:
-										direction === 'LR'
-											? cfg.level === 'serve'
-												? 95
-												: 176
-											: 30,
-									y: direction === 'LR' ? 48 : 71,
+									x: collapseTextX(direction, cfg),
+									y: direction === 'LR' ? 48 : 73,
 									textAlign: 'center',
 									textBaseline: 'middle',
 									text: '-',
@@ -355,8 +352,7 @@ function Visualization(props) {
 									fill: 'rgba(0, 0, 0, 0.25)'
 								},
 								name: 'collapse-text',
-								modelId: cfg.id,
-								visible: direction === 'LR' ? true : false
+								modelId: cfg.id
 							});
 						}
 						return circle;
@@ -656,7 +652,7 @@ function Visualization(props) {
 							attrs: {
 								fill: '#fff',
 								stroke: '#ccc',
-								x: -20,
+								x: -18,
 								y: 65,
 								width: 70,
 								height: 25
@@ -886,6 +882,8 @@ function Visualization(props) {
 				if (evt.target.cfg.name === 'status') {
 					info.cfg.visible = true;
 					infoText.cfg.visible = true;
+					info.toFront();
+					infoText.toFront();
 				}
 				// if (box.attrs.fill === '#EBEBEB') item.enableCapture(false);
 				if (pathname.includes('addBackup')) return;

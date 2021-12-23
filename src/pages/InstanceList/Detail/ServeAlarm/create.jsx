@@ -729,7 +729,6 @@ function CreateAlarm(props) {
 														'alert'
 													)
 												}
-												placeholder="CPU使用率"
 												style={{
 													marginRight: 8,
 													width: '100%'

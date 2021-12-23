@@ -238,18 +238,12 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 				<ul className="acl-config-list">
 					<li className="display-flex" style={{ width: '50%' }}>
 						<label className="form-name">
-							<span
-								className="ne-required"
-								style={{ marginRight: 8 }}
-							>
-								账户密码
-							</span>
+							<span style={{ marginRight: 8 }}>账户密码</span>
 						</label>
 						<div className="form-content">
 							<Row gutter="4">
 								<Col>
 									<FormItem
-										required
 										requiredMessage="长度在7个字符-20字符"
 										minmaxLengthMessage="长度在7个字符-20字符"
 										validateState={nameState}
@@ -272,7 +266,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								</Col>
 								<Col>
 									<FormItem
-										required
 										requiredMessage="长度在7个字符-20字符"
 										minmaxLengthMessage="长度在7个字符-20字符"
 										validateState={passwordState}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Table from '@/components/MidTable';
 import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
+import ComponentsNull from '@/components/ComponentsNull';
 import { getClusters } from '@/services/common.js';
 
 const alarmWarn = [
@@ -159,6 +160,12 @@ function AlarmRecord(props) {
 			? value
 			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
 	};
+
+	if (!monitor || !monitor.alertManager) {
+		return (
+			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+		);
+	}
 
 	return (
 		<Table
