@@ -299,7 +299,10 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 				className="middleware-item-status"
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
-				消息类型&nbsp;&nbsp;
+				{name === 'kafka' || name === 'mysql'
+					? '消息类型'
+					: '数据库类型'}
+				&nbsp;&nbsp;
 				<Tooltip
 					trigger={
 						<CustomIcon
