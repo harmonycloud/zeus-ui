@@ -176,19 +176,30 @@ function DisasterCenter(props: disasterCenterProps) {
 	};
 	const toDetail = () => {
 		// * 源示例和备服务在用一个资源池时
-		if (
-			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
-			basicData?.clusterId
-		) {
-			unAcrossCluster();
-		} else {
-			// across the cluster
-			const flag = storage.getLocal('firstAlert');
-			if (flag === 0) {
-				setVisible(true);
+		if ((data as middlewareDetailProps).mysqlDTO.relationClusterId) {
+			if (
+				(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
+				basicData?.clusterId
+			) {
+				unAcrossCluster();
 			} else {
-				acrossCluster();
+				// across the cluster
+				const flag = storage.getLocal('firstAlert');
+				if (flag === 0) {
+					setVisible(true);
+				} else {
+					acrossCluster();
+				}
 			}
+		} else {
+			history.push({
+				pathname: `/serviceList/basicInfo/${basicData?.name}/${
+					basicData?.type || 'mysql'
+				}/${(data as middlewareDetailProps).chartVersion}`,
+				state: {
+					flag: true
+				}
+			});
 		}
 	};
 	const NotSupport = () => (
