@@ -316,7 +316,12 @@ export default function Disaster(props: disasterProps): JSX.Element {
 					<>
 						<DisasterOriginCard
 							originData={originData}
-							toBasicInfo={() => onRefresh('basicInfo')}
+							toBasicInfo={() => {
+								history.location.pathname ===
+								'/disasterBackup/disasterCenter'
+									? toDetail()
+									: onRefresh('basicInfo');
+							}}
 						/>
 						<DisasterBackupCardNone
 							toCreateBackup={toCreateBackup}
