@@ -259,15 +259,30 @@ const BatchInstall = (props: BatchInstallProps) => {
 			{controllers.length === 0 && (
 				<p style={{ textAlign: 'center' }}>无可安装的中间件控制器</p>
 			)}
-			<CheckboxGroup value={selectController} onChange={onChange}>
-				{controllers.map((item: ControllerItemProps, index: number) => {
-					return (
-						<Checkbox key={index} value={item.chartName}>
-							{item.chartName}|{item.chartVersion}
-						</Checkbox>
-					);
-				})}
-			</CheckboxGroup>
+			<div className="batch-install-component-item">
+				<CheckboxGroup
+					value={selectController}
+					onChange={onChange}
+					style={{ width: '100%' }}
+				>
+					{controllers.map(
+						(item: ControllerItemProps, index: number) => {
+							return (
+								<Checkbox
+									key={index}
+									value={item.chartName}
+									style={{
+										display: 'inline-block',
+										width: '31%'
+									}}
+								>
+									{item.chartName}|{item.chartVersion}
+								</Checkbox>
+							);
+						}
+					)}
+				</CheckboxGroup>
+			</div>
 		</Dialog>
 	);
 };

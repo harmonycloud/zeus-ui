@@ -243,6 +243,8 @@ function CreateAlarm(props) {
 			setAlarmRules([{ ...record, severity: record.labels.severity }]);
 			record.ding ? setDingChecked(true) : setDingChecked(false);
 			record.mail ? setMailChecked(true) : setMailChecked(false);
+			setSystemId(record.clusterId);
+			getUserList({ alertRuleId: record.alertId });
 		} else {
 			if (alarmType === 'system') {
 				setAlarms([
@@ -259,52 +261,14 @@ function CreateAlarm(props) {
 			} else {
 				getCanUse(clusterId, namespace, middlewareName, type);
 			}
+			getUserList();
 		}
 		getClusters().then((res) => {
 			// console.log(res.data);
 			if (!res.data) return;
 			setPoolList(res.data);
-			setSystemId(res.data[0].id);
 		});
-		getUsers().then((res) => {
-			// console.log(res);
-			if (!res.data) return;
-			const user = [];
-			res.data.userBy &&
-				res.data.userBy.length &&
-				res.data.userBy.find((item) => item.email) &&
-				setSelectUser(
-					res.data.userBy
-						.filter((item) => item.email)
-						.map((item) => String(item.userId))
-				);
-			res.data.userBy &&
-				res.data.userBy.length &&
-				res.data.users.map((item) => {
-					res.data.userBy.map((arr) => {
-						arr.email &&
-							item.userId === arr.userId &&
-							user.push(item);
-					});
-				});
-			setIsReady(true);
-			setInsertUser(user);
-			setUsers(
-				res.data.users.map((item, index) => {
-					return {
-						...item,
-						value: item.userId,
-						key: item.userId,
-						disabled: !item.email,
-						label:
-							item.email +
-							item.phone +
-							item.userName +
-							item.aliasName
-					};
-				})
-			);
-		});
+
 		getMailInfo().then((res) => {
 			if (res.success) {
 				res.data ? setMailDisabled(false) : setMailDisabled(true);
@@ -322,6 +286,47 @@ function CreateAlarm(props) {
 	const handleChange = (value, data, extra) => {
 		// console.log(value, data, extra);
 		setInsertUser(data);
+	};
+
+	const getUserList = (sendData) => {
+		getUsers(sendData).then((res) => {
+			// console.log(res);
+			if (!res.data) return;
+			const user = [];
+			res.data.userBy &&
+				res.data.userBy.length &&
+				res.data.userBy.find((item) => item.email) &&
+				setSelectUser(
+					res.data.userBy
+						.filter((item) => item.email)
+						.map((item) => item.id)
+				);
+			res.data.userBy &&
+				res.data.userBy.length &&
+				res.data.users.map((item) => {
+					res.data.userBy.map((arr) => {
+						arr.email && item.id === arr.id && user.push(item);
+					});
+				});
+			setIsReady(true);
+			setInsertUser(user);
+			setUsers(
+				res.data.users.map((item, index) => {
+					return {
+						...item,
+						value: item.id,
+						key: item.id,
+						disabled: !item.email,
+						label:
+							item.email +
+							item.phone +
+							item.userName +
+							item.aliasName +
+							item.roleName
+					};
+				})
+			);
+		});
 	};
 
 	const transferRender = (item) => {
@@ -347,8 +352,12 @@ function CreateAlarm(props) {
 					{item.email ? item.email : '/'}
 				</span>
 				<span className="item-content">{item.phone}</span>
-				<span className="item-content">{item.createTime ? item.createTime : '/'}</span>
-				<span className="item-content">{item.roleName ? item.roleName : '/'}</span>
+				<span className="item-content">
+					{item.createTime ? item.createTime : '/'}
+				</span>
+				<span className="item-content">
+					{item.roleName ? item.roleName : '/'}
+				</span>
 			</span>
 		) : (
 			<Tooltip
@@ -374,8 +383,12 @@ function CreateAlarm(props) {
 							{item.email ? item.email : '/'}
 						</span>
 						<span className="item-content">{item.phone}</span>
-						<span className="item-content">{item.createTime ? item.createTime : '/'}</span>
-						<span className="item-content">{item.roleName ? item.roleName : '/'}</span>
+						<span className="item-content">
+							{item.createTime ? item.createTime : '/'}
+						</span>
+						<span className="item-content">
+							{item.roleName ? item.roleName : '/'}
+						</span>
 					</span>
 				}
 				align="t"
@@ -395,9 +408,18 @@ function CreateAlarm(props) {
 				url: {
 					clusterId: systemId
 				},
-				data: value
+				ding: dingChecked ? 'ding' : '',
+				data: {
+					middlewareAlertsDTOList: value,
+					users: insertUser
+				}
 			};
 			if (record) {
+				sendData.alertRuleId = record.alertId;
+				sendData.data = {
+					middlewareAlertsDTO: value[0],
+					users: insertUser
+				};
 				updateAlarm(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -439,9 +461,18 @@ function CreateAlarm(props) {
 					middlewareName: middlewareName,
 					namespace: namespace
 				},
-				data: value
+				ding: dingChecked ? 'ding' : '',
+				data: {
+					middlewareAlertsDTOList: value,
+					users: insertUser
+				}
 			};
 			if (record) {
+				sendData.alertRuleId = record.alertId;
+				sendData.data = {
+					middlewareAlertsDTO: value[0],
+					users: insertUser
+				};
 				updateAlarms(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -477,19 +508,19 @@ function CreateAlarm(props) {
 				});
 			}
 		}
-		if (dingChecked && !mailChecked) {
-			insertDing([]).then((res) => {
-				if (!res.success) return;
-			});
-		} else if (dingChecked && mailChecked) {
-			insertDing(insertUser).then((res) => {
-				if (!res.success) return;
-			});
-		} else {
-			sendInsertUser(insertUser).then((res) => {
-				if (!res.success) return;
-			});
-		}
+		// if (dingChecked && !mailChecked) {
+		// 	insertDing([]).then((res) => {
+		// 		if (!res.success) return;
+		// 	});
+		// } else if (dingChecked && mailChecked) {
+		// 	insertDing(insertUser).then((res) => {
+		// 		if (!res.success) return;
+		// 	});
+		// } else {
+		// 	sendInsertUser(insertUser).then((res) => {
+		// 		if (!res.success) return;
+		// 	});
+		// }
 	};
 
 	const onOk = () => {
@@ -590,8 +621,9 @@ function CreateAlarm(props) {
 				title={
 					record
 						? '修改告警规则'
-						: `新建告警规则${middlewareName ? '(' + middlewareName + ')' : ''
-						}`
+						: `新建告警规则${
+								middlewareName ? '(' + middlewareName + ')' : ''
+						  }`
 				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
@@ -628,6 +660,7 @@ function CreateAlarm(props) {
 							}}
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
+							placeholder="请选择资源池"
 							disabled={record}
 						>
 							{poolList.length &&
@@ -747,7 +780,7 @@ function CreateAlarm(props) {
 															>
 																{alarmType ===
 																	'service' &&
-																	type ===
+																type ===
 																	'zookeeper'
 																	? i.alert
 																	: i.description}
@@ -804,7 +837,7 @@ function CreateAlarm(props) {
 													(Number(item.alertTime) >
 														1440 ||
 														Number(item.alertTime) <
-														1) &&
+															1) &&
 													'error'
 												}
 												onChange={(value) => {
@@ -941,31 +974,31 @@ function CreateAlarm(props) {
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||
 										Number(item.alertTimes) < 1) && (
-											<Row>
-												<Col className="error-info">
-													{(Number(item.alertTime) >
-														1440 ||
-														Number(item.alertTime) <
+										<Row>
+											<Col className="error-info">
+												{(Number(item.alertTime) >
+													1440 ||
+													Number(item.alertTime) <
 														1) && (
-															<span>
-																分钟数的范围是1-1440
-															</span>
-														)}
-													{(Number(item.alertTimes) >
-														1000 ||
-														Number(item.alertTimes) <
+													<span>
+														分钟数的范围是1-1440
+													</span>
+												)}
+												{(Number(item.alertTimes) >
+													1000 ||
+													Number(item.alertTimes) <
 														1) && (
-															<span
-																style={{
-																	marginLeft: '16px'
-																}}
-															>
-																次数数的范围是1-1000
-															</span>
-														)}
-												</Col>
-											</Row>
-										)}
+													<span
+														style={{
+															marginLeft: '16px'
+														}}
+													>
+														次数数的范围是1-1000
+													</span>
+												)}
+											</Col>
+										</Row>
+									)}
 								</div>
 							);
 						})}
@@ -1034,7 +1067,7 @@ function CreateAlarm(props) {
 							</div>
 							<Transfer
 								showSearch
-								searchPlaceholder="请输入登录用户、用户名、邮箱、手机号搜索"
+								searchPlaceholder="请输入登录用户、用户名、邮箱、手机号、关联角色搜索"
 								defaultValue={selectUser}
 								mode="simple"
 								titles={[

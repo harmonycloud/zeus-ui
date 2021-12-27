@@ -87,23 +87,30 @@ export const getCanUseAlarms = (params) => {
 };
 export const createAlarms = (params) => {
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRules, params.url);
-	return Axios.json(restUrl, params.data);
+	return Axios.json(restUrl + '?ding=' + params.ding, params.data);
 };
 export const createAlarm = (params) => {
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
-	return Axios.json(restUrl, params.data);
+	return Axios.json(restUrl + '?ding=' + params.ding, params.data);
 };
 export const updateAlarms = (params) => {
 	const { restUrl } = Axios.restfulAPI(
 		MIDDLEWARE.updateAlarmRules,
 		params.url
 	);
-	return Axios.json(restUrl, params.data[0]);
+	return Axios.json(
+		restUrl + '?alertRuleId=' + params.alertRuleId + '&ding=' + params.ding,
+		params.data
+	);
 };
 export const updateAlarm = (params) => {
-	console.log(params);
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRule, params.url);
-	return Axios.json(restUrl, params.data[0], {}, 'PUT');
+	return Axios.json(
+		restUrl + '?alertRuleId=' + params.alertRuleId + '&ding=' + params.ding,
+		params.data,
+		{},
+		'PUT'
+	);
 };
 export const deleteAlarms = (params) => {
 	return Axios.delete(MIDDLEWARE.deleteAlarmRules, params);

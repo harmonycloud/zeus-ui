@@ -121,11 +121,12 @@ function Rules(props) {
 		}
 	};
 
-	const removeAlarm = (alert) => {
+	const removeAlarm = (record) => {
 		if (alarmType === 'system') {
 			const sendData = {
 				clusterId,
-				alert
+				alert: record.alert,
+				alertRuleId: record.alertId
 			};
 			Dialog.show({
 				title: '操作确认',
@@ -148,7 +149,8 @@ function Rules(props) {
 				clusterId,
 				middlewareName,
 				namespace,
-				alert
+				alert: record.alert,
+				alertRuleId: record.alertId
 			};
 			Dialog.show({
 				title: '操作确认',
@@ -180,7 +182,7 @@ function Rules(props) {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => removeAlarm(record.alert)}>
+				<LinkButton onClick={() => removeAlarm(record)}>
 					删除
 				</LinkButton>
 			</Actions>
@@ -232,7 +234,15 @@ function Rules(props) {
 							url: {
 								clusterId: record.labels.clusterId
 							},
-							data: [{ ...record, enable: checked ? 1 : 0 }]
+							alertRuleId: record.alertId,
+							ding: record.ding,
+							data: {
+								middlewareAlertsDTO: {
+									...record,
+									enable: checked ? 1 : 0
+								},
+								users: []
+							}
 						};
 						updateAlarm(sendData).then((res) => {
 							if (res.success) {
@@ -262,7 +272,15 @@ function Rules(props) {
 								namespace,
 								middlewareName
 							},
-							data: [{ ...record, enable: checked ? 1 : 0 }]
+							alertRuleId: record.alertId,
+							ding: record.ding,
+							data: {
+								middlewareAlertsDTO: {
+									...record,
+									enable: checked ? 1 : 0
+								},
+								users: []
+							}
 						};
 						updateAlarms(sendData).then((res) => {
 							if (res.success) {
@@ -353,11 +371,11 @@ function Rules(props) {
 		}
 	};
 
-	if (!monitor || !monitor.alertManager) {
-		return (
-			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
-		);
-	}
+	// if (!monitor || !monitor.alertManager) {
+	// 	return (
+	// 		<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+	// 	);
+	// }
 
 	return (
 		<Table
