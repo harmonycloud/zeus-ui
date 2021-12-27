@@ -56,17 +56,17 @@ export default function Log(props) {
 					</Tab.Item>
 					{!customMid ? (
 						<Tab.Item title="标准日志">
-							<StandardLog data={props} />
+							<StandardLog data={props} logging={logging} />
 						</Tab.Item>
 					) : null}
 					{!customMid ? (
 						<Tab.Item title="日志文件">
-							<LogFile data={props} />
+							<LogFile data={props} logging={logging} />
 						</Tab.Item>
 					) : null}
 					{type === 'mysql' && (
 						<Tab.Item title="慢日志查看">
-							<SlowLog data={props} />
+							<SlowLog data={props} logging={logging} />
 						</Tab.Item>
 					)}
 				</Tab>
