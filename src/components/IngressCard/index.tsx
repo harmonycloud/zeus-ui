@@ -94,6 +94,7 @@ const IngressCard = (props: IngressCardProps) => {
 						status={status}
 						actionCount={2}
 						leftText="取消接入"
+						leftClass="danger"
 						rightText="编辑"
 						leftHandle={() => uninstallComponent('access')}
 						rightHandle={() => setAccessVisible(true)}

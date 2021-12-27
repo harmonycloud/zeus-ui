@@ -347,6 +347,8 @@ function CreateAlarm(props) {
 					{item.email ? item.email : '/'}
 				</span>
 				<span className="item-content">{item.phone}</span>
+				<span className="item-content">{item.createTime ? item.createTime : '/'}</span>
+				<span className="item-content">{item.roleName ? item.roleName : '/'}</span>
 			</span>
 		) : (
 			<Tooltip
@@ -372,6 +374,8 @@ function CreateAlarm(props) {
 							{item.email ? item.email : '/'}
 						</span>
 						<span className="item-content">{item.phone}</span>
+						<span className="item-content">{item.createTime ? item.createTime : '/'}</span>
+						<span className="item-content">{item.roleName ? item.roleName : '/'}</span>
 					</span>
 				}
 				align="t"
@@ -586,9 +590,8 @@ function CreateAlarm(props) {
 				title={
 					record
 						? '修改告警规则'
-						: `新建告警规则${
-								middlewareName ? '(' + middlewareName + ')' : ''
-						  }`
+						: `新建告警规则${middlewareName ? '(' + middlewareName + ')' : ''
+						}`
 				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
@@ -744,7 +747,7 @@ function CreateAlarm(props) {
 															>
 																{alarmType ===
 																	'service' &&
-																type ===
+																	type ===
 																	'zookeeper'
 																	? i.alert
 																	: i.description}
@@ -801,7 +804,7 @@ function CreateAlarm(props) {
 													(Number(item.alertTime) >
 														1440 ||
 														Number(item.alertTime) <
-															1) &&
+														1) &&
 													'error'
 												}
 												onChange={(value) => {
@@ -938,31 +941,31 @@ function CreateAlarm(props) {
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||
 										Number(item.alertTimes) < 1) && (
-										<Row>
-											<Col className="error-info">
-												{(Number(item.alertTime) >
-													1440 ||
-													Number(item.alertTime) <
+											<Row>
+												<Col className="error-info">
+													{(Number(item.alertTime) >
+														1440 ||
+														Number(item.alertTime) <
 														1) && (
-													<span>
-														分钟数的范围是1-1440
-													</span>
-												)}
-												{(Number(item.alertTimes) >
-													1000 ||
-													Number(item.alertTimes) <
+															<span>
+																分钟数的范围是1-1440
+															</span>
+														)}
+													{(Number(item.alertTimes) >
+														1000 ||
+														Number(item.alertTimes) <
 														1) && (
-													<span
-														style={{
-															marginLeft: '16px'
-														}}
-													>
-														次数数的范围是1-1000
-													</span>
-												)}
-											</Col>
-										</Row>
-									)}
+															<span
+																style={{
+																	marginLeft: '16px'
+																}}
+															>
+																次数数的范围是1-1000
+															</span>
+														)}
+												</Col>
+											</Row>
+										)}
 								</div>
 							);
 						})}
@@ -1023,11 +1026,11 @@ function CreateAlarm(props) {
 				</div>
 				{mailChecked && isReady && (
 					<div className="transfer">
-						<div className="ne-required">邮箱告警</div>
+						<div className="ne-required">邮箱通知</div>
 						<div className="transfer-container">
 							<div className="transfer-header">
-								<p className="transfer-title left">用户管理</p>
-								<p className="transfer-title">用户管理</p>
+								<p className="transfer-title left">用户通知</p>
+								<p className="transfer-title">用户通知</p>
 							</div>
 							<Transfer
 								showSearch
@@ -1040,12 +1043,16 @@ function CreateAlarm(props) {
 										<span key="username">用户名</span>
 										<span key="email">邮箱</span>
 										<span key="tel">手机号</span>
+										<span key="time">创建时间</span>
+										<span key="role">关联角色</span>
 									</div>,
 									<div key="right">
 										<span key="account">登陆账户</span>
 										<span key="username">用户名</span>
 										<span key="email">邮箱</span>
 										<span key="tel">手机号</span>
+										<span key="time">创建时间</span>
+										<span key="role">关联角色</span>
 									</div>
 								]}
 								dataSource={users}

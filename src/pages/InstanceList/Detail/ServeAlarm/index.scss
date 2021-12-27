@@ -116,7 +116,6 @@
             box-sizing: border-box;
         }
         .next-transfer {
-            display: flex;
             width: 100%;
             justify-content: space-between;
             align-items: center;
@@ -143,6 +142,7 @@
 
             .next-transfer-panel {
                 width: calc(50% - 30px);
+                overflow: auto;
                 .next-menu {
                     width: 100%;
                 }
@@ -160,13 +160,24 @@
                     label {
                         display: none;
                     }
+                    margin-left: 12px;
+                }
+                ul{
+                    width: 800px !important;
+                    border-top: 1px solid #C0C6CC;
+                }
+
+                .next-transfer-panel-footer{
+                    width: 800px;
+                    border-top: 1px solid #C0C6CC;
                 }
 
                 .next-transfer-panel-header {
+                    width: 800px;
                     transform: translateY(50px);
                     padding: 16px 30px 16px 45px;
                     span {
-                        width: 80px;
+                        width: 100px;
                         display: inline-block;
                         font-size: 12px;
                         font-family: PingFangSC-Medium, PingFang SC;
@@ -176,7 +187,13 @@
                         &:nth-of-type(3) {
                             width: 160px;
                         }
+                        &:nth-of-type(5) {
+                            width: 160px;
+                        }
                     }
+                }
+                .next-menu-item-inner{
+                    overflow: visible;
                 }
                 .next-search {
                     transform: translateY(-50px);
@@ -188,9 +205,12 @@
                     font-weight: 400;
                     color: #333333;
                     line-height: 18px;
-                    width: 80px;
+                    width: 100px;
                     word-break: break-all;
                     &:nth-of-type(3) {
+                        width: 160px;
+                    }
+                    &:nth-of-type(5) {
                         width: 160px;
                     }
                 }

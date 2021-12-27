@@ -50,46 +50,47 @@ export default function RocketAclEditForm(props: aclEditProps) {
 					}
 				}
 			};
-			if (
-				judgeObjArrayAttrIsNull(
-					datas.rocketMQAccountList,
-					'accessKey',
-					'secretKey'
-				)
-			) {
-				Message.show(
-					messageConfig(
-						'error',
-						'失败',
-						'账户密码格式输入错误，长度在7-20个字符'
-					)
-				);
-				return;
-			} else {
-				Dialog.show({
-					title: '操作确认',
-					content: '生效已修改信息需要重启本组件服务，是否继续？',
-					onOk: () => {
-						updateMiddleware(sendData).then((res) => {
-							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'访问权限控制认证修改成功，3秒后刷新页面'
-									)
-								);
-								onCancel(true);
-							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
-							}
-						});
-					}
-				});
-			}
-		});
+			// if (
+			// 	judgeObjArrayAttrIsNull(
+			// 		datas.rocketMQAccountList,
+			// 		'accessKey',
+			// 		'secretKey'
+			// 	)
+			// ) {
+			// 	Message.show(
+			// 		messageConfig(
+			// 			'error',
+			// 			'失败',
+			// 			'账户密码格式输入错误，长度在7-20个字符'
+			// 		)
+			// 	);
+			// 	return;
+			// } else {
+			Dialog.show({
+				title: '操作确认',
+				content: '生效已修改信息需要重启本组件服务，是否继续？',
+				onOk: () => {
+					updateMiddleware(sendData).then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'访问权限控制认证修改成功，3秒后刷新页面'
+								)
+							);
+							onCancel(true);
+						} else {
+							Message.show(
+								messageConfig('error', '失败', res)
+							);
+						}
+					});
+				}
+			});
+		}
+		// }
+		);
 	};
 	return (
 		<Dialog

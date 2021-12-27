@@ -27,7 +27,7 @@ const ResourcePoolDetail = () => {
 	return (
 		<Page>
 			<Header
-				title={nickname}
+				title={`资源分区(${nickname})`}
 				hasBackArrow
 				onBackArrowClick={() => window.history.back()}
 			/>
