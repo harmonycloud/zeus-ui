@@ -382,6 +382,7 @@ function Rules(props) {
 			onSort={onSort}
 			onFilter={onFilter}
 		>
+			{console.log(monitor)}
 			<Table.Column title="规则ID" dataIndex="alertId" />
 			<Table.Column
 				{...objFilter}

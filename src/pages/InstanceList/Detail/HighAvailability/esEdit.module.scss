@@ -79,7 +79,9 @@
 		padding: 10px 30px;
 		box-sizing: border-box;
 		background-color: #f9f9f9;
-		.rotate{
+		display: flex;
+		align-items: center;
+		.rotate {
 			transform: rotate(-90deg);
 		}
 		button {
@@ -101,6 +103,21 @@
 			&:active {
 				color: #fff;
 				background: #0064c8;
+			}
+		}
+	}
+	.legend {
+		padding: 0 32px;
+		display: flex;
+		p {
+			display: flex;
+			align-items: center;
+			margin-right: 16px;
+			img {
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				margin-right: 3px;
 			}
 		}
 	}

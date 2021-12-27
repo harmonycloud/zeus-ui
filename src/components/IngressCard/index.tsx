@@ -131,6 +131,7 @@ const IngressCard = (props: IngressCardProps) => {
 						status={status}
 						actionCount={2}
 						leftText="卸载"
+						leftClass="danger"
 						rightText="编辑"
 						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
@@ -148,6 +149,7 @@ const IngressCard = (props: IngressCardProps) => {
 						status={status}
 						actionCount={2}
 						leftText="卸载"
+						leftClass="danger"
 						rightText="编辑"
 						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}

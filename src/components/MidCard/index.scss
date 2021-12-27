@@ -65,6 +65,9 @@
 			text-align: center;
 			margin-top: 8px;
 			cursor: pointer;
+			&.danger:hover{
+				color: #C80000;
+			}
 		}
 		.mid-card-right{
 			width: 49%;

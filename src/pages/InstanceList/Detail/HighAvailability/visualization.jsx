@@ -301,30 +301,30 @@ function Visualization(props) {
 							modelId: cfg.id,
 							name: 'circle-text'
 						});
-						if (cfg.level === 'serve') {
-							group.addShape('rect', {
-								attrs: {
-									stroke: '#A3B1BF',
-									x: direction === 'LR' ? 60 : 34,
-									y: direction === 'LR' ? 50 : 30,
-									width: direction === 'LR' ? 26 : 0,
-									height: direction === 'LR' ? 0 : 36
-								},
-								name: 'serve-line'
-							});
-						}
-						if (cfg.level === 'pod') {
-							group.addShape('rect', {
-								attrs: {
-									stroke: '#A3B1BF',
-									x: direction === 'LR' ? 90 : 114,
-									y: direction === 'LR' ? 50 : 30,
-									width: direction === 'LR' ? 90 : 0,
-									height: direction === 'LR' ? 0 : 36
-								},
-								name: 'pod-line'
-							});
-						}
+						// if (cfg.level === 'serve') {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: direction === 'LR' ? 60 : 34,
+						// 			y: direction === 'LR' ? 50 : 30,
+						// 			width: direction === 'LR' ? 26 : 0,
+						// 			height: direction === 'LR' ? 0 : 36
+						// 		},
+						// 		name: 'serve-line'
+						// 	});
+						// }
+						// if (cfg.level === 'pod') {
+						// 	group.addShape('rect', {
+						// 		attrs: {
+						// 			stroke: '#A3B1BF',
+						// 			x: direction === 'LR' ? 90 : 114,
+						// 			y: direction === 'LR' ? 50 : 30,
+						// 			width: direction === 'LR' ? 90 : 0,
+						// 			height: direction === 'LR' ? 0 : 36
+						// 		},
+						// 		name: 'pod-line'
+						// 	});
+						// }
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
@@ -490,7 +490,7 @@ function Visualization(props) {
 							attrs: {
 								text: '已',
 								x: 212,
-								y: 42,
+								y: 32,
 								fill: '#fff'
 							},
 							visible: hasConfigBackup(cfg),
@@ -500,7 +500,7 @@ function Visualization(props) {
 							attrs: {
 								text: '设',
 								x: 212,
-								y: 54,
+								y: 44,
 								fill: '#fff'
 							},
 							visible: hasConfigBackup(cfg),
@@ -510,11 +510,31 @@ function Visualization(props) {
 							attrs: {
 								text: '置',
 								x: 212,
-								y: 66,
+								y: 56,
 								fill: '#fff'
 							},
 							visible: hasConfigBackup(cfg),
 							name: 'text3'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '备',
+								x: 212,
+								y: 68,
+								fill: '#fff'
+							},
+							visible: hasConfigBackup(cfg),
+							name: 'text4'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '份',
+								x: 212,
+								y: 80,
+								fill: '#fff'
+							},
+							visible: hasConfigBackup(cfg),
+							name: 'text5'
 						});
 						group.addShape('image', {
 							attrs: {
@@ -833,11 +853,12 @@ function Visualization(props) {
 				}
 			]
 		};
-		// res.children = topoData.pods;
-		console.log(res);
+		// console.log(res);
 		graph.data(res);
 		graph.render();
-		graph.fitCenter();
+		topoData.pods.length && topoData.pods.length >= 4
+			? graph.fitView()
+			: graph.fitCenter();
 
 		const nodes = graph.getNodes();
 		nodes.map((item) => {
@@ -879,15 +900,14 @@ function Visualization(props) {
 					(e) => e.get('name') === 'info-text'
 				);
 				graph.setItemState(item, 'hover', true);
-				if (evt.target.cfg.name === 'status') {
-					info.cfg.visible = true;
-					infoText.cfg.visible = true;
-					info.toFront();
-					infoText.toFront();
-				}
-				// if (box.attrs.fill === '#EBEBEB') item.enableCapture(false);
+				// if (evt.target.cfg.name === 'status') {
+				// 	info.cfg.visible = true;
+				// 	infoText.cfg.visible = true;
+				// 	info.toFront();
+				// 	infoText.toFront();
+				// }
 				if (pathname.includes('addBackup')) return;
-				if (evt.target.cfg.name === 'rect-shape' && button1) {
+				if (button1) {
 					button1.cfg.visible = true;
 					button2.cfg.visible = true;
 					button3.cfg.visible = true;
@@ -1038,13 +1058,44 @@ function Visualization(props) {
 		graph.on('collapse-text:click', (e) => {
 			// console.log(e.target);
 			const { item } = e;
+			console.log(item, direction);
 			const group = item.getContainer();
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
+			const collapseBack = group.find(
+				(e) => e.get('name') === 'collapse-back'
+			);
 			const text = collapseText.attr('text');
-			text === '-' && collapseText.attr('text', '+');
-			text === '+' && collapseText.attr('text', '-');
+			if (text === '-') {
+				if (direction === 'LR') {
+					collapseBack.attr(
+						'x',
+						item.getModel().depth === 1 ? 60 : 90
+					);
+					collapseText.attr({
+						text: '+',
+						x: item.getModel().depth === 1 ? 68 : 98
+					});
+				} else {
+					collapseBack.attr('y', 30);
+					collapseText.attr({ text: '+', y: 36 });
+				}
+			} else {
+				if (direction === 'LR') {
+					collapseBack.attr(
+						'x',
+						item.getModel().depth === 1 ? 87 : 168
+					);
+					collapseText.attr({
+						text: '-',
+						x: item.getModel().depth === 1 ? 95 : 176
+					});
+				} else {
+					collapseBack.attr('y', 67);
+					collapseText.attr({ text: '-', y: 73 });
+				}
+			}
 			graph.refreshItem(item);
 			handleCollapse(e);
 		});
@@ -1054,9 +1105,39 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
+			const collapseBack = group.find(
+				(e) => e.get('name') === 'collapse-back'
+			);
 			const text = collapseText.attr('text');
-			text === '-' && collapseText.attr('text', '+');
-			text === '+' && collapseText.attr('text', '-');
+			if (text === '-') {
+				if (direction === 'LR') {
+					collapseBack.attr(
+						'x',
+						item.getModel().depth === 1 ? 60 : 90
+					);
+					collapseText.attr({
+						text: '+',
+						x: item.getModel().depth === 1 ? 68 : 98
+					});
+				} else {
+					collapseBack.attr('y', 30);
+					collapseText.attr({ text: '+', y: 36 });
+				}
+			} else {
+				if (direction === 'LR') {
+					collapseBack.attr(
+						'x',
+						item.getModel().depth === 1 ? 87 : 168
+					);
+					collapseText.attr({
+						text: '-',
+						x: item.getModel().depth === 1 ? 95 : 176
+					});
+				} else {
+					collapseBack.attr('y', 67);
+					collapseText.attr({ text: '-', y: 73 });
+				}
+			}
 			graph.refreshItem(item);
 			handleCollapse(e);
 		});
@@ -1100,10 +1181,6 @@ function Visualization(props) {
 		window.graph = graph;
 	};
 
-	// useEffect(() => {
-	// 	createTopo();
-	// }, []);
-
 	useEffect(() => {
 		window.graph && window.graph.clear();
 		window.graph && window.graph.destroy();
@@ -1112,7 +1189,9 @@ function Visualization(props) {
 	}, [direction]);
 
 	const reset = () => {
-		window.graph.fitCenter();
+		topoData.pods.length && topoData.pods.length >= 4
+			? window.graph.fitView()
+			: window.graph.fitCenter();
 	};
 
 	const bingger = () => {
@@ -1151,157 +1230,7 @@ function Visualization(props) {
 	};
 
 	const changeTree = (value) => {
-		// window.graph.clear();
-
-		// window.graph.updateLayout({
-		// 	type: 'compactBox',
-		// 	direction: value,
-		// 	defaultNode: {
-		// 		type: 'tree-node'
-		// 	},
-		// 	defaultEdge: {
-		// 		type: 'polyline',
-		// 		style: {
-		// 			stroke: '#A3B1BF'
-		// 		}
-		// 	},
-		// 	getId: function getId(d) {
-		// 		return d.id;
-		// 	},
-		// 	getHeight: function getHeight() {
-		// 		return 100;
-		// 	},
-		// 	getWidth: function getWidth(d) {
-		// 		return d.level === 'serve' ? 60 : 220;
-		// 	},
-		// 	getVGap: function getVGap() {
-		// 		return 10;
-		// 	},
-		// 	getHGap: function getHGap(d) {
-		// 		return 20;
-		// 	}
-		// });
-
-		// const nodes = window.graph.getNodes();
-		// const edges = window.graph.getEdges();
-		// edges.map((item) => {
-		// 	const group = item.getContainer();
-		// 	const path = group.find((e) => e.get('name') === 'path');
-		// 	// console.log(item.getSource().getAnchorPoints(), item.getTarget().getAnchorPoints());
-		// 	console.log(path.cfg.attrs);
-		// 	// console.log(path.attrs.path);
-
-		// 	path.cfg.attrs.path = [
-		// 		[
-		// 			'M',
-		// 			item.getSource().getAnchorPoints()[0].x,
-		// 			item.getSource().getAnchorPoints()[0].y
-		// 		],
-		// 		[
-		// 			'L',
-		// 			item.getSource().getAnchorPoints()[0].x,
-		// 			item.getTarget().getAnchorPoints()[0].y / 2 +
-		// 				(1 / 2) * item.getSource().getAnchorPoints()[0].y
-		// 		], // 二分之一处
-		// 		[
-		// 			'L',
-		// 			item.getTarget().getAnchorPoints()[0].x,
-		// 			item.getTarget().getAnchorPoints()[0].y / 2 +
-		// 				(1 / 2) * item.getSource().getAnchorPoints()[0].y
-		// 		], // 二分之二处
-		// 		[
-		// 			'L',
-		// 			item.getTarget().getAnchorPoints()[0].x,
-		// 			item.getTarget().getAnchorPoints()[0].y
-		// 		]
-		// 	];
-		// 	// path.attr({
-		// 	// 	path: [
-		// 	// 		[
-		// 	// 			'M',
-		// 	// 			item.getSource().getAnchorPoints()[0].x,
-		// 	// 			item.getSource().getAnchorPoints()[0].y
-		// 	// 		],
-		// 	// 		[
-		// 	// 			'L',
-		// 	// 			item.getSource().getAnchorPoints()[0].x,
-		// 	// 			item.getTarget().getAnchorPoints()[0].y / 2 +
-		// 	// 				(1 / 2) * item.getSource().getAnchorPoints()[0].y
-		// 	// 		], // 二分之一处
-		// 	// 		[
-		// 	// 			'L',
-		// 	// 			item.getTarget().getAnchorPoints()[0].x,
-		// 	// 			item.getTarget().getAnchorPoints()[0].y / 2 +
-		// 	// 				(1 / 2) * item.getSource().getAnchorPoints()[0].y
-		// 	// 		], // 二分之二处
-		// 	// 		[
-		// 	// 			'L',
-		// 	// 			item.getTarget().getAnchorPoints()[0].x,
-		// 	// 			item.getTarget().getAnchorPoints()[0].y
-		// 	// 		]
-		// 	// 	]
-		// 	// });
-
-		// 	// console.log(path.attrs.path);
-		// 	item.refresh();
-		// 	window.graph.paint();
-		// });
-
-		// nodes.map((item) => {
-		// 	const group = item.getContainer();
-		// 	const pods = group.find((e) => e.get('name') === 'circle');
-		// 	const podTexts = group.find((e) => e.get('name') === 'circle-text');
-		// 	const collapseBack = group.find(
-		// 		(e) => e.get('name') === 'collapse-back'
-		// 	);
-		// 	const collapseText = group.find(
-		// 		(e) => e.get('name') === 'collapse-text'
-		// 	);
-		// 	const serveLine = group.find((e) => e.get('name') === 'serve-line');
-		// 	const podLine = group.find((e) => e.get('name') === 'pod-line');
-		// 	console.log(item.getAnchorPoints());
-		// 	window.graph.updateItem(item, {
-		// 		anchorPoints:
-		// 			value === 'TB'
-		// 				? [
-		// 						[0.5, 1],
-		// 						[0.5, 0]
-		// 				  ]
-		// 				: [
-		// 						[0, 0.5],
-		// 						[1, 0.5]
-		// 				  ]
-		// 	});
-		// 	if (value === 'TB') {
-		// 		if (item.getModel().level === 'pod') {
-		// 			pods.attr({
-		// 				x: 84,
-		// 				y: 0
-		// 			});
-		// 			podTexts.attr({
-		// 				x: 114,
-		// 				y: 20
-		// 			});
-		// 		}
-		// 		if (item.getModel().level === 'serve') {
-		// 			pods.attr({
-		// 				x: 4,
-		// 				y: 0
-		// 			});
-		// 			podTexts.attr({
-		// 				x: 34,
-		// 				y: 20
-		// 			});
-		// 		}
-		// 		if (serveLine) serveLine.cfg.visible = false;
-		// 		if (podLine) podLine.cfg.visible = false;
-		// 		if (collapseBack) collapseBack.cfg.visible = false;
-		// 		if (collapseText) collapseText.cfg.visible = false;
-		// 	}
-		// });
-		// window.graph.layout();
 		setDirection(value);
-		// window.graph.fitCenter();
 	};
 
 	return (
@@ -1315,82 +1244,114 @@ function Visualization(props) {
 			</h2>
 			<div style={{ background: '#f9f9f9', ...option }}>
 				<div className={styles['tools']}>
-					<Tooltip
-						trigger={
-							<Button onClick={scale} iconSize="xs">
-								<Icon type="arrows-alt" />
-							</Button>
-						}
-						align="b"
-					>
-						{window.graph &&
-						window.graph.getWidth() !== window.innerWidth
-							? '全屏'
-							: '退出全屏'}
-					</Tooltip>
-					<Tooltip
-						trigger={
-							<Button onClick={() => changeTree('LR')}>
-								<CustomIcon
-									type="icon-shuxiangjiegou"
-									size={12}
-									style={{ color: '#000000' }}
-									className={styles['rotate']}
-								/>
-							</Button>
-						}
-						align="b"
-					>
-						横向排列
-					</Tooltip>
-					<Tooltip
-						trigger={
-							<Button onClick={() => changeTree('TB')}>
-								<CustomIcon
-									type="icon-shuxiangjiegou"
-									size={12}
-									style={{ color: '#000000' }}
-								/>
-							</Button>
-						}
-						align="b"
-					>
-						竖向排列
-					</Tooltip>
-					<Tooltip
-						trigger={
-							<Button onClick={bingger}>
-								<Icon type="add" />
-							</Button>
-						}
-						align="b"
-					>
-						放大
-					</Tooltip>
-					<Tooltip
-						trigger={
-							<Button onClick={smaller}>
-								<Icon type="minus" />
-							</Button>
-						}
-						align="b"
-					>
-						缩小
-					</Tooltip>
-					<Tooltip
-						trigger={
-							<Button onClick={reset}>
-								<CustomIcon
-									type="icon-double-circle"
-									size={12}
-									style={{ color: '#000000' }}
-								/>
-							</Button>
-						}
-						align="b"
-					>
-						回到原点
-					</Tooltip>
+					<div>
+						<Tooltip
+							trigger={
+								<Button onClick={scale} iconSize="xs">
+									<Icon type="arrows-alt" />
+								</Button>
+							}
+							align="b"
+						>
+							{window.graph &&
+							window.graph.getWidth() !== window.innerWidth
+								? '全屏'
+								: '退出全屏'}
+						</Tooltip>
+						<Tooltip
+							trigger={
+								<Button onClick={() => changeTree('LR')}>
+									<CustomIcon
+										type="icon-shuxiangjiegou"
+										size={12}
+										style={{ color: '#000000' }}
+										className={styles['rotate']}
+									/>
+								</Button>
+							}
+							align="b"
+						>
+							横向排列
+						</Tooltip>
+						<Tooltip
+							trigger={
+								<Button onClick={() => changeTree('TB')}>
+									<CustomIcon
+										type="icon-shuxiangjiegou"
+										size={12}
+										style={{ color: '#000000' }}
+									/>
+								</Button>
+							}
+							align="b"
+						>
+							竖向排列
+						</Tooltip>
+						<Tooltip
+							trigger={
+								<Button onClick={bingger}>
+									<Icon type="add" />
+								</Button>
+							}
+							align="b"
+						>
+							放大
+						</Tooltip>
+						<Tooltip
+							trigger={
+								<Button onClick={smaller}>
+									<Icon type="minus" />
+								</Button>
+							}
+							align="b"
+						>
+							缩小
+						</Tooltip>
+						<Tooltip
+							trigger={
+								<Button onClick={reset}>
+									<CustomIcon
+										type="icon-double-circle"
+										size={12}
+										style={{ color: '#000000' }}
+									/>
+								</Button>
+							}
+							align="b"
+						>
+							回到原点
+						</Tooltip>
+					</div>
+					<div className={styles['legend']}>
+						<p>
+							<img
+								src={Completed}
+								style={{ background: '#1E8E3E' }}
+							/>
+							<span>即将完成</span>
+						</p>
+						<p>
+							<img
+								src={NotReady}
+								style={{ background: '#FFC440' }}
+							/>
+							<span>运行异常</span>
+						</p>
+						<p>
+							<img
+								src={Running}
+								style={{ background: '#0091FF' }}
+							/>
+							<span>进行中</span>
+						</p>
+						<p>
+							<img
+								src={Terminating}
+								style={{ background: '#D93026' }}
+							/>
+							<span>已停止</span>
+						</p>
+					</div>
 				</div>
 				<div id="topology" style={{ ...treeOption }}></div>
 				<div id="minimap"></div>

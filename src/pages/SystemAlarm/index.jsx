@@ -37,6 +37,7 @@ function SystemAlarm(props) {
 					<AlarmRecord
 						alarmType={'system'}
 						clusterId={globalCluster.id}
+						monitor={globalCluster.monitor}
 					/>
 				);
 			case 'highAvailability':
@@ -44,6 +45,7 @@ function SystemAlarm(props) {
 					<ServerAlarm
 						alarmType={'system'}
 						clusterId={globalCluster.id}
+						monitor={globalCluster.monitor}
 					/>
 				);
 			case 'externalAccess':

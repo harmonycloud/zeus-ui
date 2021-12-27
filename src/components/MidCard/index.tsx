@@ -11,6 +11,8 @@ interface MidCardProps {
 	status?: number;
 	leftText?: string | '安装';
 	rightText?: string | '接入';
+	leftClass?: string | undefined;
+	rightClass?: string | undefined;
 	leftHandle?: () => void;
 	rightHandle?: () => void;
 	centerText?: string;
@@ -72,6 +74,8 @@ const MidCard = (props: MidCardProps) => {
 		rightText,
 		leftHandle,
 		rightHandle,
+		leftClass,
+		rightClass,
 		actionCount,
 		centerText,
 		centerHandle,
@@ -193,7 +197,7 @@ const MidCard = (props: MidCardProps) => {
 					}
 				>
 					<div
-						className="mid-card-left"
+						className={`mid-card-left ${leftClass}`}
 						onClick={leftHandle}
 						style={
 							status === -1

@@ -304,27 +304,27 @@ const RocketMQCreate = (props) => {
 					sendData.quota.rocketmq.memory = values.memory + 'Gi';
 				}
 				if (aclCheck) {
-					if (
-						judgeObjArrayAttrIsNull(
-							values.rocketMQAccountList,
-							'accessKey',
-							'secretKey'
-						)
-					) {
-						Message.show(
-							messageConfig(
-								'error',
-								'失败',
-								'账户密码格式输入错误，长度在7-20个字符'
-							)
-						);
-						return;
-					} else {
-						sendData.rocketMQParam.acl.globalWhiteRemoteAddresses =
-							values.globalWhiteRemoteAddresses;
-						sendData.rocketMQParam.acl.rocketMQAccountList =
-							values.rocketMQAccountList;
-					}
+					// if (
+					// 	judgeObjArrayAttrIsNull(
+					// 		values.rocketMQAccountList,
+					// 		'accessKey',
+					// 		'secretKey'
+					// 	)
+					// ) {
+					// 	Message.show(
+					// 		messageConfig(
+					// 			'error',
+					// 			'失败',
+					// 			'账户密码格式输入错误，长度在7-20个字符'
+					// 		)
+					// 	);
+					// 	return;
+					// } else {
+					sendData.rocketMQParam.acl.globalWhiteRemoteAddresses =
+						values.globalWhiteRemoteAddresses;
+					sendData.rocketMQParam.acl.rocketMQAccountList =
+						values.rocketMQAccountList;
+					// }
 				}
 				// console.log(sendData);
 				postMiddleware(sendData).then((res) => {

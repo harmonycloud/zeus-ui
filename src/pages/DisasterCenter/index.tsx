@@ -91,14 +91,14 @@ function DisasterCenter(props: disasterCenterProps) {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/instanceList/detail/${
+			pathname: `/serviceList/basicInfo/${
 				(data as middlewareDetailProps).mysqlDTO.relationName
 			}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 				(data as middlewareDetailProps).chartVersion
-			}`,
-			state: {
-				flag: true
-			}
+			}`
+			// state: {
+			// 	flag: true
+			// }
 		});
 	};
 	const acrossCluster = () => {
@@ -131,10 +131,10 @@ function DisasterCenter(props: disasterCenterProps) {
 						}/${
 							(data as middlewareDetailProps).mysqlDTO.type ||
 							'mysql'
-						}/${(data as middlewareDetailProps).chartVersion}`,
-						state: {
-							flag: true
-						}
+						}/${(data as middlewareDetailProps).chartVersion}`
+						// state: {
+						// 	flag: true
+						// }
 					});
 				}
 			}

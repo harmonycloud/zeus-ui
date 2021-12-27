@@ -771,6 +771,20 @@ const ServiceListByType = (props: serviceListProps) => {
 			</div>
 		);
 	};
+	const podRender = (value: string, index: number, record: serviceProps) => {
+		return (
+			<span
+				className="name-link"
+				onClick={() => {
+					history.push(
+						`/serviceList/highAvailability/${record.name}/${record.type}/${record.chartVersion}`
+					);
+				}}
+			>
+				{value}
+			</span>
+		);
+	};
 	return (
 		<Page>
 			<Header
@@ -816,6 +830,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					<Table.Column
 						title="实例数"
 						dataIndex="podNum"
+						cell={podRender}
 						width={80}
 					/>
 					<Table.Column
