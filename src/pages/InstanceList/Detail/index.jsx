@@ -92,10 +92,6 @@ const InstanceDetails = (props) => {
 		setSelectedKey(selectedKeys[0]);
 	};
 
-	useEffect(() => {
-		return () => storage.setLocal('backKey', '');
-	}, []);
-
 	const getData = (clusterId, namespace) => {
 		const sendData = {
 			clusterId,

@@ -259,7 +259,10 @@ const BatchInstall = (props: BatchInstallProps) => {
 			{controllers.length === 0 && (
 				<p style={{ textAlign: 'center' }}>无可安装的中间件控制器</p>
 			)}
-			<div className="batch-install-component-item">
+			<div
+				className="batch-install-component-item"
+				style={{ height: 'auto' }}
+			>
 				<CheckboxGroup
 					value={selectController}
 					onChange={onChange}

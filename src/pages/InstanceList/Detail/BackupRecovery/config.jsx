@@ -43,7 +43,7 @@ const listMap = {
 };
 
 export default function Config(props) {
-	const { clusterId, namespace, data: listData } = props;
+	const { clusterId, namespace, data: listData, dataSecurity } = props;
 	const [visible, setVisible] = useState(false);
 	const [backups, setBackups] = useState([]);
 	const history = useHistory();

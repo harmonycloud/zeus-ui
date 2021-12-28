@@ -11,7 +11,13 @@ import { useHistory } from 'react-router';
 import moment from 'moment';
 
 export default function List(props) {
-	const { clusterId, namespace, data: listData, storage } = props;
+	const {
+		clusterId,
+		namespace,
+		data: listData,
+		storage,
+		dataSecurity
+	} = props;
 	const [backups, setBackups] = useState([]);
 	const [backupData, setBackupData] = useState();
 	const [useVisible, setUseVisible] = useState(false);
