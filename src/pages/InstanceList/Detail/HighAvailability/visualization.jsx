@@ -35,8 +35,9 @@ insertCss(`
 }
 .g6-minimap{
 	position: absolute;
-	top: 50px;
-	right: 10px;
+	top: 40px;
+	right: 0;
+	background: #f9f9f9
 }
 `);
 
@@ -78,6 +79,12 @@ const podStatus = [
 		color: '#FFC440',
 		image: NotReady,
 		title: '运行异常'
+	},
+	{
+		status: 'Error',
+		color: '#D93026',
+		image: Terminating,
+		title: '已停止'
 	}
 ];
 
@@ -111,7 +118,6 @@ function Visualization(props) {
 	const location = useLocation();
 	const { pathname } = location;
 	const [option, setOption] = useState();
-	const [treeOption, setTreeOption] = useState();
 	const [direction, setDirection] = useState('LR');
 
 	const roleRender = (value, index, record) => {
@@ -372,15 +378,10 @@ function Visualization(props) {
 						group.addShape('rect', {
 							attrs: {
 								fill: podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
+									(item) => item.status === cfg.status
 								)[0]
 									? podStatus.filter(
-											(item) =>
-												item.status === cfg.status ||
-												item.status ===
-													serverData.status
+											(item) => item.status === cfg.status
 									  )[0].color
 									: '#FFC440',
 								x: 0,
@@ -394,15 +395,10 @@ function Visualization(props) {
 						group.addShape('image', {
 							attrs: {
 								img: podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
+									(item) => item.status === cfg.status
 								)[0]
 									? podStatus.filter(
-											(item) =>
-												item.status === cfg.status ||
-												item.status ===
-													serverData.status
+											(item) => item.status === cfg.status
 									  )[0].image
 									: NotReady,
 								x: 12,
@@ -555,49 +551,12 @@ function Visualization(props) {
 						});
 						const hasChildren =
 							cfg.children && cfg.children.length > 0;
-						if (!hasChildren && cfg.depth) {
+						if (!cfg.depth) {
 							group.addShape('rect', {
 								attrs: {
 									x: 0,
 									y: 0,
-									width: 76,
-									height: 100,
-									fill: '#000',
-									opacity: 0.65,
-									cursor: 'pointer'
-								},
-								name: 'button1',
-								visible: false
-							});
-							group.addShape('image', {
-								attrs: {
-									img: Restart,
-									x: 19,
-									y: 44,
-									width: 12,
-									height: 12
-								},
-								visible: false,
-								name: 'restart'
-							});
-							group.addShape('text', {
-								attrs: {
-									text: '重启',
-									x: 46,
-									y: 50,
-									textAlign: 'center',
-									textBaseline: 'middle',
-									fill: '#fff',
-									cursor: 'pointer'
-								},
-								name: 'text-button1',
-								visible: false
-							});
-							group.addShape('rect', {
-								attrs: {
-									x: 76,
-									y: 0,
-									width: 76,
+									width: 228,
 									height: 100,
 									fill: '#000',
 									opacity: 0.65,
@@ -630,11 +589,50 @@ function Visualization(props) {
 								visible: false,
 								name: 'text-button2'
 							});
+						}
+						if (!hasChildren && cfg.depth) {
 							group.addShape('rect', {
 								attrs: {
-									x: 152,
+									x: 0,
 									y: 0,
-									width: 76,
+									width: 114,
+									height: 100,
+									fill: '#000',
+									opacity: 0.65,
+									cursor: 'pointer'
+								},
+								name: 'button1',
+								visible: false
+							});
+							group.addShape('image', {
+								attrs: {
+									img: Restart,
+									x: 35,
+									y: 44,
+									width: 12,
+									height: 12
+								},
+								visible: false,
+								name: 'restart'
+							});
+							group.addShape('text', {
+								attrs: {
+									text: '重启',
+									x: 63,
+									y: 50,
+									textAlign: 'center',
+									textBaseline: 'middle',
+									fill: '#fff',
+									cursor: 'pointer'
+								},
+								name: 'text-button1',
+								visible: false
+							});
+							group.addShape('rect', {
+								attrs: {
+									x: 114,
+									y: 0,
+									width: 114,
 									height: 100,
 									fill: '#000',
 									opacity: 0.65,
@@ -646,7 +644,7 @@ function Visualization(props) {
 							group.addShape('image', {
 								attrs: {
 									img: Control,
-									x: 165,
+									x: 147,
 									y: 44,
 									width: 12,
 									height: 12
@@ -657,7 +655,7 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text: '控制台',
-									x: 197,
+									x: 180,
 									y: 50,
 									textAlign: 'center',
 									textBaseline: 'middle',
@@ -769,7 +767,7 @@ function Visualization(props) {
 		const height = topology.scrollHeight || 480;
 		const minimap = new G6.Minimap({
 			container: minimapDom,
-			size: [217, 142],
+			size: [130, 100],
 			viewportClassName: 'mini-view'
 		});
 		const graph = new G6.TreeGraph({
@@ -845,6 +843,7 @@ function Visualization(props) {
 			id: 'tree',
 			name: serverData.name,
 			hasConfigBackup: topoData.hasConfigBackup,
+			status: topoData.status,
 			children: [
 				{
 					adentify: serveRender(),
@@ -907,16 +906,18 @@ function Visualization(props) {
 				// 	infoText.toFront();
 				// }
 				if (pathname.includes('addBackup')) return;
-				if (button1) {
+				if (button1 && button3) {
 					button1.cfg.visible = true;
-					button2.cfg.visible = true;
 					button3.cfg.visible = true;
 					restart.cfg.visible = true;
-					edit.cfg.visible = true;
 					control.cfg.visible = true;
 					textButton1.cfg.visible = true;
-					textButton2.cfg.visible = true;
 					textButton3.cfg.visible = true;
+				}
+				if (button2) {
+					button2.cfg.visible = true;
+					edit.cfg.visible = true;
+					textButton2.cfg.visible = true;
 				}
 			}
 		});
@@ -948,16 +949,18 @@ function Visualization(props) {
 					info.cfg.visible = false;
 					infoText.cfg.visible = false;
 				}
-				if (button1) {
+				if (button1 && button3) {
 					button1.cfg.visible = false;
-					button2.cfg.visible = false;
 					button3.cfg.visible = false;
 					restart.cfg.visible = false;
-					edit.cfg.visible = false;
 					control.cfg.visible = false;
 					textButton1.cfg.visible = false;
-					textButton2.cfg.visible = false;
 					textButton3.cfg.visible = false;
+				}
+				if (button2) {
+					button2.cfg.visible = false;
+					edit.cfg.visible = false;
+					textButton2.cfg.visible = false;
 				}
 			}
 		});
@@ -1188,6 +1191,44 @@ function Visualization(props) {
 		createTopo(direction);
 	}, [direction]);
 
+	useEffect(() => {
+		const pods = [];
+		topoData.pods &&
+			topoData.pods.forEach((el) => {
+				if (!el.role) el.role = roleRender('', '', el);
+				if (pods.every((els) => els.role != el.role))
+					pods.push({
+						adentify: el.role,
+						role: el.role,
+						podName: el.podName,
+						level: 'pod'
+					});
+			});
+		pods.forEach(
+			(el) =>
+				(el.children = topoData.pods.filter(
+					(els) => els.role == el.role
+				))
+		);
+		const res = {
+			id: 'tree',
+			name: serverData.name,
+			hasConfigBackup: topoData.hasConfigBackup,
+			status: topoData.status,
+			children: [
+				{
+					adentify: serveRender(),
+					level: 'serve',
+					children: pods
+				}
+			]
+		};
+		window.graph && window.graph.changeData(res);
+		window.graph && topoData.pods.length && topoData.pods.length >= 4
+			? window.graph.fitView()
+			: window.graph.fitCenter();
+	}, [topoData]);
+
 	const reset = () => {
 		topoData.pods.length && topoData.pods.length >= 4
 			? window.graph.fitView()
@@ -1353,8 +1394,8 @@ function Visualization(props) {
 						</p>
 					</div>
 				</div>
-				<div id="topology" style={{ ...treeOption }}></div>
-				<div id="minimap"></div>
+				<div id="topology" style={{ position: 'relative' }}></div>
+				<div id="minimap" style={{ backgroundColor: ' #f9f9f9' }}></div>
 			</div>
 		</div>
 	);

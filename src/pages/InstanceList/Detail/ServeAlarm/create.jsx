@@ -1067,7 +1067,7 @@ function CreateAlarm(props) {
 							</div>
 							<Transfer
 								showSearch
-								searchPlaceholder="请输入登录用户、用户名、邮箱、手机号、关联角色搜索"
+								searchPlaceholder="请输入登录账户、用户名、邮箱、手机号、关联角色搜索"
 								defaultValue={selectUser}
 								mode="simple"
 								titles={[

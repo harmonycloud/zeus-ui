@@ -371,11 +371,11 @@ function Rules(props) {
 		}
 	};
 
-	// if (!monitor || !monitor.alertManager) {
-	// 	return (
-	// 		<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
-	// 	);
-	// }
+	if (!monitor || !monitor.alertManager) {
+		return (
+			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+		);
+	}
 
 	return (
 		<Table

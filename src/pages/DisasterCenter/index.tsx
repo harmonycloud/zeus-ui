@@ -95,10 +95,10 @@ function DisasterCenter(props: disasterCenterProps) {
 				(data as middlewareDetailProps).mysqlDTO.relationName
 			}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 				(data as middlewareDetailProps).chartVersion
-			}`
-			// state: {
-			// 	flag: true
-			// }
+			}`,
+			state: {
+				flag: true
+			}
 		});
 	};
 	const acrossCluster = () => {
@@ -131,10 +131,10 @@ function DisasterCenter(props: disasterCenterProps) {
 						}/${
 							(data as middlewareDetailProps).mysqlDTO.type ||
 							'mysql'
-						}/${(data as middlewareDetailProps).chartVersion}`
-						// state: {
-						// 	flag: true
-						// }
+						}/${(data as middlewareDetailProps).chartVersion}`,
+						state: {
+							flag: true
+						}
 					});
 				}
 			}
@@ -191,6 +191,73 @@ function DisasterCenter(props: disasterCenterProps) {
 			}
 		}
 	};
+	const toSourceDetail = () => {
+		// * 源示例和备服务在用一个资源池时
+		if (
+			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
+			basicData?.clusterId
+		) {
+			history.push({
+				pathname: `/serviceList/basicInfo/${
+					(data as middlewareDetailProps).name
+				}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
+					(data as middlewareDetailProps).chartVersion
+				}`,
+				state: {
+					flag: true
+				}
+			});
+		} else {
+			// across the cluster
+			const flag = storage.getLocal('firstAlert');
+			if (flag === 0) {
+				setVisible(true);
+			} else {
+				const cs = globalClusterList.filter(
+					(item) =>
+						item.id ===
+						(data as middlewareDetailProps).mysqlDTO
+							.relationClusterId
+				);
+				setCluster(cs[0]);
+				storage.setLocal('cluster', JSON.stringify(cs[0]));
+				getNamespaces({
+					clusterId: cs[0].id,
+					withQuota: true
+				}).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const ns = res.data.filter(
+								(item: clusterType) =>
+									item.name ===
+									(data as middlewareDetailProps).mysqlDTO
+										.relationNamespace
+							);
+							setNamespace(ns[0]);
+							storage.setLocal(
+								'namespace',
+								JSON.stringify(ns[0])
+							);
+							setRefreshCluster(true);
+							history.push({
+								pathname: `/serviceList/basicInfo/${
+									(data as middlewareDetailProps).name
+								}/${
+									(data as middlewareDetailProps).mysqlDTO
+										.type || 'mysql'
+								}/${
+									(data as middlewareDetailProps).chartVersion
+								}`,
+								state: {
+									flag: true
+								}
+							});
+						}
+					}
+				});
+			}
+		}
+	};
 	const NotSupport = () => (
 		<h3 style={{ textAlign: 'center' }}>
 			该中间件类型不支持该功能，请选择mysql类型的中间件
@@ -214,7 +281,7 @@ function DisasterCenter(props: disasterCenterProps) {
 						clusterId={basicData?.clusterId || ''}
 						namespace={basicData?.namespace || ''}
 						data={data}
-						onRefresh={getData}
+						onRefresh={toSourceDetail}
 						toDetail={toDetail}
 					/>
 				)}

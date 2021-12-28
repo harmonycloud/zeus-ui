@@ -835,7 +835,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					/>
 					<Table.Column
 						title="备注"
-						dataIndex="annotation"
+						dataIndex="description"
 						width={200}
 					/>
 					<Table.Column

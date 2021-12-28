@@ -295,6 +295,7 @@ const InstanceDetails = (props) => {
 				flag: true
 			}
 		});
+		setSelectedKey('basicInfo');
 	};
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
@@ -325,6 +326,7 @@ const InstanceDetails = (props) => {
 				}
 			}
 		});
+		setSelectedKey('basicInfo');
 	};
 	const SecondConfirm = (props) => {
 		const { visible, onCancel } = props;

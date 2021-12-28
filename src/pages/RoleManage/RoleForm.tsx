@@ -41,7 +41,8 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				description: data.description,
 				createTime: data.createTime,
 				roleId: data.id,
-				menu: data.menu
+				menu: data.menu,
+				clusterList: data.clusterList
 			});
 		}
 	}, [data]);
