@@ -82,9 +82,9 @@ const podStatus = [
 	},
 	{
 		status: 'Error',
-		color: '#D93026',
-		image: Terminating,
-		title: '已停止'
+		color: '#FFC440',
+		image: NotReady,
+		title: '运行异常'
 	}
 ];
 
@@ -1185,49 +1185,53 @@ function Visualization(props) {
 	};
 
 	useEffect(() => {
+		if (window.graph) {
+			const pods = [];
+			topoData.pods &&
+				topoData.pods.forEach((el) => {
+					if (!el.role) el.role = roleRender('', '', el);
+					if (pods.every((els) => els.role != el.role))
+						pods.push({
+							adentify: el.role,
+							role: el.role,
+							podName: el.podName,
+							level: 'pod'
+						});
+				});
+			pods.forEach(
+				(el) =>
+					(el.children = topoData.pods.filter(
+						(els) => els.role == el.role
+					))
+			);
+			const res = {
+				id: 'tree',
+				name: serverData.name,
+				hasConfigBackup: topoData.hasConfigBackup,
+				status: topoData.status,
+				children: [
+					{
+						adentify: serveRender(),
+						level: 'serve',
+						children: pods
+					}
+				]
+			};
+			window.graph && window.graph.changeData(res);
+			window.graph && topoData.pods.length && topoData.pods.length >= 4
+				? window.graph.fitView()
+				: window.graph.fitCenter();
+		}
+	}, [topoData]);
+
+	useEffect(() => {
 		window.graph && window.graph.clear();
 		window.graph && window.graph.destroy();
 
-		createTopo(direction);
+		setTimeout(() => {
+			createTopo(direction);
+		}, 0);
 	}, [direction]);
-
-	useEffect(() => {
-		const pods = [];
-		topoData.pods &&
-			topoData.pods.forEach((el) => {
-				if (!el.role) el.role = roleRender('', '', el);
-				if (pods.every((els) => els.role != el.role))
-					pods.push({
-						adentify: el.role,
-						role: el.role,
-						podName: el.podName,
-						level: 'pod'
-					});
-			});
-		pods.forEach(
-			(el) =>
-				(el.children = topoData.pods.filter(
-					(els) => els.role == el.role
-				))
-		);
-		const res = {
-			id: 'tree',
-			name: serverData.name,
-			hasConfigBackup: topoData.hasConfigBackup,
-			status: topoData.status,
-			children: [
-				{
-					adentify: serveRender(),
-					level: 'serve',
-					children: pods
-				}
-			]
-		};
-		window.graph && window.graph.changeData(res);
-		window.graph && topoData.pods.length && topoData.pods.length >= 4
-			? window.graph.fitView()
-			: window.graph.fitCenter();
-	}, [topoData]);
 
 	const reset = () => {
 		topoData.pods.length && topoData.pods.length >= 4

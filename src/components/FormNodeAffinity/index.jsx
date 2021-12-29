@@ -9,7 +9,7 @@ import {
 	Button
 } from '@alicloud/console-components';
 import { getNodePort } from '@/services/middleware';
-import './index.scss'
+import './index.scss';
 
 const { Item: FormItem } = Form;
 
@@ -44,22 +44,36 @@ export default function FormNodeAffinity(props) {
 			[key]: value
 		});
 		props.field.setValues({
-			[key]: value,
+			[key]: value
 		});
 	};
 
 	const addAffinityLabels = () => {
-		if (!affinityLabels.find(item => item.label === affinity.nodeAffinityLabel)) {
-			setAffinityLabels([...affinityLabels, { label: affinity.nodeAffinityLabel, id: Math.random() }]);
-			props.field.setValues({ affinityLabels: [...affinityLabels, { label: affinity.nodeAffinityLabel, id: Math.random() }] });
-			changeAffinity('', 'nodeAffinityLabel')
+		if (
+			!affinityLabels.find(
+				(item) => item.label === affinity.nodeAffinityLabel
+			)
+		) {
+			setAffinityLabels([
+				...affinityLabels,
+				{ label: affinity.nodeAffinityLabel, id: Math.random() }
+			]);
+			props.field.setValues({
+				nodeAffinityLabel: [
+					...affinityLabels,
+					{ label: affinity.nodeAffinityLabel, id: Math.random() }
+				]
+			});
+			setAffinity({ ...affinity, nodeAffinityLabel: '' });
 		}
-	}
+	};
 
 	const reduceAffinityLabels = (item) => {
-		setAffinityLabels(affinityLabels.filter(arr => arr.id !== item.id));
-		props.field.setValues({ affinityLabels: affinityLabels.filter(arr => arr.id !== item.id) });
-	}
+		setAffinityLabels(affinityLabels.filter((arr) => arr.id !== item.id));
+		props.field.setValues({
+			affinityLabels: affinityLabels.filter((arr) => arr.id !== item.id)
+		});
+	};
 
 	return (
 		<div className="display-flex flex-column node-affinity">
@@ -139,8 +153,17 @@ export default function FormNodeAffinity(props) {
 								/>
 							</div>
 							<div className={'add'}>
-								<Button style={{ marginLeft: '4px', padding: '0 9px' }} onClick={addAffinityLabels}>
-									<Icon style={{ color: '#005AA5' }} type="add" />
+								<Button
+									style={{
+										marginLeft: '4px',
+										padding: '0 9px'
+									}}
+									onClick={addAffinityLabels}
+								>
+									<Icon
+										style={{ color: '#005AA5' }}
+										type="add"
+									/>
 								</Button>
 							</div>
 							<div className="dynamic-form-node-affinity-check">
@@ -158,20 +181,25 @@ export default function FormNodeAffinity(props) {
 						</>
 					) : null}
 				</FormItem>
-				{
-					affinityLabels.length ? <div className={'tags'}>
-						{
-							affinityLabels.map(item => {
-								return (
-									<p className={'tag'} key={item.id}>
-										<span>{item.label}</span>
-										<Icon type="error" size='xs' className={'tag-close'} onClick={() => reduceAffinityLabels(item)} />
-									</p>
-								)
-							})
-						}
-					</div> : null
-				}
+				{affinity.nodeAffinity && affinityLabels.length ? (
+					<div className={'tags'}>
+						{affinityLabels.map((item) => {
+							return (
+								<p className={'tag'} key={item.id}>
+									<span>{item.label}</span>
+									<Icon
+										type="error"
+										size="xs"
+										className={'tag-close'}
+										onClick={() =>
+											reduceAffinityLabels(item)
+										}
+									/>
+								</p>
+							);
+						})}
+					</div>
+				) : null}
 			</div>
 		</div>
 	);

@@ -278,6 +278,19 @@ export default function List(props) {
 		}
 	};
 
+	const sourceNameRender = (value, index, record) => {
+		if (record.backupType === 'Cluster') {
+			return value;
+		} else {
+			return (
+				<div>
+					<p>{value}</p>
+					<p>{value}</p>
+				</div>
+			);
+		}
+	};
+
 	return (
 		<div style={{ marginTop: 16 }}>
 			{storage.backup ? (
@@ -302,6 +315,7 @@ export default function List(props) {
 						title="备份源名称"
 						dataIndex="sourceName"
 						width={150}
+						cell={sourceNameRender}
 					/>
 					<Table.Column
 						title="备份位置"

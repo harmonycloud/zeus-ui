@@ -9,7 +9,7 @@ import {
 	Button
 } from '@alicloud/console-components';
 import { getNodeTaint } from '@/services/middleware';
-import './index.scss'
+import './index.scss';
 
 const { Item: FormItem } = Form;
 
@@ -44,23 +44,43 @@ export default function FormTolerations(props) {
 			[key]: value
 		});
 		props.field.setValues({
-			[key]: value,
+			[key]: value
 		});
 	};
 
 	const addTolerationsLabels = () => {
-		if (!tolerationsLabels.find(item => item.label === tolerations.nodeTolerationsLabel)) {
-			setTolerationsLabels([...tolerationsLabels, { label: tolerations.nodeTolerationsLabel, id: Math.random() }]);
-			props.field.setValues({ tolerationsLabels: [...tolerationsLabels, { label: tolerations.nodeTolerationsLabel, id: Math.random() }] });
-			changeTolerations('','nodeTolerationsLabel'
+		if (
+			!tolerationsLabels.find(
+				(item) => item.label === tolerations.nodeTolerationsLabel
 			)
+		) {
+			setTolerationsLabels([
+				...tolerationsLabels,
+				{ label: tolerations.nodeTolerationsLabel, id: Math.random() }
+			]);
+			props.field.setValues({
+				tolerationsLabels: [
+					...tolerationsLabels,
+					{
+						label: tolerations.nodeTolerationsLabel,
+						id: Math.random()
+					}
+				]
+			});
+			changeTolerations('', 'nodeTolerationsLabel');
 		}
-	}
+	};
 
 	const reduceTolerationsLabels = (item) => {
-		setTolerationsLabels(tolerationsLabels.filter(arr => arr.id !== item.id));
-		props.field.setValues({ tolerationsLabels: tolerationsLabels.filter(arr => arr.id !== item.id) });
-	}
+		setTolerationsLabels(
+			tolerationsLabels.filter((arr) => arr.id !== item.id)
+		);
+		props.field.setValues({
+			tolerationsLabels: tolerationsLabels.filter(
+				(arr) => arr.id !== item.id
+			)
+		});
+	};
 
 	return (
 		<div className="display-flex flex-column form-tolerations">
@@ -99,7 +119,10 @@ export default function FormTolerations(props) {
 					/>
 					{tolerations.nodeTolerations ? (
 						<>
-							<div className="dynamic-form-node-tolerations-content" style={{marginLeft: 24}}>
+							<div
+								className="dynamic-form-node-tolerations-content"
+								style={{ marginLeft: 24 }}
+							>
 								<Select.AutoComplete
 									value={tolerations.nodeTolerationsLabel}
 									onChange={(value) =>
@@ -115,27 +138,41 @@ export default function FormTolerations(props) {
 								/>
 							</div>
 							<div className={'add'}>
-								<Button style={{ marginLeft: '4px', padding: '0 9px' }} onClick={addTolerationsLabels}>
-									<Icon style={{ color: '#005AA5' }} type="add" />
+								<Button
+									style={{
+										marginLeft: '4px',
+										padding: '0 9px'
+									}}
+									onClick={addTolerationsLabels}
+								>
+									<Icon
+										style={{ color: '#005AA5' }}
+										type="add"
+									/>
 								</Button>
 							</div>
 						</>
 					) : null}
 				</FormItem>
-				{
-					tolerationsLabels.length ? <div className={'tags'}>
-						{
-							tolerationsLabels.map(item => {
-								return (
-									<p className={'tag'} key={item.id}>
-										<span>{item.label}</span>
-										<Icon type="error" size='xs' className={'tag-close'} onClick={() => reduceTolerationsLabels(item)} />
-									</p>
-								)
-							})
-						}
-					</div> : null
-				}
+				{tolerations.nodeTolerations && tolerationsLabels.length ? (
+					<div className={'tags'}>
+						{tolerationsLabels.map((item) => {
+							return (
+								<p className={'tag'} key={item.id}>
+									<span>{item.label}</span>
+									<Icon
+										type="error"
+										size="xs"
+										className={'tag-close'}
+										onClick={() =>
+											reduceTolerationsLabels(item)
+										}
+									/>
+								</p>
+							);
+						})}
+					</div>
+				) : null}
 			</div>
 		</div>
 	);

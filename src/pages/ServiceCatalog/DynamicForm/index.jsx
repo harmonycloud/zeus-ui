@@ -125,7 +125,7 @@ function DynamicForm(props) {
 			// * 主机亲和特殊处理
 			if (values.nodeAffinity) {
 				if (values.nodeAffinityLabel) {
-					sendData.nodeAffinity = values.affinityLabels.map(
+					sendData.nodeAffinity = values.nodeAffinityLabel.map(
 						(item) => {
 							return {
 								label: item.label,
@@ -152,7 +152,8 @@ function DynamicForm(props) {
 					index !== 'name' &&
 					index !== 'aliasName' &&
 					index !== 'annotation' &&
-					index !== 'labels'
+					index !== 'tolerations' &&
+					index !== 'tolerationsLabels'
 				) {
 					dynamicValues[index] = values[index];
 				}

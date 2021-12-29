@@ -8,7 +8,6 @@ const { Item: FormItem } = Form;
 */
 export default function FormInput(props) {
 	const keys = Object.keys(props);
-	console.log(props);
 	return (
 		<div className="display-flex flex-column">
 			<label

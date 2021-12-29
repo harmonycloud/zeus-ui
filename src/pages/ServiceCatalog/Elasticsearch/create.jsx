@@ -743,7 +743,7 @@ const ElasticsearchCreate = (props) => {
 										) : null}
 									</div>
 								</li>
-								{affinityLabels.length ? (
+								{affinity.flag && affinityLabels.length ? (
 									<div className={styles['tags']}>
 										{affinityLabels.map((item) => {
 											return (
@@ -878,7 +878,8 @@ const ElasticsearchCreate = (props) => {
 										) : null}
 									</div>
 								</li>
-								{tolerationsLabels.length ? (
+								{tolerations.flag &&
+								tolerationsLabels.length ? (
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (

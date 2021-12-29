@@ -340,6 +340,19 @@ export default function Config(props) {
 		}
 	};
 
+	const sourceNameRender = (value, index, record) => {
+		if (record.backupType === 'Cluster') {
+			return value;
+		} else {
+			return (
+				<div>
+					<p>{value}</p>
+					<p>{value}</p>
+				</div>
+			);
+		}
+	};
+
 	const actionRender = (value, index, record) => {
 		return (
 			<Actions>
@@ -443,7 +456,8 @@ export default function Config(props) {
 				<Table.Column
 					title="备份源名称"
 					dataIndex="sourceName"
-					width={100}
+					width={150}
+					cell={sourceNameRender}
 				/>
 				<Table.Column
 					title="备份保留个数"
