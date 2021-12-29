@@ -6,6 +6,7 @@ import { getMiddlewareRepository } from '@/services/repository';
 import CustomIcon from '@/components/CustomIcon';
 import messageConfig from '@/components/messageConfig';
 import { mulInstallComponent } from '@/services/common';
+import { Item } from '@alicloud/console-components-console-menu';
 
 interface BatchInstallProps {
 	visible: boolean;
@@ -70,6 +71,11 @@ const BatchInstall = (props: BatchInstallProps) => {
 	const onOk = () => {
 		const componentList = data
 			.filter((i) => i.status === 0)
+			.filter((j) => {
+				if (!(j.component === 'local-path' && j.type === 'false')) {
+					return j;
+				}
+			})
 			.map((f) => {
 				if (f.type === null) {
 					f.type = 'simple';
@@ -90,6 +96,7 @@ const BatchInstall = (props: BatchInstallProps) => {
 			clusterComponentsDtoList: componentList,
 			middlewareInfoDTOList: controllerList
 		};
+		// console.log(sendData);
 		mulInstallComponent(sendData).then((res) => {
 			if (res.success) {
 				Message.show(
@@ -225,6 +232,9 @@ const BatchInstall = (props: BatchInstallProps) => {
 								<RadioGroup
 									defaultValue={'true'}
 									disabled={item.status !== 0}
+									onChange={(
+										value: string | number | boolean
+									) => componentChange(value, item)}
 								>
 									<Radio
 										id="true"
