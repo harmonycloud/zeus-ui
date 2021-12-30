@@ -41,7 +41,7 @@ function IngressList(props) {
 	const [active, setActive] = useState(false); // 抽屉显示
 	const [iconVisible, setIconVisible] = useState(false);
 	const [adress, setAdress] = useState('');
-	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const [lock, setLock] = useState({ lock: 'right' });
 
 	useEffect(() => {
 		if (

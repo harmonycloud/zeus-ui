@@ -10,7 +10,7 @@ import {
 import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
-import Visualization from './visualization'
+import Visualization from './visualization';
 // import BalloonForm from '@/components/BalloonForm';
 import {
 	getPods,
@@ -93,7 +93,7 @@ export default function HighAvailability(props) {
 	const [customVisible, setCustomVisible] = useState(false);
 	const [quotaValue, setQuotaValue] = useState();
 	const [topoData, setTopoData] = useState();
-	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const [lock, setLock] = useState({ lock: 'right' });
 
 	// * es专用 specificationConfig
 	const [esSpConfig] = useState([
@@ -699,7 +699,14 @@ export default function HighAvailability(props) {
 					)} */}
 					{topoData && (
 						<>
-							<Visualization topoData={topoData} serverData={data} openSSL={openSSL} reStart={reStart} setEsVisible={() => setEsVisible(true)} editConfiguration={editConfiguration} />
+							<Visualization
+								topoData={topoData}
+								serverData={data}
+								openSSL={openSSL}
+								reStart={reStart}
+								setEsVisible={() => setEsVisible(true)}
+								editConfiguration={editConfiguration}
+							/>
 							<div className="detail-divider" />
 						</>
 					)}

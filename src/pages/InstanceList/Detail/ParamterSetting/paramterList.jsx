@@ -30,7 +30,7 @@ export default function ParamterLIst(props) {
 	const [checked, setChecked] = useState(false);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const [visible, setVisible] = useState(false);
-	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const [lock, setLock] = useState({ lock: 'right' });
 
 	useEffect(() => {
 		const list = dataSource.filter(

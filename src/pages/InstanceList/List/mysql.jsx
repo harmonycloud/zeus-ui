@@ -36,7 +36,7 @@ function MysqlList(props) {
 	const [keyword, setKeyword] = useState('');
 	let [timer, setTimer] = useState(null);
 	const [backupCheck, setBackupCheck] = useState(false);
-	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const [lock, setLock] = useState({ lock: 'right' });
 
 	const states = [
 		{ value: 'Creating', label: '启动中' },
