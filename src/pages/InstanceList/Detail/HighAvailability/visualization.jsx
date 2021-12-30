@@ -253,9 +253,9 @@ function Visualization(props) {
 
 	const circleTextY = (direction, cfg) => {
 		if (direction === 'LR') {
-			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 53 : 55;
+			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 53 : 54;
 		} else {
-			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 13 : 15;
+			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 13 : 13;
 		}
 	};
 
@@ -458,15 +458,15 @@ function Visualization(props) {
 							attrs: {
 								text: !cfg.depth
 									? serverData.aliasName
-									: '资源/存储: ' + cfg?.resources?.cpu ||
-									  '' + 'C/' + cfg?.resources?.memory ||
-									  '' +
-											'G' +
-											'/' +
-											(cfg?.resources?.storageClassQuota
-												? cfg?.resources
-														?.storageClassQuota
-												: ''),
+									: '资源/存储: ' +
+									  cfg?.resources?.cpu +
+									  'C/' +
+									  cfg?.resources?.memory +
+									  'G' +
+									  '/' +
+									  (cfg?.resources?.storageClassQuota
+											? cfg?.resources?.storageClassQuota
+											: ''),
 								x: 45,
 								y: !cfg.depth ? 60 : 70,
 								textBaseline: 'middle',
