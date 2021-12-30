@@ -46,13 +46,11 @@ function AlarmSet() {
 	const [dingShow, setDingShow] = useState(true);
 
 	useEffect(() => {
-		getMailInfo().then(async (res) => {
-			if (!res.data) return;
-			// console.log(res);
-			await field.setValues(res.data);
-			checkBtn();
-			setData(res.data);
-		});
+		getDingData();
+		getMailInfoData();
+	}, []);
+
+	const getDingData = () => {
 		getDing().then((res) => {
 			if (!res.data || !res.data.length) return;
 			// console.log(res);
@@ -70,7 +68,17 @@ function AlarmSet() {
 			checkDingBtn();
 			setDingData(res.data);
 		});
-	}, []);
+	};
+
+	const getMailInfoData = () => {
+		getMailInfo().then(async (res) => {
+			if (!res.data) return;
+			// console.log(res);
+			await field.setValues(res.data);
+			checkBtn();
+			setData(res.data);
+		});
+	};
 
 	const submit = () => {
 		field.validate((error, value) => {
@@ -78,7 +86,7 @@ function AlarmSet() {
 			setMail(value).then((res) => {
 				// console.log(res);
 				if (res.data) return;
-				getMailInfo();
+				getMailInfoData();
 				Message.show(messageConfig('success', '成功', '邮箱设置成功'));
 			});
 		});
@@ -111,7 +119,7 @@ function AlarmSet() {
 			setDing(arrs).then((res) => {
 				// console.log(res);
 				if (res.data) return;
-				getDing();
+				getDingData();
 				Message.show(
 					messageConfig('success', '成功', '钉钉机器人设置成功')
 				);
@@ -220,6 +228,7 @@ function AlarmSet() {
 
 	return (
 		<div className="alarm-set">
+			{console.log(data, dingData)}
 			<div className="box">
 				<div className="box-header" onClick={() => setShow(!show)}>
 					<div className="header-img">

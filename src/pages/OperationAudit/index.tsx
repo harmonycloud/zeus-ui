@@ -54,6 +54,7 @@ export default function OperationAudit(): JSX.Element {
 			<Breadcrumb.Item>操作审计</Breadcrumb.Item>
 		</Breadcrumb>
 	);
+	const [lock, setLock] = useState<any>({ lock: 'right' });
 	useEffect(() => {
 		// * 获取板块信息
 		getModules().then((res) => {
@@ -93,6 +94,11 @@ export default function OperationAudit(): JSX.Element {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, []);
 	useEffect(() => {
 		// * 获取操作审计列表
@@ -523,7 +529,7 @@ export default function OperationAudit(): JSX.Element {
 						dataIndex="action"
 						width={100}
 						cell={actionRender}
-						lock="right"
+						{...lock}
 					/>
 				</Table>
 				<SPagination
