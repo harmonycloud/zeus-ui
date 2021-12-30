@@ -116,7 +116,7 @@ const RedisCreate = (props) => {
 	const [mode, setMode] = useState('cluster');
 	const modeList = [
 		{
-			label: '集群moshi',
+			label: '集群模式',
 			value: 'cluster'
 		},
 		{
