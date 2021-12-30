@@ -345,10 +345,7 @@ const ElasticsearchCreate = (props) => {
 					password: values.pwd,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode:
-						mode.includes('complex') || mode.includes('regular')
-							? 'complex'
-							: mode
+					mode
 				};
 				// * 动态表单相关
 				if (customForm) {
@@ -393,7 +390,6 @@ const ElasticsearchCreate = (props) => {
 				}
 				if (nodeObj) {
 					sendData.quota = {};
-					console.log(nodeObj);
 					for (let key in nodeObj) {
 						if (!nodeObj[key].disabled) {
 							if (nodeObj[key].storageClass === '') {

@@ -93,6 +93,8 @@ export default function HighAvailability(props) {
 	const [customVisible, setCustomVisible] = useState(false);
 	const [quotaValue, setQuotaValue] = useState();
 	const [topoData, setTopoData] = useState();
+	const [lock, setLock] = useState<any>({ lock: 'right' });
+
 	// * es专用 specificationConfig
 	const [esSpConfig] = useState([
 		{
@@ -327,6 +329,11 @@ export default function HighAvailability(props) {
 			// 	}
 			// }
 		}
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, [data]);
 
 	useEffect(() => {
@@ -817,7 +824,7 @@ export default function HighAvailability(props) {
 							title="操作"
 							cell={actionRender}
 							width={150}
-							lock="right"
+							{...lock}
 						/>
 					</Table>
 				</>

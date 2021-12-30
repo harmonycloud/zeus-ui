@@ -36,6 +36,7 @@ function MysqlList(props) {
 	const [keyword, setKeyword] = useState('');
 	let [timer, setTimer] = useState(null);
 	const [backupCheck, setBackupCheck] = useState(false);
+	const [lock, setLock] = useState<any>({ lock: 'right' });
 
 	const states = [
 		{ value: 'Creating', label: '启动中' },
@@ -48,6 +49,11 @@ function MysqlList(props) {
 		if (JSON.stringify(globalNamespace) !== '{}' && instance) {
 			getData(globalCluster.id, globalNamespace.name, keyword);
 		}
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, [globalNamespace, instance]);
 
 	useEffect(() => {
@@ -467,7 +473,7 @@ function MysqlList(props) {
 					dataIndex="action"
 					cell={actionRender}
 					width={188}
-					lock="right"
+					{...lock}
 				/>
 			</Table>
 		</>

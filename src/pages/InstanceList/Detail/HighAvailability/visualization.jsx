@@ -89,16 +89,19 @@ const podStatus = [
 ];
 
 const modelMap = {
-	MasterSlave: '主从模式',
-	'1m-1s': '主从模式',
+	MasterSlave: '一主一从',
+	'1m-1s': '一主一从',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
+	'complex-cold': 'N主N数据N冷',
+	'cold-complex': 'N主N数据N冷N协调',
 	regular: 'N主N数据',
 	sentinel: '哨兵',
 	'2m-noslave': '两主',
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
-	null: '未知'
+	6: '三主三从',
+	10: '五主五从'
 };
 
 function Visualization(props) {
@@ -248,6 +251,14 @@ function Visualization(props) {
 		}
 	};
 
+	const circleTextY = (direction, cfg) => {
+		if (direction === 'LR') {
+			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 53 : 55;
+		} else {
+			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 13 : 15;
+		}
+	};
+
 	const collapseBackX = (direction, cfg) => {
 		if (direction === 'LR') {
 			return cfg.level === 'serve' ? 87 : 168;
@@ -281,9 +292,9 @@ function Visualization(props) {
 								stroke: '#666',
 								fill: '#fff',
 								width: 60,
-								height: 30,
-								radius: 15,
-								y: direction === 'LR' ? 35 : 0,
+								height: 20,
+								radius: 10,
+								y: direction === 'LR' ? 40 : 0,
 								x: circleX(direction, cfg),
 								cursor: 'pointer'
 							},
@@ -297,12 +308,12 @@ function Visualization(props) {
 										? cfg.adentify
 										: roleRender(cfg.adentify, '', cfg),
 								fill: 'rgba(0, 0, 0, .65)',
-								fontSize: 10,
+								fontSize: cfg.level === 'serve' && cfg.adentify.length >= 6 ? 6 : 8,
 								textAlign: 'center',
 								width: 60,
 								height: 30,
 								x: circleTextX(direction, cfg),
-								y: direction === 'LR' ? 55 : 20
+								y: circleTextY(direction, cfg),
 							},
 							modelId: cfg.id,
 							name: 'circle-text'

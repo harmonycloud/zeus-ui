@@ -68,6 +68,8 @@ function ServiceList(props: serviceListProps): JSX.Element {
 	const [selected, setSelected] = useState<string>(
 		storage.getSession('service-list-current') || '全部服务'
 	);
+	const [lock, setLock] = useState<any>({ lock: 'right' });
+
 	// useEffect(() => {
 	// 	let mounted = true;
 	// 	if (JSON.stringify(namespace) !== '{}') {
@@ -129,6 +131,11 @@ function ServiceList(props: serviceListProps): JSX.Element {
 				setShowDataSource(l);
 			}
 		}
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, [originData]);
 	useEffect(() => {
 		if (originData.length > 0) {
@@ -708,7 +715,7 @@ function ServiceList(props: serviceListProps): JSX.Element {
 						dataIndex="action"
 						cell={actionRender}
 						width={300}
-						lock="right"
+						{...lock}
 					/>
 				</Table>
 			</Content>

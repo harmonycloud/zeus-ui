@@ -59,11 +59,18 @@ const ServiceListByType = (props: serviceListProps) => {
 	const history = useHistory();
 	const params: paramsProps = useParams();
 	const { name, aliasName } = params;
+	const [lock, setLock] = useState<any>({ lock: 'right' });
+
 	useEffect(() => {
 		setCurrentServiceType({
 			name: aliasName,
 			type: name
 		});
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, [params]);
 	useEffect(() => {
 		let mounted = true;
@@ -856,7 +863,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="action"
 						cell={actionRender}
 						width={300}
-						lock="right"
+						{...lock}
 					/>
 				</Table>
 			</Content>

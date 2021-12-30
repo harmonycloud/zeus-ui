@@ -341,13 +341,13 @@ export default function Config(props) {
 	};
 
 	const sourceNameRender = (value, index, record) => {
-		if (record.backupType === 'Cluster') {
+		if (record.backupType !== 'Cluster') {
 			return value;
 		} else {
 			return (
 				<div>
 					<p>{value}</p>
-					<p>{value}</p>
+					<p>{record.aliasName}</p>
 				</div>
 			);
 		}
@@ -482,7 +482,7 @@ export default function Config(props) {
 					width={100}
 				/>
 				<Table.Column
-					title="备份时间"
+					title="创建时间"
 					dataIndex="createTime"
 					sortable
 					width={160}

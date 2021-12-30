@@ -41,6 +41,8 @@ function IngressList(props) {
 	const [active, setActive] = useState(false); // 抽屉显示
 	const [iconVisible, setIconVisible] = useState(false);
 	const [adress, setAdress] = useState('');
+	const [lock, setLock] = useState<any>({ lock: 'right' });
+
 	useEffect(() => {
 		if (
 			JSON.stringify(globalVar.cluster) !== '{}' &&
@@ -55,6 +57,11 @@ function IngressList(props) {
 						middlewareName
 				  );
 		}
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, [globalVar]);
 
 	const getData = (clusterId, namespace, keyword = searchText) => {
@@ -486,7 +493,7 @@ function IngressList(props) {
 						dataIndex="action"
 						cell={actionRender}
 						width={150}
-						lock="right"
+						{...lock}
 					/>
 				</Table>
 			</Page.Content>

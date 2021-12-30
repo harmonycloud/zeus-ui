@@ -30,12 +30,18 @@ export default function ParamterLIst(props) {
 	const [checked, setChecked] = useState(false);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const [visible, setVisible] = useState(false);
+	const [lock, setLock] = useState<any>({ lock: 'right' });
 
 	useEffect(() => {
 		const list = dataSource.filter(
 			(item) => item.value != item.modifiedValue
 		);
 		setShowDataSource(list);
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 	}, [dataSource]);
 
 	useEffect(() => {
@@ -353,7 +359,7 @@ export default function ParamterLIst(props) {
 					<Table.Column
 						title="参数描述"
 						dataIndex="description"
-						lock="right"
+						{...lock}
 						width={200}
 					/>
 				</Table>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Button, Dialog, Message, Balloon } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
@@ -9,6 +9,8 @@ import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
 import { useHistory } from 'react-router';
 import moment from 'moment';
+
+const {Tooltip} = Balloon;
 
 export default function List(props) {
 	const {
@@ -198,11 +200,18 @@ export default function List(props) {
 	const addressListRender = (value, index, record) => {
 		if (value) {
 			return (
-				<div>
+				<Tooltip
+					trigger={
+						<div style={{overflow: 'hidden',textOverflow: 'ellipsis',whiteSpace: 'nowrap',width: '250px'}}>
+							{value.join(';')}
+						</div>
+					}
+					align="t"
+				>
 					{value.map((item, index) => (
-						<p key={index}>{item}</p>
+						<p key={index} style={{margin: '3px 0'}}>{item}</p>
 					))}
-				</div>
+				</Tooltip>
 			);
 		} else {
 			return <div></div>;
@@ -218,8 +227,8 @@ export default function List(props) {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setBackups([...tempDataSource]);
 		} else if (dataIndex === 'phrase') {
@@ -279,13 +288,13 @@ export default function List(props) {
 	};
 
 	const sourceNameRender = (value, index, record) => {
-		if (record.backupType === 'Cluster') {
+		if (record.backupType !== 'Cluster') {
 			return value;
 		} else {
 			return (
 				<div>
 					<p>{value}</p>
-					<p>{value}</p>
+					<p>{record.aliasName}</p>
 				</div>
 			);
 		}
@@ -321,6 +330,7 @@ export default function List(props) {
 						title="备份位置"
 						dataIndex="backupAddressList"
 						cell={addressListRender}
+						width={250}
 					/>
 					<Table.Column
 						title="备份状态"

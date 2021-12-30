@@ -58,6 +58,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [iconVisible, setIconVisible] = useState<boolean>(false);
 	const [adress, setAdress] = useState<string>('');
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
+	const [lock, setLock] = useState<any>({ lock: 'right' });
+
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -105,9 +107,15 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				});
 			}
 		}
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
 		return () => {
 			mounted = false;
 		};
+
 	}, [namespace]);
 	useEffect(() => {
 		const allList: serviceAvailableItemProps[] = [];
@@ -636,7 +644,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						dataIndex="action"
 						cell={actionRender}
 						width={70}
-						lock="right"
+						{...lock}
 					/>
 				</Table>
 			</Content>

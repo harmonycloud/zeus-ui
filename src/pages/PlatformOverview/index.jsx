@@ -325,21 +325,10 @@ function PlatformOverview(props) {
 												{totalData.cpuUsedPercent}
 											</span>
 											<Progress
-												percent={Number(
-													totalData.cpuUsedPercent.replace(
-														'%',
-														''
-													)
-												)}
-												textRender={() =>
-													totalData.usedCpu.toFixed(
-														0
-													) + '核'
-												}
+												percent={Number(totalData.cpuUsedPercent.replace('%',''))}
 											/>
 											<span>
-												{totalData.totalCpu.toFixed(0) +
-													'核'}
+												{totalData.usedCpu.toFixed(0) + '/' + totalData.totalCpu.toFixed(0) +'核'}
 											</span>
 										</div>
 										<span className="type">
@@ -366,22 +355,10 @@ function PlatformOverview(props) {
 												{totalData.memoryUsedPercent}
 											</span>
 											<Progress
-												percent={Number(
-													totalData.memoryUsedPercent.replace(
-														'%',
-														''
-													)
-												)}
-												textRender={() =>
-													totalData.usedMemory.toFixed(
-														0
-													) + 'GB'
-												}
+												percent={Number(totalData.memoryUsedPercent.replace('%',''))}
 											/>
 											<span>
-												{totalData.totalMemory.toFixed(
-													0
-												) + 'GB'}
+												{totalData.usedMemory.toFixed(0) + '/' +totalData.totalMemory.toFixed(0) + 'GB'}
 											</span>
 										</div>
 										<span className="type">
