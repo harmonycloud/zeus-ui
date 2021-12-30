@@ -308,12 +308,16 @@ function Visualization(props) {
 										? cfg.adentify
 										: roleRender(cfg.adentify, '', cfg),
 								fill: 'rgba(0, 0, 0, .65)',
-								fontSize: cfg.level === 'serve' && cfg.adentify.length >= 6 ? 6 : 8,
+								fontSize:
+									cfg.level === 'serve' &&
+									cfg.adentify.length >= 6
+										? 6
+										: 8,
 								textAlign: 'center',
 								width: 60,
 								height: 30,
 								x: circleTextX(direction, cfg),
-								y: circleTextY(direction, cfg),
+								y: circleTextY(direction, cfg)
 							},
 							modelId: cfg.id,
 							name: 'circle-text'
@@ -454,15 +458,15 @@ function Visualization(props) {
 							attrs: {
 								text: !cfg.depth
 									? serverData.aliasName
-									: '资源/存储: ' +
-									  cfg.resources.cpu +
-									  'C/' +
-									  cfg.resources.memory +
-									  'G' +
-									  '/' +
-									  (cfg.resources.storageClassQuota
-											? cfg.resources.storageClassQuota
-											: ''),
+									: '资源/存储: ' + cfg?.resources?.cpu ||
+									  '' + 'C/' + cfg?.resources?.memory ||
+									  '' +
+											'G' +
+											'/' +
+											(cfg?.resources?.storageClassQuota
+												? cfg?.resources
+														?.storageClassQuota
+												: ''),
 								x: 45,
 								y: !cfg.depth ? 60 : 70,
 								textBaseline: 'middle',
@@ -857,7 +861,7 @@ function Visualization(props) {
 			status: topoData.status,
 			children: [
 				{
-					adentify: serveRender(),
+					adentify: serveRender() || '未知',
 					level: 'serve',
 					children: pods
 				}
