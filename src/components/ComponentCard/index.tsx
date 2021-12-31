@@ -112,9 +112,6 @@ const ComponentCard = (props: ComponentCardProps) => {
 			setVisible(true);
 		}
 	};
-	const accessComponent = () => {
-		setAccessVisible(true);
-	};
 	const uninstallComponent = () => {
 		const msg = status === 1 ? '取消接入' : '卸载';
 		const content =
@@ -169,7 +166,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						leftClass="link"
 						rightClass="link"
 						leftHandle={installComponent}
-						rightHandle={accessComponent}
+						rightHandle={() => setAccessVisible(true)}
 						centerText="安装"
 						centerClass="link"
 						centerHandle={() => {
@@ -337,6 +334,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 				<AccessForm
 					visible={accessVisible}
 					onCancel={() => setAccessVisible(false)}
+					status={status}
 					title={title}
 					clusterId={clusterId}
 					onRefresh={onRefresh}

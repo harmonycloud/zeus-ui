@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Field, Form, Message } from '@alicloud/console-components';
 import { putComponent } from '@/services/common';
 import {
@@ -20,7 +20,9 @@ interface AccessFormProps {
 	clusterId: string;
 	onRefresh: () => void;
 	setRefreshCluster: (flag: boolean) => void;
+	status: number;
 }
+
 const AccessForm = (props: AccessFormProps) => {
 	const {
 		visible,
@@ -28,7 +30,8 @@ const AccessForm = (props: AccessFormProps) => {
 		title,
 		clusterId,
 		onRefresh,
-		setRefreshCluster
+		setRefreshCluster,
+		status
 	} = props;
 	const field = Field.useField();
 	// console.log(props);
@@ -86,8 +89,6 @@ const AccessForm = (props: AccessFormProps) => {
 	}, []);
 	const onOk = () => {
 		field.validate((errors, values: any) => {
-			console.log(values);
-			console.log(title);
 			if (errors) return;
 			// console.log({ ...values, title });
 			const sendData: any = {
@@ -156,7 +157,11 @@ const AccessForm = (props: AccessFormProps) => {
 			putComponent(sendData).then((res) => {
 				if (res.success) {
 					Message.show(
-						messageConfig('success', '成功', '组件接入成功')
+						messageConfig(
+							'success',
+							'成功',
+							`组件${status === 0 ? '接入' : '编辑'}成功`
+						)
 					);
 					onCancel();
 					setRefreshCluster(true);
@@ -188,7 +193,7 @@ const AccessForm = (props: AccessFormProps) => {
 	};
 	return (
 		<Dialog
-			title="工具接入"
+			title={`工具${status === 0 ? '接入' : '编辑'}`}
 			visible={visible}
 			onCancel={onCancel}
 			onClose={onCancel}
@@ -196,10 +201,14 @@ const AccessForm = (props: AccessFormProps) => {
 			style={{ width: '580px' }}
 		>
 			<div className="access-title-content">
-				<div className="access-title-name">完善接入信息</div>
+				<div className="access-title-name">
+					完善{status === 0 ? '接入' : '编辑'}信息
+				</div>
 			</div>
 			<p className="access-subtitle">
-				若您的资源池已经安装了对应工具，可直接接入使用
+				若您的资源池已经安装了对应工具，可直接
+				{status === 0 ? '接入' : '编辑'}
+				使用
 			</p>
 			<div className="access-form-content">
 				<Form field={field}>{childrenRender()}</Form>
