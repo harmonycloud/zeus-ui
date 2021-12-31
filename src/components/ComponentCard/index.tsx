@@ -166,9 +166,12 @@ const ComponentCard = (props: ComponentCardProps) => {
 						}
 						leftText="安装"
 						rightText="接入"
+						leftClass="link"
+						rightClass="link"
 						leftHandle={installComponent}
 						rightHandle={accessComponent}
 						centerText="安装"
+						centerClass="link"
 						centerHandle={() => {
 							title !== 'lvm'
 								? installComponent()
@@ -188,6 +191,8 @@ const ComponentCard = (props: ComponentCardProps) => {
 						actionCount={2}
 						leftText="取消接入"
 						rightText="编辑"
+						leftClass="danger"
+						rightClass="link"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
 						createTime={createTime}
@@ -228,10 +233,13 @@ const ComponentCard = (props: ComponentCardProps) => {
 								: 1
 						}
 						leftText="卸载"
+						leftClass="danger"
 						rightText="编辑"
+						rightClass="link"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
 						centerText="卸载"
+						centerClass="danger"
 						centerHandle={uninstallComponent}
 						createTime={createTime}
 						seconds={seconds}
@@ -252,10 +260,13 @@ const ComponentCard = (props: ComponentCardProps) => {
 								: 1
 						}
 						leftText="卸载"
+						leftClass="danger"
+						rightClass="link"
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
 						centerText="卸载"
+						centerClass="danger"
 						centerHandle={uninstallComponent}
 						createTime={createTime}
 						seconds={seconds}
@@ -294,10 +305,12 @@ const ComponentCard = (props: ComponentCardProps) => {
 								: 1
 						}
 						leftText="卸载"
+						leftClass="danger"
 						rightText="编辑"
 						leftHandle={uninstallComponent}
 						rightHandle={() => setAccessVisible(true)}
 						centerText="卸载"
+						centerClass="danger"
 						centerHandle={uninstallComponent}
 						createTime={createTime}
 						seconds={seconds}

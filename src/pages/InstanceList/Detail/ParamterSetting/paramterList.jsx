@@ -337,13 +337,13 @@ export default function ParamterLIst(props) {
 					<Table.Column
 						title="参数默认值"
 						dataIndex="defaultValue"
-						width={250}
+						width={100}
 					/>
 					<Table.Column
 						title="修改目标值"
 						dataIndex="modifiedValue"
 						cell={valueRender}
-						width={250}
+						width={100}
 					/>
 					<Table.Column
 						title="是否重启"

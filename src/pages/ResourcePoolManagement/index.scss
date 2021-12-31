@@ -76,6 +76,7 @@
 
 // * 资源池详情
 .resource-pool-info{
+	margin-top: 16px;
 	margin-bottom: 0;
 	border: none;
 }
@@ -179,7 +180,7 @@
 .batch-install-component-item{
 	width: 667px;
 	height: 72px;
-	border: 1px dashed #888888;
+	border-bottom: 1px solid #EBEBEB;
 	display: flex;
 	align-items: center;
 	margin-bottom: 1px;

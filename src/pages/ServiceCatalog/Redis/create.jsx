@@ -669,6 +669,11 @@ const RedisCreate = (props) => {
 															marginLeft: '4px',
 															padding: '0 9px'
 														}}
+														disabled={
+															affinity.label
+																? false
+																: true
+														}
 														onClick={() => {
 															if (
 																!affinityLabels.find(
@@ -806,6 +811,11 @@ const RedisCreate = (props) => {
 															marginLeft: '4px',
 															padding: '0 9px'
 														}}
+														disabled={
+															tolerations.label
+																? false
+																: true
+														}
 														onClick={() => {
 															if (
 																!tolerationsLabels.find(

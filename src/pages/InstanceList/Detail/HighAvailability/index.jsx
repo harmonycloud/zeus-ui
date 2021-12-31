@@ -707,7 +707,7 @@ export default function HighAvailability(props) {
 								setEsVisible={() => setEsVisible(true)}
 								editConfiguration={editConfiguration}
 							/>
-							<div className="detail-divider" />
+							<div style={{ height: '24px' }} />
 						</>
 					)}
 					{type === 'mysql' ? (

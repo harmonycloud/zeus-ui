@@ -143,6 +143,11 @@ export default function FormTolerations(props) {
 										marginLeft: '4px',
 										padding: '0 9px'
 									}}
+									disabled={
+										tolerations.nodeTolerationsLabel
+											? false
+											: true
+									}
 									onClick={addTolerationsLabels}
 								>
 									<Icon

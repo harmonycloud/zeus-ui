@@ -1,8 +1,7 @@
 .role-modal {
-	width: 540px;
-	height: 430px;
+	width: 223px;
 	.next-dialog-body {
-		height: 320px;
+		max-height: 200px;
 		overflow-y: auto;
 		& > p {
 			line-height: 32px;

@@ -59,6 +59,8 @@ const IngressCard = (props: IngressCardProps) => {
 					<MidCard
 						leftText="安装"
 						rightText="接入"
+						leftClass="link"
+						rightClass="link"
 						actionCount={2}
 						leftHandle={() => setInstallVisible(true)}
 						rightHandle={() => setAccessVisible(true)}
@@ -78,6 +80,8 @@ const IngressCard = (props: IngressCardProps) => {
 						actionCount={2}
 						leftText="安装"
 						rightText="接入"
+						leftClass="link"
+						rightClass="link"
 						leftHandle={() => setInstallVisible(false)}
 						rightHandle={() => setAccessVisible(false)}
 						titleStyle={{ fontSize: '12px' }}
@@ -96,6 +100,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftText="取消接入"
 						leftClass="danger"
 						rightText="编辑"
+						rightClass="link"
 						leftHandle={() => uninstallComponent('access')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
@@ -134,6 +139,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftText="卸载"
 						leftClass="danger"
 						rightText="编辑"
+						rightClass="link"
 						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
@@ -152,6 +158,7 @@ const IngressCard = (props: IngressCardProps) => {
 						leftText="卸载"
 						leftClass="danger"
 						rightText="编辑"
+						rightClass="link"
 						leftHandle={() => uninstallComponent('install')}
 						rightHandle={() => setAccessVisible(true)}
 						titleStyle={{ fontSize: '12px' }}
@@ -187,6 +194,7 @@ const IngressCard = (props: IngressCardProps) => {
 						status={status}
 						actionCount={1}
 						centerText="卸载"
+						centerClass="danger"
 						centerHandle={() => uninstallComponent('install')}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}

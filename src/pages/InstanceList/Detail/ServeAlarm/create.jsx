@@ -818,7 +818,10 @@ function CreateAlarm(props) {
 												})}
 											</Select>
 											<Input
-												style={{ width: '30%' }}
+												style={{
+													width: '30%',
+													borderLeft: 0
+												}}
 												value={item.threshold}
 												onChange={(value) => {
 													onChange(
@@ -949,6 +952,7 @@ function CreateAlarm(props) {
 											<Button
 												disabled={record}
 												onClick={() => addAlarm()}
+												style={{ borderLeft: 0 }}
 											>
 												<Icon
 													type="plus"
@@ -960,6 +964,7 @@ function CreateAlarm(props) {
 													onClick={() =>
 														delAlarm(item.id)
 													}
+													style={{ borderLeft: 0 }}
 												>
 													<Icon
 														type="wind-minus"

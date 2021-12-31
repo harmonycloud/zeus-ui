@@ -51,6 +51,7 @@ interface disasterProps {
 	namespace: string;
 	onRefresh: (key?: string) => void;
 	toDetail: () => void;
+	getData: () => void;
 }
 interface OriginProps {
 	cluster: string;
@@ -79,7 +80,8 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		clusterId,
 		namespace,
 		onRefresh,
-		toDetail
+		toDetail,
+		getData
 	} = props;
 	// console.log(props);
 	const [originData, setOriginData] = useState<OriginProps>(originDataInit);

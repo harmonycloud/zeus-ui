@@ -158,6 +158,11 @@ export default function FormNodeAffinity(props) {
 										marginLeft: '4px',
 										padding: '0 9px'
 									}}
+									disabled={
+										affinity.nodeAffinityLabel
+											? false
+											: true
+									}
 									onClick={addAffinityLabels}
 								>
 									<Icon

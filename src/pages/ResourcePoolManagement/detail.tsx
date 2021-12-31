@@ -24,6 +24,11 @@ const ResourcePoolDetail = () => {
 		setActiveKey(key as string);
 		storage.setLocal('cluster-detail-current-tab', key);
 	};
+
+	useEffect(() => {
+		return storage.setLocal('cluster-detail-current-tab', '');
+	});
+
 	return (
 		<Page>
 			<Header

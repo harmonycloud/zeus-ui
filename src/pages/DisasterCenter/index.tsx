@@ -282,6 +282,7 @@ function DisasterCenter(props: disasterCenterProps) {
 						namespace={basicData?.namespace || ''}
 						data={data}
 						onRefresh={toSourceDetail}
+						getData={getData}
 						toDetail={toDetail}
 					/>
 				)}

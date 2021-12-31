@@ -606,6 +606,11 @@ const RocketMQCreate = (props) => {
 															marginLeft: '4px',
 															padding: '0 9px'
 														}}
+														disabled={
+															affinity.label
+																? false
+																: true
+														}
 														onClick={() => {
 															if (
 																!affinityLabels.find(
@@ -757,6 +762,11 @@ const RocketMQCreate = (props) => {
 															marginLeft: '4px',
 															padding: '0 9px'
 														}}
+														disabled={
+															tolerations.label
+																? false
+																: true
+														}
 														onClick={() => {
 															if (
 																!tolerationsLabels.find(
@@ -1331,7 +1341,7 @@ const RocketMQCreate = (props) => {
 								>
 									<label className="form-name">
 										<span className="ne-required">
-											集群外访问
+											主机网络
 										</span>
 									</label>
 									<div

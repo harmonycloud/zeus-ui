@@ -8,7 +8,7 @@ import { getClusters } from '@/services/common.js';
 import Table from '@/components/MidTable';
 import { clusterType } from '@/types';
 import messageConfig from '@/components/messageConfig';
-import { timeRender, nameRender } from '@/utils/utils';
+import { timeRender } from '@/utils/utils';
 import DeleteCard from '../BasicResource/DeleteCard';
 import RegistryNamespace from '../BasicResource/registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
@@ -254,6 +254,21 @@ export default function ResourcePoolManagement(): JSX.Element {
 						`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
 					)
 				}
+			>
+				{value}
+			</span>
+		);
+	};
+	const nameRender = (value: string, index: number, record: any) => {
+		return (
+			<span
+				className="name-link"
+				onClick={() => {
+					history.push(
+						`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
+					);
+					storage.setLocal('cluster-detail-current-tab', 'namespace');
+				}}
 			>
 				{value}
 			</span>

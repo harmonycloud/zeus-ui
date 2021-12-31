@@ -13,6 +13,7 @@ interface MidCardProps {
 	rightText?: string | '接入';
 	leftClass?: string | undefined;
 	rightClass?: string | undefined;
+	centerClass?: string | undefined;
 	leftHandle?: () => void;
 	rightHandle?: () => void;
 	centerText?: string;
@@ -76,6 +77,7 @@ const MidCard = (props: MidCardProps) => {
 		rightHandle,
 		leftClass,
 		rightClass,
+		centerClass,
 		actionCount,
 		centerText,
 		centerHandle,
@@ -207,14 +209,17 @@ const MidCard = (props: MidCardProps) => {
 					>
 						{leftText}
 					</div>
-					<div className="mid-card-right" onClick={rightHandle}>
+					<div
+						className={`mid-card-right ${rightClass}`}
+						onClick={rightHandle}
+					>
 						{rightText}
 					</div>
 				</div>
 			)}
 			{actionCount === 1 && (
 				<div
-					className="mid-card-center"
+					className={`mid-card-center ${centerClass}`}
 					onClick={centerHandle}
 					style={centerStyle}
 				>

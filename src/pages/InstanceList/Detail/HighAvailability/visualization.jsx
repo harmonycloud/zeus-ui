@@ -1307,7 +1307,7 @@ function Visualization(props) {
 
 	return (
 		<div className={styles['visualization']}>
-			<h2>
+			<h2 style={{ marginTop: 0 }}>
 				{pathname.includes('addBackup')
 					? backup
 						? '选择要恢复的对象'
