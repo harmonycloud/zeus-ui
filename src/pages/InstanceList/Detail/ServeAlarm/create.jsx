@@ -769,6 +769,7 @@ function CreateAlarm(props) {
 													marginRight: 8,
 													width: '100%'
 												}}
+												autoWidth={false}
 												value={item.alert}
 											>
 												{alarms &&
