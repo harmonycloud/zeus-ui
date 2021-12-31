@@ -754,29 +754,15 @@ const ElasticsearchCreate = (props) => {
 														className={
 															styles['tag-close']
 														}
-														onClick={() => {
-															if (
-																!tolerationsLabels.find(
-																	(item) =>
-																		item.label ===
-																		tolerations.label
+														onClick={() =>
+															setAffinityLabels(
+																affinityLabels.filter(
+																	(arr) =>
+																		arr.id !==
+																		item.id
 																)
-															) {
-																setAffinityLabels(
-																	[
-																		...tolerationsLabels,
-																		{
-																			label: tolerations.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
-															}
-														}}
+															)
+														}
 													/>
 												</p>
 											);

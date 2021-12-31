@@ -61,66 +61,96 @@ function Personlization(): JSX.Element {
 					setStatus(res.data.status);
 					storage.setLocal('personalization', res.data);
 					field.setValues(res.data);
-					res.data.backgroundPath &&
-						setBackgroundValue([
-							{
-								name: 'background.svg',
-								state: 'done',
-								size: 1024,
-								downloadURL:
-									api +
-									'/images/middleware/' +
-									res.data.backgroundPath,
-								fileURL:
-									api +
-									'/images/middleware/' +
-									res.data.backgroundPath,
-								imgURL:
-									api +
-									'/images/middleware/' +
-									res.data.backgroundPath
-							}
-						]);
-					res.data.loginLogoPath &&
-						setLoginValue([
-							{
-								name: 'login.svg',
-								state: 'done',
-								size: 1024,
-								downloadURL:
-									api +
-									'/images/middleware/' +
-									res.data.loginLogoPath,
-								fileURL:
-									api +
-									'/images/middleware/' +
-									res.data.loginLogoPath,
-								imgURL:
-									api +
-									'/images/middleware/' +
-									res.data.loginLogoPath
-							}
-						]);
-					res.data.homeLogoPath &&
-						setHomeValue([
-							{
-								name: 'home.svg',
-								state: 'done',
-								size: 1024,
-								downloadURL:
-									api +
-									'/images/middleware/' +
-									res.data.homeLogoPath,
-								fileURL:
-									api +
-									'/images/middleware/' +
-									res.data.homeLogoPath,
-								imgURL:
-									api +
-									'/images/middleware/' +
-									res.data.homeLogoPath
-							}
-						]);
+					res.data.backgroundPath
+						? setBackgroundValue([
+								{
+									name: 'background.svg',
+									state: 'done',
+									size: 1024,
+									downloadURL:
+										api +
+										'/images/middleware/' +
+										res.data.backgroundPath,
+									fileURL:
+										api +
+										'/images/middleware/' +
+										res.data.backgroundPath,
+									imgURL:
+										api +
+										'/images/middleware/' +
+										res.data.backgroundPath
+								}
+						  ])
+						: setBackgroundValue([
+								{
+									name: 'background.svg',
+									state: 'done',
+									size: 1024,
+									downloadURL: background,
+									fileURL: background,
+									imgURL: background
+								}
+						  ]);
+					res.data.loginLogoPath
+						? setLoginValue([
+								{
+									name: 'login.svg',
+									state: 'done',
+									size: 1024,
+									downloadURL:
+										api +
+										'/images/middleware/' +
+										res.data.loginLogoPath,
+									fileURL:
+										api +
+										'/images/middleware/' +
+										res.data.loginLogoPath,
+									imgURL:
+										api +
+										'/images/middleware/' +
+										res.data.loginLogoPath
+								}
+						  ])
+						: setLoginValue([
+								{
+									name: 'login.svg',
+									state: 'done',
+									size: 1024,
+									downloadURL: logo,
+									fileURL: logo,
+									imgURL: logo
+								}
+						  ]);
+					res.data.homeLogoPath
+						? setHomeValue([
+								{
+									name: 'home.svg',
+									state: 'done',
+									size: 1024,
+									downloadURL:
+										api +
+										'/images/middleware/' +
+										res.data.homeLogoPath,
+									fileURL:
+										api +
+										'/images/middleware/' +
+										res.data.homeLogoPath,
+									imgURL:
+										api +
+										'/images/middleware/' +
+										res.data.homeLogoPath
+								}
+						  ])
+						: setHomeValue([
+								{
+									name: 'home.svg',
+									state: 'done',
+									size: 1024,
+									downloadURL: homeLogo,
+									fileURL: homeLogo,
+									imgURL: homeLogo
+								}
+						  ]);
 					document.title =
 						res.data && res.data.title ? res.data.title : 'Zeus';
 				} else {

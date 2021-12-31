@@ -88,7 +88,7 @@ function AlarmTimeLine(props) {
 
 	const toDetail = (item) => {
 		const clusterTemp = JSON.parse(storage.getLocal('cluster'));
-		if (item.chartVersion) {
+		if (item.type) {
 			if (item.clusterId === clusterTemp.id) {
 				// * 非跨资源池群跳转
 				unAcross(item);
@@ -108,17 +108,21 @@ function AlarmTimeLine(props) {
 							<Timeline.Item
 								key={index}
 								title={
-									<span
-										className={`time-line-title ${
-											item.chartVersion ? 'active' : ''
-										}`}
-										onClick={() => toDetail(item)}
-									>
-										{item.lay === 'system'
-											? '(系统级)'
-											: '(服务级)'}
-										{' ' + item.name}
-									</span>
+									<p>
+										<span>
+											{item.lay === 'system'
+												? '(系统级) '
+												: '(服务级) '}
+										</span>
+										<span
+											className={`time-line-title ${
+												item.type ? 'active' : ''
+											}`}
+											onClick={() => toDetail(item)}
+										>
+											{item.name}
+										</span>
+									</p>
 								}
 								dot={dotRender(item.level)}
 								content={
@@ -128,14 +132,31 @@ function AlarmTimeLine(props) {
 										</div>
 										<div className="details-msg">
 											<div className="details-summary">
-												<span title={item.summary}>
-													{item.content
-														? item.content + '；'
-														: ''}
-												</span>
-												<span title={item.summary}>
+												<Tooltip
+													trigger={
+														<span
+															title={item.summary}
+														>
+															{item.content
+																? item.content +
+																  '；'
+																: ''}
+														</span>
+													}
+													align="t"
+												>
+													{item.content || ''}
+												</Tooltip>
+												<Tooltip
+													trigger={
+														<span>
+															{item.summary || ''}
+														</span>
+													}
+													align="t"
+												>
 													{item.summary || ''}
-												</span>
+												</Tooltip>
 											</div>
 											{/* <Tooltip
 												align="l"

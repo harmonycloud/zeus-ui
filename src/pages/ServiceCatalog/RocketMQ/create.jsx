@@ -600,6 +600,44 @@ const RocketMQCreate = (props) => {
 														}}
 													/>
 												</div>
+												<div className={styles['add']}>
+													<Button
+														style={{
+															marginLeft: '4px',
+															padding: '0 9px'
+														}}
+														onClick={() => {
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
+																)
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
+															}
+														}}
+													>
+														<Icon
+															style={{
+																color: '#005AA5'
+															}}
+															type="add"
+														/>
+													</Button>
+												</div>
 												<div
 													className={styles['check']}
 												>

@@ -261,6 +261,7 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 }
 .dynamic-form-node-affinity-check{
 	display: inline-block;
+	width: 260px;
 	margin-left: 16px;
 }
 /** table */

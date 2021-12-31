@@ -193,11 +193,7 @@ function Visualization(props) {
 
 	const isSelect = (cfg) => {
 		if (!isEdit) {
-			if (hasConfigBackup(cfg)) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		} else {
 			if (backup) {
 				if (serverData.name === selectObj) {
@@ -429,8 +425,14 @@ function Visualization(props) {
 								text: !cfg.depth
 									? serverData.name
 									: 'IP: ' + cfg.podIp,
-								x: 45,
-								y: !cfg.depth ? 40 : 30,
+								x: 50,
+								y: !cfg.depth
+									? hasConfigBackup(cfg)
+										? 33
+										: 40
+									: hasConfigBackup(cfg)
+									? 23
+									: 30,
 								textBaseline: 'middle',
 								fill: '#333',
 								fontWeight: 500,
@@ -443,8 +445,8 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text: cfg.podName,
-									x: 45,
-									y: 50,
+									x: 50,
+									y: hasConfigBackup(cfg) ? 40 : 50,
 									textBaseline: 'middle',
 									fill: '#333',
 									fontWeight: 500,
@@ -467,8 +469,14 @@ function Visualization(props) {
 									  (cfg?.resources?.storageClassQuota
 											? cfg?.resources?.storageClassQuota
 											: ''),
-								x: 45,
-								y: !cfg.depth ? 60 : 70,
+								x: 50,
+								y: !cfg.depth
+									? hasConfigBackup(cfg)
+										? 53
+										: 60
+									: hasConfigBackup(cfg)
+									? 57
+									: 70,
 								textBaseline: 'middle',
 								fill: '#666',
 								fontWeight: 400
@@ -481,27 +489,31 @@ function Visualization(props) {
 								x: 160,
 								y: 34,
 								width: 32,
-								height: 32
+								height: 32,
+								opacity: 0.3
 							},
 							visible: !cfg.depth,
 							name: 'type-image'
 						});
 						group.addShape('rect', {
 							attrs: {
-								x: 208,
-								y: 0,
-								width: 20,
-								height: 100,
-								fill: '#6236FF'
+								x: 50,
+								y: 70,
+								width: 60,
+								height: 20,
+								radius: 10,
+								fill: '#6236FF',
+								opacity: 0.6
 							},
 							visible: hasConfigBackup(cfg),
 							name: 'right'
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '已',
-								x: 212,
-								y: 32,
+								text: '已设置备份',
+								x: 58,
+								y: 85,
+								fontSize: 9,
 								fill: '#fff'
 							},
 							visible: hasConfigBackup(cfg),
