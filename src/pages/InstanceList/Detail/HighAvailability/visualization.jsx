@@ -489,8 +489,8 @@ function Visualization(props) {
 								x: 160,
 								y: 34,
 								width: 32,
-								height: 32,
-								opacity: 0.3
+								height: 32
+								// opacity: 0.3
 							},
 							visible: !cfg.depth,
 							name: 'type-image'

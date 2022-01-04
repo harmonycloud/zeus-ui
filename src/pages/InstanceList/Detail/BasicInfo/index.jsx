@@ -12,6 +12,7 @@ import {
 import { useParams } from 'react-router-dom';
 import DataFields from '@alicloud/console-components-data-fields';
 import DefaultPicture from '@/components/DefaultPicture';
+import { getMiddlewareEvents } from '@/services/middleware.js';
 import { statusRender } from '@/utils/utils';
 import transTime from '@/utils/transTime';
 import EventsList from './eventsList';
@@ -209,6 +210,7 @@ function BasicInfo(props) {
 	});
 	const [visible, setVisible] = useState(false); // * 修改acl
 	const { chartVersion } = useParams();
+	const [eventList, setEventList] = useState([]);
 	const disasterInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
 		label: '备份服务名称',
@@ -399,6 +401,8 @@ function BasicInfo(props) {
 			});
 			setACLCheck(data?.rocketMQParam?.acl?.enable);
 		}
+
+		getEventsData();
 	}, [data]);
 
 	useEffect(() => {
@@ -539,6 +543,21 @@ function BasicInfo(props) {
 		setInfoConfig(infoConfigTemp);
 	}, [props]);
 
+	const getEventsData = async () => {
+		let sendData = {
+			clusterId,
+			namespace,
+			middlewareName,
+			type,
+			kind: 'All'
+		};
+		if (kind) sendData.kind = kind === 'All' ? '' : kind;
+		let res = await getMiddlewareEvents(sendData);
+		if (res.success) {
+			setEventList(data);
+		}
+	};
+
 	const eventsConfig = [
 		{
 			dataIndex: 'title',
@@ -556,12 +575,17 @@ function BasicInfo(props) {
 							style={{ marginRight: 16 }}
 							value={eventType}
 							onChange={(val) => setEventType(val)}
+							disabled={eventList && eventList.length}
 						>
 							<Option value={'All'}>全部状态</Option>
 							<Option value={'Normal'}>正常</Option>
 							<Option value={'Abnormal'}>异常</Option>
 						</Select>
-						<Select value={kind} onChange={(val) => setKind(val)}>
+						<Select
+							value={kind}
+							onChange={(val) => setKind(val)}
+							disabled={eventList && eventList.length}
+						>
 							<Option value={'All'}>全部类型</Option>
 							<Option value={'Pod'}>Pod</Option>
 							<Option value={'StatefulSet'}>StatefulSet</Option>

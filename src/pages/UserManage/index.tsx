@@ -300,7 +300,7 @@ function UserManage(): JSX.Element {
 					onOk={submitRole}
 					onCancel={() => setRoleVisible(false)}
 					onClose={() => setRoleVisible(false)}
-					className="role-modal"
+					className="role-key-modal"
 				>
 					<RadioGroup
 						itemDirection={'ver'}
