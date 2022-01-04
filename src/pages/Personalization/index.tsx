@@ -39,7 +39,6 @@ function Personlization(): JSX.Element {
 		authType: storage.getLocal('token') ? 1 : 0
 	};
 	const [data, setData] = useState<personalizationProps>();
-	const personalization = storage.getLocal('personalization');
 	const [status, setStatus] = useState<number | string | boolean>('0');
 	const [bgSelect, setBgSelect] = useState(false);
 	const [loginSelect, setLoginSelect] = useState(false);
@@ -162,6 +161,7 @@ function Personlization(): JSX.Element {
 							'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
 						platformName: 'Zeus | 中间件管理一体化平台'
 					});
+					storage.setLocal('personalization', '');
 					setBackgroundValue([
 						{
 							name: 'background.svg',

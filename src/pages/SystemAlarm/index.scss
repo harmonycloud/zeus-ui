@@ -60,7 +60,7 @@
                         display: inline-block;
                         width: 60px;
                         height: 20px;
-                        background: #f6ffed;
+                        background: #F6FFED;
                         border: 1px solid #b7eb8f;
                         text-align: center;
                         font-size: 12px;
@@ -96,6 +96,7 @@
                             border-bottom: 8px solid transparent;
                         }
                         &.none {
+                            background: #FFF3DD;
                             border-color: #ffdb94;
                             color: #faa700;
                             &::before {

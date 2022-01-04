@@ -422,7 +422,7 @@ export default function OperationAudit(): JSX.Element {
 									hasArrow={false}
 									hasBorder={false}
 									hasClear={false}
-									expandTriggerType="click"
+									expandTriggerType="hover"
 									dataSource={modulesFilters}
 									onChange={onModuleChange}
 									placeholder=" "
@@ -471,7 +471,7 @@ export default function OperationAudit(): JSX.Element {
 									}}
 									footer={
 										<div style={{ padding: 12 }}>
-											<Button
+											{/* <Button
 												type="primary"
 												style={{
 													marginRight: 8
@@ -481,7 +481,7 @@ export default function OperationAudit(): JSX.Element {
 												}
 											>
 												确认
-											</Button>
+											</Button> */}
 											<Button onClick={resetModules}>
 												重置
 											</Button>
