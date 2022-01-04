@@ -32,7 +32,7 @@ const ResourcePoolDetail = () => {
 	return (
 		<Page>
 			<Header
-				title={`资源分区(${nickname})`}
+				title={nickname}
 				hasBackArrow
 				onBackArrowClick={() => window.history.back()}
 			/>
@@ -47,7 +47,7 @@ const ResourcePoolDetail = () => {
 					<Tab.Item title="负载均衡" key="ingress">
 						<Ingress />
 					</Tab.Item>
-					<Tab.Item title="平台组件" key="component">
+					<Tab.Item title="组件管理" key="component">
 						<Component />
 					</Tab.Item>
 				</Tab>
