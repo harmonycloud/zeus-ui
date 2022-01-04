@@ -47,26 +47,6 @@ const hideRoute = [
 	'/terminal'
 ];
 
-// 设置logo
-const personalization = storage.getLocal('personalization');
-
-const header = (
-	<div
-		className={styles['logo-box']}
-		style={{ lineHeight: '48px', textAlign: 'center', padding: '5px 0px' }}
-	>
-		<img
-			className={styles['logo-png']}
-			src={
-				personalization && personalization.homeLogoPath
-					? api + '/images/middleware/' + personalization.homeLogoPath
-					: logo
-			}
-			alt=""
-		/>
-	</div>
-);
-
 function Navbar(props) {
 	const {
 		user,
@@ -91,6 +71,8 @@ function Navbar(props) {
 	// * 用户信息
 	const [nickName, setNickName] = useState('admin');
 	const [role, setRole] = useState({ aliasName: '系统管理员' });
+	// 设置logo
+	const personalization = storage.getLocal('personalization');
 	const footer = (nickName, role) => (
 		<div className={styles['action-bar']}>
 			<div className={styles['action-bar-item']}>
@@ -234,13 +216,38 @@ function Navbar(props) {
 		/**TODO 用户权限 */
 	}, [user]);
 
+	useEffect(() => {
+		console.log(111);
+	}, [personalization]);
+
 	return (
 		<div className={styles['middleware-navbar']} style={{ ...style }}>
 			<Nav
 				className={styles['custom-nav']}
 				direction="hoz"
 				type="normal"
-				header={header}
+				header={
+					<div
+						className={styles['logo-box']}
+						style={{
+							lineHeight: '48px',
+							textAlign: 'center',
+							padding: '5px 0px'
+						}}
+					>
+						<img
+							className={styles['logo-png']}
+							src={
+								personalization && personalization.homeLogoPath
+									? api +
+									  '/images/middleware/' +
+									  personalization.homeLogoPath
+									: logo
+							}
+							alt=""
+						/>
+					</div>
+				}
 				footer={footer(nickName, role)}
 				embeddable={true}
 				style={{

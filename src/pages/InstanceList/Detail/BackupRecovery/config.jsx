@@ -482,7 +482,7 @@ export default function Config(props) {
 					width={100}
 				/>
 				<Table.Column
-					title="最后一次执行"
+					title="最近一次执行"
 					dataIndex="createTime"
 					sortable
 					width={160}

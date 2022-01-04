@@ -334,7 +334,10 @@ function BasicInfo(props) {
 					aliasName: data.aliasName || '无',
 					label: data.labels || '',
 					hostAffinity: `${
-						(data.nodeAffinity && data.nodeAffinity[0].label) ||
+						(data.nodeAffinity &&
+							data.nodeAffinity
+								.map((item) => item.label)
+								.join(';')) ||
 						'无'
 					}(${
 						data.nodeAffinity && data.nodeAffinity[0].required
@@ -355,7 +358,10 @@ function BasicInfo(props) {
 					aliasName: data.aliasName || '无',
 					label: data.labels || '',
 					hostAffinity: `${
-						(data.nodeAffinity && data.nodeAffinity[0].label) ||
+						(data.nodeAffinity &&
+							data.nodeAffinity
+								.map((item) => item.label)
+								.join(';')) ||
 						'无'
 					}(${
 						data.nodeAffinity && data.nodeAffinity[0].required
@@ -475,10 +481,17 @@ function BasicInfo(props) {
 	useEffect(() => {
 		let infoConfigTemp = [...infoConfig];
 		const dataIndexList = infoConfigTemp.map((item) => item.dataIndex);
-		if (customMid) {
-			if (dataIndexList.includes('hostAffinity')) {
+		// if (customMid) {
+		// 	if (dataIndexList.includes('hostAffinity')) {
+		// 		infoConfigTemp = infoConfigTemp.filter(
+		// 			(item) => item.dataIndex !== 'hostAffinity'
+		// 		);
+		// 	}
+		// }
+		if (type === 'zookeeper') {
+			if (dataIndexList.includes('tolerations')) {
 				infoConfigTemp = infoConfigTemp.filter(
-					(item) => item.dataIndex !== 'hostAffinity'
+					(item) => item.dataIndex !== 'tolerations'
 				);
 			}
 		}
@@ -554,7 +567,7 @@ function BasicInfo(props) {
 		if (kind) sendData.kind = kind === 'All' ? '' : kind;
 		let res = await getMiddlewareEvents(sendData);
 		if (res.success) {
-			setEventList(data);
+			setEventList(res);
 		}
 	};
 
@@ -575,7 +588,7 @@ function BasicInfo(props) {
 							style={{ marginRight: 16 }}
 							value={eventType}
 							onChange={(val) => setEventType(val)}
-							disabled={eventList && eventList.length}
+							disabled={!eventList.length}
 						>
 							<Option value={'All'}>全部状态</Option>
 							<Option value={'Normal'}>正常</Option>
@@ -584,7 +597,7 @@ function BasicInfo(props) {
 						<Select
 							value={kind}
 							onChange={(val) => setKind(val)}
-							disabled={eventList && eventList.length}
+							disabled={!eventList.length}
 						>
 							<Option value={'All'}>全部类型</Option>
 							<Option value={'Pod'}>Pod</Option>
