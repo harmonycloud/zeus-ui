@@ -41,7 +41,7 @@ export default function ParamterTemplateForm(props) {
 			type
 		};
 		getParamTemp(sendData).then((res) => {
-			console.log(res);
+			// console.log(res);
 			if (res.success) {
 				if (res.data.length > 0) {
 					setTemplates(res.data);
@@ -54,20 +54,20 @@ export default function ParamterTemplateForm(props) {
 	};
 
 	const onChange = (value) => {
-		console.log(value);
+		// console.log(value);
 		setTemplate(value);
 	};
 
 	const onOk = () => {
 		field.validate((err, values) => {
 			if (err) return;
-			console.log(values);
+			// console.log(values);
 			const sendData = {
 				type,
 				templateName: values.templateName
 			};
 			getParamDetail(sendData).then((res) => {
-				console.log(res);
+				// console.log(res);
 				if (res.success) {
 					onCreate(res.data.customConfigList);
 				}

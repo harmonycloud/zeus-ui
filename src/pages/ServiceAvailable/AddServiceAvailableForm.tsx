@@ -39,7 +39,7 @@ interface addServiceAvailableProps {
 export default function AddServiceAvailableForm(
 	props: addServiceAvailableProps
 ): JSX.Element {
-	console.log(props);
+	// console.log(props);
 	const { visible, onCancel, cluster, onCreate, namespace, middlewareName } =
 		props;
 	const [isProcessing, setIsProcessing] = useState(false); // 确认按钮 loading

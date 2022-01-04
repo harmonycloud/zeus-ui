@@ -221,7 +221,7 @@ function AddForm(props: addFormProps): JSX.Element {
 	// 	// });
 	// }, []);
 	const uploadConf = (e: any) => {
-		console.log(e);
+		// console.log(e);
 		const reader = new window.FileReader();
 		reader.onload = function (e) {
 			field.setValue('cert', reader.result);
@@ -230,10 +230,10 @@ function AddForm(props: addFormProps): JSX.Element {
 	};
 	const onOk = () => {
 		field.validate((errors) => {
-			console.log(errors);
+			// console.log(errors);
 			if (errors) return;
 			const values: valuesProps = field.getValues();
-			console.log(values);
+			// console.log(values);
 			const sendData: clusterAddType = {
 				cert: {
 					certificate: values.cert

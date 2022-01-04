@@ -96,8 +96,8 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 const getLineOption = (
 	data: { [propName: string]: any } | null | undefined
 ) => {
-	console.log('22',data);
-	
+	// console.log('22',data);
+
 	const option = {
 		tooltip: {
 			trigger: 'axis'
@@ -110,9 +110,10 @@ const getLineOption = (
 		xAxis: {
 			type: 'category',
 			boundaryGap: false,
-			data: data && data.x && data.x.map((item: any) =>
-				item.alerttime.substring(11, 16)
-			)
+			data:
+				data &&
+				data.x &&
+				data.x.map((item: any) => item.alerttime.substring(11, 16))
 		},
 		yAxis: {
 			type: 'value',
@@ -131,7 +132,10 @@ const getLineOption = (
 				name: '一般',
 				type: 'line',
 				symbol: 'none',
-				data: data && data.infoList && data.infoList.map((item: any) => item.num),
+				data:
+					data &&
+					data.infoList &&
+					data.infoList.map((item: any) => item.num),
 				itemStyle: {
 					color: '#00A7FA'
 				}
@@ -140,7 +144,10 @@ const getLineOption = (
 				name: '重要',
 				type: 'line',
 				symbol: 'none',
-				data: data && data.warningList && data.warningList.map((item: any) => item.num),
+				data:
+					data &&
+					data.warningList &&
+					data.warningList.map((item: any) => item.num),
 				itemStyle: {
 					color: '#FAA700'
 				}
@@ -149,7 +156,10 @@ const getLineOption = (
 				name: '严重',
 				type: 'line',
 				symbol: 'none',
-				data: data && data.criticalList && data.criticalList.map((item: any) => item.num),
+				data:
+					data &&
+					data.criticalList &&
+					data.criticalList.map((item: any) => item.num),
 				itemStyle: {
 					color: '#FF4D4F'
 				}

@@ -22,12 +22,12 @@ export default function FormSelectOrRadios(props) {
 		});
 	}
 
-	useEffect(() => {
-		console.log(props);
-		// props.field.setValues({
-		// 	[`${props.variable}`]: props.defaultValue
-		// });
-	}, []);
+	// useEffect(() => {
+	// console.log(props);
+	// props.field.setValues({
+	// 	[`${props.variable}`]: props.defaultValue
+	// });
+	// }, []);
 
 	const handleSelectBlock = (value) => {
 		setValue(value);

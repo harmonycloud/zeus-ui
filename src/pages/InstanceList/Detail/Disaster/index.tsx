@@ -143,7 +143,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 									content:
 										'该操作不可逆，只允许切换一次，是否继续',
 									onOk: () => {
-										console.log('ok');
+										// console.log('ok');
 										const sendData = {
 											clusterId: clusterId,
 											namespace: namespace,
@@ -193,13 +193,16 @@ export default function Disaster(props: disasterProps): JSX.Element {
 						type="refresh"
 						size="xs"
 						style={{
-							color: '#0091FF',
+							color: '#0070cc',
 							marginLeft: 8,
 							cursor: 'pointer'
 						}}
 						onClick={() => {
 							setTimeout(() => {
-								onRefresh();
+								history.location.pathname ===
+								'/disasterBackup/disasterCenter'
+									? getData()
+									: onRefresh('disaster');
 							}, 1000);
 						}}
 					/>
@@ -241,7 +244,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 								size="xs"
 								style={{ color: '#C80000' }}
 							/>{' '}
-							{status[val]}
+							错误
 						</>
 					);
 				}
@@ -254,7 +257,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 	];
 	const toCreateBackup: () => void = () => {
 		history.push({
-			pathname: `/serviceList/mysqlCreate/${chartName}/${chartVersion}`,
+			pathname: `/serviceList/mysqlCreate/MySQL/${chartName}/${chartVersion}`,
 			state: { disasterOriginName: middlewareName }
 		});
 	};
@@ -320,7 +323,12 @@ export default function Disaster(props: disasterProps): JSX.Element {
 					<>
 						<DisasterOriginCard
 							originData={originData}
-							toBasicInfo={() => onRefresh('basicInfo')}
+							toBasicInfo={() => {
+								history.location.pathname ===
+								'/disasterBackup/disasterCenter'
+									? toDetail()
+									: onRefresh('basicInfo');
+							}}
 						/>
 						<DisasterBackupCardNone
 							toCreateBackup={toCreateBackup}

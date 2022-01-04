@@ -85,7 +85,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceList/mysqlCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
+					path="/serviceList/mysqlCreate/:aliasName/:chartName/:chartVersion/:middlewareName/:backupFileName"
 					component={MysqlCreate}
 					exact
 				/>
@@ -129,6 +129,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:name/:aliasName"
 					component={ServiceListByType}
+					exact
+				/>
+				<Route
+					path="/serviceList/createAlarm"
+					component={CreateAlarm}
 					exact
 				/>
 				{/* <Route

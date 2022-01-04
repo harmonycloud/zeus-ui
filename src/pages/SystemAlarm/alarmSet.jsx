@@ -115,7 +115,7 @@ function AlarmSet() {
 					...data
 				};
 			});
-			console.log(arrs);
+			// console.log(arrs);
 			setDing(arrs).then((res) => {
 				// console.log(res);
 				if (res.data) return;
@@ -228,7 +228,7 @@ function AlarmSet() {
 
 	return (
 		<div className="alarm-set">
-			{console.log(data, dingData)}
+			{/* {console.log(data, dingData)} */}
 			<div className="box">
 				<div className="box-header" onClick={() => setShow(!show)}>
 					<div className="header-img">

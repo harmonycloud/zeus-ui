@@ -433,7 +433,7 @@ function BackupSetting(props) {
 						{listData.type === 'mysql' && (
 							<Button
 								onClick={() => {
-									console.log(listData);
+									// console.log(listData);
 									if (!backupObj) {
 										Message.show(
 											messageConfig(

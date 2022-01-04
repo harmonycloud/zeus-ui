@@ -167,7 +167,7 @@ export default function ParamterLIst(props) {
 	};
 
 	const updateValue = (value, record) => {
-		console.log(value, record);
+		// console.log(value, record);
 		if (record.paramType === 'multiSelect') {
 			record.modifiedValue = value[record.name].join(',');
 		} else {

@@ -26,7 +26,7 @@ interface treeData {
 }
 function RolePermissions(props: RolePermissionProps): JSX.Element {
 	const { onCancel, onCreate, visible, data } = props;
-	console.log(data);
+	// console.log(data);
 	const [treeData, setTreeData] = useState<treeData[] | undefined>();
 	const [checkedKeys, setCheckedKeys] = useState<any | undefined[]>([]);
 	const [harfCheckedKeys, setHarfCheckedKeys] = useState<any | undefined[]>(
@@ -197,7 +197,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 						harfCheckedKeys.indexOf(String(item.id)) !== -1
 					) {
 						item.own = true;
-						console.log(item);
+						// console.log(item);
 					} else {
 						item.own = false;
 					}
@@ -206,7 +206,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 			delete sendData.createTime;
 			sendData.roleId = sendData.id;
 			updateRole(sendData).then((res) => {
-				console.log(res);
+				// console.log(res);
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '用户修改成功')

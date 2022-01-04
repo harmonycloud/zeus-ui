@@ -14,7 +14,7 @@ export default function Log(props) {
 	const location = useLocation();
 	const { pathname } = location;
 	const [selectedKey, setSelectedKey] = useState('realtime');
-	console.log(logging);
+	// console.log(logging);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
 	};

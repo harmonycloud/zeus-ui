@@ -113,7 +113,7 @@ export default function SlowLog(props) {
 		)}&endTime=${transTime.local2gmt2(
 			rangeTime[1]
 		)}&searchType=${searchType}&searchWord=${keyword}`;
-		console.log(url);
+		// console.log(url);
 		window.open(url);
 	};
 

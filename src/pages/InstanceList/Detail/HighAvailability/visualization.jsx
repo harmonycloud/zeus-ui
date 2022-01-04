@@ -1088,7 +1088,7 @@ function Visualization(props) {
 		graph.on('collapse-text:click', (e) => {
 			// console.log(e.target);
 			const { item } = e;
-			console.log(item, direction);
+			// console.log(item, direction);
 			const group = item.getContainer();
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'

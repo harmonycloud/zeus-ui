@@ -194,7 +194,9 @@ function Rules(props) {
 			<Button
 				type="primary"
 				onClick={() => {
-					history.push('/systemManagement/createAlarm');
+					alarmType === 'system'
+						? history.push('/systemManagement/createAlarm')
+						: history.push('/serviceList/createAlarm');
 					storage.setSession('alarm', props);
 				}}
 			>
@@ -332,7 +334,7 @@ function Rules(props) {
 			} else {
 				let tempData = null;
 				tempData = originData.filter((item) => {
-					console.log(item, selectedKeys[0]);
+					// console.log(item, selectedKeys[0]);
 					return item.silence === selectedKeys[0];
 				});
 				setDataSource(tempData);
@@ -346,7 +348,7 @@ function Rules(props) {
 			} else {
 				let tempData = null;
 				tempData = originData.filter((item) => {
-					console.log(item, selectedKeys[0]);
+					// console.log(item, selectedKeys[0]);
 					return item.name === selectedKeys[0];
 				});
 				setDataSource(tempData);
@@ -400,7 +402,7 @@ function Rules(props) {
 			onSort={onSort}
 			onFilter={onFilter}
 		>
-			{console.log(monitor)}
+			{/* {console.log(monitor)} */}
 			<Table.Column title="规则ID" dataIndex="alertId" />
 			<Table.Column
 				{...objFilter}

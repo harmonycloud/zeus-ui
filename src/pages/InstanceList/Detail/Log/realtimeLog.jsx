@@ -91,10 +91,10 @@ const RealtimeLog = (props) => {
 				socketUrl: `/terminal?terminalType=stdoutlog&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
 				socketMessage: (receive) => {
-					console.log(receive); //后端返回的数据，渲染页面
+					// console.log(receive); //后端返回的数据，渲染页面
 					// console.log(JSON.parse(receive.data).text);
 					let content = props.log + JSON.parse(receive.data).text;
-					console.log(content);
+					// console.log(content);
 					setRealLog(content);
 					// se/tLog(content);
 				},

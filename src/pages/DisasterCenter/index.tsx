@@ -19,8 +19,12 @@ import { connect } from 'react-redux';
 
 interface disasterCenterProps {
 	globalVar: globalVarProps;
+	setCluster: (value: any) => void;
+	setNamespace: (value: any) => void;
+	setRefreshCluster: (flag: boolean) => void;
 }
 function DisasterCenter(props: disasterCenterProps) {
+	const { setCluster, setNamespace, setRefreshCluster } = props;
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);

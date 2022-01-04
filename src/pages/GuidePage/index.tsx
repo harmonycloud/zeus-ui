@@ -16,12 +16,12 @@ interface GuideProps {
 	globalVar: globalVarProps;
 }
 const GuidePage = (props: GuideProps) => {
-	const [current, setCurrent] = useState<string>('0');
+	const [current, setCurrent] = useState<string>('1');
 	const { cluster, clusterList: globalClusterList } = props.globalVar;
 	const history = useHistory();
 	useEffect(() => {
 		if (globalClusterList.length === 0) {
-			setCurrent('0');
+			setCurrent('1');
 		} else {
 			getComponents({ clusterId: cluster.id }).then((res) => {
 				if (res.success) {
@@ -29,15 +29,15 @@ const GuidePage = (props: GuideProps) => {
 						(item: ComponentProp) =>
 							item.component === 'middleware-controller'
 					).status;
-					console.log(middlewareControllerStatus);
+					// console.log(middlewareControllerStatus);
 					if (middlewareControllerStatus === 3) {
-						setCurrent('2');
+						setCurrent('3');
 					} else {
-						setCurrent('1');
+						setCurrent('2');
 					}
 				} else {
 					Message.show(messageConfig('error', '失败', res));
-					setCurrent('1');
+					setCurrent('2');
 				}
 			});
 		}
@@ -119,7 +119,7 @@ const GuidePage = (props: GuideProps) => {
 									安装或接入资源池组件
 								</div>
 								<div
-									className="guide-page-line"
+									className="guide-page-line-2"
 									style={
 										current === '2' || current === '3'
 											? {

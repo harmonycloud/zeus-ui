@@ -26,7 +26,7 @@ export default class webSocket {
 
 	connection = () => {
 		let { socketUrl, timeout = 0 } = this.param;
-		console.log(window.location);
+		// console.log(window.location);
 		let url = '';
 		if (window.location.protocol.toLowerCase() === 'https:') {
 			url = `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
@@ -85,7 +85,7 @@ export default class webSocket {
 		let { socketMessage } = this.param;
 		socketMessage && socketMessage(msg);
 		// 打印出后端推得数据
-		console.log(msg);
+		// console.log(msg);
 	};
 
 	// 关闭连接触发

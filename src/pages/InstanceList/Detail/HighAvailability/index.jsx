@@ -541,7 +541,7 @@ export default function HighAvailability(props) {
 	};
 	// * 修改节点规格
 	const updateMid = (sendData) => {
-		console.log(sendData);
+		// console.log(sendData);
 		Dialog.show({
 			title: '操作确认',
 			content: '切换模式过程中可能会有闪断，请确认是否执行',

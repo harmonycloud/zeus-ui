@@ -314,7 +314,7 @@ function MysqlList(props) {
 		);
 	};
 	const toDetail = (record) => {
-		console.log(record);
+		// console.log(record);
 		if (!record.mysqlDTO.relationExist) {
 			Message.show(
 				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
