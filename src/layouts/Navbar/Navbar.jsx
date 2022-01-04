@@ -216,10 +216,6 @@ function Navbar(props) {
 		/**TODO 用户权限 */
 	}, [user]);
 
-	useEffect(() => {
-		console.log(111);
-	}, [personalization]);
-
 	return (
 		<div className={styles['middleware-navbar']} style={{ ...style }}>
 			<Nav

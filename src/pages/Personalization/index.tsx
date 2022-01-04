@@ -52,7 +52,7 @@ function Personlization(): JSX.Element {
 		getData();
 	}, []);
 
-	const getData = () => {
+	const getData = (flag?: boolean) => {
 		getPersonalConfig({}).then((res) => {
 			if (res.success) {
 				if (res.data) {
@@ -301,7 +301,7 @@ function Personlization(): JSX.Element {
 										'个性化设置成功'
 									)
 								);
-								getData();
+								window.location.reload();
 							}
 						});
 					}
@@ -313,7 +313,7 @@ function Personlization(): JSX.Element {
 						Message.show(
 							messageConfig('success', '成功', '个性化设置成功')
 						);
-						getData();
+						window.location.reload();
 					}
 				});
 			}

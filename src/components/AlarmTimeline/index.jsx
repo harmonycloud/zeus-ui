@@ -88,7 +88,14 @@ function AlarmTimeLine(props) {
 
 	const toDetail = (item) => {
 		const clusterTemp = JSON.parse(storage.getLocal('cluster'));
-		if (item.chartVersion) {
+		if (
+			!item.chartVersion ||
+			!item.type ||
+			!item.clusterId ||
+			!item.namespace
+		) {
+			return;
+		} else {
 			if (item.clusterId === clusterTemp.id) {
 				// * 非跨资源池群跳转
 				unAcross(item);
@@ -116,9 +123,12 @@ function AlarmTimeLine(props) {
 										</span>
 										<span
 											className={`time-line-title ${
-												item.chartVersion
-													? 'active'
-													: ''
+												!item.chartVersion ||
+												!item.type ||
+												!item.clusterId ||
+												!item.namespace
+													? ''
+													: 'active'
 											}`}
 											onClick={() => toDetail(item)}
 										>

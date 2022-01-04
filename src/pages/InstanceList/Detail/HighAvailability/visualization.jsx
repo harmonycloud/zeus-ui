@@ -424,7 +424,7 @@ function Visualization(props) {
 							attrs: {
 								text: !cfg.depth
 									? serverData.name
-									: 'IP: ' + cfg.podIp,
+									: 'IP: ' + (cfg.podIp ? cfg.podIp : ''),
 								x: 50,
 								y: !cfg.depth
 									? hasConfigBackup(cfg)
@@ -444,7 +444,11 @@ function Visualization(props) {
 						if (cfg.depth) {
 							group.addShape('text', {
 								attrs: {
-									text: cfg.podName,
+									text:
+										cfg.podName.length >= 22
+											? cfg.podName.substring(0, 22) +
+											  '...'
+											: cfg.podName,
 									x: 50,
 									y: hasConfigBackup(cfg) ? 40 : 50,
 									textBaseline: 'middle',
