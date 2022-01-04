@@ -198,7 +198,7 @@ function AlarmRecord(props) {
 				filterMode="single"
 				cell={levelRender}
 			/>
-			<Table.Column title="告警内容" dataIndex="content" />
+			<Table.Column title="告警内容" dataIndex="content" width={200} />
 			<Table.Column
 				title="告警对象"
 				dataIndex="clusterId"
