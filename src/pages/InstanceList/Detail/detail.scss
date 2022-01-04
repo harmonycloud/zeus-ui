@@ -126,13 +126,22 @@
 	line-height: 18px;
 }
 .updated-value{
+	display: inline-block;
+	max-width: 218px;
 	color: #C80000;
 	margin-right: 8px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 .before-update{
+	display: inline-block;
+	max-width: 218px;
 	color: $text-color-title;
 	margin-right: 8px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
+
 .parameter-content{
 	display: flex;
 	align-items: center;

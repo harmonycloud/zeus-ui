@@ -415,11 +415,31 @@ table.table-list tbody tr td {
   border-left: 1px solid #e3e4e6;
   margin-top: 12px;
 }
-.next-table td .next-table-cell-wrapper {
+/* .next-table td .next-table-cell-wrapper {
   overflow: auto !important;
   display: -webkit-box !important;
   -webkit-line-clamp: 5 !important;
   -webkit-box-orient: vertical !important;
+} */
+.mid-table-col {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.table-col-w146-h2{
+	width: 168px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+}
+.hidden {
+	width: auto;
+	position: absolute;
+	z-index: -999;
+	top: 0;
+	visibility: hidden;
+	opacity: 0;
 }
 .next-search.next-normal .next-after .next-btn-normal {
   min-width: 32px !important;

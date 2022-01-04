@@ -9,7 +9,8 @@ import {
 	Input,
 	Message,
 	Dialog,
-	Select
+	Select,
+	Balloon
 } from '@alicloud/console-components';
 import HeaderLayout from '@/components/HeaderLayout';
 import BalloonForm from '@/components/BalloonForm';
@@ -19,6 +20,7 @@ import { getConfigs, updateConfig } from '@/services/middleware';
 
 const { Option } = Select;
 const FormItem = Form.Item;
+const Tooltip = Balloon.Tooltip;
 const formItemLayout = {
 	labelCol: { fixedSpan: 0 },
 	wrapperCol: { span: 24 }
@@ -37,11 +39,6 @@ export default function ParamterLIst(props) {
 			(item) => item.value != item.modifiedValue
 		);
 		setShowDataSource(list);
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
 	}, [dataSource]);
 
 	useEffect(() => {
@@ -167,7 +164,6 @@ export default function ParamterLIst(props) {
 	};
 
 	const updateValue = (value, record) => {
-		// console.log(value, record);
 		if (record.paramType === 'multiSelect') {
 			record.modifiedValue = value[record.name].join(',');
 		} else {
@@ -189,6 +185,79 @@ export default function ParamterLIst(props) {
 		setDataSource(list);
 		setSubmitDisabled(judgeSubmit());
 		setVisible(false);
+	};
+	const descriptionRender = (value, index, record) => {
+		return (
+			<Tooltip
+				trigger={
+					<span
+						className="table-col-w146-h2"
+						onClick={() => {
+							const dialog = Dialog.show({
+								title: '参数描述',
+								content: (
+									<div
+										style={{
+											maxWidth: '560px',
+											lineHeight: '16px'
+										}}
+									>
+										{value}
+									</div>
+								),
+								footer: (
+									<Button
+										type="primary"
+										onClick={() => dialog.hide()}
+									>
+										确认
+									</Button>
+								)
+							});
+						}}
+					>
+						{value}
+					</span>
+				}
+				align="t"
+			>
+				{value}
+			</Tooltip>
+		);
+	};
+	const tooltipRender = (value, index, record, width) => {
+		const e1 = document.createElement('div');
+		e1.className = 'hidden';
+		e1.innerText = value;
+		document.body.appendChild(e1);
+		if (e1.clientWidth > width) {
+			document.body.removeChild(e1);
+			return (
+				<Tooltip
+					trigger={
+						<div
+							className="mid-table-col"
+							style={{ width: `${width - 32}px` }}
+						>
+							{value}
+						</div>
+					}
+					align="t"
+				>
+					<span style={{ lineHeight: '16px' }}>{value}</span>
+				</Tooltip>
+			);
+		} else {
+			document.body.removeChild(e1);
+			return (
+				<div
+					className="mid-table-col"
+					style={{ width: `${width - 32}px` }}
+				>
+					{value}
+				</div>
+			);
+		}
 	};
 
 	const valueRender = (value, index, record) => {
@@ -267,6 +336,7 @@ export default function ParamterLIst(props) {
 								name={record.name}
 								defaultValue={defaultSelects}
 								mode="multiple"
+								style={{ width: '268px' }}
 							>
 								{selectList &&
 									selectList.map((item) => {
@@ -327,39 +397,50 @@ export default function ParamterLIst(props) {
 				<Table
 					dataSource={checked ? showDataSource : dataSource}
 					hasBorder={false}
+					tableWidth={1270}
 				>
 					<Table.Column
 						title="参数名"
 						dataIndex="name"
-						width={280}
-						lock
+						width={210}
+						cell={(value, index, record) =>
+							tooltipRender(value, index, record, 210)
+						}
+						lock="left"
 					/>
 					<Table.Column
 						title="参数默认值"
 						dataIndex="defaultValue"
-						width={100}
+						width={210}
+						cell={(value, index, record) =>
+							tooltipRender(value, index, record, 210)
+						}
 					/>
 					<Table.Column
 						title="修改目标值"
 						dataIndex="modifiedValue"
 						cell={valueRender}
-						width={100}
+						width={250}
 					/>
 					<Table.Column
 						title="是否重启"
 						dataIndex="restart"
 						cell={isRestartRender}
-						width={80}
+						width={100}
 					/>
 					<Table.Column
 						title="参数值范围"
 						dataIndex="ranges"
-						width={500}
+						width={350}
+						cell={(value, index, record) =>
+							tooltipRender(value, index, record, 350)
+						}
 					/>
 					<Table.Column
 						title="参数描述"
 						dataIndex="description"
-						{...lock}
+						cell={descriptionRender}
+						// {...lock}
 						width={200}
 					/>
 				</Table>
