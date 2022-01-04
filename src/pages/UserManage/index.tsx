@@ -134,7 +134,7 @@ function UserManage(): JSX.Element {
 			const dsTemp = dataSource.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				console.log(result);
+				// console.log(result);
 				return order === 'asc'
 					? result > 0
 						? 1

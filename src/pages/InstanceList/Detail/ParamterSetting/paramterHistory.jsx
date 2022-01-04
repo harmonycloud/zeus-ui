@@ -27,7 +27,7 @@ export default function ParamterHistory(props) {
 		startTime = null,
 		endTime = null
 	) => {
-		console.log(startTime, endTime);
+		// console.log(startTime, endTime);
 		const sendData = {
 			clusterId,
 			namespace,
@@ -42,7 +42,7 @@ export default function ParamterHistory(props) {
 			sendData.endTime = moment(endTime).format('YYYY-MM-DDTHH:mm:ss[Z]');
 		}
 		getConfigHistory(sendData).then((res) => {
-			console.log(res);
+			// console.log(res);
 			if (res.success) {
 				setDataSource(res.data);
 			}

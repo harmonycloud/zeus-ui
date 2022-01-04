@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Breadcrumb } from '@alicloud/console-components';
+import storage from '@/utils/storage';
 import './breadcrumb.scss';
 
 import breadcrumbMap from './breadcrumbMap';
@@ -8,22 +9,25 @@ import breadcrumbMap from './breadcrumbMap';
 export default function MdBreadcrumb(props) {
 	const { pathname } = props;
 	const [pathList, setPathList] = useState([]);
-
 	// 根据整路由拿到可用分级路由
 	const getValidPathes = (pathname) => {
 		const arr = pathname.split('/');
 		const validPathes = arr.filter((i) =>
 			Object.keys(breadcrumbMap).includes(i)
 		);
-		// console.log(validPathes);
 		setPathList(validPathes);
 	};
 
 	// 获取当前级整路由
-	const getPath = (route) => {
+	const getPath = (route, i) => {
+		if (route === 'serviceList') {
+			return storage.getSession('menuPath') || '/';
+		}
 		if (route) {
-			let index = pathname.indexOf(route);
-			return pathname.substring(0, index) + route;
+			const arr = pathname.split('/');
+			arr.length = i === 0 ? 3 : i + 2;
+			const result = arr.join('/');
+			return result;
 		}
 		return '/';
 	};
@@ -46,7 +50,7 @@ export default function MdBreadcrumb(props) {
 						} else {
 							return (
 								<Breadcrumb.Item key={index}>
-									<Link to={getPath(item)}>
+									<Link to={getPath(item, index)}>
 										{breadcrumbMap[item]}
 									</Link>
 								</Breadcrumb.Item>

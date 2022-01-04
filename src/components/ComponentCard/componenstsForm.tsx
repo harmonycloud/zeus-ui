@@ -388,7 +388,7 @@ export const MinioRender = (props: any) => {
 	}, [head, mid, tail]);
 	useEffect(() => {
 		const cluster = JSON.parse(storage.getLocal('cluster'));
-		console.log(cluster);
+		// console.log(cluster);
 		if (cluster?.storage?.backup?.storage) {
 			const endpoint = cluster.storage.backup.storage.endpoint.split(':');
 			setHead(`${endpoint[0]}://`);

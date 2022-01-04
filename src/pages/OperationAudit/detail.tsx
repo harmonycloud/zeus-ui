@@ -108,7 +108,7 @@ const items2: IDataFieldsProps['items'] = [
 ];
 export default function OperationAuditDetail(): JSX.Element {
 	const history = useHistory();
-	console.log(history);
+	// console.log(history);
 	const {
 		location: { state }
 	} = history;

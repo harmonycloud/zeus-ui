@@ -29,7 +29,7 @@ const GuidePage = (props: GuideProps) => {
 						(item: ComponentProp) =>
 							item.component === 'middleware-controller'
 					).status;
-					console.log(middlewareControllerStatus);
+					// console.log(middlewareControllerStatus);
 					if (middlewareControllerStatus === 3) {
 						setCurrent('3');
 					} else {

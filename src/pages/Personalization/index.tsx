@@ -234,7 +234,7 @@ function Personlization(): JSX.Element {
 	};
 
 	const onSuccess = (type: string, info: any) => {
-		console.log(info);
+		// console.log(info);
 
 		if (info) {
 			Message.show(messageConfig('success', '成功', '图片上传成功'));

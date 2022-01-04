@@ -19,6 +19,7 @@ import { Icon } from '@alifd/next';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { StoreState, menuReduxProps } from '@/types/index';
 import './menu.scss';
+import storage from '@/utils/storage';
 
 const CustomIcon = Icon.createFromIconfontCN({
 	scriptUrl: '@/assets/iconfont'
@@ -26,6 +27,8 @@ const CustomIcon = Icon.createFromIconfontCN({
 
 const mapLocationToActiveKey = (location: Location) => {
 	const pathArray = location.pathname.split('/');
+	console.log(pathArray);
+	console.log(storage.getSession('menuPath'));
 	if (!location || !location.pathname || location.pathname === '/') {
 		return '/dataOverview';
 	} else if (pathArray.includes('middlewareRepository'))
@@ -34,6 +37,8 @@ const mapLocationToActiveKey = (location: Location) => {
 		return '/systemManagement/operationAudit';
 	else if (pathArray.includes('resourcePoolManagement'))
 		return '/systemManagement/resourcePoolManagement';
+	else if (pathArray.includes('serviceList'))
+		return storage.getSession('menuPath');
 	return location.pathname;
 };
 interface MenuProps {
@@ -52,8 +57,6 @@ function Menu(props: MenuProps): JSX.Element {
 	]);
 	const { clusterId, menu } = props;
 	useEffect(() => {
-		// if (props.clusterId !== '') {
-		// }
 		getMenus();
 	}, [clusterId]);
 	useEffect(() => {
@@ -61,6 +64,11 @@ function Menu(props: MenuProps): JSX.Element {
 			getMenus();
 		}
 	}, [menu]);
+	const onItemClick = (key: string) => {
+		if (key.includes('serviceList/')) {
+			storage.setSession('menuPath', key);
+		}
+	};
 	function renderAsLink({ key, label }: IItemDescriptor) {
 		return <Link to={`${key}`}>{label}</Link>;
 	}
@@ -156,6 +164,7 @@ function Menu(props: MenuProps): JSX.Element {
 						items={items}
 						defaultOpenKeys={defaultOpenKeys}
 						activeKey={mapLocationToActiveKey(location)}
+						onItemClick={onItemClick}
 					/>
 				)}
 			</Route>

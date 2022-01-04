@@ -143,7 +143,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 									content:
 										'该操作不可逆，只允许切换一次，是否继续',
 									onOk: () => {
-										console.log('ok');
+										// console.log('ok');
 										const sendData = {
 											clusterId: clusterId,
 											namespace: namespace,

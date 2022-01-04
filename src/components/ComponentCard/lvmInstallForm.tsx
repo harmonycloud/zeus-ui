@@ -39,7 +39,7 @@ const LvmInstallForm = (props: LvmInstallFormProps) => {
 	const field = Field.useField();
 	const onOk = () => {
 		field.validate((errors, values) => {
-			console.log(values);
+			// console.log(values);
 			if (errors) return;
 			const sendData = {
 				clusterId,

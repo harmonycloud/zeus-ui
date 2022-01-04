@@ -346,8 +346,6 @@ function BasicInfo(props) {
 						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`
 				});
-				console.log(data);
-
 			} else {
 				setBasicData({
 					title: '规格配置',

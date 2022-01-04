@@ -90,7 +90,7 @@ export default function Login() {
 						'https://mpaas.com/assets/images/bg-d2bf59ca.png'
 					);
 					if (res.data.rePassword) {
-						console.log(res.data.rePassword);
+						// console.log(res.data.rePassword);
 						setVisible(true);
 						setRePassword(res.data.rePassword);
 						setUserName(res.data.userName);

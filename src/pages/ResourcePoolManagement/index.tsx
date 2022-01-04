@@ -81,7 +81,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 		}
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		console.log(dataIndex, order);
+		// console.log(dataIndex, order);
 		if (dataIndex === 'attributes.createTime') {
 			const dsTemp = clusterList.sort((a, b) => {
 				const result =

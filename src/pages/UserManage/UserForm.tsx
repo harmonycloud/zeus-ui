@@ -61,7 +61,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 			if (data) {
 				// * 修改用户
 				updateUser(sendData).then((res) => {
-					console.log(res);
+					// console.log(res);
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户修改成功')
@@ -74,7 +74,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 			} else {
 				// * 创建用户
 				createUser(sendData).then((res) => {
-					console.log(res);
+					// console.log(res);
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户创建成功')

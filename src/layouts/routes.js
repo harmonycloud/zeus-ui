@@ -131,6 +131,11 @@ const Routes = withRouter((props) => {
 					component={ServiceListByType}
 					exact
 				/>
+				<Route
+					path="/serviceList/createAlarm"
+					component={CreateAlarm}
+					exact
+				/>
 				{/* <Route
 					path="/serviceList/issueService"
 					component={MiddlewareRepository}

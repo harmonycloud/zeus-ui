@@ -48,7 +48,7 @@ function DynamicForm(props) {
 			getDynamicFormData(sendData).then((res) => {
 				if (res.success) {
 					const formatData = processData(res.data.questions);
-					console.log(formatData);
+					// console.log(formatData);
 					setDataSource(formatData);
 					setCapabilities(res.data.capabilities);
 				} else {
@@ -176,7 +176,7 @@ function DynamicForm(props) {
 			}
 			// console.log(sendData);
 			postMiddleware(sendData).then((res) => {
-				console.log(res);
+				// console.log(res);
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '中间件创建成功')

@@ -32,7 +32,7 @@ export default function LogDetail(): JSX.Element {
 				type,
 				middlewareName: name
 			}).then((res) => {
-				console.log(res);
+				// console.log(res);
 				if (res.success) {
 					setIsService(true);
 					setData(res.data);
