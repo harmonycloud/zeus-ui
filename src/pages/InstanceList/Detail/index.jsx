@@ -3,6 +3,7 @@ import { Page } from '@alicloud/console-components-page';
 import { useHistory, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Button, Dialog, Message, Icon } from '@alicloud/console-components';
+import { Tab } from '@alicloud/console-components';
 import BasicInfo from './BasicInfo/index';
 import HighAvailability from './HighAvailability/index';
 import BackupRecovery from './BackupRecovery/index';
@@ -61,6 +62,11 @@ const InstanceDetails = (props) => {
 	const history = useHistory();
 	const location = useLocation();
 	const backKey = storage.getLocal('backKey');
+	const [activeKey, setActiveKey] = useState(
+		storage.getLocal('backKey') === ''
+			? 'basicInfo'
+			: storage.getLocal('backKey')
+	);
 
 	useEffect(() => {
 		if (
@@ -82,10 +88,9 @@ const InstanceDetails = (props) => {
 		// 		window.location.reload();
 		// 	}
 		// }
-		backKey && backKey === 'alarm' && setSelectedKey('alarm');
 		backKey &&
 			backKey.indexOf('backupRecovery') !== -1 &&
-			setSelectedKey('backupRecovery');
+			setActiveKey('backupRecovery');
 	}, []);
 
 	const menuSelect = (selectedKeys) => {
@@ -120,28 +125,28 @@ const InstanceDetails = (props) => {
 		setSelectedKey(key);
 	};
 
-	const DetailMenu = ({ selected, handleMenu }) => (
-		<Menu
-			id="mid-menu"
-			selectedKeys={selected}
-			onSelect={handleMenu}
-			direction="hoz"
-		>
-			<Menu.Item key="basicInfo">基本信息</Menu.Item>
-			<Menu.Item key="highAvailability">实例详情</Menu.Item>
-			{type === 'mysql' || type === 'elasticsearch' ? (
-				<Menu.Item key="backupRecovery">数据安全</Menu.Item>
-			) : null}
-			<Menu.Item key="externalAccess">服务暴露</Menu.Item>
-			<Menu.Item key="monitor">数据监控</Menu.Item>
-			<Menu.Item key="log">日志详情</Menu.Item>
-			<Menu.Item key="paramterSetting">参数设置</Menu.Item>
-			<Menu.Item key="alarm">服务告警</Menu.Item>
-			{type === 'mysql' ? (
-				<Menu.Item key="disaster">灾备服务</Menu.Item>
-			) : null}
-		</Menu>
-	);
+	// const DetailMenu = ({ selected, handleMenu }) => (
+	// 	<Menu
+	// 		id="mid-menu"
+	// 		selectedKeys={selected}
+	// 		onSelect={handleMenu}
+	// 		direction="hoz"
+	// 	>
+	// 		<Menu.Item key="basicInfo">基本信息</Menu.Item>
+	// 		<Menu.Item key="highAvailability">实例详情</Menu.Item>
+	// 		{type === 'mysql' || type === 'elasticsearch' ? (
+	// 			<Menu.Item key="backupRecovery">数据安全</Menu.Item>
+	// 		) : null}
+	// 		<Menu.Item key="externalAccess">服务暴露</Menu.Item>
+	// 		<Menu.Item key="monitor">数据监控</Menu.Item>
+	// 		<Menu.Item key="log">日志详情</Menu.Item>
+	// 		<Menu.Item key="paramterSetting">参数设置</Menu.Item>
+	// 		<Menu.Item key="alarm">服务告警</Menu.Item>
+	// 		{type === 'mysql' ? (
+	// 			<Menu.Item key="disaster">灾备服务</Menu.Item>
+	// 		) : null}
+	// 	</Menu>
+	// );
 
 	const childrenRender = (key) => {
 		switch (key) {
@@ -377,6 +382,15 @@ const InstanceDetails = (props) => {
 		}
 	};
 
+	const onChange = (key) => {
+		setActiveKey(key);
+		storage.setLocal('backKey', key);
+	};
+
+	useEffect(() => {
+		return () => storage.setLocal('backKey', '');
+	}, []);
+
 	return (
 		<Page>
 			<Page.Header
@@ -433,10 +447,48 @@ const InstanceDetails = (props) => {
 					/>
 				</div>
 			)}
-			<div style={{ padding: '0px 40px 15px 40px' }}>
+			{/* <div style={{ padding: '0px 40px 15px 40px' }}>
 				<DetailMenu selected={selectedKey} handleMenu={menuSelect} />
-			</div>
-			<Page.Content>{childrenRender(selectedKey)}</Page.Content>
+			</div> */}
+			<Page.Content>
+				<Tab
+					navStyle={{ marginBottom: '15px' }}
+					activeKey={activeKey}
+					onChange={onChange}
+				>
+					<Tab.Item title="基本信息" key="basicInfo">
+						{childrenRender('basicInfo')}
+					</Tab.Item>
+					<Tab.Item title="实例详情" key="highAvailability">
+						{childrenRender('highAvailability')}
+					</Tab.Item>
+					{type === 'mysql' || type === 'elasticsearch' ? (
+						<Tab.Item title="数据安全" key="backupRecovery">
+							{childrenRender('backupRecovery')}
+						</Tab.Item>
+					) : null}
+					<Tab.Item title="服务暴露" key="externalAccess">
+						{childrenRender('externalAccess')}
+					</Tab.Item>
+					<Tab.Item title="数据监控" key="monitor">
+						{childrenRender('monitor')}
+					</Tab.Item>
+					<Tab.Item title="日志详情" key="log">
+						{childrenRender('log')}
+					</Tab.Item>
+					<Tab.Item title="参数设置" key="paramterSetting">
+						{childrenRender('paramterSetting')}
+					</Tab.Item>
+					<Tab.Item title="服务告警" key="alarm">
+						{childrenRender('alarm')}
+					</Tab.Item>
+					{type === 'mysql' ? (
+						<Tab.Item title="灾备服务" key="disaster">
+							{childrenRender('disaster')}
+						</Tab.Item>
+					) : null}
+				</Tab>
+			</Page.Content>
 			<SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}

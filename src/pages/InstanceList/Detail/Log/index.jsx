@@ -22,7 +22,7 @@ export default function Log(props) {
 		<Menu
 			selectedKeys={selectedKey}
 			onItemClick={menuSelect}
-			style={{ height: '100%' }}
+			style={{ height: '100%', marginLeft: 0 }}
 		>
 			<Menu.Item key="realtime">实时日志</Menu.Item>
 			{!customMid && <Menu.Item key="standard">标准日志</Menu.Item>}
@@ -75,7 +75,10 @@ export default function Log(props) {
 	} else {
 		return (
 			<Page>
-				<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
+				<Content
+					menu={<ConsoleMenu />}
+					style={{ margin: 0, padding: 0 }}
+				>
 					{childrenRender(selectedKey)}
 				</Content>
 			</Page>

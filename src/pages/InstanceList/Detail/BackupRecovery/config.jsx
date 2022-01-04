@@ -426,7 +426,7 @@ export default function Config(props) {
 	};
 
 	return (
-		<div style={{ marginTop: 24 }}>
+		<div style={{ marginTop: 15 }}>
 			<Table
 				dataSource={backups}
 				exact

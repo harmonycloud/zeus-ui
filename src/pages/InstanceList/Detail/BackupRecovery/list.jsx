@@ -10,7 +10,7 @@ import UseBackupForm from './useBackupForm';
 import { useHistory } from 'react-router';
 import moment from 'moment';
 
-const {Tooltip} = Balloon;
+const { Tooltip } = Balloon;
 
 export default function List(props) {
 	const {
@@ -202,14 +202,23 @@ export default function List(props) {
 			return (
 				<Tooltip
 					trigger={
-						<div style={{overflow: 'hidden',textOverflow: 'ellipsis',whiteSpace: 'nowrap',width: '250px'}}>
+						<div
+							style={{
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap',
+								width: '250px'
+							}}
+						>
 							{value.join(';')}
 						</div>
 					}
 					align="t"
 				>
 					{value.map((item, index) => (
-						<p key={index} style={{margin: '3px 0'}}>{item}</p>
+						<p key={index} style={{ margin: '3px 0' }}>
+							{item}
+						</p>
 					))}
 				</Tooltip>
 			);
@@ -227,8 +236,8 @@ export default function List(props) {
 						? 1
 						: -1
 					: result > 0
-						? -1
-						: 1;
+					? -1
+					: 1;
 			});
 			setBackups([...tempDataSource]);
 		} else if (dataIndex === 'phrase') {
@@ -301,8 +310,8 @@ export default function List(props) {
 	};
 
 	return (
-		<div style={{ marginTop: 16 }}>
-			{storage.backup ? (
+		<div style={{ marginTop: 15 }}>
+			{storage && storage.backup ? (
 				<Table
 					dataSource={backups}
 					exact

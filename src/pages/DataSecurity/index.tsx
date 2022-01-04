@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SecondLayout from '@/components/SecondLayout';
 import BackupRecovery from '@/pages/InstanceList/Detail/BackupRecovery';
 import { getMiddlewareDetail } from '@/services/middleware';
@@ -6,6 +6,7 @@ import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
+import storage from '@/utils/storage';
 import { clusterType } from '@/types';
 
 export default function DataSecurity(): JSX.Element {
@@ -48,6 +49,11 @@ export default function DataSecurity(): JSX.Element {
 			该中间件类型不支持该功能，请选择mysql或者elasticsearch类型的中间件
 		</h3>
 	);
+
+	useEffect(() => {
+		return () => storage.setLocal('backKey', '');
+	}, []);
+
 	return (
 		<SecondLayout
 			title="数据安全"

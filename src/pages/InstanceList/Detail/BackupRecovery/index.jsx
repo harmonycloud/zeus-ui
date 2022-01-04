@@ -40,22 +40,24 @@ export default function BackupRecovery(props) {
 			<Menu
 				selectedKeys={selectedKey}
 				onItemClick={menuSelect}
-				style={{ height: '100%' }}
+				style={{ height: '100%', marginLeft: 0 }}
 			>
 				<Menu.Item key="list">备份记录</Menu.Item>
 				<Menu.Item key="config">备份规则</Menu.Item>
 			</Menu>
 		);
 	};
-	if (
-		!storage.backup ||
-		!storage.backup.storage ||
-		!storage.support ||
-		!storage.support['CSI-LVM']
-	) {
-		return (
-			<ComponentNull title="该功能所需要备份存储工具支持，您可前往“资源池——>平台组件进行安装" />
-		);
+	if (storage) {
+		if (
+			!storage.backup ||
+			!storage.backup.storage ||
+			!storage.support ||
+			!storage.support['CSI-LVM']
+		) {
+			return (
+				<ComponentNull title="该功能所需要备份存储工具支持，您可前往“资源池——>平台组件进行安装" />
+			);
+		}
 	}
 	if (customMid && !capabilities.includes('backup')) {
 		return <DefaultPicture />;
@@ -76,7 +78,10 @@ export default function BackupRecovery(props) {
 	} else {
 		return (
 			<Page>
-				<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
+				<Content
+					menu={<ConsoleMenu />}
+					style={{ margin: 0, padding: 0 }}
+				>
 					{childrenRender(selectedKey)}
 				</Content>
 			</Page>

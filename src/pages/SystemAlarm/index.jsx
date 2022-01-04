@@ -17,7 +17,6 @@ function SystemAlarm(props) {
 	);
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
-	const backKey = storage.getLocal('backKey');
 	const onChange = (key) => {
 		setActiveKey(key);
 		storage.setLocal('backKey', key);
