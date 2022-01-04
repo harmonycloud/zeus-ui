@@ -27,8 +27,6 @@ const CustomIcon = Icon.createFromIconfontCN({
 
 const mapLocationToActiveKey = (location: Location) => {
 	const pathArray = location.pathname.split('/');
-	console.log(pathArray);
-	console.log(storage.getSession('menuPath'));
 	if (!location || !location.pathname || location.pathname === '/') {
 		return '/dataOverview';
 	} else if (pathArray.includes('middlewareRepository'))
