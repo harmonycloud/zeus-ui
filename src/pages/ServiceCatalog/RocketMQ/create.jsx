@@ -247,7 +247,7 @@ const RocketMQCreate = (props) => {
 					sendData.dynamicValues = dynamicValues;
 				}
 				if (affinity.flag) {
-					if (affinity.label === '') {
+					if (!affinityLabels.length) {
 						Message.show(
 							messageConfig('error', '错误', '请选择主机亲和。')
 						);

@@ -20,7 +20,7 @@ export default {
 	monitorAlarm: '监控告警',
 	dataMonitor: '数据监控',
 	logDetail: '日志详情',
-	alarmCenter: '告警中心',
+	alarmCenter: '服务告警',
 	disasterBackup: '容灾备份',
 	disasterCenter: '灾备中心',
 	dataSecurity: '数据安全',

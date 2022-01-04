@@ -1,4 +1,15 @@
-.role-modal {
+.role-model{
+	width: 540px;
+	height: 430px;
+	.next-dialog-body{
+		height: 320px;
+		overflow-y: auto;
+		& > p {
+			line-height: 32px;
+		}
+	}
+}
+.role-key-modal {
 	width: 223px;
 	.next-dialog-body {
 		max-height: 200px;
