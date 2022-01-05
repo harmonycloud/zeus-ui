@@ -26,11 +26,13 @@ const RegistryNamespace = (props) => {
 		setDataSource(tempArr);
 	};
 	const onChange = (selectedRowKeys) => {
-		setPrimaryKeys(selectedRowKeys);
+		const array = Array.from(new Set([...primaryKeys, ...selectedRowKeys]));
+		console.log(array);
+		setPrimaryKeys(array);
 	};
 	const okHandle = () => {
 		let nsArray = [];
-		dataSource.forEach((namespace) => {
+		originDataSource.forEach((namespace) => {
 			primaryKeys.forEach((id) => {
 				if (id === namespace.id) {
 					nsArray.push(namespace.name);
