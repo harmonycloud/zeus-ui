@@ -11,6 +11,7 @@ import {
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
+import { nullRender } from '@/utils/utils';
 import {
 	serviceListItemProps,
 	serviceProps,
@@ -734,14 +735,16 @@ const ServiceListByType = (props: serviceListProps) => {
 							className="name-link"
 							onClick={() => toDetail(record)}
 						>
-							{record?.mysqlDTO?.relationName}
+							{record?.mysqlDTO?.relationName || '--'}
 						</div>
 						<div>
 							{record?.mysqlDTO?.relationAliasName ||
 								record?.mysqlDTO?.relationName}
 						</div>
 					</div>
-				) : null}
+				) : (
+					'--'
+				)}
 			</div>
 		);
 	};
@@ -844,6 +847,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						title="备注"
 						dataIndex="description"
 						width={200}
+						cell={nullRender}
 					/>
 					<Table.Column
 						title="关联服务名称/中文别名"

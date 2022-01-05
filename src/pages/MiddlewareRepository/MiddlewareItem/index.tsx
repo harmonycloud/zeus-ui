@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon, Balloon, Message, Dialog } from '@alicloud/console-components';
 import { useHistory } from 'react-router-dom';
 import { api } from '@/api.json';
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import { middlewareItemProps } from '../middleware';
 import CustomIcon from '@/components/CustomIcon';
 import { installMiddleware, unInstallMiddleware } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
+import { SendDataProps } from '@/components/OperatorInstallForm/index';
 import { StoreState } from '@/types/index';
 import { setMenuRefresh } from '@/redux/menu/menu';
+import OperatorInstallForm from '@/components/OperatorInstallForm/index';
 import './index.scss';
 
 const Tooltip = Balloon.Tooltip;
@@ -115,33 +117,32 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 	const toVersion = () => {
 		history.push(`/middlewareRepository/versionManagement/${chartName}`);
 	};
-	const install = () => {
-		const sendData = {
-			chartName,
-			chartVersion,
-			clusterId
-		};
-		Dialog.show({
-			title: '操作确认',
-			content: '请确认是否安装该中间件？',
-			onOk: () => {
-				installMiddleware(sendData).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								'中间件安装成功，5秒后刷新数据'
-							)
-						);
-						setMenuRefresh(true);
-						onRefresh();
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
+	const [installType, setInstallType] = useState();
+	const [visible, setVisible] = useState(false);
+
+	const install = (sendData: any) => {
+		// Dialog.show({
+		// 	title: '操作确认',
+		// 	content: '请确认是否安装该中间件？',
+		// 	onOk: () => {
+		installMiddleware(sendData).then((res) => {
+			if (res.success) {
+				Message.show(
+					messageConfig(
+						'success',
+						'成功',
+						'中间件安装成功，5秒后刷新数据'
+					)
+				);
+				setMenuRefresh(true);
+				setVisible(false);
+				onRefresh();
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
+		// }
+		// });
 	};
 	const unInstall = () => {
 		const sendData = {
@@ -236,7 +237,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 								</div>
 								<div
 									className="middleware-item-action-item-two"
-									onClick={install}
+									onClick={() => setVisible(true)}
 								>
 									<CustomIcon
 										type="icon-anzhuang"
@@ -323,6 +324,14 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			<div className="middleware-item-description" title={description}>
 				{description}
 			</div>
+			<OperatorInstallForm
+				visible={visible}
+				clusterId={clusterId}
+				chartName={chartName}
+				chartVersion={chartVersion}
+				onCreate={install}
+				onCancel={() => setVisible(false)}
+			/>
 		</div>
 	);
 }

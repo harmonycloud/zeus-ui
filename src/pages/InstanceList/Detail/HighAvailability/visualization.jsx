@@ -445,7 +445,7 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text:
-										cfg.podName.length >= 22
+										cfg.podName && cfg.podName.length >= 22
 											? cfg.podName.substring(0, 22) +
 											  '...'
 											: cfg.podName,
@@ -1242,7 +1242,7 @@ function Visualization(props) {
 				status: topoData.status,
 				children: [
 					{
-						adentify: serveRender(),
+						adentify: serveRender() || '未知',
 						level: 'serve',
 						children: pods
 					}

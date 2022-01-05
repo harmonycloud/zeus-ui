@@ -211,7 +211,7 @@ function UserManage(): JSX.Element {
 		);
 	};
 	const createTimeRender = (value: string) => {
-		if (!value) return '/';
+		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 	const Operation = {
@@ -274,7 +274,11 @@ function UserManage(): JSX.Element {
 						cell={createTimeRender}
 						sortable
 					/>
-					<Table.Column title="关联角色" dataIndex="roleName" />
+					<Table.Column
+						title="关联角色"
+						dataIndex="roleName"
+						cell={nullRender}
+					/>
 					<Table.Column
 						title="操作"
 						dataIndex="action"

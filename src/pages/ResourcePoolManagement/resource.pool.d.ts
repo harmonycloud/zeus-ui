@@ -57,6 +57,7 @@ export interface ComponentProp {
 	vgName: string | null;
 	size: number | null;
 	seconds: number;
+	chartName?: string;
 }
 
 export interface IngressItemProps {

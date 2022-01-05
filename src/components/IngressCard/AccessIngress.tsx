@@ -90,7 +90,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 	};
 	return (
 		<Dialog
-			title="接入服务暴露"
+			title={data ? '编辑服务暴露' : '接入服务暴露'}
 			style={{ width: 640 }}
 			visible={visible}
 			onCancel={onCancel}

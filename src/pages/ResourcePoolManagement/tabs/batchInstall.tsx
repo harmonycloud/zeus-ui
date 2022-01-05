@@ -6,6 +6,7 @@ import { getMiddlewareRepository } from '@/services/repository';
 import CustomIcon from '@/components/CustomIcon';
 import messageConfig from '@/components/messageConfig';
 import { mulInstallComponent } from '@/services/common';
+import { api } from '@/api.json';
 import { Item } from '@alicloud/console-components-console-menu';
 
 interface BatchInstallProps {
@@ -18,6 +19,8 @@ interface BatchInstallProps {
 interface ControllerItemProps {
 	chartName: string;
 	chartVersion: string;
+	status: number;
+	type?: string | null;
 }
 export enum labelSimple {
 	alertmanager = 'cpu：0.2核；内存：0.5G；存储：0G',
@@ -44,20 +47,22 @@ const BatchInstall = (props: BatchInstallProps) => {
 	);
 	const [controllers, setControllers] = useState<ControllerItemProps[]>([]);
 	const [controllerCheck, setControllerCheck] = useState<boolean>(false);
-	const [selectController, setSelectController] = useState<string[]>([]);
+	const [selectController, setSelectController] = useState<
+		ControllerItemProps[]
+	>([]);
 	useEffect(() => {
 		getMiddlewareRepository({ clusterId }).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
-					const list = res.data
-						.filter((item: any) => item.status === 2)
-						.map((item: any) => {
-							const result: ControllerItemProps = {
-								chartName: item.chartName,
-								chartVersion: item.chartVersion
-							};
-							return result;
-						});
+					const list = res.data.map((item: any) => {
+						const result: ControllerItemProps = {
+							chartName: item.chartName,
+							chartVersion: item.chartVersion,
+							status: item.status,
+							type: null
+						};
+						return result;
+					});
 					setControllers(list);
 				} else {
 					setControllers([]);
@@ -88,15 +93,23 @@ const BatchInstall = (props: BatchInstallProps) => {
 				}
 				return f;
 			});
-		const controllerList = selectController.map((item) => {
-			return controllers.find((i) => i.chartName === item);
-		});
+		const controllerList = controllers
+			.filter((i) => i.status === 2)
+			.map((f) => {
+				if (f.type === null) {
+					f.type = 'simple';
+				}
+				return {
+					chartName: f.chartName,
+					chartVersion: f.chartVersion,
+					type: f.type
+				};
+			});
 		const sendData = {
 			clusterId,
 			clusterComponentsDtoList: componentList,
 			middlewareInfoDTOList: controllerList
 		};
-		// console.log(sendData);
 		mulInstallComponent(sendData).then((res) => {
 			if (res.success) {
 				Message.show(
@@ -109,24 +122,24 @@ const BatchInstall = (props: BatchInstallProps) => {
 			}
 		});
 	};
-	const onChange = (value: string[]) => {
-		setSelectController(value);
-		if (value.length === controllers.length) {
-			setControllerCheck(true);
-		} else {
-			setControllerCheck(false);
-		}
-	};
-	const allControllerSelect = (checked: boolean) => {
-		setControllerCheck(checked);
-		if (checked) {
-			setSelectController(
-				controllers.map((item: ControllerItemProps) => item.chartName)
-			);
-		} else {
-			setSelectController([]);
-		}
-	};
+	// const onChange = (value: string[]) => {
+	// 	setSelectController(value);
+	// 	if (value.length === controllers.length) {
+	// 		setControllerCheck(true);
+	// 	} else {
+	// 		setControllerCheck(false);
+	// 	}
+	// };
+	// const allControllerSelect = (checked: boolean) => {
+	// 	setControllerCheck(checked);
+	// 	if (checked) {
+	// 		setSelectController(
+	// 			controllers.map((item: ControllerItemProps) => item.chartName)
+	// 		);
+	// 	} else {
+	// 		setSelectController([]);
+	// 	}
+	// };
 	const componentChange = (
 		value: string | number | boolean,
 		record: ComponentProp
@@ -138,6 +151,18 @@ const BatchInstall = (props: BatchInstallProps) => {
 			return item;
 		});
 		setData(listTemp);
+	};
+	const operatorChange = (
+		value: string | number | boolean,
+		record: ControllerItemProps
+	) => {
+		const listTemp = controllers.map((item) => {
+			if (item.chartName === record.chartName) {
+				item.type = value as string;
+			}
+			return item;
+		});
+		setSelectController(listTemp);
 	};
 	return (
 		<Dialog
@@ -258,40 +283,98 @@ const BatchInstall = (props: BatchInstallProps) => {
 				style={{ marginTop: 24 }}
 			>
 				<div className="batch-install-name">中间件控制器</div>
-				<div>
+				{/* <div>
 					<Checkbox
 						label="全选"
 						checked={controllerCheck}
 						onChange={allControllerSelect}
 					/>
-				</div>
+				</div> */}
 			</div>
 			{controllers.length === 0 && (
 				<p style={{ textAlign: 'center' }}>无可安装的中间件控制器</p>
 			)}
 			<div style={{ height: 'auto' }}>
-				<CheckboxGroup
+				{/* <CheckboxGroup
 					value={selectController}
 					onChange={onChange}
 					style={{ width: '100%' }}
-				>
-					{controllers.map(
-						(item: ControllerItemProps, index: number) => {
-							return (
-								<Checkbox
-									key={index}
-									value={item.chartName}
-									style={{
-										display: 'inline-block',
-										width: '31%'
-									}}
+				> */}
+				{controllers.map((item: ControllerItemProps, index: number) => {
+					return (
+						// <Checkbox
+						// 	key={index}
+						// 	value={item.chartName}
+						// 	style={{
+						// 		display: 'inline-block',
+						// 		width: '31%'
+						// 	}}
+						// >
+						// 	{item.chartName}|{item.chartVersion}
+						// </Checkbox>
+						<div
+							className="batch-install-component-item"
+							key={item.chartName}
+						>
+							<div className="batch-install-component-title">
+								<div
+									className="batch-install-component-title-icon operator"
+									style={
+										{
+											// backgroundColor: color[item.component]
+										}
+									}
 								>
-									{item.chartName}|{item.chartVersion}
-								</Checkbox>
-							);
-						}
-					)}
-				</CheckboxGroup>
+									<img
+										height={30}
+										width={30}
+										src={`${api}/images/middleware/${item.chartName}-${item.chartVersion}.svg`}
+									/>
+								</div>
+								<div className="batch-install-component-title-info">
+									<div className="batch-install-component-title-name">
+										{item.chartName +
+											' | ' +
+											item.chartVersion}
+									</div>
+									{item.status === 1 ? (
+										<div
+											className="batch-install-component-status-tag"
+											style={{
+												backgroundColor: '#F6FFED',
+												color: '#52C41A'
+											}}
+										>
+											已安装
+										</div>
+									) : null}
+								</div>
+							</div>
+							<div>
+								<RadioGroup
+									defaultValue={'simple'}
+									disabled={item.status === 1}
+									onChange={(
+										value: string | number | boolean
+									) => operatorChange(value, item)}
+								>
+									<Radio
+										id="simple"
+										value="simple"
+										label={`单实例版`}
+									/>
+									<br />
+									<Radio
+										id="high"
+										value="high"
+										label={`高实例版`}
+									/>
+								</RadioGroup>
+							</div>
+						</div>
+					);
+				})}
+				{/* </CheckboxGroup> */}
 			</div>
 		</Dialog>
 	);

@@ -310,7 +310,7 @@ export const timeRender = (value: string, index: number, record: any) => {
 export const nullRender: (value: string | null) => string = (
 	value: string | null
 ) => {
-	return value || '-';
+	return value || '--';
 };
 // * 蓝字显示
 export const nameRender = (value: string, index: number, record: any) => {

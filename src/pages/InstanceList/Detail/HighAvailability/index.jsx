@@ -544,7 +544,7 @@ export default function HighAvailability(props) {
 		// console.log(sendData);
 		Dialog.show({
 			title: '操作确认',
-			content: '切换模式过程中可能会有闪断，请确认是否执行',
+			content: '实例规格修改后将导致服务重启，是否继续？',
 			onOk: () => {
 				setVisible(false);
 				setEsVisible(false);

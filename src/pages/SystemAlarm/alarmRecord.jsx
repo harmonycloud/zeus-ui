@@ -3,6 +3,7 @@ import Table from '@/components/MidTable';
 import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
 import ComponentsNull from '@/components/ComponentsNull';
+import { nullRender } from '@/utils/utils';
 import { getClusters } from '@/services/common.js';
 
 const alarmWarn = [
@@ -189,7 +190,12 @@ function AlarmRecord(props) {
 			onSort={onSort}
 			onFilter={onFilter}
 		>
-			<Table.Column title="告警ID" dataIndex="alertId" width={100} />
+			<Table.Column
+				title="告警ID"
+				dataIndex="alertId"
+				width={100}
+				cell={nullRender}
+			/>
 			<Table.Column
 				title="告警等级"
 				dataIndex="level"
@@ -198,14 +204,24 @@ function AlarmRecord(props) {
 				filterMode="single"
 				cell={levelRender}
 			/>
-			<Table.Column title="告警内容" dataIndex="content" width={200} />
+			<Table.Column
+				title="告警内容"
+				dataIndex="content"
+				width={200}
+				cell={nullRender}
+			/>
 			<Table.Column
 				title="告警对象"
 				dataIndex="clusterId"
 				cell={nameRender}
 				{...objFilter}
 			/>
-			<Table.Column title="规则描述" dataIndex="expr" width={160} />
+			<Table.Column
+				title="规则描述"
+				dataIndex="expr"
+				width={160}
+				cell={nullRender}
+			/>
 			<Table.Column title="实际监测" dataIndex="summary" />
 			<Table.Column
 				title="告警时间"

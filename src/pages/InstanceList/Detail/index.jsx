@@ -78,9 +78,11 @@ const InstanceDetails = (props) => {
 	}, [globalVar]);
 
 	useEffect(() => {
+		setActiveKey(currentTab);
 		if (location.query) {
 			let { query } = location;
-			setSelectedKey(query.key);
+			// setSelectedKey(query.key);
+			storage.setLocal('backKey', query.key);
 		}
 		// * 强制刷新
 		// if (location.state) {
@@ -122,7 +124,8 @@ const InstanceDetails = (props) => {
 
 	const refresh = (key = selectedKey) => {
 		getData(globalVar.cluster.id, globalVar.namespace.name);
-		setSelectedKey(key);
+		// setSelectedKey(key);
+		setActiveKey(key);
 	};
 
 	// const DetailMenu = ({ selected, handleMenu }) => (
@@ -296,7 +299,8 @@ const InstanceDetails = (props) => {
 				flag: true
 			}
 		});
-		setSelectedKey('basicInfo');
+		// setSelectedKey('basicInfo');
+		setActiveKey('basicInfo');
 	};
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
@@ -327,7 +331,8 @@ const InstanceDetails = (props) => {
 				}
 			}
 		});
-		setSelectedKey('basicInfo');
+		// setSelectedKey('basicInfo');
+		setActiveKey('basicInfo');
 	};
 	const SecondConfirm = (props) => {
 		const { visible, onCancel } = props;
@@ -419,7 +424,7 @@ const InstanceDetails = (props) => {
 				}
 			>
 				<Button
-					onClick={() => refresh(selectedKey)}
+					onClick={() => refresh(storage.getLocal('backKey'))}
 					style={{ padding: '0 9px', marginRight: '8px' }}
 				>
 					<Icon type="refresh" />

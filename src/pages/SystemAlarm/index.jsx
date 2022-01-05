@@ -38,15 +38,15 @@ function SystemAlarm(props) {
 							monitor={globalCluster.monitor}
 						/>
 					</Tab.Item>
-					<Tab.Item title="规则中心" key="highAvailability">
+					<Tab.Item title="规则中心" key="alarm">
 						<ServerAlarm
 							alarmType={'system'}
 							clusterId={globalCluster.id}
 							monitor={globalCluster.monitor}
 						/>
 					</Tab.Item>
-					<Tab.Item title="告警设置" key="externalAccess">
-						<AlarmSet />
+					<Tab.Item title="告警设置" key="alarmSet">
+						<AlarmSet activeKey={activeKey} />
 					</Tab.Item>
 				</Tab>
 			</Content>

@@ -30,7 +30,7 @@ const formItemLayout = {
 	}
 };
 
-function AlarmSet() {
+function AlarmSet(props) {
 	const field = Field.useField();
 	const dingField = Field.useField();
 	const [btnStatus, setBtnStatus] = useState(true);
@@ -44,11 +44,14 @@ function AlarmSet() {
 	const [dingConnect, setDingConnect] = useState();
 	const [show, setShow] = useState(true);
 	const [dingShow, setDingShow] = useState(true);
+	const { activeKey } = props;
 
 	useEffect(() => {
-		getDingData();
-		getMailInfoData();
-	}, []);
+		if (activeKey === 'alarmSet') {
+			getDingData();
+			getMailInfoData();
+		}
+	}, [activeKey]);
 
 	const getDingData = () => {
 		getDing().then((res) => {

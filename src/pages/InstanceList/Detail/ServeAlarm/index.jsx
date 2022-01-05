@@ -8,6 +8,7 @@ import { getClusters } from '@/services/common.js';
 import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
 import messageConfig from '@/components/messageConfig';
+import { nullRender } from '@/utils/utils';
 import {
 	deleteAlarm,
 	deleteAlarms,
@@ -71,7 +72,7 @@ function Rules(props) {
 	};
 
 	const createTimeRender = (value) => {
-		if (!value) return '/';
+		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 
@@ -421,16 +422,22 @@ function Rules(props) {
 				filters={alarmWarn}
 				filterMode="single"
 				cell={levelRender}
-				width={110}
+				width={120}
 			/>
 			<Table.Column
 				title="告警间隔"
 				dataIndex="silence"
 				filters={silences}
 				filterMode="single"
-				width={110}
+				cell={nullRender}
+				width={120}
 			/>
-			<Table.Column title="告警内容" dataIndex="content" width={110} />
+			<Table.Column
+				title="告警内容"
+				dataIndex="content"
+				width={110}
+				cell={nullRender}
+			/>
 			<Table.Column
 				title="创建时间"
 				dataIndex="createTime"
