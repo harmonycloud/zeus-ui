@@ -7,7 +7,6 @@ import CustomIcon from '@/components/CustomIcon';
 import messageConfig from '@/components/messageConfig';
 import { mulInstallComponent } from '@/services/common';
 import { api } from '@/api.json';
-import { Item } from '@alicloud/console-components-console-menu';
 
 interface BatchInstallProps {
 	visible: boolean;
@@ -20,7 +19,7 @@ interface ControllerItemProps {
 	chartName: string;
 	chartVersion: string;
 	status: number;
-	type?: string | null;
+	type?: any;
 }
 export enum labelSimple {
 	alertmanager = 'cpu：0.2核；内存：0.5G；存储：0G',
@@ -59,7 +58,7 @@ const BatchInstall = (props: BatchInstallProps) => {
 							chartName: item.chartName,
 							chartVersion: item.chartVersion,
 							status: item.status,
-							type: null
+							type: item.replicas > 1 ? 'high' : 'simple'
 						};
 						return result;
 					});
@@ -352,8 +351,8 @@ const BatchInstall = (props: BatchInstallProps) => {
 							</div>
 							<div>
 								<RadioGroup
-									defaultValue={'simple'}
-									disabled={item.status === 1}
+									defaultValue={item.type}
+									disabled={item.status !== 2}
 									onChange={(
 										value: string | number | boolean
 									) => operatorChange(value, item)}

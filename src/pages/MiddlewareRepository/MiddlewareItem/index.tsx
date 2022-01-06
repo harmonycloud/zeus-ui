@@ -8,7 +8,6 @@ import CustomIcon from '@/components/CustomIcon';
 import { installMiddleware, unInstallMiddleware } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
-import { SendDataProps } from '@/components/OperatorInstallForm/index';
 import { StoreState } from '@/types/index';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import OperatorInstallForm from '@/components/OperatorInstallForm/index';
@@ -110,7 +109,8 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 		onRefresh,
 		version,
 		setMenuRefresh,
-		menu
+		menu,
+		replicas
 	} = props;
 	const history = useHistory();
 	// console.log(setMenuRefresh, menu);
@@ -289,6 +289,11 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 						) : null}
 					</div>
 				)}
+				<div className="middleware-item-type">
+					<span className="middleware-item-type-text">
+						{replicas && replicas > 1 ? '高' : '单'}
+					</span>
+				</div>
 			</div>
 			<div
 				className="middleware-item-title"
