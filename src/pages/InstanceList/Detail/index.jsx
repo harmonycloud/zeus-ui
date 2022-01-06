@@ -93,6 +93,7 @@ const InstanceDetails = (props) => {
 		backKey &&
 			backKey.indexOf('backupRecovery') !== -1 &&
 			setActiveKey('backupRecovery');
+		backKey && backKey === 'alarm' && setActiveKey('alarm');
 	}, []);
 
 	const menuSelect = (selectedKeys) => {
@@ -126,6 +127,7 @@ const InstanceDetails = (props) => {
 		getData(globalVar.cluster.id, globalVar.namespace.name);
 		// setSelectedKey(key);
 		setActiveKey(key);
+		storage.setLocal('backKey', 'basicInfo');
 	};
 
 	// const DetailMenu = ({ selected, handleMenu }) => (
@@ -301,6 +303,7 @@ const InstanceDetails = (props) => {
 		});
 		// setSelectedKey('basicInfo');
 		setActiveKey('basicInfo');
+		storage.setLocal('backKey', 'basicInfo');
 	};
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
@@ -424,7 +427,9 @@ const InstanceDetails = (props) => {
 				}
 			>
 				<Button
-					onClick={() => refresh(storage.getLocal('backKey'))}
+					onClick={() =>
+						refresh(storage.getLocal('backKey') || 'basicInfo')
+					}
 					style={{ padding: '0 9px', marginRight: '8px' }}
 				>
 					<Icon type="refresh" />

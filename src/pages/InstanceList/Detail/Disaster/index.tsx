@@ -283,7 +283,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				});
 			}
 		});
-		onRefresh();
+		typeof getData === 'function' ? getData() : onRefresh('disaster');
 	};
 	return (
 		<div>
