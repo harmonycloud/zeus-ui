@@ -137,6 +137,9 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
   top: 35px;
   height: 60%;
 }
+.next-tabs-content{
+  overflow: visible;
+}
 /* .next-timeline-item-has-left-content{
 	min-height: 100px;
 }

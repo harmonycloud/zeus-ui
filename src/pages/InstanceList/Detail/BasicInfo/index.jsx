@@ -67,7 +67,12 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'hostAffinity',
-		label: '主机亲和'
+		label: '主机亲和',
+		render: (val) => (
+			<div className="annotation-content" title={val}>
+				{val}
+			</div>
+		)
 	},
 	{
 		dataIndex: 'annotations',
@@ -567,7 +572,7 @@ function BasicInfo(props) {
 		if (kind) sendData.kind = kind === 'All' ? '' : kind;
 		let res = await getMiddlewareEvents(sendData);
 		if (res.success) {
-			setEventList(res);
+			setEventList(res.data);
 		}
 	};
 

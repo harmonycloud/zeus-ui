@@ -445,9 +445,13 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text:
-										cfg.podName && cfg.podName.length >= 22
-											? cfg.podName.substring(0, 22) +
-											  '...'
+										cfg.podName && cfg.podName.length >= 25
+											? cfg.podName.substring(0, 15) +
+											  '...' +
+											  cfg.podName.substring(
+													cfg.podName.length - 6,
+													cfg.podName.length
+											  )
 											: cfg.podName,
 									x: 50,
 									y: hasConfigBackup(cfg) ? 40 : 50,

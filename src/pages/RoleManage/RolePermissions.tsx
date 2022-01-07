@@ -246,7 +246,7 @@ function RolePermissions(props: RolePermissionProps): JSX.Element {
 					dataSource={treeData}
 				/>
 			</div>
-			<p>资源池权限分配：</p>
+			<p style={{ marginTop: '16px' }}>资源池权限分配：</p>
 			<Loading tip="加载中，请稍后" size="medium" visible={loading}>
 				<div className="role-management-content">
 					<div className="role-management-cluster">

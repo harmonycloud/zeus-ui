@@ -127,7 +127,7 @@ const InstanceDetails = (props) => {
 		getData(globalVar.cluster.id, globalVar.namespace.name);
 		// setSelectedKey(key);
 		setActiveKey(key);
-		storage.setLocal('backKey', 'basicInfo');
+		// storage.setLocal('backKey', 'basicInfo');
 	};
 
 	// const DetailMenu = ({ selected, handleMenu }) => (
