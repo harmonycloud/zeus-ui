@@ -607,6 +607,7 @@ const Overview = () => {
 						title="状态"
 						dataIndex="status"
 						cell={statusRender}
+						filterMode="single"
 						filters={[
 							{ label: '成功', value: 'True' },
 							{ label: '失败', value: 'False' }

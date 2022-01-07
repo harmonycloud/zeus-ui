@@ -9,6 +9,7 @@ import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
+import { symbols } from './create';
 import {
 	deleteAlarm,
 	deleteAlarms,
@@ -207,7 +208,13 @@ function Rules(props) {
 	};
 
 	const ruleRender = (value, index, record) =>
-		`${record.description}${record.symbol}${record.threshold}%且${record.alertTime}分钟内触发${record.alertTimes}次`;
+		`${record.description}${
+			symbols.find((item) => item.value === record.symbol)
+				? symbols.find((item) => item.value === record.symbol).label
+				: ''
+		}${record.threshold}%且${record.alertTime || ''}分钟内触发${
+			record.alertTimes || ''
+		}次`;
 
 	const levelRender = (value, index, record) => {
 		return (
@@ -403,7 +410,6 @@ function Rules(props) {
 			onSort={onSort}
 			onFilter={onFilter}
 		>
-			{/* {console.log(monitor)} */}
 			<Table.Column title="规则ID" dataIndex="alertId" />
 			<Table.Column
 				{...objFilter}

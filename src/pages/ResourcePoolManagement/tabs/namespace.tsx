@@ -151,7 +151,7 @@ const Namespace = (props: NamespaceProps) => {
 		index: number,
 		record: NamespaceResourceProps
 	) => {
-		return record.registered ? (
+		return record.registered && record.middlewareReplicas ? (
 			<Tooltip trigger={<Switch checked={value} />} align="l">
 				本资源分区已发布中间件服务，使用中，不可关闭
 			</Tooltip>

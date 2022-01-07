@@ -29,7 +29,14 @@ import './index.scss';
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { Tooltip } = Balloon;
-const symbols = ['>=', '>', '==', '<', '<=', '!='];
+export const symbols = [
+	{ value: '>=', label: '≥' },
+	{ value: '>', label: '>' },
+	{ value: '==', label: '=' },
+	{ value: '<', label: '<' },
+	{ value: '<=', label: '≤' },
+	{ value: '!=', label: '≠' }
+];
 const silences = [
 	{ value: '5m', label: '5分钟' },
 	{ value: '10m', label: '10分钟' },
@@ -784,10 +791,10 @@ function CreateAlarm(props) {
 												{symbols.map((i) => {
 													return (
 														<Option
-															key={i}
-															value={i}
+															key={i.value}
+															value={i.value}
 														>
-															{i}
+															{i.label}
 														</Option>
 													);
 												})}
