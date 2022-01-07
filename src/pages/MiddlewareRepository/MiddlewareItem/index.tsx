@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Icon, Balloon, Message, Dialog } from '@alicloud/console-components';
 import { useHistory } from 'react-router-dom';
 import { api } from '@/api.json';
-import { connect, useStore } from 'react-redux';
+import { connect } from 'react-redux';
 import { middlewareItemProps } from '../middleware';
 import CustomIcon from '@/components/CustomIcon';
 import { installMiddleware, unInstallMiddleware } from '@/services/repository';

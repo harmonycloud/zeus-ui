@@ -13,6 +13,7 @@ interface AddNamespaceProps {
 	visible: boolean;
 	onCancel: () => void;
 	clusterId: string;
+	onRefresh: () => void;
 }
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -25,7 +26,7 @@ const formItemLayout = {
 };
 
 const AddNamespace = (props: AddNamespaceProps) => {
-	const { visible, onCancel, clusterId } = props;
+	const { visible, onCancel, clusterId, onRefresh } = props;
 	const field = Field.useField();
 	const onOk = () => {
 		field.validate((errors, values) => {
@@ -36,6 +37,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 						messageConfig('success', '成功', '资源分区创建成功')
 					);
 					onCancel();
+					onRefresh();
 				} else {
 					field.setError('name', res.errorMsg);
 				}

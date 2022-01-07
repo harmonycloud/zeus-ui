@@ -10,13 +10,15 @@ import ComponentCard from '@/components/ComponentCard';
 import BatchInstall from './batchInstall';
 import { connect } from 'react-redux';
 import { setRefreshCluster } from '@/redux/globalVar/var';
+import { setMenuRefresh } from '@/redux/menu/menu';
 
 interface ComponentProps {
 	setRefreshCluster: (flag: boolean) => void;
+	setMenuRefresh: (flag: boolean) => void;
 }
 
 const Component = (props: ComponentProps) => {
-	const { setRefreshCluster } = props;
+	const { setRefreshCluster, setMenuRefresh } = props;
 	const { id, nickname }: paramsProps = useParams();
 	const [components, setComponents] = useState<ComponentProp[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -40,6 +42,7 @@ const Component = (props: ComponentProps) => {
 			if (res.success) {
 				setComponents(res.data);
 				setRefreshCluster(true);
+				setMenuRefresh(true);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -85,5 +88,6 @@ const Component = (props: ComponentProps) => {
 	);
 };
 export default connect(() => ({}), {
-	setRefreshCluster
+	setRefreshCluster,
+	setMenuRefresh
 })(Component);
