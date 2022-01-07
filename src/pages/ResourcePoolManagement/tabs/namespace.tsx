@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import { Button, Message, Switch, Balloon } from '@alicloud/console-components';
 import Confirm from '@alicloud/console-components-confirm';
+import { connect } from 'react-redux';
 import {
 	getNamespaces,
 	deleteNamespace,
@@ -13,9 +14,13 @@ import { NamespaceResourceProps } from '../resource.pool';
 import { paramsProps } from '../detail';
 import { nullRender } from '@/utils/utils';
 import AddNamespace from './addNamespace';
-
+import { setRefreshCluster } from '@/redux/globalVar/var';
+interface NamespaceProps {
+	setRefreshCluster: (flag: boolean) => void;
+}
 const Tooltip = Balloon.Tooltip;
-const Namespace = () => {
+const Namespace = (props: NamespaceProps) => {
+	const { setRefreshCluster } = props;
 	const [dataSource, setDataSource] = useState<NamespaceResourceProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
@@ -135,6 +140,7 @@ const Namespace = () => {
 					return item;
 				});
 				setDataSource(list);
+				setRefreshCluster(true);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -279,4 +285,6 @@ const Namespace = () => {
 		</div>
 	);
 };
-export default Namespace;
+export default connect(() => ({}), {
+	setRefreshCluster
+})(Namespace);
