@@ -161,7 +161,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton
+				{/* <LinkButton
 					onClick={() => {
 						history.push(
 							`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
@@ -173,7 +173,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 					}}
 				>
 					服务暴露
-				</LinkButton>
+				</LinkButton> */}
 				{/* <LinkButton
 					onClick={() => {
 						setNamespaceVisible(true);
