@@ -187,6 +187,7 @@ const Namespace = () => {
 										'资源分区删除成功'
 									)
 								);
+								getData();
 							} else {
 								Message.show(
 									messageConfig('error', '失败', res)
@@ -272,6 +273,7 @@ const Namespace = () => {
 					visible={visible}
 					onCancel={() => setVisible(false)}
 					clusterId={id}
+					onRefresh={getData}
 				/>
 			)}
 		</div>
