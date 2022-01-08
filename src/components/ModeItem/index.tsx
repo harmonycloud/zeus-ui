@@ -21,7 +21,7 @@ export interface modeItemProps {
 }
 const ModeItem = (props: modeItemProps) => {
 	const { data, clusterId, namespace, type, onChange } = props;
-	// const [num, setNum] = useState<number>(data.num);
+	console.log(data);
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -64,7 +64,7 @@ const ModeItem = (props: modeItemProps) => {
 							}}
 							onBlur={() => setIsEdit(false)}
 							autoFocus={true}
-							min={1}
+							min={data.title === '主节点' ? 3 : 1}
 							className="mode-item-number-input"
 						/>
 					) : (
