@@ -7,6 +7,7 @@ import ServerAlarm from '@/pages/InstanceList/Detail/ServeAlarm';
 import './index.scss';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
+import GuidePage from '../GuidePage';
 
 const { Menu } = Page;
 function SystemAlarm(props) {
@@ -25,7 +26,12 @@ function SystemAlarm(props) {
 	useEffect(() => {
 		return () => storage.setLocal('backKey', '');
 	}, []);
-
+	if (
+		JSON.stringify(globalCluster) === '{}' &&
+		JSON.stringify(globalNamespace) === '{}'
+	) {
+		return <GuidePage />;
+	}
 	return (
 		<Page className="system-alarm">
 			<Header title="系统告警" subTitle="系统相关告警展示及设置" />

@@ -134,9 +134,7 @@ const GuidePage = (props: GuideProps) => {
 								平台运行需要依赖各类组件。
 								<span
 									className={
-										current === '1' ||
-										current === '2' ||
-										current === '3'
+										current === '2' || current === '3'
 											? 'name-link'
 											: 'name-disabled-link'
 									}
