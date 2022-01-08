@@ -543,3 +543,9 @@ table.table-list tbody tr td {
   font-weight: normal;
   text-transform: none;
 }
+.text-overflow {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+
+}

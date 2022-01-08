@@ -730,14 +730,14 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				) : null}
 				{record?.mysqlDTO?.isSource !== null ? (
-					<div>
+					<div style={{ maxWidth: '160px' }}>
 						<div
-							className="name-link"
+							className="name-link text-overflow"
 							onClick={() => toDetail(record)}
 						>
 							{record?.mysqlDTO?.relationName || '--'}
 						</div>
-						<div>
+						<div className="text-overflow">
 							{record?.mysqlDTO?.relationAliasName ||
 								record?.mysqlDTO?.relationName}
 						</div>
@@ -765,9 +765,9 @@ const ServiceListByType = (props: serviceListProps) => {
 						<div className="gray-circle">备</div>
 					) : null
 				) : null}
-				<div>
+				<div style={{ maxWidth: '160px' }}>
 					<div
-						className="name-link"
+						className="name-link text-overflow"
 						onClick={() => {
 							history.push(
 								`/serviceList/basicInfo/${record.name}/${record.type}/${record.chartVersion}`
@@ -776,7 +776,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					>
 						{record.name}
 					</div>
-					<div>{record.aliasName}</div>
+					<div className="text-overflow">{record.aliasName}</div>
 				</div>
 			</div>
 		);
@@ -846,7 +846,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					<Table.Column
 						title="备注"
 						dataIndex="description"
-						width={200}
 						cell={nullRender}
 					/>
 					<Table.Column

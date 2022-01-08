@@ -50,6 +50,7 @@
 		}
 	}
 	.disaster-card-info{
+		width: 100%;
 		padding: 24px 32px 0px;
 		& li{
 			height: 18px;
@@ -58,8 +59,15 @@
 			color: #333333;
 			line-height: 18px;
 			margin-bottom: 16px;
+			display: flex;
 			& label{
 				margin-right: 8px;
+			}
+			& span {
+				max-width: 185px;
+				overflow: hidden;
+				white-space:nowrap;
+				text-overflow:ellipsis;
 			}
 		}
 	}
