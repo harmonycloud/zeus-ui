@@ -16,6 +16,15 @@ interface AddNamespaceProps {
 	onRefresh: () => void;
 }
 const FormItem = Form.Item;
+const formItemLayout = {
+	labelCol: {
+		span: 10
+	},
+	wrapperCol: {
+		span: 14
+	}
+};
+
 const AddNamespace = (props: AddNamespaceProps) => {
 	const { visible, onCancel, clusterId, onRefresh } = props;
 	const field = Field.useField();
@@ -43,7 +52,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 			onOk={onOk}
 			onClose={onCancel}
 		>
-			<Form field={field} labelAlign="top">
+			<Form field={field} {...formItemLayout}>
 				<FormItem label="资源分区英文名:" required>
 					<Input id="name" name="name" />
 				</FormItem>
