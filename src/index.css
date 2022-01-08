@@ -137,8 +137,19 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
   top: 35px;
   height: 60%;
 }
-.next-tabs-content{
-  overflow: visible;
+.next-tabs {
+    box-sizing: border-box;
+    width: 100%;
+	height: 100%;
+}
+.next-tabs-tabpane.active {
+    visibility: visible;
+    opacity: 1;
+    height: 100%;
+}
+.next-tabs-content {
+	overflow: visible;
+	height: 100%;
 }
 /* .next-timeline-item-has-left-content{
 	min-height: 100px;
@@ -531,4 +542,10 @@ table.table-list tbody tr td {
   font-style: normal;
   font-weight: normal;
   text-transform: none;
+}
+.text-overflow {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+
 }

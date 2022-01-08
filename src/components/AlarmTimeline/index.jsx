@@ -6,7 +6,11 @@ import transTime from '@/utils/transTime';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
 import { getNamespaces } from '@/services/common';
-import { setCluster, setNamespace } from '@/redux/globalVar/var';
+import {
+	setCluster,
+	setNamespace,
+	setRefreshCluster
+} from '@/redux/globalVar/var';
 
 /*
 	params
@@ -17,7 +21,14 @@ import { setCluster, setNamespace } from '@/redux/globalVar/var';
 */
 const Tooltip = Balloon.Tooltip;
 function AlarmTimeLine(props) {
-	const { style = {}, list = [], clusters = [], type = 'default' } = props;
+	const {
+		style = {},
+		list = [],
+		clusters = [],
+		type = 'default',
+		setCluster,
+		setNamespace
+	} = props;
 	const [data, setData] = useState(list);
 	const history = useHistory();
 	// props变化时修改list值
@@ -51,11 +62,9 @@ function AlarmTimeLine(props) {
 					if (n.name === item.namespace) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
+						setRefreshCluster(true);
 						history.push({
 							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
-							// state: {
-							// 	flag: true
-							// }
 						});
 					}
 				});
@@ -74,11 +83,9 @@ function AlarmTimeLine(props) {
 					if (n.name === item.namespace) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
+						setRefreshCluster(true);
 						history.push({
 							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
-							// state: {
-							// 	flag: true
-							// }
 						});
 					}
 				});
@@ -192,5 +199,6 @@ function AlarmTimeLine(props) {
 }
 export default connect(() => ({}), {
 	setCluster,
-	setNamespace
+	setNamespace,
+	setRefreshCluster
 })(AlarmTimeLine);

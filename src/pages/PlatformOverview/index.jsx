@@ -23,11 +23,6 @@ import {
 	getServers
 } from '@/services/platformOverview';
 import AlarmTimeLine from '@/components/AlarmTimeline';
-import {
-	setCluster,
-	setNamespace,
-	setRefreshCluster
-} from '@/redux/globalVar/var';
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
 import * as echarts from 'echarts/core';
@@ -54,7 +49,7 @@ const radioList = [
 ];
 const Tooltip = Balloon.Tooltip;
 
-function PlatformOverview(props) {
+function PlatformOverview() {
 	let x = [];
 
 	// 设置事件数据
@@ -117,8 +112,16 @@ function PlatformOverview(props) {
 			setOperatorList(list);
 			setAuditList(res.data.auditList);
 			setPieOption(getPieOption(res.data.operatorDTO));
-			setLineOption(getLineOption({ ...res.data.alertSummary, x: res.data.alertSummary.infoList }));
-			setAlertSummary({ ...res.data.alertSummary, x: res.data.alertSummary.infoList });
+			setLineOption(
+				getLineOption({
+					...res.data.alertSummary,
+					x: res.data.alertSummary.infoList
+				})
+			);
+			setAlertSummary({
+				...res.data.alertSummary,
+				x: res.data.alertSummary.infoList
+			});
 			chart.setOption(getPieOption(res.data.operatorDTO));
 
 			chart.on('legendselectchanged', (obj) => {
@@ -185,13 +188,28 @@ function PlatformOverview(props) {
 		};
 		switch (value) {
 			case 'info':
-				setLineOption(getLineOption({ infoList: alertSummary.infoList, x: alertSummary.x }));
+				setLineOption(
+					getLineOption({
+						infoList: alertSummary.infoList,
+						x: alertSummary.x
+					})
+				);
 				break;
 			case 'warning':
-				setLineOption(getLineOption({ warningList: alertSummary.warningList, x: alertSummary.x }));
+				setLineOption(
+					getLineOption({
+						warningList: alertSummary.warningList,
+						x: alertSummary.x
+					})
+				);
 				break;
 			case 'critical':
-				setLineOption(getLineOption({ criticalList: alertSummary.criticalList, x: alertSummary.x }));
+				setLineOption(
+					getLineOption({
+						criticalList: alertSummary.criticalList,
+						x: alertSummary.x
+					})
+				);
 				break;
 			default:
 				setLineOption(getLineOption(alertSummary));
@@ -325,10 +343,20 @@ function PlatformOverview(props) {
 												{totalData.cpuUsedPercent}
 											</span>
 											<Progress
-												percent={Number(totalData.cpuUsedPercent.replace('%',''))}
+												percent={Number(
+													totalData.cpuUsedPercent.replace(
+														'%',
+														''
+													)
+												)}
 											/>
 											<span>
-												{totalData.usedCpu.toFixed(0) + '/' + totalData.totalCpu.toFixed(0) +'核'}
+												{totalData.usedCpu.toFixed(0) +
+													'/' +
+													totalData.totalCpu.toFixed(
+														0
+													) +
+													'核'}
 											</span>
 										</div>
 										<span className="type">
@@ -355,10 +383,22 @@ function PlatformOverview(props) {
 												{totalData.memoryUsedPercent}
 											</span>
 											<Progress
-												percent={Number(totalData.memoryUsedPercent.replace('%',''))}
+												percent={Number(
+													totalData.memoryUsedPercent.replace(
+														'%',
+														''
+													)
+												)}
 											/>
 											<span>
-												{totalData.usedMemory.toFixed(0) + '/' +totalData.totalMemory.toFixed(0) + 'GB'}
+												{totalData.usedMemory.toFixed(
+													0
+												) +
+													'/' +
+													totalData.totalMemory.toFixed(
+														0
+													) +
+													'GB'}
 											</span>
 										</div>
 										<span className="type">
@@ -387,13 +427,26 @@ function PlatformOverview(props) {
 														<div
 															className="info-item"
 															onClick={() => {
-																if (type === 'all') return;
-																history.push(
-																	`/serviceList/${item.name}/${item.name.charAt(0).toUpperCase() + item.name.slice(1)}`
+																if (
+																	type ===
+																	'all'
 																)
-															}
-
-															}
+																	return;
+																history.push(
+																	`/serviceList/${
+																		item.name
+																	}/${
+																		item.name
+																			.charAt(
+																				0
+																			)
+																			.toUpperCase() +
+																		item.name.slice(
+																			1
+																		)
+																	}`
+																);
+															}}
 														>
 															<div className="info-img">
 																<img
@@ -402,7 +455,7 @@ function PlatformOverview(props) {
 																	src={`${api}/images/middleware/${item.imagePath}`}
 																/>
 																{item.errServiceNum !==
-																	0 ? (
+																0 ? (
 																	<Tooltip
 																		trigger={
 																			<span className="err-count">
@@ -421,13 +474,17 @@ function PlatformOverview(props) {
 																{item.name}
 															</p>
 															<p className="info-count">
-																<span>服务数 </span>
+																<span>
+																	服务数{' '}
+																</span>
 																<span
 																	className={
 																		'total-count'
 																	}
 																>
-																	{item.serviceNum}
+																	{
+																		item.serviceNum
+																	}
 																</span>
 															</p>
 														</div>
@@ -517,7 +574,7 @@ function PlatformOverview(props) {
 																style={{
 																	color:
 																		value ===
-																			1
+																		1
 																			? '#00A700'
 																			: '#C80000',
 																	marginRight:
@@ -657,8 +714,4 @@ function PlatformOverview(props) {
 		</Page>
 	);
 }
-export default connect(({ globalVar }) => ({ globalVar }), {
-	setCluster,
-	setNamespace,
-	setRefreshCluster
-})(PlatformOverview);
+export default connect(({ globalVar }) => ({ globalVar }))(PlatformOverview);

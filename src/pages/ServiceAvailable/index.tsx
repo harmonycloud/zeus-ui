@@ -28,6 +28,7 @@ import { getIngresses, deleteIngress, addIngress } from '@/services/ingress';
 import AddServiceAvailableForm from './AddServiceAvailableForm';
 import storage from '@/utils/storage';
 import { getList } from '@/services/serviceList';
+import GuidePage from '../GuidePage';
 
 interface stateProps {
 	middlewareName: string;
@@ -115,7 +116,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		return () => {
 			mounted = false;
 		};
-
 	}, [namespace]);
 	useEffect(() => {
 		const allList: serviceAvailableItemProps[] = [];
@@ -543,6 +543,12 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	) => {
 		return `${value}/${record.ingressClassName || '-'}`;
 	};
+	if (
+		JSON.stringify(cluster) === '{}' &&
+		JSON.stringify(namespace) === '{}'
+	) {
+		return <GuidePage />;
+	}
 	return (
 		<Page>
 			<Header

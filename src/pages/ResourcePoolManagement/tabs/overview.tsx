@@ -199,9 +199,9 @@ const Overview = () => {
 		record: MiddlewareResourceProps
 	) => {
 		return (
-			<div>
-				<div className="name-link">{record.name}</div>
-				<div>{record.aliasName}</div>
+			<div style={{ maxWidth: '160px' }}>
+				<div className="name-link text-overflow">{record.name}</div>
+				<div className="text-overflow">{record.aliasName}</div>
 			</div>
 		);
 	};
@@ -520,7 +520,7 @@ const Overview = () => {
 									title="服务名称/中文别名"
 									dataIndex="name"
 									cell={nameRender}
-									width={200}
+									width={180}
 								/>
 							)}
 							{tableType === 'cpu' && (

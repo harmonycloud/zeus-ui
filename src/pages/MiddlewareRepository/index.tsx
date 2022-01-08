@@ -10,6 +10,7 @@ import timerClass from '@/utils/timerClass';
 import messageConfig from '@/components/messageConfig';
 import MiddlewareItem from './MiddlewareItem';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
+import GuidePage from '../GuidePage';
 import { changeObjectIndex } from '@/utils/utils';
 import './index.scss';
 
@@ -27,6 +28,8 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [timer, setTimer] = useState();
 	const location = useLocation();
+	console.log(cluster);
+	console.log(namespace);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -114,6 +117,12 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			}, 5)
 		);
 	};
+	if (
+		JSON.stringify(cluster) === '{}' &&
+		JSON.stringify(namespace) === '{}'
+	) {
+		return <GuidePage />;
+	}
 	return (
 		<Page>
 			<Header
