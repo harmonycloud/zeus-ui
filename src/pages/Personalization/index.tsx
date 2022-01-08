@@ -31,6 +31,21 @@ const formItemLayout = {
 	}
 };
 
+const base = [
+	{
+		key: 'jpg',
+		value: 'jpeg'
+	},
+	{
+		key: 'svg',
+		value: 'svg+xml'
+	},
+	{
+		key: 'png',
+		value: 'png'
+	}
+];
+
 function Personlization(): JSX.Element {
 	const history = useHistory();
 	const field: Field = Field.useField();
@@ -47,156 +62,101 @@ function Personlization(): JSX.Element {
 	const [backgroundValue, setBackgroundValue] = useState<any>();
 	const [loginValue, setLoginValue] = useState<any>();
 	const [homeValue, setHomeValue] = useState<any>();
+	const upload1: any = createRef();
+	const upload2: any = createRef();
+	const upload3: any = createRef();
 
 	useEffect(() => {
 		getData();
 	}, []);
 
 	const getData = (flag?: boolean) => {
-		getPersonalConfig({}).then((res) => {
+		getPersonalConfig().then((res) => {
+			console.log(res);
 			if (res.success) {
-				if (res.data) {
-					setData(res.data);
-					setStatus(res.data.status);
-					storage.setLocal('personalization', res.data);
-					field.setValues(res.data);
-					res.data.backgroundPath
-						? setBackgroundValue([
-								{
-									name: 'background.svg',
-									state: 'done',
-									size: 1024,
-									downloadURL:
-										api +
-										'/images/middleware/' +
-										res.data.backgroundPath,
-									fileURL:
-										api +
-										'/images/middleware/' +
-										res.data.backgroundPath,
-									imgURL:
-										api +
-										'/images/middleware/' +
-										res.data.backgroundPath
-								}
-						  ])
-						: setBackgroundValue([
-								{
-									name: 'background.svg',
-									state: 'done',
-									size: 1024,
-									downloadURL: background,
-									fileURL: background,
-									imgURL: background
-								}
-						  ]);
-					res.data.loginLogoPath
-						? setLoginValue([
-								{
-									name: 'login.svg',
-									state: 'done',
-									size: 1024,
-									downloadURL:
-										api +
-										'/images/middleware/' +
-										res.data.loginLogoPath,
-									fileURL:
-										api +
-										'/images/middleware/' +
-										res.data.loginLogoPath,
-									imgURL:
-										api +
-										'/images/middleware/' +
-										res.data.loginLogoPath
-								}
-						  ])
-						: setLoginValue([
-								{
-									name: 'login.svg',
-									state: 'done',
-									size: 1024,
-									downloadURL: logo,
-									fileURL: logo,
-									imgURL: logo
-								}
-						  ]);
-					res.data.homeLogoPath
-						? setHomeValue([
-								{
-									name: 'home.svg',
-									state: 'done',
-									size: 1024,
-									downloadURL:
-										api +
-										'/images/middleware/' +
-										res.data.homeLogoPath,
-									fileURL:
-										api +
-										'/images/middleware/' +
-										res.data.homeLogoPath,
-									imgURL:
-										api +
-										'/images/middleware/' +
-										res.data.homeLogoPath
-								}
-						  ])
-						: setHomeValue([
-								{
-									name: 'home.svg',
-									state: 'done',
-									size: 1024,
-									downloadURL: homeLogo,
-									fileURL: homeLogo,
-									imgURL: homeLogo
-								}
-						  ]);
-					document.title =
-						res.data && res.data.title ? res.data.title : 'Zeus';
-				} else {
-					field.setValues({
-						status: '0',
-						title: 'Zeus',
-						slogan: '我是Slogan，让IT更美好',
-						copyrightNotice:
-							'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
-						platformName: 'Zeus | 中间件管理一体化平台'
-					});
-					storage.setLocal('personalization', '');
-					setBackgroundValue([
-						{
-							name: 'background.svg',
-							state: 'done',
-							size: 1024,
-							downloadURL: background,
-							fileURL: background,
-							imgURL: background
-						}
-					]);
-					setLoginValue([
-						{
-							name: 'login.svg',
-							state: 'done',
-							size: 1024,
-							url: logo
-						}
-					]);
-					setHomeValue([
-						{
-							name: 'home.svg',
-							state: 'done',
-							size: 1024,
-							downloadURL: homeLogo,
-							fileURL: homeLogo,
-							imgURL: homeLogo
-						}
-					]);
-				}
+				// if (res.data) {
+				setData(res.data);
+				setStatus(res.data.status);
+				storage.setLocal('personalization', res.data);
+				field.setValues({ ...res.data, status: '0' });
+				setStatus('0');
+				setBackgroundValue([
+					{
+						name: 'background.svg',
+						state: 'done',
+						size: 1024,
+						downloadURL: res.data.backgroundImage,
+						fileURL: res.data.backgroundImage,
+						imgURL: res.data.backgroundImage
+					}
+				]);
+				setLoginValue([
+					{
+						name: 'loginlogo.svg',
+						state: 'done',
+						size: 1024,
+						downloadURL: res.data.loginLogo,
+						fileURL: res.data.loginLogo,
+						imgURL: res.data.loginLogo
+					}
+				]);
+				setHomeValue([
+					{
+						name: 'home.svg',
+						state: 'done',
+						size: 1024,
+						downloadURL: res.data.homeLogo,
+						fileURL: res.data.homeLogo,
+						imgURL: res.data.homeLogo
+					}
+				]);
+				document.title =
+					res.data && res.data.title ? res.data.title : 'Zeus';
+				// } else {
+				// 	field.setValues({
+				// 		status: '0',
+				// 		title: 'Zeus',
+				// 		slogan: '我是Slogan，让IT更美好',
+				// 		copyrightNotice:
+				// 			'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.',
+				// 		platformName: 'Zeus | 中间件管理一体化平台'
+				// 	});
+				// 	storage.setLocal('personalization', '');
+				// 	setBackgroundValue([
+				// 		{
+				// 			name: 'background.svg',
+				// 			state: 'done',
+				// 			size: 1024,
+				// 			downloadURL: background,
+				// 			fileURL: background,
+				// 			imgURL: background
+				// 		}
+				// 	]);
+				// 	setLoginValue([
+				// 		{
+				// 			name: 'login.svg',
+				// 			state: 'done',
+				// 			size: 1024,
+				// 			url: logo
+				// 		}
+				// 	]);
+				// 	setHomeValue([
+				// 		{
+				// 			name: 'home.svg',
+				// 			state: 'done',
+				// 			size: 1024,
+				// 			downloadURL: homeLogo,
+				// 			fileURL: homeLogo,
+				// 			imgURL: homeLogo
+				// 		}
+				// 	]);
+				// }
 			}
 		});
 	};
 
 	const beforeUpload = (info: any) => {
-		// console.log(info);
+		console.log(info);
 
 		if (info.size / 1024 / 1024 > 2) {
 			Message.show(messageConfig('warning', '图片过大，请重新上传'));
@@ -233,11 +193,10 @@ function Personlization(): JSX.Element {
 		}
 	};
 
-	const onSuccess = (type: string, info: any) => {
-		// console.log(info);
-
+	const onSuccess = (type = '', info: any) => {
+		console.log(info);
+		Message.show(messageConfig('success', '成功', '图片上传成功'));
 		if (info) {
-			Message.show(messageConfig('success', '成功', '图片上传成功'));
 			if (type === 'background') {
 				setBackgroundValue([
 					{
@@ -246,9 +205,14 @@ function Personlization(): JSX.Element {
 						size: info.size,
 						downloadURL: api + '/images/middleware/' + info.name,
 						fileURL: api + '/images/middleware/' + info.name,
-						imgURL: api + '/images/middleware/' + info.name
+						imgURL: info.imgURL
+						// imgURL: api + '/images/middleware/' + info.name
 					}
 				]);
+				storage.setLocal('personalization', {
+					...storage.getLocal('personalization'),
+					backgroundImage: info.imgURL
+				});
 			} else if (type === 'home') {
 				setHomeValue([
 					{
@@ -257,24 +221,40 @@ function Personlization(): JSX.Element {
 						size: info.size,
 						downloadURL: api + '/images/middleware/' + info.name,
 						fileURL: api + '/images/middleware/' + info.name,
-						imgURL: api + '/images/middleware/' + info.name
+						// imgURL: api + '/images/middleware/' + info.name
+						imgURL: info.imgURL
 					}
 				]);
+				storage.setLocal('personalization', {
+					...storage.getLocal('personalization'),
+					homeLogo: info.imgURL
+				});
 			} else {
 				setLoginValue([
 					{
 						name: info.name,
 						state: 'done',
 						size: info.size,
-						url: api + '/images/middleware/' + info.name
+						// url: api + '/images/middleware/' + info.name
+						imgURL: info.imgURL
 					}
 				]);
 			}
+			storage.setLocal('personalization', {
+				...storage.getLocal('personalization'),
+				loginLogo: info.imgURL
+			});
 			setImgRule(false);
 		}
 	};
 
 	const onSubmit = () => {
+		// console.log(upload1.current);
+		// const uploaderRef1 = upload1.current.getInstance();
+		// const uploaderRef2 = upload2?.current?.getInstance();
+		// const uploaderRef3 = upload3?.current?.getInstance();
+		// console.log(upload1, upload1.current, uploaderRef1);
+
 		field.validate((errors, values: any) => {
 			if (errors || bgSelect || homeSelect || loginSelect || imgRule)
 				return;
@@ -284,6 +264,10 @@ function Personlization(): JSX.Element {
 			delete values.backgroundImage;
 			delete values.loginLogo;
 			delete values.homeLogo;
+			values.backgroundImage =
+				storage.getLocal('personalization').backgroundImage;
+			values.loginLogo = storage.getLocal('personalization').loginLogo;
+			values.homeLogo = storage.getLocal('personalization').homeLogo;
 
 			if (values.status === '1') {
 				values.status = 'init';
@@ -292,6 +276,9 @@ function Personlization(): JSX.Element {
 					content:
 						'您之前所有自定义已做修改的地方将恢复至出厂状态，是否继续？',
 					onOk: () => {
+						// uploaderRef1 && uploaderRef1.startUpload();
+						// uploaderRef2 && uploaderRef2.startUpload();
+						// uploaderRef3 && uploaderRef3.startUpload();
 						personalized(values).then((res) => {
 							if (res.success) {
 								Message.show(
@@ -308,6 +295,9 @@ function Personlization(): JSX.Element {
 				});
 			} else {
 				values.status = '';
+				// uploaderRef1 && uploaderRef1.startUpload();
+				// uploaderRef2 && uploaderRef2.startUpload();
+				// uploaderRef3 && uploaderRef3.startUpload();
 				personalized(values).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -318,6 +308,10 @@ function Personlization(): JSX.Element {
 				});
 			}
 		});
+	};
+
+	const onChange = (info: any) => {
+		console.log(info);
 	};
 
 	return (
@@ -345,6 +339,8 @@ function Personlization(): JSX.Element {
 							action={`${api}/user/uploadFile?type=background`}
 							accept="image/svg,image/jpg,image/png,.svg"
 							limit={1}
+							// name="backgroundPath"
+							// fileKeyName='file'
 							useDataURL={true}
 							headers={headers}
 							beforeUpload={beforeUpload}
@@ -354,6 +350,10 @@ function Personlization(): JSX.Element {
 									? setBgSelect(true)
 									: setBgSelect(false);
 							}}
+							// onSuccess={onSuccess}
+							// autoUpload={false}
+							// onChange={onChange}
+							// ref={upload1}
 							onSuccess={(info) => onSuccess('background', info)}
 							value={backgroundValue}
 						>
@@ -382,6 +382,7 @@ function Personlization(): JSX.Element {
 							limit={1}
 							useDataURL={true}
 							headers={headers}
+							// name="loginLogoPath"
 							beforeUpload={logoBeforeUpload}
 							onSuccess={(info) => onSuccess('login', info)}
 							onChange={(value) => {
@@ -389,6 +390,9 @@ function Personlization(): JSX.Element {
 									? setLoginSelect(true)
 									: setLoginSelect(false);
 							}}
+							// ref={upload2}
+							// autoUpload={false}
+							// onChange={onChange}
 							value={loginValue}
 						>
 							<Button>
@@ -448,6 +452,7 @@ function Personlization(): JSX.Element {
 							headers={headers}
 							useDataURL={true}
 							limit={1}
+							// name="homeLogoPath"
 							beforeUpload={logoBeforeUpload}
 							onSuccess={(info) => onSuccess('home', info)}
 							onChange={(value) => {
@@ -455,6 +460,9 @@ function Personlization(): JSX.Element {
 									? setHomeSelect(true)
 									: setHomeSelect(false);
 							}}
+							// ref={upload3}
+							// autoUpload={false}
+							// onChange={onChange}
 							value={homeValue}
 						>
 							<div className="next-upload-card">

@@ -273,7 +273,7 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 								{ label: '当前版本', value: 'now' },
 								{ label: '可安装升级版本', value: 'future' },
 								{ label: '历史版本', value: 'history' },
-								{ label: '升级中', value: '升级中' }
+								{ label: '升级中', value: 'updating' }
 							]}
 							filterMode="single"
 							width={200}

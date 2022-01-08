@@ -602,7 +602,7 @@ const MysqlCreate = (props) => {
 		} else {
 			if (originData.nodeAffinity) {
 				setAffinity({
-					flag: true,
+					flag: false,
 					label: originData.nodeAffinity[0].label,
 					checked: originData.nodeAffinity[0].required
 				});

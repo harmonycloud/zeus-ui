@@ -233,13 +233,7 @@ function Navbar(props) {
 					>
 						<img
 							className={styles['logo-png']}
-							src={
-								personalization && personalization.homeLogoPath
-									? api +
-									  '/images/middleware/' +
-									  personalization.homeLogoPath
-									: logo
-							}
+							src={personalization && personalization.homeLogo}
 							alt=""
 						/>
 					</div>

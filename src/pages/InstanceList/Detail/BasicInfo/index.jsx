@@ -59,7 +59,12 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'aliasName',
-		label: '显示名称'
+		label: '显示名称',
+		render: (val) => (
+			<div className="annotation-content" title={val}>
+				{val}
+			</div>
+		)
 	},
 	{
 		dataIndex: 'label',
@@ -522,7 +527,7 @@ function BasicInfo(props) {
 				render: (val) => {
 					return (
 						<div className="display-flex">
-							<div>{val}</div>
+							<div className="annotation-content">{val}</div>
 							<BalloonForm
 								closable={false}
 								trigger={

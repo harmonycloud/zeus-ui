@@ -122,21 +122,12 @@ export default function Login() {
 			className={styles['login']}
 			style={{
 				background: `transparent url(${
-					data && data.backgroundPath
-						? api + '/images/middleware/' + data.backgroundPath
-						: background
+					data && data.backgroundImage
 				}) no-repeat center center /cover`
 			}}
 		>
 			<div className={styles['header']}>
-				<img
-					className={styles['logo']}
-					src={
-						data && data.loginLogoPath
-							? `${api}/images/middleware/${data.loginLogoPath}`
-							: logo
-					}
-				/>
+				<img className={styles['logo']} src={data && data.loginLogo} />
 				<span className={styles['info']}>
 					{(data && data.platformName) ||
 						'Zeus | 中间件管理一体化平台'}

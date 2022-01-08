@@ -72,13 +72,15 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			if (
 				type === 'future' ||
 				type === 'updating' ||
-				type === 'needUpgradeOperator'
+				type === 'needUpgradeOperator' ||
+				type === 'canUpgrade'
 			) {
 				const list = originData.filter(
 					(item) =>
 						item[keys[0]] === 'future' ||
 						item[keys[0]] === 'updating' ||
-						item[keys[0]] === 'needUpgradeOperator'
+						item[keys[0]] === 'needUpgradeOperator' ||
+						item[keys[0]] === 'canUpgrade'
 				);
 				setDataSource(list);
 			} else {
@@ -116,21 +118,30 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		const color =
 			value === 'now'
 				? '#00A7FA'
-				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator' || value === 'canUpgrade')
-					? '#52C41A'
-					: '#666666';
+				: value === 'future' ||
+				  value === 'updating' ||
+				  value === 'needUpgradeOperator' ||
+				  value === 'canUpgrade'
+				? '#52C41A'
+				: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
-				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator' || value === 'canUpgrade')
-					? '#F6FFED'
-					: '#F5F5F5';
+				: value === 'future' ||
+				  value === 'updating' ||
+				  value === 'needUpgradeOperator' ||
+				  value === 'canUpgrade'
+				? '#F6FFED'
+				: '#F5F5F5';
 		const text =
 			value === 'now'
 				? '当前版本'
-				: (value === 'future' || value === 'updating' || value === 'needUpgradeOperator' || value === 'canUpgrade')
-					? '可升级版本'
-					: '历史版本';
+				: value === 'future' ||
+				  value === 'updating' ||
+				  value === 'needUpgradeOperator' ||
+				  value === 'canUpgrade'
+				? '可升级版本'
+				: '历史版本';
 		return (
 			<div
 				className="version-status-display"
@@ -198,7 +209,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							onClick={() => {
 								dialog.hide();
 								history.push(
-									`/middlewareRepository/versionManagement/${url[url.length - 3]
+									`/middlewareRepository/versionManagement/${
+										url[url.length - 3]
 									}`
 								);
 							}}

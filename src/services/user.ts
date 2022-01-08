@@ -77,8 +77,8 @@ export const updatePassword = (params: any) => {
 	return Axios.put(USER.updatePassword, params);
 };
 // * 获取个性化配置
-export const getPersonalConfig = (params: any) => {
-	return Axios.get(USER.getPersonalConfig, params);
+export const getPersonalConfig = () => {
+	return Axios.get(USER.getPersonalConfig);
 };
 // * 添加个性化配置
 export const personalized = (params: any) => {
