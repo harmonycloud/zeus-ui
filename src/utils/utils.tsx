@@ -307,10 +307,14 @@ export const timeRender = (value: string, index: number, record: any) => {
 	return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '/';
 };
 // * 简单表格列为空
-export const nullRender: (value: string | null) => string = (
+export const nullRender: (value: string | null) => JSX.Element = (
 	value: string | null
 ) => {
-	return value || '--';
+	return (
+		<div className="text-overflow-one" title={value || '--'}>
+			{value || '--'}
+		</div>
+	);
 };
 // * 蓝字显示
 export const nameRender = (value: string, index: number, record: any) => {

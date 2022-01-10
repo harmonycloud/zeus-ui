@@ -751,9 +751,11 @@ const ServiceListByType = (props: serviceListProps) => {
 	const nameRender = (value: string, index: number, record: serviceProps) => {
 		if (record.status === 'Deleted') {
 			return (
-				<div>
-					<div className="displayed-name">{record.name}</div>
-					<div>{record.aliasName}</div>
+				<div style={{ maxWidth: '160px' }}>
+					<div className="displayed-name text-overflow">
+						{record.name}
+					</div>
+					<div className="text-overflow">{record.aliasName}</div>
 				</div>
 			);
 		}

@@ -677,6 +677,16 @@ export default function HighAvailability(props) {
 	const createTimeRender = (value) => {
 		return transTime.gmt2local(value);
 	};
+	const podNameRender = (value) => {
+		return (
+			<div
+				style={{ width: '150px', wordBreak: 'break-all' }}
+				title={value}
+			>
+				{value}
+			</div>
+		);
+	};
 
 	return (
 		<div>
@@ -779,7 +789,8 @@ export default function HighAvailability(props) {
 						<Table.Column
 							title="实例名称"
 							dataIndex="podName"
-							width={150}
+							cell={podNameRender}
+							width={170}
 							lock="left"
 						/>
 						<Table.Column
