@@ -239,11 +239,11 @@ function Personlization(): JSX.Element {
 						imgURL: info.imgURL
 					}
 				]);
+				storage.setLocal('personalization', {
+					...storage.getLocal('personalization'),
+					loginLogo: info.imgURL
+				});
 			}
-			storage.setLocal('personalization', {
-				...storage.getLocal('personalization'),
-				loginLogo: info.imgURL
-			});
 			setImgRule(false);
 		}
 	};
