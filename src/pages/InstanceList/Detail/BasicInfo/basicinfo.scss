@@ -26,35 +26,11 @@
 	text-align: center;
 	color: #666666;
 }
-@media screen and (max-width: 1920px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
-		width: 80%;
-	}
-}
-@media screen and (max-width: 1840px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
-		width: 70%;
-	}
-}
-@media screen and (max-width: 1650px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
-		width: 50%;
-	}
-}
-@media screen and (max-width: 1340px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
-		width: 40%;
-	}
+.annotation-content {
+	max-height: 20px;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 1;/*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
 }
