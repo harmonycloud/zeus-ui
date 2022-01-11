@@ -272,6 +272,7 @@ function Visualization(props) {
 	};
 
 	const createTopo = (direction) => {
+		console.log(direction);
 		let url = window.location.href.split('/');
 		let imagePath =
 			url[url.length - 2] + '-' + url[url.length - 1] + '.svg';
@@ -1227,8 +1228,8 @@ function Visualization(props) {
 
 	useEffect(() => {
 		if (window.graph) {
-			window.graph && window.graph.clear();
-			window.graph && window.graph.destroy();
+			// window.graph && window.graph.clear();
+			// window.graph && window.graph.destroy();
 			setTimeout(() => {
 				createTopo(direction);
 			}, 0);
@@ -1272,12 +1273,16 @@ function Visualization(props) {
 	}, [topoData]);
 
 	useEffect(() => {
-		window.graph && window.graph.clear();
-		window.graph && window.graph.destroy();
+		// window.graph && window.graph.clear();
+		// window.graph && window.graph.destroy();
 
 		setTimeout(() => {
 			createTopo(direction);
 		}, 0);
+		return () => {
+			window.graph && window.graph.clear();
+			window.graph && window.graph.destroy();
+		};
 	}, [direction]);
 
 	const reset = () => {
