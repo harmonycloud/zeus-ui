@@ -1046,6 +1046,7 @@ const MysqlCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -1080,10 +1081,10 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
+																// changeAffinity(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
@@ -1186,6 +1187,7 @@ const MysqlCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -1222,10 +1224,10 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																);
-																changeTolerations(
-																	'',
-																	'label'
-																);
+																// changeTolerations(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>

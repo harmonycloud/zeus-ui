@@ -675,6 +675,7 @@ const ElasticsearchCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -709,10 +710,10 @@ const ElasticsearchCreate = (props) => {
 																		}
 																	]
 																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
+																// changeAffinity(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
@@ -815,6 +816,7 @@ const ElasticsearchCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -851,10 +853,10 @@ const ElasticsearchCreate = (props) => {
 																		}
 																	]
 																);
-																changeTolerations(
-																	'',
-																	'label'
-																);
+																// changeTolerations(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
