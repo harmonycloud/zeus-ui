@@ -25,9 +25,6 @@ import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
-import cache from '@/utils/storage';
-import axios from 'axios';
-import LogFile from '../Log/logFile';
 
 const { Row, Col } = Grid;
 
@@ -532,7 +529,7 @@ export default function HighAvailability(props) {
 					offset: [-24, 62]
 				});
 				setTimeout(function () {
-					onRefresh();
+					onRefresh('highAvailability');
 				}, 3000);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -565,7 +562,7 @@ export default function HighAvailability(props) {
 							offset: [-24, 62]
 						});
 						setTimeout(function () {
-							onRefresh();
+							onRefresh('highAvailability');
 						}, 3000);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
