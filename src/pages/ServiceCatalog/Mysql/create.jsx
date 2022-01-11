@@ -530,9 +530,21 @@ const MysqlCreate = (props) => {
 			if (res.data.nodeAffinity) {
 				setAffinity({
 					flag: true,
-					label: res.data.nodeAffinity[0].label,
-					checked: res.data.nodeAffinity[0].required
+					label: '',
+					checked: false
 				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item) => {
+						return { label: item };
+					}) || []
+				);
 			}
 			if (res.data.mode) {
 				setMode(res.data.mode);
