@@ -67,6 +67,20 @@ function Personlization(): JSX.Element {
 		getData();
 	}, []);
 
+	function base64ToBlob(code: any) {
+		const parts = code.split(';base64,');
+		const contentType = parts[0].split(':')[1];
+		const raw = window.atob(parts[1]);
+		const rawLength = raw.length;
+
+		const uInt8Array = new Uint8Array(rawLength);
+
+		for (let i = 0; i < rawLength; ++i) {
+			uInt8Array[i] = raw.charCodeAt(i);
+		}
+		return new Blob([uInt8Array], { type: contentType });
+	}
+
 	const getData = () => {
 		getPersonalConfig().then((res) => {
 			console.log(res);
@@ -82,7 +96,9 @@ function Personlization(): JSX.Element {
 						name: 'background.svg',
 						state: 'done',
 						size: 1024,
-						downloadURL: res.data.backgroundImage,
+						downloadURL: URL.createObjectURL(
+							base64ToBlob(res.data.backgroundImage)
+						),
 						fileURL: res.data.backgroundImage,
 						imgURL: res.data.backgroundImage
 					}
@@ -92,7 +108,9 @@ function Personlization(): JSX.Element {
 						name: 'loginlogo.svg',
 						state: 'done',
 						size: 1024,
-						downloadURL: res.data.loginLogo,
+						downloadURL: URL.createObjectURL(
+							base64ToBlob(res.data.loginLogo)
+						),
 						fileURL: res.data.loginLogo,
 						imgURL: res.data.loginLogo
 					}
@@ -102,7 +120,9 @@ function Personlization(): JSX.Element {
 						name: 'home.svg',
 						state: 'done',
 						size: 1024,
-						downloadURL: res.data.homeLogo,
+						downloadURL: URL.createObjectURL(
+							base64ToBlob(res.data.homeLogo)
+						),
 						fileURL: res.data.homeLogo,
 						imgURL: res.data.homeLogo
 					}
@@ -161,7 +181,9 @@ function Personlization(): JSX.Element {
 						name: info.name,
 						state: 'done',
 						size: info.size,
-						downloadURL: info.imgURL,
+						downloadURL: URL.createObjectURL(
+							base64ToBlob(info.imgURL)
+						),
 						fileURL: info.imgURL,
 						imgURL: info.imgURL
 					}
@@ -176,7 +198,9 @@ function Personlization(): JSX.Element {
 						name: info.name,
 						state: 'done',
 						size: info.size,
-						downloadURL: info.imgURL,
+						downloadURL: URL.createObjectURL(
+							base64ToBlob(info.imgURL)
+						),
 						fileURL: info.imgURL,
 						imgURL: info.imgURL
 					}
@@ -191,7 +215,7 @@ function Personlization(): JSX.Element {
 						name: info.name,
 						state: 'done',
 						size: info.size,
-						url: info.imgURL
+						url: URL.createObjectURL(base64ToBlob(info.imgURL))
 					}
 				]);
 				storage.setLocal('personalization', {
