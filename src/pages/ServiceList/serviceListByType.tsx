@@ -733,7 +733,15 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				) : null}
 				{record?.mysqlDTO?.isSource !== null ? (
-					<div style={{ maxWidth: '160px' }}>
+					<div
+						style={{
+							maxWidth:
+								record?.mysqlDTO?.openDisasterRecoveryMode ===
+								true
+									? '120px'
+									: '160px'
+						}}
+					>
 						<div
 							className="name-link text-overflow"
 							onClick={() => toDetail(record)}
@@ -770,7 +778,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						<div className="gray-circle">备</div>
 					) : null
 				) : null}
-				<div style={{ maxWidth: '160px' }}>
+				<div
+					style={{
+						maxWidth:
+							record?.mysqlDTO.openDisasterRecoveryMode &&
+							!record?.mysqlDTO.isSource
+								? '120px'
+								: '160px'
+					}}
+				>
 					<div
 						className="name-link text-overflow"
 						onClick={() => {
