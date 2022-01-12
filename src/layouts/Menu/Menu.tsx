@@ -20,10 +20,7 @@ import { setMenuRefresh } from '@/redux/menu/menu';
 import { StoreState, menuReduxProps } from '@/types/index';
 import './menu.scss';
 import storage from '@/utils/storage';
-
-const CustomIcon = Icon.createFromIconfontCN({
-	scriptUrl: '@/assets/iconfont'
-});
+import CustomIcon from '@/components/CustomIcon';
 
 const mapLocationToActiveKey = (location: Location) => {
 	const pathArray = location.pathname.split('/');
