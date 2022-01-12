@@ -527,7 +527,7 @@ function BasicInfo(props) {
 				render: (val) => {
 					return (
 						<div className="display-flex">
-							<div className="annotation-content">{val}</div>
+							<div className="annotation-content auto">{val}</div>
 							<BalloonForm
 								closable={false}
 								trigger={

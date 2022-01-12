@@ -32,6 +32,10 @@
 		white-space:nowrap;
 		text-overflow:ellipsis;
 		width: 80%;
+		&.auto{
+			max-width: 80%;
+			width: auto;
+		}
 	}
 }
 @media screen and (max-width: 1840px) {
@@ -40,6 +44,10 @@
 		white-space:nowrap;
 		text-overflow:ellipsis;
 		width: 70%;
+		&.auto{
+			max-width: 70%;
+			width: auto;
+		}
 	}
 }
 @media screen and (max-width: 1650px) {
@@ -48,6 +56,10 @@
 		white-space:nowrap;
 		text-overflow:ellipsis;
 		width: 50%;
+		&.auto{
+			max-width: 50%;
+			width: auto;
+		}
 	}
 }
 @media screen and (max-width: 1340px) {
@@ -56,5 +68,9 @@
 		white-space:nowrap;
 		text-overflow:ellipsis;
 		width: 40%;
+		&.auto{
+			max-width: 40%;
+			width: auto;
+		}
 	}
 }

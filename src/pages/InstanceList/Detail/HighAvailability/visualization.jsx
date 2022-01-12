@@ -272,6 +272,9 @@ function Visualization(props) {
 	};
 
 	const createTopo = (direction) => {
+		window.graph && window.graph.clear();
+		window.graph && window.graph.destroy();
+
 		let url = window.location.href.split('/');
 		let imagePath =
 			url[url.length - 2] + '-' + url[url.length - 1] + '.svg';
@@ -294,7 +297,7 @@ function Visualization(props) {
 								x: circleX(direction, cfg),
 								cursor: 'pointer'
 							},
-							modelId: cfg.id,
+							// modelId: cfg.id,
 							name: 'circle'
 						});
 						group.addShape('text', {
@@ -315,7 +318,7 @@ function Visualization(props) {
 								x: circleTextX(direction, cfg),
 								y: circleTextY(direction, cfg)
 							},
-							modelId: cfg.id,
+							// modelId: cfg.id,
 							name: 'circle-text'
 						});
 						// if (cfg.level === 'serve') {
@@ -339,6 +342,7 @@ function Visualization(props) {
 						// 			width: direction === 'LR' ? 90 : 0,
 						// 			height: direction === 'LR' ? 0 : 36
 						// 		},
+						// 		visible: false,
 						// 		name: 'pod-line'
 						// 	});
 						// }
@@ -346,7 +350,7 @@ function Visualization(props) {
 							group.addShape('rect', {
 								attrs: {
 									x: collapseBackX(direction, cfg),
-									y: direction === 'LR' ? 42 : 67,
+									y: direction === 'LR' ? 42 : 62,
 									width: 16,
 									height: 16,
 									radius: 8,
@@ -360,10 +364,10 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									x: collapseTextX(direction, cfg),
-									y: direction === 'LR' ? 48 : 73,
+									y: direction === 'LR' ? 48 : 68,
 									textAlign: 'center',
 									textBaseline: 'middle',
-									text: '-',
+									text: cfg.collapsed ? '+' : '-',
 									fontSize: 16,
 									cursor: 'pointer',
 									fill: 'rgba(0, 0, 0, 0.25)'
@@ -1100,7 +1104,6 @@ function Visualization(props) {
 			graph.setItemState(item, 'select', false);
 		};
 		graph.on('collapse-text:click', (e) => {
-			// console.log(e.target);
 			const { item } = e;
 			// console.log(item, direction);
 			const group = item.getContainer();
@@ -1110,6 +1113,7 @@ function Visualization(props) {
 			const collapseBack = group.find(
 				(e) => e.get('name') === 'collapse-back'
 			);
+			const podLine = group.find((e) => e.get('name') === 'pod-line');
 			const text = collapseText.attr('text');
 			if (text === '-') {
 				if (direction === 'LR') {
@@ -1122,8 +1126,8 @@ function Visualization(props) {
 						x: item.getModel().depth === 1 ? 68 : 98
 					});
 				} else {
-					collapseBack.attr('y', 30);
-					collapseText.attr({ text: '+', y: 36 });
+					collapseBack.attr('y', 20);
+					collapseText.attr({ text: '+', y: 26 });
 				}
 			} else {
 				if (direction === 'LR') {
@@ -1149,6 +1153,8 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
+			console.log(e.target, collapseText);
+
 			const collapseBack = group.find(
 				(e) => e.get('name') === 'collapse-back'
 			);
@@ -1164,8 +1170,8 @@ function Visualization(props) {
 						x: item.getModel().depth === 1 ? 68 : 98
 					});
 				} else {
-					collapseBack.attr('y', 30);
-					collapseText.attr({ text: '+', y: 36 });
+					collapseBack.attr('y', 20);
+					collapseText.attr({ text: '+', y: 26 });
 				}
 			} else {
 				if (direction === 'LR') {
@@ -1227,8 +1233,6 @@ function Visualization(props) {
 
 	useEffect(() => {
 		if (window.graph) {
-			window.graph && window.graph.clear();
-			window.graph && window.graph.destroy();
 			setTimeout(() => {
 				createTopo(direction);
 			}, 0);
@@ -1272,9 +1276,6 @@ function Visualization(props) {
 	}, [topoData]);
 
 	useEffect(() => {
-		window.graph && window.graph.clear();
-		window.graph && window.graph.destroy();
-
 		setTimeout(() => {
 			createTopo(direction);
 		}, 0);
@@ -1334,7 +1335,7 @@ function Visualization(props) {
 						: '选择备份对象'
 					: '关系拓扑'}
 			</h2>
-			<div style={{ background: '#f9f9f9', ...option }}>
+			<div style={{ background: '#f9f9f9', height: '530px', ...option }}>
 				<div className={styles['tools']}>
 					<div>
 						<Tooltip

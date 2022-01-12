@@ -167,7 +167,7 @@ const Namespace = (props: NamespaceProps) => {
 		index: number,
 		record: NamespaceResourceProps
 	) => {
-		if (record.registered) {
+		if (record.registered && record.middlewareReplicas) {
 			return (
 				<Tooltip
 					trigger={<span className="delete-disabled">删除</span>}
