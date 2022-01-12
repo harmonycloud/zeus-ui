@@ -37,7 +37,7 @@ export enum name {
 	ingress = '负载均衡',
 	'local-path' = '资源存储',
 	'middleware-controller' = '中间件管理',
-	lvm = 'LVM(存储相关)'
+	lvm = 'LVM存储'
 }
 export enum color {
 	alertmanager = '#12C1C6',
