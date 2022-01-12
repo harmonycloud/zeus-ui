@@ -64,7 +64,12 @@ const ModeItem = (props: modeItemProps) => {
 							}}
 							onBlur={() => setIsEdit(false)}
 							autoFocus={true}
-							min={data.title === '主节点' ? 3 : 1}
+							min={
+								data.title === '主节点' ||
+								data.title === '数据节点'
+									? 3
+									: 1
+							}
 							className="mode-item-number-input"
 						/>
 					) : (
