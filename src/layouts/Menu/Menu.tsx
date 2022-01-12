@@ -65,6 +65,8 @@ function Menu(props: MenuProps): JSX.Element {
 	const onItemClick = (key: string) => {
 		if (key.includes('serviceList/')) {
 			storage.setSession('menuPath', key);
+		} else {
+			storage.removeSession('menuPath');
 		}
 	};
 	function renderAsLink({ key, label }: IItemDescriptor) {

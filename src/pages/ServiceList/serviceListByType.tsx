@@ -86,8 +86,11 @@ const ServiceListByType = (props: serviceListProps) => {
 					}).then((res) => {
 						if (res.success) {
 							res.data && setDataSource(res.data[0]);
-							res.data &&
+							if (res.data.length > 0) {
 								setShowDataSource(res.data[0].serviceList);
+							} else {
+								setShowDataSource([]);
+							}
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -730,7 +733,15 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				) : null}
 				{record?.mysqlDTO?.isSource !== null ? (
-					<div style={{ maxWidth: '160px' }}>
+					<div
+						style={{
+							maxWidth:
+								record?.mysqlDTO?.openDisasterRecoveryMode ===
+								true
+									? '120px'
+									: '160px'
+						}}
+					>
 						<div
 							className="name-link text-overflow"
 							onClick={() => toDetail(record)}
@@ -751,9 +762,11 @@ const ServiceListByType = (props: serviceListProps) => {
 	const nameRender = (value: string, index: number, record: serviceProps) => {
 		if (record.status === 'Deleted') {
 			return (
-				<div>
-					<div className="displayed-name">{record.name}</div>
-					<div>{record.aliasName}</div>
+				<div style={{ maxWidth: '160px' }}>
+					<div className="displayed-name text-overflow">
+						{record.name}
+					</div>
+					<div className="text-overflow">{record.aliasName}</div>
 				</div>
 			);
 		}
@@ -765,7 +778,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						<div className="gray-circle">备</div>
 					) : null
 				) : null}
-				<div style={{ maxWidth: '160px' }}>
+				<div
+					style={{
+						maxWidth:
+							record?.mysqlDTO.openDisasterRecoveryMode &&
+							!record?.mysqlDTO.isSource
+								? '120px'
+								: '160px'
+					}}
+				>
 					<div
 						className="name-link text-overflow"
 						onClick={() => {

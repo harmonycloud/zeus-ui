@@ -61,7 +61,7 @@ const InfoConfig = [
 		dataIndex: 'aliasName',
 		label: '显示名称',
 		render: (val) => (
-			<div className="annotation-content" title={val}>
+			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
 		)
@@ -74,7 +74,7 @@ const InfoConfig = [
 		dataIndex: 'hostAffinity',
 		label: '主机亲和',
 		render: (val) => (
-			<div className="annotation-content" title={val}>
+			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
 		)
@@ -83,7 +83,7 @@ const InfoConfig = [
 		dataIndex: 'annotations',
 		label: '注解',
 		render: (val) => (
-			<div className="annotation-content" title={val}>
+			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
 		)
@@ -92,7 +92,7 @@ const InfoConfig = [
 		dataIndex: 'tolerations',
 		label: '主机容忍',
 		render: (val) => (
-			<div className="annotation-content" title={val}>
+			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
 		)
@@ -527,7 +527,9 @@ function BasicInfo(props) {
 				render: (val) => {
 					return (
 						<div className="display-flex">
-							<div className="annotation-content auto">{val}</div>
+							<div className="text-overflow-one" title={val}>
+								{val}
+							</div>
 							<BalloonForm
 								closable={false}
 								trigger={

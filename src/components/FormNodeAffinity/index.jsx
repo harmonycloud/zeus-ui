@@ -64,7 +64,7 @@ export default function FormNodeAffinity(props) {
 					{ label: affinity.nodeAffinityLabel, id: Math.random() }
 				]
 			});
-			setAffinity({ ...affinity, nodeAffinityLabel: '' });
+			// setAffinity({ ...affinity, nodeAffinityLabel: '' });
 		}
 	};
 
@@ -146,6 +146,7 @@ export default function FormNodeAffinity(props) {
 											'nodeAffinityLabel'
 										)
 									}
+									hasClear={true}
 									dataSource={labelList}
 									style={{
 										width: '100%'

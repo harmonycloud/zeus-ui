@@ -120,9 +120,22 @@ export default function ParamterHistory(props) {
 						placeholder: '请输入搜索内容'
 					}}
 				>
-					<Table.Column title="参数名" dataIndex="item" />
-					<Table.Column title="变更前的参数值" dataIndex="last" />
-					<Table.Column title="变更后的参数值" dataIndex="after" />
+					<Table.Column
+						title="参数名"
+						dataIndex="item"
+						width={210}
+						lock="left"
+					/>
+					<Table.Column
+						title="变更前的参数值"
+						dataIndex="last"
+						width={210}
+					/>
+					<Table.Column
+						title="变更后的参数值"
+						dataIndex="after"
+						width={210}
+					/>
 					<Table.Column
 						title="是否生效"
 						dataIndex="status"

@@ -657,6 +657,7 @@ const RedisCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -691,10 +692,10 @@ const RedisCreate = (props) => {
 																		}
 																	]
 																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
+																// changeAffinity(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
@@ -797,6 +798,7 @@ const RedisCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -833,10 +835,10 @@ const RedisCreate = (props) => {
 																		}
 																	]
 																);
-																changeTolerations(
-																	'',
-																	'label'
-																);
+																// changeTolerations(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>

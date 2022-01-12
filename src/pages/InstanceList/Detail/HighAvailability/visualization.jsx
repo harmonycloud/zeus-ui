@@ -1279,6 +1279,10 @@ function Visualization(props) {
 		setTimeout(() => {
 			createTopo(direction);
 		}, 0);
+		return () => {
+			window.graph && window.graph.clear();
+			window.graph && window.graph.destroy();
+		};
 	}, [direction]);
 
 	const reset = () => {

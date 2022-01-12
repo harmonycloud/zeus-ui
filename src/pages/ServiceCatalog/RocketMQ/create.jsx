@@ -594,6 +594,7 @@ const RocketMQCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -628,10 +629,10 @@ const RocketMQCreate = (props) => {
 																		}
 																	]
 																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
+																// changeAffinity(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
@@ -748,6 +749,7 @@ const RocketMQCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -784,10 +786,10 @@ const RocketMQCreate = (props) => {
 																		}
 																	]
 																);
-																changeTolerations(
-																	'',
-																	'label'
-																);
+																// changeTolerations(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>

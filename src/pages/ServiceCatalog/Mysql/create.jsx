@@ -359,6 +359,8 @@ const MysqlCreate = (props) => {
 						mode: mode,
 						filelogEnabled: fileLog,
 						stdoutEnabled: standardLog,
+						nodeAffinity: sendData.nodeAffinity,
+						tolerations: sendData.tolerations,
 						quota: {
 							mysql: {
 								storageClassName: values.storageClass,
@@ -383,6 +385,7 @@ const MysqlCreate = (props) => {
 				}
 				// 灾备服务-在已有源服务上创建备服务
 				if (state && state.disasterOriginName) {
+					console.log(originData);
 					const sendDataTemp = {
 						chartName: chartName,
 						chartVersion: originData.chartVersion,
@@ -447,6 +450,50 @@ const MysqlCreate = (props) => {
 							}
 						}
 					};
+					// 主机亲和
+					if (affinity.flag) {
+						if (!affinityLabels.length) {
+							Message.show(
+								messageConfig(
+									'error',
+									'错误',
+									'请选择主机亲和。'
+								)
+							);
+							return;
+						} else {
+							sendDataTemp.nodeAffinity = affinityLabels.map(
+								(item) => {
+									return {
+										label: item.label,
+										required: affinity.checked,
+										namespace: globalNamespace.name
+									};
+								}
+							);
+							sendDataTemp.relationMiddleware.nodeAffinity =
+								sendDataTemp.nodeAffinity;
+						}
+					}
+					// 主机容忍
+					if (tolerations.flag) {
+						if (!tolerationsLabels.length) {
+							Message.show(
+								messageConfig(
+									'error',
+									'错误',
+									'请选择主机容忍。'
+								)
+							);
+							return;
+						} else {
+							sendDataTemp.tolerations = tolerationsLabels.map(
+								(item) => item.label
+							);
+							sendDataTemp.relationMiddleware.tolerations =
+								sendDataTemp.tolerations;
+						}
+					}
 					// * 动态表单相关
 					if (customForm) {
 						const dynamicValues = {};
@@ -464,7 +511,7 @@ const MysqlCreate = (props) => {
 					}
 					sendData = sendDataTemp;
 				}
-				// console.log(sendData);
+				console.log(sendData);
 				if (state && state.disasterOriginName) {
 					addDisasterIns(sendData).then((res) => {
 						if (res.success) {
@@ -530,9 +577,21 @@ const MysqlCreate = (props) => {
 			if (res.data.nodeAffinity) {
 				setAffinity({
 					flag: true,
-					label: res.data.nodeAffinity[0].label,
-					checked: res.data.nodeAffinity[0].required
+					label: '',
+					checked: false
 				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item) => {
+						return { label: item };
+					}) || []
+				);
 			}
 			if (res.data.mode) {
 				setMode(res.data.mode);
@@ -1046,6 +1105,7 @@ const MysqlCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -1080,10 +1140,10 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
+																// changeAffinity(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
@@ -1186,6 +1246,7 @@ const MysqlCreate = (props) => {
 																'label'
 															)
 														}
+														hasClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -1222,10 +1283,10 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																);
-																changeTolerations(
-																	'',
-																	'label'
-																);
+																// changeTolerations(
+																// 	'',
+																// 	'label'
+																// );
 															}
 														}}
 													>
