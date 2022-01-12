@@ -26,3 +26,35 @@
 	text-align: center;
 	color: #666666;
 }
+@media screen and (max-width: 1920px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 80%;
+	}
+}
+@media screen and (max-width: 1840px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 70%;
+	}
+}
+@media screen and (max-width: 1650px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 50%;
+	}
+}
+@media screen and (max-width: 1340px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 40%;
+	}
+}
