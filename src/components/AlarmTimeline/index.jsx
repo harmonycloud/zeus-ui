@@ -63,6 +63,10 @@ function AlarmTimeLine(props) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
 						setRefreshCluster(true);
+						storage.setSession(
+							'menuPath',
+							`/serviceList/${item.type}/${item.capitalType}`
+						);
 						history.push({
 							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
 						});
@@ -84,6 +88,10 @@ function AlarmTimeLine(props) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
 						setRefreshCluster(true);
+						storage.setSession(
+							'menuPath',
+							`/serviceList/${item.type}/${item.capitalType}`
+						);
 						history.push({
 							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
 						});

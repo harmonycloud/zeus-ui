@@ -86,8 +86,11 @@ const ServiceListByType = (props: serviceListProps) => {
 					}).then((res) => {
 						if (res.success) {
 							res.data && setDataSource(res.data[0]);
-							res.data &&
+							if (res.data.length > 0) {
 								setShowDataSource(res.data[0].serviceList);
+							} else {
+								setShowDataSource([]);
+							}
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
