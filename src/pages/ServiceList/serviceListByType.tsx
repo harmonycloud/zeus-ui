@@ -773,16 +773,16 @@ const ServiceListByType = (props: serviceListProps) => {
 		return (
 			<div className="display-flex flex-align">
 				{record?.mysqlDTO ? (
-					record?.mysqlDTO.openDisasterRecoveryMode &&
-					!record?.mysqlDTO.isSource ? (
+					record?.mysqlDTO?.openDisasterRecoveryMode &&
+					!record?.mysqlDTO?.isSource ? (
 						<div className="gray-circle">备</div>
 					) : null
 				) : null}
 				<div
 					style={{
 						maxWidth:
-							record?.mysqlDTO.openDisasterRecoveryMode &&
-							!record?.mysqlDTO.isSource
+							record?.mysqlDTO?.openDisasterRecoveryMode &&
+							!record?.mysqlDTO?.isSource
 								? '120px'
 								: '160px'
 					}}
