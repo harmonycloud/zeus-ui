@@ -438,7 +438,7 @@ const Overview = () => {
 								)}
 								核
 								<br />
-								已分配：
+								已使用：
 								{(Number(clusterQuota?.usedCpu) || 0).toFixed(
 									2
 								)}
@@ -468,20 +468,20 @@ const Overview = () => {
 								{(
 									Number(clusterQuota?.totalMemory) || 0
 								).toFixed(2)}
-								核
+								GB
 								<br />
-								已分配：
+								已使用：
 								{(
 									Number(clusterQuota?.usedMemory) || 0
 								).toFixed(2)}
-								核
+								GB
 								<br />
 								剩余容量：
 								{(
 									(Number(clusterQuota?.totalMemory) || 0) -
 										Number(clusterQuota?.usedMemory) || 0
 								).toFixed(2)}
-								核
+								GB
 								<br />
 							</div>
 						</div>
