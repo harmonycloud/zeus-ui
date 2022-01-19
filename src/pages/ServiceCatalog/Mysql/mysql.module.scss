@@ -12,14 +12,14 @@
 	.host-affinity {
 		.switch {
 			width: 120px;
-			line-height: 32px;
+			line-height: $line-height-lg * 2;
 		}
 		.input {
 			width: 260px;
 		}
 		.check {
 			width: 120px;
-			line-height: 32px;
+			line-height: $line-height-lg * 2;
 			padding-left: 16px;
 		}
 	}
@@ -30,7 +30,7 @@
 	.file-log, .standard-log {
 		.switch {
 			width: 120px;
-			line-height: 32px;
+			line-height: $line-height-lg * 2;
 		}
 	}
 	.file-log {
@@ -45,7 +45,7 @@
 	.backup{
 		.switch{
 			width: 120px;
-			line-height: 32px;
+			line-height: $line-height-lg * 2;
 		}
 	}
 }
@@ -71,7 +71,7 @@
 		width: 182px;
 		height: 32px;
 		color: $text-color-title;
-		font-weight: 500;
+		font-weight: $font-weight;
 		margin-right: 8px;
 		border: 1px solid $border-color;
 		display: flex;
@@ -119,12 +119,12 @@
 	display: flex;
 	flex-wrap: wrap;
 	.tag{
-		font-size: 12px;
+		font-size: $font-size;
 		font-family: PingFangSC-Medium, PingFang SC;
-		font-weight: 500;
-		color: #333333;
+		font-weight: $font-weight;
+		color: $text-color-title;
 		padding: 6px;
-		line-height: 18px;
+		line-height: $line-height-xl;
 		margin: 0 6px 6px 0;
 		border-radius: 12px;
 		border: 1px solid #C0C6CC;

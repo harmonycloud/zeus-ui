@@ -13,7 +13,7 @@
 		.home-card-title{
 			@include lineHeight(22px);
 			font-size: $font-h2;
-			font-weight: 600;
+			font-weight: $font-weight-lg;
 			color: $text-color-title;
 			width: 100%;
 			display: flex;
@@ -22,11 +22,11 @@
 			.more{
 				width: 24px;
 				height: 18px;
-				font-size: 12px;
+				font-size: $font-size;
 				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #0070cc;
-				line-height: 18px;
+				font-weight: $font-weight-sm;
+				color: $primary-color;
+				line-height: $line-height-xl;
 				cursor: pointer;
 			}
 		}

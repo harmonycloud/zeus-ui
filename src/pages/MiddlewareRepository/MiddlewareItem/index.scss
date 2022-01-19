@@ -5,7 +5,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	text-align: center;	
+	text-align: center;
 	&:last-child:nth-child(5n - 4) {
 		margin-right: calc(80%);
 	}
@@ -21,9 +21,9 @@
 	.middleware-item-icon{
 		width: 100px;
 		height: 100px;
-		background: #FFFFFF;
+		background: $white;
 		box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.09);
-		border-radius: 4px;
+		border-radius: $border-radius-lg;
 		border: 1px solid #E7E9EB;
 		display: flex;
 		align-items: center;
@@ -41,7 +41,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			opacity: 0;
-			border-radius: 6px;
+			border-radius: $border-radius-xl;
 		}
 		.middleware-item-type{
 			position: absolute;
@@ -49,12 +49,12 @@
 			right: 0;
 			width: 26px;
 			height: 26px;
-			border-radius: 4px;
+			border-radius: $border-radius-lg;
 			border-right: 13px solid #F6AE1B;
 			border-top: 13px solid #F6AE1B;
 			border-bottom: 13px solid transparent;
 			border-left: 13px solid transparent;
-			color: #fff;
+			color: $white;
 			.middleware-item-type-text{
 				position: absolute;
 				top: -12px;
@@ -105,35 +105,15 @@
 						width: 110px;
 						border-bottom: none;
 					}
-					// .middleware-item-action-icon{
-					// 	width: 34px;
-					// 	height: 34px;
-					// 	text-align: center;
-					// 	line-height: 30px;
-					// 	// display: flex;
-					// 	// justify-content: center;
-					// 	// align-items: center;
-					// 	border-radius: 17px;
-					// 	color: $white;
-					// 	&:nth-child(1){
-					// 		background-color: #A78CF3;
-					// 	}
-					// 	&:nth-child(2){
-					// 		background-color: #5CCDBB;
-					// 	}
-					// 	&:nth-child(3){
-					// 		background-color: #E99673;
-					// 	}
-					// }
 				}
 			}
 		}
 	}
 	.middleware-item-title{
 		margin-top: 16px;
-		font-size: 16px;
+		font-size: $font-h1;
 		font-family: PingFangSC-Semibold, PingFang SC;
-		font-weight: 600;
+		font-weight: $font-weight-lg;
 		color: $text-color-title;
 		line-height: 22px;
 		overflow: hidden;
@@ -142,17 +122,17 @@
 	}
 	.middleware-item-status{
 		margin-top: 8px;
-		font-size: 12px;
-		line-height: 20px;
+		font-size: $font-size;
+		line-height: $line-height-xxl;
 		vertical-align: middle;
 		font-family: PingFangSC-Medium, PingFang SC;
-		font-weight: 500;
-		color: #333333;
+		font-weight: $font-weight;
+		color: $text-color-title;
 	}
 	.middleware-item-description{
-		font-size: 12px;
+		font-size: $font-size;
 		font-family: PingFangSC-Regular, PingFang SC;
-		font-weight: 400;
+		font-weight: $font-weight-sm;
 		color: #666666;
 		line-height: 17px;
 		margin-top: 12px;

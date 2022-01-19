@@ -12,11 +12,11 @@
 		.rocketmq-acl-left{
 			display: flex;
 			align-items: center;
-			font-size: 14px;
+			font-size: $font-h2;
 			.rocketmq-acl-blue-line{
 				width: 1px;
 				height: 14px;
-				border: 1px solid #0070cc;
+				border: 1px solid $primary-color;
 				margin-right: 8px;
 			}
 		}

@@ -7,7 +7,7 @@
 	justify-content: space-between;
 	align-items: center;
 	margin: 16px 0 32px 0;
-	border-radius: 2px;
+	border-radius: $border-radius;
 	cursor: pointer;
 	margin-left: 2px;
 	img {
@@ -21,11 +21,11 @@
 		flex: 1;
 		width: 80px;
 		height: 24px;
-		font-size: 16px;
+		font-size: $font-h1;
 		font-family: PingFangSC-Medium, PingFang SC;
-		font-weight: 500;
+		font-weight: $font-weight;
 		color: #40454A;
-		line-height: 24px;
+		line-height: $line-height * 2;
 		margin-left: 40px;
 	}
 }
@@ -38,10 +38,10 @@
 	width: 100px;
 	height: 32px;
 	background-color: $primary-color;
-	font-size: 12px;
-	font-weight: 500;
-	color: #FFFFFF;
-	line-height: 32px;
+	font-size: $font-size;
+	font-weight: $font-weight;
+	color: $white;
+	line-height: $line-height-lg * 2;
 	text-align: center;
 	position: absolute;
 	right: -120px;
@@ -100,11 +100,11 @@
 				width: 120px;
 				// height: 54px;
 				padding-top: 40px;
-				font-size: 12px;
+				font-size: $font-size;
 				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #333333;
-				line-height: 18px;
+				font-weight: $font-weight-sm;
+				color: $text-color-title;
+				line-height: $line-height-xl;
 			}
 		}
 	}
@@ -129,11 +129,11 @@
 	align-items: center;
 	.batch-install-name,
 	.node-title-name{
-		font-size: 14px;
-		font-weight: 500;
-		color: #333333;
+		font-size: $font-h2;
+		font-weight: $font-weight;
+		color: $text-color-title;
 		line-height: 22px;
-		border-left: 2px solid #0070cc;
+		border-left: 2px solid $primary-color;
 		padding: 0 8px;
 		margin: 8px 0;
 	}
@@ -143,7 +143,7 @@
 }
 .error-text {
 	color: #C80000;
-	font-size: 12px;
+	font-size: $font-size;
 }
 .quick-model-content{
 	width: 100%;
@@ -152,10 +152,10 @@
 	padding: 16px;
 	.quick-model-title{
 		height: 22px;
-		font-size: 12px;
+		font-size: $font-size;
 		font-family: PingFangSC-Regular, PingFang SC;
-		font-weight: 400;
-		color: #333333;
+		font-weight: $font-weight-sm;
+		color: $text-color-title;
 		line-height: 22px;
 	}
 	.quick-model-text{
@@ -194,7 +194,7 @@
 		.batch-install-component-title-icon{
 			width: 40px;
 			height: 40px;
-			border-radius: 4px;
+			border-radius: $border-radius-lg;
 			text-align: center;
 			padding-top: 4.5px;
 			&.operator{
@@ -208,20 +208,20 @@
 			justify-content: center;
 			.batch-install-component-title-name{
 				height: 22px;
-				font-size: 14px;
+				font-size: $font-h2;
 				font-family: PingFangSC-Medium, PingFang SC;
-				font-weight: 500;
-				color: #333333;
+				font-weight: $font-weight;
+				color: $text-color-title;
 				line-height: 22px;
 			}
 			.batch-install-component-status-tag{
 				width: 52px;
 				height: 16px;
-				border-radius: 12px;
+				border-radius: $border-radius-xxl;
 				text-align: center;
 				font-size: 8px;
-				font-weight: 400;
-				line-height: 16px;
+				font-weight: $font-weight-sm;
+				line-height: $line-height-lg;
 			}
 		}
 	}

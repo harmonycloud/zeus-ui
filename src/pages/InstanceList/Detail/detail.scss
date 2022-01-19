@@ -6,12 +6,12 @@
 	.blue-line{
 		width: 1px;
 		height: 14px;
-		border: 1px solid #0070cc;
+		border: 1px solid $primary-color;
 	}
 	.detail-title{
 		@include lineHeight(22px);
 		font-size: $font-h2;
-		font-weight: 500;
+		font-weight: $font-weight;
 		color: $text-color-title;
 		margin-left: 5px;
 	}
@@ -25,17 +25,17 @@
 	display: flex;
 	color: $text-color-title;
 	margin-bottom: 6px;
-	font-size: $font-size-base;
+	font-size: $font-size;
 	.backup-title{
 		@include lineHeight(22px);
 		width: 160px;
 		font-size: $font-h1;
-		font-weight: 600;
+		font-weight: $font-weight-lg;
 		color: $text-color-title;
 	}
 	.backup-action{
 		@include lineHeight(20px);
-		color: #0070cc;
+		color: $primary-color;
 		cursor: pointer;
 	}
 }
@@ -47,12 +47,12 @@
 		display: flex;
 		color: $text-color-title;
 		margin-bottom: 6px;
-		font-size: $font-size-base;
+		font-size: $font-size;
 		.backup-label{
 			@include lineHeight(20px);
 			width: 160px;
-			font-size: $font-size-base;
-			font-weight: 500;
+			font-size: $font-size;
+			font-weight: $font-weight;
 			color: #666666;
 		}
 		.backup-value{
@@ -70,7 +70,7 @@
 	.blue-line{
 		width: 1px;
 		height: 14px;
-		border: 1px solid #0070cc;
+		border: 1px solid $primary-color;
 		margin-right: 8px;
 	}
 }
@@ -78,10 +78,10 @@
 	display: flex;
 	.password-display{
 		height: 18px;
-		font-size: $font-size-base;
-		font-weight: 400;
+		font-size: $font-size;
+		font-weight: $font-weight-sm;
 		color: $text-color-title;
-		line-height: 18px;
+		line-height: $line-height-xl;
 	}
 	.password-reset{
 		margin-left: 24px;
@@ -110,12 +110,12 @@
 		.blue-line{
 			width: 1px;
 			height: 14px;
-			border: 1px solid #0070cc;
+			border: 1px solid $primary-color;
 		}
 		.detail-title{
 			@include lineHeight(22px);
 			font-size: $font-h2;
-			font-weight: 500;
+			font-weight: $font-weight;
 			color: $text-color-title;
 			margin-left: 5px;
 		}
@@ -123,11 +123,11 @@
 }
 .details-go-back{
 	&:hover{
-		color: #0070cc;
+		color: $primary-color;
 	}
 }
 .balloon-text{
-	line-height: 18px;
+	line-height: $line-height-xl;
 }
 .updated-value{
 	display: inline-block;
@@ -157,10 +157,10 @@
 	margin-bottom: 16px;
 	cursor: pointer;
 	.create-alarm-text{
-		color: #0070cc;
+		color: $primary-color;
 		margin-left: 8px;
-		font-size: $font-size-base;
-		font-weight: 400;
+		font-size: $font-size;
+		font-weight: $font-weight-sm;
 		@include lineHeight(16px);
 	}
 }
@@ -170,8 +170,8 @@
 	& label{
 		width: 88px;
 		@include lineHeight(18px);
-		font-size: $font-size-base;
-		font-weight: 500;
+		font-size: $font-size;
+		font-weight: $font-weight;
 		color: $text-color-title;
 	}
 }
@@ -185,29 +185,29 @@
 	margin: 0 24px 16px 24px;
 	height: 32px;
 	background: #FFF7D1;
-	border-radius: 2px;
+	border-radius: $border-radius;
 	&>.warning-icon{
-		font-size: 14px;
+		font-size: $font-h2;
 		margin: 0 10px;
 		color: #FAC800;
 	}
 	&>.info-text{
-		font-size: 12px;
+		font-size: $font-size;
 		font-family: PingFangSC-Regular, PingFang SC;
-		font-weight: 400;
-		color: #333333;
-		line-height: 32px;
+		font-weight: $font-weight-sm;
+		color: $text-color-title;
+		line-height: $line-height-lg * 2;
 	}
 	&>.warning-close{
 		float: right;
 		margin-right: 10px !important;
-		line-height: 32px;
-		color: #333333;
+		line-height: $line-height-lg * 2;
+		color: $text-color-title;
 	}
 }
 .edit-icon{
 	cursor: pointer;
 	&:hover{
-		color: #0070cc;
+		color: $primary-color;
 	}
 }

@@ -17,12 +17,12 @@
 	.blue-line{
 		width: 1px;
 		height: 14px;
-		border: 2px solid #0070cc;
+		border: 2px solid $primary-color;
 	}
 	.form-title{
 		@include lineHeight(22px);
-		font-size: $font-size-base;
-		font-weight: 500;
+		font-size: $font-size;
+		font-weight: $font-weight;
 		color: $text-color-title;
 		margin-left: 5px;
 	}

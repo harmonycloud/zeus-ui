@@ -65,7 +65,7 @@
 @mixin  alarm-tip {
 	width: 40px;
 	border-radius: $border-radius;
-	font-weight: 400;
-	font-size: $font-size-base;
+	font-weight: $font-weight-sm;
+	font-size: $font-size;
 	@include lineHeight(22px);
 }

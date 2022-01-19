@@ -20,18 +20,18 @@
 					width: 32px;
 					height: 32px;
 					border: 1px solid #C0C6CC;
-					color: #333333;
+					color: $text-color-title;
 					border-radius: 16px;
 					text-align: center;
-					line-height: 30px;
+					line-height: $line-height-sm * 3;
 				}
 				.guide-page-img-info{
 					height: 36px;
 					font-size: 18px;
 					font-family: PingFangSC-Medium, PingFang SC;
-					font-weight: 500;
+					font-weight: $font-weight;
 					color: #111111;
-					line-height: 36px;
+					line-height: $line-height * 3;
 					margin-left: 8px;
 					position: relative;
 				}

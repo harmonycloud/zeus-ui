@@ -13,7 +13,7 @@
 		justify-content: space-between;
 		h2 {
 			font-size: $font-h2;
-			font-weight: 500;
+			font-weight: $font-weight;
 			color: #111;
 		}
 	}
@@ -49,8 +49,8 @@
 			-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
 			-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
 			font-size: 24px;
-			line-height: 24px;
-			color: #000;
+			line-height: $line-height * 2;
+			color: $black;
 			margin-left: $margin-sm;
 		}
 	}
@@ -71,7 +71,7 @@
 		height: 40px;
 		button {
 			color: rgba(0, 0, 0, 0.5);
-			font-weight: 400;
+			font-weight: $font-weight-sm;
 		}
 	}
 }

@@ -12,8 +12,8 @@ $slowlog-name: 'slowlog';
 		width: 48%;
 		label {
 			color: #1A1A1A;
-			line-height: 32px;
-			font-weight: 500;
+			line-height: $line-height-lg * 2;
+			font-weight: $font-weight;
 		}
 		&:nth-child(2n) {
 			margin: 8px 0px 8px 10px;
@@ -32,8 +32,8 @@ $slowlog-name: 'slowlog';
 	width: 100%;
 	label {
 		color: #1A1A1A;
-		line-height: 32px;
-		font-weight: 500;
+		line-height: $line-height-lg * 2;
+		font-weight: $font-weight;
 	}
 	button {
 		float: right;
@@ -61,7 +61,7 @@ $slowlog-name: 'slowlog';
 			.btn {
 				margin-right: 24px;
 				&:hover{
-					color: #0070cc;
+					color: $primary-color;
 					cursor: pointer;
 				}
 			}
@@ -95,8 +95,8 @@ $slowlog-name: 'slowlog';
 }
 .log-file-box{
 	width: 46%;
-	font-size: $font-size-base;
-	font-weight: 500;
+	font-size: $font-size;
+	font-weight: $font-weight;
 	color: $text-color-title;
 	text-align: center;
 	margin-right: 32px;

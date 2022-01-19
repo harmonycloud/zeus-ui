@@ -24,11 +24,11 @@
 				height: 30px;
 				border-bottom: 1px solid #b2d4ef;
 				text-align: center;
-				line-height: 30px;
+				line-height: $line-height-sm * 3;
 				.circle {
 					padding: 0 4px;
 					background-color: #c3d6f0;
-					border-radius: 8px;
+					border-radius: $border-radius-lg * 2;
 				}
 			}
 			.node-data {
@@ -57,10 +57,10 @@
 .visualization {
 	position: relative;
 	h2 {
-		font-size: 14px;
+		font-size: $font-h2;
 		font-family: PingFangSC-Medium, PingFang SC;
-		font-weight: 500;
-		color: #333333;
+		font-weight: $font-weight;
+		color: $text-color-title;
 		line-height: 22px;
 		margin: 16px 0;
 		display: flex;
@@ -94,14 +94,14 @@
 				border-right: none;
 			}
 			&:hover {
-				color: #fff;
+				color: $white;
 				background: #0064c8;
 				svg {
-					color: #fff !important;
+					color: $white !important;
 				}
 			}
 			&:active {
-				color: #fff;
+				color: $white;
 				background: #0064c8;
 			}
 		}

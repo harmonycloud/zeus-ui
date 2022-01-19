@@ -3,8 +3,8 @@
 	height: 660px;
 	overflow-y: auto;
 	.time-line-title{
-		font-size: $font-size-base;
-		font-weight: 500;
+		font-size: $font-size;
+		font-weight: $font-weight;
 		color: $text-color-title;
 		cursor: pointer;
 		@include lineHeight(18px);
@@ -12,10 +12,10 @@
 	.time-line-time{
 		// width: 118px;
 		height: 20px;
-		font-size: $font-size-base;
-		font-weight: 400;
+		font-size: $font-size;
+		font-weight: $font-weight-sm;
 		color: rgba(0, 0, 0, 0.45);
-		line-height: 20px;
+		line-height: $line-height-xxl;
 	}
 	.details-msg{
 		display: flex;
@@ -34,7 +34,7 @@
 		}
 	}
 	.details-color{
-		color: #0070cc;
+		color: $primary-color;
 		cursor: pointer;
 		margin-left: 8px;
 	}
@@ -64,5 +64,5 @@
 	}
 }
 .active{
-	color: #0070cc !important;
+	color: $primary-color !important;
 }

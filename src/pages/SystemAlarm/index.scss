@@ -10,9 +10,9 @@
     }
     .alarm-set {
         .box {
-            background: #ffffff;
+            background: $white;
             box-shadow: 0px 2px 4px 0px rgba(68, 71, 74, 0.07);
-            border-radius: 4px;
+            border-radius: $border-radius-lg;
             border: 1px solid #ebebeb;
             padding: 24px;
             &:first-child {
@@ -27,7 +27,7 @@
                     width: 112px;
                     height: 112px;
                     background: #f7f8fc;
-                    border-radius: 4px;
+                    border-radius: $border-radius-lg;
                     line-height: 112px;
                     text-align: center;
                 }
@@ -48,11 +48,11 @@
                 .header-info {
                     margin-left: 24px;
                     .type {
-                        font-size: 16px;
+                        font-size: $font-h1;
                         font-family: PingFangSC-Medium, PingFang SC;
-                        font-weight: 500;
-                        color: #333333;
-                        line-height: 24px;
+                        font-weight: $font-weight;
+                        color: $text-color-title;
+                        line-height: $line-height * 2;
                         vertical-align: middle;
                         margin-right: 8px;
                     }
@@ -63,11 +63,11 @@
                         background: #F6FFED;
                         border: 1px solid #b7eb8f;
                         text-align: center;
-                        font-size: 12px;
+                        font-size: $font-size;
                         font-family: PingFangSC-Regular, PingFang SC;
-                        font-weight: 400;
+                        font-weight: $font-weight-sm;
                         color: #52c41a;
-                        line-height: 18px;
+                        line-height: $line-height-xl;
                         padding-right: 10px;
                         position: relative;
                         border-right: none;
@@ -90,7 +90,7 @@
                             top: 1px;
                             right: 0;
                             z-index: 10;
-                            border-right: 8px solid #fff;
+                            border-right: 8px solid $white;
                             border-top: 8px solid transparent;
                             border-left: 8px solid transparent;
                             border-bottom: 8px solid transparent;
@@ -106,25 +106,25 @@
                     }
                     p {
                         margin-top: 16px;
-                        font-size: 12px;
+                        font-size: $font-size;
                         font-family: PingFangSC-Regular, PingFang SC;
-                        font-weight: 400;
+                        font-weight: $font-weight-sm;
                         color: #666666;
-                        line-height: 18px;
+                        line-height: $line-height-xl;
                     }
                 }
             }
             .box-content {
                 margin-top: 16px;
                 background: #f7f7f7;
-                border-radius: 2px;
+                border-radius: $border-radius;
                 .next-form {
                     label {
-                        font-size: 12px;
+                        font-size: $font-size;
                         font-family: PingFangSC-Medium, PingFang SC;
-                        font-weight: 500;
-                        color: #333333;
-                        line-height: 18px;
+                        font-weight: $font-weight;
+                        color: $text-color-title;
+                        line-height: $line-height-xl;
                     }
                 }
                 .btns {
@@ -138,7 +138,7 @@
                         }
                         &.save[disabled] {
                             background: #d1d5d9;
-                            color: #fff;
+                            color: $white;
                         }
                     }
                 }
@@ -153,11 +153,11 @@
                         padding: 0;
                         border: none;
                         border-radius: 7px;
-                        color: #fff;
+                        color: $white;
                         background: #c80000;
                         min-width: auto !important;
                         text-align: center;
-                        line-height: 12px;
+                        line-height: $line-height;
                         &.disabled {
                             background: #cccccc;
                         }

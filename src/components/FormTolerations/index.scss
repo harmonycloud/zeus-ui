@@ -10,14 +10,14 @@
 		display: flex;
 		flex-wrap: wrap;
 		.tag {
-			font-size: 12px;
+			font-size: $font-size;
 			font-family: PingFangSC-Medium, PingFang SC;
-			font-weight: 500;
-			color: #333333;
+			font-weight: $font-weight;
+			color: $text-color-title;
 			padding: 6px;
-			line-height: 18px;
+			line-height: $line-height-xl;
 			margin: 0 6px 6px 0;
-			border-radius: 12px;
+			border-radius: $border-radius-xxl;
 			border: 1px solid #c0c6cc;
 		}
 		.tag-close {

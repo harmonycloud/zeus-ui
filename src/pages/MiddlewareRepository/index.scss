@@ -4,7 +4,7 @@ $component-name: 'middleware-repository';
 	width: 100%;
 	height: 34px;
 	background: #F8F8F9;
-	border-radius: 2px;
+	border-radius: $border-radius;
 	color: $text-color-title;
 	padding: 8px 16px;
 }
@@ -17,10 +17,10 @@ $component-name: 'middleware-repository';
 		.#{$component-name}-refresh-btn {
 			width: 32px;
 			height: 32px;
-			border-radius: 2px;
+			border-radius: $border-radius;
 			border: 1px solid #C0C6CC;
 			text-align: center;
-			line-height: 32px;
+			line-height: $line-height-lg * 2;
 			margin-left: 8px;
 			cursor: pointer;
 		}
@@ -34,9 +34,9 @@ $component-name: 'middleware-repository';
 		background-color: $white;
 		margin-bottom: 13px;
 		& > p {
-			font-size: 14px;
+			font-size: $font-h2;
 			font-family: PingFangSC-Medium, PingFang SC;
-			font-weight: 500;
+			font-weight: $font-weight;
 			color: $text-color-title;
 			@include lineHeight(24px);
 		}

@@ -2,7 +2,7 @@
 	cursor: pointer;
 	padding: 0 10px;
     height: 30px;
-    line-height: 32px;
+    line-height: $line-height-lg * 2;
 }
 
 .icon-disabled {

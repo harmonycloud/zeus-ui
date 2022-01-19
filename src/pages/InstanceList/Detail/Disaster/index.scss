@@ -6,7 +6,7 @@
 	height: 370px;
 	background: $white;
 	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.09);
-	border-radius: 6px;
+	border-radius: $border-radius-xl;
 	margin-right: 70px;
 	position: relative;
 	.disaster-card-title{
@@ -15,7 +15,7 @@
 		background:  $primary-color;
 		display: flex;
 		align-items: center;
-		border-radius: 6px 6px 0px 0px;
+		border-radius: $border-radius-xl $border-radius-xl 0px 0px;
 		cursor: pointer;
 		& img{
 			margin-top: 10px;
@@ -23,8 +23,8 @@
 		& span{
 			height: 33px;
 			font-size: 24px;
-			font-weight: 500;
-			color: #FFFFFF;
+			font-weight: $font-weight;
+			color: $white;
 			line-height: 33px;
 			margin-left: 24px;
 		}
@@ -35,7 +35,7 @@
 		background: #dedede;
 		display: flex;
 		align-items: center;
-		border-radius: 6px 6px 0px 0px;
+		border-radius: $border-radius-xl $border-radius-xl 0px 0px;
 		cursor: pointer;
 		& img{
 			margin-top: 10px;
@@ -43,7 +43,7 @@
 		& span{
 			height: 33px;
 			font-size: 24px;
-			font-weight: 500;
+			font-weight: $font-weight;
 			color: $black;
 			line-height: 33px;
 			margin-left: 24px;
@@ -54,10 +54,10 @@
 		padding: 24px 32px 0px;
 		& li{
 			height: 18px;
-			font-size: 12px;
-			font-weight: 400;
-			color: #333333;
-			line-height: 18px;
+			font-size: $font-size;
+			font-weight: $font-weight-sm;
+			color: $text-color-title;
+			line-height: $line-height-xl;
 			margin-bottom: 16px;
 			display: flex;
 			& label{
@@ -87,7 +87,7 @@
 	.disaster-card-delete{
 		width: 100%;
 		height: 32px;
-		line-height: 32px;
+		line-height: $line-height-lg * 2;
 		border-top: 1px solid #ebebeb;
 		text-align: center;
 		color: #7F7F7F;
@@ -107,6 +107,6 @@
 }
 // .refresh-color{
 // 	.next-icon{
-// 		color: #0070cc !important;
+// 		color: $primary-color !important;
 // 	}
 // }

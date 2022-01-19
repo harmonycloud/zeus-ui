@@ -16,10 +16,10 @@
     }
 
     h2{
-        font-size: 14px;
+        font-size: $font-h2;
         font-family: PingFangSC-Medium, PingFang SC;
-        font-weight: 500;
-        color: #333333;
+        font-weight: $font-weight;
+        color: $text-color-title;
         line-height: 22px;
         margin: 16px 0;
         display: flex;
@@ -35,20 +35,20 @@
     }
 
     .upload-info{
-        font-size: 12px;
+        font-size: $font-size;
         font-family: PingFangSC-Regular, PingFang SC;
-        font-weight: 400;
+        font-weight: $font-weight-sm;
         color: #666666;
-        line-height: 18px;
+        line-height: $line-height-xl;
     }
     .next-form-item{
         align-items: center;
         label{
-            font-size: 12px;
+            font-size: $font-size;
             font-family: PingFangSC-Medium, PingFang SC;
-            font-weight: 500;
-            color: #333333;
-            line-height: 18px;
+            font-weight: $font-weight;
+            color: $text-color-title;
+            line-height: $line-height-xl;
         }
         .next-upload-card {
             &:hover{
@@ -57,28 +57,28 @@
             .next-icon{
                 color: #0064C8;
                 &::before{
-                    font-size: 12px;
+                    font-size: $font-size;
                 }
             }
             .next-upload-text{
-                font-size: 12px;
+                font-size: $font-size;
                 font-family: PingFangSC-Regular, PingFang SC;
-                font-weight: 400;
-                color: #333333;
-                line-height: 18px;
+                font-weight: $font-weight-sm;
+                color: $text-color-title;
+                line-height: $line-height-xl;
             }
         }
         .next-btn{
             width: 100px;
-            font-size: 12px;
+            font-size: $font-size;
             font-family: PingFangSC-Medium, PingFang SC;
-            font-weight: 500;
-            color: #333333;
-            line-height: 18px;
+            font-weight: $font-weight;
+            color: $text-color-title;
+            line-height: $line-height-xl;
             .next-icon{
                 color: #0064C8;
                 &::before{
-                    font-size: 12px;
+                    font-size: $font-size;
                 }
             }
         }
