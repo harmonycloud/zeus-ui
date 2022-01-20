@@ -19,33 +19,7 @@ import {
 import { api } from '@/api.json';
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
-
-// 资源池、分区不可改变路由名单
-const disabledRoute = [
-	'/serviceList/mysqlCreate',
-	'/serviceList/redisCreate',
-	'/serviceList/elasticsearchCreate',
-	'/serviceList/rocketmqCreate',
-	'/serviceList/dynamicForm',
-	'/serviceList/versionManagement',
-	'/instanceList/detail',
-	'/serviceList/basicInfo',
-	'/serviceList/paramterSetting'
-];
-
-// 资源池、分区不显示路由名单
-const hideRoute = [
-	'/basicResource',
-	'/authManage',
-	'/platformOverview',
-	'/operationAudit',
-	'/userManagement',
-	'/resourcePoolManagement',
-	'/roleManagement',
-	'/dataOverview',
-	'/systemManagement',
-	'/terminal'
-];
+import { disabledRoute, hideRoute } from '@/utils/const';
 
 function Navbar(props) {
 	const {

@@ -23,27 +23,10 @@ import {
 	getEvents
 } from '@/services/home.js';
 import messageConfig from '@/components/messageConfig';
+import { radioList } from '@/utils/const';
 import { getMiddlewares } from '@/services/middleware.js';
 
 const RadioGroup = Radio.Group;
-const radioList = [
-	{
-		value: '',
-		label: '全部'
-	},
-	{
-		value: 'info',
-		label: '提示'
-	},
-	{
-		value: 'warning',
-		label: '告警'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
-];
 
 function Home(props) {
 	const { globalVar } = props;

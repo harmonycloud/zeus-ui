@@ -67,7 +67,7 @@ function Personlization(): JSX.Element {
 		getData();
 	}, []);
 
-	function base64ToBlob(code: any) {
+	const base64ToBlob = (code: any) => {
 		const parts = code.split(';base64,');
 		const contentType = parts[0].split(':')[1];
 		const raw = window.atob(parts[1]);
@@ -79,7 +79,20 @@ function Personlization(): JSX.Element {
 			uInt8Array[i] = raw.charCodeAt(i);
 		}
 		return new Blob([uInt8Array], { type: contentType });
-	}
+	};
+
+	const imageData = (name: string, data: string) => {
+		return [
+			{
+				name: name,
+				state: 'done',
+				size: 1024,
+				downloadURL: URL.createObjectURL(base64ToBlob(data)),
+				fileURL: data,
+				imgURL: data
+			}
+		];
+	};
 
 	const getData = () => {
 		getPersonalConfig().then((res) => {
@@ -91,42 +104,11 @@ function Personlization(): JSX.Element {
 				storage.setLocal('personalization', res.data);
 				field.setValues({ ...res.data, status: '0' });
 				setStatus('0');
-				setBackgroundValue([
-					{
-						name: 'background.svg',
-						state: 'done',
-						size: 1024,
-						downloadURL: URL.createObjectURL(
-							base64ToBlob(res.data.backgroundImage)
-						),
-						fileURL: res.data.backgroundImage,
-						imgURL: res.data.backgroundImage
-					}
-				]);
-				setLoginValue([
-					{
-						name: 'loginlogo.svg',
-						state: 'done',
-						size: 1024,
-						downloadURL: URL.createObjectURL(
-							base64ToBlob(res.data.loginLogo)
-						),
-						fileURL: res.data.loginLogo,
-						imgURL: res.data.loginLogo
-					}
-				]);
-				setHomeValue([
-					{
-						name: 'home.svg',
-						state: 'done',
-						size: 1024,
-						downloadURL: URL.createObjectURL(
-							base64ToBlob(res.data.homeLogo)
-						),
-						fileURL: res.data.homeLogo,
-						imgURL: res.data.homeLogo
-					}
-				]);
+				setBackgroundValue(
+					imageData('background.svg', res.data.backgroundImage)
+				);
+				setLoginValue(imageData('loginlogo.svg', res.data.loginLogo));
+				setHomeValue(imageData('home.svg', res.data.homeLogo));
 				document.title =
 					res.data && res.data.title ? res.data.title : 'Zeus';
 			}
@@ -176,48 +158,19 @@ function Personlization(): JSX.Element {
 		Message.show(messageConfig('success', '成功', '图片上传成功'));
 		if (info) {
 			if (type === 'background') {
-				setBackgroundValue([
-					{
-						name: info.name,
-						state: 'done',
-						size: info.size,
-						downloadURL: URL.createObjectURL(
-							base64ToBlob(info.imgURL)
-						),
-						fileURL: info.imgURL,
-						imgURL: info.imgURL
-					}
-				]);
+				setBackgroundValue(imageData('background.svg', info.imgURL));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
 					backgroundImage: info.imgURL
 				});
 			} else if (type === 'home') {
-				setHomeValue([
-					{
-						name: info.name,
-						state: 'done',
-						size: info.size,
-						downloadURL: URL.createObjectURL(
-							base64ToBlob(info.imgURL)
-						),
-						fileURL: info.imgURL,
-						imgURL: info.imgURL
-					}
-				]);
+				setHomeValue(imageData('home.svg', info.imgURL));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
 					homeLogo: info.imgURL
 				});
 			} else {
-				setLoginValue([
-					{
-						name: info.name,
-						state: 'done',
-						size: info.size,
-						url: URL.createObjectURL(base64ToBlob(info.imgURL))
-					}
-				]);
+				setLoginValue(imageData('loginlogo.svg', info.imgURL));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
 					loginLogo: info.imgURL

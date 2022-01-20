@@ -17,6 +17,7 @@ import {
 } from '@/services/middleware';
 import './index.scss';
 import messageConfig from '@/components/messageConfig';
+import { status } from '@/utils/enum';
 
 const clusterInfo = {
 	title: '服务详情'
@@ -66,11 +67,7 @@ interface runStateProps {
 	status: string;
 	syncTime: string;
 }
-enum status {
-	Syncing = '同步中',
-	stopSyncing = '停止同步',
-	Error = '错误'
-}
+
 export default function Disaster(props: disasterProps): JSX.Element {
 	const {
 		chartName,

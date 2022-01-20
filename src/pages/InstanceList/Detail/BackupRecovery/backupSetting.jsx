@@ -22,6 +22,7 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
 import { useHistory } from 'react-router';
 import { Button } from '@alifd/next';
+import { list } from '@/utils/const';
 
 const formItemLayout = {
 	labelCol: {
@@ -30,24 +31,6 @@ const formItemLayout = {
 	wrapperCol: {
 		span: 14
 	}
-};
-const list = [
-	{ value: 1, label: '星期一' },
-	{ value: 2, label: '星期二' },
-	{ value: 3, label: '星期三' },
-	{ value: 4, label: '星期四' },
-	{ value: 5, label: '星期五' },
-	{ value: 6, label: '星期六' },
-	{ value: 0, label: '星期日' }
-];
-const listMap = {
-	星期一: 1,
-	星期二: 2,
-	星期三: 3,
-	星期四: 4,
-	星期五: 5,
-	星期六: 6,
-	星期日: 0
 };
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(props) {
@@ -88,8 +71,8 @@ function BackupSetting(props) {
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
-			middlewareName: listData.name,
-			type: listData.type
+			middlewareName: listData?.name,
+			type: listData?.type
 		};
 		getPodList(sendData);
 		record &&
@@ -444,9 +427,19 @@ function BackupSetting(props) {
 										);
 										return;
 									} else {
-										history.push(
-											`/serviceList/mysqlCreate/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`
-										);
+										if (backup.phrase !== 'Success') {
+											Message.show(
+												messageConfig(
+													'error',
+													'错误',
+													'该服务还没备份完成'
+												)
+											);
+										} else {
+											history.push(
+												`/serviceList/mysqlCreate/MySQL/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`
+											);
+										}
 									}
 								}}
 								type="primary"
