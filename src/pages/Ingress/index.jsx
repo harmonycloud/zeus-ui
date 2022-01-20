@@ -20,7 +20,6 @@ import {
 import messageConfig from '@/components/messageConfig';
 import CustomIcon from '@/components/CustomIcon';
 import { instanceType, exposedWay } from '@/utils/const';
-// import ComponentsLoading from '@/components/componentsLoading';
 import './ingress.scss';
 
 function IngressList(props) {

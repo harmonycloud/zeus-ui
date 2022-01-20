@@ -4,8 +4,12 @@ import { Button, Radio, Message, Icon } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
 import { getMiddlewareRepository } from '@/services/repository';
-import { StoreState, globalVarProps } from '@/types/index';
-import { middlewareProps, middlewareListProps } from './middleware';
+import { StoreState } from '@/types/index';
+import {
+	middlewareProps,
+	middlewareListProps,
+	middlewareRepositoryProps
+} from './middleware';
 import timerClass from '@/utils/timerClass';
 import messageConfig from '@/components/messageConfig';
 import MiddlewareItem from './MiddlewareItem';
@@ -15,9 +19,7 @@ import { changeObjectIndex } from '@/utils/utils';
 import './index.scss';
 
 const RadioGroup = Radio.Group;
-interface middlewareRepositoryProps {
-	globalVar: globalVarProps;
-}
+
 function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const {
 		globalVar: { cluster, namespace }
@@ -28,8 +30,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [timer, setTimer] = useState();
 	const location = useLocation();
-	console.log(cluster);
-	console.log(namespace);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {

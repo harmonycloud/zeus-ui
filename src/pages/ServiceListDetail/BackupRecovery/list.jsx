@@ -3,7 +3,6 @@ import { Button, Dialog, Message, Balloon } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
-import ComponentsLoading from '@/components/componentsLoading';
 import { getBackups, addBackupConfig, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
 import UseBackupForm from './useBackupForm';
@@ -311,58 +310,50 @@ export default function List(props) {
 
 	return (
 		<div style={{ marginTop: 15 }}>
-			{storage && storage.backup ? (
-				<Table
-					dataSource={backups}
-					exact
-					fixedBarExpandWidth={[24]}
-					showRefresh
-					onRefresh={getData}
-					affixActionBar
-					primaryKey="key"
-					operation={Operation}
-					onSort={onSort}
-				>
-					<Table.Column
-						title="备份对象"
-						dataIndex="backupType"
-						width={100}
-						cell={roleRender}
-					/>
-					<Table.Column
-						title="备份源名称"
-						dataIndex="sourceName"
-						width={150}
-						cell={sourceNameRender}
-					/>
-					<Table.Column
-						title="备份位置"
-						dataIndex="backupAddressList"
-						cell={addressListRender}
-						width={250}
-					/>
-					<Table.Column
-						title="备份状态"
-						dataIndex="phrase"
-						cell={statusBackupRender}
-						width={120}
-						sortable
-					/>
-					<Table.Column
-						title="备份时间"
-						dataIndex="backupTime"
-						sortable
-						width={160}
-					/>
-					<Table.Column
-						title="操作"
-						cell={actionRender}
-						width={120}
-					/>
-				</Table>
-			) : (
-				<ComponentsLoading type="backup" clusterId={clusterId} />
-			)}
+			<Table
+				dataSource={backups}
+				exact
+				fixedBarExpandWidth={[24]}
+				showRefresh
+				onRefresh={getData}
+				affixActionBar
+				primaryKey="key"
+				operation={Operation}
+				onSort={onSort}
+			>
+				<Table.Column
+					title="备份对象"
+					dataIndex="backupType"
+					width={100}
+					cell={roleRender}
+				/>
+				<Table.Column
+					title="备份源名称"
+					dataIndex="sourceName"
+					width={150}
+					cell={sourceNameRender}
+				/>
+				<Table.Column
+					title="备份位置"
+					dataIndex="backupAddressList"
+					cell={addressListRender}
+					width={250}
+				/>
+				<Table.Column
+					title="备份状态"
+					dataIndex="phrase"
+					cell={statusBackupRender}
+					width={120}
+					sortable
+				/>
+				<Table.Column
+					title="备份时间"
+					dataIndex="backupTime"
+					sortable
+					width={160}
+				/>
+				<Table.Column title="操作" cell={actionRender} width={120} />
+			</Table>
 			{useVisible && backupData.backupName !== '' && (
 				<UseBackupForm
 					visible={useVisible}

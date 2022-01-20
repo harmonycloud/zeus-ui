@@ -5,6 +5,7 @@ import noData from '@/assets/images/nodata.svg';
 import { Button } from '@alicloud/console-components';
 import { StoreState, globalVarProps } from '@/types/index';
 import storage from '@/utils/storage';
+import './index.scss';
 
 interface ComponentNullProps {
 	title: string;

@@ -12,7 +12,7 @@ import MysqlCreate from '@/pages/ServiceCatalog/Mysql/create';
 import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
-import InstanceDetails from '@/pages/InstanceList/Detail/index';
+import InstanceDetails from '@/pages/ServiceListDetail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
 import OperationAudit from '@/pages/OperationAudit/index';
@@ -36,17 +36,11 @@ import Personlization from '@/pages/Personalization/index';
 import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
-import CreateAlarm from '@/pages/InstanceList/Detail/ServeAlarm/create';
+import CreateAlarm from '@/pages/ServiceListDetail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
-import BackupSetting from '@/pages/InstanceList/Detail/BackupRecovery/backupSetting';
+import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 // ! 已弃用组件
-// import ServiceList from '@/pages/ServiceList';
-// import BasicResource from '@/pages/BasicResource/index';
-// import AuthManage from '@/pages/AuthManage/index';
 // import Ingress from '@/pages/Ingress/index';
-// import Home from '@/pages/Home/index';
-// import InstanceList from '@/pages/InstanceList/index';
-
 const Routes = withRouter((props) => {
 	return (
 		<>
@@ -59,8 +53,6 @@ const Routes = withRouter((props) => {
 					exact
 					render={() => <Redirect to="/dataOverview" />}
 				/>
-				{/* 空间总览 ——已废除的一张页面 */}
-				{/* <Route path="/dataOverview" component={Home} exact /> */}
 				{/* 数据总览  */}
 				<Route
 					path="/dataOverview"
@@ -141,11 +133,6 @@ const Routes = withRouter((props) => {
 					component={CreateAlarm}
 					exact
 				/>
-				{/* <Route
-					path="/serviceList/issueService"
-					component={MiddlewareRepository}
-					exact
-				/> */}
 				{/* 服务详情 - 版本管理*/}
 				<Route
 					path="/serviceList/serverVersion/:type/:service"
@@ -157,11 +144,6 @@ const Routes = withRouter((props) => {
 					component={InstanceDetails}
 					exact
 				/>
-				{/* <Route
-					path="/serviceList/highAvailability/:middlewareName/:type/:chartVersion"
-					component={InstanceDetails}
-					exact
-				/> */}
 				{/* 服务暴露 */}
 				<Route
 					path="/serviceAvailable"
@@ -215,14 +197,7 @@ const Routes = withRouter((props) => {
 					component={BackupSetting}
 					exact
 				/>
-				{/* 基础资源——已废弃 */}
-				{/* <Route path="/basicResource" component={BasicResource} exact /> */}
-				{/* 授权管理——已废弃 */}
-				{/* <Route
-					path="/systemManagement/authManage"
-					component={AuthManage}
-					exact
-				/> */}
+				{/* 系统管理 */}
 				<Route
 					path="/systemManagement"
 					exact

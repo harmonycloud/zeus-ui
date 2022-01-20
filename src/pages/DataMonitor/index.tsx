@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SecondLayout from '@/components/SecondLayout';
-import Monitor from '../InstanceList/Detail/Monitor';
+import Monitor from '../ServiceListDetail/Monitor';
 import { Message } from '@alicloud/console-components';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';

@@ -1,32 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { Message, Button, Dialog } from '@alicloud/console-components';
+import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import { Page, Content, Header } from '@alicloud/console-components-page';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Message, Button, Dialog } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { StoreState, globalVarProps } from '@/types/index';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+
+import Table from '@/components/MidTable';
+import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
+
 import {
 	getTypeVersion,
 	updateMiddleware,
 	shelvesTypeVersion
 } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
+import { middlewareRepositoryProps, paramsProps } from './middleware';
+
 import { middlewareProps } from './middleware';
-import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
-import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import { versionStatus } from '@/utils/enum';
+import { StoreState } from '@/types/index';
 import './index.scss';
 
-interface versionProps {
-	globalVar: globalVarProps;
-}
-interface paramsProps {
-	type: string;
-}
-
-function MiddlewareVersion(props: versionProps): JSX.Element {
+function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	const {
 		globalVar: { cluster }
 	} = props;

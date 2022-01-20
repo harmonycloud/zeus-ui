@@ -11,7 +11,6 @@ import messageConfig from '@/components/messageConfig';
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
-// import { setMenuRefresh } from '@/redux/menu/menu';
 
 const formItemLayout = {
 	labelCol: {
@@ -25,7 +24,6 @@ const formItemLayout = {
 function UploadMiddlewareForm(props) {
 	const { visible, onCancel, onCreate } = props;
 	const { cluster: globalCluster } = props.globalVar;
-	// const upload = useRef();
 	const upload2 = createRef();
 	const field = Field.useField();
 	const headers = {
@@ -51,7 +49,6 @@ function UploadMiddlewareForm(props) {
 					'chart包上传成功，3秒后刷新数据'
 				)
 			);
-			// setMenuRefresh(true);
 			onCreate();
 		}
 	}

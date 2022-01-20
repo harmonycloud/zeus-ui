@@ -109,22 +109,15 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 		onRefresh,
 		version,
 		setMenuRefresh,
-		menu,
 		replicas
 	} = props;
 	const history = useHistory();
-	// console.log(setMenuRefresh, menu);
 	const toVersion = () => {
 		history.push(`/middlewareRepository/versionManagement/${chartName}`);
 	};
-	const [installType, setInstallType] = useState();
 	const [visible, setVisible] = useState(false);
 
 	const install = (sendData: any) => {
-		// Dialog.show({
-		// 	title: '操作确认',
-		// 	content: '请确认是否安装该中间件？',
-		// 	onOk: () => {
 		installMiddleware(sendData).then((res) => {
 			if (res.success) {
 				Message.show(
@@ -141,8 +134,6 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-		// }
-		// });
 	};
 	const unInstall = () => {
 		const sendData = {
@@ -252,13 +243,11 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 									className="middleware-item-action-item-two"
 									onClick={toVersion}
 								>
-									{/* <div className="middleware-item-action-icon"> */}
 									<CustomIcon
 										type="icon-banben"
 										style={{ color: 'white' }}
 									/>
 									版本
-									{/* </div> */}
 								</div>
 								<div
 									className="middleware-item-action-item-two"

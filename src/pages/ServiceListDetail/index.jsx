@@ -58,7 +58,6 @@ const InstanceDetails = (props) => {
 	const [visible, setVisible] = useState(false);
 	const [waringVisible, setWaringVisible] = useState(true);
 	const [reason, setReason] = useState('');
-	// const [storageClassName, setStorageClassName] = useState('');
 	const history = useHistory();
 	const location = useLocation();
 	const backKey = storage.getLocal('backKey');
@@ -81,24 +80,13 @@ const InstanceDetails = (props) => {
 		setActiveKey(currentTab);
 		if (location.query) {
 			let { query } = location;
-			// setSelectedKey(query.key);
 			storage.setLocal('backKey', query.key);
 		}
-		// * 强制刷新
-		// if (location.state) {
-		// 	if (location.state.flag) {
-		// 		window.location.reload();
-		// 	}
-		// }
 		backKey &&
 			backKey.indexOf('backupRecovery') !== -1 &&
 			setActiveKey('backupRecovery');
 		backKey && backKey === 'alarm' && setActiveKey('alarm');
 	}, []);
-
-	const menuSelect = (selectedKeys) => {
-		setSelectedKey(selectedKeys[0]);
-	};
 
 	const getData = (clusterId, namespace) => {
 		const sendData = {
@@ -125,33 +113,8 @@ const InstanceDetails = (props) => {
 
 	const refresh = (key = selectedKey) => {
 		getData(globalVar.cluster.id, globalVar.namespace.name);
-		// setSelectedKey(key);
 		setActiveKey(key);
-		// storage.setLocal('backKey', 'basicInfo');
 	};
-
-	// const DetailMenu = ({ selected, handleMenu }) => (
-	// 	<Menu
-	// 		id="mid-menu"
-	// 		selectedKeys={selected}
-	// 		onSelect={handleMenu}
-	// 		direction="hoz"
-	// 	>
-	// 		<Menu.Item key="basicInfo">基本信息</Menu.Item>
-	// 		<Menu.Item key="highAvailability">实例详情</Menu.Item>
-	// 		{type === 'mysql' || type === 'elasticsearch' ? (
-	// 			<Menu.Item key="backupRecovery">数据安全</Menu.Item>
-	// 		) : null}
-	// 		<Menu.Item key="externalAccess">服务暴露</Menu.Item>
-	// 		<Menu.Item key="monitor">数据监控</Menu.Item>
-	// 		<Menu.Item key="log">日志详情</Menu.Item>
-	// 		<Menu.Item key="paramterSetting">参数设置</Menu.Item>
-	// 		<Menu.Item key="alarm">服务告警</Menu.Item>
-	// 		{type === 'mysql' ? (
-	// 			<Menu.Item key="disaster">灾备服务</Menu.Item>
-	// 		) : null}
-	// 	</Menu>
-	// );
 
 	const childrenRender = (key) => {
 		switch (key) {
@@ -457,9 +420,6 @@ const InstanceDetails = (props) => {
 					/>
 				</div>
 			)}
-			{/* <div style={{ padding: '0px 40px 15px 40px' }}>
-				<DetailMenu selected={selectedKey} handleMenu={menuSelect} />
-			</div> */}
 			<Page.Content>
 				<Tab
 					navStyle={{ marginBottom: '15px' }}

@@ -1,4 +1,5 @@
 import { menuReduxProps } from '@/redux/menu/menu';
+import { globalVarProps } from '@/types/index';
 export interface middlewareProps {
 	chartName: string;
 	chartVersion: string;
@@ -26,4 +27,10 @@ export interface middlewareItemProps extends middlewareProps {
 }
 export interface middlewareListProps {
 	[propsName: string]: middlewareProps[];
+}
+export interface middlewareRepositoryProps {
+	globalVar: globalVarProps;
+}
+export interface paramsProps {
+	type: string;
 }

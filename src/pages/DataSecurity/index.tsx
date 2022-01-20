@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SecondLayout from '@/components/SecondLayout';
-import BackupRecovery from '@/pages/InstanceList/Detail/BackupRecovery';
+import BackupRecovery from '@/pages/ServiceListDetail/BackupRecovery';
 import { getMiddlewareDetail } from '@/services/middleware';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';

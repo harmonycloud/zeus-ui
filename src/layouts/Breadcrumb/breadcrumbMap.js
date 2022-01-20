@@ -1,12 +1,4 @@
 export default {
-	// * 已弃用
-	// spaceOverview: '空间概览',
-	// serviceCatalog: '服务目录',
-	// instanceList: '服务列表',
-	// detail: '服务详情',
-	// outboundRoute: '对外路由',
-	// basicResource: '基础资源',
-
 	mysqlCreate: 'Mysql创建',
 	redisCreate: 'Redis创建',
 	elasticsearchCreate: 'Elasticsearch创建',

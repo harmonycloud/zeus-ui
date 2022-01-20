@@ -1,3 +1,4 @@
+import { globalVarProps } from '@/types/index';
 export interface serviceProps {
 	aliasName: string | null;
 	annotation: string | null;
@@ -76,4 +77,16 @@ export interface middlewareItemProps extends middlewareProps {
 }
 export interface middlewareListProps {
 	[propsName: string]: middlewareProps[];
+}
+export interface serviceListProps {
+	globalVar: globalVarProps;
+	setCluster: (value: any) => void;
+	setNamespace: (value: any) => void;
+	setRefreshCluster: (flag: boolean) => void;
+}
+export interface versionProps {
+	globalVar: globalVarProps;
+}
+export interface paramsProps {
+	type: string;
 }

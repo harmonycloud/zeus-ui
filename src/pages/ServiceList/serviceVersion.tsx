@@ -13,24 +13,9 @@ import { middlewareProps } from './service.list';
 import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
-// import './index.scss';
-
+import { versionProps, paramsProps } from './service.list';
 const { Tooltip } = Balloon;
 
-interface versionProps {
-	globalVar: globalVarProps;
-}
-interface paramsProps {
-	type: string;
-}
-enum versionStatus {
-	now = '当前版本',
-	future = '可升级版本',
-	history = '历史版本',
-	updating = 'operator升级中',
-	needUpgradeOperator = '需要升级operator',
-	canUpgrade = '升级版本'
-}
 function ServiceVersion(props: versionProps): JSX.Element {
 	const {
 		globalVar: { cluster, namespace }

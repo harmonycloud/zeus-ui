@@ -4,7 +4,7 @@ import {
 	Dialog,
 	Field,
 	Message,
-	Input
+	NumberPicker
 } from '@alicloud/console-components';
 
 const formItemLayout = {
@@ -17,12 +17,13 @@ const formItemLayout = {
 	}
 };
 const FormItem = Form.Item;
-export default function CustomEditNodeSpe(props) {
+
+export default function EditNodeSpe(props) {
 	const {
 		visible,
 		onCreate,
 		onCancel,
-		quota: { cpu, memory }
+		quota: { cpu, memory, storageClassQuota }
 	} = props;
 	const field = Field.useField();
 
@@ -31,8 +32,6 @@ export default function CustomEditNodeSpe(props) {
 			onCreate(value);
 		});
 	};
-
-	const onChange = () => {};
 
 	return (
 		<Dialog
@@ -47,20 +46,38 @@ export default function CustomEditNodeSpe(props) {
 				<Message style={{ marginBottom: 24 }} type="warning">
 					修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。
 				</Message>
-				<FormItem label="CPU">
-					<Input
-						style={{ width: '140px' }}
+				<FormItem label="CPU (Core)">
+					<NumberPicker
+						type="inline"
+						step="0.1"
 						name="cpu"
-						onChange={onChange}
-						defaultValue={cpu}
+						min={0}
+						defaultValue={Number(cpu)}
 					/>
 				</FormItem>
-				<FormItem label="内存">
-					<Input
-						style={{ width: '140px' }}
+				<FormItem label="内存 (GB)">
+					<NumberPicker
+						type="inline"
+						step="0.1"
 						name="memory"
-						onChange={onChange}
-						defaultValue={memory}
+						min={0}
+						defaultValue={Number(
+							memory.substring(0, memory.length - 2)
+						)}
+					/>
+				</FormItem>
+				<FormItem label="存储 (GB)">
+					<NumberPicker
+						disabled
+						type="inline"
+						step="0.1"
+						name="storage"
+						defaultValue={Number(
+							storageClassQuota.substring(
+								0,
+								storageClassQuota.length - 2
+							)
+						)}
 					/>
 				</FormItem>
 			</Form>

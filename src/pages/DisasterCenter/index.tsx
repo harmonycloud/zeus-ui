@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import SecondLayout from '@/components/SecondLayout';
-import Disaster from '@/pages/InstanceList/Detail/Disaster';
+import Disaster from '@/pages/ServiceListDetail/Disaster';
 import { Message, Dialog, Button } from '@alicloud/console-components';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';

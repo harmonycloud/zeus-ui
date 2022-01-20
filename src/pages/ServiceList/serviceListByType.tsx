@@ -10,14 +10,9 @@ import {
 } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
+// --- 自定义组件
 import Table from '@/components/MidTable';
-import { nullRender } from '@/utils/utils';
-import {
-	serviceListItemProps,
-	serviceProps,
-	CurrentService
-} from './service.list';
-import { StoreState } from '@/types/index';
+// --- 方法
 import {
 	getList,
 	deleteMiddlewareStorage,
@@ -25,18 +20,40 @@ import {
 	ParamsProps
 } from '@/services/serviceList';
 import { deleteMiddleware } from '@/services/middleware';
-import { states } from '@/utils/const';
-import { serviceListStatusRender, timeRender } from '@/utils/utils';
-import { tabJudge, serviceListProps } from './index';
 import messageConfig from '@/components/messageConfig';
+import { getComponents } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
 	setRefreshCluster
 } from '@/redux/globalVar/var';
+// --- 类型定义 / 常量 / 工具
+import {
+	serviceListItemProps,
+	serviceProps,
+	CurrentService,
+	serviceListProps
+} from './service.list';
+import { StoreState } from '@/types/index';
 import storage from '@/utils/storage';
-import { getComponents } from '@/services/common';
+import { states } from '@/utils/const';
+import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
+// --- css样式
 
+const tabJudge: (record: serviceProps, tab: string) => boolean = (
+	record: serviceProps,
+	tab: string
+) => {
+	if (record.capabilities === null) {
+		return false;
+	} else {
+		if (record.capabilities.includes(tab)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+};
 const Tooltip = Balloon.Tooltip;
 interface paramsProps {
 	name: string;
@@ -63,15 +80,17 @@ const ServiceListByType = (props: serviceListProps) => {
 	const [lock, setLock] = useState<any>({ lock: 'right' });
 
 	useEffect(() => {
-		setCurrentServiceType({
-			name: aliasName,
-			type: name
-		});
 		window.onresize = function () {
 			document.body.clientWidth >= 2300
 				? setLock(null)
 				: setLock({ lock: 'right' });
 		};
+	}, []);
+	useEffect(() => {
+		setCurrentServiceType({
+			name: aliasName,
+			type: name
+		});
 	}, [params]);
 	useEffect(() => {
 		let mounted = true;

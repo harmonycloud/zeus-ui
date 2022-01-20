@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Message } from '@alicloud/console-components';
 import SecondLayout from '@/components/SecondLayout';
-import Log from '@/pages/InstanceList/Detail/Log';
+import Log from '@/pages/ServiceListDetail/Log';
 import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';

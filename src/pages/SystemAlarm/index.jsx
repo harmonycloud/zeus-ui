@@ -3,7 +3,7 @@ import { Page, Header, Content } from '@alicloud/console-components-page';
 import { Tab } from '@alicloud/console-components';
 import AlarmRecord from './alarmRecord';
 import AlarmSet from './alarmSet';
-import ServerAlarm from '@/pages/InstanceList/Detail/ServeAlarm';
+import ServerAlarm from '@/pages/ServiceListDetail/ServeAlarm';
 import './index.scss';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
