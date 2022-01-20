@@ -423,15 +423,6 @@ export default function StandardLog(props) {
 						>
 							日志导出 <Icon size="xs" type="download1" />
 						</div>
-						{/* <div
-							className={`display-inline-block ${styles['btn']}`}
-						>
-							实时日志{' '}
-							<Switch
-								size="small"
-								style={{ verticalAlign: 'middle' }}
-							/>
-						</div> */}
 						{!isFullscreen && (
 							<Icon
 								type="expand-alt"

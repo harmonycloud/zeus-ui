@@ -125,14 +125,6 @@ export default function LogFile(props) {
 		}
 	}, [clusterId, namespace, middlewareName]);
 
-	// * 当选择了节点和容器时，查询日志目录
-	// useEffect(() => {
-	// 	if (pod !== 'all' && container !== 'all') {
-	// 		// * 获取日志目录
-	// 		getLogIndexs(pod, container);
-	// 	}
-	// }, [pod, container]);
-
 	const changePod = (value) => {
 		setPod(value);
 		for (let i = 0; i < podList.length; i++) {
@@ -157,9 +149,7 @@ export default function LogFile(props) {
 	const handleChange = (value) => {
 		setKeyword(value);
 	};
-	// const fileChange = (value) => {
-	// 	setLogIndex(value);
-	// };
+
 	const logFilesClick = (value) => {
 		setLogList([]);
 		setLogPath(value);
@@ -182,11 +172,9 @@ export default function LogFile(props) {
 			searchWord: keyword,
 			searchType: searchType,
 			middlewareType: type
-			// logDir: logIndex
 		};
 		if (pod === 'all') delete sendData.pod;
 		if (container === 'all') delete sendData.container;
-		// if (pod === 'all' && container === 'all') delete sendData.logDir;
 		getLogFiles(sendData);
 	};
 	// * 查询日志文件
@@ -311,26 +299,6 @@ export default function LogFile(props) {
 		window.open(url, '_target');
 	};
 
-	// * 获取日志目录 - 后端无法实现日志目录的筛选
-	// const getLogIndexs = (pod, container) => {
-	// 	const sendData = {
-	// 		clusterId: clusterId,
-	// 		namespace: namespace,
-	// 		middlewareName: middlewareName,
-	// 		middlewareType: type,
-	// 		pod: pod,
-	// 		container: container
-	// 	};
-	// 	getLogFileIndex(sendData).then((res) => {
-	// 		// * 获取数据后对日志目录进行赋值。
-	// 		if (res.success) {
-	// 			if (res.data.length > 0) {
-	// 				setLogIndexs(res.data);
-	// 				setLogIndex(res.data[0]);
-	// 			}
-	// 		}
-	// 	});
-	// };
 	if (!logging || !logging.elasticSearch) {
 		return (
 			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“资源池——>平台组件“进行安装" />
@@ -383,27 +351,6 @@ export default function LogFile(props) {
 						</Col>
 					</Row>
 				</div>
-				{/* <div className={styles['filter-item']}>
-					<Row>
-						<Col span={5}>
-							<label>日志目录</label>
-						</Col>
-						<Col span={19}>
-							<Select
-								placeholder="请选择日志目录"
-								value={logIndex}
-								onChange={fileChange}
-								style={{ width: '100%' }}
-							>
-								{logIndexs.map((item, index) => (
-									<Option value={item} key={index}>
-										{item}
-									</Option>
-								))}
-							</Select>
-						</Col>
-					</Row>
-				</div> */}
 				<div className={styles['filter-item-standard']}>
 					<Row>
 						<Col span={5}>

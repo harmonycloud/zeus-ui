@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Tab } from '@alicloud/console-components';
 import { Page, Content } from '@alicloud/console-components-page';
 import ParamterList from './paramterList';
 import ParamterHistory from './paramterHistory';

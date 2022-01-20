@@ -218,3 +218,15 @@ export const initMenu = [
 		own: false
 	}
 ];
+export const BalloonFormFormItemLayout = {
+	labelCol: { fixedSpan: 0 },
+	wrapperCol: { span: 24 }
+};
+export const formItemLayout614 = {
+	labelCol: {
+		fixedSpan: 6
+	},
+	wrapperCol: {
+		span: 14
+	}
+};

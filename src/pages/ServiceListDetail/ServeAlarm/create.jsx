@@ -238,7 +238,6 @@ function CreateAlarm(props) {
 			getUserList();
 		}
 		getClusters().then((res) => {
-			// console.log(res.data);
 			if (!res.data) return;
 			setPoolList(res.data);
 		});
@@ -258,13 +257,11 @@ function CreateAlarm(props) {
 	}, []);
 
 	const handleChange = (value, data, extra) => {
-		// console.log(value, data, extra);
 		setInsertUser(data);
 	};
 
 	const getUserList = (sendData) => {
 		getUsers(sendData).then((res) => {
-			// console.log(res);
 			if (!res.data) return;
 			const user = [];
 			res.data.userBy &&
@@ -462,19 +459,6 @@ function CreateAlarm(props) {
 				});
 			}
 		}
-		// if (dingChecked && !mailChecked) {
-		// 	insertDing([]).then((res) => {
-		// 		if (!res.success) return;
-		// 	});
-		// } else if (dingChecked && mailChecked) {
-		// 	insertDing(insertUser).then((res) => {
-		// 		if (!res.success) return;
-		// 	});
-		// } else {
-		// 	sendInsertUser(insertUser).then((res) => {
-		// 		if (!res.success) return;
-		// 	});
-		// }
 	};
 
 	const onOk = () => {

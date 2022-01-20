@@ -8,23 +8,10 @@ import {
 } from '@alicloud/console-components';
 import { getParamTemp, getParamDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import { formItemLayout614 } from '@/utils/const';
 
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
 const FormItem = Form.Item;
 const { Option } = Select;
-
-// const templates = [
-// 	{ label: '系统默认', value: 'default' },
-// 	{ label: '模板1', value: 'template1' },
-// 	{ label: '模板2', value: 'template2' }
-// ];
 
 export default function ParamterTemplateForm(props) {
 	const { visible, onCreate, onCancel, type } = props;
@@ -41,7 +28,6 @@ export default function ParamterTemplateForm(props) {
 			type
 		};
 		getParamTemp(sendData).then((res) => {
-			// console.log(res);
 			if (res.success) {
 				if (res.data.length > 0) {
 					setTemplates(res.data);
@@ -54,20 +40,17 @@ export default function ParamterTemplateForm(props) {
 	};
 
 	const onChange = (value) => {
-		// console.log(value);
 		setTemplate(value);
 	};
 
 	const onOk = () => {
 		field.validate((err, values) => {
 			if (err) return;
-			// console.log(values);
 			const sendData = {
 				type,
 				templateName: values.templateName
 			};
 			getParamDetail(sendData).then((res) => {
-				// console.log(res);
 				if (res.success) {
 					onCreate(res.data.customConfigList);
 				}
@@ -84,7 +67,7 @@ export default function ParamterTemplateForm(props) {
 			onClose={onCancel}
 			footerAlign="right"
 		>
-			<Form {...formItemLayout} field={field}>
+			<Form {...formItemLayout614} field={field}>
 				<FormItem
 					label="模板名称"
 					required

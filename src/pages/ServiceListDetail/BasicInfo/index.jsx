@@ -9,24 +9,24 @@ import {
 	Form,
 	Input
 } from '@alicloud/console-components';
-import { useParams } from 'react-router-dom';
 import DataFields from '@alicloud/console-components-data-fields';
 import DefaultPicture from '@/components/DefaultPicture';
-import { getMiddlewareEvents } from '@/services/middleware.js';
-import { statusRender } from '@/utils/utils';
-import transTime from '@/utils/transTime';
-import EventsList from './eventsList';
+import { useParams } from 'react-router-dom';
+
 import RocketAclUserInfo from './rocketAclUserInfo';
 import RocketAclEditForm from './rocketAclEditForm';
-import './basicinfo.scss';
-import { updateMiddleware } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
+import EventsList from './eventsList';
 import BalloonForm from '@/components/BalloonForm';
 
-const formItemLayout = {
-	labelCol: { fixedSpan: 0 },
-	wrapperCol: { span: 24 }
-};
+import { getMiddlewareEvents } from '@/services/middleware.js';
+import { updateMiddleware } from '@/services/middleware';
+import messageConfig from '@/components/messageConfig';
+
+import { statusRender } from '@/utils/utils';
+import transTime from '@/utils/transTime';
+import { BalloonFormFormItemLayout } from '@/utils/const';
+
+import './basicinfo.scss';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -546,7 +546,7 @@ function BasicInfo(props) {
 									width: '284px'
 								}}
 								onConfirm={editDescription}
-								formProps={formItemLayout}
+								formProps={BalloonFormFormItemLayout}
 							>
 								<FormItem
 									requiredMessage="请输入"

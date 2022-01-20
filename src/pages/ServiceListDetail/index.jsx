@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Page } from '@alicloud/console-components-page';
 import { useHistory, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Button, Dialog, Message, Icon } from '@alicloud/console-components';
-import { Tab } from '@alicloud/console-components';
+import { Page } from '@alicloud/console-components-page';
+import {
+	Button,
+	Dialog,
+	Message,
+	Icon,
+	Tab
+} from '@alicloud/console-components';
+
 import BasicInfo from './BasicInfo/index';
 import HighAvailability from './HighAvailability/index';
 import BackupRecovery from './BackupRecovery/index';
@@ -13,6 +19,7 @@ import Log from './Log/index';
 import ServerAlarm from './ServeAlarm';
 import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';
+
 import { getMiddlewareDetail } from '@/services/middleware';
 import { getNamespaces } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
@@ -22,6 +29,7 @@ import {
 	setRefreshCluster
 } from '@/redux/globalVar/var';
 import storage from '@/utils/storage';
+
 import './detail.scss';
 
 /*
@@ -264,7 +272,6 @@ const InstanceDetails = (props) => {
 				flag: true
 			}
 		});
-		// setSelectedKey('basicInfo');
 		setActiveKey('basicInfo');
 		storage.setLocal('backKey', 'basicInfo');
 	};
@@ -297,7 +304,6 @@ const InstanceDetails = (props) => {
 				}
 			}
 		});
-		// setSelectedKey('basicInfo');
 		setActiveKey('basicInfo');
 	};
 	const SecondConfirm = (props) => {

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import {
 	Table,
@@ -24,6 +23,8 @@ import { searchTypes } from '@/utils/const';
 
 const { Option } = Select;
 const { Row, Col } = Grid;
+// * 慢日志表格后端分页
+
 export default function SlowLog(props) {
 	const { logging } = props;
 	const { clusterId, middlewareName, namespace } = props.data;
@@ -108,13 +109,11 @@ export default function SlowLog(props) {
 		)}&endTime=${transTime.local2gmt2(
 			rangeTime[1]
 		)}&searchType=${searchType}&searchWord=${keyword}`;
-		// console.log(url);
 		window.open(url);
 	};
 
 	const onSearchChange = (value) => {
 		setKeyword(value);
-		// console.log(value);
 	};
 
 	const onFilterChange = (value) => {

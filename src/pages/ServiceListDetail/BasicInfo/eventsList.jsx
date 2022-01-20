@@ -4,9 +4,9 @@ import { Timeline } from '@alicloud/console-components';
 import { Icon } from '@alifd/next';
 import { getMiddlewareEvents } from '@/services/middleware.js';
 import styles from './basicinfo.module.scss';
-import './basicinfo.scss';
 import transTime from '@/utils/transTime';
 import imgNone from '@/assets/images/nodata.svg';
+import './basicinfo.scss';
 
 const successTip = <div className={styles['success-tip']}>正常</div>;
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Balloon } from '@alicloud/console-components';
 import DataFields from '@alicloud/console-components-data-fields';
 import PasswordDisplay from '@/components/PasswordDisplay';
+import { UserInfoProps } from '../detail';
 
 const Tooltip = Balloon.Tooltip;
 const itemsConfig = [
@@ -46,9 +47,7 @@ const itemsConfig = [
 		}
 	}
 ];
-interface UserInfoProps {
-	data: any;
-}
+
 export default function RocketAclUserInfo(props: UserInfoProps): JSX.Element {
 	const { data } = props;
 	const [infoData, setInfoData] = useState(data);
@@ -74,7 +73,6 @@ export default function RocketAclUserInfo(props: UserInfoProps): JSX.Element {
 			groupKey.map((item) => `${item[0]}=${item[1]}`).join('、') +
 			ouch2;
 		setInfoData({
-			// ...infoData,
 			accessKey: infoData.accessKey || '',
 			secretKey: infoData.secretKey || '',
 			admin: infoData.admin || '',

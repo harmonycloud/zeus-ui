@@ -4,14 +4,18 @@ import {
 	Message,
 	Switch,
 	Icon,
-	Balloon,
-	Grid
+	Balloon
 } from '@alicloud/console-components';
-import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
+
 import Table from '@/components/MidTable';
 import Visualization from './visualization';
-// import BalloonForm from '@/components/BalloonForm';
+import DefaultPicture from '@/components/DefaultPicture';
+import EditNodeSpe from './editNodeSpe';
+import EsEditNodeSpe from './esEditNodeSpe';
+import CustomEditNodeSpe from './customEditNodeSpe';
+import Console from './console';
+
 import {
 	getPods,
 	restartPods,
@@ -19,31 +23,8 @@ import {
 	updateMiddleware
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import DefaultPicture from '@/components/DefaultPicture';
-import EditNodeSpe from './editNodeSpe';
 import transTime from '@/utils/transTime';
-import EsEditNodeSpe from './esEditNodeSpe';
-import CustomEditNodeSpe from './customEditNodeSpe';
-import { modelMap, esMap } from '@/utils/const';
-import Console from './console';
 
-const { Row, Col } = Grid;
-
-const specification = {
-	title: '规格配置',
-	model: '',
-	node: ''
-};
-
-// const redisModeSelects = [
-// 	{ value: '6', label: '三主三从' },
-// 	{ value: '10', label: '五主五从' }
-// ];
-// const mqModeSelects = [
-// 	{ value: '2m-noslave', label: '两主' },
-// 	{ value: '2m-2s', label: '两主两从' },
-// 	{ value: '3m-3s', label: '三主三从' }
-// ];
 export default function HighAvailability(props) {
 	const {
 		type,
@@ -55,7 +36,6 @@ export default function HighAvailability(props) {
 		onRefresh,
 		customMid
 	} = props;
-	const [config, setConfig] = useState(specification);
 	const [pods, setPods] = useState([]);
 	const [switchValue, setSwitchValue] = useState(true);
 	const [podVisible, setPodVisible] = useState(false);
@@ -71,263 +51,13 @@ export default function HighAvailability(props) {
 	const [topoData, setTopoData] = useState();
 	const [lock, setLock] = useState({ lock: 'right' });
 
-	// * es专用 specificationConfig
-	const [esSpConfig] = useState([
-		{
-			dataIndex: 'title',
-			render: (val) => (
-				<div className="title-content">
-					<div className="blue-line"></div>
-					<div className="detail-title">{val}</div>
-					<span
-						className="name-link ml-12"
-						onClick={() => setEsVisible(true)}
-					>
-						修改
-					</span>
-				</div>
-			),
-			span: 24
-		},
-		{
-			dataIndex: 'model',
-			label: '模式',
-			span: 9,
-			render: (val) => <div>{modelMap[val]}</div>
-		},
-		{
-			dataIndex: 'node',
-			label: '节点规格',
-			span: 15,
-			render: () => {
-				const list = [];
-				if (data) {
-					for (let i in data.quota) {
-						if (data.quota[i].num !== 0) {
-							list.push({
-								type: i,
-								...data.quota[i]
-							});
-						}
-					}
-					return (
-						<div>
-							{list &&
-								list.map((item) => {
-									return (
-										<Row key={item.type}>
-											<Col span={6}>
-												{esMap[item.type]} ({item.num}):{' '}
-											</Col>
-											<Col>
-												{item.cpu}Core CPU {item.memory}{' '}
-												内存{' '}
-												{item.type !== 'kibana'
-													? item.storageClassQuota ||
-													  0
-													: null}
-												{`${
-													item.type !== 'kibana'
-														? '存储'
-														: ''
-												}`}
-											</Col>{' '}
-										</Row>
-									);
-								})}
-						</div>
-					);
-				} else {
-					return '';
-				}
-			}
-		}
-	]);
-	// * 其他默认中间件使用
-	const [spConfig, setSpConfig] = useState([
-		{
-			dataIndex: 'title',
-			render: (val) => (
-				<div className="title-content">
-					<div className="blue-line"></div>
-					<div className="detail-title">{val}</div>
-				</div>
-			),
-			span: 24
-		},
-		{
-			dataIndex: 'model',
-			label: '模式',
-			render: (val) => <div>{modelMap[val]}</div>
-		},
-		{
-			dataIndex: 'node',
-			label: '节点规格',
-			render: (val) => (
-				<div>
-					{val}
-					{val === '-' ? null : (
-						<span
-							className="name-link ml-12"
-							onClick={editConfiguration}
-						>
-							修改
-						</span>
-					)}
-				</div>
-			)
-		}
-	]);
-
-	// model
-	const modelFormat = (mode) => {
-		let model = mode || '';
-		if (type === 'elasticsearch') {
-			if (data.quota.client.num !== 0 && data.quota.cold.num !== 0) {
-				model = 'cold-complex';
-			} else if (
-				data.quota.client.num === 0 &&
-				data.quota.cold.num !== 0
-			) {
-				model = 'complex-cold';
-			}
-		} else if (type === 'redis') {
-			if (mode === 'sentinel') {
-				model = mode;
-			} else {
-				model = data.quota.redis.num;
-			}
-		} else {
-			model = mode;
-		}
-		return model;
-	};
-
-	const nodeFormat = () => {
-		let node = '-';
-		if (
-			!customMid &&
-			data.quota[type] !== null &&
-			data.quota[type].cpu !== null
-		) {
-			const cpu =
-				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
-				'm'
-					? data.quota[type].cpu
-					: `${data.quota[type].cpu} Core`;
-			const memory = `${data.quota[type].memory} 内存`;
-			const storage = `${data.quota[type].storageClassQuota} 存储`;
-			node = cpu + memory + storage;
-		} else if (
-			customMid &&
-			data.quota[type] !== null &&
-			data.quota[type].cpu !== null
-		) {
-			const cpu =
-				data.quota[type].cpu.charAt(data.quota[type].cpu.length - 1) ===
-				'm'
-					? data.quota[type].cpu
-					: `${data.quota[type].cpu} Core`;
-			const memory = `${data.quota[type].memory} 内存`;
-			node = cpu + memory;
-		}
-		return node;
-	};
-
 	useEffect(() => {
-		if (data !== undefined) {
-			if (type === 'elasticsearch') {
-				setConfig({
-					title: '规格配置',
-					model: modelFormat(data.mode)
-				});
-			} else {
-				setConfig({
-					title: '规格配置',
-					model: modelFormat(data.mode),
-					node: nodeFormat()
-				});
-			}
-			setQuotaValue(data.quota[type]);
-			// * 自定义中间件 有operator，无operator
-			// if (customMid && data.quota[type] !== null) {
-			// 	setConfig({
-			// 		title: '规格配置',
-			// 		model: data.mode || '',
-			// 		node: `${
-			// 			data.quota[type].cpu.charAt(
-			// 				data.quota[type].cpu.length - 1
-			// 			) === 'm'
-			// 				? data.quota[type].cpu
-			// 				: `${data.quota[type].cpu} Core`
-			// 		} CPU ${data.quota[type].memory} 内存`
-			// 	});
-			// 	setQuotaValue(data.quota[type]);
-			// } else {
-			// 	// * mysql redis es mq
-			// 	if (type !== 'elasticsearch') {
-			// 		// * mysql redis mq
-			// 		setConfig({
-			// 			title: '规格配置',
-			// 			model:
-			// 				type === 'redis'
-			// 					? data.quota.redis.num
-			// 					: data.mode || '',
-			// 			node: `${
-			// 				data.quota[type].cpu.charAt(
-			// 					data.quota[type].cpu.length - 1
-			// 				) === 'm'
-			// 					? data.quota[type].cpu
-			// 					: `${data.quota[type].cpu} Core`
-			// 			} CPU ${data.quota[type].memory} 内存 ${
-			// 				data.quota[type].storageClassQuota
-			// 			} 存储`
-			// 		});
-			// 		setQuotaValue(data.quota[type]);
-			// 	} else {
-			// 		// es
-			// 		let mode = data.mode;
-			// 		if (
-			// 			data.quota.client.num !== 0 &&
-			// 			data.quota.cold.num !== 0
-			// 		) {
-			// 			mode = 'cold-complex';
-			// 		} else if (
-			// 			data.quota.client.num === 0 &&
-			// 			data.quota.cold.num !== 0
-			// 		) {
-			// 			mode = 'complex-cold';
-			// 		}
-			// 		setConfig({
-			// 			title: '规格配置',
-			// 			model: mode
-			// 		});
-			// 	}
-			// }
-		}
 		window.onresize = function () {
 			document.body.clientWidth >= 2300
 				? setLock(null)
 				: setLock({ lock: 'right' });
 		};
-	}, [data]);
-
-	useEffect(() => {
-		if (data !== undefined) {
-			if (customMid) {
-				let spConfigTemp = [...spConfig];
-				const dataIndexList = spConfigTemp.map(
-					(item) => item.dataIndex
-				);
-				if (dataIndexList.includes('model')) {
-					spConfigTemp = spConfigTemp.filter(
-						(item) => item.dataIndex !== 'model'
-					);
-				}
-				setSpConfig(spConfigTemp);
-			}
-		}
-	}, [data]);
+	}, []);
 
 	useEffect(() => {
 		if (data !== undefined) {
@@ -338,6 +68,7 @@ export default function HighAvailability(props) {
 				type: data.type
 			};
 			getPodList(sendData);
+			setQuotaValue(data.quota[type]);
 		}
 	}, [data]);
 	// * 获取pod列表
@@ -517,7 +248,6 @@ export default function HighAvailability(props) {
 	};
 	// * 修改节点规格
 	const updateMid = (sendData) => {
-		// console.log(sendData);
 		Dialog.show({
 			title: '操作确认',
 			content: '实例规格修改后将导致服务重启，是否继续？',
@@ -670,19 +400,6 @@ export default function HighAvailability(props) {
 				<DefaultPicture />
 			) : (
 				<>
-					{/* {customMid && data.quota[data.type] === null ? null : (
-						<>
-							<DataFields
-								dataSource={config}
-								items={
-									type === 'elasticsearch'
-										? esSpConfig
-										: spConfig
-								}
-							/>
-							<div className="detail-divider" />
-						</>
-					)} */}
 					{topoData && (
 						<>
 							<Visualization
