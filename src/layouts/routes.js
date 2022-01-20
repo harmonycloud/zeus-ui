@@ -39,6 +39,7 @@ import SystemAlarm from '@/pages/SystemAlarm';
 import CreateAlarm from '@/pages/InstanceList/Detail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
 import BackupSetting from '@/pages/InstanceList/Detail/BackupRecovery/backupSetting';
+import YamlEdit from '@/pages/InstanceList/Detail/HighAvailability/yamlEdit';
 // ! 已弃用组件
 // import ServiceList from '@/pages/ServiceList';
 // import BasicResource from '@/pages/BasicResource/index';
@@ -155,6 +156,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:currentTab/:middlewareName/:type/:chartVersion"
 					component={InstanceDetails}
+					exact
+				/>
+				<Route
+					path="/serviceList/highAvailability/yamlDetail/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
+					component={YamlEdit}
 					exact
 				/>
 				{/* <Route
