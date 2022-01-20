@@ -6,7 +6,8 @@ import {
 	Select,
 	Message
 } from '@alicloud/console-components';
-import { getParamTemp, getParamDetail } from '@/services/middleware';
+import { getParamsTemps, getParamsTemp } from '@/services/template';
+// import { getParamTemp, getParamDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 
 const formItemLayout = {
@@ -27,7 +28,7 @@ const { Option } = Select;
 // ];
 
 export default function ParamterTemplateForm(props) {
-	const { visible, onCreate, onCancel, type } = props;
+	const { visible, onCreate, onCancel, type, chartVersion } = props;
 	const [templates, setTemplates] = useState();
 	const [template, setTemplate] = useState();
 	const field = Field.useField();
@@ -40,12 +41,11 @@ export default function ParamterTemplateForm(props) {
 		const sendData = {
 			type
 		};
-		getParamTemp(sendData).then((res) => {
+		getParamsTemps(sendData).then((res) => {
 			// console.log(res);
 			if (res.success) {
 				if (res.data.length > 0) {
 					setTemplates(res.data);
-					setTemplate(res.data[0].name);
 				} else {
 					Message.show(messageConfig('error', '失败', '暂无模板'));
 				}
@@ -62,11 +62,16 @@ export default function ParamterTemplateForm(props) {
 		field.validate((err, values) => {
 			if (err) return;
 			// console.log(values);
+			const current = templates.filter(
+				(item) => item.uid === values.templateUid
+			);
 			const sendData = {
 				type,
-				templateName: values.templateName
+				templateName: current.name,
+				uid: values.templateUid,
+				chartVersion
 			};
-			getParamDetail(sendData).then((res) => {
+			getParamsTemp(sendData).then((res) => {
 				// console.log(res);
 				if (res.success) {
 					onCreate(res.data.customConfigList);
@@ -94,15 +99,14 @@ export default function ParamterTemplateForm(props) {
 				>
 					<Select
 						style={{ width: 300 }}
-						name="templateName"
-						value={template}
-						onChange={onChange}
+						name="templateUid"
+						defaultValue={templates && templates[0].uid}
 					>
 						{templates &&
 							templates.map((item) => {
 								return (
-									<Option key={item.name} value={item.name}>
-										{item.aliasName}
+									<Option key={item.uid} value={item.uid}>
+										{item.name}
 									</Option>
 								);
 							})}

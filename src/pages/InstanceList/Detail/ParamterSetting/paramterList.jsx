@@ -9,9 +9,11 @@ import {
 	Input,
 	Message,
 	Dialog,
+	Balloon,
 	Select,
-	Balloon
+	Search
 } from '@alicloud/console-components';
+import { useParams } from 'react-router';
 import HeaderLayout from '@/components/HeaderLayout';
 import BalloonForm from '@/components/BalloonForm';
 import ParamterTemplateForm from './paramterTemplateForm';
@@ -20,29 +22,40 @@ import { getConfigs, updateConfig } from '@/services/middleware';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const Tooltip = Balloon.Tooltip;
 const formItemLayout = {
 	labelCol: { fixedSpan: 0 },
 	wrapperCol: { span: 24 }
 };
+const Tooltip = Balloon.Tooltip;
 export default function ParamterLIst(props) {
 	const { clusterId, namespace, middlewareName, type, onFreshChange } = props;
 	const [dataSource, setDataSource] = useState([]);
-	const [showDataSource, setShowDataSource] = useState();
+	const [checkedDataSource, setCheckedDataSource] = useState([]);
+	const [originData, setOriginData] = useState([]);
 	const [checked, setChecked] = useState(false);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const [visible, setVisible] = useState(false);
-
+	const [searchText, setSearchText] = useState('');
+	const params = useParams();
 	useEffect(() => {
 		const list = dataSource.filter(
 			(item) => item.value != item.modifiedValue
 		);
-		setShowDataSource(list);
+		setCheckedDataSource(list);
 	}, [dataSource]);
 
 	useEffect(() => {
-		getData(clusterId, namespace, middlewareName, type);
-	}, [props]);
+		const list = originData.filter((item) =>
+			item.name.includes(searchText)
+		);
+		setDataSource(list);
+	}, [searchText]);
+
+	useEffect(() => {
+		if (clusterId && namespace && middlewareName && type) {
+			getData(clusterId, namespace, middlewareName, type);
+		}
+	}, [namespace]);
 
 	const getData = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -56,9 +69,11 @@ export default function ParamterLIst(props) {
 				const list =
 					res.data &&
 					res.data.map((item) => {
-						item.modifiedValue = item.value;
+						item.modifiedValue = item.value || item.defaultValue;
+						item.value = item.value || item.defaultValue;
 						return item;
 					});
+				setOriginData(list);
 				setDataSource(list);
 			}
 		});
@@ -66,6 +81,11 @@ export default function ParamterLIst(props) {
 
 	const onChange = (checked) => {
 		setChecked(checked);
+	};
+
+	const onSearch = (value) => {
+		console.log(value);
+		setSearchText(value);
 	};
 
 	const isRestartRender = (value, index, record) => {
@@ -76,35 +96,38 @@ export default function ParamterLIst(props) {
 		const list = dataSource.filter(
 			(item) => item.value != item.modifiedValue
 		);
-		const sendList = list.map((item) => {
-			item.value = item.modifiedValue;
-			return item;
-		});
-		const restartFlag = sendList.some((item) => {
+		const restartFlag = list.some((item) => {
 			if (item.restart === true) return true;
 			return false;
 		});
-		const sendData = {
-			url: {
-				clusterId,
-				middlewareName,
-				namespace
-			},
-			data: {
-				clusterId,
-				middlewareName,
-				namespace,
-				type,
-				customConfigList: sendList
-			}
-		};
 		if (restartFlag) {
 			Dialog.show({
 				title: '修改参数',
 				content:
 					'本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作',
 				onOk: () => {
+					const sendList = list.map((item) => {
+						item.value = item.modifiedValue;
+						return item;
+					});
+					const sendData = {
+						url: {
+							clusterId,
+							middlewareName,
+							namespace
+						},
+						data: {
+							clusterId,
+							middlewareName,
+							namespace,
+							type,
+							customConfigList: sendList
+						}
+					};
 					updateData(sendData);
+				},
+				onCancel: () => {
+					setSubmitDisabled(judgeSubmit());
 				}
 			});
 		} else {
@@ -113,7 +136,28 @@ export default function ParamterLIst(props) {
 				content:
 					'本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
 				onOk: () => {
+					const sendList = list.map((item) => {
+						item.value = item.modifiedValue;
+						return item;
+					});
+					const sendData = {
+						url: {
+							clusterId,
+							middlewareName,
+							namespace
+						},
+						data: {
+							clusterId,
+							middlewareName,
+							namespace,
+							type,
+							customConfigList: sendList
+						}
+					};
 					updateData(sendData);
+				},
+				onCancel: () => {
+					setSubmitDisabled(judgeSubmit());
 				}
 			});
 		}
@@ -131,8 +175,10 @@ export default function ParamterLIst(props) {
 						)
 					);
 					onFreshChange();
+					setSubmitDisabled(judgeSubmit());
 				} else {
 					Message.show(messageConfig('error', '失败', res));
+					setSubmitDisabled(judgeSubmit());
 				}
 			})
 			.finally(() => {
@@ -150,6 +196,7 @@ export default function ParamterLIst(props) {
 					return item;
 				});
 				setDataSource(list);
+				setSubmitDisabled(judgeSubmit());
 			}
 		});
 	};
@@ -163,6 +210,17 @@ export default function ParamterLIst(props) {
 	};
 
 	const updateValue = (value, record) => {
+		let cValue = value[record.name];
+		if (record.paramType === 'multiSelect') {
+			cValue = value[record.name].join(',');
+		}
+		const flag = cValue.trim();
+		if (flag === null || flag === undefined || flag === '') {
+			Message.show(
+				messageConfig('error', '失败', '不能将目标值设置为空!')
+			);
+			return;
+		}
 		if (record.paramType === 'multiSelect') {
 			record.modifiedValue = value[record.name].join(',');
 		} else {
@@ -177,6 +235,7 @@ export default function ParamterLIst(props) {
 			values.map((it) => {
 				if (item.name === it.name) {
 					item.modifiedValue = it.value;
+					// item.description = it.description;
 				}
 			});
 			return item;
@@ -184,79 +243,6 @@ export default function ParamterLIst(props) {
 		setDataSource(list);
 		setSubmitDisabled(judgeSubmit());
 		setVisible(false);
-	};
-	const descriptionRender = (value, index, record) => {
-		return (
-			<Tooltip
-				trigger={
-					<span
-						className="table-col-w146-h2"
-						onClick={() => {
-							const dialog = Dialog.show({
-								title: '参数描述',
-								content: (
-									<div
-										style={{
-											maxWidth: '560px',
-											lineHeight: '16px'
-										}}
-									>
-										{value}
-									</div>
-								),
-								footer: (
-									<Button
-										type="primary"
-										onClick={() => dialog.hide()}
-									>
-										确认
-									</Button>
-								)
-							});
-						}}
-					>
-						{value}
-					</span>
-				}
-				align="t"
-			>
-				{value}
-			</Tooltip>
-		);
-	};
-	const tooltipRender = (value, index, record, width) => {
-		const e1 = document.createElement('div');
-		e1.className = 'hidden';
-		e1.innerText = value;
-		document.body.appendChild(e1);
-		if (e1.clientWidth > width) {
-			document.body.removeChild(e1);
-			return (
-				<Tooltip
-					trigger={
-						<div
-							className="mid-table-col"
-							style={{ width: `${width - 32}px` }}
-						>
-							{value}
-						</div>
-					}
-					align="t"
-				>
-					<span style={{ lineHeight: '16px' }}>{value}</span>
-				</Tooltip>
-			);
-		} else {
-			document.body.removeChild(e1);
-			return (
-				<div
-					className="mid-table-col"
-					style={{ width: `${width - 32}px` }}
-				>
-					{value}
-				</div>
-			);
-		}
 	};
 
 	const valueRender = (value, index, record) => {
@@ -356,7 +342,79 @@ export default function ParamterLIst(props) {
 			</div>
 		);
 	};
-
+	const tooltipRender = (value, index, record, width) => {
+		const e1 = document.createElement('div');
+		e1.className = 'hidden';
+		e1.innerText = value;
+		document.body.appendChild(e1);
+		if (e1.clientWidth > width) {
+			document.body.removeChild(e1);
+			return (
+				<Tooltip
+					trigger={
+						<div
+							className="mid-table-col"
+							style={{ width: `${width - 32}px` }}
+						>
+							{value}
+						</div>
+					}
+					align="t"
+				>
+					<span style={{ lineHeight: '16px' }}>{value}</span>
+				</Tooltip>
+			);
+		} else {
+			document.body.removeChild(e1);
+			return (
+				<div
+					className="mid-table-col"
+					style={{ width: `${width - 32}px` }}
+				>
+					{value}
+				</div>
+			);
+		}
+	};
+	const descriptionRender = (value, index, record) => {
+		return (
+			<Tooltip
+				trigger={
+					<span
+						className="table-col-w146-h2"
+						onClick={() => {
+							const dialog = Dialog.show({
+								title: '参数描述',
+								content: (
+									<div
+										style={{
+											maxWidth: '560px',
+											lineHeight: '16px'
+										}}
+									>
+										{value}
+									</div>
+								),
+								footer: (
+									<Button
+										type="primary"
+										onClick={() => dialog.hide()}
+									>
+										确认
+									</Button>
+								)
+							});
+						}}
+					>
+						{value}
+					</span>
+				}
+				align="t"
+			>
+				{value}
+			</Tooltip>
+		);
+	};
 	return (
 		<Page>
 			<Page.Content style={{ padding: '0 0' }}>
@@ -380,9 +438,17 @@ export default function ParamterLIst(props) {
 							>
 								重新编辑
 							</Button>
-							<Button onClick={() => setVisible(true)}>
-								参数模板
+							<Button
+								className="mr-8"
+								onClick={() => setVisible(true)}
+							>
+								选择参数模板
 							</Button>
+							<Search
+								onSearch={onSearch}
+								style={{ width: '200px' }}
+								placeholder="请输入搜索内容"
+							/>
 						</>
 					}
 					right={
@@ -394,9 +460,8 @@ export default function ParamterLIst(props) {
 					}
 				/>
 				<Table
-					dataSource={checked ? showDataSource : dataSource}
+					dataSource={checked ? checkedDataSource : dataSource}
 					hasBorder={false}
-					tableWidth={1270}
 				>
 					<Table.Column
 						title="参数名"
@@ -439,7 +504,7 @@ export default function ParamterLIst(props) {
 						title="参数描述"
 						dataIndex="description"
 						cell={descriptionRender}
-						// {...lock}
+						// lock="right"
 						width={200}
 					/>
 				</Table>
@@ -450,6 +515,7 @@ export default function ParamterLIst(props) {
 					onCreate={selectTemplate}
 					onCancel={() => setVisible(false)}
 					type={type}
+					chartVersion={params.chartVersion}
 				/>
 			)}
 		</Page>
