@@ -5,7 +5,8 @@ import {
 	Switch,
 	Icon,
 	Balloon,
-	Grid
+	Grid,
+	Button
 } from '@alicloud/console-components';
 import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
@@ -16,7 +17,8 @@ import {
 	getPods,
 	restartPods,
 	switchMiddlewareMasterSlave,
-	updateMiddleware
+	updateMiddleware,
+	rebootService
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
@@ -684,6 +686,43 @@ export default function HighAvailability(props) {
 			</div>
 		);
 	};
+	const restartService = () => {
+		Dialog.show({
+			title: '操作确认',
+			content: '请确认是否重启服务？',
+			onOk: () => {
+				const sendData = {
+					clusterId,
+					middlewareName: data.name,
+					namespace,
+					type: data.type
+				};
+				rebootService(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '服务重启成功！')
+						);
+						onRefresh();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		});
+	};
+	const Operation = {
+		primary: (
+			<div className="title-content">
+				<div className="blue-line"></div>
+				<div className="detail-title">实例列表</div>
+			</div>
+		),
+		secondary: (
+			<Button type="primary" onClick={restartService}>
+				重启服务
+			</Button>
+		)
+	};
 
 	return (
 		<div>
@@ -776,12 +815,7 @@ export default function HighAvailability(props) {
 							};
 							getPodList(sendData);
 						}}
-						operation={
-							<div className="title-content">
-								<div className="blue-line"></div>
-								<div className="detail-title">实例列表</div>
-							</div>
-						}
+						operation={Operation}
 					>
 						<Table.Column
 							title="实例名称"
