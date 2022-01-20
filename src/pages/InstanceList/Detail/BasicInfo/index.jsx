@@ -212,7 +212,7 @@ function BasicInfo(props) {
 				className="name-link"
 				onClick={() => {
 					history.push(
-						`/serviceList/highAvailability/yamlDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${clusterId}/${namespace}`
+						`/serviceList/${params.name}/${params.aliasName}/highAvailability/yamlDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${clusterId}/${namespace}`
 					);
 				}}
 			>
@@ -435,9 +435,12 @@ function BasicInfo(props) {
 			});
 			setACLCheck(data?.rocketMQParam?.acl?.enable);
 		}
-
-		getEventsData();
 	}, [data]);
+	useEffect(() => {
+		if (clusterId && namespace) {
+			getEventsData();
+		}
+	}, [namespace]);
 
 	useEffect(() => {
 		// * 动态表单 设置其他

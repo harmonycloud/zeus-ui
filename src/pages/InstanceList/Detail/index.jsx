@@ -41,7 +41,14 @@ const InstanceDetails = (props) => {
 	const {
 		globalVar,
 		match: {
-			params: { middlewareName, type, chartVersion, currentTab }
+			params: {
+				middlewareName,
+				type,
+				chartVersion,
+				currentTab,
+				name,
+				aliasName
+			}
 		},
 		setCluster,
 		setNamespace,
@@ -65,6 +72,7 @@ const InstanceDetails = (props) => {
 			? 'basicInfo'
 			: storage.getLocal('backKey')
 	);
+	console.log(props);
 
 	useEffect(() => {
 		if (
@@ -256,9 +264,9 @@ const InstanceDetails = (props) => {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/serviceList/basicInfo/${data.mysqlDTO.relationName}/${
-				data.mysqlDTO.type || 'mysql'
-			}/${chartVersion}`,
+			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
+				data.mysqlDTO.relationName
+			}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 			state: {
 				flag: true
 			}
@@ -285,7 +293,7 @@ const InstanceDetails = (props) => {
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/serviceList/basicInfo/${
+						pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
 							data.mysqlDTO.relationName
 						}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 						state: {

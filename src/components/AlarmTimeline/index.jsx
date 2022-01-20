@@ -68,7 +68,7 @@ function AlarmTimeLine(props) {
 							`/serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
-							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
+							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
 						});
 					}
 				});
@@ -93,7 +93,7 @@ function AlarmTimeLine(props) {
 							`/serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
-							pathname: `/serviceList/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
+							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
 						});
 					}
 				});

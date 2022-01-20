@@ -25,6 +25,8 @@ interface paramsProps {
 	namespace: string;
 	type: string;
 	chartVersion: string;
+	name: string;
+	aliasName: string;
 }
 interface YamlMsgProp {
 	time: string;
@@ -38,7 +40,9 @@ const YamlEdit = () => {
 		clusterId,
 		namespace,
 		type,
-		chartVersion
+		chartVersion,
+		name,
+		aliasName
 	}: paramsProps = useParams();
 	const [oldValue, setOldValue] = useState<string>('');
 	const [newValue, setNewValue] = useState<string>('');
@@ -131,7 +135,7 @@ const YamlEdit = () => {
 							messageConfig('success', '成功', 'yaml编辑成功')
 						);
 						history.push(
-							`/serviceList/highAvailability/${middlewareName}/${type}/${chartVersion}`
+							`/serviceList/${name}/${aliasName}/highAvailability/${middlewareName}/${type}/${chartVersion}`
 						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));

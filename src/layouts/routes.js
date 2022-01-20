@@ -155,22 +155,22 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务详情 - 实例详情*/}
 				<Route
-					path="/serviceList/:currentTab/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:name/:aliasName/:currentTab/:middlewareName/:type/:chartVersion"
 					component={InstanceDetails}
 					exact
 				/>
 				<Route
-					path="/serviceList/paramterSetting/template/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion"
 					component={ParamterEdit}
 					exact
 				/>
 				<Route
-					path="/serviceList/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName"
+					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName"
 					component={ParamterEdit}
 					exact
 				/>
 				<Route
-					path="/serviceList/highAvailability/yamlDetail/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
+					path="/serviceList/:name/:aliasName/highAvailability/yamlDetail/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
 					component={YamlEdit}
 					exact
 				/>

@@ -27,6 +27,8 @@ interface ParamsProps {
 	middlewareName: string;
 	uid: string;
 	templateName: string;
+	name: string;
+	aliasName: string;
 }
 export interface TempProps {
 	name: string;
@@ -50,7 +52,9 @@ const ParamterEdit = () => {
 		chartVersion,
 		middlewareName,
 		uid,
-		templateName
+		templateName,
+		name,
+		aliasName
 	}: ParamsProps = useParams();
 	const history = useHistory();
 	const [originData, setOriginData] = useState<ParamterItem[]>([]);
@@ -162,7 +166,7 @@ const ParamterEdit = () => {
 						messageConfig('success', '成功', '参数模板修改成功')
 					);
 					history.push(
-						`/serviceList/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+						`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
 					);
 				} else {
 					Message.show(messageConfig('error', '失败', res));
@@ -181,7 +185,7 @@ const ParamterEdit = () => {
 						messageConfig('success', '成功', '参数模板创建成功')
 					);
 					history.push(
-						`/serviceList/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+						`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
 					);
 				} else {
 					Message.show(messageConfig('error', '失败', res));

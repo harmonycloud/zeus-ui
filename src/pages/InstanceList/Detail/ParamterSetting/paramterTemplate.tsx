@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Message, Dialog } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import { getParamsTemps, deleteParamsTemp } from '@/services/template';
 import messageConfig from '@/components/messageConfig';
@@ -11,12 +11,18 @@ interface ParamterTemplateProps {
 	chartVersion: string;
 	middlewareName: string;
 }
+interface paramsProps {
+	name: string;
+	aliasName: string;
+}
 const ParamterTemplate = (props: ParamterTemplateProps) => {
 	const { type, chartVersion, middlewareName } = props;
 	const [originData, setOriginData] = useState([]);
 	const [dataSource, setDataSource] = useState([]);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 	const history = useHistory();
+	const params: paramsProps = useParams();
+	console.log(params);
 	useEffect(() => {
 		getData();
 	}, []);
@@ -37,7 +43,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<Button
 					onClick={() => {
 						history.push(
-							`/serviceList/paramterSetting/template/${middlewareName}/${type}/${chartVersion}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}`
 						);
 					}}
 					type="primary"
@@ -93,7 +99,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/serviceList/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
 						);
 					}}
 				>
