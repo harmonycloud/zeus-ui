@@ -791,7 +791,9 @@ const MysqlCreate = (props) => {
 				className="page-header"
 				hasBackArrow
 				onBackArrowClick={() => {
-					window.history.back();
+					history.push({
+						pathname: `/serviceList/${chartName}/${aliasName}`
+					});
 				}}
 			/>
 			<Page.Content>
@@ -1908,7 +1910,11 @@ const MysqlCreate = (props) => {
 						</Form.Submit>
 						<Button
 							type="normal"
-							onClick={() => window.history.back()}
+							onClick={() =>
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								})
+							}
 						>
 							取消
 						</Button>

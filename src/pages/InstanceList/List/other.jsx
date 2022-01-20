@@ -9,6 +9,7 @@ import transTime from '@/utils/transTime';
 import messageConfig from '@/components/messageConfig';
 import timerClass from '@/utils/timerClass';
 import { statusRender } from '@/utils/utils';
+import { states } from '@/utils/const';
 
 function OtherList(props) {
 	const { cluster: globalCluster, namespace: globalNamespace } =
@@ -21,11 +22,6 @@ function OtherList(props) {
 	let [timer, setTimer] = useState(null);
 	const [lock, setLock] = useState({ lock: 'right' });
 
-	const status = [
-		{ value: 'Creating', label: '启动中' },
-		{ value: 'Running', label: '运行正常' },
-		{ value: 'Other', label: '运行异常' }
-	];
 	const getData = async (clusterId, namespace, keyword) => {
 		if (instance.chartName) {
 			let res = await getMiddlewareList({

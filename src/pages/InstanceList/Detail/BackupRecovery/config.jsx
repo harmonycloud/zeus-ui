@@ -20,27 +20,8 @@ import {
 	updateBackupConfig
 } from '@/services/backup';
 import moment from 'moment';
-import transTime from '@/utils/transTime';
 import storage from '@/utils/storage';
-
-const weekMap = {
-	1: '星期一',
-	2: '星期二',
-	3: '星期三',
-	4: '星期四',
-	5: '星期五',
-	6: '星期六',
-	0: '星期日'
-};
-const listMap = {
-	星期一: 1,
-	星期二: 2,
-	星期三: 3,
-	星期四: 4,
-	星期五: 5,
-	星期六: 6,
-	星期日: 0
-};
+import { weekMap } from '@/utils/const';
 
 export default function Config(props) {
 	const { clusterId, namespace, data: listData, dataSecurity } = props;

@@ -16,6 +16,7 @@ import { middlewareProps } from './middleware';
 import Table from '@/components/MidTable';
 import { iconTypeRender } from '@/utils/utils';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
+import { versionStatus } from '@/utils/enum';
 import './index.scss';
 
 interface versionProps {
@@ -24,12 +25,7 @@ interface versionProps {
 interface paramsProps {
 	type: string;
 }
-enum versionStatus {
-	now = '当前版本',
-	future = '可安装升级版本',
-	history = '历史版本',
-	updating = '升级中'
-}
+
 function MiddlewareVersion(props: versionProps): JSX.Element {
 	const {
 		globalVar: { cluster }

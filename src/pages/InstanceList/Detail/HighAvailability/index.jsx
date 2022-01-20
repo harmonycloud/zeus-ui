@@ -24,6 +24,7 @@ import EditNodeSpe from './editNodeSpe';
 import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
+import { modelMap, esMap } from '@/utils/const';
 import Console from './console';
 
 const { Row, Col } = Grid;
@@ -32,28 +33,6 @@ const specification = {
 	title: '规格配置',
 	model: '',
 	node: ''
-};
-const modelMap = {
-	MasterSlave: '一主一从',
-	'1m-1s': '一主一从',
-	simple: 'N主',
-	complex: 'N主N数据N协调',
-	'complex-cold': 'N主N数据N冷',
-	'cold-complex': 'N主N数据N冷N协调',
-	regular: 'N主N数据',
-	sentinel: '哨兵',
-	'2m-noslave': '两主',
-	'2m-2s': '两主两从',
-	'3m-3s': '三主三从',
-	6: '三主三从',
-	10: '五主五从'
-};
-const esMap = {
-	master: '主节点',
-	data: '数据节点',
-	kibana: 'kibana',
-	client: '协调节点',
-	cold: '冷数据节点'
 };
 
 // const redisModeSelects = [

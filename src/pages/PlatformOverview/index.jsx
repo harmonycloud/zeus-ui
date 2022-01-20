@@ -25,28 +25,11 @@ import {
 import AlarmTimeLine from '@/components/AlarmTimeline';
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
+import { radioList } from '@/utils/const';
 import * as echarts from 'echarts/core';
 import moment from 'moment';
 import './platformOverview.scss';
 
-const radioList = [
-	{
-		value: '',
-		label: '全部'
-	},
-	{
-		value: 'info',
-		label: '一般'
-	},
-	{
-		value: 'warning',
-		label: '重要'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
-];
 const Tooltip = Balloon.Tooltip;
 
 function PlatformOverview() {

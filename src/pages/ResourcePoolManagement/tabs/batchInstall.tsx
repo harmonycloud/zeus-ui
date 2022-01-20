@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, Checkbox, Radio, Message } from '@alicloud/console-components';
-import { name, color, icon } from '@/components/ComponentCard/index';
+import { name, icon, color, labelSimple, labelHigh } from '@/utils/enum';
 import { ComponentProp } from '../resource.pool';
 import { getMiddlewareRepository } from '@/services/repository';
 import CustomIcon from '@/components/CustomIcon';
@@ -20,22 +20,6 @@ interface ControllerItemProps {
 	chartVersion: string;
 	status: number;
 	type?: any;
-}
-export enum labelSimple {
-	alertmanager = 'cpu：0.2核；内存：0.5G；存储：0G',
-	prometheus = 'cpu：1核；内存：2G；存储：10G',
-	logging = 'cpu：2.5核；内存：7G；存储：5G',
-	minio = 'cpu：0.5核；内存：1G；存储：20G',
-	grafana = 'cpu：1核；内存：1G；存储：0G',
-	'middleware-controller' = 'cpu：0.5核；内存：0.5G；存储：0G'
-}
-export enum labelHigh {
-	alertmanager = 'cpu：0.6核；内存：1.5G；存储：0G',
-	prometheus = 'cpu：3核；内存：6G；存储：30G',
-	logging = 'cpu：4.5核；内存：15G；存储：15G',
-	minio = 'cpu：1.5核；内存：3G；存储：30G',
-	grafana = 'cpu：3核；内存：3G；存储：0G',
-	'middleware-controller' = 'cpu：1.5核；内存：1.5G；存储：0G'
 }
 const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;

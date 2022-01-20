@@ -19,19 +19,9 @@ import {
 } from '@/services/ingress';
 import messageConfig from '@/components/messageConfig';
 import CustomIcon from '@/components/CustomIcon';
+import { instanceType, exposedWay } from '@/utils/const';
 // import ComponentsLoading from '@/components/componentsLoading';
 import './ingress.scss';
-
-const instanceType = [
-	{ value: 'mysql', label: 'MySQL' },
-	{ value: 'redis', label: 'Redis' },
-	{ value: 'elasticsearch', label: 'Elasticsearch' },
-	{ value: 'rocketmq', label: 'RocketMQ' }
-];
-const exposedWay = [
-	{ value: 'Ingress', label: 'Ingress' },
-	{ value: 'NodePort', label: 'NodePort' }
-];
 
 function IngressList(props) {
 	const { globalVar, entry = 'menu', type = '', middlewareName = '' } = props;

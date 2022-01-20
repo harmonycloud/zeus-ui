@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { Dialog } from '@alicloud/console-components';
 import CustomIcon from '../CustomIcon';
 import { SendDataProps } from './index';
-import {
-	labelHigh,
-	labelSimple
-} from '@/pages/ResourcePoolManagement/tabs/batchInstall';
+import { labelHigh, labelSimple } from '@/utils/enum';
 import './index.scss';
 
 interface installFormProps {

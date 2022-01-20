@@ -11,6 +11,7 @@ import {
 // import { findDOMNode } from 'react-dom';
 import { userConfigProps, authProps, visibleProps } from './acl';
 import { judgeObjArrayHeavyByAttr } from '@/utils/utils';
+import { stateProps } from '@/utils/enum';
 // todo 优化点
 // todo 方法一、对于topicPerm 和 groupPerm 的处理 可以更为简洁 可以尝试 Object.entries() 将对象转成一个二维数组 在通过Object.fromEntries 将二位数组重新转换成对象
 // todo 方法二、可以使用Map对象，通过setMap等函数来处理数据，最后通过Object.fromEntries(map) 可以转换成对象
@@ -18,12 +19,7 @@ const { Item: FormItem } = Form;
 const { Group: RadioGroup } = Radio;
 const { Row, Col } = Grid;
 const { Option } = Select;
-enum stateProps {
-	'error' = 'error',
-	'loading' = 'loading',
-	'success' = 'success',
-	'warning' = 'warning'
-}
+
 export default function UserConfig(props: userConfigProps): JSX.Element {
 	const { deleteUserConfigProps, userConfig, setUserConfig } = props;
 	const [visible, setVisible] = useState<boolean>(false);

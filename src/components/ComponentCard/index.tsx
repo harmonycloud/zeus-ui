@@ -10,6 +10,7 @@ import AccessForm from './accessForm';
 import LvmInstallForm from './lvmInstallForm';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import MidCard from '../MidCard';
+import { name, icon, color } from '@/utils/enum';
 import moment from 'moment';
 
 interface ComponentCardProps {
@@ -27,39 +28,6 @@ export interface SendDataProps {
 	type?: string;
 	vgName?: string;
 	size?: number;
-}
-export enum name {
-	alertmanager = '监控告警',
-	prometheus = '数据监控',
-	logging = '日志采集',
-	minio = '备份存储',
-	grafana = '监控面板',
-	ingress = '负载均衡',
-	'local-path' = '资源存储',
-	'middleware-controller' = '中间件管理',
-	lvm = 'LVM存储'
-}
-export enum color {
-	alertmanager = '#12C1C6',
-	prometheus = '#F7786C',
-	logging = '#6069FF',
-	minio = '#846CF7',
-	grafana = '#60C1FF',
-	ingress = '#FFAA3A',
-	'local-path' = '#E871AF',
-	'middleware-controller' = '#C5D869',
-	lvm = '#EAC110'
-}
-export enum icon {
-	alertmanager = 'icon-gaojingshijian1',
-	prometheus = 'icon-shujujiankong1',
-	logging = 'icon-rizhicaiji',
-	minio = 'icon-beifen',
-	grafana = 'icon-shujujiankong',
-	ingress = 'icon-fuzaijunheng',
-	'local-path' = 'icon-ziyuan-cunchu',
-	'middleware-controller' = 'icon-zhongjianjianguanli',
-	'lvm' = 'icon-cunchu1'
 }
 
 const ComponentCard = (props: ComponentCardProps) => {

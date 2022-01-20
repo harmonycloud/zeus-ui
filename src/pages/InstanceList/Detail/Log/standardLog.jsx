@@ -22,15 +22,10 @@ import TimeSelect from '@/components/TimeSelect';
 import transTime from '@/utils/transTime';
 import messageConfig from '@/components/messageConfig';
 import ComponentsNull from '@/components/ComponentsNull';
+import { searchTypes } from '@/utils/const';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
-const searchTypes = [
-	{ label: '分词搜索', value: 'match' },
-	{ label: '精确搜索', value: 'matchPhrase' },
-	{ label: '模糊搜索', value: 'wildcard' },
-	{ label: '正则表达式搜索', value: 'regexp' }
-];
 export default function StandardLog(props) {
 	const { logging } = props;
 	const { type, middlewareName, clusterId, namespace } = props.data;

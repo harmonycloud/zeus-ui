@@ -20,13 +20,8 @@ import NumberRange from '@/components/NumberRange';
 import { api } from '@/api.json';
 import styles from './log.module.scss';
 import ComponentsNull from '@/components/ComponentsNull';
+import { searchTypes } from '@/utils/const';
 
-const searchTypes = [
-	{ label: '分词搜索', value: 'match' },
-	{ label: '精确搜索', value: 'matchPhrase' },
-	{ label: '模糊搜索', value: 'wildcard' },
-	{ label: '正则表达式搜索', value: 'regexp' }
-];
 const { Option } = Select;
 const { Row, Col } = Grid;
 export default function SlowLog(props) {

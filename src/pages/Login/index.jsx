@@ -142,7 +142,7 @@ export default function Login() {
 				</header>
 				<div className={styles['login-form-box']}>
 					<Form className={styles['form']}>
-						<Form.Item label="登陆账户">
+						<Form.Item label="登录账户">
 							<Input
 								innerBefore={
 									<span className={styles['account']}></span>

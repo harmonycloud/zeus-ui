@@ -24,45 +24,12 @@ import {
 import { getUsers, sendInsertUser, insertDing } from '@/services/user';
 import { getMailInfo, getDing } from '@/services/alrem';
 import storage from '@/utils/storage';
+import { symbols, alarmWarn, silences } from '@/utils/const';
 import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { Tooltip } = Balloon;
-export const symbols = [
-	{ value: '>=', label: '≥' },
-	{ value: '>', label: '>' },
-	{ value: '==', label: '=' },
-	{ value: '<', label: '<' },
-	{ value: '<=', label: '≤' },
-	{ value: '!=', label: '≠' }
-];
-const silences = [
-	{ value: '5m', label: '5分钟' },
-	{ value: '10m', label: '10分钟' },
-	{ value: '15m', label: '15分钟' },
-	{ value: '30m', label: '30分钟' },
-	{ value: '1h', label: '1小时' },
-	{ value: '2h', label: '2小时' },
-	{ value: '3h', label: '3小时' },
-	{ value: '6h', label: '6小时' },
-	{ value: '12h', label: '12小时' },
-	{ value: '24h', label: '24小时' }
-];
-const alarmWarn = [
-	{
-		value: 'info',
-		label: '一般'
-	},
-	{
-		value: 'warning',
-		label: '重要'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
-];
 
 function CreateAlarm(props) {
 	const { clusterId, namespace, middlewareName, type, alarmType, record } =
@@ -1060,7 +1027,7 @@ function CreateAlarm(props) {
 								mode="simple"
 								titles={[
 									<div key="left">
-										<span key="account">登陆账户</span>
+										<span key="account">登录账户</span>
 										<span key="username">用户名</span>
 										<span key="email">邮箱</span>
 										<span key="tel">手机号</span>
@@ -1068,7 +1035,7 @@ function CreateAlarm(props) {
 										<span key="role">关联角色</span>
 									</div>,
 									<div key="right">
-										<span key="account">登陆账户</span>
+										<span key="account">登录账户</span>
 										<span key="username">用户名</span>
 										<span key="email">邮箱</span>
 										<span key="tel">手机号</span>

@@ -15,8 +15,8 @@ import Control from '@/assets/images/control.svg';
 import { useLocation } from 'react-router';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
+import { modelMap } from '@/utils/const';
 import insertCss from 'insert-css';
-import { type } from 'os';
 
 insertCss(`
 .tooltip {
@@ -87,22 +87,6 @@ const podStatus = [
 		title: '运行异常'
 	}
 ];
-
-const modelMap = {
-	MasterSlave: '一主一从',
-	'1m-1s': '一主一从',
-	simple: 'N主',
-	complex: 'N主N数据N协调',
-	'complex-cold': 'N主N数据N冷',
-	'cold-complex': 'N主N数据N冷N协调',
-	regular: 'N主N数据',
-	sentinel: '哨兵',
-	'2m-noslave': '两主',
-	'2m-2s': '两主两从',
-	'3m-3s': '三主三从',
-	6: '三主三从',
-	10: '五主五从'
-};
 
 function Visualization(props) {
 	const {
@@ -306,7 +290,7 @@ function Visualization(props) {
 									cfg.level === 'serve'
 										? cfg.adentify
 										: roleRender(cfg.adentify, '', cfg),
-								fill: 'rgba(0, 0, 0, .65)',
+								fill: 'rgb(0, 0, 0)',
 								fontSize:
 									cfg.level === 'serve' &&
 									cfg.adentify.length >= 6
