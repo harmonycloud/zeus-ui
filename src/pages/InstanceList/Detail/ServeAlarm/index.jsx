@@ -9,7 +9,7 @@ import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
-import { symbols, alarmWarn, silences } from '@/utils/const';
+import { alarmWarn, silences } from '@/utils/const';
 import {
 	deleteAlarm,
 	deleteAlarms,
@@ -181,13 +181,9 @@ function Rules(props) {
 	};
 
 	const ruleRender = (value, index, record) =>
-		`${record.description}${
-			symbols.find((item) => item.value === record.symbol)
-				? symbols.find((item) => item.value === record.symbol).label
-				: ''
-		}${record.threshold}%且${record.alertTime || ''}分钟内触发${
-			record.alertTimes || ''
-		}次`;
+		`${record.description}${record.symbol}${record.threshold}%且${
+			record.alertTime || ''
+		}分钟内触发${record.alertTimes || ''}次`;
 
 	const levelRender = (value, index, record) => {
 		return (

@@ -19,10 +19,10 @@ import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareF
 import { versionStatus } from '@/utils/enum';
 import './index.scss';
 
-interface versionProps {
+export interface versionProps {
 	globalVar: globalVarProps;
 }
-interface paramsProps {
+export interface paramsProps {
 	type: string;
 }
 

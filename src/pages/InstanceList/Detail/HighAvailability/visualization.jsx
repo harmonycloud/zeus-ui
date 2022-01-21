@@ -348,7 +348,18 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									x: collapseTextX(direction, cfg),
-									y: direction === 'LR' ? 48 : 68,
+									y:
+										direction === 'LR'
+											? /macintosh|mac os x/i.test(
+													navigator.userAgent
+											  )
+												? 48
+												: 53
+											: /macintosh|mac os x/i.test(
+													navigator.userAgent
+											  )
+											? 68
+											: 73,
 									textAlign: 'center',
 									textBaseline: 'middle',
 									text: cfg.collapsed ? '+' : '-',

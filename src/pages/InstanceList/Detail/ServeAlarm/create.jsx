@@ -21,7 +21,7 @@ import {
 	updateAlarm,
 	updateAlarms
 } from '@/services/middleware';
-import { getUsers, sendInsertUser, insertDing } from '@/services/user';
+import { getUsers } from '@/services/user';
 import { getMailInfo, getDing } from '@/services/alrem';
 import storage from '@/utils/storage';
 import { symbols, alarmWarn, silences } from '@/utils/const';
@@ -48,7 +48,6 @@ function CreateAlarm(props) {
 	const [selectUser, setSelectUser] = useState([]);
 	const [mailChecked, setMailChecked] = useState(false);
 	const [dingChecked, setDingChecked] = useState(false);
-	const [copyIndex, setCopyIndex] = useState();
 	const [isRule, setIsRule] = useState();
 	const [dingDisabled, setDingDisabled] = useState(false);
 	const [mailDisabled, setMailDisabled] = useState(false);
@@ -191,20 +190,21 @@ function CreateAlarm(props) {
 
 	const addAlarm = () => {
 		if (alarms && alarms.length > 0) {
-			const addItem = alarmRules[copyIndex];
-			if (typeof copyIndex === 'undefined') {
-				setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
-			} else {
-				setAlarmRules([
-					...alarmRules,
-					{
-						...addItem,
-						id: Math.random() * 100,
-						alert: '',
-						content: ''
-					}
-				]);
-			}
+			setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
+		}
+	};
+	const copyAlarm = (index) => {
+		if (alarms && alarms.length > 0) {
+			const addItem = alarmRules[index];
+			setAlarmRules([
+				...alarmRules,
+				{
+					...addItem,
+					id: Math.random() * 100,
+					alert: '',
+					content: ''
+				}
+			]);
 		}
 	};
 	const delAlarm = (i) => {
@@ -512,6 +512,7 @@ function CreateAlarm(props) {
 					};
 				}
 				item.lay = 'system';
+				item.ip = window.location.host;
 				record ? (item.enable = record.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
@@ -547,6 +548,7 @@ function CreateAlarm(props) {
 				record ? (item.enable = record.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
+				item.ip = window.location.host;
 				return item;
 			});
 			if (flag[0]) {
@@ -888,20 +890,22 @@ function CreateAlarm(props) {
 											/>
 										</Col>
 										<Col span={2}>
-											<Button>
+											<Button
+												style={{ marginRight: '8px' }}
+											>
 												<CustomIcon
 													type="icon-fuzhi1"
 													size={12}
 													style={{ color: '#0064C8' }}
 													onClick={() =>
-														setCopyIndex(index)
+														copyAlarm(index)
 													}
 												/>
 											</Button>
 											<Button
 												disabled={record}
 												onClick={() => addAlarm()}
-												style={{ borderLeft: 0 }}
+												style={{ marginRight: '8px' }}
 											>
 												<Icon
 													type="plus"
@@ -913,7 +917,6 @@ function CreateAlarm(props) {
 													onClick={() =>
 														delAlarm(item.id)
 													}
-													style={{ borderLeft: 0 }}
 												>
 													<Icon
 														type="wind-minus"
