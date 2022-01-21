@@ -622,7 +622,7 @@ export default function EsEditNodeSpe(props) {
 													</Option>
 												</Select>
 											</FormItem>
-											<FormItem
+											{/* <FormItem
 												pattern={pattern.posInt}
 												patternMessage="请输入正整数"
 												required
@@ -652,7 +652,7 @@ export default function EsEditNodeSpe(props) {
 													addonTextAfter="GB"
 													disabled
 												/>
-											</FormItem>
+											</FormItem> */}
 										</div>
 									</li>
 								)}

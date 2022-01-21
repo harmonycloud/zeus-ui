@@ -28,6 +28,7 @@ import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
 import YamlForm from './yamlForm';
+import DilatationForm from './dilatationForm';
 
 const { Row, Col } = Grid;
 
@@ -96,6 +97,7 @@ export default function HighAvailability(props) {
 	const [lock, setLock] = useState({ lock: 'right' });
 	const [yamlVisible, setYamlVisible] = useState(false);
 	const [podData, setPodData] = useState();
+	const [dilatationVisible, setDilationVisible] = useState(false);
 
 	// * es专用 specificationConfig
 	const [esSpConfig] = useState([
@@ -729,9 +731,14 @@ export default function HighAvailability(props) {
 			</div>
 		),
 		secondary: (
-			<Button type="primary" onClick={restartService}>
-				重启服务
-			</Button>
+			<>
+				<Button type="primary" onClick={restartService}>
+					重启服务
+				</Button>
+				<Button type="primary" onClick={() => setDilationVisible(true)}>
+					扩容
+				</Button>
+			</>
 		)
 	};
 
@@ -932,6 +939,14 @@ export default function HighAvailability(props) {
 						type: data.type,
 						podName: podData.podName
 					}}
+				/>
+			)}
+			{dilatationVisible && (
+				<DilatationForm
+					visible={dilatationVisible}
+					onCancel={() => setDilationVisible(false)}
+					onCreate={() => setDilationVisible(false)}
+					quota={quotaValue}
 				/>
 			)}
 		</div>

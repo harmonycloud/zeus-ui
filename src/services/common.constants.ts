@@ -19,3 +19,5 @@ export const getIngresses = `${api}/clusters/{clusterId}/ingress`;
 export const deleteIngress = `${api}/clusters/{clusterId}/ingress/{ingressName}`;
 // * 获取外接动态表单
 export const getAspectFrom = `${api}/aspect/form`;
+// * 接入组件
+export const cutInComponents = `${api}/clusters/{clusterId}/components/{componentName}/integrate`;

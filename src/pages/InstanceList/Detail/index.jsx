@@ -72,7 +72,6 @@ const InstanceDetails = (props) => {
 			? 'basicInfo'
 			: storage.getLocal('backKey')
 	);
-	console.log(props);
 
 	useEffect(() => {
 		if (

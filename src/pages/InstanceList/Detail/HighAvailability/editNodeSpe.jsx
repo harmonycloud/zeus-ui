@@ -33,7 +33,9 @@ export default function EditNodeSpe(props) {
 		});
 	};
 
-	const onChange = () => {};
+	const onChange = () => {
+		console.log('');
+	};
 
 	return (
 		<Dialog
@@ -70,7 +72,7 @@ export default function EditNodeSpe(props) {
 						)}
 					/>
 				</FormItem>
-				<FormItem label="存储 (GB)">
+				{/* <FormItem label="存储 (GB)">
 					<NumberPicker
 						disabled
 						type="inline"
@@ -84,7 +86,7 @@ export default function EditNodeSpe(props) {
 							)
 						)}
 					/>
-				</FormItem>
+				</FormItem> */}
 			</Form>
 		</Dialog>
 	);
