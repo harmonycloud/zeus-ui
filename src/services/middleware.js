@@ -171,3 +171,22 @@ export const switchDisasterIns = (params) => {
 export const getMysqlExternal = (params) => {
 	return Axios.get(MIDDLEWARE.getMysqlExternal, params);
 };
+// * 重启服务
+export const rebootService = (params) => {
+	return Axios.post(MIDDLEWARE.restartService, params);
+};
+
+// * 查看pod yaml
+export const getPodNameYaml = (params) => {
+	return Axios.get(MIDDLEWARE.getPodYaml, params);
+};
+
+// * 获取value.yaml
+export const getValueYaml = (params) => {
+	return Axios.get(MIDDLEWARE.valueYamlApi, params);
+};
+
+// * 更新value.yaml
+export const updateValueYaml = (params) => {
+	return Axios.json(MIDDLEWARE.valueYamlApi, params, {}, 'PUT');
+};

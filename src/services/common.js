@@ -72,9 +72,13 @@ export const getComponents = (params) => {
 export const postComponent = (params) => {
 	return Axios.json(COMMON.updateComponents, params, {}, 'POST');
 };
-// * 对接（接入）组件
+// * 编辑组件
 export const putComponent = (params) => {
 	return Axios.json(COMMON.updateComponents, params, {}, 'PUT');
+};
+// * 接入组件
+export const cutInComponent = (params) => {
+	return Axios.json(COMMON.cutInComponents, params, {}, 'PUT');
 };
 // * 卸载（取消接入）组件
 export const deleteComponent = (params) => {

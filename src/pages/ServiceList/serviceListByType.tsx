@@ -663,7 +663,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					disabled={tabJudge(record, 'config')}
 					onClick={() => {
 						history.push(
-							`/serviceList/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
+							`/serviceList/${name}/${aliasName}/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
 						);
 						storage.setLocal('backKey', 'paramterSetting');
 					}}
@@ -710,9 +710,9 @@ const ServiceListByType = (props: serviceListProps) => {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/serviceList/basicInfo/${record.mysqlDTO.relationName}/${
-				record.mysqlDTO.type || 'mysql'
-			}/${record.chartVersion}`,
+			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
+				record.mysqlDTO.relationName
+			}/${record.mysqlDTO.type || 'mysql'}/${record.chartVersion}`,
 			state: {
 				flag: true
 			}
@@ -792,7 +792,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						className="name-link text-overflow"
 						onClick={() => {
 							history.push(
-								`/serviceList/basicInfo/${record.name}/${record.type}/${record.chartVersion}`
+								`/serviceList/${name}/${aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}`
 							);
 						}}
 					>
@@ -809,7 +809,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				className="name-link"
 				onClick={() => {
 					history.push(
-						`/serviceList/highAvailability/${record.name}/${record.type}/${record.chartVersion}`
+						`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}`
 					);
 					storage.setLocal('backKey', 'highAvailability');
 				}}

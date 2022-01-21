@@ -116,13 +116,13 @@ function MiddlewareVersion(props: versionProps): JSX.Element {
 		const color =
 			value === 'now'
 				? '#00A7FA'
-				: value === ('future' || 'updating')
+				: value === 'future' || value === 'updating'
 				? '#52C41A'
 				: '#666666';
 		const bgColor =
 			value === 'now'
 				? '#EBF8FF'
-				: value === ('future' || 'updating')
+				: value === 'future' || value === 'updating'
 				? '#F6FFED'
 				: '#F5F5F5';
 		return (

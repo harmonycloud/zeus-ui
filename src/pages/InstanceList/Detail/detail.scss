@@ -211,3 +211,98 @@
 		color: #0070cc;
 	}
 }
+.yaml-edit-btn-content {
+	display: flex;
+	.yaml-btn {
+		margin-right: 8px !important;
+	}
+}
+.yaml-edit-content {
+	height: 100%;
+	.yaml-edit-console-header,
+	.yaml-edit-header{
+		width: 100%;
+		height: 34px;
+		background:#222222;
+		margin-top: 16px;
+		border-radius: 4px 4px 0 0;
+		color: #BFBFBF;
+		line-height: 34px;
+		display: flex;
+		padding-left: 18px;
+		.yaml-edit-right-2,
+		.yaml-edit-left-2 {
+			width: 50%;
+		}
+		.yaml-edit-right-1 {
+			width: 240px;
+			padding-left: 12px;
+			position: relative;
+			&::before{
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 100%;
+				border-left: 1px solid #404040;
+			}
+		}
+		.yaml-edit-left-1 {
+			width: calc(100% - 240px);
+		}
+	}
+	.yaml-edit-code {
+
+	}
+	.yaml-edit-console-header{
+		border-radius: 0;
+		margin-top: 0px;
+		padding-left: 18px;
+	}
+	.yaml-edit-console-content {
+		width: 100%;
+		height: 115px;
+		background-color: #141414;
+		border-radius:0 0 4px 4px;
+		padding:8px 12px;
+		overflow: auto;
+		.codeIDE-pre-code {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			color: #fff;
+			background-color: transparent;
+		}
+	}
+	.yaml-edit-editor-content{
+		display: flex;
+		height: 100%;
+		.yaml-edit-editor-left {
+			width: calc(100% - 240px);
+			background-color: #141414;
+			border-radius: 0 0 0 4px;
+			height: calc(100% - 132px);
+		}
+		.yaml-edit-editor-right {
+			width: 240px;
+			background-color: #141414;
+			height: calc(100% - 132px);
+			border-left: 1px solid #404040;
+			border-radius: 0 0 4px 0;
+			padding:8px 12px;
+			overflow: auto;
+			.codeIDE-pre-code {
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				border: 0;
+				white-space: pre-wrap;
+				word-wrap: break-word;
+				color: #fff;
+				background-color: transparent;
+			}
+		}
+	}
+}

@@ -76,3 +76,9 @@ export const addDisasterInstance = `${api}/clusters/{clusterId}/namespaces/{name
 export const switchDisasterInstance = `${api}/clusters/{clusterId}/middlewares/mysql/{mysqlName}/disasterRecovery`;
 // * 获取mysql对外访问信息
 export const getMysqlExternal = `${api}/clusters/{clusterId}/middlewares/mysql/{mysqlName}/queryAccessInfo`;
+// * 重启服务
+export const restartService = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/reboot`;
+// * 查看pod yaml
+export const getPodYaml = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/pods/{podName}/yaml`;
+// * value.yaml
+export const valueYamlApi = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/values`;

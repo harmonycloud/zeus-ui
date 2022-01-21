@@ -5,7 +5,8 @@ import {
 	Switch,
 	Icon,
 	Balloon,
-	Grid
+	Grid,
+	Button
 } from '@alicloud/console-components';
 import DataFields from '@alicloud/console-components-data-fields';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
@@ -16,7 +17,8 @@ import {
 	getPods,
 	restartPods,
 	switchMiddlewareMasterSlave,
-	updateMiddleware
+	updateMiddleware,
+	rebootService
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
@@ -26,6 +28,8 @@ import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
 import { modelMap, esMap } from '@/utils/const';
 import Console from './console';
+import YamlForm from './yamlForm';
+import DilatationForm from './dilatationForm';
 
 const { Row, Col } = Grid;
 
@@ -70,6 +74,9 @@ export default function HighAvailability(props) {
 	const [quotaValue, setQuotaValue] = useState();
 	const [topoData, setTopoData] = useState();
 	const [lock, setLock] = useState({ lock: 'right' });
+	const [yamlVisible, setYamlVisible] = useState(false);
+	const [podData, setPodData] = useState();
+	const [dilatationVisible, setDilationVisible] = useState(false);
 
 	// * es专用 specificationConfig
 	const [esSpConfig] = useState([
@@ -438,6 +445,14 @@ export default function HighAvailability(props) {
 			<Actions>
 				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
 				<LinkButton onClick={() => reStart(record)}>重启</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setPodData(record);
+						setYamlVisible(true);
+					}}
+				>
+					查看yaml
+				</LinkButton>
 			</Actions>
 		);
 	};
@@ -663,6 +678,48 @@ export default function HighAvailability(props) {
 			</div>
 		);
 	};
+	const restartService = () => {
+		Dialog.show({
+			title: '操作确认',
+			content: '请确认是否重启服务？',
+			onOk: () => {
+				const sendData = {
+					clusterId,
+					middlewareName: data.name,
+					namespace,
+					type: data.type
+				};
+				rebootService(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '服务重启成功！')
+						);
+						onRefresh();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		});
+	};
+	const Operation = {
+		primary: (
+			<div className="title-content">
+				<div className="blue-line"></div>
+				<div className="detail-title">实例列表</div>
+			</div>
+		),
+		secondary: (
+			<>
+				<Button type="primary" onClick={restartService}>
+					重启服务
+				</Button>
+				<Button type="primary" onClick={() => setDilationVisible(true)}>
+					扩容
+				</Button>
+			</>
+		)
+	};
 
 	return (
 		<div>
@@ -755,12 +812,7 @@ export default function HighAvailability(props) {
 							};
 							getPodList(sendData);
 						}}
-						operation={
-							<div className="title-content">
-								<div className="blue-line"></div>
-								<div className="detail-title">实例列表</div>
-							</div>
-						}
+						operation={Operation}
 					>
 						<Table.Column
 							title="实例名称"
@@ -817,7 +869,7 @@ export default function HighAvailability(props) {
 						<Table.Column
 							title="操作"
 							cell={actionRender}
-							width={150}
+							width={200}
 							{...lock}
 						/>
 					</Table>
@@ -853,6 +905,27 @@ export default function HighAvailability(props) {
 					data={consoleData}
 					onCancel={() => setPodVisible(false)}
 					containers={containers}
+				/>
+			)}
+			{yamlVisible && (
+				<YamlForm
+					visible={yamlVisible}
+					onCancel={() => setYamlVisible(false)}
+					data={{
+						clusterId,
+						namespace,
+						middlewareName: data.name,
+						type: data.type,
+						podName: podData.podName
+					}}
+				/>
+			)}
+			{dilatationVisible && (
+				<DilatationForm
+					visible={dilatationVisible}
+					onCancel={() => setDilationVisible(false)}
+					onCreate={() => setDilationVisible(false)}
+					quota={quotaValue}
 				/>
 			)}
 		</div>

@@ -9,7 +9,7 @@ import {
 	Form,
 	Input
 } from '@alicloud/console-components';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import DataFields from '@alicloud/console-components-data-fields';
 import DefaultPicture from '@/components/DefaultPicture';
 import { getMiddlewareEvents } from '@/services/middleware.js';
@@ -183,6 +183,8 @@ function BasicInfo(props) {
 		onRefresh,
 		toDetail
 	} = props;
+	const history = useHistory();
+	const params = useParams();
 	// * 密码显影
 	const [passwordDisplay, setPasswordDisplay] = useState(false);
 	// * 事件
@@ -202,6 +204,22 @@ function BasicInfo(props) {
 		storageTypeConfig
 	]);
 	// * 配置信息
+	const [yamlConfig] = useState({
+		dataIndex: 'yaml',
+		label: 'yaml编辑',
+		render: (val) => (
+			<span
+				className="name-link"
+				onClick={() => {
+					history.push(
+						`/serviceList/${params.name}/${params.aliasName}/highAvailability/yamlDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${clusterId}/${namespace}`
+					);
+				}}
+			>
+				编辑yaml文件
+			</span>
+		)
+	});
 	const [configData, setConfigData] = useState(config);
 	const [configConfig, setConfigConfig] = useState([
 		titleConfig,
@@ -219,8 +237,8 @@ function BasicInfo(props) {
 		globalIps: ''
 	});
 	const [visible, setVisible] = useState(false); // * 修改acl
-	const { chartVersion } = useParams();
 	const [eventList, setEventList] = useState([]);
+
 	const disasterInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
 		label: '备份服务名称',
@@ -313,7 +331,7 @@ function BasicInfo(props) {
 			namespace: namespace,
 			middlewareName: middlewareName,
 			chartName: type,
-			chartVersion: chartVersion,
+			chartVersion: params.chartVersion,
 			type: type,
 			description: value.description
 		};
@@ -417,9 +435,12 @@ function BasicInfo(props) {
 			});
 			setACLCheck(data?.rocketMQParam?.acl?.enable);
 		}
-
-		getEventsData();
 	}, [data]);
+	useEffect(() => {
+		if (clusterId && namespace) {
+			getEventsData();
+		}
+	}, [namespace]);
 
 	useEffect(() => {
 		// * 动态表单 设置其他
@@ -659,7 +680,8 @@ function BasicInfo(props) {
 								</div>
 							);
 						}
-					}
+					},
+					yamlConfig
 			  ]
 			: configConfig;
 	const onCancel = (value) => {
@@ -791,7 +813,7 @@ function BasicInfo(props) {
 					clusterId={clusterId}
 					namespace={namespace}
 					middlewareName={middlewareName}
-					chartVersion={chartVersion}
+					chartVersion={params.chartVersion}
 					chartName={type}
 				/>
 			)}
