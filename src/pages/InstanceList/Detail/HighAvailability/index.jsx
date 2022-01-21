@@ -725,8 +725,10 @@ export default function HighAvailability(props) {
 		});
 	};
 	const onDilatationCreate = (values) => {
-		console.log(values);
 		const sendData = {
+			clusterId,
+			namespace,
+			middlewareName: data.name,
 			type,
 			chartName,
 			chartVersion,
@@ -771,10 +773,15 @@ export default function HighAvailability(props) {
 					<Button
 						type="primary"
 						onClick={() => setDilationVisible(true)}
-						disabled={data.status !== 'Running'}
+						disabled={
+							data?.status !== 'Running' ||
+							!data?.mysqlDTO.isLvmStorage
+						}
 						title={
-							data.status !== 'Running'
+							data?.status !== 'Running'
 								? '当前服务运行存在异常，无法进行存储扩容！'
+								: !data?.mysqlDTO.isLvmStorage
+								? '目前仅支持LVM类型的存储扩容！'
 								: ''
 						}
 					>

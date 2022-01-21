@@ -193,5 +193,5 @@ export const updateValueYaml = (params) => {
 
 // * 存储扩容
 export const storageDilatation = (params) => {
-	return Axios.post(MIDDLEWARE.restartService, params);
+	return Axios.json(MIDDLEWARE.dilatationStorage, params, {}, 'PUT');
 };
