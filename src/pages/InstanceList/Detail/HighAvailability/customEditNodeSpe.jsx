@@ -32,7 +32,9 @@ export default function CustomEditNodeSpe(props) {
 		});
 	};
 
-	const onChange = () => {};
+	const onChange = () => {
+		console.log('');
+	};
 
 	return (
 		<Dialog

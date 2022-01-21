@@ -17,13 +17,13 @@ export default function BackupRecovery(props) {
 	useEffect(() => {
 		setCustomMid(props.customMid);
 		setCapabilities(props.capabilities || []);
-		localStorage.getItem('backKey') &&
-		localStorage.getItem('backKey').indexOf('config') !== -1
-			? setSelectedKey('config')
-			: setSelectedKey('list');
+		// localStorage.getItem('backKey') &&
+		// localStorage.getItem('backKey').indexOf('config') !== -1
+		// 	? setSelectedKey('config')
+		// 	: setSelectedKey('list');
 	}, [props]);
 	useEffect(() => {
-		return () => localStorage.setItem('backKey', '');
+		// return () => localStorage.setItem('backKey', '');
 	}, []);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);

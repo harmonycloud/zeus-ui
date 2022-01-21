@@ -748,7 +748,7 @@ export default function HighAvailability(props) {
 				<Button type="primary" onClick={restartService}>
 					重启服务
 				</Button>
-				{type === 'mysql' && (
+				{/* {type === 'mysql' && (
 					<Button
 						type="primary"
 						onClick={() => setDilationVisible(true)}
@@ -766,7 +766,7 @@ export default function HighAvailability(props) {
 					>
 						存储扩容
 					</Button>
-				)}
+				)} */}
 			</>
 		)
 	};

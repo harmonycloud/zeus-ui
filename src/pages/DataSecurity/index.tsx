@@ -51,7 +51,7 @@ export default function DataSecurity(): JSX.Element {
 	);
 
 	useEffect(() => {
-		return () => storage.setLocal('backKey', '');
+		// return () => storage.setLocal('backKey', '');
 	}, []);
 
 	return (
