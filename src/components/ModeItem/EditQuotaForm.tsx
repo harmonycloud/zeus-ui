@@ -12,6 +12,7 @@ import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
 import pattern from '@/utils/pattern';
 import { getStorageClass } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import { instanceSpecList } from '@/utils/const';
 import { modeItemProps } from './index';
 
 interface EditQuotaFormProps extends modeItemProps {
@@ -23,16 +24,7 @@ interface storageClassListItem {
 	name: string;
 	[propName: string]: any;
 }
-const instanceSpecList = [
-	{
-		label: '通用规格',
-		value: 'General'
-	},
-	{
-		label: '自定义',
-		value: 'Customize'
-	}
-];
+
 const formItemLayout = {
 	labelCol: {
 		fixedSpan: 6

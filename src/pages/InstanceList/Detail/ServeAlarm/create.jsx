@@ -21,48 +21,15 @@ import {
 	updateAlarm,
 	updateAlarms
 } from '@/services/middleware';
-import { getUsers, sendInsertUser, insertDing } from '@/services/user';
+import { getUsers } from '@/services/user';
 import { getMailInfo, getDing } from '@/services/alrem';
 import storage from '@/utils/storage';
+import { symbols, alarmWarn, silences } from '@/utils/const';
 import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { Tooltip } = Balloon;
-export const symbols = [
-	{ value: '>=', label: '≥' },
-	{ value: '>', label: '>' },
-	{ value: '==', label: '=' },
-	{ value: '<', label: '<' },
-	{ value: '<=', label: '≤' },
-	{ value: '!=', label: '≠' }
-];
-const silences = [
-	{ value: '5m', label: '5分钟' },
-	{ value: '10m', label: '10分钟' },
-	{ value: '15m', label: '15分钟' },
-	{ value: '30m', label: '30分钟' },
-	{ value: '1h', label: '1小时' },
-	{ value: '2h', label: '2小时' },
-	{ value: '3h', label: '3小时' },
-	{ value: '6h', label: '6小时' },
-	{ value: '12h', label: '12小时' },
-	{ value: '24h', label: '24小时' }
-];
-const alarmWarn = [
-	{
-		value: 'info',
-		label: '一般'
-	},
-	{
-		value: 'warning',
-		label: '重要'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
-];
 
 function CreateAlarm(props) {
 	const { clusterId, namespace, middlewareName, type, alarmType, record } =
@@ -81,7 +48,6 @@ function CreateAlarm(props) {
 	const [selectUser, setSelectUser] = useState([]);
 	const [mailChecked, setMailChecked] = useState(false);
 	const [dingChecked, setDingChecked] = useState(false);
-	const [copyIndex, setCopyIndex] = useState();
 	const [isRule, setIsRule] = useState();
 	const [dingDisabled, setDingDisabled] = useState(false);
 	const [mailDisabled, setMailDisabled] = useState(false);
@@ -224,20 +190,21 @@ function CreateAlarm(props) {
 
 	const addAlarm = () => {
 		if (alarms && alarms.length > 0) {
-			const addItem = alarmRules[copyIndex];
-			if (typeof copyIndex === 'undefined') {
-				setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
-			} else {
-				setAlarmRules([
-					...alarmRules,
-					{
-						...addItem,
-						id: Math.random() * 100,
-						alert: '',
-						content: ''
-					}
-				]);
-			}
+			setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
+		}
+	};
+	const copyAlarm = (index) => {
+		if (alarms && alarms.length > 0) {
+			const addItem = alarmRules[index];
+			setAlarmRules([
+				...alarmRules,
+				{
+					...addItem,
+					id: Math.random() * 100,
+					alert: '',
+					content: ''
+				}
+			]);
 		}
 	};
 	const delAlarm = (i) => {
@@ -545,6 +512,7 @@ function CreateAlarm(props) {
 					};
 				}
 				item.lay = 'system';
+				item.ip = window.location.host;
 				record ? (item.enable = record.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
@@ -580,6 +548,7 @@ function CreateAlarm(props) {
 				record ? (item.enable = record.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
+				item.ip = window.location.host;
 				return item;
 			});
 			if (flag[0]) {
@@ -921,20 +890,22 @@ function CreateAlarm(props) {
 											/>
 										</Col>
 										<Col span={2}>
-											<Button>
+											<Button
+												style={{ marginRight: '8px' }}
+											>
 												<CustomIcon
 													type="icon-fuzhi1"
 													size={12}
 													style={{ color: '#0064C8' }}
 													onClick={() =>
-														setCopyIndex(index)
+														copyAlarm(index)
 													}
 												/>
 											</Button>
 											<Button
 												disabled={record}
 												onClick={() => addAlarm()}
-												style={{ borderLeft: 0 }}
+												style={{ marginRight: '8px' }}
 											>
 												<Icon
 													type="plus"
@@ -946,7 +917,6 @@ function CreateAlarm(props) {
 													onClick={() =>
 														delAlarm(item.id)
 													}
-													style={{ borderLeft: 0 }}
 												>
 													<Icon
 														type="wind-minus"
@@ -1060,7 +1030,7 @@ function CreateAlarm(props) {
 								mode="simple"
 								titles={[
 									<div key="left">
-										<span key="account">登陆账户</span>
+										<span key="account">登录账户</span>
 										<span key="username">用户名</span>
 										<span key="email">邮箱</span>
 										<span key="tel">手机号</span>
@@ -1068,7 +1038,7 @@ function CreateAlarm(props) {
 										<span key="role">关联角色</span>
 									</div>,
 									<div key="right">
-										<span key="account">登陆账户</span>
+										<span key="account">登录账户</span>
 										<span key="username">用户名</span>
 										<span key="email">邮箱</span>
 										<span key="tel">手机号</span>

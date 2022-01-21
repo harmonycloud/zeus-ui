@@ -9,7 +9,7 @@ import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
-import { symbols } from './create';
+import { alarmWarn, silences } from '@/utils/const';
 import {
 	deleteAlarm,
 	deleteAlarms,
@@ -19,33 +19,6 @@ import {
 	updateAlarm
 } from '@/services/middleware';
 import storage from '@/utils/storage';
-
-const alarmWarn = [
-	{
-		value: 'info',
-		label: '一般'
-	},
-	{
-		value: 'warning',
-		label: '重要'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
-];
-const silences = [
-	{ value: '5m', label: '5分钟' },
-	{ value: '10m', label: '10分钟' },
-	{ value: '15m', label: '15分钟' },
-	{ value: '30m', label: '30分钟' },
-	{ value: '1h', label: '1小时' },
-	{ value: '2h', label: '2小时' },
-	{ value: '3h', label: '3小时' },
-	{ value: '6h', label: '6小时' },
-	{ value: '12h', label: '12小时' },
-	{ value: '24h', label: '24小时' }
-];
 
 function Rules(props) {
 	const history = useHistory();
@@ -208,13 +181,9 @@ function Rules(props) {
 	};
 
 	const ruleRender = (value, index, record) =>
-		`${record.description}${
-			symbols.find((item) => item.value === record.symbol)
-				? symbols.find((item) => item.value === record.symbol).label
-				: ''
-		}${record.threshold}%且${record.alertTime || ''}分钟内触发${
-			record.alertTimes || ''
-		}次`;
+		`${record.description}${record.symbol}${record.threshold}%且${
+			record.alertTime || ''
+		}分钟内触发${record.alertTimes || ''}次`;
 
 	const levelRender = (value, index, record) => {
 		return (

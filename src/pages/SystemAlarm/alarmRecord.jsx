@@ -5,21 +5,7 @@ import { getEvent } from '@/services/platformOverview';
 import ComponentsNull from '@/components/ComponentsNull';
 import { nullRender } from '@/utils/utils';
 import { getClusters } from '@/services/common.js';
-
-const alarmWarn = [
-	{
-		value: 'info',
-		label: '一般'
-	},
-	{
-		value: 'warning',
-		label: '重要'
-	},
-	{
-		value: 'critical',
-		label: '严重'
-	}
-];
+import { alarmWarn } from '@/utils/const';
 
 function AlarmRecord(props) {
 	const {

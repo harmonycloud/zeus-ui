@@ -61,7 +61,7 @@ function UploadMiddlewareForm(props) {
 		if (info) {
 			const dialog = Dialog.show({
 				title: '失败',
-				content: '上架失败，不可上传旧版本或者已有版本哦。',
+				content: '上架失败，不可上传旧版本或者已有版本。',
 				footer: (
 					<Button type="primary" onClick={() => dialog.hide()}>
 						我知道了

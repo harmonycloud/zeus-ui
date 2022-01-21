@@ -24,6 +24,12 @@ function SystemAlarm(props) {
 	};
 
 	useEffect(() => {
+		storage.getLocal('backKey') === ''
+			? setActiveKey('alarmRecord')
+			: setActiveKey(storage.getLocal('backKey'));
+	}, []);
+
+	useEffect(() => {
 		return () => storage.setLocal('backKey', '');
 	}, []);
 	if (

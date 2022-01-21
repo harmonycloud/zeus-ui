@@ -220,10 +220,11 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 										) as string) || ''
 									).length
 								}
+								(长度需要8-16之间)
 							</span>
 						</li>
 					</ul>
-					要求：需要英文大小写+数字+&quot;.&quot;+&quot;@&quot;+&quot;-&quot;中任意3种类型及以上字符组合，长度需要≥8字符且≤16字符
+					要求：密码需要满足以上四个条件
 				</Balloon>
 				<FormItem
 					label="新密码二次确认"

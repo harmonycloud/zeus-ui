@@ -115,12 +115,12 @@ export const searchTypes = [
 	{ label: '正则表达式搜索', value: 'regexp' }
 ];
 export const symbols = [
-	{ value: '>=', label: '≥' },
+	{ value: '>=', label: '>=' },
 	{ value: '>', label: '>' },
 	{ value: '==', label: '=' },
 	{ value: '<', label: '<' },
-	{ value: '<=', label: '≤' },
-	{ value: '!=', label: '≠' }
+	{ value: '<=', label: '<=' },
+	{ value: '!=', label: '!=' }
 ];
 export const alarmWarn = [
 	{
