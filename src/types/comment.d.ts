@@ -18,6 +18,7 @@ export interface filtersProps {
 	isLeaf?: boolean;
 	disabled?: boolean;
 	children?: filtersProps[];
+	[propsName: string]: any;
 }
 export interface middlewareDetailProps {
 	aliasName: string;

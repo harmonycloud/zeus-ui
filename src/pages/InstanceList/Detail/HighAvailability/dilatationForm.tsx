@@ -3,7 +3,6 @@ import {
 	Form,
 	Dialog,
 	Field,
-	Message,
 	NumberPicker
 } from '@alicloud/console-components';
 
@@ -19,7 +18,7 @@ const FormItem = Form.Item;
 interface DilatationFormProps {
 	visible: boolean;
 	onCancel: () => void;
-	onCreate: () => void;
+	onCreate: (value: any) => void;
 	quota: any;
 }
 export default function DilatationForm(
@@ -31,6 +30,10 @@ export default function DilatationForm(
 
 	const onOk = () => {
 		console.log('on');
+		field.validate((errors, values) => {
+			if (errors) return;
+			onCreate(values);
+		});
 	};
 
 	return (
@@ -47,7 +50,13 @@ export default function DilatationForm(
 					<NumberPicker
 						type="inline"
 						step="0.1"
-						name="storage"
+						name="storageClassQuota"
+						min={Number(
+							quota.storageClassQuota.substring(
+								0,
+								quota.storageClassQuota.length - 2
+							)
+						)}
 						defaultValue={Number(
 							quota.storageClassQuota.substring(
 								0,

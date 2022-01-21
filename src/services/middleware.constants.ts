@@ -82,3 +82,5 @@ export const restartService = `${api}/clusters/{clusterId}/namespaces/{namespace
 export const getPodYaml = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/pods/{podName}/yaml`;
 // * value.yaml
 export const valueYamlApi = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/values`;
+// * 存储扩容
+export const dilatationStorage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/storage`;

@@ -190,3 +190,8 @@ export const getValueYaml = (params) => {
 export const updateValueYaml = (params) => {
 	return Axios.json(MIDDLEWARE.valueYamlApi, params, {}, 'PUT');
 };
+
+// * 存储扩容
+export const storageDilatation = (params) => {
+	return Axios.json(MIDDLEWARE.dilatationStorage, params, {}, 'PUT');
+};
