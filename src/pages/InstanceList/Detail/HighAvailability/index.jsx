@@ -18,7 +18,8 @@ import {
 	restartPods,
 	switchMiddlewareMasterSlave,
 	updateMiddleware,
-	rebootService
+	rebootService,
+	storageDilatation
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
@@ -723,6 +724,37 @@ export default function HighAvailability(props) {
 			}
 		});
 	};
+	const onDilatationCreate = (values) => {
+		console.log(values);
+		const sendData = {
+			type,
+			chartName,
+			chartVersion,
+			quota: {
+				mysql: {
+					storageClassQuota: values.storageClassQuota + 'Gi'
+				}
+			}
+		};
+		console.log(sendData);
+		storageDilatation(sendData).then((res) => {
+			if (res.success) {
+				Message.show(
+					messageConfig('success', '成功', '存储扩容成功！')
+				);
+				const sendData = {
+					clusterId,
+					namespace,
+					middlewareName: data.name,
+					type: data.type
+				};
+				getPodList(sendData);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+		setDilationVisible(false);
+	};
 	const Operation = {
 		primary: (
 			<div className="title-content">
@@ -735,9 +767,20 @@ export default function HighAvailability(props) {
 				<Button type="primary" onClick={restartService}>
 					重启服务
 				</Button>
-				<Button type="primary" onClick={() => setDilationVisible(true)}>
-					扩容
-				</Button>
+				{type === 'mysql' && (
+					<Button
+						type="primary"
+						onClick={() => setDilationVisible(true)}
+						disabled={data.status !== 'Running'}
+						title={
+							data.status !== 'Running'
+								? '当前服务运行存在异常，无法进行存储扩容！'
+								: ''
+						}
+					>
+						存储扩容
+					</Button>
+				)}
 			</>
 		)
 	};
@@ -945,7 +988,7 @@ export default function HighAvailability(props) {
 				<DilatationForm
 					visible={dilatationVisible}
 					onCancel={() => setDilationVisible(false)}
-					onCreate={() => setDilationVisible(false)}
+					onCreate={onDilatationCreate}
 					quota={quotaValue}
 				/>
 			)}

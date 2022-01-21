@@ -28,7 +28,8 @@ interface secondLayoutProps {
 		name: string | null,
 		type: string,
 		namespace: string,
-		cluster: clusterType
+		cluster: clusterType,
+		aliasName?: string
 	) => void;
 }
 function SecondLayout(props: secondLayoutProps): JSX.Element {
@@ -59,6 +60,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						const result: filtersProps = {
 							value: item.chartName,
 							label: item.name,
+							aliasName: item.aliasName,
 							children: item.serviceList.map((i) => {
 								return {
 									label: i.aliasName || i.name,
@@ -75,11 +77,17 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						location.state?.middlewareType
 					) {
 						setCurrent(location.state.middlewareName);
+						const temp = list.filter(
+							(item: filtersProps) =>
+								item.value === location.state.middlewareType
+						);
+						console.log(temp);
 						onChange(
 							location.state.middlewareName,
 							location.state.middlewareType,
 							namespace.name,
-							cluster
+							cluster,
+							temp[0].aliasName
 						);
 					} else {
 						if (list.length > 0 && list[0].children.length > 0) {
@@ -88,7 +96,8 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 								list[0].children[0].value,
 								list[0].value,
 								namespace.name,
-								cluster
+								cluster,
+								list[0].aliasName
 							);
 						} else {
 							setCurrent('无服务');
@@ -105,7 +114,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 		}
 	}, [namespace, cluster]);
 	const handleChange = (value: string | string[], data: any, extra: any) => {
-		// console.log(value, data, extra);
+		console.log(value, data, extra);
 		if (data.isLeaf) {
 			// * 如果选的是叶子结点的话
 			setCurrent(value as string);

@@ -44,6 +44,7 @@ export interface serviceListItemProps {
 	chartVersion: string;
 	version?: string | null;
 	official: boolean;
+	aliasName: string;
 }
 
 export interface CurrentService {
