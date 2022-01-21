@@ -27,6 +27,7 @@ import transTime from '@/utils/transTime';
 import EsEditNodeSpe from './esEditNodeSpe';
 import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
+import YamlForm from './yamlForm';
 
 const { Row, Col } = Grid;
 
@@ -93,6 +94,8 @@ export default function HighAvailability(props) {
 	const [quotaValue, setQuotaValue] = useState();
 	const [topoData, setTopoData] = useState();
 	const [lock, setLock] = useState({ lock: 'right' });
+	const [yamlVisible, setYamlVisible] = useState(false);
+	const [podData, setPodData] = useState();
 
 	// * es专用 specificationConfig
 	const [esSpConfig] = useState([
@@ -461,6 +464,14 @@ export default function HighAvailability(props) {
 			<Actions>
 				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
 				<LinkButton onClick={() => reStart(record)}>重启</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setPodData(record);
+						setYamlVisible(true);
+					}}
+				>
+					查看yaml
+				</LinkButton>
 			</Actions>
 		);
 	};
@@ -872,7 +883,7 @@ export default function HighAvailability(props) {
 						<Table.Column
 							title="操作"
 							cell={actionRender}
-							width={150}
+							width={200}
 							{...lock}
 						/>
 					</Table>
@@ -908,6 +919,19 @@ export default function HighAvailability(props) {
 					data={consoleData}
 					onCancel={() => setPodVisible(false)}
 					containers={containers}
+				/>
+			)}
+			{yamlVisible && (
+				<YamlForm
+					visible={yamlVisible}
+					onCancel={() => setYamlVisible(false)}
+					data={{
+						clusterId,
+						namespace,
+						middlewareName: data.name,
+						type: data.type,
+						podName: podData.podName
+					}}
 				/>
 			)}
 		</div>
