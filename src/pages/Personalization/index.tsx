@@ -155,7 +155,8 @@ function Personlization(): JSX.Element {
 
 	const onSuccess = (type = '', info: any) => {
 		console.log(info);
-		Message.show(messageConfig('success', '成功', '图片上传成功'));
+		if (!info.response.code)
+			Message.show(messageConfig('success', '成功', '图片上传成功'));
 		if (info) {
 			if (type === 'background') {
 				setBackgroundValue(imageData('background.svg', info.imgURL));
