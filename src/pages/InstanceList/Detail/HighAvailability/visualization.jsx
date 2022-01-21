@@ -354,12 +354,12 @@ function Visualization(props) {
 													navigator.userAgent
 											  )
 												? 48
-												: 53
+												: 50
 											: /macintosh|mac os x/i.test(
 													navigator.userAgent
 											  )
 											? 68
-											: 73,
+											: 70,
 									textAlign: 'center',
 									textBaseline: 'middle',
 									text: cfg.collapsed ? '+' : '-',
@@ -1122,7 +1122,12 @@ function Visualization(props) {
 					});
 				} else {
 					collapseBack.attr('y', 20);
-					collapseText.attr({ text: '+', y: 26 });
+					collapseText.attr({
+						text: '+',
+						y: /macintosh|mac os x/i.test(navigator.userAgent)
+							? 26
+							: 28
+					});
 				}
 			} else {
 				if (direction === 'LR') {
@@ -1135,8 +1140,13 @@ function Visualization(props) {
 						x: item.getModel().depth === 1 ? 95 : 176
 					});
 				} else {
-					collapseBack.attr('y', 67);
-					collapseText.attr({ text: '-', y: 73 });
+					collapseBack.attr('y', 62);
+					collapseText.attr({
+						text: '-',
+						y: /macintosh|mac os x/i.test(navigator.userAgent)
+							? 69
+							: 71
+					});
 				}
 			}
 			graph.refreshItem(item);
@@ -1166,7 +1176,12 @@ function Visualization(props) {
 					});
 				} else {
 					collapseBack.attr('y', 20);
-					collapseText.attr({ text: '+', y: 26 });
+					collapseText.attr({
+						text: '+',
+						y: /macintosh|mac os x/i.test(navigator.userAgent)
+							? 26
+							: 28
+					});
 				}
 			} else {
 				if (direction === 'LR') {
@@ -1179,8 +1194,13 @@ function Visualization(props) {
 						x: item.getModel().depth === 1 ? 95 : 176
 					});
 				} else {
-					collapseBack.attr('y', 67);
-					collapseText.attr({ text: '-', y: 73 });
+					collapseBack.attr('y', 62);
+					collapseText.attr({
+						text: '-',
+						y: /macintosh|mac os x/i.test(navigator.userAgent)
+							? 69
+							: 71
+					});
 				}
 			}
 			graph.refreshItem(item);
@@ -1231,7 +1251,6 @@ function Visualization(props) {
 			setTimeout(() => {
 				createTopo(direction);
 			}, 0);
-
 			// const pods = [];
 			// topoData.pods &&
 			// 	topoData.pods.forEach((el) => {

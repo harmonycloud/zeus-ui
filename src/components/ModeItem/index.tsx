@@ -100,6 +100,15 @@ const ModeItem = (props: modeItemProps) => {
 								<span>{data.storageQuota} GB</span>
 							</li>
 						)}
+						{type !== 'kibana' &&
+							type !== 'sentinel' &&
+							!data.storageClass && (
+								<li>
+									<span style={{ color: '#D93026' }}>
+										存储配额：未配置
+									</span>
+								</li>
+							)}
 					</ul>
 				</div>
 				{visible && (
