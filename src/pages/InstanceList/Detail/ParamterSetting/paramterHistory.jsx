@@ -15,8 +15,10 @@ export default function ParamterHistory(props) {
 	const [endTime, setEndTime] = useState();
 
 	useEffect(() => {
-		getData(clusterId, namespace, middlewareName, type, searchText);
-	}, [props]);
+		if (clusterId && namespace && middlewareName && type) {
+			getData(clusterId, namespace, middlewareName, type, searchText);
+		}
+	}, [namespace]);
 
 	const getData = (
 		clusterId,

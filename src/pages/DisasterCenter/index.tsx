@@ -96,6 +96,7 @@ function DisasterCenter(props: disasterCenterProps) {
 		setNamespace(ns[0]);
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
+		storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 		history.push({
 			pathname: `/serviceList/mysql/MySQL/basicInfo/${
 				(data as middlewareDetailProps).mysqlDTO.relationName
@@ -130,6 +131,7 @@ function DisasterCenter(props: disasterCenterProps) {
 					setNamespace(ns[0]);
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
+					storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 					history.push({
 						pathname: `/serviceList/mysql/MySQL/basicInfo/${
 							(data as middlewareDetailProps).mysqlDTO
@@ -201,6 +203,7 @@ function DisasterCenter(props: disasterCenterProps) {
 				}
 			}
 		} else {
+			storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 			history.push({
 				pathname: `/serviceList/mysql/MySQL/basicInfo/${
 					(data as middlewareDetailProps).name
@@ -216,6 +219,7 @@ function DisasterCenter(props: disasterCenterProps) {
 			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
 			basicData?.clusterId
 		) {
+			storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 			history.push({
 				pathname: `/serviceList/mysql/MySQL/basicInfo/${
 					(data as middlewareDetailProps).name
@@ -258,6 +262,10 @@ function DisasterCenter(props: disasterCenterProps) {
 								JSON.stringify(ns[0])
 							);
 							setRefreshCluster(true);
+							storage.setSession(
+								'menuPath',
+								'/serviceList/mysql/MySQL'
+							);
 							history.push({
 								pathname: `/serviceList/mysql/MySQL/basicInfo/${
 									(data as middlewareDetailProps).name

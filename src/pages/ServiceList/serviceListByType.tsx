@@ -665,7 +665,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						history.push(
 							`/serviceList/${name}/${aliasName}/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
 						);
-						storage.setLocal('backKey', 'paramterSetting');
+						// storage.setLocal('backKey', 'paramterSetting');
 					}}
 				>
 					<span
@@ -811,7 +811,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					history.push(
 						`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}`
 					);
-					storage.setLocal('backKey', 'highAvailability');
+					// storage.setLocal('backKey', 'highAvailability');
 				}}
 			>
 				{value}

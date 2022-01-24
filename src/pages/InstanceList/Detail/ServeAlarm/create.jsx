@@ -400,7 +400,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
-						storage.setLocal('backKey', 'alarm');
+						// storage.setLocal('backKey', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -412,7 +412,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
-						storage.setLocal('backKey', 'alarm');
+						// storage.setLocal('backKey', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -443,7 +443,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
-						storage.setLocal('backKey', 'alarm');
+						// storage.setLocal('backKey', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -455,7 +455,7 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
-						storage.setLocal('backKey', 'alarm');
+						// storage.setLocal('backKey', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -587,7 +587,7 @@ function CreateAlarm(props) {
 						className="details-go-back"
 						onClick={() => {
 							window.history.back();
-							storage.setLocal('backKey', 'alarm');
+							// storage.setLocal('backKey', 'alarm');
 						}}
 					>
 						{elem}
@@ -1064,7 +1064,7 @@ function CreateAlarm(props) {
 					<Button
 						onClick={() => {
 							window.history.back();
-							storage.setLocal('backKey', 'alarm');
+							// storage.setLocal('backKey', 'alarm');
 						}}
 					>
 						取消

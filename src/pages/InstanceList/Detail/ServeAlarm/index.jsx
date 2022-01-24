@@ -51,7 +51,11 @@ function Rules(props) {
 	};
 
 	useEffect(() => {
-		getData(clusterId, middlewareName, namespace, searchText);
+		if (clusterId && namespace && middlewareName) {
+			getData(clusterId, middlewareName, namespace, searchText);
+		}
+	}, [props]);
+	useEffect(() => {
 		getClusters().then((res) => {
 			if (!res.data) return;
 			setPoolList(
