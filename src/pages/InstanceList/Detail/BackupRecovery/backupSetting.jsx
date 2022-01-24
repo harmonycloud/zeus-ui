@@ -12,12 +12,12 @@ import Visualization from '../HighAvailability/visualization';
 import moment from 'moment';
 import { connect, useStore } from 'react-redux';
 import messageConfig from '@/components/messageConfig';
-import storage from '@/utils/storage';
 import {
 	addBackupConfig,
 	backupNow,
 	updateBackupConfig
 } from '@/services/backup';
+import storage from '@/utils/storage';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
 import { useHistory } from 'react-router';
@@ -164,7 +164,7 @@ function BackupSetting(props) {
 					} else {
 						window.history.back();
 					}
-					storage.setLocal('backKey', 'backupRecovery-config');
+					localStorage.setItem('backupTab', 'config');
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -205,7 +205,7 @@ function BackupSetting(props) {
 						} else {
 							window.history.back();
 						}
-						storage.setLocal('backKey', 'backupRecovery-config');
+						localStorage.setItem('backupTab', 'config');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -250,10 +250,7 @@ function BackupSetting(props) {
 									} else {
 										window.history.back();
 									}
-									storage.setLocal(
-										'backKey',
-										'backupRecovery-list'
-									);
+									localStorage.setItem('backupTab', 'list');
 								}, 5000);
 							} else {
 								Message.show(
@@ -287,11 +284,9 @@ function BackupSetting(props) {
 							} else {
 								window.history.back();
 							}
-							storage.setLocal(
-								'backKey',
-								`backupRecovery-${
-									backup && isEdit ? 'list' : 'config'
-								}`
+							localStorage.setItem(
+								'backupTab',
+								backup && isEdit ? 'list' : 'config'
 							);
 						}}
 					>
@@ -402,10 +397,7 @@ function BackupSetting(props) {
 								} else {
 									window.history.back();
 								}
-								storage.setLocal(
-									'backKey',
-									'backupRecovery-config'
-								);
+								localStorage.setItem('backupTab', 'config');
 							}}
 						>
 							取消
@@ -469,10 +461,7 @@ function BackupSetting(props) {
 								} else {
 									window.history.back();
 								}
-								storage.setLocal(
-									'backKey',
-									'backupRecovery-list'
-								);
+								localStorage.setItem('backupTab', 'list');
 							}}
 						>
 							取消

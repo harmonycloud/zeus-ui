@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import { Tab } from '@alicloud/console-components';
 import { Page, Content } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
@@ -10,23 +11,30 @@ const { Menu } = Page;
 export default function BackupRecovery(props) {
 	const location = useLocation();
 	const { pathname } = location;
-	const [selectedKey, setSelectedKey] = useState('list');
+	const { currentTab } = useParams();
+	const [selectedKey, setSelectedKey] = useState(
+		localStorage.getItem('backupTab') || 'list'
+	);
 	const [customMid, setCustomMid] = useState(false);
 	const [capabilities, setCapabilities] = useState([]);
 	const { storage } = props;
 	useEffect(() => {
 		setCustomMid(props.customMid);
 		setCapabilities(props.capabilities || []);
-		// localStorage.getItem('backKey') &&
-		// localStorage.getItem('backKey').indexOf('config') !== -1
+		// localStorage.getItem('backupTab') &&
+		// localStorage.getItem('backupTab') !== 'config'
 		// 	? setSelectedKey('config')
 		// 	: setSelectedKey('list');
 	}, [props]);
 	useEffect(() => {
-		// return () => localStorage.setItem('backKey', '');
+		currentTab && currentTab !== 'backupRecovery' && setSelectedKey('list');
+	}, [currentTab]);
+	useEffect(() => {
+		localStorage.removeItem('backupTab');
 	}, []);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
+		localStorage.setItem('backupTab', selectedKey);
 	};
 	const childrenRender = (selected) => {
 		if (selected === 'list') {
