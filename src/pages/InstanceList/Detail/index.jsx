@@ -365,6 +365,7 @@ const InstanceDetails = (props) => {
 	useEffect(() => {
 		return () => {
 			storage.removeSession('paramsTab');
+			localStorage.removeItem('backupTab');
 			// storage.setLocal('backKey', '');
 		};
 	}, []);

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tab } from '@alicloud/console-components';
 import { useLocation } from 'react-router';
+import { useParams } from 'react-router';
 import { Page, Content } from '@alicloud/console-components-page';
 import DefaultPicture from '@/components/DefaultPicture';
 import RealtimeLog from './realtimeLog';
@@ -13,11 +14,15 @@ export default function Log(props) {
 	const { type, data, customMid = false, logging } = props;
 	const location = useLocation();
 	const { pathname } = location;
+	const { currentTab } = useParams();
 	const [selectedKey, setSelectedKey] = useState('realtime');
 	// console.log(logging);
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
 	};
+	useEffect(() => {
+		setSelectedKey('realtime');
+	}, [currentTab]);
 	const ConsoleMenu = () => (
 		<Menu
 			selectedKeys={selectedKey}

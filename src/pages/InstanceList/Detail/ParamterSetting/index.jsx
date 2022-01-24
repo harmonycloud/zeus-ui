@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Page, Content } from '@alicloud/console-components-page';
 import { useParams } from 'react-router';
 import ParamterList from './paramterList';
@@ -23,10 +23,16 @@ export default function ParamterSetting(props) {
 		storage.getSession('paramsTab') || 'list'
 	);
 	const params = useParams();
+	const { currentTab } = params;
 	const menuSelect = (selectedKey) => {
 		setSelectedKey(selectedKey);
 		storage.setSession('paramsTab', selectedKey);
 	};
+
+	useEffect(() => {
+		setSelectedKey('list');
+	}, [currentTab]);
+
 	const ConsoleMenu = () => (
 		<Menu
 			selectedKeys={selectedKey}
