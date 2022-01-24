@@ -20,8 +20,12 @@ export default function MdBreadcrumb(props) {
 
 	// 获取当前级整路由
 	const getPath = (route, i) => {
+		console.log(route, i);
 		if (route === 'serviceList') {
 			return storage.getSession('menuPath') || '/';
+		}
+		if (route.includes('middlewareRepository')) {
+			return '/middlewareRepository';
 		}
 		if (route) {
 			const arr = pathname.split('/');
