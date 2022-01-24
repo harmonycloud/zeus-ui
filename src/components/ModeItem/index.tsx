@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Input } from '@alicloud/console-components';
 import EditQuotaForm from './EditQuotaForm';
 import './index.scss';
+import { number } from 'echarts/core';
 
 export interface modeItemProps {
 	data: {
@@ -36,6 +37,12 @@ const ModeItem = (props: modeItemProps) => {
 	useEffect(() => {
 		onChange(modifyData);
 	}, [modifyData]);
+	const inputChange = (value: any) => {
+		setModifyData({
+			...modifyData,
+			num: Number(value)
+		});
+	};
 	if (data.disabled) {
 		return (
 			<div className="mode-item-box">
@@ -53,15 +60,10 @@ const ModeItem = (props: modeItemProps) => {
 					{isEdit ? (
 						<Input
 							size="small"
-							defaultValue={modifyData.num}
+							value={modifyData.num}
 							htmlType="number"
 							hasBorder={false}
-							onChange={(value: string) => {
-								setModifyData({
-									...modifyData,
-									num: Number(value)
-								});
-							}}
+							onChange={inputChange}
 							onBlur={() => setIsEdit(false)}
 							autoFocus={true}
 							min={
@@ -121,6 +123,7 @@ const ModeItem = (props: modeItemProps) => {
 						namespace={namespace}
 						type={type}
 						onChange={onChange}
+						inputChange={inputChange}
 					/>
 				)}
 			</div>

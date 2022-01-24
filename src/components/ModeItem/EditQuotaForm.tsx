@@ -5,7 +5,8 @@ import {
 	Field,
 	Input,
 	Select,
-	Message
+	Message,
+	NumberPicker
 } from '@alicloud/console-components';
 import SelectBlock from '@/pages/ServiceCatalog/components/SelectBlock';
 import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
@@ -19,6 +20,7 @@ interface EditQuotaFormProps extends modeItemProps {
 	visible: boolean;
 	onCreate: (value: any) => void;
 	onCancel: () => void;
+	inputChange: (value: any) => void;
 }
 interface storageClassListItem {
 	name: string;
@@ -35,8 +37,16 @@ const formItemLayout = {
 };
 const FormItem = Form.Item;
 const EditQuotaForm = (props: EditQuotaFormProps) => {
-	const { visible, onCancel, onCreate, data, clusterId, namespace, type } =
-		props;
+	const {
+		visible,
+		onCancel,
+		onCreate,
+		data,
+		clusterId,
+		namespace,
+		type,
+		inputChange
+	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [storageClassList, setStorageClassList] = useState<
 		storageClassListItem[]
@@ -59,6 +69,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		field.validate((errors, values) => {
 			if (errors) return;
 			const value = { ...modifyData, ...values };
+			console.log(values);
+
 			onCreate(value);
 		});
 	};
@@ -117,6 +129,25 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 			onOk={onOk}
 		>
 			<Form {...formItemLayout} field={field}>
+				<FormItem min={1} minmaxLengthMessage="数据节点数量最小值为1">
+					<label
+						className="form-name"
+						style={{ marginRight: '20px' }}
+					>
+						<span>数据节点数量</span>
+					</label>
+					<NumberPicker
+						min={
+							data.title === '主节点' || data.title === '数据节点'
+								? 3
+								: 1
+						}
+						value={data.num}
+						type="inline"
+						name="num"
+						onChange={inputChange}
+					/>
+				</FormItem>
 				<ul className="form-layout">
 					<li className="display-flex form-li">
 						<label className="form-name">
