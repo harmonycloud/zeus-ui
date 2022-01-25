@@ -30,7 +30,9 @@ export default function ParamterSetting(props) {
 	};
 
 	useEffect(() => {
-		setSelectedKey('list');
+		currentTab &&
+			currentTab !== 'paramterSetting' &&
+			setSelectedKey('list');
 	}, [currentTab]);
 
 	const ConsoleMenu = () => (

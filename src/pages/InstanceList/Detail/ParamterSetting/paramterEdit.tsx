@@ -20,6 +20,7 @@ import messageConfig from '@/components/messageConfig';
 import EditParamItem from './editParamItem';
 import SaveParamTemp from './saveParamTemp';
 import { tooltipRender } from '@/utils/utils';
+import storage from '@/utils/storage';
 
 interface ParamsProps {
 	type: string;
@@ -63,6 +64,9 @@ const ParamterEdit = () => {
 	const [editData, setEditData] = useState<ParamterItem>();
 	const [saveVisible, setSaveVisible] = useState<boolean>(false);
 	const [tempData, setTempData] = useState<TempProps>();
+	useEffect(() => {
+		storage.setSession('paramsTab', 'template');
+	}, []);
 	useEffect(() => {
 		if (uid) {
 			getParamsTemp({ type, chartVersion, uid, templateName }).then(
