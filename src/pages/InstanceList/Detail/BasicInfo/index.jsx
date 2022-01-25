@@ -683,7 +683,7 @@ function BasicInfo(props) {
 					},
 					yamlConfig
 			  ]
-			: configConfig;
+			: [...configConfig, yamlConfig];
 	const onCancel = (value) => {
 		setVisible(false);
 		if (value) {
