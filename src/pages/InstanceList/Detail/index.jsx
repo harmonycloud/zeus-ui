@@ -66,7 +66,6 @@ const InstanceDetails = (props) => {
 	const [reason, setReason] = useState('');
 	const history = useHistory();
 	const location = useLocation();
-	// const backKey = storage.getLocal('backKey');
 	const [activeKey, setActiveKey] = useState(currentTab || 'basicInfo');
 
 	useEffect(() => {
@@ -84,10 +83,6 @@ const InstanceDetails = (props) => {
 			let { query } = location;
 			// storage.setLocal('backKey', query.key);
 		}
-		// backKey &&
-		// 	backKey.indexOf('backupRecovery') !== -1 &&
-		// 	setActiveKey('backupRecovery');
-		// backKey && backKey === 'alarm' && setActiveKey('alarm');
 	}, []);
 
 	const getData = (clusterId, namespace) => {
@@ -266,8 +261,6 @@ const InstanceDetails = (props) => {
 				flag: true
 			}
 		});
-		// setActiveKey('basicInfo');
-		// storage.setLocal('backKey', 'basicInfo');
 	};
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
@@ -298,7 +291,6 @@ const InstanceDetails = (props) => {
 				}
 			}
 		});
-		// setActiveKey('basicInfo');
 	};
 	const SecondConfirm = (props) => {
 		const { visible, onCancel } = props;
@@ -355,11 +347,9 @@ const InstanceDetails = (props) => {
 
 	const onChange = (key) => {
 		setActiveKey(key);
-		storage.removeSession('paramsTab');
 		history.push(
 			`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
 		);
-		// storage.setLocal('backKey', key);
 	};
 
 	useEffect(() => {
