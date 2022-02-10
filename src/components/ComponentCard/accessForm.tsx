@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, Field, Form, Message } from '@alicloud/console-components';
-import { putComponent } from '@/services/common';
+import { putComponent, cutInComponent } from '@/services/common';
 import {
 	PrometheusRender,
 	IngressRender,
@@ -154,22 +154,37 @@ const AccessForm = (props: AccessFormProps) => {
 				};
 			}
 			// console.log(sendData);
-			putComponent(sendData).then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig(
-							'success',
-							'成功',
-							`组件${status === 0 ? '接入' : '编辑'}成功`
-						)
-					);
-					onCancel();
-					setRefreshCluster(true);
-					onRefresh();
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
+			if (status === 0) {
+				cutInComponent(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '组件接入成功')
+						);
+						onCancel();
+						setRefreshCluster(true);
+						onRefresh();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			} else {
+				putComponent(sendData).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig(
+								'success',
+								'成功',
+								`组件${status === 1 ? '接入' : '编辑'}成功`
+							)
+						);
+						onCancel();
+						setRefreshCluster(true);
+						onRefresh();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
 		});
 	};
 
@@ -193,7 +208,7 @@ const AccessForm = (props: AccessFormProps) => {
 	};
 	return (
 		<Dialog
-			title={`工具${status === 0 ? '接入' : '编辑'}`}
+			title={`工具${status === 0 || status === 1 ? '接入' : '编辑'}`}
 			visible={visible}
 			onCancel={onCancel}
 			onClose={onCancel}
@@ -202,12 +217,12 @@ const AccessForm = (props: AccessFormProps) => {
 		>
 			<div className="access-title-content">
 				<div className="access-title-name">
-					完善{status === 0 ? '接入' : '编辑'}信息
+					完善{status === 0 || status === 1 ? '接入' : '编辑'}信息
 				</div>
 			</div>
 			<p className="access-subtitle">
 				若您的资源池已经安装了对应工具，可直接
-				{status === 0 ? '接入' : '编辑'}
+				{status === 0 || status === 1 ? '接入' : '编辑'}
 				使用
 			</p>
 			<div className="access-form-content">

@@ -100,6 +100,7 @@ function UploadMiddlewareForm(props) {
 						listType="text"
 						ref={upload2}
 						headers={headers}
+						limit={1}
 					>
 						<Button type="primary" style={{ margin: '0 0 10px' }}>
 							上传文件

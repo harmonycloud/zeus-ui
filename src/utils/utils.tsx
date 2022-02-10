@@ -6,6 +6,7 @@ import moment from 'moment';
 import { renderFormItem } from '@/components/renderFormItem';
 import FormBlock from '@/pages/ServiceCatalog/components/FormBlock';
 
+const Tooltip = Balloon.Tooltip;
 // * 组件复用
 export const statusRender: (value: string) => JSX.Element = (value: string) => {
 	switch (value) {
@@ -319,6 +320,43 @@ export const nullRender: (value: string | null) => JSX.Element = (
 // * 蓝字显示
 export const nameRender = (value: string, index: number, record: any) => {
 	return <span className="name-link">{value}</span>;
+};
+// * 表格超出长度用气泡显示
+export const tooltipRender = (
+	value: string,
+	index: number,
+	record: any,
+	width: number
+) => {
+	const e1 = document.createElement('div');
+	e1.className = 'hidden';
+	e1.innerText = value;
+	document.body.appendChild(e1);
+	if (e1.clientWidth > width) {
+		document.body.removeChild(e1);
+		return (
+			<Tooltip
+				trigger={
+					<div
+						className="mid-table-col"
+						style={{ width: `${width - 32}px` }}
+					>
+						{value}
+					</div>
+				}
+				align="t"
+			>
+				<span style={{ lineHeight: '16px' }}>{value}</span>
+			</Tooltip>
+		);
+	} else {
+		document.body.removeChild(e1);
+		return (
+			<div className="mid-table-col" style={{ width: `${width - 32}px` }}>
+				{value}
+			</div>
+		);
+	}
 };
 
 // * 函数复用

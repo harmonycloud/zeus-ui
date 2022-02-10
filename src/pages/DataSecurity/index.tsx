@@ -50,10 +50,6 @@ export default function DataSecurity(): JSX.Element {
 		</h3>
 	);
 
-	useEffect(() => {
-		return () => storage.setLocal('backKey', '');
-	}, []);
-
 	return (
 		<SecondLayout
 			title="数据安全"

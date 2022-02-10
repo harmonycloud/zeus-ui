@@ -23,6 +23,9 @@ export default function MdBreadcrumb(props) {
 		if (route === 'serviceList') {
 			return storage.getSession('menuPath') || '/';
 		}
+		if (route.includes('middlewareRepository')) {
+			return '/middlewareRepository';
+		}
 		if (route) {
 			const arr = pathname.split('/');
 			arr.length = i === 0 ? 3 : i + 2;

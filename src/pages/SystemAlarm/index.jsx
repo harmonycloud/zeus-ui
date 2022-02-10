@@ -12,19 +12,17 @@ import GuidePage from '../GuidePage';
 const { Menu } = Page;
 function SystemAlarm(props) {
 	const [activeKey, setActiveKey] = useState(
-		storage.getLocal('backKey') === ''
-			? 'alarmRecord'
-			: storage.getLocal('backKey')
+		storage.getLocal('systemTab') || 'alarmRecord'
 	);
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
 	const onChange = (key) => {
 		setActiveKey(key);
-		storage.setLocal('backKey', key);
+		storage.setLocal('systemTab', key);
 	};
 
 	useEffect(() => {
-		return () => storage.setLocal('backKey', '');
+		return () => storage.removeLocal('systemTab', '');
 	}, []);
 	if (
 		JSON.stringify(globalCluster) === '{}' &&

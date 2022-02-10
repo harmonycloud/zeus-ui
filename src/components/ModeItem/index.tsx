@@ -36,6 +36,12 @@ const ModeItem = (props: modeItemProps) => {
 	useEffect(() => {
 		onChange(modifyData);
 	}, [modifyData]);
+	const inputChange = (value: any) => {
+		setModifyData({
+			...modifyData,
+			num: Number(value)
+		});
+	};
 	if (data.disabled) {
 		return (
 			<div className="mode-item-box">
@@ -53,15 +59,10 @@ const ModeItem = (props: modeItemProps) => {
 					{isEdit ? (
 						<Input
 							size="small"
-							defaultValue={modifyData.num}
+							value={modifyData.num}
 							htmlType="number"
 							hasBorder={false}
-							onChange={(value: string) => {
-								setModifyData({
-									...modifyData,
-									num: Number(value)
-								});
-							}}
+							onChange={inputChange}
 							onBlur={() => setIsEdit(false)}
 							autoFocus={true}
 							min={
@@ -100,6 +101,15 @@ const ModeItem = (props: modeItemProps) => {
 								<span>{data.storageQuota} GB</span>
 							</li>
 						)}
+						{type !== 'kibana' &&
+							type !== 'sentinel' &&
+							!data.storageClass && (
+								<li>
+									<span style={{ color: '#D93026' }}>
+										存储配额：未配置
+									</span>
+								</li>
+							)}
 					</ul>
 				</div>
 				{visible && (
@@ -112,6 +122,7 @@ const ModeItem = (props: modeItemProps) => {
 						namespace={namespace}
 						type={type}
 						onChange={onChange}
+						inputChange={inputChange}
 					/>
 				)}
 			</div>

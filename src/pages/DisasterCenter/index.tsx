@@ -38,7 +38,8 @@ function DisasterCenter(props: disasterCenterProps) {
 		name: string | null,
 		type: string,
 		namespace: string,
-		cluster: clusterType
+		cluster: clusterType,
+		aliasName?: string
 	) => {
 		if (name !== null) {
 			setBasicData({
@@ -94,8 +95,9 @@ function DisasterCenter(props: disasterCenterProps) {
 		setNamespace(ns[0]);
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
+		storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 		history.push({
-			pathname: `/serviceList/basicInfo/${
+			pathname: `/serviceList/mysql/MySQL/basicInfo/${
 				(data as middlewareDetailProps).mysqlDTO.relationName
 			}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 				(data as middlewareDetailProps).chartVersion
@@ -128,8 +130,9 @@ function DisasterCenter(props: disasterCenterProps) {
 					setNamespace(ns[0]);
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
+					storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 					history.push({
-						pathname: `/serviceList/basicInfo/${
+						pathname: `/serviceList/mysql/MySQL/basicInfo/${
 							(data as middlewareDetailProps).mysqlDTO
 								.relationName
 						}/${
@@ -162,6 +165,7 @@ function DisasterCenter(props: disasterCenterProps) {
 			<Dialog
 				title="操作确认"
 				visible={visible}
+				onClose={onCancel}
 				footerAlign="right"
 				footer={
 					<div>
@@ -179,20 +183,31 @@ function DisasterCenter(props: disasterCenterProps) {
 		);
 	};
 	const toDetail = () => {
-		// * 源示例和备服务在用一个资源池时
-		if (
-			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
-			basicData?.clusterId
-		) {
-			unAcrossCluster();
-		} else {
-			// across the cluster
-			const flag = storage.getLocal('firstAlert');
-			if (flag === 0) {
-				setVisible(true);
+		if ((data as middlewareDetailProps).mysqlDTO.openDisasterRecoveryMode) {
+			// * 源示例和备服务在用一个资源池时
+			if (
+				(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
+				basicData?.clusterId
+			) {
+				unAcrossCluster();
 			} else {
-				acrossCluster();
+				// across the cluster
+				const flag = storage.getLocal('firstAlert');
+				if (flag === 0) {
+					setVisible(true);
+				} else {
+					acrossCluster();
+				}
 			}
+		} else {
+			storage.setSession('menuPath', '/serviceList/mysql/MySQL');
+			history.push({
+				pathname: `/serviceList/mysql/MySQL/basicInfo/${
+					(data as middlewareDetailProps).name
+				}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
+					(data as middlewareDetailProps).chartVersion
+				}`
+			});
 		}
 	};
 	const toSourceDetail = () => {
@@ -201,8 +216,9 @@ function DisasterCenter(props: disasterCenterProps) {
 			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
 			basicData?.clusterId
 		) {
+			storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 			history.push({
-				pathname: `/serviceList/basicInfo/${
+				pathname: `/serviceList/mysql/MySQL/basicInfo/${
 					(data as middlewareDetailProps).name
 				}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 					(data as middlewareDetailProps).chartVersion
@@ -243,8 +259,12 @@ function DisasterCenter(props: disasterCenterProps) {
 								JSON.stringify(ns[0])
 							);
 							setRefreshCluster(true);
+							storage.setSession(
+								'menuPath',
+								'/serviceList/mysql/MySQL'
+							);
 							history.push({
-								pathname: `/serviceList/basicInfo/${
+								pathname: `/serviceList/mysql/MySQL/basicInfo/${
 									(data as middlewareDetailProps).name
 								}/${
 									(data as middlewareDetailProps).mysqlDTO

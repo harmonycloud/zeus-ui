@@ -386,13 +386,13 @@ const RedisCreate = (props) => {
 						for (let key in nodeObj) {
 							if (!nodeObj[key].disabled) {
 								if (nodeObj[key].storageClass === '') {
-									Message.show(
-										messageConfig(
-											'error',
-											'失败',
-											`${key}节点没有选择存储类型`
-										)
-									);
+									// Message.show(
+									// 	messageConfig(
+									// 		'error',
+									// 		'失败',
+									// 		`${key}节点没有选择存储类型`
+									// 	)
+									// );
 									modifyQuota(key);
 									return;
 								}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Page } from '@alicloud/console-components-page';
 import {
@@ -49,7 +49,14 @@ const InstanceDetails = (props) => {
 	const {
 		globalVar,
 		match: {
-			params: { middlewareName, type, chartVersion, currentTab }
+			params: {
+				middlewareName,
+				type,
+				chartVersion,
+				currentTab,
+				name,
+				aliasName
+			}
 		},
 		setCluster,
 		setNamespace,
@@ -59,7 +66,6 @@ const InstanceDetails = (props) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = globalVar;
-	const [selectedKey, setSelectedKey] = useState(currentTab);
 	const [data, setData] = useState();
 	const [status, setStatus] = useState();
 	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
@@ -67,13 +73,7 @@ const InstanceDetails = (props) => {
 	const [waringVisible, setWaringVisible] = useState(true);
 	const [reason, setReason] = useState('');
 	const history = useHistory();
-	const location = useLocation();
-	const backKey = storage.getLocal('backKey');
-	const [activeKey, setActiveKey] = useState(
-		storage.getLocal('backKey') === ''
-			? 'basicInfo'
-			: storage.getLocal('backKey')
-	);
+	const [activeKey, setActiveKey] = useState(currentTab || 'basicInfo');
 
 	useEffect(() => {
 		if (
@@ -86,14 +86,6 @@ const InstanceDetails = (props) => {
 
 	useEffect(() => {
 		setActiveKey(currentTab);
-		if (location.query) {
-			let { query } = location;
-			storage.setLocal('backKey', query.key);
-		}
-		backKey &&
-			backKey.indexOf('backupRecovery') !== -1 &&
-			setActiveKey('backupRecovery');
-		backKey && backKey === 'alarm' && setActiveKey('alarm');
 	}, []);
 
 	const getData = (clusterId, namespace) => {
@@ -119,7 +111,7 @@ const InstanceDetails = (props) => {
 		});
 	};
 
-	const refresh = (key = selectedKey) => {
+	const refresh = (key = activeKey) => {
 		getData(globalVar.cluster.id, globalVar.namespace.name);
 		setActiveKey(key);
 	};
@@ -265,15 +257,13 @@ const InstanceDetails = (props) => {
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/serviceList/basicInfo/${data.mysqlDTO.relationName}/${
-				data.mysqlDTO.type || 'mysql'
-			}/${chartVersion}`,
+			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
+				data.mysqlDTO.relationName
+			}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 			state: {
 				flag: true
 			}
 		});
-		setActiveKey('basicInfo');
-		storage.setLocal('backKey', 'basicInfo');
 	};
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
@@ -294,7 +284,7 @@ const InstanceDetails = (props) => {
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/serviceList/basicInfo/${
+						pathname: `/serviceList${name}/${aliasName}/basicInfo/${
 							data.mysqlDTO.relationName
 						}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 						state: {
@@ -304,7 +294,6 @@ const InstanceDetails = (props) => {
 				}
 			}
 		});
-		setActiveKey('basicInfo');
 	};
 	const SecondConfirm = (props) => {
 		const { visible, onCancel } = props;
@@ -361,11 +350,16 @@ const InstanceDetails = (props) => {
 
 	const onChange = (key) => {
 		setActiveKey(key);
-		storage.setLocal('backKey', key);
+		storage.removeSession('paramsTab');
+		history.push(
+			`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
+		);
 	};
 
 	useEffect(() => {
-		return () => storage.setLocal('backKey', '');
+		return () => {
+			localStorage.removeItem('backupTab');
+		};
 	}, []);
 
 	return (
@@ -380,7 +374,9 @@ const InstanceDetails = (props) => {
 				renderBackArrow={(elem) => (
 					<span
 						className="details-go-back"
-						onClick={() => window.history.back()}
+						onClick={() =>
+							history.push(`/serviceList/${name}/${aliasName}`)
+						}
 					>
 						{elem}
 					</span>
@@ -396,9 +392,7 @@ const InstanceDetails = (props) => {
 				}
 			>
 				<Button
-					onClick={() =>
-						refresh(storage.getLocal('backKey') || 'basicInfo')
-					}
+					onClick={() => refresh(activeKey)}
 					style={{ padding: '0 9px', marginRight: '8px' }}
 				>
 					<Icon type="refresh" />
