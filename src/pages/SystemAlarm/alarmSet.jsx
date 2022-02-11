@@ -251,7 +251,11 @@ function AlarmSet(props) {
 					<div className="show-box">
 						<span className="show-icon">
 							<Icon
-								type="angle-double-down"
+								type={
+									show
+										? 'angle-double-up'
+										: 'angle-double-down'
+								}
 								size="xs"
 								style={{ color: '#C0C6CC' }}
 							/>
@@ -392,7 +396,11 @@ function AlarmSet(props) {
 					<div className="show-box">
 						<span className="show-icon">
 							<Icon
-								type="angle-double-down"
+								type={
+									show
+										? 'angle-double-up'
+										: 'angle-double-down'
+								}
 								size="xs"
 								style={{ color: '#C0C6CC' }}
 							/>

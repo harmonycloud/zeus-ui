@@ -10,8 +10,10 @@ import {
 	Message,
 	Dialog,
 	Select,
-	Balloon
+	Balloon,
+	Search
 } from '@alicloud/console-components';
+import { useParams } from 'react-router';
 import HeaderLayout from '@/components/HeaderLayout';
 import BalloonForm from '@/components/BalloonForm';
 import ParamterTemplateForm from './paramterTemplateForm';
@@ -28,21 +30,30 @@ const formItemLayout = {
 export default function ParamterLIst(props) {
 	const { clusterId, namespace, middlewareName, type, onFreshChange } = props;
 	const [dataSource, setDataSource] = useState([]);
-	const [showDataSource, setShowDataSource] = useState();
+	const [checkedDataSource, setCheckedDataSource] = useState([]);
+	const [originData, setOriginData] = useState([]);
 	const [checked, setChecked] = useState(false);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const [visible, setVisible] = useState(false);
-
+	const [searchText, setSearchText] = useState('');
+	const params = useParams();
 	useEffect(() => {
 		const list = dataSource.filter(
 			(item) => item.value != item.modifiedValue
 		);
-		setShowDataSource(list);
+		setCheckedDataSource(list);
 	}, [dataSource]);
-
 	useEffect(() => {
-		getData(clusterId, namespace, middlewareName, type);
-	}, [props]);
+		const list = originData.filter((item) =>
+			item.name.includes(searchText)
+		);
+		setDataSource(list);
+	}, [searchText]);
+	useEffect(() => {
+		if (clusterId && namespace && middlewareName && type) {
+			getData(clusterId, namespace, middlewareName, type);
+		}
+	}, [namespace]);
 
 	const getData = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -56,12 +67,17 @@ export default function ParamterLIst(props) {
 				const list =
 					res.data &&
 					res.data.map((item) => {
-						item.modifiedValue = item.value;
+						item.modifiedValue = item.value || item.defaultValue;
+						item.value = item.value || item.defaultValue;
 						return item;
 					});
 				setDataSource(list);
 			}
 		});
+	};
+	const onSearch = (value) => {
+		console.log(value);
+		setSearchText(value);
 	};
 
 	const onChange = (checked) => {
@@ -76,35 +92,38 @@ export default function ParamterLIst(props) {
 		const list = dataSource.filter(
 			(item) => item.value != item.modifiedValue
 		);
-		const sendList = list.map((item) => {
-			item.value = item.modifiedValue;
-			return item;
-		});
-		const restartFlag = sendList.some((item) => {
+		const restartFlag = list.some((item) => {
 			if (item.restart === true) return true;
 			return false;
 		});
-		const sendData = {
-			url: {
-				clusterId,
-				middlewareName,
-				namespace
-			},
-			data: {
-				clusterId,
-				middlewareName,
-				namespace,
-				type,
-				customConfigList: sendList
-			}
-		};
 		if (restartFlag) {
 			Dialog.show({
 				title: '修改参数',
 				content:
 					'本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作',
 				onOk: () => {
+					const sendList = list.map((item) => {
+						item.value = item.modifiedValue;
+						return item;
+					});
+					const sendData = {
+						url: {
+							clusterId,
+							middlewareName,
+							namespace
+						},
+						data: {
+							clusterId,
+							middlewareName,
+							namespace,
+							type,
+							customConfigList: sendList
+						}
+					};
 					updateData(sendData);
+				},
+				onCancel: () => {
+					setSubmitDisabled(judgeSubmit());
 				}
 			});
 		} else {
@@ -113,7 +132,28 @@ export default function ParamterLIst(props) {
 				content:
 					'本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
 				onOk: () => {
+					const sendList = list.map((item) => {
+						item.value = item.modifiedValue;
+						return item;
+					});
+					const sendData = {
+						url: {
+							clusterId,
+							middlewareName,
+							namespace
+						},
+						data: {
+							clusterId,
+							middlewareName,
+							namespace,
+							type,
+							customConfigList: sendList
+						}
+					};
 					updateData(sendData);
+				},
+				onCancel: () => {
+					setSubmitDisabled(judgeSubmit());
 				}
 			});
 		}
@@ -131,8 +171,10 @@ export default function ParamterLIst(props) {
 						)
 					);
 					onFreshChange();
+					setSubmitDisabled(judgeSubmit());
 				} else {
 					Message.show(messageConfig('error', '失败', res));
+					setSubmitDisabled(judgeSubmit());
 				}
 			})
 			.finally(() => {
@@ -150,6 +192,7 @@ export default function ParamterLIst(props) {
 					return item;
 				});
 				setDataSource(list);
+				setSubmitDisabled(judgeSubmit());
 			}
 		});
 	};
@@ -163,6 +206,17 @@ export default function ParamterLIst(props) {
 	};
 
 	const updateValue = (value, record) => {
+		let cValue = value[record.name];
+		if (record.paramType === 'multiSelect') {
+			cValue = value[record.name].join(',');
+		}
+		const flag = cValue.trim();
+		if (flag === null || flag === undefined || flag === '') {
+			Message.show(
+				messageConfig('error', '失败', '不能将目标值设置为空!')
+			);
+			return;
+		}
 		if (record.paramType === 'multiSelect') {
 			record.modifiedValue = value[record.name].join(',');
 		} else {
@@ -380,9 +434,17 @@ export default function ParamterLIst(props) {
 							>
 								重新编辑
 							</Button>
-							<Button onClick={() => setVisible(true)}>
-								参数模板
+							<Button
+								className="mr-8"
+								onClick={() => setVisible(true)}
+							>
+								选择参数模板
 							</Button>
+							<Search
+								onSearch={onSearch}
+								style={{ width: '200px' }}
+								placeholder="请输入搜索内容"
+							/>
 						</>
 					}
 					right={
@@ -394,7 +456,7 @@ export default function ParamterLIst(props) {
 					}
 				/>
 				<Table
-					dataSource={checked ? showDataSource : dataSource}
+					dataSource={checked ? checkedDataSource : dataSource}
 					hasBorder={false}
 					tableWidth={1270}
 				>
@@ -450,6 +512,7 @@ export default function ParamterLIst(props) {
 					onCreate={selectTemplate}
 					onCancel={() => setVisible(false)}
 					type={type}
+					chartVersion={params.chartVersion}
 				/>
 			)}
 		</Page>

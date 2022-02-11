@@ -163,7 +163,7 @@ function RoleManage(): JSX.Element {
 					>
 						{record.id === 1
 							? '系统初始化最高权限角色，不可操作'
-							: '不能删除自己的角色哦'}
+							: '不能删除自己的角色'}
 					</Balloon>
 				) : (
 					<LinkButton
@@ -208,7 +208,7 @@ function RoleManage(): JSX.Element {
 					>
 						{record.id === 1
 							? '系统初始化最高权限角色，不可操作'
-							: '不能改自己的角色权限哦'}
+							: '不能改自己的角色权限'}
 					</Balloon>
 				) : (
 					<LinkButton

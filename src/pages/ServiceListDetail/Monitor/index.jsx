@@ -24,8 +24,8 @@ const Monitor = (props) => {
 	// console.log(props);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('monitoring')) {
-			if (type && monitor.grafana !== null) {
-				if (props.chartVersion !== undefined) {
+			if (type && monitor?.grafana !== null) {
+				if (chartVersion && clusterId && namespace) {
 					getMiddlewareMonitorUrl({
 						clusterId,
 						namespace,
@@ -42,7 +42,7 @@ const Monitor = (props) => {
 				}
 			}
 		}
-	}, [props.chartVersion, props.middlewareName]);
+	}, [props]);
 
 	useEffect(() => {
 		if (url) {
@@ -72,7 +72,7 @@ const Monitor = (props) => {
 
 	return (
 		<div className={styles['monitor']}>
-			{monitor.grafana === null ? (
+			{monitor?.grafana === null ? (
 				<ComponentNull title="该功能所需要数据监控和监控面板工具支持，您可前往“资源池——>平台组件进行安装" />
 			) : (
 				<>

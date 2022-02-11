@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Icon } from '@alicloud/console-components';
 import moment from 'moment';
 import CustomIcon from '../CustomIcon';
+import cutin from '@/assets/images/cutin.svg';
 import './index.scss';
 
 interface MidCardProps {
@@ -28,6 +29,12 @@ interface MidCardProps {
 }
 export const iconRender = (status: number | undefined) => {
 	switch (status) {
+		case 1:
+			return (
+				<>
+					<img src={cutin} /> 已接入
+				</>
+			);
 		case 3:
 			return (
 				<>

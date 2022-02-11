@@ -47,6 +47,10 @@
 				line-height: $line-height-xl;
 				font-size: $font-size;
 				margin-top: 4px;
+				& > img {
+					vertical-align: middle;
+					width: 13px;
+				}
 			}
 		}
 	}

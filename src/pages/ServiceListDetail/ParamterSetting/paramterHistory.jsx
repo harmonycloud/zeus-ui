@@ -15,8 +15,10 @@ export default function ParamterHistory(props) {
 	const [endTime, setEndTime] = useState();
 
 	useEffect(() => {
-		getData(clusterId, namespace, middlewareName, type, searchText);
-	}, [props]);
+		if (clusterId && namespace && middlewareName && type) {
+			getData(clusterId, namespace, middlewareName, type, searchText);
+		}
+	}, [namespace]);
 
 	const getData = (
 		clusterId,
@@ -27,6 +29,7 @@ export default function ParamterHistory(props) {
 		startTime = null,
 		endTime = null
 	) => {
+		// console.log(startTime, endTime);
 		const sendData = {
 			clusterId,
 			namespace,
@@ -41,6 +44,7 @@ export default function ParamterHistory(props) {
 			sendData.endTime = moment(endTime).format('YYYY-MM-DDTHH:mm:ss[Z]');
 		}
 		getConfigHistory(sendData).then((res) => {
+			// console.log(res);
 			if (res.success) {
 				setDataSource(res.data);
 			}
