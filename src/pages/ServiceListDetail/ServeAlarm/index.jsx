@@ -7,6 +7,7 @@ import { useHistory } from 'react-router';
 import { getClusters } from '@/services/common.js';
 import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
+import DefaultPicture from '@/components/DefaultPicture';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import { alarmWarn, silences } from '@/utils/const';
@@ -49,6 +50,10 @@ function Rules(props) {
 		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
+
+	useEffect(() => {
+		getData(clusterId, middlewareName, namespace, searchText);
+	}, []);
 
 	useEffect(() => {
 		if (clusterId && namespace && middlewareName) {
@@ -356,6 +361,10 @@ function Rules(props) {
 		return (
 			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
 		);
+	}
+
+	if (customMid && !capabilities.includes('alert')) {
+		return <DefaultPicture />;
 	}
 
 	return (

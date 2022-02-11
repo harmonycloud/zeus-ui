@@ -48,7 +48,6 @@ function CreateAlarm(props) {
 	const [selectUser, setSelectUser] = useState([]);
 	const [mailChecked, setMailChecked] = useState(false);
 	const [dingChecked, setDingChecked] = useState(false);
-	// const [copyIndex, setCopyIndex] = useState();
 	const [isRule, setIsRule] = useState();
 	const [dingDisabled, setDingDisabled] = useState(false);
 	const [mailDisabled, setMailDisabled] = useState(false);
@@ -136,50 +135,10 @@ function CreateAlarm(props) {
 				}
 			});
 			setAlarmRules(list);
-		} else if (type === 'severity') {
+		} else {
 			const list = alarmRules.map((item) => {
 				if (item.id === record.id) {
-					item.severity = value;
-					return item;
-				} else {
-					return item;
-				}
-			});
-			setAlarmRules(list);
-		} else if (type === 'content') {
-			const list = alarmRules.map((item) => {
-				if (item.id === record.id) {
-					item.content = value;
-					return item;
-				} else {
-					return item;
-				}
-			});
-			setAlarmRules(list);
-		} else if (type === 'symbol') {
-			const list = alarmRules.map((item) => {
-				if (item.id === record.id) {
-					item.symbol = value;
-					return item;
-				} else {
-					return item;
-				}
-			});
-			setAlarmRules(list);
-		} else if (type === 'threshold') {
-			const list = alarmRules.map((item) => {
-				if (item.id === record.id) {
-					item.threshold = value;
-					return item;
-				} else {
-					return item;
-				}
-			});
-			setAlarmRules(list);
-		} else if (type === 'silence') {
-			const list = alarmRules.map((item) => {
-				if (item.id === record.id) {
-					item.silence = value;
+					item[type] = value;
 					return item;
 				} else {
 					return item;
@@ -190,22 +149,6 @@ function CreateAlarm(props) {
 	};
 
 	const addAlarm = () => {
-		// if (alarms && alarms.length > 0) {
-		// 	const addItem = alarmRules[copyIndex];
-		// 	if (typeof copyIndex === 'undefined') {
-		// 		setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
-		// 	} else {
-		// 		setAlarmRules([
-		// 			...alarmRules,
-		// 			{
-		// 				...addItem,
-		// 				id: Math.random() * 100,
-		// 				alert: '',
-		// 				content: ''
-		// 			}
-		// 		]);
-		// 	}
-		// }
 		setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
 	};
 	const copyAlarm = (index) => {
@@ -415,7 +358,6 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
-						// storage.setLocal('backKey', 'alarm');
 						storage.setLocal('systemTab', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -428,7 +370,6 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
-						// storage.setLocal('backKey', 'alarm');
 						storage.setLocal('systemTab', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -460,7 +401,6 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则修改成功')
 						);
 						window.history.back();
-						// storage.setLocal('backKey', 'alarm');
 						storage.setLocal('systemTab', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -473,7 +413,6 @@ function CreateAlarm(props) {
 							messageConfig('success', '成功', '告警规则设置成功')
 						);
 						window.history.back();
-						// storage.setLocal('backKey', 'alarm');
 						storage.setLocal('systemTab', 'alarm');
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -593,7 +532,6 @@ function CreateAlarm(props) {
 						className="details-go-back"
 						onClick={() => {
 							window.history.back();
-							// storage.setLocal('backKey', 'alarm');
 							storage.setLocal('systemTab', 'alarm');
 						}}
 					>
