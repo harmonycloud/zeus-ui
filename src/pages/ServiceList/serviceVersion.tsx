@@ -21,6 +21,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		globalVar: { cluster, namespace }
 	} = props;
 	const params: paramsProps = useParams();
+	const { middlewareName, type, aliasName } = params;
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -32,9 +33,9 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const getData = () => {
 		getVersions({
 			clusterId: cluster.id,
-			middlewareName: url[url.length - 2],
+			middlewareName,
 			namespace: namespace.name,
-			type: url[url.length - 3]
+			type
 		}).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
@@ -194,9 +195,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							onClick={() => {
 								dialog.hide();
 								history.push(
-									`/middlewareRepository/versionManagement/${
-										url[url.length - 3]
-									}`
+									`/middlewareRepository/versionManagement/${middlewareName}`
 								);
 							}}
 						>
@@ -213,8 +212,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					return upgradeChart({
 						clusterId: cluster.id,
 						namespace: namespace.name,
-						middlewareName: url[url.length - 2],
-						type: url[url.length - 3],
+						middlewareName,
+						type,
 						chartName: record.chartName,
 						upgradeChartVersion: record.chartVersion
 					}).then((res) => {
@@ -273,8 +272,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							dataIndex="chartName"
 							cell={
 								<div>
-									<p>{url[url.length - 2]}</p>
-									<p>{url[url.length - 1]}</p>
+									<p>{middlewareName}</p>
+									<p>{aliasName}</p>
 								</div>
 							}
 						/>

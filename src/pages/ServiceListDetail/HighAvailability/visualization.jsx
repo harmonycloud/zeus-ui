@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './esEdit.module.scss';
 import G6 from '@antv/g6';
+import { useParams } from 'react-router';
 import { Button, Icon, Balloon } from '@alicloud/console-components';
 import CustomIcon from '@/components/CustomIcon';
 import { api } from '@/api.json';
@@ -104,11 +105,11 @@ function Visualization(props) {
 	} = props;
 	const location = useLocation();
 	const { pathname } = location;
+	const { type, chartVersion } = useParams();
 	const [option, setOption] = useState();
 	const [direction, setDirection] = useState('LR');
 
 	const roleRender = (value, index, record) => {
-		// console.log(record, 'ppp', value);
 		if (record.podName.includes('exporter')) {
 			return 'exporter';
 		} else {
@@ -259,17 +260,13 @@ function Visualization(props) {
 		window.graph && window.graph.clear();
 		window.graph && window.graph.destroy();
 
-		let url = window.location.href.split('/');
-		let imagePath =
-			url[url.length - 2] + '-' + url[url.length - 1] + '.svg';
+		let imagePath = type + '-' + chartVersion + '.svg';
 
 		G6.registerNode(
 			'tree-node',
 			{
 				drawShape: function drawShape(cfg, group) {
-					// console.log(cfg, serverData, group);
 					if (cfg.adentify) {
-						// console.log(cfg.level, cfg.adentify);
 						const circle = group.addShape('rect', {
 							attrs: {
 								stroke: '#666',
@@ -281,7 +278,6 @@ function Visualization(props) {
 								x: circleX(direction, cfg),
 								cursor: 'pointer'
 							},
-							// modelId: cfg.id,
 							name: 'circle'
 						});
 						group.addShape('text', {
@@ -302,34 +298,8 @@ function Visualization(props) {
 								x: circleTextX(direction, cfg),
 								y: circleTextY(direction, cfg)
 							},
-							// modelId: cfg.id,
 							name: 'circle-text'
 						});
-						// if (cfg.level === 'serve') {
-						// 	group.addShape('rect', {
-						// 		attrs: {
-						// 			stroke: '#A3B1BF',
-						// 			x: direction === 'LR' ? 60 : 34,
-						// 			y: direction === 'LR' ? 50 : 30,
-						// 			width: direction === 'LR' ? 26 : 0,
-						// 			height: direction === 'LR' ? 0 : 36
-						// 		},
-						// 		name: 'serve-line'
-						// 	});
-						// }
-						// if (cfg.level === 'pod') {
-						// 	group.addShape('rect', {
-						// 		attrs: {
-						// 			stroke: '#A3B1BF',
-						// 			x: direction === 'LR' ? 90 : 114,
-						// 			y: direction === 'LR' ? 50 : 30,
-						// 			width: direction === 'LR' ? 90 : 0,
-						// 			height: direction === 'LR' ? 0 : 36
-						// 		},
-						// 		visible: false,
-						// 		name: 'pod-line'
-						// 	});
-						// }
 						if (cfg.children && cfg.children.length) {
 							group.addShape('rect', {
 								attrs: {
@@ -744,7 +714,6 @@ function Visualization(props) {
 				const endPoint = cfg.endPoint;
 
 				const { style } = cfg;
-				// console.log(cfg, group, startPoint, endPoint);
 				const shape = group.addShape('path', {
 					attrs: {
 						stroke: style.stroke,
@@ -810,7 +779,6 @@ function Visualization(props) {
 			},
 			nodeStateStyles: {
 				hover: {
-					// fill: '#EBEBEB',
 					opacity: 0.7
 				},
 				select: {
@@ -881,7 +849,6 @@ function Visualization(props) {
 				}
 			]
 		};
-		// console.log(res);
 		graph.data(res);
 		graph.render();
 		topoData.pods.length && topoData.pods.length >= 4
@@ -928,12 +895,6 @@ function Visualization(props) {
 					(e) => e.get('name') === 'info-text'
 				);
 				graph.setItemState(item, 'hover', true);
-				// if (evt.target.cfg.name === 'status') {
-				// 	info.cfg.visible = true;
-				// 	infoText.cfg.visible = true;
-				// 	info.toFront();
-				// 	infoText.toFront();
-				// }
 				if (pathname.includes('addBackup')) return;
 				if (button1 && button3) {
 					button1.cfg.visible = true;
@@ -1002,7 +963,6 @@ function Visualization(props) {
 				(e) => e.get('name') === 'select-image'
 			);
 			const box = group.find((e) => e.get('name') === 'rect-shape');
-			// console.log(item, evt);
 			if (!setBackupObj) return;
 			if (evt.target.cfg.modelId) return;
 			if (serverData.type === 'mysql') {
@@ -1089,7 +1049,6 @@ function Visualization(props) {
 		};
 		graph.on('collapse-text:click', (e) => {
 			const { item } = e;
-			// console.log(item, direction);
 			const group = item.getContainer();
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
@@ -1137,7 +1096,6 @@ function Visualization(props) {
 			const collapseText = group.find(
 				(e) => e.get('name') === 'collapse-text'
 			);
-			console.log(e.target, collapseText);
 
 			const collapseBack = group.find(
 				(e) => e.get('name') === 'collapse-back'
@@ -1220,42 +1178,6 @@ function Visualization(props) {
 			setTimeout(() => {
 				createTopo(direction);
 			}, 0);
-
-			// const pods = [];
-			// topoData.pods &&
-			// 	topoData.pods.forEach((el) => {
-			// 		if (!el.role) el.role = roleRender('', '', el);
-			// 		if (pods.every((els) => els.role != el.role))
-			// 			pods.push({
-			// 				adentify: el.role,
-			// 				role: el.role,
-			// 				podName: el.podName,
-			// 				level: 'pod'
-			// 			});
-			// 	});
-			// pods.forEach(
-			// 	(el) =>
-			// 		(el.children = topoData.pods.filter(
-			// 			(els) => els.role == el.role
-			// 		))
-			// );
-			// const res = {
-			// 	id: 'tree',
-			// 	name: serverData.name,
-			// 	hasConfigBackup: topoData.hasConfigBackup,
-			// 	status: topoData.status,
-			// 	children: [
-			// 		{
-			// 			adentify: serveRender() || '未知',
-			// 			level: 'serve',
-			// 			children: pods
-			// 		}
-			// 	]
-			// };
-			// window.graph && window.graph.changeData(res);
-			// window.graph && topoData.pods.length && topoData.pods.length >= 4
-			// 	? window.graph.fitView()
-			// 	: window.graph.fitCenter();
 		}
 	}, [topoData]);
 

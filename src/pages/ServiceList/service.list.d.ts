@@ -89,4 +89,6 @@ export interface versionProps {
 }
 export interface paramsProps {
 	type: string;
+	middlewareName: string;
+	aliasName: string;
 }
