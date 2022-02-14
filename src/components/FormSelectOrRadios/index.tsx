@@ -15,7 +15,7 @@ export default function FormSelectOrRadios(
 	props: FormSelectOrRadiosProps
 ): JSX.Element {
 	const keys = Object.keys(props);
-	const [value, setValue] = useState(props.defaultValue);
+	const [value, setValue] = useState<string>(props.defaultValue);
 
 	const handleChange: (value: any) => void = (value) => {
 		props.field.setValues({

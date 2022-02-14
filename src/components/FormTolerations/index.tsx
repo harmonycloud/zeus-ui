@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
-	Balloon,
 	Icon,
 	Form,
 	Select,
-	Checkbox,
 	Switch,
 	Button
 } from '@alicloud/console-components';
 import { getNodeTaint } from '@/services/middleware';
+import {
+	FormTolerationsProps,
+	TolerationLabelItem,
+	TolerationsProps
+} from './formTolerations';
 import './index.scss';
 
 const { Item: FormItem } = Form;
@@ -16,17 +19,21 @@ const { Item: FormItem } = Form;
 /*
 	FormNodeTolerations：动态表单中的主机容忍组件
 */
-export default function FormTolerations(props) {
+export default function FormTolerations(
+	props: FormTolerationsProps
+): JSX.Element {
 	const { cluster } = props;
 	const keys = Object.keys(props);
 	// * 主机容忍
-	const [tolerations, setTolerations] = useState({
+	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		nodeTolerations: props.default,
 		nodeTolerationsLabel: '',
 		nodeTolerationsForce: false
 	});
-	const [labelList, setLabelList] = useState([]);
-	const [tolerationsLabels, setTolerationsLabels] = useState([]);
+	const [labelList, setLabelList] = useState<string[]>([]);
+	const [tolerationsLabels, setTolerationsLabels] = useState<
+		TolerationLabelItem[]
+	>([]);
 
 	useEffect(() => {
 		if (JSON.stringify(cluster) !== '{}') {
@@ -38,7 +45,7 @@ export default function FormTolerations(props) {
 		}
 	}, [cluster]);
 
-	const changeTolerations = (value, key) => {
+	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
 			[key]: value
@@ -71,7 +78,7 @@ export default function FormTolerations(props) {
 		}
 	};
 
-	const reduceTolerationsLabels = (item) => {
+	const reduceTolerationsLabels = (item: TolerationLabelItem) => {
 		setTolerationsLabels(
 			tolerationsLabels.filter((arr) => arr.id !== item.id)
 		);
@@ -91,7 +98,6 @@ export default function FormTolerations(props) {
 				<span
 					className={keys.includes('required') ? 'ne-required' : ''}
 				>
-					{/* {props.label} */}
 					主机容忍
 				</span>
 			</label>

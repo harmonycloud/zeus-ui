@@ -10,7 +10,7 @@ const { Item: FormItem } = Form;
 */
 export default function FormSwitch(props: FormSwitchProps): JSX.Element {
 	const keys = Object.keys(props);
-	const [currentValue, setCurrentValue] = useState(
+	const [currentValue, setCurrentValue] = useState<boolean>(
 		JSON.parse(props.defaultValue)
 	);
 

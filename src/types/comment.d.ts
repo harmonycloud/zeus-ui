@@ -151,6 +151,7 @@ export interface CustomFormItemProps {
 	subQuestions?: any[];
 	showSubQuestionIf?: string;
 	options?: any[];
+	[propsName: string]: any;
 }
 // * 存储类型
 export interface StorageClassProps {
