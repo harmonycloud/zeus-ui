@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
-import { getSecrets } from '@/services/middleware';
+
+import { getPvcs } from '@/services/middleware';
+
+import { formProps } from '../FormInput/form';
+
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-export default function FormSecret(props) {
-	// console.log(props);
+export default function FormPVC(props: formProps) {
 	const { cluster, namespace } = props;
 	const keys = Object.keys(props);
-	const [secrets, setSecrets] = useState([]);
-	const [value, setValue] = useState(props.defaultValue);
+	const [pvcList, setPVCList] = useState<any>([]);
+	const [value, setValue] = useState<any>(props.defaultValue);
 
 	useEffect(() => {
-		getSecrets({
+		getPvcs({
 			clusterId: cluster.id,
 			namespace: namespace.name
 		}).then((res) => {
@@ -20,13 +23,12 @@ export default function FormSecret(props) {
 				if (res.data.length > 0) {
 					setValue(res.data[0].name);
 				}
-				setSecrets(res.data);
+				setPVCList(res.data);
 			}
 		});
 	}, [cluster]);
 
-	function handleChange(value) {
-		// console.log(value);
+	function handleChange(value: any) {
 		setValue(value);
 	}
 
@@ -82,7 +84,7 @@ export default function FormSecret(props) {
 						value={value}
 						autoWidth={false}
 					>
-						{secrets.map((item, index) => (
+						{pvcList.map((item: any, index: number) => (
 							<Option key={index} value={item.name}>
 								{item.name}
 							</Option>

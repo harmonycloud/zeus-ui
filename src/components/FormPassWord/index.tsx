@@ -1,11 +1,15 @@
 import React from 'react';
 import { Input, Balloon, Icon, Form } from '@alicloud/console-components';
 
+import { formProps } from '../FormInput/form';
+
 const { Item: FormItem } = Form;
 
-export default function FormNumber(props) {
+/*
+	FormPassword：动态表单里的密码组件
+*/
+export default function FormPassword(props: formProps) {
 	const keys = Object.keys(props);
-
 	return (
 		<div className="display-flex flex-column">
 			<label
@@ -50,12 +54,9 @@ export default function FormNumber(props) {
 							? `请输入${props.label}`
 							: ''
 					}
-					pattern={props.pattern}
-					patternMessage={props.message}
 				>
-					<Input
+					<Input.Password
 						style={{ width: '390px' }}
-						htmlType="number"
 						defaultValue={props.defaultValue}
 						name={props.variable}
 						trim
