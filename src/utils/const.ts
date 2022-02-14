@@ -230,3 +230,60 @@ export const formItemLayout614 = {
 		span: 14
 	}
 };
+export const timeSelectDataSource = [
+	{
+		value: '1',
+		label: '1',
+		children: [
+			{ value: '1-minutes', label: '分钟' },
+			{ value: '1-hours', label: '小时' },
+			{ value: '1-days', label: '天' }
+		]
+	},
+
+	{
+		value: '3',
+		label: '3',
+		children: [
+			{ value: '3-minutes', label: '分钟' },
+			{ value: '3-hours', label: '小时' },
+			{ value: '3-days', label: '天' }
+		]
+	},
+	{
+		value: '5',
+		label: '5',
+		children: [
+			{ value: '5-minutes', label: '分钟' },
+			{ value: '5-hours', label: '小时' },
+			{ value: '5-days', label: '天' }
+		]
+	},
+	{
+		value: '7',
+		label: '7',
+		children: [
+			{ value: '7-minutes', label: '分钟' },
+			{ value: '7-hours', label: '小时' },
+			{ value: '7-days', label: '天' }
+		]
+	},
+	{
+		value: '15',
+		label: '15',
+		children: [
+			{ value: '15-minutes', label: '分钟' },
+			{ value: '15-hours', label: '小时' },
+			{ value: '15-days', label: '天' }
+		]
+	},
+	{
+		value: '30',
+		label: '30',
+		children: [
+			{ value: '30-minutes', label: '分钟' },
+			{ value: '30-hours', label: '小时' },
+			{ value: '30-days', label: '天' }
+		]
+	}
+];
