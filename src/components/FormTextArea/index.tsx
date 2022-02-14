@@ -1,13 +1,10 @@
 import React from 'react';
 import { Input, Balloon, Icon, Form } from '@alicloud/console-components';
+import { CustomFormItemProps } from '@/types/comment';
 
 const { Item: FormItem } = Form;
 
-/*
-	todo
-	subquestion 还未处理
-*/
-export default function FormTextArea(props) {
+export default function FormTextArea(props: CustomFormItemProps): JSX.Element {
 	const keys = Object.keys(props);
 	return (
 		<div className="display-flex flex-column">

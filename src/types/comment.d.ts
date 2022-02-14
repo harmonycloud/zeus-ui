@@ -138,3 +138,15 @@ export interface clusterQuotaDTOProps {
 	usedCpu: number;
 	usedMemory: number;
 }
+
+export interface CustomFormItemProps {
+	defaultValue: string;
+	description: string;
+	group: string;
+	label: string;
+	type: string;
+	variable: string;
+	required?: boolean;
+	subQuestions?: any[];
+	showSubQuestionIf?: string;
+}

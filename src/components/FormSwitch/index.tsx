@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Form, Switch, Balloon, Icon } from '@alicloud/console-components';
 import { renderFormItem } from '@/components/renderFormItem';
+import { FormSwitchProps } from './formSwitch';
 
 const { Item: FormItem } = Form;
 
 /*
 	FormSwitch: 动态表达中的switch 组件
 */
-export default function FormSwitch(props) {
+export default function FormSwitch(props: FormSwitchProps): JSX.Element {
 	const keys = Object.keys(props);
-	// const [item, setItems] = useState(props);
 	const [currentValue, setCurrentValue] = useState(
 		JSON.parse(props.defaultValue)
 	);
 
-	const onChange = (checked) => {
+	const onChange = (checked: boolean) => {
 		setCurrentValue(checked);
 	};
 
@@ -62,8 +62,6 @@ export default function FormSwitch(props) {
 							? `请输入${props.label}`
 							: ''
 					}
-					// pattern={pattern.name}
-					// patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 				>
 					<label className="dynamic-switch-label">
 						{currentValue ? '已开启' : '已关闭 '}
@@ -82,7 +80,7 @@ export default function FormSwitch(props) {
 				{(props.showSubQuestionIf &&
 					JSON.parse(props.showSubQuestionIf)) === currentValue ? (
 					<div className="dynamic-second-form-box">
-						{props.subQuestions.map((item) => {
+						{props.subQuestions?.map((item) => {
 							return (
 								<React.Fragment key={item.variable}>
 									{renderFormItem(
