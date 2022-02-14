@@ -12,7 +12,6 @@ import { getRoleList, deleteRole } from '@/services/role';
 import messageConfig from '@/components/messageConfig';
 import { getUserInformation } from '@/services/user';
 import './index.scss';
-import storage from '@/utils/storage';
 
 function RoleManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<roleProps[]>([]);

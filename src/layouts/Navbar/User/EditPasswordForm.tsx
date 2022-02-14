@@ -8,11 +8,15 @@ import {
 	Icon,
 	Message
 } from '@alicloud/console-components';
-import Storage from '@/utils/storage';
-import styles from './user.module.scss';
+
 import { encrypt } from '@/utils/utils';
 import { updatePassword } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
+
+import Storage from '@/utils/storage';
+
+import styles from './user.module.scss';
+
 interface sendDataProps {
 	password: string;
 	newPassword: string;

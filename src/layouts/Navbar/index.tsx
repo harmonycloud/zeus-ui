@@ -3,10 +3,9 @@ import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
 import { Nav, Select, Message } from '@alicloud/console-components';
+
 import User from './User';
 
-import styles from './navbar.module.scss';
-import './navbar.scss';
 import { getClusters, getNamespaces } from '@/services/common';
 import {
 	setCluster,
@@ -21,6 +20,9 @@ import { disabledRoute, hideRoute } from '@/utils/const';
 import { StoreState } from '@/types/index';
 import { NavbarProps } from './navbar';
 
+import styles from './navbar.module.scss';
+import './navbar.scss';
+
 function Navbar(props: NavbarProps) {
 	const {
 		user,
@@ -33,7 +35,6 @@ function Navbar(props: NavbarProps) {
 		getClusterId
 	} = props;
 	const { flag } = props.globalVar;
-	// console.log(flag);
 	const location = useLocation();
 	const [currentCluster, setCurrentCluster] = useState<{ id?: string }>({});
 	const [currentNamespace, setCurrentNamespace] = useState<{ name?: string }>(

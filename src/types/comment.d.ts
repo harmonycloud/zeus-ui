@@ -81,7 +81,6 @@ export interface monitorProps {
 export interface storageProps {
 	backup: backupProps | null;
 	support?: supportProps | null;
-	// resource?: resourceProps | null;
 }
 export interface backupProps {
 	type?: string;

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import AppLayout from '@alicloud/console-components-app-layout';
+
 import Login from '@/pages/Login/index';
 import Navbar from './Navbar/index';
 import Menu from './Menu/Menu';
 import MidTerminal from '@/components/MidTerminal';
+
 import Routes from './routes';
 import Storage from '@/utils/storage';
+
 import styles from './layout.module.scss';
 
 export default function Layout() {

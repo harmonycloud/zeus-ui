@@ -3,13 +3,16 @@ import { useHistory } from 'react-router-dom';
 import { Icon } from '@alifd/next';
 import { Message } from '@alicloud/console-components';
 import CustomIcon from '@/components/CustomIcon';
-import styles from './user.module.scss';
-import logoutSvg from '@/assets/images/navbar/logout.svg';
-import Storage from '@/utils/storage';
+
 import { postLogout } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import EditPasswordForm from './EditPasswordForm';
 import { userProps } from './user';
+
+import Storage from '@/utils/storage';
+import logoutSvg from '@/assets/images/navbar/logout.svg';
+
+import styles from './user.module.scss';
 
 function User(props: userProps) {
 	const { nickName, className, role } = props;
