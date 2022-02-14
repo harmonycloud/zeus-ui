@@ -149,4 +149,5 @@ export interface CustomFormItemProps {
 	required?: boolean;
 	subQuestions?: any[];
 	showSubQuestionIf?: string;
+	options?: any[];
 }
