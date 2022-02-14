@@ -189,16 +189,6 @@ function AlarmTimeLine(props: alarmTimeLineProps) {
 													{item.summary || ''}
 												</Tooltip>
 											</div>
-											{/* <Tooltip
-												align="l"
-												trigger={
-													<span className="details-color">
-														详情
-													</span>
-												}
-											>
-												{item.message}
-											</Tooltip> */}
 										</div>
 									</>
 								}

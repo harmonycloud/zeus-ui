@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Balloon, Field, Button, Form } from '@alicloud/console-components';
+
+import { balloonFormProps } from './balloonForm';
+
 import './index.scss';
 /**
  * 此组件是form组件和balloon组件的组合，主要用于气泡表单
@@ -16,7 +19,7 @@ import './index.scss';
 	 ...balloonProps 气泡组件属性
  }
  */
-function isPromise(obj) {
+function isPromise(obj: any) {
 	return (
 		!!obj && //有实际含义的变量才执行方法，变量null，undefined和''空串都为false
 		(typeof obj === 'object' || typeof obj === 'function') && // 初始promise 或 promise.then返回的
@@ -24,7 +27,7 @@ function isPromise(obj) {
 	);
 }
 const fn = () => {};
-const BalloonForm = (props) => {
+const BalloonForm = (props: balloonFormProps) => {
 	// formProps是表单的属性， restProps是气泡的属性
 	const {
 		trigger,
@@ -37,8 +40,8 @@ const BalloonForm = (props) => {
 		children,
 		...restProps
 	} = props;
-	const [submitLoading, setSubmitLoading] = useState(false);
-	const [balloonVisible, setBalloonVisible] = useState(false);
+	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+	const [balloonVisible, setBalloonVisible] = useState<boolean>(false);
 	const field = Field.useField();
 	const hasVisible = visible !== undefined;
 
