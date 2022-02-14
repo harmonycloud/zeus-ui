@@ -105,8 +105,8 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 					label="输入角色描述"
 					required
 					requiredMessage="请输入角色描述"
-					pattern={pattern.roleDescription}
-					patternMessage="角色描述长度不可超过100字符"
+					maxLength={100}
+					minmaxLengthMessage="角色描述长度不可超过100字符"
 				>
 					<TextArea
 						placeholder="请输入角色描述"

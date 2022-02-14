@@ -16,8 +16,7 @@ const pattern: patternProps = {
 	email: '^(([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5}){1,25})+([;.](([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5}){1,25})+)*$',
 	userName: '^[A-Za-z0-9-]{1,10}$',
 	aliasName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$',
-	roleName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$',
-	roleDescription: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,100}$'
+	roleName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$'
 };
 
 export default pattern;
