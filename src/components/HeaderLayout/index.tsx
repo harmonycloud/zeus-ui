@@ -1,7 +1,8 @@
 import React from 'react';
+import { HeaderLayoutProps } from './headerlayout';
 import './index.scss';
 
-export default function HeaderLayout(props) {
+export default function HeaderLayout(props: HeaderLayoutProps): JSX.Element {
 	const { left, right, className = '', style = {}, flex = [] } = props;
 	return (
 		<div className={`headerLayout ${className}`} style={style}>

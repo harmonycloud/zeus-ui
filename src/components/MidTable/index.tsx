@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Pagination, Button, Icon, Search } from '@alicloud/console-components';
 import Table from '@alicloud/console-components-table';
 import ColumnDialog from './columnDialog';
+import { MidTableProps } from './midTable';
 import './index.scss';
 
-function getDataByPageInfo(list, { current = 1, pageSize = 10 } = {}) {
+function getDataByPageInfo(list: any[], { current = 1, pageSize = 10 } = {}) {
 	return list.slice((current - 1) * pageSize, current * pageSize);
 }
 
-function translateChildrenToColumns(children) {
-	const list = [];
-	children.forEach((item) => {
+function translateChildrenToColumns(children: any): any[] {
+	const list: any[] = [];
+	children.forEach((item: any) => {
 		if (item) {
 			if (item.type.displayName === 'Column') {
 				list.push(item.props);
@@ -20,7 +21,7 @@ function translateChildrenToColumns(children) {
 	return list;
 }
 
-const MidTable = (props) => {
+const MidTable = (props: MidTableProps) => {
 	const {
 		columns = [],
 		children,
@@ -42,7 +43,8 @@ const MidTable = (props) => {
 	const [columnLock, setColumnLock] = useState(false); // 锁定column
 	const [pageInfo, setPageInfo] = useState({
 		current: 1,
-		pageSize: 10
+		pageSize: 10,
+		total: 10
 	}); //分页
 	const [tableDatas, setTableDatas] = useState(
 		getDataByPageInfo(dataSource, pageInfo)
@@ -58,7 +60,7 @@ const MidTable = (props) => {
 	// children发生变化并且column没有被锁住，更新children
 	useEffect(() => {
 		if (children && !columnLock) {
-			let list = translateChildrenToColumns(children);
+			const list = translateChildrenToColumns(children);
 			setTableColumns(list);
 			setVisibleTableColumns(list);
 		}
@@ -79,15 +81,15 @@ const MidTable = (props) => {
 		setTableDatas(getDataByPageInfo(dataSource, pageInfo));
 	}, [pageInfo]);
 	// 设置展示的column
-	const setColumns = (columns) => {
+	const setColumns = (columns: any) => {
 		setVisibleTableColumns(columns);
 		setColumnLock(true);
 		setShowColumnDialog(false);
 	};
-	const onPageChange = (current) => {
+	const onPageChange = (current: number) => {
 		setPageInfo({ ...pageInfo, current });
 	};
-	const onPageSizeChange = (pageSize) => {
+	const onPageSizeChange = (pageSize: number) => {
 		setPageInfo({ ...pageInfo, current: 1, pageSize });
 	};
 
@@ -126,20 +128,11 @@ const MidTable = (props) => {
 						<div>
 							<Search
 								{...tableProps.search}
-								// defaultValue={tableProps.search.defaultValue}
-								// value={tableProps.search.value}
-								// placeholder={tableProps.search.placeholder}
 								style={
 									JSON.stringify(searchStyle) === '{}'
 										? { width: '260px' }
 										: searchStyle
 								}
-								// filter={tableProps.search.filter}
-								// onSearch={tableProps.search.onSearch}
-								// onFilterChange={
-								// 	tableProps.search.onFilterChange
-								// }
-								// onChange={tableProps.search.onChange}
 								hasClear={true}
 							/>
 						</div>
@@ -166,9 +159,9 @@ const MidTable = (props) => {
 	);
 };
 
-export default MidTable;
-
 MidTable.Column = Table.Column;
 MidTable.ColumnGroup = Table.ColumnGroup;
 MidTable.GroupHeader = Table.GroupHeader;
 MidTable.GroupFooter = Table.GroupFooter;
+
+export default MidTable;

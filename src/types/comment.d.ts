@@ -137,3 +137,39 @@ export interface clusterQuotaDTOProps {
 	usedCpu: number;
 	usedMemory: number;
 }
+
+// * 自定义组件
+export interface CustomFormItemProps {
+	defaultValue: string;
+	description: string;
+	group: string;
+	label: string;
+	type: string;
+	variable: string;
+	required?: boolean;
+	subQuestions?: any[];
+	showSubQuestionIf?: string;
+	options?: any[];
+	[propsName: string]: any;
+}
+// * 存储类型
+export interface StorageClassProps {
+	allowVolumeExpansion: boolean;
+	createTime: null | string;
+	labels: null | string;
+	name: string;
+	parameters: {
+		fsType: string;
+		lvmType: string;
+		vgName: string;
+		volumeType: string;
+	};
+	provisioner: string;
+	reclaimPolicy: string;
+	status: null | any;
+	storageLimit: null | any;
+	storageQuota: null | any;
+	storageUsed: null | any;
+	type: null | any;
+	volumeBindingMode: string;
+}

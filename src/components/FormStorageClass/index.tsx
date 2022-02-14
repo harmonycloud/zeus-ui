@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
 import { getStorageClass } from '@/services/middleware';
+import { FormStorageClassProps } from './formStorageClass';
+import { StorageClassProps } from '@/types/comment';
+
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-export default function FormStorageClass(props) {
+export default function FormStorageClass(
+	props: FormStorageClassProps
+): JSX.Element {
 	const { cluster, namespace } = props;
 	const keys = Object.keys(props);
-	const [storageClassList, setStorageClassList] = useState([]);
-	const [value, setValue] = useState(props.defaultValue);
+	const [storageClassList, setStorageClassList] = useState<
+		StorageClassProps[]
+	>([]);
+	const [value, setValue] = useState<string>(props.defaultValue);
 
 	useEffect(() => {
 		getStorageClass({
 			clusterId: cluster.id,
 			namespace: namespace.name
 		}).then((res) => {
+			console.log(res);
 			if (res.success) {
 				for (let i = 0; i < res.data.length; i++) {
 					if (res.data[i].type === 'CSI-LVM') {
@@ -27,12 +35,8 @@ export default function FormStorageClass(props) {
 		});
 	}, [cluster]);
 
-	function handleChange(value) {
-		// console.log(value);
+	function handleChange(value: any): void {
 		setValue(value);
-		// props.field.setValues({
-		// 	[`${props.label}`]: value
-		// });
 	}
 
 	return (
@@ -79,8 +83,6 @@ export default function FormStorageClass(props) {
 							? `请选择${props.label}`
 							: ''
 					}
-					// pattern={pattern.name}
-					// patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 				>
 					<Select
 						style={{ width: '390px' }}
@@ -89,11 +91,13 @@ export default function FormStorageClass(props) {
 						value={value}
 						autoWidth={false}
 					>
-						{storageClassList.map((item, index) => (
-							<Option key={index} value={item.name}>
-								{item.name}
-							</Option>
-						))}
+						{storageClassList.map(
+							(item: StorageClassProps, index) => (
+								<Option key={index} value={item.name}>
+									{item.name}
+								</Option>
+							)
+						)}
 					</Select>
 				</FormItem>
 			</div>

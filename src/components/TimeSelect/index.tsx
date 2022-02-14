@@ -1,93 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CascaderSelect, Select, Grid } from '@alicloud/console-components';
 import { DatePicker } from '@alicloud/console-components';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
+import { timeSelectDataSource } from '@/utils/const';
+import { TimeSelectProps } from './timeSelect';
 import './index.scss';
+
 const { Option } = Select;
 const { Row, Col } = Grid;
 
-export default function TimeSelect(props) {
+export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 	const { RangePicker } = DatePicker;
-	const {
-		timeSelect,
-		align = 'right',
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		onRefresh = () => {},
-		source = 'default',
-		style = {}
-	} = props;
-	const [isSelect, setIsSelect] = useState(false);
-	const [startTime, setStartTime] = useState(moment().subtract(1, 'hours'));
-	const [endTime, setEndTime] = useState(moment());
-	const [timeQuantum, setTimeQuantum] = useState('');
-	const onChange = (value) => {
+	const { timeSelect, source = 'default', style = {} } = props;
+	const [isSelect, setIsSelect] = useState<boolean>(false);
+	const [startTime, setStartTime] = useState<Moment>(
+		moment().subtract(1, 'hours')
+	);
+	const [endTime, setEndTime] = useState<Moment>(moment());
+	const [timeQuantum, setTimeQuantum] = useState<string>('');
+
+	const onChange = (value: any) => {
 		setStartTime(value[0]);
 		setEndTime(value[1]);
 	};
-	const onRangeOk = (value) => {
+	const onRangeOk = (value: any[]) => {
 		setStartTime(value[0]);
 		setEndTime(value[1]);
 		timeSelect(value);
 	};
 
-	const dataSource = [
-		{
-			value: '1',
-			label: '1',
-			children: [
-				{ value: '1-minutes', label: '分钟' },
-				{ value: '1-hours', label: '小时' },
-				{ value: '1-days', label: '天' }
-			]
-		},
-
-		{
-			value: '3',
-			label: '3',
-			children: [
-				{ value: '3-minutes', label: '分钟' },
-				{ value: '3-hours', label: '小时' },
-				{ value: '3-days', label: '天' }
-			]
-		},
-		{
-			value: '5',
-			label: '5',
-			children: [
-				{ value: '5-minutes', label: '分钟' },
-				{ value: '5-hours', label: '小时' },
-				{ value: '5-days', label: '天' }
-			]
-		},
-		{
-			value: '7',
-			label: '7',
-			children: [
-				{ value: '7-minutes', label: '分钟' },
-				{ value: '7-hours', label: '小时' },
-				{ value: '7-days', label: '天' }
-			]
-		},
-		{
-			value: '15',
-			label: '15',
-			children: [
-				{ value: '15-minutes', label: '分钟' },
-				{ value: '15-hours', label: '小时' },
-				{ value: '15-days', label: '天' }
-			]
-		},
-		{
-			value: '30',
-			label: '30',
-			children: [
-				{ value: '30-minutes', label: '分钟' },
-				{ value: '30-hours', label: '小时' },
-				{ value: '30-days', label: '天' }
-			]
-		}
-	];
-	const handleChange = (value) => {
+	const handleChange = (value: any) => {
 		setTimeQuantum(value);
 		const number = value.split('-')[0];
 		const unit = value.split('-')[1];
@@ -95,11 +37,8 @@ export default function TimeSelect(props) {
 		setEndTime(moment());
 		timeSelect([moment().subtract(number, unit), moment()]);
 	};
-	const onTypeChange = (value) => {
+	const onTypeChange = (value: boolean) => {
 		setIsSelect(value);
-		if (value === false) {
-			onRefresh();
-		}
 		setTimeQuantum('');
 		setStartTime(moment().subtract(1, 'hours'));
 		setEndTime(moment());
@@ -108,7 +47,7 @@ export default function TimeSelect(props) {
 		return (
 			<>
 				{isSelect === true ? (
-					<div id="timepicker" align={align} style={style}>
+					<div id="timepicker" style={style}>
 						<Select
 							onChange={onTypeChange}
 							defaultValue={isSelect}
@@ -120,13 +59,13 @@ export default function TimeSelect(props) {
 						<CascaderSelect
 							listStyle={{ width: '50%' }}
 							style={{ width: '100%' }}
-							dataSource={dataSource}
+							dataSource={timeSelectDataSource}
 							onChange={handleChange}
 							value={timeQuantum}
 						/>
 					</div>
 				) : (
-					<div id="timepicker" align={align} style={style}>
+					<div id="timepicker" style={style}>
 						<Select
 							onChange={onTypeChange}
 							defaultValue={isSelect}
@@ -165,7 +104,7 @@ export default function TimeSelect(props) {
 							<Col span={19} style={{ marginLeft: 13 }}>
 								<CascaderSelect
 									style={{ width: '100%' }}
-									dataSource={dataSource}
+									dataSource={timeSelectDataSource}
 									onChange={handleChange}
 									value={timeQuantum}
 								/>
