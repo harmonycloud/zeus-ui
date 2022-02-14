@@ -1,5 +1,6 @@
 import React from 'react';
 import noData from '@/assets/images/nodata.svg';
+
 import './index.scss';
 
 export default function DefaultPicture() {
