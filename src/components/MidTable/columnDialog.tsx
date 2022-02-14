@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog } from '@alicloud/console-components';
 import ColumnList from './columnList';
+import { ColumnDialogProps } from './midTable';
 
-const ColumnDialog = (props) => {
+const ColumnDialog: (props: ColumnDialogProps) => JSX.Element = (
+	props: ColumnDialogProps
+) => {
 	const {
 		visible,
 		columns = [],
@@ -24,11 +27,9 @@ const ColumnDialog = (props) => {
 
 	return (
 		<Dialog
-			type="confirm"
 			visible={visible}
 			onOk={handleConfirm}
 			onCancel={handleCancel}
-			columns={columns}
 			onClose={handleCancel}
 			footerAlign="right"
 		>
