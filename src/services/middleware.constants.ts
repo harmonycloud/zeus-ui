@@ -55,7 +55,7 @@ export const getParamTemplate = `${api}/middlewares/template`;
 // * 获取参数模板列表详情
 export const getParamTemplateDetail = `${api}/middlewares/template/{templateName}`;
 // * 获取慢日志
-export const getSlowLog = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/slowsql`;
+export const getSlowLog = `${api}/clusters/{clusterId}/middlewares/mysql/{middlewareName}/slowsql`;
 // * 动态表单接口获取
 export const getDynamicForm = `${api}/clusters/{clusterId}/dynamic`;
 // * 获取pvc数据
