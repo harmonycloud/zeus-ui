@@ -11,10 +11,7 @@ import {
 	Form,
 	Input
 } from '@alicloud/console-components';
-import { api } from '@/api.json';
 import { getPersonalConfig } from '@/services/user';
-import logo from '@/assets/images/logo.svg';
-import background from '../../assets/images/login_bg.svg';
 import styles from './login.module.scss';
 import storage from '@/utils/storage';
 

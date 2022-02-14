@@ -9,9 +9,9 @@ import Storage from '@/utils/storage';
 import { postLogout } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import EditPasswordForm from './EditPasswordForm';
-import { loadavg } from 'os';
+import { userProps } from './user';
 
-function User(props) {
+function User(props: userProps) {
 	const { nickName, className, role } = props;
 	const [visible, setVisible] = useState(false);
 	const history = useHistory();
