@@ -87,7 +87,6 @@ export const renderFormItem = (
 					{...formValue}
 					cluster={cluster}
 					namespace={namespace}
-					// field={field}
 				/>
 			);
 		case 'pvc':
