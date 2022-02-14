@@ -395,10 +395,12 @@ function PlatformOverview() {
 					<div className="content">
 						<div className="top-content">
 							<HomeCard
-								title={'服务信息'}
-								height={'172px'}
-								width={'100%'}
-								marginBottom={'16px'}
+								title="服务信息"
+								style={{
+									height: '172px',
+									width: '100%',
+									marginBottom: '16px'
+								}}
 							>
 								<div className="serve-info">
 									{briefInfoList?.length ? (
@@ -501,11 +503,13 @@ function PlatformOverview() {
 									}}
 								>
 									<HomeCard
-										title={'控制器状态'}
-										height={'300px'}
-										width={'66%'}
-										marginBottom={'16px'}
-										readMore={'更多'}
+										title="控制器状态"
+										style={{
+											height: '300px',
+											width: '66%',
+											marginBottom: '16px'
+										}}
+										readMore="更多"
 										readMoreFn={() =>
 											history.push(
 												'/middlewareRepository'
@@ -580,10 +584,12 @@ function PlatformOverview() {
 									</HomeCard>
 									<HomeCard
 										title={'异常告警'}
-										height={'300px'}
-										width={'33%'}
-										marginLeft={'16px'}
-										marginBottom={'16px'}
+										style={{
+											height: '300px',
+											width: '33%',
+											marginLeft: '16px',
+											marginBottom: '16px'
+										}}
 									>
 										<EChartsReact
 											option={lineOption}
@@ -595,9 +601,8 @@ function PlatformOverview() {
 									</HomeCard>
 								</div>
 								<HomeCard
-									title={'审计信息'}
-									height={'300px'}
-									width={'100%'}
+									title="审计信息"
+									style={{ height: '300px', width: '100%' }}
 									readMore={'更多'}
 									readMoreFn={() =>
 										history.push(
@@ -641,10 +646,12 @@ function PlatformOverview() {
 							</div>
 							<div className="right-content">
 								<HomeCard
-									title={'告警事件（全平台）'}
-									height={'450px'}
-									width={'100%'}
-									marginBottom={'16px'}
+									title="告警事件（全平台）"
+									style={{
+										height: '450px',
+										width: '100%',
+										marginBottom: '16px'
+									}}
 								>
 									<RadioGroup
 										dataSource={radioList}
@@ -677,9 +684,8 @@ function PlatformOverview() {
 									/>
 								</HomeCard>
 								<HomeCard
-									title={'系统信息'}
-									height={'150px'}
-									width={'100%'}
+									title="系统信息"
+									style={{ height: '150px', width: '100%' }}
 								>
 									<div className="system-info">
 										<div className="version">
