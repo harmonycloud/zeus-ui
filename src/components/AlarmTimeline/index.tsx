@@ -23,7 +23,7 @@ import './index.scss';
 	clusters:
 */
 const Tooltip = Balloon.Tooltip;
-function AlarmTimeLine(props: alarmTimeLineProps) {
+function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 	const {
 		style = {},
 		list = [],

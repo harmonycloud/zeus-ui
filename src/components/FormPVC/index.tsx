@@ -3,12 +3,12 @@ import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
 
 import { getPvcs } from '@/services/middleware';
 
-import { formProps } from '../FormInput/form';
+import { CustomFormItemProps } from '@/types/comment'
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-export default function FormPVC(props: formProps) {
+export default function FormPVC(props: CustomFormItemProps): JSX.Element {
 	const { cluster, namespace } = props;
 	const keys = Object.keys(props);
 	const [pvcList, setPVCList] = useState<any>([]);

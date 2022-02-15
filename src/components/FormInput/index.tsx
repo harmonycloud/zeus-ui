@@ -1,14 +1,14 @@
 import React from 'react';
 import { Input, Balloon, Icon, Form } from '@alicloud/console-components';
 
-import { formProps } from './form'
+import { CustomFormItemProps } from '@/types/comment'
 
 const { Item: FormItem } = Form;
 
 /*
 	FormInput：动态表单中的Input组件
 */
-export default function FormInput(props: formProps) {
+export default function FormInput(props: CustomFormItemProps): JSX.Element {
 	const keys = Object.keys(props);
 	return (
 		<div className="display-flex flex-column">

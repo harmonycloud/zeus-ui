@@ -23,7 +23,7 @@ import { NavbarProps } from './navbar';
 import styles from './navbar.module.scss';
 import './navbar.scss';
 
-function Navbar(props: NavbarProps) {
+function Navbar(props: NavbarProps): JSX.Element {
 	const {
 		user,
 		style,

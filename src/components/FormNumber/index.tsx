@@ -1,11 +1,11 @@
 import React from 'react';
 import { Input, Balloon, Icon, Form } from '@alicloud/console-components';
 
-import { formProps } from '../FormInput/form';
+import { CustomFormItemProps } from '@/types/comment'
 
 const { Item: FormItem } = Form;
 
-export default function FormNumber(props: formProps) {
+export default function FormNumber(props: CustomFormItemProps): JSX.Element {
 	const keys = Object.keys(props);
 
 	return (

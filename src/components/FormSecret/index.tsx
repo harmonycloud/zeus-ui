@@ -3,12 +3,12 @@ import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
 
 import { getSecrets } from '@/services/middleware';
 
-import { formProps } from '../FormInput/form';
+import { CustomFormItemProps } from '@/types/comment'
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-export default function FormSecret(props: formProps) {
+export default function FormSecret(props: CustomFormItemProps): JSX.Element {
 	const { cluster, namespace } = props;
 	const keys = Object.keys(props);
 	const [secrets, setSecrets] = useState<any>([]);

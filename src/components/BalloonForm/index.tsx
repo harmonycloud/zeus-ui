@@ -27,7 +27,7 @@ function isPromise(obj: any) {
 	);
 }
 const fn = () => {};
-const BalloonForm = (props: balloonFormProps) => {
+const BalloonForm = (props: balloonFormProps): JSX.Element => {
 	// formProps是表单的属性， restProps是气泡的属性
 	const {
 		trigger,

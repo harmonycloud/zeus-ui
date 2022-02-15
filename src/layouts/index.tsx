@@ -12,7 +12,7 @@ import Storage from '@/utils/storage';
 
 import styles from './layout.module.scss';
 
-export default function Layout() {
+export default function Layout(): JSX.Element {
 	const [clusterId, setClusterId] = useState<string>('');
 	const redirectToLogin = () => (
 		<Router>

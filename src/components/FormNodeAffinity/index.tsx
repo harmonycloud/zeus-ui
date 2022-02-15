@@ -10,7 +10,7 @@ import {
 } from '@alicloud/console-components';
 
 import { getNodePort } from '@/services/middleware';
-import { formProps } from '../FormInput/form';
+import { FormNodeAffinityProps, NodeAffinityProps,NodeAffinityLabelItem } from './formNodeAffinity'
 
 import './index.scss';
 
@@ -19,17 +19,17 @@ const { Item: FormItem } = Form;
 /*
 	FormNodeAffinity：动态表单中的主机亲和组件
 */
-export default function FormNodeAffinity(props: formProps) {
+export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Element {
 	const { cluster } = props;
 	const keys = Object.keys(props);
 	// * 主机亲和
-	const [affinity, setAffinity] = useState<any>({
+	const [affinity, setAffinity] = useState<NodeAffinityProps>({
 		nodeAffinity: props.default,
 		nodeAffinityLabel: '',
 		nodeAffinityForce: false
 	});
-	const [labelList, setLabelList] = useState<any>([]);
-	const [affinityLabels, setAffinityLabels] = useState<any>([]);
+	const [labelList, setLabelList] = useState<any[]>([]);
+	const [affinityLabels, setAffinityLabels] = useState<NodeAffinityLabelItem[]>([]);
 
 	useEffect(() => {
 		if (JSON.stringify(cluster) !== '{}') {

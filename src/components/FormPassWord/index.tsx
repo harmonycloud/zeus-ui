@@ -1,14 +1,14 @@
 import React from 'react';
 import { Input, Balloon, Icon, Form } from '@alicloud/console-components';
 
-import { formProps } from '../FormInput/form';
+import { CustomFormItemProps } from '@/types/comment'
 
 const { Item: FormItem } = Form;
 
 /*
 	FormPassword：动态表单里的密码组件
 */
-export default function FormPassword(props: formProps) {
+export default function FormPassword(props: CustomFormItemProps): JSX.Element {
 	const keys = Object.keys(props);
 	return (
 		<div className="display-flex flex-column">

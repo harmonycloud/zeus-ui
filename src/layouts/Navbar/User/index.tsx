@@ -14,7 +14,7 @@ import logoutSvg from '@/assets/images/navbar/logout.svg';
 
 import styles from './user.module.scss';
 
-function User(props: userProps) {
+function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
 	const [visible, setVisible] = useState(false);
 	const history = useHistory();
