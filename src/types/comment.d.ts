@@ -107,11 +107,30 @@ export interface resourceProps {
 export interface ingressProps {
 	address: string;
 	ingressClassName: string | null;
+	globalVar?: globalVarProps;
+    entry?: string;
+    type?: string;
+    middlewareName?: string;
+	name: string;
+	middlewareNickName: string;
+	namespace: string;	
 	tcp: {
 		enabled: boolean;
 		configMapName: string;
 		namespace: string;
 	};
+}
+
+export interface ingressCreateProps {
+	selectedInstance: {
+        name: string;
+    };
+    selectedService: {
+        serviceName: string;
+        portDetailDtoList: any[];
+    };
+    errors: any[];
+    values: any;
 }
 
 export interface registryProps {
