@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import JSEncrypt from 'jsencrypt';
-import Storage from '@/utils/storage';
-import { postLogin, getRsaKey } from '@/services/user';
-import EditPasswordForm from '@/layouts/Navbar/User/EditPasswordForm';
 import {
 	Dialog,
 	Button,
@@ -11,9 +7,18 @@ import {
 	Form,
 	Input
 } from '@alicloud/console-components';
+
+import EditPasswordForm from '@/layouts/Navbar/User/EditPasswordForm';
+
+import JSEncrypt from 'jsencrypt';
+import Storage from '@/utils/storage';
+import { postLogin, getRsaKey } from '@/services/user';
+
 import { getPersonalConfig } from '@/services/user';
-import styles from './login.module.scss';
 import storage from '@/utils/storage';
+import { loginProps } from './login';
+
+import styles from './login.module.scss';
 
 export default function Login() {
 	const history = useHistory();
@@ -21,17 +26,16 @@ export default function Login() {
 		username: '',
 		password: ''
 	});
-	const [message, setMessage] = useState('');
-	const [publicKey, setPublicKey] = useState('');
-	const [visible, setVisible] = useState(false);
-	const [editVisible, setEditVisible] = useState(false);
-	const [userName, setUserName] = useState(false);
-	const [rePassword, setRePassword] = useState();
-	const [data, setData] = useState();
+	const [message, setMessage] = useState<string>('');
+	const [publicKey, setPublicKey] = useState<string>('');
+	const [visible, setVisible] = useState<boolean>(false);
+	const [editVisible, setEditVisible] = useState<boolean>(false);
+	const [userName, setUserName] = useState<string>('');
+	const [rePassword, setRePassword] = useState<number>(0);
+	const [data, setData] = useState<loginProps>();
 
 	useEffect(() => {
-		getPersonalConfig({}).then((res) => {
-			// console.log(res.data);
+		getPersonalConfig().then((res) => {
 			setData(res.data);
 			storage.setLocal('personalization', res.data);
 			document.title =
@@ -50,14 +54,14 @@ export default function Login() {
 	}, []);
 
 	// * 公钥加密 ---- 修改密码也要加密，目前暂时没有做，可将此方法作为公共方法提取出来
-	function encrypt(text) {
+	function encrypt(text: string) {
 		const encrypt = new JSEncrypt();
 		encrypt.setPublicKey(publicKey);
 		const encrypted = encrypt.encrypt(text);
 		return encrypted;
 	}
 
-	const submit = (e) => {
+	const submit = (e: any) => {
 		e && e.preventDefault();
 		setMessage('');
 		const { username, password } = account;
@@ -87,7 +91,6 @@ export default function Login() {
 						'https://mpaas.com/assets/images/bg-d2bf59ca.png'
 					);
 					if (res.data.rePassword) {
-						// console.log(res.data.rePassword);
 						setVisible(true);
 						setRePassword(res.data.rePassword);
 						setUserName(res.data.userName);
