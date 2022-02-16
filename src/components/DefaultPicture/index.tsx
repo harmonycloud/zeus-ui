@@ -1,8 +1,9 @@
 import React from 'react';
 import noData from '@/assets/images/nodata.svg';
+
 import './index.scss';
 
-export default function DefaultPicture() {
+export default function DefaultPicture(): JSX.Element {
 	return (
 		<div className="default-picture-content">
 			<img width={140} height={140} src={noData} />

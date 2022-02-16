@@ -8,7 +8,7 @@ export const exposedWay: filtersProps[] = [
 	{ value: 'Ingress', label: 'Ingress' },
 	{ value: 'NodePort', label: 'NodePort' }
 ];
-export const instanceType = [
+export const instanceType: filtersProps[] = [
 	{ value: 'mysql', label: 'MySQL' },
 	{ value: 'redis', label: 'Redis' },
 	{ value: 'elasticsearch', label: 'Elasticsearch' },

@@ -8,9 +8,11 @@ import {
 	Balloon,
 	Icon
 } from '@alicloud/console-components';
-import { Page } from '@alicloud/console-components-page';
+import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
+
 import AddServiceAvailableForm from '../ServiceAvailable/AddServiceAvailableForm';
+
 import {
 	getIngresses,
 	deleteIngress,
@@ -19,18 +21,36 @@ import {
 } from '@/services/ingress';
 import messageConfig from '@/components/messageConfig';
 import CustomIcon from '@/components/CustomIcon';
+
 import { instanceType, exposedWay } from '@/utils/const';
+import { StoreState } from '@/types';
+import { ingressProps, filtersProps } from '@/types/comment';
+
 import './ingress.scss';
 
-function IngressList(props) {
+function IngressList(props: ingressProps) {
 	const { globalVar, entry = 'menu', type = '', middlewareName = '' } = props;
-	const [dataSource, setDataSource] = useState([]);
-	const [showDataSource, setShowDataSource] = useState([]);
-	const [searchText, setSearchText] = useState('');
-	const [active, setActive] = useState(false); // 抽屉显示
-	const [iconVisible, setIconVisible] = useState(false);
-	const [adress, setAdress] = useState('');
-	const [lock, setLock] = useState({ lock: 'right' });
+	const [dataSource, setDataSource] = useState<ingressProps[]>([]);
+	const [showDataSource, setShowDataSource] = useState<ingressProps[]>([]);
+	const [searchText, setSearchText] = useState<string>('');
+	const [active, setActive] = useState<boolean>(false); // 抽屉显示
+	const [iconVisible, setIconVisible] = useState<boolean>(false);
+	const [adress, setAdress] = useState<string>('');
+	const [lock, setLock] = useState<{lock: string} | null>({ lock: 'right' });
+	const [instanceTypeFilter, setInstanceTypeFilter] = useState<filtersProps[]>();
+	const [exposedWayFilter, setExposedWayFilter] = useState<filtersProps[]> ();
+
+	useEffect(() => {
+		window.onresize = function () {
+			document.body.clientWidth >= 2300
+				? setLock(null)
+				: setLock({ lock: 'right' });
+		};
+		if(entry === 'detail'){
+			setInstanceTypeFilter(instanceType);
+			setExposedWayFilter(exposedWay);
+		}
+	},[])
 
 	useEffect(() => {
 		if (
@@ -46,14 +66,9 @@ function IngressList(props) {
 						middlewareName
 				  );
 		}
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
 	}, [globalVar]);
 
-	const getData = (clusterId, namespace, keyword = searchText) => {
+	const getData = (clusterId: string, namespace: string, keyword = searchText) => {
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
@@ -66,7 +81,7 @@ function IngressList(props) {
 			}
 		});
 	};
-	const getIngressByMid = (clusterId, namespace, type, middlewareName) => {
+	const getIngressByMid = (clusterId: string, namespace: string, type: string, middlewareName: string) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -89,7 +104,7 @@ function IngressList(props) {
 		)
 	};
 
-	const nameRender = (value, index, record) => {
+	const nameRender = (record: ingressProps) => {
 		return (
 			<>
 				<div>{record.name}</div>
@@ -103,11 +118,11 @@ function IngressList(props) {
 		);
 	};
 
-	const handleSearch = (value) => {
+	const handleSearch = (value: string) => {
 		setSearchText(value);
 		getData(globalVar.cluster.id, globalVar.namespace.name, value);
 	};
-	const onFilter = (filterParams) => {
+	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
 			const list = dataSource.filter(
@@ -119,7 +134,7 @@ function IngressList(props) {
 			setShowDataSource(dataSource);
 		}
 	};
-	const handleDelete = (record) => {
+	const handleDelete = (record: ingressProps) => {
 		Dialog.show({
 			title: '操作确认',
 			content:
@@ -162,7 +177,7 @@ function IngressList(props) {
 			}
 		});
 	};
-	const actionRender = (value, index, record) => {
+	const actionRender = (record: ingressProps) => {
 		return (
 			<Actions>
 				<LinkButton onClick={() => handleDelete(record)}>
@@ -172,7 +187,7 @@ function IngressList(props) {
 		);
 	};
 	// * 浏览器复制到剪切板方法
-	const copyValue = (value, record) => {
+	const copyValue = (value: string, record: ingressProps) => {
 		const input = document.createElement('input');
 		setAdress(record.name);
 		setIconVisible(true);
@@ -191,9 +206,8 @@ function IngressList(props) {
 		setTimeout(() => {
 			setIconVisible(false);
 		}, 3000);
-		// Message.show(messageConfig('success', '成功', '复制成功'));
 	};
-	const addressRender = (value, index, record) => {
+	const addressRender = (record: any) => {
 		if (record.protocol === 'HTTP') {
 			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
 			return (
@@ -226,7 +240,7 @@ function IngressList(props) {
 				<div className="ingress-balloon-content">
 					<div className="ingress-balloon-list-content">
 						{record.serviceList &&
-							record.serviceList.map((item, index) => {
+							record.serviceList.map((item: any, index: number) => {
 								const address = `${record.exposeIP}:${item.exposePort}`;
 								if (index > 1) {
 									return null;
@@ -281,7 +295,7 @@ function IngressList(props) {
 							}
 							closable={false}
 						>
-							{record.serviceList.map((item, index) => {
+							{record.serviceList.map((item: any, index: number) => {
 								const address = `${record.exposeIP}:${item.exposePort}`;
 								return (
 									<div key={index} className="balloon-tips">
@@ -329,14 +343,14 @@ function IngressList(props) {
 			);
 		}
 	};
-	const portRender = (value, index, record) => {
+	const portRender = (record: any) => {
 		const port =
 			record.protocol === 'HTTP'
 				? record.rules[0].ingressHttpPaths[0].servicePort
 				: record.serviceList[0].servicePort;
 		return <span>{port}</span>;
 	};
-	const onCreate = (values) => {
+	const onCreate = (values: any) => {
 		const sendData =
 			values.protocol === 'HTTP'
 				? {
@@ -396,16 +410,16 @@ function IngressList(props) {
 			}
 		});
 	};
-	const exposeTypeRender = (value, index, record) => {
+	const exposeTypeRender = (record: any) => {
 		return `${record.exposeType}/${record.ingressClassName || '-'}`;
 	};
 
 	return (
 		<Page>
 			{entry !== 'detail' ? (
-				<Page.Header title="对外路由"></Page.Header>
+				<Header title="对外路由"></Header>
 			) : null}
-			<Page.Content
+			<Content
 				style={entry !== 'detail' ? {} : { padding: '0 0', margin: 0 }}
 			>
 				<Table
@@ -449,14 +463,14 @@ function IngressList(props) {
 					<Table.Column
 						title="服务类型"
 						dataIndex="middlewareType"
-						filters={entry === 'detail' ? null : instanceType}
+						filters={instanceTypeFilter}
 						filterMode="single"
 						width={150}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
-						filters={entry === 'detail' ? null : exposedWay}
+						filters={exposedWayFilter}
 						filterMode="single"
 						width={200}
 						cell={exposeTypeRender}
@@ -485,7 +499,7 @@ function IngressList(props) {
 						{...lock}
 					/>
 				</Table>
-			</Page.Content>
+			</Content>
 			{active && (
 				<AddServiceAvailableForm
 					visible={active}
@@ -499,9 +513,7 @@ function IngressList(props) {
 		</Page>
 	);
 }
-export default connect(
-	({ globalVar }) => ({
-		globalVar
-	}),
-	null
-)(IngressList);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, null)(IngressList);

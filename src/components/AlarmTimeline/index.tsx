@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Timeline, Balloon } from '@alicloud/console-components';
 import { useHistory } from 'react-router-dom';
-import './index.scss';
-import transTime from '@/utils/transTime';
 import { connect } from 'react-redux';
-import storage from '@/utils/storage';
+
+import transTime from '@/utils/transTime';
 import { getNamespaces } from '@/services/common';
 import {
 	setCluster,
@@ -12,30 +11,33 @@ import {
 	setRefreshCluster
 } from '@/redux/globalVar/var';
 
+import storage from '@/utils/storage';
+import { alarmTimeLineProps } from './alarmTimeLine';
+
+import './index.scss';
+
 /*
 	params
 	list:[{time:'',message:'',summary:'',level:''}]
 	style:内联样式
 	clusters:
-	type:'default' 在平台管理页面的告警跳转涉及跨资源池跳转
 */
 const Tooltip = Balloon.Tooltip;
-function AlarmTimeLine(props) {
+function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 	const {
 		style = {},
 		list = [],
 		clusters = [],
-		type = 'default',
 		setCluster,
 		setNamespace
 	} = props;
-	const [data, setData] = useState(list);
+	const [data, setData] = useState<any>(list);
 	const history = useHistory();
 	// props变化时修改list值
 	useEffect(() => {
 		setData(list);
 	}, [props]);
-	const dotRender = (value) => {
+	const dotRender = (value: string) => {
 		return (
 			<div className={`${value}-tip`}>
 				{value === 'info'
@@ -48,17 +50,19 @@ function AlarmTimeLine(props) {
 	};
 
 	// 跨资源池跳转
-	const getNamespaceList = async (item) => {
-		const clusterData = clusters.filter((c) => c.id === item.clusterId)[0];
+	const getNamespaceList = async (item: any) => {
+		const clusterData = clusters.filter(
+			(c: any) => c.id === item.clusterId
+		)[0];
 		setCluster(clusterData);
 		storage.setLocal('cluster', JSON.stringify(clusterData));
-		let res = await getNamespaces({
+		const res = await getNamespaces({
 			clusterId: item.clusterId,
 			withQuota: true
 		});
 		if (res.success) {
 			if (res.data.length > 0) {
-				res.data.map((n) => {
+				res.data.map((n: any) => {
 					if (n.name === item.namespace) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
@@ -76,14 +80,14 @@ function AlarmTimeLine(props) {
 		}
 	};
 	// * 非跨资源池跳转
-	const unAcross = async (item) => {
-		let res = await getNamespaces({
+	const unAcross = async (item: any) => {
+		const res = await getNamespaces({
 			clusterId: item.clusterId,
 			withQuota: true
 		});
 		if (res.success) {
 			if (res.data.length > 0) {
-				res.data.map((n) => {
+				res.data.map((n: any) => {
 					if (n.name === item.namespace) {
 						setNamespace(n);
 						storage.setLocal('namespace', JSON.stringify(n));
@@ -101,7 +105,7 @@ function AlarmTimeLine(props) {
 		}
 	};
 
-	const toDetail = (item) => {
+	const toDetail = (item: any) => {
 		const clusterTemp = JSON.parse(storage.getLocal('cluster'));
 		if (
 			!item.chartVersion ||
@@ -125,7 +129,7 @@ function AlarmTimeLine(props) {
 		<div style={style} id="time-line-content">
 			<Timeline>
 				{data &&
-					data.map((item, index) => {
+					data.map((item: any, index: number) => {
 						return (
 							<Timeline.Item
 								key={index}
@@ -185,16 +189,6 @@ function AlarmTimeLine(props) {
 													{item.summary || ''}
 												</Tooltip>
 											</div>
-											{/* <Tooltip
-												align="l"
-												trigger={
-													<span className="details-color">
-														详情
-													</span>
-												}
-											>
-												{item.message}
-											</Tooltip> */}
 										</div>
 									</>
 								}

@@ -3,11 +3,9 @@ import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
 import { Nav, Select, Message } from '@alicloud/console-components';
-import User from './User/User';
 
-import styles from './navbar.module.scss';
-import './navbar.scss';
-import logo from '@/assets/images/navbar/zeus-logo-small.svg';
+import User from './User';
+
 import { getClusters, getNamespaces } from '@/services/common';
 import {
 	setCluster,
@@ -16,12 +14,16 @@ import {
 	setGlobalClusterList,
 	setGlobalNamespaceList
 } from '@/redux/globalVar/var';
-import { api } from '@/api.json';
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import { disabledRoute, hideRoute } from '@/utils/const';
+import { StoreState } from '@/types/index';
+import { NavbarProps } from './navbar';
 
-function Navbar(props) {
+import styles from './navbar.module.scss';
+import './navbar.scss';
+
+function Navbar(props: NavbarProps): JSX.Element {
 	const {
 		user,
 		style,
@@ -33,12 +35,13 @@ function Navbar(props) {
 		getClusterId
 	} = props;
 	const { flag } = props.globalVar;
-	// console.log(flag);
 	const location = useLocation();
-	const [currentCluster, setCurrentCluster] = useState({});
-	const [currentNamespace, setCurrentNamespace] = useState({});
-	const [clusterList, setClusterList] = useState([]);
-	const [namespaceList, setNamespaceList] = useState([]);
+	const [currentCluster, setCurrentCluster] = useState<{ id?: string }>({});
+	const [currentNamespace, setCurrentNamespace] = useState<{ name?: string }>(
+		{}
+	);
+	const [clusterList, setClusterList] = useState<any[]>([]);
+	const [namespaceList, setNamespaceList] = useState<any[]>([]);
 	// 控制资源池和分区
 	const [disabled, setDisabled] = useState(false);
 	const [hideFlag, setHideFlag] = useState(false);
@@ -47,7 +50,7 @@ function Navbar(props) {
 	const [role, setRole] = useState({ aliasName: '系统管理员' });
 	// 设置logo
 	const personalization = storage.getLocal('personalization');
-	const footer = (nickName, role) => (
+	const footer = (nickName: string, role: { aliasName: string }) => (
 		<div className={styles['action-bar']}>
 			<div className={styles['action-bar-item']}>
 				<User
@@ -60,7 +63,8 @@ function Navbar(props) {
 	);
 
 	const getUserInfo = async () => {
-		let res = await getUserInformation();
+		const res: { aliasName?: string; [propsName: string]: any } =
+			await getUserInformation();
 		if (res.success) {
 			setNickName(res.data.aliasName);
 			setRole(res.data);
@@ -70,25 +74,23 @@ function Navbar(props) {
 	};
 
 	const getClusterList = async () => {
-		let res = await getClusters();
+		const res = await getClusters();
 		if (res.success) {
 			if (res.data.length > 0) {
-				let jsonLocalCluster = storage.getLocal('cluster');
+				const jsonLocalCluster = storage.getLocal('cluster');
 				if (
 					jsonLocalCluster &&
-					res.data.some((item) => {
+					res.data.some((item: any) => {
 						return item.id === JSON.parse(jsonLocalCluster).id;
 					})
 				) {
 					const localClusterTemp = res.data.find(
-						(item) => item.id === JSON.parse(jsonLocalCluster).id
+						(item: any) =>
+							item.id === JSON.parse(jsonLocalCluster).id
 					);
 					getClusterId(localClusterTemp.id);
-					// getClusterId(JSON.parse(jsonLocalCluster).id);
 					setCurrentCluster(localClusterTemp);
-					// setCurrentCluster(JSON.parse(jsonLocalCluster));
 					setCluster(localClusterTemp);
-					// setCluster(JSON.parse(jsonLocalCluster));
 				} else {
 					setCurrentCluster(res.data[0]);
 					setCluster(res.data[0]);
@@ -101,14 +103,14 @@ function Navbar(props) {
 		}
 	};
 
-	const getNamespaceList = async (clusterId) => {
-		let res = await getNamespaces({ clusterId, withQuota: true });
+	const getNamespaceList = async (clusterId: string | undefined) => {
+		const res = await getNamespaces({ clusterId, withQuota: true });
 		if (res.success) {
 			if (res.data.length > 0) {
-				let jsonLocalNamespace = storage.getLocal('namespace');
+				const jsonLocalNamespace = storage.getLocal('namespace');
 				if (
 					jsonLocalNamespace &&
-					res.data.some((item) => {
+					res.data.some((item: any) => {
 						return (
 							item.name === JSON.parse(jsonLocalNamespace).name
 						);
@@ -127,7 +129,7 @@ function Navbar(props) {
 		}
 	};
 
-	const clusterHandle = (id) => {
+	const clusterHandle = (id: number) => {
 		for (let i = 0; i < clusterList.length; i++) {
 			if (clusterList[i].id === id) {
 				setCurrentCluster(clusterList[i]);
@@ -138,7 +140,7 @@ function Navbar(props) {
 		}
 	};
 
-	const namespaceHandle = (name) => {
+	const namespaceHandle = (name: string) => {
 		for (let i = 0; i < namespaceList.length; i++) {
 			if (namespaceList[i].name === name) {
 				setCurrentNamespace(namespaceList[i]);
@@ -269,7 +271,10 @@ function Navbar(props) {
 	);
 }
 
-export default connect(({ globalVar }) => ({ globalVar }), {
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {
 	setCluster,
 	setNamespace,
 	setRefreshCluster,

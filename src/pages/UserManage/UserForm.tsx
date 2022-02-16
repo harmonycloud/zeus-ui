@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
 	Dialog,
 	Form,
 	Field,
 	Input,
-	Select,
 	Message
 } from '@alicloud/console-components';
-import { getRoles, createUser, updateUser } from '@/services/user';
-import { userProps, roleProps } from './user';
+import { createUser, updateUser } from '@/services/user';
+import { userProps } from './user';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 const formItemLayout = {
 	labelCol: {
 		span: 6
@@ -30,17 +28,7 @@ interface userFormProps {
 }
 export default function UserForm(props: userFormProps): JSX.Element {
 	const { visible, onCreate, onCancel, data } = props;
-	// const [roles, setRoles] = useState<roleProps[]>([]);
 	const field: Field = Field.useField();
-	// useEffect(() => {
-	// 	getRoles().then((res) => {
-	// 		if (res.success) {
-	// 			setRoles(res.data);
-	// 		} else {
-	// 			Message.show(messageConfig('error', '失败', res));
-	// 		}
-	// 	});
-	// }, []);
 	useEffect(() => {
 		if (data) {
 			field.setValues({
@@ -48,7 +36,6 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				aliasName: data.aliasName,
 				phone: data.phone,
 				email: data.email
-				// roleId: data.roleId
 			});
 		}
 	}, [data]);
@@ -61,7 +48,6 @@ export default function UserForm(props: userFormProps): JSX.Element {
 			if (data) {
 				// * 修改用户
 				updateUser(sendData).then((res) => {
-					// console.log(res);
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户修改成功')
@@ -74,7 +60,6 @@ export default function UserForm(props: userFormProps): JSX.Element {
 			} else {
 				// * 创建用户
 				createUser(sendData).then((res) => {
-					// console.log(res);
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户创建成功')
@@ -151,33 +136,14 @@ export default function UserForm(props: userFormProps): JSX.Element {
 					/>
 				</FormItem>
 				<FormItem
-					// className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
 					label="邮箱"
-					// required
-					// requiredMessage="请输入邮箱"
 					pattern={pattern.email}
 					patternMessage="请输入正确的邮箱地址"
 				>
 					<Input name="email" trim={true} placeholder="请输入邮箱" />
 				</FormItem>
-				{/* <FormItem
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					label="角色"
-					required
-					requiredMessage="请选择角色"
-				>
-					<Select name="roleId" style={{ width: '100%' }}>
-						{roles.map((item: roleProps) => (
-							<Option key={item.id} value={item.id}>
-								{item.name}
-							</Option>
-						))}
-					</Select>
-				</FormItem> */}
 			</Form>
 		</Dialog>
 	);

@@ -12,7 +12,7 @@ export const postLogin = (params: any) => {
 	return Axios.post(USER.loginApi, params);
 };
 
-export const postLogout = (params: any) => {
+export const postLogout = (params?: any) => {
 	return Axios.post(USER.logoutApi, params);
 };
 

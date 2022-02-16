@@ -8,7 +8,10 @@ import {
 	Switch,
 	Button
 } from '@alicloud/console-components';
+
 import { getNodePort } from '@/services/middleware';
+import { FormNodeAffinityProps, NodeAffinityProps,NodeAffinityLabelItem } from './formNodeAffinity'
+
 import './index.scss';
 
 const { Item: FormItem } = Form;
@@ -16,17 +19,17 @@ const { Item: FormItem } = Form;
 /*
 	FormNodeAffinity：动态表单中的主机亲和组件
 */
-export default function FormNodeAffinity(props) {
+export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Element {
 	const { cluster } = props;
 	const keys = Object.keys(props);
 	// * 主机亲和
-	const [affinity, setAffinity] = useState({
+	const [affinity, setAffinity] = useState<NodeAffinityProps>({
 		nodeAffinity: props.default,
 		nodeAffinityLabel: '',
 		nodeAffinityForce: false
 	});
-	const [labelList, setLabelList] = useState([]);
-	const [affinityLabels, setAffinityLabels] = useState([]);
+	const [labelList, setLabelList] = useState<any[]>([]);
+	const [affinityLabels, setAffinityLabels] = useState<NodeAffinityLabelItem[]>([]);
 
 	useEffect(() => {
 		if (JSON.stringify(cluster) !== '{}') {
@@ -38,7 +41,7 @@ export default function FormNodeAffinity(props) {
 		}
 	}, [cluster]);
 
-	const changeAffinity = (value, key) => {
+	const changeAffinity = (value: string | boolean, key: string) => {
 		setAffinity({
 			...affinity,
 			[key]: value
@@ -51,7 +54,7 @@ export default function FormNodeAffinity(props) {
 	const addAffinityLabels = () => {
 		if (
 			!affinityLabels.find(
-				(item) => item.label === affinity.nodeAffinityLabel
+				(item: any) => item.label === affinity.nodeAffinityLabel
 			)
 		) {
 			setAffinityLabels([
@@ -64,14 +67,13 @@ export default function FormNodeAffinity(props) {
 					{ label: affinity.nodeAffinityLabel, id: Math.random() }
 				]
 			});
-			// setAffinity({ ...affinity, nodeAffinityLabel: '' });
 		}
 	};
 
-	const reduceAffinityLabels = (item) => {
-		setAffinityLabels(affinityLabels.filter((arr) => arr.id !== item.id));
+	const reduceAffinityLabels = (item: any) => {
+		setAffinityLabels(affinityLabels.filter((arr: any) => arr.id !== item.id));
 		props.field.setValues({
-			affinityLabels: affinityLabels.filter((arr) => arr.id !== item.id)
+			affinityLabels: affinityLabels.filter((arr: any) => arr.id !== item.id)
 		});
 	};
 
@@ -189,7 +191,7 @@ export default function FormNodeAffinity(props) {
 				</FormItem>
 				{affinity.nodeAffinity && affinityLabels.length ? (
 					<div className={'tags'}>
-						{affinityLabels.map((item) => {
+						{affinityLabels.map((item: any) => {
 							return (
 								<p className={'tag'} key={item.id}>
 									<span>{item.label}</span>

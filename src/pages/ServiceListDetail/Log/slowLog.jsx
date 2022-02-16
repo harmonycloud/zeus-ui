@@ -104,7 +104,7 @@ export default function SlowLog(props) {
 	};
 
 	const slowLogDownload = () => {
-		const url = `${api}/clusters/${clusterId}/namespaces/${namespace}/middlewares/${middlewareName}/slowsql/file?startTime=${transTime.local2gmt2(
+		const url = `${api}/clusters/${clusterId}/${namespace}/middlewares/mysql/${middlewareName}/slowsql/file?startTime=${transTime.local2gmt2(
 			rangeTime[0]
 		)}&endTime=${transTime.local2gmt2(
 			rangeTime[1]

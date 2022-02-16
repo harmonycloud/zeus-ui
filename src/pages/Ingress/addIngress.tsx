@@ -7,10 +7,14 @@ import {
 	Field,
 	Message
 } from '@alicloud/console-components';
+
 import { connect } from 'react-redux';
 import { getInstances, getServices } from '@/services/ingress';
 import messageConfig from '@/components/messageConfig';
+
 import pattern from '@/utils/pattern';
+import { StoreState } from '@/types';
+import { addIngressProps,selectedInstanceProps,instanceProps,servicesProps } from './ingress';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -22,7 +26,7 @@ const formItemLayout = {
 		span: 14
 	}
 };
-function AddIngress(props) {
+function AddIngress(props: addIngressProps) {
 	const {
 		active,
 		onCreate,
@@ -31,23 +35,23 @@ function AddIngress(props) {
 		middlewareName = '',
 		globalVar: { cluster, namespace }
 	} = props;
-	const [isProcessing, setIsProcessing] = useState(false); // 确认按钮 loading
-	const [exposedWay, setExposedWay] = useState('Ingress');
-	const [protocol, setProtocol] = useState(
+	const [isProcessing, setIsProcessing] = useState<boolean>(false); // 确认按钮 loading
+	const [exposedWay, setExposedWay] = useState<string>('Ingress');
+	const [protocol, setProtocol] = useState<string>(
 		exposedWay === 'Ingress' ? 'HTTP' : 'TCP'
 	);
-	const [instances, setInstances] = useState([]);
-	const [selectedInstance, setSelectedInstance] = useState({ name: '' });
-	const [services, setServices] = useState([]);
-	const [selectedService, setSelectedService] = useState({
+	const [instances, setInstances] = useState<instanceProps[]>([]);
+	const [selectedInstance, setSelectedInstance] = useState<selectedInstanceProps>({ name: '' });
+	const [services, setServices] = useState<servicesProps[]>([]);
+	const [selectedService, setSelectedService] = useState<servicesProps>({
 		serviceName: '',
 		portDetailDtoList: []
 	});
-	const [ingressTcpFlag] = useState(
+	const [ingressTcpFlag] = useState<boolean>(
 		(cluster.ingress &&
 			cluster.ingress.tcp &&
 			cluster.ingress.tcp.enabled) ||
-			false
+		false
 	);
 	const field = Field.useField();
 
@@ -62,7 +66,7 @@ function AddIngress(props) {
 				if (res.data.length !== 0) {
 					if (middlewareName !== '') {
 						const list = res.data.filter(
-							(item) => item.name === middlewareName
+							(item: any) => item.name === middlewareName
 						);
 						setSelectedInstance(list[0]);
 						getExposedService(list[0].name, list[0].type);
@@ -77,7 +81,7 @@ function AddIngress(props) {
 		});
 	}, []);
 
-	const getExposedService = (midName, type) => {
+	const getExposedService = (midName: string, type: string) => {
 		const sendData = {
 			clusterId: cluster.id,
 			namespace: namespace.name,
@@ -88,35 +92,33 @@ function AddIngress(props) {
 			if (res.success) {
 				setServices(res.data);
 				setSelectedService(res.data[0]);
-				// setServicePorts(res.data[0].portDetailDtoList);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
 
-	const onChange = (value) => {
+	const onChange = (value: string) => {
 		setExposedWay(value);
 		value === 'NodePort' ? setProtocol('TCP') : setProtocol('HTTP');
 	};
 
-	const onProtocolChange = (value) => {
+	const onProtocolChange = (value: string) => {
 		setProtocol(value);
 	};
 
-	const onInstanceChange = (value) => {
+	const onInstanceChange = (value: string) => {
 		const list = instances.filter((item) => item.name === value);
 		setSelectedInstance(list[0]);
 		getExposedService(value, list[0].type);
 	};
 
-	const onServiceChange = (value) => {
+	const onServiceChange = (value: string) => {
 		const list = services.filter((item) => item.serviceName === value);
 		setSelectedService(list[0]);
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const onPortChange = () => {};
+	const onPortChange = () => { };
 
 	const onOk = () => {
 		field.validate((err, data) => {
@@ -214,8 +216,8 @@ function AddIngress(props) {
 						)}
 						{((exposedWay === 'Ingress' && ingressTcpFlag) ||
 							exposedWay === 'NodePort') && (
-							<Option value="TCP">TCP</Option>
-						)}
+								<Option value="TCP">TCP</Option>
+							)}
 					</Select>
 				</FormItem>
 				{protocol === 'HTTP' && (
@@ -245,9 +247,8 @@ function AddIngress(props) {
 						formatMessage="请填写数字！"
 						min={30000}
 						max={exposedWay === 'Ingress' ? 65535 : 32000}
-						minmaxMessage={`对外端口不能小于30000，大于${
-							exposedWay === 'Ingress' ? 65535 : 32000
-						}`}
+						minmaxMessage={`对外端口不能小于30000，大于${exposedWay === 'Ingress' ? 65535 : 32000
+							}`}
 						asterisk={false}
 						className="ne-required-ingress"
 					>
@@ -331,9 +332,7 @@ function AddIngress(props) {
 		</SlidePanel>
 	);
 }
-export default connect(
-	({ globalVar }) => ({
-		globalVar
-	}),
-	null
-)(AddIngress);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, null)(AddIngress);
