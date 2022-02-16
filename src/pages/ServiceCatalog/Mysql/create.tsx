@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Page from '@alicloud/console-components-page';
-import FormBlock from '../components/FormBlock/index';
-import SelectBlock from '../components/SelectBlock/index';
+import FormBlock from '@/components/FormBlock';
+import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
-import GlobalTableRadio from '@/components/TableRadio';
 import {
 	Form,
 	Field,
 	Input,
-	// Tag,
 	Switch,
 	Checkbox,
 	Balloon,
@@ -18,8 +16,8 @@ import {
 	Select,
 	Button,
 	Message,
-	NumberPicker,
 	CascaderSelect
+	// NumberPicker 一主多从
 } from '@alicloud/console-components';
 import pattern from '@/utils/pattern';
 import styles from './mysql.module.scss';
@@ -29,13 +27,26 @@ import {
 	getStorageClass,
 	postMiddleware,
 	getMiddlewareDetail,
-	getBackups,
 	addDisasterIns
 } from '@/services/middleware';
 import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import transUnit from '@/utils/transUnit';
-import moment from 'moment';
+import { StoreState, clusterType, namespaceType } from '@/types/index';
+import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
+import {
+	CreateProps,
+	CreateParams,
+	AffinityProps,
+	TolerationsProps,
+	AffinityLabelsItem,
+	TolerationsLabelsItem,
+	MysqlSendDataParams,
+	MysqlCreateValuesParams,
+	MysqlSendDataTempParams
+} from '../catalog';
+import { data } from '@alicloud/console-components/types/cascader';
+import { instanceSpecList } from '@/utils/const';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 
@@ -48,94 +59,67 @@ const formItemLayout = {
 		span: 14
 	}
 };
-// const { Group: TagGroup, Closable: ClosableTag } = Tag;
-const backupSourceColumns = [
-	{ title: '', dataIndex: 'id' },
-	{ title: '备份时间', dataIndex: 'date' },
-	{ title: '类型', dataIndex: 'type' },
-	{ title: '状态', dataIndex: 'status' },
-	{ title: '位置', dataIndex: 'position' }
-];
-const backupStatus = {
-	Creating: '创建中',
-	Running: '运行中',
-	Failed: '运行失败',
-	Complete: '成功完成',
-	Unknow: '运行状态未知'
-};
-const MysqlCreate = (props) => {
+const MysqlCreate: (props: CreateProps) => JSX.Element = (
+	props: CreateProps
+) => {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
+	const params: CreateParams = useParams();
 	const {
 		chartName,
 		chartVersion,
 		middlewareName,
 		backupFileName,
 		aliasName
-	} = useParams();
+	} = params;
 	const { state } = props.location;
 	const field = Field.useField();
 	const history = useHistory();
 	// 主机亲和
-	const [affinity, setAffinity] = useState({
+	const [affinity, setAffinity] = useState<AffinityProps>({
 		flag: false,
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState([]);
-	const changeAffinity = (value, key) => {
+	const [labelList, setLabelList] = useState<string[]>([]);
+	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
 			[key]: value
 		});
 	};
-	const [affinityLabels, setAffinityLabels] = useState([]);
+	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
+		[]
+	);
 	// 主机容忍
-	const [tolerations, setTolerations] = useState({
+	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState([]);
-	const changeTolerations = (value, key) => {
+	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
 			[key]: value
 		});
 	};
-	const [tolerationsLabels, setTolerationsLabels] = useState([]);
+	const [tolerationsLabels, setTolerationsLabels] = useState<
+		TolerationsLabelsItem[]
+	>([]);
 
 	// 日志
-	const [fileLog, setFileLog] = useState(false);
-	// const [directory, setDirectory] = useState('');
-	// const [directoryList, setDirectoryList] = useState([]);
-	const [standardLog, setStandardLog] = useState(false);
-	// const addDirectory = (e) => {
-	// 	e && e.preventDefault();
-	// 	let temp = [].concat(directoryList);
-	// 	temp.push(directory);
-	// 	setDirectoryList(temp);
-	// 	setDirectory('');
-	// };
-	// const delDirectory = (index) => {
-	// 	let temp = [].concat(directoryList);
-	// 	temp.splice(index, 1);
-	// 	setDirectoryList(temp);
-	// };
+	const [fileLog, setFileLog] = useState<boolean>(false);
+	const [standardLog, setStandardLog] = useState<boolean>(false);
 
 	// MySQL配置
-	const [version, setVersion] = useState('5.7');
+	const [version, setVersion] = useState<string>('5.7');
 	const versionList = [
-		// 暂时隐藏8.0.21版本
-		// {
-		// 	label: '8.0.21',
-		// 	value: '8.0.21'
-		// },
 		{
 			label: '5.7',
 			value: '5.7'
 		}
 	];
-	const [charSet, setCharSet] = useState('utf8mb4');
+	const [charSet, setCharSet] = useState<string>('utf8mb4');
 	const charSetList = [
 		{
 			label: 'utf8mb4',
@@ -150,46 +134,37 @@ const MysqlCreate = (props) => {
 			value: 'latin1'
 		}
 	];
-	const [mode, setMode] = useState('1m-1s');
+	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
 		{
 			label: '主从模式',
 			value: '1m-1s'
 		}
 	];
-	const [instanceSpec, setInstanceSpec] = useState('General');
-	const instanceSpecList = [
-		{
-			label: '通用规格',
-			value: 'General'
-		},
-		{
-			label: '自定义',
-			value: 'Customize'
-		}
-	];
-	const [specId, setSpecId] = useState('1');
-	const [storageClassList, setStorageClassList] = useState([]);
-	const [maxCpu, setMaxCpu] = useState({}); // 自定义cpu的最大值
-	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
-	// const [replicaCount, setReplicaCount] = useState(1);
+	const [instanceSpec, setInstanceSpec] = useState<string>('General');
+	const [specId, setSpecId] = useState<string>('1');
+	const [storageClassList, setStorageClassList] = useState<
+		StorageClassProps[]
+	>([]);
+	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
+	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
+	// const [replicaCount, setReplicaCount] = useState(1); // * 一主多从
+
 	// * 灾备
-	const [backupFlag, setBackupFlag] = useState(false);
-	const [reuse, setReuse] = useState(true);
-	const [backupSourceId, setBackupSourceId] = useState();
-	const [backupSources, setBackupSources] = useState([]);
-	const [dataSource, setDataSource] = useState([]);
-	const [relationClusterId, setRelationClusterId] = useState();
-	const [relationNamespace, setRelataionNamespace] = useState();
-	const [originData, setOriginData] = useState();
-	const [reClusterFlag, setReClusterFlag] = useState(false);
+	const [backupFlag, setBackupFlag] = useState<boolean>(false);
+	const [reuse, setReuse] = useState<boolean>(true);
+	const [dataSource, setDataSource] = useState<data[]>([]);
+	const [relationClusterId, setRelationClusterId] = useState<string>();
+	const [relationNamespace, setRelationNamespace] = useState<string>();
+	const [originData, setOriginData] = useState<middlewareDetailProps>();
+	const [reClusterFlag, setReClusterFlag] = useState<boolean>(false);
 	// * 外接的动态表单
-	const [customForm, setCustomForm] = useState();
+	const [customForm, setCustomForm] = useState<any>();
 
 	useEffect(() => {
 		getClusters().then((res) => {
 			if (res.success) {
-				const list = res.data.map((item) => {
+				const list: data[] = res.data.map((item: clusterType) => {
 					return {
 						value: item.id,
 						label: item.nickname,
@@ -226,9 +201,10 @@ const MysqlCreate = (props) => {
 	}, [props]);
 
 	const handleSubmit = () => {
-		field.validate((err, values) => {
+		field.validate((err, value) => {
+			const values: MysqlCreateValuesParams = field.getValues();
 			if (!err) {
-				let sendData = {
+				let sendData: MysqlSendDataParams = {
 					chartName: chartName,
 					chartVersion: chartVersion,
 					clusterId: globalCluster.id,
@@ -261,8 +237,8 @@ const MysqlCreate = (props) => {
 				// * 动态表单相关
 				if (customForm) {
 					const dynamicValues = {};
-					let keys = [];
-					for (let i in customForm) {
+					let keys: string[] = [];
+					for (const i in customForm) {
 						const list = getCustomFormKeys(customForm[i]);
 						keys = [...list, ...keys];
 					}
@@ -371,8 +347,8 @@ const MysqlCreate = (props) => {
 					// * 动态表单相关
 					if (customForm) {
 						const dynamicValues = {};
-						let keys = [];
-						for (let i in customForm) {
+						let keys: string[] = [];
+						for (const i in customForm) {
 							const list = getCustomFormKeys(customForm[i]);
 							keys = [...list, ...keys];
 						}
@@ -384,9 +360,8 @@ const MysqlCreate = (props) => {
 					}
 				}
 				// 灾备服务-在已有源服务上创建备服务
-				if (state && state.disasterOriginName) {
-					console.log(originData);
-					const sendDataTemp = {
+				if (state && state.disasterOriginName && originData) {
+					const sendDataTemp: MysqlSendDataTempParams = {
 						chartName: chartName,
 						chartVersion: originData.chartVersion,
 						clusterId: globalCluster.id,
@@ -400,11 +375,11 @@ const MysqlCreate = (props) => {
 						description: values.description,
 						version: originData.version,
 						charSet: originData.charSet,
-						port: originData.mysqlPort,
-						password: originData.mysqlPwd,
+						port: originData.port,
+						password: originData.password,
 						mode: originData.mode,
-						filelogEnabled: originData.fileLog,
-						stdoutEnabled: originData.standardLog,
+						filelogEnabled: originData.filelogEnabled,
+						stdoutEnabled: originData.stdoutEnabled,
 						quota: {
 							mysql: {
 								cpu: originData.quota.mysql.cpu,
@@ -497,8 +472,8 @@ const MysqlCreate = (props) => {
 					// * 动态表单相关
 					if (customForm) {
 						const dynamicValues = {};
-						let keys = [];
-						for (let i in customForm) {
+						let keys: string[] = [];
+						for (const i in customForm) {
 							const list = getCustomFormKeys(customForm[i]);
 							keys = [...list, ...keys];
 						}
@@ -511,7 +486,6 @@ const MysqlCreate = (props) => {
 					}
 					sendData = sendDataTemp;
 				}
-				console.log(sendData);
 				if (state && state.disasterOriginName) {
 					addDisasterIns(sendData).then((res) => {
 						if (res.success) {
@@ -565,13 +539,14 @@ const MysqlCreate = (props) => {
 		}
 	}, [globalCluster]);
 
-	const getMiddlewareDetailAndSetForm = (middlewareName) => {
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
 			namespace: globalNamespace.name,
 			middlewareName: middlewareName,
 			type: 'mysql'
 		}).then((res) => {
+			console.log(res);
 			setOriginData(res.data);
 			setInstanceSpec('Customize');
 			if (res.data.nodeAffinity) {
@@ -588,7 +563,7 @@ const MysqlCreate = (props) => {
 					label: ''
 				});
 				setTolerationsLabels(
-					res.data?.tolerations?.map((item) => {
+					res.data?.tolerations?.map((item: string) => {
 						return { label: item };
 					}) || []
 				);
@@ -603,7 +578,6 @@ const MysqlCreate = (props) => {
 				setVersion(res.data.version);
 			}
 			field.setValues({
-				// aliasName: res.data.aliasName,
 				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
@@ -619,13 +593,13 @@ const MysqlCreate = (props) => {
 				)
 			});
 			if (res.data.dynamicValues) {
-				for (let i in res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
 					field.setValue(i, res.data.dynamicValues[i]);
 				}
 			}
 		});
 	};
-	const handleReuse = (checked) => {
+	const handleReuse = (checked: boolean) => {
 		setReuse(checked);
 		if (!checked) {
 			setAffinity({
@@ -637,7 +611,6 @@ const MysqlCreate = (props) => {
 			setInstanceSpec('General');
 			field.setValues({
 				aliasName: '',
-				// name: res.data.name,
 				labels: '',
 				annotations: '',
 				description: '',
@@ -649,8 +622,8 @@ const MysqlCreate = (props) => {
 				storageQuota: ''
 			});
 			if (customForm) {
-				let keys = [];
-				for (let i in customForm) {
+				let keys: string[] = [];
+				for (const i in customForm) {
 					const list = getCustomFormKeys(customForm[i]);
 					keys = [...list, ...keys];
 				}
@@ -659,42 +632,43 @@ const MysqlCreate = (props) => {
 				});
 			}
 		} else {
-			if (originData.nodeAffinity) {
+			if (originData?.nodeAffinity) {
 				setAffinity({
 					flag: false,
 					label: originData.nodeAffinity[0].label,
 					checked: originData.nodeAffinity[0].required
 				});
 			}
-			setCharSet(originData.charSet);
+			if (originData?.charSet) {
+				setCharSet(originData.charSet);
+			}
 			setInstanceSpec('Customize');
 			field.setValues({
-				aliasName: originData.aliasName,
-				// name: res.data.name,
-				labels: originData.labels,
-				annotations: originData.annotations,
-				description: originData.description,
-				mysqlPort: originData.port,
-				mysqlPwd: originData.password,
-				cpu: originData.quota.mysql.cpu,
+				aliasName: originData?.aliasName,
+				labels: originData?.labels,
+				annotations: originData?.annotations,
+				description: originData?.description,
+				mysqlPort: originData?.port,
+				mysqlPwd: originData?.password,
+				cpu: originData?.quota.mysql.cpu,
 				memory: transUnit.removeUnit(
-					originData.quota.mysql.memory,
+					originData?.quota.mysql.memory,
 					'Gi'
 				),
-				storageClass: originData.quota.mysql.storageClassName,
+				storageClass: originData?.quota.mysql.storageClassName,
 				storageQuota: transUnit.removeUnit(
-					originData.quota.mysql.storageClassQuota,
+					originData?.quota.mysql.storageClassQuota,
 					'Gi'
 				)
 			});
 			if (customForm) {
-				let keys = [];
-				for (let i in customForm) {
+				let keys: string[] = [];
+				for (const i in customForm) {
 					const list = getCustomFormKeys(customForm[i]);
 					keys = [...list, ...keys];
 				}
 				keys.forEach((item) => {
-					field.setValue(item, originData.dynamicValues[item]);
+					field.setValue(item, originData?.dynamicValues[item]);
 				});
 			}
 		}
@@ -721,51 +695,24 @@ const MysqlCreate = (props) => {
 		if (JSON.stringify(globalNamespace) !== '{}') {
 			// 灾备服务
 			if (state && state.disasterOriginName) {
-				// const sendData = {
-				// 	clusterId: globalCluster.id,
-				// 	namespace: globalNamespace.name,
-				// 	mysqlName: state.disasterOriginName
-				// };
-				// getBackups(sendData).then((res) => {
-				// 	if (res.success) {
-				// 		const list = res.data?.map((item) => {
-				// 			return {
-				// 				id: Math.random() * 100,
-				// 				...item,
-				// 				date: moment(item.date).format(
-				// 					'YYYY-MM-DD HH:mm:ss'
-				// 				),
-				// 				type:
-				// 					item.type === 'all'
-				// 						? '全量备份'
-				// 						: '全量备份',
-				// 				status: backupStatus[item.status]
-				// 			};
-				// 		});
-				// 		setBackupSources(list || []);
-				// 	}
-				// });
 				getMiddlewareDetailAndSetForm(state.disasterOriginName);
 			}
 		}
 	}, [globalNamespace]);
 
-	const handleChange = (value, data, extra) => {
+	const handleChange = (value: any, data: any) => {
 		setRelationClusterId(data.parent);
 		if (data.parent === globalCluster.id) {
 			setReClusterFlag(true);
 		} else {
 			setReClusterFlag(false);
 		}
-		setRelataionNamespace(data.value);
+		setRelationNamespace(data.value);
 	};
-	const onLoadData = (data) => {
-		const sendData = {
-			clusterId: data.value
-		};
-		return getNamespaces(sendData).then((res) => {
+	const onLoadData = (data: any) => {
+		return getNamespaces({ clusterId: data.value }).then((res) => {
 			if (res.success) {
-				const list = res.data.map((item) => {
+				const list = res.data.map((item: namespaceType) => {
 					return {
 						parent: data.value,
 						label: item.name,
@@ -837,55 +784,6 @@ const MysqlCreate = (props) => {
 												</FormItem>
 											</div>
 										</li>
-										{/* <li className="display-flex">
-											<label className="form-name">
-												<span>数据来源</span>
-											</label>
-											<div className="form-content">
-												<FormItem
-													required
-													requiredMessage="请选择灾备服务资源池"
-												>
-													<div
-														style={{
-															width: 652,
-															marginTop: 16
-														}}
-													>
-														<GlobalTableRadio
-															name="dataSource"
-															id={backupSourceId}
-															onCallBack={(
-																value
-															) => {
-																setBackupSourceId(
-																	value
-																);
-																const list =
-																	backupSources.filter(
-																		(
-																			item
-																		) =>
-																			item.id ===
-																			value
-																	);
-																field.setValue(
-																	'dataSource',
-																	list[0]
-																		.backupFileName
-																);
-															}}
-															columns={
-																backupSourceColumns
-															}
-															dataList={
-																backupSources
-															}
-														/>
-													</div>
-												</FormItem>
-											</div>
-										</li> */}
 									</ul>
 								</div>
 							</FormBlock>
@@ -961,10 +859,6 @@ const MysqlCreate = (props) => {
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											// validateState={
-											// 	field.getValue('name') ===
-											// 		'mysql' && 'error'
-											// }
 											patternMessage="请输入由小写字母数字及“-”组成的2-30个字符"
 										>
 											<Input
@@ -972,18 +866,6 @@ const MysqlCreate = (props) => {
 												placeholder="请输入由小写字母数字及“-”组成的2-30个字符"
 												trim
 											/>
-											{/* {field.getValue('name') ===
-												'mysql' && (
-												<Form.Error>
-													<span
-														style={{
-															color: '#C80000'
-														}}
-													>
-														服务名称不能与类型同名
-													</span>
-												</Form.Error>
-											)} */}
 										</FormItem>
 									</div>
 								</li>
@@ -1142,10 +1024,6 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																);
-																// changeAffinity(
-																// 	'',
-																// 	'label'
-																// );
 															}
 														}}
 													>
@@ -1285,10 +1163,6 @@ const MysqlCreate = (props) => {
 																		}
 																	]
 																);
-																// changeTolerations(
-																// 	'',
-																// 	'label'
-																// );
 															}
 														}}
 													>
@@ -1379,60 +1253,6 @@ const MysqlCreate = (props) => {
 												}}
 											/>
 										</div>
-										{/* {fileLog ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<TagGroup
-														style={{ marginTop: 4 }}
-													>
-														{directoryList.map(
-															(item, index) => (
-																<ClosableTag
-																	key={index}
-																	onClose={() =>
-																		delDirectory(
-																			index
-																		)
-																	}
-																>
-																	{item}
-																</ClosableTag>
-															)
-														)}
-													</TagGroup>
-													<Input
-														innerBefore={
-															<Icon
-																type="add"
-																style={{
-																	marginLeft: 8
-																}}
-															/>
-														}
-														placeholder="添加日志目录"
-														value={directory}
-														onChange={(value) =>
-															setDirectory(value)
-														}
-														onKeyPress={(event) => {
-															if (
-																event.charCode ===
-																13
-															) {
-																addDirectory(
-																	event
-																);
-															}
-														}}
-														onBlur={(e) => {
-															addDirectory(e);
-														}}
-													/>
-												</div>
-											</>
-										) : null} */}
 									</div>
 								</li>
 							</ul>
@@ -1495,7 +1315,7 @@ const MysqlCreate = (props) => {
 										<SelectBlock
 											options={versionList}
 											currentValue={version}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setVersion(value)
 											}
 										/>
@@ -1511,7 +1331,7 @@ const MysqlCreate = (props) => {
 										<SelectBlock
 											options={charSetList}
 											currentValue={charSet}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setCharSet(value)
 											}
 										/>
@@ -1579,10 +1399,11 @@ const MysqlCreate = (props) => {
 										<SelectBlock
 											options={modeList}
 											currentValue={mode}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setMode(value)
 											}
 										/>
+										{/* 一主多从 */}
 										{/* <div>
 											<label style={{ margin: '0 16px' }}>
 												自定义从节点数量
@@ -1611,7 +1432,7 @@ const MysqlCreate = (props) => {
 										<SelectBlock
 											options={instanceSpecList}
 											currentValue={instanceSpec}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
 										/>
@@ -1625,7 +1446,7 @@ const MysqlCreate = (props) => {
 												<TableRadio
 													id={specId}
 													isMysql={true}
-													onCallBack={(value) =>
+													onCallBack={(value: any) =>
 														setSpecId(value)
 													}
 												/>
@@ -1647,7 +1468,7 @@ const MysqlCreate = (props) => {
 														<div className="form-content">
 															<FormItem
 																min={0.1}
-																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu.max}Core）`}
+																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`}
 																required
 																requiredMessage="请输入自定义CPU配额，单位为Core"
 																{...maxCpu}
@@ -1672,7 +1493,7 @@ const MysqlCreate = (props) => {
 														<div className="form-content">
 															<FormItem
 																min={0.1}
-																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory.max}Gi）`}
+																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi）`}
 																required
 																requiredMessage="请输入自定义内存配额，单位为Gi"
 																{...maxMemory}
@@ -1755,10 +1576,7 @@ const MysqlCreate = (props) => {
 								<ul className="form-layout">
 									<li className="display-flex">
 										<label className="form-name">
-											<span
-												// className="ne-required"
-												style={{ marginRight: 8 }}
-											>
+											<span style={{ marginRight: 8 }}>
 												灾备模式
 											</span>
 											<Balloon
@@ -1924,5 +1742,7 @@ const MysqlCreate = (props) => {
 		</Page>
 	);
 };
-
-export default connect(({ globalVar }) => ({ globalVar }), {})(MysqlCreate);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {})(MysqlCreate);

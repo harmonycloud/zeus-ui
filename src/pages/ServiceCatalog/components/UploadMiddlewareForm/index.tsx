@@ -11,6 +11,8 @@ import messageConfig from '@/components/messageConfig';
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
+import { StoreState } from '@/types/index';
+import { UploadMiddlewareFormProps } from './upload';
 
 const formItemLayout = {
 	labelCol: {
@@ -21,26 +23,26 @@ const formItemLayout = {
 	}
 };
 
-function UploadMiddlewareForm(props) {
+function UploadMiddlewareForm(props: UploadMiddlewareFormProps) {
 	const { visible, onCancel, onCreate } = props;
 	const { cluster: globalCluster } = props.globalVar;
-	const upload2 = createRef();
+	const upload2 = createRef<any>();
 	const field = Field.useField();
 	const headers = {
 		userToken: storage.getLocal('token'),
 		authType: storage.getLocal('token') ? 1 : 0
 	};
 
-	function beforeUpload(info) {
+	function beforeUpload(info: any) {
 		console.log('beforeUpload : ', info);
 	}
 
-	function onChange(info) {
+	function onChange(info: any) {
 		console.log('onChange : ', info);
 	}
 
-	function onSuccess(info) {
-		console.log('onSuccess : ', info);
+	function onSuccess(info: any) {
+		// console.log('onSuccess : ', info);
 		if (info) {
 			Message.show(
 				messageConfig(
@@ -53,8 +55,8 @@ function UploadMiddlewareForm(props) {
 		}
 	}
 
-	function onError(info) {
-		console.log('error:', info);
+	function onError(info: any) {
+		// console.log('error:', info);
 		if (info) {
 			const dialog = Dialog.show({
 				title: '失败',
@@ -69,7 +71,7 @@ function UploadMiddlewareForm(props) {
 	}
 
 	const onOk = () => {
-		console.log(upload2);
+		// console.log(upload2);
 		const uploaderRef = upload2.current.getInstance();
 		uploaderRef.startUpload();
 	};
@@ -111,7 +113,7 @@ function UploadMiddlewareForm(props) {
 		</Dialog>
 	);
 }
-export default connect(
-	({ globalVar }) => ({ globalVar }),
-	{}
-)(UploadMiddlewareForm);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {})(UploadMiddlewareForm);

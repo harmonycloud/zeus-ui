@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Page from '@alicloud/console-components-page';
-import FormBlock from '../components/FormBlock/index';
-import SelectBlock from '../components/SelectBlock/index';
+import FormBlock from '@/components/FormBlock';
+import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
-import CalInput from '../components/CalInput/index';
 import {
 	Form,
 	Field,
@@ -19,19 +18,31 @@ import {
 	Message
 } from '@alicloud/console-components';
 import pattern from '@/utils/pattern';
-import styles from './elasticsearch.module.scss';
+import styles from './rocketmq.module.scss';
 import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
-	postMiddleware,
-	getMiddlewareDetail
+	postMiddleware
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import ModeItem from '@/components/ModeItem';
+import RocketACLForm from '@/components/RocketACLForm';
+import { instanceSpecList } from '@/utils/const';
+import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
+import {
+	CreateProps,
+	CreateParams,
+	AffinityProps,
+	AffinityLabelsItem,
+	TolerationsProps,
+	RMQSendDataParams,
+	RMQCreateValuesParams
+} from '../catalog';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
+import { StoreState } from '@/types';
+import { StorageClassProps } from '@/types/comment';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -43,315 +54,143 @@ const formItemLayout = {
 	}
 };
 
-const ElasticsearchCreate = (props) => {
+const RocketMQCreate: (props: CreateProps) => JSX.Element = (
+	props: CreateProps
+) => {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
-	const {
-		chartName,
-		chartVersion,
-		middlewareName,
-		backupFileName,
-		aliasName
-	} = useParams();
+	const params: CreateParams = useParams();
+	const { chartName, chartVersion, aliasName } = params;
 	const field = Field.useField();
 	const history = useHistory();
 
 	// 主机亲和
-	const [affinity, setAffinity] = useState({
+	const [affinity, setAffinity] = useState<AffinityProps>({
 		flag: false,
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState([]);
-	const changeAffinity = (value, key) => {
+	const [labelList, setLabelList] = useState<string[]>([]);
+	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
 			[key]: value
 		});
 	};
-	const [affinityLabels, setAffinityLabels] = useState([]);
+	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
+		[]
+	);
 	// 主机容忍
-	const [tolerations, setTolerations] = useState({
+	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState([]);
-	const changeTolerations = (value, key) => {
+	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
 			[key]: value
 		});
 	};
-	const [tolerationsLabels, setTolerationsLabels] = useState([]);
+	const [tolerationsLabels, setTolerationsLabels] = useState<
+		TolerationLabelItem[]
+	>([]);
 
 	// 日志
-	const [fileLog, setFileLog] = useState(false);
-	// const [directory, setDirectory] = useState('');
-	// const [directoryList, setDirectoryList] = useState([]);
-	const [standardLog, setStandardLog] = useState(false);
-	// const addDirectory = (e) => {
-	// 	e && e.preventDefault();
-	// 	let temp = [].concat(directoryList);
-	// 	temp.push(directory);
-	// 	setDirectoryList(temp);
-	// 	setDirectory('');
-	// };
-	// const delDirectory = (index) => {
-	// 	let temp = [].concat(directoryList);
-	// 	temp.splice(index, 1);
-	// 	setDirectoryList(temp);
-	// };
+	const [fileLog, setFileLog] = useState<boolean>(false);
+	const [standardLog, setStandardLog] = useState<boolean>(false);
 
-	// 对外访问
-	// const [exportWay, setExportWay] = useState('not');
-	// const [ingress, setIngress] = useState({
-	// 	protocol: 'TCP',
-	// 	Port: '',
-	// 	domain: ''
-	// });
-	// const [nodePort, setNodePort] = useState({
-	// 	protocol: 'TCP',
-	// 	hostPort: ''
-	// });
-	// const exportWayList = [
-	// 	{
-	// 		label: 'Ingress',
-	// 		value: 'Ingress'
-	// 	},
-	// 	{
-	// 		label: 'NodePort',
-	// 		value: 'NodePort'
-	// 	},
-	// 	{
-	// 		label: '不对外暴露',
-	// 		value: 'not'
-	// 	}
-	// ];
-	// const ingressHandle = (value, key) => {
-	// 	setIngress({
-	// 		...ingress,
-	// 		[key]: value
-	// 	});
-	// };
-	// const nodePortHandle = (value, key) => {
-	// 	setNodePort({
-	// 		...nodePort,
-	// 		[key]: value
-	// 	});
-	// };
-
-	// Elasticsearch配置
-	const [version, setVersion] = useState('6.8');
+	// RMQ配置
+	const [version, setVersion] = useState<string>('4.8');
 	const versionList = [
 		{
-			label: '6.8',
-			value: '6.8'
+			label: '4.8',
+			value: '4.8'
 		}
 	];
-	const [mode, setMode] = useState('simple');
+	const [mode, setMode] = useState<string>('2m-noslave');
 	const modeList = [
 		{
-			label: 'N主',
-			value: 'simple'
+			label: '双主',
+			value: '2m-noslave'
 		},
 		{
-			label: 'N主 N数据',
-			value: 'regular'
+			label: '双主双从',
+			value: '2m-2s'
 		},
 		{
-			label: 'N主 N数据 N协调',
-			value: 'complex'
-		},
-		{
-			label: 'N主 N数据 N冷',
-			value: 'complex-cold'
-		},
-		{
-			label: 'N主 N数据 N冷 N协调',
-			value: 'cold-complex'
+			label: '三主三从',
+			value: '3m-3s'
 		}
 	];
-	const [nodeObj, setNodeObj] = useState({
-		master: {
-			disabled: false,
-			title: '主节点',
-			num: 3,
-			specId: '1',
-			cpu: 1,
-			memory: 2,
-			storageClass: '',
-			storageQuota: 0
-		},
-		kibana: {
-			disabled: false,
-			title: 'Kibana节点',
-			num: 1,
-			specId: '1',
-			cpu: 1,
-			memory: 2
-		},
-		data: {
-			disabled: true,
-			title: '数据节点',
-			num: 3,
-			specId: '1',
-			cpu: 1,
-			memory: 2,
-			storageClass: '',
-			storageQuota: 0
-		},
-		client: {
-			disabled: true,
-			title: '协调节点',
-			num: 2,
-			specId: '1',
-			cpu: 1,
-			memory: 2,
-			storageClass: '',
-			storageQuota: 0
-		},
-		cold: {
-			disabled: true,
-			title: '冷数据节点',
-			num: 3,
-			specId: '1',
-			cpu: 1,
-			memory: 2,
-			storageClass: '',
-			storageQuota: 0
-		}
-	});
-	const [nodeModify, setNodeModify] = useState({
-		nodeName: '',
-		flag: false
-	});
-	const [instanceSpec, setInstanceSpec] = useState('General');
-	const instanceSpecList = [
-		{
-			label: '通用规格',
-			value: 'General'
-		},
-		{
-			label: '自定义',
-			value: 'Customize'
-		}
-	];
-	const [nodeNum, setNodeNum] = useState(0);
-	const [specId, setSpecId] = useState('1');
-	const [storageClassList, setStorageClassList] = useState([]);
+	const [instanceSpec, setInstanceSpec] = useState<string>('General');
+	const [specId, setSpecId] = useState<string>('1');
+	const [storageClassList, setStorageClassList] = useState<
+		StorageClassProps[]
+	>([]);
+	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
+	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
+	// * acl相关
+	const [aclCheck, setAclCheck] = useState<boolean>(false);
 	// * 外接的动态表单
-	const [customForm, setCustomForm] = useState();
-	const formHandle = (obj, item) => {
-		if (
-			['cpu', 'memory', 'storageClass', 'storageQuota'].indexOf(
-				item.name
-			) > -1
-		) {
-			let temp = nodeObj[nodeModify.nodeName];
-			temp[item.name] = item.value;
-			setNodeObj({
-				...nodeObj,
-				[nodeModify.nodeName]: temp
+	const [customForm, setCustomForm] = useState<any>();
+	// * 集群外访问
+	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (globalNamespace.quotas) {
+			const cpuMax =
+				Number(globalNamespace.quotas.cpu[1]) -
+				Number(globalNamespace.quotas.cpu[2]);
+			setMaxCpu({
+				max: cpuMax
+			});
+			const memoryMax =
+				Number(globalNamespace.quotas.memory[1]) -
+				Number(globalNamespace.quotas.memory[2]);
+			setMaxMemory({
+				max: memoryMax
 			});
 		}
-	};
-
-	const putAway = (key) => {
-		if (instanceSpec === 'Customize') {
-			setSpecId('');
-			let temp = nodeObj[key];
-			temp.specId = '';
-			setNodeObj({
-				...nodeObj,
-				[key]: temp
-			});
-		}
-		setNodeModify({
-			nodeName: '',
-			flag: false
-		});
-	};
-
-	const modifyQuota = (key) => {
-		setNodeModify({
-			nodeName: key,
-			flag: true
-		});
-		setNodeNum(nodeObj[key].num);
-		setSpecId(nodeObj[key].specId);
-		if (nodeObj[key].specId === '') {
-			setInstanceSpec('Customize');
-			field.setValues({
-				cpu: nodeObj[key].cpu,
-				memory: nodeObj[key].memory
-			});
-		} else {
-			setInstanceSpec('General');
-		}
-		field.setValues({
-			storageClass: nodeObj[key].storageClass,
-			storageQuota: nodeObj[key].storageQuota
-		});
-	};
-
-	const checkGeneral = (value) => {
-		setSpecId(value);
-		let temp = nodeObj[nodeModify.nodeName];
-		switch (value) {
-			case '1':
-				temp.cpu = 1;
-				temp.memory = 2;
-				break;
-			case '2':
-				temp.cpu = 2;
-				temp.memory = 8;
-				break;
-			case '3':
-				temp.cpu = 4;
-				temp.memory = 16;
-				break;
-			case '4':
-				temp.cpu = 8;
-				temp.memory = 32;
-				break;
-			case '5':
-				temp.cpu = 16;
-				temp.memory = 64;
-				break;
-			default:
-				break;
-		}
-		setNodeObj({
-			...nodeObj,
-			[nodeModify.nodeName]: temp
-		});
-	};
+	}, [props]);
 
 	const handleSubmit = () => {
-		field.validate((err, values) => {
+		field.validate((err) => {
+			const values: RMQCreateValuesParams = field.getValues();
 			if (!err) {
-				let sendData = {
+				const sendData: RMQSendDataParams = {
 					chartName: chartName,
 					chartVersion: chartVersion,
 					clusterId: globalCluster.id,
 					namespace: globalNamespace.name,
-					type: 'elasticsearch',
+					type: 'rocketmq',
 					name: values.name,
 					aliasName: values.aliasName,
 					labels: values.labels,
 					annotations: values.annotations,
 					description: values.description,
 					version: version,
-					password: values.pwd,
+					mode: mode,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					mode
+					hostNetwork: hostNetwork,
+					quota: {
+						rocketmq: {
+							storageClassName: values.storageClass,
+							storageClassQuota: values.storageQuota
+						}
+					},
+					rocketMQParam: {
+						acl: {
+							enable: aclCheck
+						}
+					}
 				};
 				// * 动态表单相关
 				if (customForm) {
 					const dynamicValues = {};
-					let keys = [];
-					for (let i in customForm) {
+					let keys: string[] = [];
+					for (const i in customForm) {
 						const list = getCustomFormKeys(customForm[i]);
 						keys = [...list, ...keys];
 					}
@@ -388,46 +227,46 @@ const ElasticsearchCreate = (props) => {
 						);
 					}
 				}
-				if (nodeObj) {
-					sendData.quota = {};
-					for (let key in nodeObj) {
-						if (!nodeObj[key].disabled) {
-							if (nodeObj[key].storageClass === '') {
-								// Message.show(
-								// 	messageConfig(
-								// 		'error',
-								// 		'失败',
-								// 		`${key}节点没有选择存储类型`
-								// 	)
-								// );
-								modifyQuota(key);
-								return;
-							}
-							if (nodeObj[key].storageQuota === 0) {
-								Message.show(
-									messageConfig(
-										'error',
-										'失败',
-										`${key}节点存储配额不能为0`
-									)
-								);
-								modifyQuota(key);
-								return;
-							}
-							sendData.quota[key] = {
-								...nodeObj[key],
-								storageClassName: nodeObj[key].storageClass,
-								storageClassQuota: nodeObj[key].storageQuota
-							};
-						}
+				if (instanceSpec === 'General') {
+					switch (specId) {
+						case '1':
+							sendData.quota.rocketmq.cpu = 1;
+							sendData.quota.rocketmq.memory = '2Gi';
+							break;
+						case '2':
+							sendData.quota.rocketmq.cpu = 2;
+							sendData.quota.rocketmq.memory = '4Gi';
+							break;
+						case '3':
+							sendData.quota.rocketmq.cpu = 4;
+							sendData.quota.rocketmq.memory = '16Gi';
+							break;
+						case '4':
+							sendData.quota.rocketmq.cpu = 8;
+							sendData.quota.rocketmq.memory = '32Gi';
+							break;
+						case '5':
+							sendData.quota.rocketmq.cpu = 16;
+							sendData.quota.rocketmq.memory = '64Gi';
+							break;
+						default:
+							break;
 					}
+				} else if (instanceSpec === 'Customize') {
+					sendData.quota.rocketmq.cpu = values.cpu;
+					sendData.quota.rocketmq.memory = values.memory + 'Gi';
 				}
-				// console.log(sendData);
+				if (aclCheck) {
+					sendData.rocketMQParam.acl.globalWhiteRemoteAddresses =
+						values.globalWhiteRemoteAddresses;
+					sendData.rocketMQParam.acl.rocketMQAccountList =
+						values.rocketMQAccountList;
+				}
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', {
-								data: '中间件Elasticsearch正在创建中'
+								data: '中间件RocketMQ正在创建中'
 							})
 						);
 						history.push({
@@ -470,64 +309,22 @@ const ElasticsearchCreate = (props) => {
 
 	// 全局分区更新
 	useEffect(() => {
-		if (JSON.stringify(globalNamespace) !== '{}') {
-			// 克隆服务
-			if (backupFileName) {
-				getMiddlewareDetail({
-					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
-					middlewareName: middlewareName,
-					type: 'elasticsearch'
-				}).then((res) => {
-					console.log(res.data);
-				});
+		getStorageClass({
+			clusterId: globalCluster.id,
+			namespace: globalNamespace.name
+		}).then((res) => {
+			if (res.success) {
+				setStorageClassList(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
-		}
+		});
 	}, [globalNamespace]);
-
-	// 模式变更
-	useEffect(() => {
-		if (mode) {
-			let { master, kibana, data, client, cold } = nodeObj;
-			if (mode === 'simple') {
-				master.disabled = false;
-				kibana.disabled = false;
-				data.disabled = true;
-				client.disabled = true;
-				cold.disabled = true;
-			} else if (mode === 'regular') {
-				master.disabled = false;
-				kibana.disabled = false;
-				data.disabled = false;
-				client.disabled = true;
-				cold.disabled = true;
-			} else if (mode === 'complex') {
-				master.disabled = false;
-				kibana.disabled = false;
-				data.disabled = false;
-				client.disabled = false;
-				cold.disabled = true;
-			} else if (mode === 'complex-cold') {
-				master.disabled = false;
-				kibana.disabled = false;
-				data.disabled = false;
-				client.disabled = true;
-				cold.disabled = false;
-			} else if (mode === 'cold-complex') {
-				master.disabled = false;
-				kibana.disabled = false;
-				data.disabled = false;
-				client.disabled = false;
-				cold.disabled = false;
-			}
-			setNodeObj({ master, kibana, data, client, cold });
-		}
-	}, [mode]);
 
 	return (
 		<Page>
 			<Page.Header
-				title="发布Elasticsearch服务"
+				title="发布RocketMQ服务"
 				className="page-header"
 				hasBackArrow
 				onBackArrowClick={() => {
@@ -535,7 +332,7 @@ const ElasticsearchCreate = (props) => {
 				}}
 			/>
 			<Page.Content>
-				<Form {...formItemLayout} field={field} onChange={formHandle}>
+				<Form {...formItemLayout} field={field}>
 					<FormBlock title="基础信息">
 						<div className={styles['basic-info']}>
 							<ul className="form-layout">
@@ -627,12 +424,41 @@ const ElasticsearchCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
+					<FormBlock
+						title={
+							<span>
+								访问权限控制认证
+								<span className={styles['acl-title-flag']}>
+									{aclCheck ? '已开启' : '已关闭'}
+									<Switch
+										style={{
+											marginLeft: 16,
+											verticalAlign: 'middle'
+										}}
+										size="small"
+										checked={aclCheck}
+										onChange={(checked: boolean) =>
+											setAclCheck(checked)
+										}
+									/>
+								</span>
+							</span>
+						}
+					>
+						{aclCheck ? (
+							<div className={styles['acl-config']}>
+								<RocketACLForm field={field} />
+							</div>
+						) : null}
+					</FormBlock>
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span className="mr-8">主机亲和</span>
+										<span style={{ marginRight: 8 }}>
+											主机亲和
+										</span>
 										<Balloon
 											trigger={
 												<Icon
@@ -659,7 +485,10 @@ const ElasticsearchCreate = (props) => {
 													)
 												}
 												size="small"
-												className={styles['component']}
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
 											/>
 										</div>
 										{affinity.flag ? (
@@ -760,15 +589,29 @@ const ElasticsearchCreate = (props) => {
 														className={
 															styles['tag-close']
 														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
+														onClick={() => {
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
 																)
-															)
-														}
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
+															}
+														}}
 													/>
 												</p>
 											);
@@ -947,60 +790,6 @@ const ElasticsearchCreate = (props) => {
 												}}
 											/>
 										</div>
-										{/* {fileLog ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<TagGroup
-														style={{ marginTop: 4 }}
-													>
-														{directoryList.map(
-															(item, index) => (
-																<ClosableTag
-																	key={index}
-																	onClose={() =>
-																		delDirectory(
-																			index
-																		)
-																	}
-																>
-																	{item}
-																</ClosableTag>
-															)
-														)}
-													</TagGroup>
-													<Input
-														innerBefore={
-															<Icon
-																type="add"
-																style={{
-																	marginLeft: 8
-																}}
-															/>
-														}
-														placeholder="添加日志目录"
-														value={directory}
-														onChange={(value) =>
-															setDirectory(value)
-														}
-														onKeyPress={(event) => {
-															if (
-																event.charCode ===
-																13
-															) {
-																addDirectory(
-																	event
-																);
-															}
-														}}
-														onBlur={(e) => {
-															addDirectory(e);
-														}}
-													/>
-												</div>
-											</>
-										) : null} */}
 									</div>
 								</li>
 							</ul>
@@ -1050,179 +839,7 @@ const ElasticsearchCreate = (props) => {
 							</ul>
 						</div>
 					</FormBlock>
-					{/* <FormBlock title="对外访问">
-						<div className={styles['foreign-visit']}>
-							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>暴露方式</span>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['export-way']}`}
-									>
-										<SelectBlock
-											options={exportWayList}
-											currentValue={exportWay}
-											onCallBack={(value) =>
-												setExportWay(value)
-											}
-										/>
-										{exportWay !== 'not' ? (
-											<div
-												className={`display-flex ${styles['export-content']}`}
-											>
-												{exportWay === 'Ingress' ? (
-													<ul className="form-layout">
-														<li className="display-flex form-li">
-															<label className="form-name">
-																<span>
-																	访问协议
-																</span>
-															</label>
-															<div className="form-content">
-																<Select
-																	value={
-																		ingress.protocol
-																	}
-																	onChange={(
-																		value
-																	) =>
-																		ingressHandle(
-																			value,
-																			'protocol'
-																		)
-																	}
-																	dataSource={[
-																		'TCP',
-																		'HTTP'
-																	]}
-																	style={{
-																		width:
-																			'100%'
-																	}}
-																/>
-															</div>
-														</li>
-														{ingress.protocol ===
-														'TCP' ? (
-															<li className="display-flex form-li">
-																<label className="form-name">
-																	<span className="ne-required">
-																		对外端口
-																	</span>
-																</label>
-																<div className="form-content">
-																	<Input
-																		value={
-																			ingress.port
-																		}
-																		onChange={(
-																			value
-																		) =>
-																			ingressHandle(
-																				value,
-																				'port'
-																			)
-																		}
-																		placeholder="范围：30000-65535"
-																		style={{
-																			width:
-																				'100%'
-																		}}
-																	/>
-																</div>
-															</li>
-														) : null}
-														{ingress.protocol ===
-														'HTTP' ? (
-															<li className="display-flex form-li">
-																<label className="form-name">
-																	<span className="ne-required">
-																		访问域名
-																	</span>
-																</label>
-																<div className="form-content">
-																	<Input
-																		value={
-																			ingress.domain
-																		}
-																		onChange={(
-																			value
-																		) =>
-																			ingressHandle(
-																				value,
-																				'domain'
-																			)
-																		}
-																		placeholder="例如：www.example.com"
-																		style={{
-																			width:
-																				'100%'
-																		}}
-																	/>
-																</div>
-															</li>
-														) : null}
-													</ul>
-												) : null}
-												{exportWay === 'NodePort' ? (
-													<ul className="form-layout">
-														<li className="display-flex form-li">
-															<label className="form-name">
-																<span>
-																	访问协议
-																</span>
-															</label>
-															<div className="form-content">
-																<p
-																	style={{
-																		padding:
-																			'6px 12px'
-																	}}
-																>
-																	{
-																		nodePort.protocol
-																	}
-																</p>
-															</div>
-														</li>
-														<li className="display-flex form-li">
-															<label className="form-name">
-																<span className="ne-required">
-																	主机端口
-																</span>
-															</label>
-															<div className="form-content">
-																<Input
-																	value={
-																		nodePort.hostPort
-																	}
-																	onChange={(
-																		value
-																	) =>
-																		nodePortHandle(
-																			value,
-																			'hostPort'
-																		)
-																	}
-																	placeholder="范围：30000-32767"
-																	style={{
-																		width:
-																			'100%'
-																	}}
-																/>
-															</div>
-														</li>
-													</ul>
-												) : null}
-											</div>
-										) : null}
-									</div>
-								</li>
-							</ul>
-						</div>
-					</FormBlock> */}
-					<FormBlock title="Elasticsearch配置">
+					<FormBlock title="RocketMQ配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
 								<li className="display-flex form-li">
@@ -1235,27 +852,10 @@ const ElasticsearchCreate = (props) => {
 										<SelectBlock
 											options={versionList}
 											currentValue={version}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setVersion(value)
 											}
 										/>
-									</div>
-								</li>
-								<li className="display-flex mt-8">
-									<label className="form-name">
-										<span>初始密码</span>
-									</label>
-									<div
-										className={`form-content ${styles['input-flex-length']}`}
-									>
-										<FormItem>
-											<Input
-												htmlType="password"
-												name="pwd"
-												placeholder="请输入初始密码，输入为空则由平台随机生成"
-												trim
-											/>
-										</FormItem>
 									</div>
 								</li>
 							</ul>
@@ -1266,46 +866,186 @@ const ElasticsearchCreate = (props) => {
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span className="ne-required">
-											模式
-										</span>
+										<span>模式</span>
 									</label>
 									<div
-										className={`form-content display-flex ${styles['es-mode']}`}
+										className={`form-content display-flex`}
 									>
 										<SelectBlock
 											options={modeList}
 											currentValue={mode}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setMode(value)
 											}
 										/>
-										<div
-											className={`display-flex ${styles['mode-content']}`}
-										>
-											{Object.keys(nodeObj).map((key) => (
-												<ModeItem
-													key={key}
-													type={key}
-													data={nodeObj[key]}
-													clusterId={globalCluster.id}
-													namespace={
-														globalNamespace.name
+									</div>
+								</li>
+								<li className="display-flex form-li">
+									<label className="form-name">
+										<span>节点规格</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['instance-spec-content']}`}
+									>
+										<SelectBlock
+											options={instanceSpecList}
+											currentValue={instanceSpec}
+											onCallBack={(value: any) =>
+												setInstanceSpec(value)
+											}
+										/>
+										{instanceSpec === 'General' ? (
+											<div
+												style={{
+													width: 652,
+													marginTop: 16
+												}}
+											>
+												<TableRadio
+													id={specId}
+													onCallBack={(value: any) =>
+														setSpecId(value)
 													}
-													onChange={(values) => {
-														// console.log(values);
-														// console.log(key);
-														// console.log({
-														// 	...nodeObj,
-														// 	[key]: values
-														// });
-														setNodeObj({
-															...nodeObj,
-															[key]: values
-														});
-													}}
 												/>
-											))}
+											</div>
+										) : null}
+										{instanceSpec === 'Customize' ? (
+											<div
+												className={
+													styles['spec-custom']
+												}
+											>
+												<ul className="form-layout">
+													<li className="display-flex">
+														<label className="form-name">
+															<span className="ne-required">
+																CPU
+															</span>
+														</label>
+														<div className="form-content">
+															<FormItem
+																min={0.1}
+																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`}
+																required
+																requiredMessage="请输入自定义CPU配额，单位为Core"
+																{...maxCpu}
+															>
+																<Input
+																	name="cpu"
+																	htmlType="number"
+																	min={0.1}
+																	step={0.1}
+																	placeholder="请输入自定义CPU配额，单位为Core"
+																	trim
+																/>
+															</FormItem>
+														</div>
+													</li>
+													<li className="display-flex">
+														<label className="form-name">
+															<span className="ne-required">
+																内存
+															</span>
+														</label>
+														<div className="form-content">
+															<FormItem
+																min={0.1}
+																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`}
+																required
+																requiredMessage="请输入自定义内存配额，单位为Gi"
+																{...maxMemory}
+															>
+																<Input
+																	name="memory"
+																	htmlType="number"
+																	min={0.1}
+																	step={0.1}
+																	placeholder="请输入自定义内存配额，单位为Gi"
+																	trim
+																/>
+															</FormItem>
+														</div>
+													</li>
+												</ul>
+											</div>
+										) : null}
+									</div>
+								</li>
+								<li className="display-flex">
+									<label className="form-name">
+										<span className="ne-required">
+											存储配额
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex`}
+									>
+										<FormItem
+											required
+											requiredMessage="请选择存储类型"
+										>
+											<Select
+												name="storageClass"
+												style={{ marginRight: 8 }}
+												autoWidth={false}
+											>
+												{storageClassList.map(
+													(item, index) => {
+														return (
+															<Select.Option
+																key={index}
+																value={
+																	item.name
+																}
+															>
+																{item.name}
+															</Select.Option>
+														);
+													}
+												)}
+											</Select>
+										</FormItem>
+										<FormItem
+											pattern={pattern.posInt}
+											patternMessage="请输入小于21位的正整数"
+											required
+											requiredMessage="请输入存储配额大小（GB）"
+										>
+											<Input
+												name="storageQuota"
+												defaultValue={5}
+												htmlType="number"
+												placeholder="请输入存储配额大小"
+												addonTextAfter="GB"
+											/>
+										</FormItem>
+									</div>
+								</li>
+								<li
+									className="display-flex form-li"
+									style={{ alignItems: 'center' }}
+								>
+									<label className="form-name">
+										<span className="ne-required">
+											主机网络
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['standard-log']}`}
+									>
+										<div className={styles['switch']}>
+											{hostNetwork ? '已开启' : '关闭'}
+											<Switch
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+											/>
 										</div>
 									</div>
 								</li>
@@ -1339,8 +1079,7 @@ const ElasticsearchCreate = (props) => {
 		</Page>
 	);
 };
-
-export default connect(
-	({ globalVar }) => ({ globalVar }),
-	{}
-)(ElasticsearchCreate);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {})(RocketMQCreate);

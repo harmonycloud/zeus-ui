@@ -119,7 +119,9 @@ function Personlization(): JSX.Element {
 		console.log(info);
 
 		if (info.size / 1024 / 1024 > 2) {
-			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			Message.show(
+				messageConfig('warning', '提示', '图片过大，请重新上传')
+			);
 			setImgRule(true);
 			return false;
 		}
@@ -128,7 +130,9 @@ function Personlization(): JSX.Element {
 			info.type !== 'image/jpeg' &&
 			info.type !== 'image/png'
 		) {
-			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			Message.show(
+				messageConfig('warning', '提示', '文件格式错误，请重新上传')
+			);
 			setImgRule(true);
 			return false;
 		}
@@ -139,15 +143,17 @@ function Personlization(): JSX.Element {
 	};
 
 	const logoBeforeUpload = (info: any) => {
-		// console.log(info);
-
 		if (info.size / 1024 / 1024 > 2) {
-			Message.show(messageConfig('warning', '图片过大，请重新上传'));
+			Message.show(
+				messageConfig('warning', '提示', '图片过大，请重新上传')
+			);
 			setImgRule(true);
 			return false;
 		}
 		if (info.type !== 'image/svg+xml') {
-			Message.show(messageConfig('warning', '文件格式错误，请重新上传'));
+			Message.show(
+				messageConfig('warning', '提示', '文件格式错误，请重新上传')
+			);
 			setImgRule(true);
 			return false;
 		}

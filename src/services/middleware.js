@@ -195,3 +195,7 @@ export const updateValueYaml = (params) => {
 export const storageDilatation = (params) => {
 	return Axios.json(MIDDLEWARE.dilatationStorage, params, {}, 'PUT');
 };
+// * 查询可发布的中间件信息
+export const getCanReleaseMiddleware = (params) => {
+	return Axios.get(MIDDLEWARE.getCanReleaseMiddleware, params);
+};

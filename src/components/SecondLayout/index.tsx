@@ -113,7 +113,6 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 		}
 	}, [namespace, cluster]);
 	const handleChange = (value: string | string[], data: any, extra: any) => {
-		// console.log(value, data, extra);
 		if (data.isLeaf) {
 			// * 如果选的是叶子结点的话
 			setCurrent(value as string);

@@ -166,14 +166,13 @@ function UserManage(): JSX.Element {
 	};
 	const submitRole = () => {
 		if (!role) {
-			Message.show(messageConfig('warning', '请选择关联角色!'));
+			Message.show(messageConfig('warning', '提示', '请选择关联角色!'));
 			return;
 		}
 		const sendData = {
 			...(record as unknown as userProps)
 		};
 		updateUser(sendData).then((res) => {
-			// console.log(res);
 			if (res.success) {
 				Message.show(messageConfig('success', '成功', '用户修改成功'));
 				setRoleVisible(false);

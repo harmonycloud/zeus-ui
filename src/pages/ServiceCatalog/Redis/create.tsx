@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Page from '@alicloud/console-components-page';
-import FormBlock from '../components/FormBlock/index';
-import SelectBlock from '../components/SelectBlock/index';
+import FormBlock from '@/components/FormBlock';
+import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
-import CalInput from '../components/CalInput/index';
 import {
 	Form,
 	Field,
@@ -17,7 +16,6 @@ import {
 	Select,
 	Button,
 	Message
-	// Tag
 } from '@alicloud/console-components';
 import pattern from '@/utils/pattern';
 import styles from './redis.module.scss';
@@ -25,16 +23,28 @@ import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
-	postMiddleware,
-	getMiddlewareDetail
+	postMiddleware
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
+import { instanceSpecList } from '@/utils/const';
+import {
+	CreateProps,
+	CreateParams,
+	AffinityProps,
+	AffinityLabelsItem,
+	TolerationsProps,
+	RedisSendDataParams,
+	RedisCreateValuesParams,
+	NodeModifyParams,
+	NodeObjParams
+} from '../catalog';
+import { getCustomFormKeys, childrenRender } from '@/utils/utils';
+import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
+import { StorageClassProps } from '@/types/comment';
+import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
-import { getCustomFormKeys, childrenRender } from '@/utils/utils';
-
-// const { Group: TagGroup, Closable: ClosableTag } = Tag;
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -46,74 +56,61 @@ const formItemLayout = {
 	}
 };
 
-const RedisCreate = (props) => {
+const RedisCreate: (props: CreateProps) => JSX.Element = (
+	props: CreateProps
+) => {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
-	const {
-		chartName,
-		chartVersion,
-		middlewareName,
-		backupFileName,
-		aliasName
-	} = useParams();
+	const params: CreateParams = useParams();
+	const { chartName, chartVersion, aliasName } = params;
 	const field = Field.useField();
 	const history = useHistory();
 
 	// 主机亲和
-	const [affinity, setAffinity] = useState({
+	const [affinity, setAffinity] = useState<AffinityProps>({
 		flag: false,
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState([]);
-	const changeAffinity = (value, key) => {
+	const [labelList, setLabelList] = useState<string[]>([]);
+	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
 			[key]: value
 		});
 	};
-	const [affinityLabels, setAffinityLabels] = useState([]);
+	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
+		[]
+	);
 	// 主机容忍
-	const [tolerations, setTolerations] = useState({
+	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState([]);
-	const changeTolerations = (value, key) => {
+	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
 			[key]: value
 		});
 	};
-	const [tolerationsLabels, setTolerationsLabels] = useState([]);
+	const [tolerationsLabels, setTolerationsLabels] = useState<
+		TolerationLabelItem[]
+	>([]);
 
 	// 日志
-	const [fileLog, setFileLog] = useState(false);
-	// const [directory, setDirectory] = useState('');
-	// const [directoryList, setDirectoryList] = useState([]);
-	const [standardLog, setStandardLog] = useState(false);
-	// const addDirectory = (e) => {
-	// 	e && e.preventDefault();
-	// 	let temp = [].concat(directoryList);
-	// 	temp.push(directory);
-	// 	setDirectoryList(temp);
-	// 	setDirectory('');
-	// };
-	// const delDirectory = (index) => {
-	// 	let temp = [].concat(directoryList);
-	// 	temp.splice(index, 1);
-	// 	setDirectoryList(temp);
-	// };
+	const [fileLog, setFileLog] = useState<boolean>(false);
+	const [standardLog, setStandardLog] = useState<boolean>(false);
 
-	// MySQL配置
-	const [version, setVersion] = useState('5.0');
+	// Redis配置
+	const [version, setVersion] = useState<string>('5.0');
 	const versionList = [
 		{
 			label: '5.0',
 			value: '5.0'
 		}
 	];
-	const [mode, setMode] = useState('cluster');
+	const [mode, setMode] = useState<string>('cluster');
 	const modeList = [
 		{
 			label: '集群模式',
@@ -124,7 +121,7 @@ const RedisCreate = (props) => {
 			value: 'sentinel'
 		}
 	];
-	const [clusterMode, setClusterMode] = useState('3s-3m');
+	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
 	const clusterModeList = [
 		{
 			label: '三主三从',
@@ -135,7 +132,7 @@ const RedisCreate = (props) => {
 			value: '5s-5m'
 		}
 	];
-	const [nodeObj, setNodeObj] = useState({
+	const [nodeObj, setNodeObj] = useState<NodeObjParams>({
 		redis: {
 			disabled: false,
 			title: 'Redis 节点',
@@ -155,28 +152,19 @@ const RedisCreate = (props) => {
 			memory: 2
 		}
 	});
-	const [nodeModify, setNodeModify] = useState({
+	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
 		nodeName: '',
 		flag: false
 	});
-	const [nodeNum, setNodeNum] = useState(2);
-	const [instanceSpec, setInstanceSpec] = useState('General');
-	const instanceSpecList = [
-		{
-			label: '通用规格',
-			value: 'General'
-		},
-		{
-			label: '自定义',
-			value: 'Customize'
-		}
-	];
-	const [specId, setSpecId] = useState('1');
-	const [storageClassList, setStorageClassList] = useState([]);
-	const [maxCpu, setMaxCpu] = useState({}); // 自定义cpu的最大值
-	const [maxMemory, setMaxMemory] = useState({}); // 自定义memory的最大值
+	const [instanceSpec, setInstanceSpec] = useState<string>('General');
+	const [specId, setSpecId] = useState<string>('1');
+	const [storageClassList, setStorageClassList] = useState<
+		StorageClassProps[]
+	>([]);
+	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
+	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * 外接的动态表单
-	const [customForm, setCustomForm] = useState();
+	const [customForm, setCustomForm] = useState<any>();
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -194,14 +182,14 @@ const RedisCreate = (props) => {
 		}
 	}, [props]);
 
-	const formHandle = (obj, item) => {
+	const formHandle = (obj: any, item: any) => {
 		if (
 			['cpu', 'memory', 'storageClass', 'storageQuota'].indexOf(
 				item.name
 			) > -1 &&
 			mode === 'sentinel'
 		) {
-			let temp = nodeObj[nodeModify.nodeName];
+			const temp = nodeObj[nodeModify.nodeName];
 			temp[item.name] = item.value;
 			setNodeObj({
 				...nodeObj,
@@ -210,28 +198,11 @@ const RedisCreate = (props) => {
 		}
 	};
 
-	const putAway = (key) => {
-		if (instanceSpec === 'Customize') {
-			setSpecId('');
-			let temp = nodeObj[key];
-			temp.specId = '';
-			setNodeObj({
-				...nodeObj,
-				[key]: temp
-			});
-		}
-		setNodeModify({
-			nodeName: '',
-			flag: false
-		});
-	};
-
-	const modifyQuota = (key) => {
+	const modifyQuota = (key: string) => {
 		setNodeModify({
 			nodeName: key,
 			flag: true
 		});
-		setNodeNum(nodeObj[key].num);
 		setSpecId(nodeObj[key].specId);
 		if (nodeObj[key].specId === '') {
 			setInstanceSpec('Customize');
@@ -248,9 +219,9 @@ const RedisCreate = (props) => {
 		});
 	};
 
-	const checkGeneral = (value) => {
+	const checkGeneral = (value: any) => {
 		setSpecId(value);
-		let temp = nodeObj[nodeModify.nodeName];
+		const temp = nodeObj[nodeModify.nodeName];
 		switch (value) {
 			case '1':
 				temp.cpu = 1;
@@ -282,9 +253,10 @@ const RedisCreate = (props) => {
 	};
 
 	const handleSubmit = () => {
-		field.validate((err, values) => {
+		field.validate((err, value) => {
+			const values: RedisCreateValuesParams = field.getValues();
 			if (!err) {
-				let sendData = {
+				const sendData: RedisSendDataParams = {
 					chartName: chartName,
 					chartVersion: chartVersion,
 					clusterId: globalCluster.id,
@@ -300,13 +272,13 @@ const RedisCreate = (props) => {
 					mode: mode,
 					filelogEnabled: fileLog,
 					stdoutEnabled: standardLog,
-					quota: {}
+					quota: { redis: {} }
 				};
 				// * 动态表单相关
 				if (customForm) {
 					const dynamicValues = {};
-					let keys = [];
-					for (let i in customForm) {
+					let keys: string[] = [];
+					for (const i in customForm) {
 						const list = getCustomFormKeys(customForm[i]);
 						keys = [...list, ...keys];
 					}
@@ -382,17 +354,10 @@ const RedisCreate = (props) => {
 					}
 				} else {
 					if (nodeObj) {
-						sendData.quota = {};
-						for (let key in nodeObj) {
+						sendData.quota = { redis: {} };
+						for (const key in nodeObj) {
 							if (!nodeObj[key].disabled) {
 								if (nodeObj[key].storageClass === '') {
-									// Message.show(
-									// 	messageConfig(
-									// 		'error',
-									// 		'失败',
-									// 		`${key}节点没有选择存储类型`
-									// 	)
-									// );
 									modifyQuota(key);
 									return;
 								}
@@ -416,7 +381,6 @@ const RedisCreate = (props) => {
 						}
 					}
 				}
-				// console.log(sendData);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -469,36 +433,11 @@ const RedisCreate = (props) => {
 			namespace: globalNamespace.name
 		}).then((res) => {
 			if (res.success) {
-				// for (let i = 0; i < res.data.length; i++) {
-				// 	if (res.data[i].type === 'CSI-LVM') {
-				// 		const { redis, sentinel } = nodeObj;
-				// 		redis.storageClass = res.data[i].name;
-				// 		redis.storageQuota = 5;
-				// 		setNodeObj({ redis, sentinel });
-				// 		field.setValues({
-				// 			storageClass: res.data[i].name
-				// 		});
-				// 		break;
-				// 	}
-				// }
 				setStorageClassList(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
-		// * 克隆服务 - redis 暂不支持
-		// if (JSON.stringify(globalNamespace) !== '{}') {
-		// 	if (backupFileName) {
-		// 		getMiddlewareDetail({
-		// 			clusterId: globalCluster.id,
-		// 			namespace: globalNamespace.name,
-		// 			middlewareName: middlewareName,
-		// 			type: 'redis'
-		// 		}).then((res) => {
-		// 			console.log(res.data);
-		// 		});
-		// 	}
-		// }
 	}, [globalNamespace]);
 
 	return (
@@ -692,10 +631,6 @@ const RedisCreate = (props) => {
 																		}
 																	]
 																);
-																// changeAffinity(
-																// 	'',
-																// 	'label'
-																// );
 															}
 														}}
 													>
@@ -929,60 +864,6 @@ const RedisCreate = (props) => {
 												}}
 											/>
 										</div>
-										{/* {fileLog ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<TagGroup
-														style={{ marginTop: 4 }}
-													>
-														{directoryList.map(
-															(item, index) => (
-																<ClosableTag
-																	key={index}
-																	onClose={() =>
-																		delDirectory(
-																			index
-																		)
-																	}
-																>
-																	{item}
-																</ClosableTag>
-															)
-														)}
-													</TagGroup>
-													<Input
-														innerBefore={
-															<Icon
-																type="add"
-																style={{
-																	marginLeft: 8
-																}}
-															/>
-														}
-														placeholder="添加日志目录"
-														value={directory}
-														onChange={(value) =>
-															setDirectory(value)
-														}
-														onKeyPress={(event) => {
-															if (
-																event.charCode ===
-																13
-															) {
-																addDirectory(
-																	event
-																);
-															}
-														}}
-														onBlur={(e) => {
-															addDirectory(e);
-														}}
-													/>
-												</div>
-											</>
-										) : null} */}
 									</div>
 								</li>
 							</ul>
@@ -1045,7 +926,7 @@ const RedisCreate = (props) => {
 										<SelectBlock
 											options={versionList}
 											currentValue={version}
-											onCallBack={(value) =>
+											onCallBack={(value: any) =>
 												setVersion(value)
 											}
 										/>
@@ -1101,7 +982,7 @@ const RedisCreate = (props) => {
 												<SelectBlock
 													options={clusterModeList}
 													currentValue={clusterMode}
-													onCallBack={(value) =>
+													onCallBack={(value: any) =>
 														setClusterMode(value)
 													}
 												/>
@@ -1145,33 +1026,6 @@ const RedisCreate = (props) => {
 										) : null}
 									</div>
 								</li>
-								{/* {nodeModify.flag && (
-									<li className="display-flex form-li">
-										<label className="form-name">
-											<span>节点数量</span>
-										</label>
-										<div
-											className={`form-content display-flex ${styles['input-flex-length']}`}
-										>
-											<CalInput
-												value={nodeNum}
-												onChange={(value) => {
-													setNodeNum(value);
-													let tempObj =
-														nodeObj[
-															nodeModify.nodeName
-														];
-													tempObj.num = value;
-													setNodeObj({
-														...nodeObj,
-														[nodeModify.nodeName]:
-															tempObj
-													});
-												}}
-											/>
-										</div>
-									</li>
-								)} */}
 								{(mode === 'cluster' || nodeModify.flag) && (
 									<>
 										<li className="display-flex form-li">
@@ -1184,7 +1038,7 @@ const RedisCreate = (props) => {
 												<SelectBlock
 													options={instanceSpecList}
 													currentValue={instanceSpec}
-													onCallBack={(value) =>
+													onCallBack={(value: any) =>
 														setInstanceSpec(value)
 													}
 												/>
@@ -1198,7 +1052,7 @@ const RedisCreate = (props) => {
 														<TableRadio
 															id={specId}
 															onCallBack={(
-																value
+																value: any
 															) =>
 																checkGeneral(
 																	value
@@ -1228,7 +1082,7 @@ const RedisCreate = (props) => {
 																		min={
 																			0.1
 																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu.max}Core）`}
+																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`}
 																		required
 																		requiredMessage="请输入自定义CPU配额，单位为Core"
 																		{...maxCpu}
@@ -1259,7 +1113,7 @@ const RedisCreate = (props) => {
 																		min={
 																			0.1
 																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory.max}Gi`}
+																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`}
 																		required
 																		requiredMessage="请输入自定义内存配额，单位为Gi"
 																		{...maxMemory}
@@ -1378,5 +1232,7 @@ const RedisCreate = (props) => {
 		</Page>
 	);
 };
-
-export default connect(({ globalVar }) => ({ globalVar }), {})(RedisCreate);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {})(RedisCreate);

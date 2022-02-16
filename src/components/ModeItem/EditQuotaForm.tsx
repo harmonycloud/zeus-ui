@@ -8,7 +8,7 @@ import {
 	Message,
 	NumberPicker
 } from '@alicloud/console-components';
-import SelectBlock from '@/pages/ServiceCatalog/components/SelectBlock';
+import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
 import pattern from '@/utils/pattern';
 import { getStorageClass } from '@/services/middleware';

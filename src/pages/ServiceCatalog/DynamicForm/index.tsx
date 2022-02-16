@@ -9,14 +9,19 @@ import {
 	Message,
 	Input
 } from '@alicloud/console-components';
-import FormBlock from '../components/FormBlock/index';
+import FormBlock from '@/components/FormBlock';
 import { renderFormItem } from '@/components/renderFormItem';
 import { getDynamicFormData } from '@/services/middleware';
 import { postMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
+import {
+	CreateProps,
+	DynamicSendDataParams,
+	DynamicCreateValueParams
+} from '../catalog';
+import { StoreState } from '@/types';
 
-// import FormNodeAffinity from '../../../components/FormNodeAffinity';
 const { Item: FormItem } = Form;
 
 const formItemLayout = {
@@ -28,14 +33,14 @@ const formItemLayout = {
 	}
 };
 
-function DynamicForm(props) {
+function DynamicForm(props: CreateProps): JSX.Element {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
 	const {
 		params: { chartName, chartVersion, version, aliasName }
 	} = props.match;
-	const [dataSource, setDataSource] = useState();
-	const [capabilities, setCapabilities] = useState();
+	const [dataSource, setDataSource] = useState<any>();
+	const [capabilities, setCapabilities] = useState<string[]>([]);
 	const history = useHistory();
 	const field = Field.useField();
 	useEffect(() => {
@@ -48,7 +53,6 @@ function DynamicForm(props) {
 			getDynamicFormData(sendData).then((res) => {
 				if (res.success) {
 					const formatData = processData(res.data.questions);
-					// console.log(formatData);
 					setDataSource(formatData);
 					setCapabilities(res.data.capabilities);
 				} else {
@@ -58,12 +62,12 @@ function DynamicForm(props) {
 		}
 	}, [props]);
 
-	const processData = (array) => {
+	const processData = (array: any) => {
 		const obj = {};
-		array.forEach((item) => {
+		array.forEach((item: any) => {
 			obj[item.group] = [];
 		});
-		array.forEach((item) => {
+		array.forEach((item: any) => {
 			if (Object.keys(obj).includes(item.group)) {
 				obj[item.group].push(item);
 			}
@@ -71,7 +75,7 @@ function DynamicForm(props) {
 		return obj;
 	};
 
-	const childrenRender = (values) => {
+	const childrenRender = (values: any) => {
 		if (values) {
 			const keys = Object.keys(values);
 			return (
@@ -81,7 +85,7 @@ function DynamicForm(props) {
 							<FormBlock key={item} title={item}>
 								<div className="w-50">
 									<ul className="form-layout">
-										{values[item].map((formItem) => {
+										{values[item].map((formItem: any) => {
 											return (
 												<React.Fragment
 													key={formItem.variable}
@@ -106,10 +110,10 @@ function DynamicForm(props) {
 	};
 
 	const handleSubmit = () => {
-		field.validate((err, values) => {
+		field.validate((err) => {
 			if (err) return;
-			// console.log(values);
-			const sendData = {
+			const values: DynamicCreateValueParams = field.getValues();
+			const sendData: DynamicSendDataParams = {
 				clusterId: globalCluster.id,
 				namespace: globalNamespace.name,
 				type: chartName,
@@ -118,7 +122,7 @@ function DynamicForm(props) {
 				version: version,
 				name: values.name,
 				aliasName: values.aliasName,
-				annotation: values.annotation,
+				description: values.description,
 				labels: values.labels,
 				capabilities: capabilities
 			};
@@ -144,14 +148,14 @@ function DynamicForm(props) {
 			}
 			// * 删除动态表单中多余的主机亲和相关的值
 			const dynamicValues = {};
-			for (let index in values) {
+			for (const index in values) {
 				if (
 					index !== 'nodeAffinityLabel' &&
 					index !== 'nodeAffinityForce' &&
 					index !== 'nodeAffinity' &&
 					index !== 'name' &&
 					index !== 'aliasName' &&
-					index !== 'annotation' &&
+					index !== 'annotations' &&
 					index !== 'tolerations' &&
 					index !== 'tolerationsLabels'
 				) {
@@ -174,9 +178,7 @@ function DynamicForm(props) {
 					return;
 				}
 			}
-			// console.log(sendData);
 			postMiddleware(sendData).then((res) => {
-				// console.log(res);
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '中间件创建成功')
@@ -304,4 +306,7 @@ function DynamicForm(props) {
 		</Page>
 	);
 }
-export default connect(({ globalVar }) => ({ globalVar }), {})(DynamicForm);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {})(DynamicForm);

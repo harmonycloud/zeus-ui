@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import FormBlock from '../ServiceCatalog/components/FormBlock';
+import FormBlock from '@/components/FormBlock';
 import OtherResourcePoolImg from '@/assets/images/other-resource-pool.svg';
 import CustomIcon from '@/components/CustomIcon';
 import './index.scss';

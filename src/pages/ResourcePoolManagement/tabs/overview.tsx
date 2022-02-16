@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Radio, Balloon, Message, Icon } from '@alicloud/console-components';
 import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
-import FormBlock from '@/pages/ServiceCatalog/components/FormBlock';
+import FormBlock from '@/components/FormBlock';
 import CustomIcon from '@/components/CustomIcon';
 import { iconTypeRender, nullRender } from '@/utils/utils';
 import { paramsProps } from '../detail';

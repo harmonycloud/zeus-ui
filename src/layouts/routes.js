@@ -7,7 +7,6 @@ import {
 	withRouter
 } from 'react-router-dom';
 import MdBreadcrumb from './Breadcrumb/Breadcrumb';
-import ServiceCatalog from '@/pages/ServiceCatalog/index';
 import MysqlCreate from '@/pages/ServiceCatalog/Mysql/create';
 import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
@@ -41,8 +40,7 @@ import GuidePage from '@/pages/GuidePage';
 import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
 import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
-// ! 已弃用组件
-// import Ingress from '@/pages/Ingress/index';
+
 const Routes = withRouter((props) => {
 	return (
 		<>

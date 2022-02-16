@@ -13,7 +13,7 @@ import {
 	Icon,
 	Tab
 } from '@alicloud/console-components';
-import FormBlock from '../ServiceCatalog/components/FormBlock';
+import FormBlock from '@/components/FormBlock';
 import { useParams, useHistory } from 'react-router';
 import {
 	postCluster,

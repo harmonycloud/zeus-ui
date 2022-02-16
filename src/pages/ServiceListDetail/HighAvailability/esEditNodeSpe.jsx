@@ -10,7 +10,7 @@ import {
 	NumberPicker,
 	Message
 } from '@alicloud/console-components';
-import SelectBlock from '../../ServiceCatalog/components/SelectBlock/index';
+import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../../ServiceCatalog/components/TableRadio/index';
 import styles from './esEdit.module.scss';
 import pattern from '@/utils/pattern';
