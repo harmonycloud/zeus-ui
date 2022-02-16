@@ -36,9 +36,9 @@ function IngressList(props: ingressProps) {
 	const [active, setActive] = useState<boolean>(false); // 抽屉显示
 	const [iconVisible, setIconVisible] = useState<boolean>(false);
 	const [adress, setAdress] = useState<string>('');
-	const [lock, setLock] = useState<{lock: string} | null>({ lock: 'right' });
+	const [lock, setLock] = useState<{ lock: string } | null>({ lock: 'right' });
 	const [instanceTypeFilter, setInstanceTypeFilter] = useState<filtersProps[]>();
-	const [exposedWayFilter, setExposedWayFilter] = useState<filtersProps[]> ();
+	const [exposedWayFilter, setExposedWayFilter] = useState<filtersProps[]>();
 
 	useEffect(() => {
 		window.onresize = function () {
@@ -46,11 +46,11 @@ function IngressList(props: ingressProps) {
 				? setLock(null)
 				: setLock({ lock: 'right' });
 		};
-		if(entry === 'detail'){
+		if (entry === 'detail') {
 			setInstanceTypeFilter(instanceType);
 			setExposedWayFilter(exposedWay);
 		}
-	},[])
+	}, [])
 
 	useEffect(() => {
 		if (
@@ -60,11 +60,11 @@ function IngressList(props: ingressProps) {
 			entry !== 'detail'
 				? getData(globalVar.cluster.id, globalVar.namespace.name)
 				: getIngressByMid(
-						globalVar.cluster.id,
-						globalVar.namespace.name,
-						type,
-						middlewareName
-				  );
+					globalVar.cluster.id,
+					globalVar.namespace.name,
+					type,
+					middlewareName
+				);
 		}
 	}, [globalVar]);
 
@@ -104,7 +104,7 @@ function IngressList(props: ingressProps) {
 		)
 	};
 
-	const nameRender = (record: ingressProps) => {
+	const nameRender = (value: string, index: number, record: ingressProps) => {
 		return (
 			<>
 				<div>{record.name}</div>
@@ -164,20 +164,20 @@ function IngressList(props: ingressProps) {
 					.finally(() => {
 						entry !== 'detail'
 							? getData(
-									globalVar.cluster.id,
-									globalVar.namespace.name
-							  )
+								globalVar.cluster.id,
+								globalVar.namespace.name
+							)
 							: getIngressByMid(
-									globalVar.cluster.id,
-									globalVar.namespace.name,
-									type,
-									middlewareName
-							  );
+								globalVar.cluster.id,
+								globalVar.namespace.name,
+								type,
+								middlewareName
+							);
 					});
 			}
 		});
 	};
-	const actionRender = (record: ingressProps) => {
+	const actionRender = (value: string, index: number, record: ingressProps) => {
 		return (
 			<Actions>
 				<LinkButton onClick={() => handleDelete(record)}>
@@ -207,7 +207,7 @@ function IngressList(props: ingressProps) {
 			setIconVisible(false);
 		}, 3000);
 	};
-	const addressRender = (record: any) => {
+	const addressRender = (value: string, index: number, record: any) => {
 		if (record.protocol === 'HTTP') {
 			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
 			return (
@@ -343,7 +343,7 @@ function IngressList(props: ingressProps) {
 			);
 		}
 	};
-	const portRender = (record: any) => {
+	const portRender = (value: string, index: number, record: any) => {
 		const port =
 			record.protocol === 'HTTP'
 				? record.rules[0].ingressHttpPaths[0].servicePort
@@ -354,45 +354,45 @@ function IngressList(props: ingressProps) {
 		const sendData =
 			values.protocol === 'HTTP'
 				? {
-						clusterId: globalVar.cluster.id,
-						namespace: globalVar.namespace.name,
-						exposeType: values.exposeType,
-						middlewareName: values.selectedInstance.name,
-						middlewareType: values.selectedInstance.type,
-						protocol: values.protocol,
-						ingressClassName: values.ingressClassName,
-						rules: [
-							{
-								domain: values.domain,
-								ingressHttpPaths: [
-									{
-										path: values.path,
-										serviceName: values.serviceName,
-										servicePort: values.servicePort
-									}
-								]
-							}
-						]
-				  }
+					clusterId: globalVar.cluster.id,
+					namespace: globalVar.namespace.name,
+					exposeType: values.exposeType,
+					middlewareName: values.selectedInstance.name,
+					middlewareType: values.selectedInstance.type,
+					protocol: values.protocol,
+					ingressClassName: values.ingressClassName,
+					rules: [
+						{
+							domain: values.domain,
+							ingressHttpPaths: [
+								{
+									path: values.path,
+									serviceName: values.serviceName,
+									servicePort: values.servicePort
+								}
+							]
+						}
+					]
+				}
 				: {
-						clusterId: globalVar.cluster.id,
-						namespace: globalVar.namespace.name,
-						exposeType: values.exposeType,
-						middlewareName: values.selectedInstance.name,
-						middlewareType: values.selectedInstance.type,
-						protocol: values.protocol,
-						ingressClassName: values.ingressClassName,
-						serviceList: [
-							{
-								exposePort: values.exposePort,
-								serviceName: values.serviceName,
-								servicePort: values.servicePort,
-								targetPort:
-									values.selectedService.portDetailDtoList[0]
-										.targetPort
-							}
-						]
-				  };
+					clusterId: globalVar.cluster.id,
+					namespace: globalVar.namespace.name,
+					exposeType: values.exposeType,
+					middlewareName: values.selectedInstance.name,
+					middlewareType: values.selectedInstance.type,
+					protocol: values.protocol,
+					ingressClassName: values.ingressClassName,
+					serviceList: [
+						{
+							exposePort: values.exposePort,
+							serviceName: values.serviceName,
+							servicePort: values.servicePort,
+							targetPort:
+								values.selectedService.portDetailDtoList[0]
+									.targetPort
+						}
+					]
+				};
 		addIngress(sendData).then((res) => {
 			if (res.success) {
 				Message.show(
@@ -410,7 +410,7 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
-	const exposeTypeRender = (record: any) => {
+	const exposeTypeRender = (value: string, index: number, record: any) => {
 		return `${record.exposeType}/${record.ingressClassName || '-'}`;
 	};
 
@@ -432,15 +432,15 @@ function IngressList(props: ingressProps) {
 					onRefresh={() =>
 						entry !== 'detail'
 							? getData(
-									globalVar.cluster.id,
-									globalVar.namespace.name
-							  )
+								globalVar.cluster.id,
+								globalVar.namespace.name
+							)
 							: getIngressByMid(
-									globalVar.cluster.id,
-									globalVar.namespace.name,
-									type,
-									middlewareName
-							  )
+								globalVar.cluster.id,
+								globalVar.namespace.name,
+								type,
+								middlewareName
+							)
 					}
 					primaryKey="key"
 					operation={Operation}
@@ -448,9 +448,9 @@ function IngressList(props: ingressProps) {
 						entry === 'detail'
 							? null
 							: {
-									onSearch: handleSearch,
-									placeholder: '请输入搜索内容'
-							  }
+								onSearch: handleSearch,
+								placeholder: '请输入搜索内容'
+							}
 					}
 					onFilter={entry === 'detail' ? null : onFilter}
 				>
