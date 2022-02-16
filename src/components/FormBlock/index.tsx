@@ -1,9 +1,8 @@
 import React from 'react';
 import styles from './formblock.module.scss';
-
-export default function FormBlock(props) {
+import { formBlockProps } from './formBlock';
+export default function FormBlock(props: formBlockProps): JSX.Element {
 	const { title, className = '', style = {}, children } = props;
-	// console.log(typeof title);
 	return (
 		<div
 			className={`${styles['form-block']} ${className}`}

@@ -22,7 +22,8 @@ export interface filtersProps {
 }
 export interface middlewareDetailProps {
 	aliasName: string;
-	annotation: string | null;
+	annotations: string | null;
+	description: string | null;
 	autoSwitch: any | null;
 	backupFileName: string | null;
 	capabilities: any | null;

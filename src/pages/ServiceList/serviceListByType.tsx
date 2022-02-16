@@ -19,7 +19,10 @@ import {
 	recoveryMiddleware,
 	ParamsProps
 } from '@/services/serviceList';
-import { deleteMiddleware } from '@/services/middleware';
+import {
+	deleteMiddleware,
+	getCanReleaseMiddleware
+} from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import { getComponents } from '@/services/common';
 import {
@@ -32,7 +35,8 @@ import {
 	serviceListItemProps,
 	serviceProps,
 	CurrentService,
-	serviceListProps
+	serviceListProps,
+	middlewareProps
 } from './service.list';
 import { StoreState } from '@/types/index';
 import storage from '@/utils/storage';
@@ -78,6 +82,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const params: paramsProps = useParams();
 	const { name, aliasName } = params;
 	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 
 	useEffect(() => {
 		window.onresize = function () {
@@ -126,6 +131,17 @@ const ServiceListByType = (props: serviceListProps) => {
 						} else {
 							setCantRelease(true);
 						}
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+				getCanReleaseMiddleware({
+					clusterId: cluster.id,
+					type: params.name
+				}).then((res) => {
+					console.log(res);
+					if (res.success) {
+						setMiddlewareInfo(res.data);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -262,37 +278,37 @@ const ServiceListByType = (props: serviceListProps) => {
 		setShowDataSource(list);
 	};
 	const releaseMiddleware = () => {
-		if (dataSource?.official) {
-			switch (dataSource.chartName) {
+		if (middlewareInfo?.official) {
+			switch (middlewareInfo.chartName) {
 				case 'mysql':
 					history.push(
-						`/serviceList/mysqlCreate/${currentService?.name}/${dataSource.chartName}/${dataSource.chartVersion}`
+						`/serviceList/mysqlCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'redis':
 					history.push(
-						`/serviceList/redisCreate/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}`
+						`/serviceList/redisCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'elasticsearch':
 					history.push(
-						`/serviceList/elasticsearchCreate/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}`
+						`/serviceList/elasticsearchCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'rocketmq':
 					history.push(
-						`/serviceList/rocketmqCreate/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}`
+						`/serviceList/rocketmqCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				default:
 					history.push(
-						`/serviceList/dynamicForm/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
+						`/serviceList/dynamicForm/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
 					);
 					break;
 			}
 		} else {
 			history.push(
-				`/serviceList/dynamicForm/${currentService?.name}/${dataSource?.chartName}/${dataSource?.chartVersion}/${dataSource?.version}`
+				`/serviceList/dynamicForm/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
 			);
 		}
 	};
@@ -411,7 +427,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			}
-		} else if (!dataSource) {
+		} else if (!middlewareInfo) {
 			if (currentService?.type === 'mysql') {
 				return {
 					primary: (
@@ -420,7 +436,7 @@ const ServiceListByType = (props: serviceListProps) => {
 								<Button
 									onClick={releaseMiddleware}
 									type="primary"
-									disabled={!dataSource}
+									disabled={!middlewareInfo}
 								>
 									发布服务
 								</Button>
@@ -446,7 +462,7 @@ const ServiceListByType = (props: serviceListProps) => {
 								<Button
 									onClick={releaseMiddleware}
 									type="primary"
-									disabled={!dataSource}
+									disabled={!middlewareInfo}
 								>
 									发布服务
 								</Button>
@@ -464,7 +480,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<Button
 							onClick={releaseMiddleware}
 							type="primary"
-							disabled={!dataSource}
+							disabled={!middlewareInfo}
 						>
 							发布服务
 						</Button>
@@ -484,7 +500,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<Button
 							onClick={releaseMiddleware}
 							type="primary"
-							disabled={!dataSource}
+							disabled={!middlewareInfo}
 						>
 							发布服务
 						</Button>

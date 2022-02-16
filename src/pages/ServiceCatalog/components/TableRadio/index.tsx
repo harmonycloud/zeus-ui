@@ -1,5 +1,6 @@
 import React from 'react';
 import { Radio } from '@alicloud/console-components';
+import { TableRadioProps } from './tableRadio';
 
 const { Group: RadioGroup } = Radio;
 /**
@@ -7,7 +8,7 @@ const { Group: RadioGroup } = Radio;
  * @param { id, isMysql, onCallBack } props
  * id 一项数据的唯一id
  */
-export default function TableRadio(props) {
+export default function TableRadio(props: TableRadioProps): JSX.Element {
 	const { id = '', isMysql = false, onCallBack } = props;
 	const columns = [
 		{ title: '', dataIndex: 'id' },

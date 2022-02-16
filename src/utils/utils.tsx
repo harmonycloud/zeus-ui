@@ -4,7 +4,7 @@ import { api } from '@/api.json';
 import JSEncrypt from 'jsencrypt';
 import moment from 'moment';
 import { renderFormItem } from '@/components/renderFormItem';
-import FormBlock from '@/pages/ServiceCatalog/components/FormBlock';
+import FormBlock from '@/components/FormBlock';
 
 const Tooltip = Balloon.Tooltip;
 // * 组件复用

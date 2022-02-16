@@ -84,3 +84,5 @@ export const getPodYaml = `${api}/clusters/{clusterId}/namespaces/{namespace}/mi
 export const valueYamlApi = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/values`;
 // * 存储扩容
 export const dilatationStorage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/storage`;
+// * 查询可发布的中间件信息
+export const getCanReleaseMiddleware = `${api}/middlewares/info/{type}`;
