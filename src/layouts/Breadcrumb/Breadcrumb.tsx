@@ -3,14 +3,16 @@ import { Link } from 'react-router-dom';
 import { Breadcrumb } from '@alicloud/console-components';
 import storage from '@/utils/storage';
 import './breadcrumb.scss';
-
 import breadcrumbMap from './breadcrumbMap';
 
-export default function MdBreadcrumb(props) {
+export interface BreadcrumbProps {
+	pathname: string;
+}
+export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 	const { pathname } = props;
-	const [pathList, setPathList] = useState([]);
+	const [pathList, setPathList] = useState<string[]>([]);
 	// 根据整路由拿到可用分级路由
-	const getValidPathes = (pathname) => {
+	const getValidPathes = (pathname: string) => {
 		const arr = pathname.split('/');
 		const validPathes = arr.filter((i) =>
 			Object.keys(breadcrumbMap).includes(i)
@@ -19,7 +21,7 @@ export default function MdBreadcrumb(props) {
 	};
 
 	// 获取当前级整路由
-	const getPath = (route, i) => {
+	const getPath = (route: string, i: number) => {
 		if (route === 'serviceList') {
 			return storage.getSession('menuPath') || '/';
 		}
