@@ -19,21 +19,23 @@ import {
 	getCanUseAlarms,
 	createAlarm,
 	updateAlarm,
-	updateAlarms
+	updateAlarms,
+	getAlarmDetail,
 } from '@/services/middleware';
 import { getUsers } from '@/services/user';
-import { getMailInfo, getDing } from '@/services/alrem';
+import { getMailInfo, getDing } from '@/services/alarm';
 import storage from '@/utils/storage';
 import { symbols, alarmWarn, silences } from '@/utils/const';
+import { useParams } from 'react-router';
+
 import './index.scss';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { Tooltip } = Balloon;
 
-function CreateAlarm(props) {
-	const { clusterId, namespace, middlewareName, type, alarmType, record } =
-		storage.getSession('alarm');
+function CreateAlarm() {
+	const { clusterId, namespace, middlewareName, type, alarmType, ruleId } = useParams();
 	const [alarms, setAlarms] = useState([
 		{
 			alert: null,
@@ -52,6 +54,7 @@ function CreateAlarm(props) {
 	const [dingDisabled, setDingDisabled] = useState(false);
 	const [mailDisabled, setMailDisabled] = useState(false);
 	const [isReady, setIsReady] = useState(false);
+	const [detail, setDetail] = useState();
 
 	const getCanUse = (clusterId, namespace, middlewareName, type) => {
 		const sendData = {
@@ -171,12 +174,15 @@ function CreateAlarm(props) {
 	};
 
 	useEffect(() => {
-		if (record) {
-			setAlarmRules([{ ...record, severity: record.labels.severity }]);
-			record.ding ? setDingChecked(true) : setDingChecked(false);
-			record.mail ? setMailChecked(true) : setMailChecked(false);
-			setSystemId(record.clusterId);
-			getUserList({ alertRuleId: record.alertId });
+		if (ruleId) {
+			getAlarmDetail({ alertRuleId: ruleId }).then(({ data }) => {
+				setAlarmRules([{ ...data, severity: data.labels.severity }]);
+				data.ding ? setDingChecked(true) : setDingChecked(false);
+				data.mail ? setMailChecked(true) : setMailChecked(false);
+				setSystemId(data.clusterId);
+				getUserList({ alertRuleId: ruleId });
+				setDetail(data);
+			})
 		} else {
 			if (alarmType === 'system') {
 				setAlarms([
@@ -346,8 +352,8 @@ function CreateAlarm(props) {
 					users: insertUser
 				}
 			};
-			if (record) {
-				sendData.alertRuleId = record.alertId;
+			if (ruleId) {
+				sendData.alertRuleId = ruleId;
 				sendData.data = {
 					middlewareAlertsDTO: value[0],
 					users: insertUser
@@ -389,8 +395,8 @@ function CreateAlarm(props) {
 					users: insertUser
 				}
 			};
-			if (record) {
-				sendData.alertRuleId = record.alertId;
+			if (ruleId) {
+				sendData.alertRuleId = ruleId;
 				sendData.data = {
 					middlewareAlertsDTO: value[0],
 					users: insertUser
@@ -446,9 +452,9 @@ function CreateAlarm(props) {
 		if (alarmType === 'system') {
 			const data = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
-				if (record) {
+				if (detail) {
 					item.annotations = {
-						...record.annotations,
+						...detail.annotations,
 						message: item.content
 					};
 				} else {
@@ -458,7 +464,7 @@ function CreateAlarm(props) {
 				}
 				item.lay = 'system';
 				item.ip = window.location.host;
-				record ? (item.enable = record.enable) : (item.enable = 0);
+				detail ? (item.enable = detail.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				return item;
@@ -490,7 +496,7 @@ function CreateAlarm(props) {
 			const list = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
 				item.lay = 'service';
-				record ? (item.enable = record.enable) : (item.enable = 0);
+				detail ? (item.enable = detail.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				item.ip = window.location.host;
@@ -520,11 +526,10 @@ function CreateAlarm(props) {
 		<Page className="create-alarm">
 			<Header
 				title={
-					record
+					detail
 						? '修改告警规则'
-						: `新建告警规则${
-								middlewareName ? '(' + middlewareName + ')' : ''
-						  }`
+						: `新建告警规则${middlewareName ? '(' + middlewareName + ')' : ''
+						}`
 				}
 				hasBackArrow
 				renderBackArrow={(elem) => (
@@ -557,7 +562,7 @@ function CreateAlarm(props) {
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
 							placeholder="请选择资源池"
-							disabled={record}
+							disabled={ruleId}
 						>
 							{poolList.length &&
 								poolList.map((item) => {
@@ -677,7 +682,7 @@ function CreateAlarm(props) {
 															>
 																{alarmType ===
 																	'service' &&
-																type ===
+																	type ===
 																	'zookeeper'
 																	? i.alert
 																	: i.description}
@@ -737,7 +742,7 @@ function CreateAlarm(props) {
 													(Number(item.alertTime) >
 														1440 ||
 														Number(item.alertTime) <
-															1) &&
+														1) &&
 													'error'
 												}
 												onChange={(value) => {
@@ -848,7 +853,7 @@ function CreateAlarm(props) {
 												/>
 											</Button>
 											<Button
-												disabled={record}
+												disabled={ruleId}
 												onClick={() => addAlarm()}
 												style={{ marginRight: '8px' }}
 											>
@@ -877,31 +882,31 @@ function CreateAlarm(props) {
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||
 										Number(item.alertTimes) < 1) && (
-										<Row>
-											<Col className="error-info">
-												{(Number(item.alertTime) >
-													1440 ||
-													Number(item.alertTime) <
+											<Row>
+												<Col className="error-info">
+													{(Number(item.alertTime) >
+														1440 ||
+														Number(item.alertTime) <
 														1) && (
-													<span>
-														分钟数的范围是1-1440
-													</span>
-												)}
-												{(Number(item.alertTimes) >
-													1000 ||
-													Number(item.alertTimes) <
+															<span>
+																分钟数的范围是1-1440
+															</span>
+														)}
+													{(Number(item.alertTimes) >
+														1000 ||
+														Number(item.alertTimes) <
 														1) && (
-													<span
-														style={{
-															marginLeft: '16px'
-														}}
-													>
-														次数数的范围是1-1000
-													</span>
-												)}
-											</Col>
-										</Row>
-									)}
+															<span
+																style={{
+																	marginLeft: '16px'
+																}}
+															>
+																次数数的范围是1-1000
+															</span>
+														)}
+												</Col>
+											</Row>
+										)}
 								</div>
 							);
 						})}

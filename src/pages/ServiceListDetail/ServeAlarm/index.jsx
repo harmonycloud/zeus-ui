@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import moment from 'moment';
 import { LinkButton, Actions } from '@alicloud/console-components-actions';
@@ -33,6 +34,7 @@ function Rules(props) {
 		monitor,
 		alarmType
 	} = props;
+	const { name, aliasName, currentTab, chartVersion } = useParams();
 	const [searchText, setSearchText] = useState('');
 	const [dataSource, setDataSource] = useState([]);
 	const [originData, setOriginData] = useState([]);
@@ -158,7 +160,11 @@ function Rules(props) {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						history.push('/systemManagement/createAlarm');
+						alarmType === 'system'
+							? history.push(`/systemManagement/systemAlarm/createAlarm/system/${record.alertId}`)
+							: history.push(
+								`/serviceList/${name}/${aliasName}/${currentTab}/createAlarm/${middlewareName}/${type}/${chartVersion}/${clusterId}/${namespace}/${record.alertId}`
+							);
 						storage.setSession('alarm', { ...props, record });
 					}}
 				>
@@ -177,8 +183,10 @@ function Rules(props) {
 				type="primary"
 				onClick={() => {
 					alarmType === 'system'
-						? history.push('/systemManagement/createAlarm')
-						: history.push('/serviceList/createAlarm');
+						? history.push('/systemManagement/systemAlarm/createAlarm/system')
+						: history.push(
+							`/serviceList/${name}/${aliasName}/${currentTab}/createAlarm/${middlewareName}/${type}/${chartVersion}/${clusterId}/${namespace}`
+						);
 					storage.setSession('alarm', props);
 				}}
 			>
@@ -188,17 +196,16 @@ function Rules(props) {
 	};
 
 	const ruleRender = (value, index, record) =>
-		`${record.description}${record.symbol}${record.threshold}%且${
-			record.alertTime || ''
+		`${record.description}${record.symbol}${record.threshold}%且${record.alertTime || ''
 		}分钟内触发${record.alertTimes || ''}次`;
 
 	const levelRender = (value, index, record) => {
 		return (
 			<span className={value && value.severity + ' level'}>
 				{value &&
-				alarmWarn.find((item) => item.value === value.severity)
+					alarmWarn.find((item) => item.value === value.severity)
 					? alarmWarn.find((item) => item.value === value.severity)
-							.label
+						.label
 					: ''}
 			</span>
 		);
@@ -350,8 +357,8 @@ function Rules(props) {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setDataSource([...dsTemp]);
 		}

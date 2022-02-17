@@ -17,7 +17,7 @@ import {
 	getDing,
 	connectDing,
 	connectMail
-} from '@/services/alrem';
+} from '@/services/alarm';
 import messageConfig from '@/components/messageConfig';
 
 const { Row, Col } = Grid;
