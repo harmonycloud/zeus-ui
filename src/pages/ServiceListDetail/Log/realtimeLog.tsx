@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { Select, Grid } from '@alicloud/console-components';
 import { connect } from 'react-redux';
@@ -12,11 +11,14 @@ import { getPods } from '@/services/middleware';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/twilight.css';
+import { ContainerItem, PodItem, RealTimeProps } from '../detail';
+import { Editor } from 'codemirror';
+import { StoreState } from '@/types';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
 
-const RealtimeLog = (props) => {
+const RealtimeLog = (props: RealTimeProps) => {
 	const { setRealLog, cleanRealLog } = props;
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	const options = {
@@ -28,14 +30,14 @@ const RealtimeLog = (props) => {
 		lineWrapping: true
 	};
 
-	const [pod, setPod] = useState('');
-	const [podList, setPodList] = useState([]);
-	const [container, setContainer] = useState('');
-	const [containerList, setContainerList] = useState([]);
-	const [isFullscreen, setIsFullscreen] = useState(false);
-	const ws = useRef(null);
+	const [pod, setPod] = useState<string>('');
+	const [podList, setPodList] = useState<PodItem[]>([]);
+	const [container, setContainer] = useState<string>('');
+	const [containerList, setContainerList] = useState<ContainerItem[]>([]);
+	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+	const ws = useRef<any>(null);
 
-	const changePod = (value) => {
+	const changePod = (value: string) => {
 		setPod(value);
 		for (let i = 0; i < podList.length; i++) {
 			if (value === podList[i].podName) {
@@ -47,7 +49,7 @@ const RealtimeLog = (props) => {
 		}
 	};
 
-	const changeContainr = (value) => {
+	const changeContainr = (value: string) => {
 		setContainer(value);
 	};
 
@@ -57,6 +59,9 @@ const RealtimeLog = (props) => {
 
 	const screenShrink = () => {
 		setIsFullscreen(false);
+	};
+	const onBeforeChange = (editor: Editor) => {
+		console.log(editor);
 	};
 
 	useEffect(() => {
@@ -86,11 +91,11 @@ const RealtimeLog = (props) => {
 			ws.current = new Socket({
 				socketUrl: `/terminal?terminalType=stdoutlog&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
-				socketMessage: (receive) => {
-					let content = props.log + JSON.parse(receive.data).text;
+				socketMessage: (receive: any) => {
+					const content = props.log + JSON.parse(receive.data).text;
 					setRealLog(content);
 				},
-				socketClose: (msg) => {
+				socketClose: (msg: any) => {
 					console.log(msg);
 				},
 				socketError: () => {
@@ -187,18 +192,16 @@ const RealtimeLog = (props) => {
 					value={props.log}
 					options={options}
 					className="log-codeMirror"
+					onBeforeChange={onBeforeChange}
 				/>
 			</div>
 		</>
 	);
 };
-
-export default connect(
-	({ log }) => ({
-		log: log.log
-	}),
-	{
-		setRealLog,
-		cleanRealLog
-	}
-)(RealtimeLog);
+const mapStateToProps = (state: StoreState) => ({
+	log: state.log.log
+});
+export default connect(mapStateToProps, {
+	setRealLog,
+	cleanRealLog
+})(RealtimeLog);

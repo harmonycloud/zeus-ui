@@ -4,7 +4,7 @@ import * as BACKUP from './backup.constants';
 interface listParams {
 	clusterId: string;
 	namespace: string;
-	middlewareName: string;
+	middlewareName?: string;
 	type: string;
 	[propName: string]: any;
 }

@@ -7,7 +7,7 @@ import {
 	Message
 } from '@alicloud/console-components';
 import { Icon } from '@alifd/next';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import styles from './log.module.scss';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/lib/codemirror.css';
@@ -23,6 +23,15 @@ import transTime from '@/utils/transTime';
 import messageConfig from '@/components/messageConfig';
 import ComponentsNull from '@/components/ComponentsNull';
 import { searchTypes } from '@/utils/const';
+import {
+	CommonLogProps,
+	ContainerItem,
+	DownLoadLogSendData,
+	LogDetailItem,
+	LogFileItem,
+	PodItem
+} from '../detail';
+import { Editor } from 'codemirror';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -34,41 +43,42 @@ const options = {
 	fullScreen: false,
 	lineWrapping: true
 };
-export default function LogFile(props) {
+export default function LogFile(props: CommonLogProps): JSX.Element {
 	const { logging } = props;
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	// *------------显示-------------------
 	// * 日志显示是否全屏
-	const [isFullscreen, setIsFullscreen] = useState(false);
+	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 	// *------------筛选-------------------
 	// * 选择的pod节点 & 节点的下拉列表
-	const [pod, setPod] = useState('all');
-	const [podList, setPodList] = useState([]);
+	const [pod, setPod] = useState<string>('all');
+	const [podList, setPodList] = useState<PodItem[]>([]);
 	// * 选择的容器 & 容器下拉列表
-	const [container, setContainer] = useState('all');
-	const [containerList, setContainerList] = useState([]);
-	// * 搜搜类型
-	const [searchType, setSearchType] = useState('matchPhrase');
+	const [container, setContainer] = useState<string>('all');
+	const [containerList, setContainerList] = useState<ContainerItem[]>([]);
+	// * 搜索类型
+	const [searchType, setSearchType] = useState<string>('matchPhrase');
 	// * 关键词
-	const [keyword, setKeyword] = useState();
+	const [keyword, setKeyword] = useState<string>('');
 	// * 选择的日志目录和日志目录下拉列表
-	// const [logIndex, setLogIndex] = useState('');
-	// const [logIndexs, setLogIndexs] = useState([]);
 	// * 日期选择 时间段选择
 	const defaultStart = moment().subtract({ hours: 1 });
-	const [rangeTime, setRangeTime] = useState([defaultStart, moment()]);
+	const [rangeTime, setRangeTime] = useState<Moment[]>([
+		defaultStart,
+		moment()
+	]);
 	// *------------数据-------------------
 	// * 查询日志详情的分页，第一次获取不用传。
 	const [scrollId, setScrollId] = useState();
 	// * 显示的日志信息
-	const [logs, setLogs] = useState('');
+	const [logs, setLogs] = useState<string>('');
 	// * 日志信息列表
-	const [logList, setLogList] = useState([]);
+	const [logList, setLogList] = useState<string[]>([]);
 	// * 日志信息总数
-	const [total, setTotal] = useState(0);
+	const [total, setTotal] = useState<number>(0);
 	// * logPath & logPaths  搜索后获取的日志文件和日志文件列表
-	const [logPath, setLogPath] = useState();
-	const [logPaths, setLogPaths] = useState([]);
+	const [logPath, setLogPath] = useState<LogFileItem>();
+	const [logPaths, setLogPaths] = useState<LogFileItem[]>([]);
 
 	// * 当logList发生变化是去更新logs内容
 	useEffect(() => {
@@ -80,7 +90,7 @@ export default function LogFile(props) {
 			const [start, end] = rangeTime;
 			const startTime = transTime.local2gmt2(start);
 			const endTime = transTime.local2gmt2(end);
-			const sendData = {
+			const sendData: DownLoadLogSendData = {
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
@@ -125,7 +135,7 @@ export default function LogFile(props) {
 		}
 	}, [clusterId, namespace, middlewareName]);
 
-	const changePod = (value) => {
+	const changePod = (value: string) => {
 		setPod(value);
 		for (let i = 0; i < podList.length; i++) {
 			if (value === podList[i].podName) {
@@ -137,20 +147,20 @@ export default function LogFile(props) {
 		}
 	};
 	// todo 优化 方法合并 可做可不做
-	const changeContainr = (value) => {
+	const changeContainr = (value: string) => {
 		setContainer(value);
 	};
-	const onTimeChange = (rangeTime) => {
+	const onTimeChange = (rangeTime: Moment[]) => {
 		setRangeTime(rangeTime);
 	};
-	const changeSearchType = (value) => {
+	const changeSearchType = (value: string) => {
 		setSearchType(value);
 	};
-	const handleChange = (value) => {
+	const handleChange = (value: string) => {
 		setKeyword(value);
 	};
 
-	const logFilesClick = (value) => {
+	const logFilesClick = (value: LogFileItem) => {
 		setLogList([]);
 		setLogPath(value);
 	};
@@ -159,7 +169,7 @@ export default function LogFile(props) {
 		const [start, end] = rangeTime;
 		const startTime = transTime.local2gmt2(start);
 		const endTime = transTime.local2gmt2(end);
-		const sendData = {
+		const sendData: DownLoadLogSendData = {
 			clusterId: clusterId,
 			namespace: namespace,
 			middlewareName: middlewareName,
@@ -178,7 +188,7 @@ export default function LogFile(props) {
 		getLogFiles(sendData);
 	};
 	// * 查询日志文件
-	const getLogFiles = (sendData) => {
+	const getLogFiles = (sendData: any) => {
 		getStandardLogFiles(sendData).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
@@ -193,7 +203,7 @@ export default function LogFile(props) {
 						)
 					);
 					setLogPaths([]);
-					setLogPath();
+					setLogPath(undefined);
 				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -201,7 +211,7 @@ export default function LogFile(props) {
 		});
 	};
 	// * 发情请求
-	const getLog = (sendData) => {
+	const getLog = (sendData: any) => {
 		getLogDetail(sendData).then((res) => {
 			if (res.success) {
 				if (sendData.scrollId) {
@@ -214,7 +224,9 @@ export default function LogFile(props) {
 							)
 						);
 					} else {
-						const logs = res.data.log.map((item) => item.msg);
+						const logs = res.data.log.map(
+							(item: LogDetailItem) => item.msg
+						);
 						setLogList([...logList, ...logs]);
 					}
 				} else {
@@ -228,7 +240,9 @@ export default function LogFile(props) {
 						);
 						setLogList([]);
 					} else {
-						const log = res.data.log.map((item) => item.msg);
+						const log = res.data.log.map(
+							(item: LogDetailItem) => item.msg
+						);
 						setScrollId(res.data.scrollId);
 						setLogList(log);
 						setTotal(res.data.totalHit);
@@ -244,7 +258,7 @@ export default function LogFile(props) {
 		const [start, end] = rangeTime;
 		const startTime = transTime.local2gmt2(start);
 		const endTime = transTime.local2gmt2(end);
-		const sendData = {
+		const sendData: DownLoadLogSendData = {
 			clusterId: clusterId,
 			namespace: namespace,
 			middlewareName: middlewareName,
@@ -258,7 +272,7 @@ export default function LogFile(props) {
 			searchType: searchType,
 			middlewareType: type,
 			scrollId: scrollId,
-			logPath: logPath.logPath
+			logPath: logPath?.logPath
 		};
 		if (pod === 'all') delete sendData.pod;
 		if (container === 'all') delete sendData.container;
@@ -269,7 +283,7 @@ export default function LogFile(props) {
 		const [start, end] = rangeTime;
 		const startTime = transTime.local2gmt2(start);
 		const endTime = transTime.local2gmt2(end);
-		const sendData = {
+		const sendData: DownLoadLogSendData = {
 			clusterId: clusterId,
 			namespace: namespace,
 			middlewareName: middlewareName,
@@ -283,7 +297,7 @@ export default function LogFile(props) {
 			searchType: searchType,
 			middlewareType: type,
 			scrollId: scrollId ? scrollId : '',
-			logPath: logPath.logPath
+			logPath: logPath?.logPath
 		};
 		if (pod === 'all') delete sendData.pod;
 		if (container === 'all') delete sendData.container;
@@ -293,10 +307,13 @@ export default function LogFile(props) {
 		}${container === 'all' ? '' : `&container=${container}`}&searchWord=${
 			keyword || ''
 		}&searchType=${searchType}&middlewareType=${type}&logPath=${
-			logPath.logPath
+			logPath?.logPath
 		}`;
 		// console.log(url);
 		window.open(url, '_target');
+	};
+	const onBeforeChange = (value: Editor) => {
+		console.log(value);
 	};
 
 	if (!logging || !logging.elasticSearch) {
@@ -455,6 +472,7 @@ export default function LogFile(props) {
 					value={logs}
 					options={options}
 					className="log-codeMirror"
+					onBeforeChange={onBeforeChange}
 				/>
 				{total > logList.length ? (
 					<div className={styles['foot']}>

@@ -25,13 +25,23 @@ import messageConfig from '@/components/messageConfig';
 import { statusRender } from '@/utils/utils';
 import transTime from '@/utils/transTime';
 import { BalloonFormFormItemLayout } from '@/utils/const';
+import {
+	BasicInfoProps,
+	configParams,
+	DetailParams,
+	DynamicDataParams,
+	eventsParams,
+	InfoParams,
+	runParams
+} from '../detail';
+import { rocketMQAccount } from '@/components/RocketACLForm/acl';
 
 import './basicinfo.scss';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { Row, Col } = Grid;
-const info = {
+const info: InfoParams = {
 	title: '规格配置',
 	name: '',
 	aliasName: '',
@@ -45,7 +55,7 @@ const info = {
 const InfoConfig = [
 	{
 		dataIndex: 'title',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="title-content">
 				<div className="blue-line"></div>
 				<div className="detail-title">{val}</div>
@@ -60,7 +70,7 @@ const InfoConfig = [
 	{
 		dataIndex: 'aliasName',
 		label: '显示名称',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
@@ -73,7 +83,7 @@ const InfoConfig = [
 	{
 		dataIndex: 'hostAffinity',
 		label: '主机亲和',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
@@ -82,7 +92,7 @@ const InfoConfig = [
 	{
 		dataIndex: 'annotations',
 		label: '注解',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
@@ -91,7 +101,7 @@ const InfoConfig = [
 	{
 		dataIndex: 'tolerations',
 		label: '主机容忍',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
 			</div>
@@ -99,7 +109,7 @@ const InfoConfig = [
 	}
 ];
 
-const config = {
+const config: configParams = {
 	title: '配置信息',
 	version: '',
 	characterSet: '',
@@ -107,7 +117,7 @@ const config = {
 	password: ''
 };
 
-const runStatus = {
+const runStatus: runParams = {
 	title: '运行状态',
 	status: '',
 	createTime: '',
@@ -116,7 +126,7 @@ const runStatus = {
 	storageType: ''
 };
 
-const events = {
+const events: eventsParams = {
 	title: '实时事件',
 	table: ''
 };
@@ -138,7 +148,7 @@ const modelMap = {
 };
 const titleConfig = {
 	dataIndex: 'title',
-	render: (val) => (
+	render: (val: string) => (
 		<div className="title-content">
 			<div className="blue-line"></div>
 			<div className="detail-title">{val}</div>
@@ -153,12 +163,12 @@ const versionConfig = {
 const healthConfig = {
 	dataIndex: 'status',
 	label: '健康状态',
-	render: (val) => statusRender(val)
+	render: (val: string) => statusRender(val)
 };
 const createTimeConfig = {
 	dataIndex: 'createTime',
 	label: '创建时间',
-	render: (val) => transTime.gmt2local(val)
+	render: (val: string) => transTime.gmt2local(val)
 };
 const modelConfig = {
 	dataIndex: 'model',
@@ -172,7 +182,7 @@ const storageTypeConfig = {
 	dataIndex: 'storageType',
 	label: '存储类型'
 };
-function BasicInfo(props) {
+function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const {
 		type,
 		data,
@@ -184,12 +194,12 @@ function BasicInfo(props) {
 		toDetail
 	} = props;
 	const history = useHistory();
-	const params = useParams();
+	const params: DetailParams = useParams();
 	// * 密码显影
-	const [passwordDisplay, setPasswordDisplay] = useState(false);
+	const [passwordDisplay, setPasswordDisplay] = useState<boolean>(false);
 	// * 事件
-	const [eventType, setEventType] = useState('All');
-	const [kind, setKind] = useState('All');
+	const [eventType, setEventType] = useState<string>('All');
+	const [kind, setKind] = useState<string>('All');
 	// * 规格配置
 	const [basicData, setBasicData] = useState(info);
 	const [infoConfig, setInfoConfig] = useState(InfoConfig);
@@ -207,7 +217,7 @@ function BasicInfo(props) {
 	const [yamlConfig] = useState({
 		dataIndex: 'yaml',
 		label: 'yaml编辑',
-		render: (val) => (
+		render: (val: any) => (
 			<span
 				className="name-link"
 				onClick={() => {
@@ -226,10 +236,10 @@ function BasicInfo(props) {
 		versionConfig
 	]);
 	// * 动态表单相关
-	const [dynamicData, setDynamicData] = useState({
+	const [dynamicData, setDynamicData] = useState<DynamicDataParams>({
 		title: '其他'
 	});
-	const [dynamicConfig, setDynamicConfig] = useState([titleConfig]);
+	const [dynamicConfig, setDynamicConfig] = useState<any[]>([titleConfig]);
 	// * mq acl 认证相关
 	const [aclCheck, setACLCheck] = useState(false);
 	const [aclData, setAclData] = useState({
@@ -241,7 +251,7 @@ function BasicInfo(props) {
 	const disasterInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
 		label: '备份服务名称',
-		render: (val) => {
+		render: (val: string) => {
 			return (
 				<span
 					className="name-link"
@@ -268,7 +278,7 @@ function BasicInfo(props) {
 	const originInstanceConfig = {
 		dataIndex: 'disasterInstanceName',
 		label: '源服务名称',
-		render: (val) => {
+		render: (val: string) => {
 			return (
 				<span
 					className="name-link"
@@ -281,7 +291,7 @@ function BasicInfo(props) {
 			);
 		}
 	};
-	const aclSwitchChange = (checked) => {
+	const aclSwitchChange = (checked: boolean) => {
 		Dialog.show({
 			title: '提示',
 			content: checked
@@ -302,7 +312,7 @@ function BasicInfo(props) {
 							}
 						}
 					};
-					let res = await updateMiddleware(sendData);
+					const res = await updateMiddleware(sendData);
 					if (res.success) {
 						Message.show(
 							messageConfig(
@@ -324,7 +334,7 @@ function BasicInfo(props) {
 			}
 		});
 	};
-	const editDescription = (value) => {
+	const editDescription = (value: any) => {
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
@@ -347,7 +357,7 @@ function BasicInfo(props) {
 					onRefresh();
 				}, 5000);
 			} else {
-				Message.shoe(messageConfig('success', '失败', res));
+				Message.show(messageConfig('success', '失败', res));
 			}
 		});
 	};
@@ -446,7 +456,7 @@ function BasicInfo(props) {
 		if (data !== undefined && data.dynamicValues) {
 			const listConfig = [...dynamicConfig];
 			const listData = { ...dynamicData };
-			for (let index in data.dynamicValues) {
+			for (const index in data.dynamicValues) {
 				listConfig.push({
 					dataIndex: index,
 					label: index
@@ -511,13 +521,6 @@ function BasicInfo(props) {
 	useEffect(() => {
 		let infoConfigTemp = [...infoConfig];
 		const dataIndexList = infoConfigTemp.map((item) => item.dataIndex);
-		// if (customMid) {
-		// 	if (dataIndexList.includes('hostAffinity')) {
-		// 		infoConfigTemp = infoConfigTemp.filter(
-		// 			(item) => item.dataIndex !== 'hostAffinity'
-		// 		);
-		// 	}
-		// }
 		if (type === 'zookeeper') {
 			if (dataIndexList.includes('tolerations')) {
 				infoConfigTemp = infoConfigTemp.filter(
@@ -544,7 +547,7 @@ function BasicInfo(props) {
 			const descriptionTemp = {
 				dataIndex: 'description',
 				label: '备注',
-				render: (val) => {
+				render: (val: string) => {
 					return (
 						<div className="display-flex">
 							<div className="text-overflow-one" title={val}>
@@ -589,7 +592,7 @@ function BasicInfo(props) {
 	}, [props]);
 
 	const getEventsData = async () => {
-		let sendData = {
+		const sendData = {
 			clusterId,
 			namespace,
 			middlewareName,
@@ -597,7 +600,7 @@ function BasicInfo(props) {
 			kind: 'All'
 		};
 		if (kind) sendData.kind = kind === 'All' ? '' : kind;
-		let res = await getMiddlewareEvents(sendData);
+		const res = await getMiddlewareEvents(sendData);
 		if (res.success) {
 			setEventList(res.data);
 		}
@@ -606,7 +609,7 @@ function BasicInfo(props) {
 	const eventsConfig = [
 		{
 			dataIndex: 'title',
-			render: (val) => (
+			render: (val: string) => (
 				<div className="title-content">
 					<div className="blue-line"></div>
 					<div
@@ -660,7 +663,7 @@ function BasicInfo(props) {
 					{
 						dataIndex: 'password',
 						label: '密码',
-						render: (val) => {
+						render: (val: string) => {
 							return (
 								<div className="password-content">
 									<div className="password-display">
@@ -683,7 +686,7 @@ function BasicInfo(props) {
 					yamlConfig
 			  ]
 			: [...configConfig, yamlConfig];
-	const onCancel = (value) => {
+	const onCancel = (value: boolean) => {
 		setVisible(false);
 		if (value) {
 			setTimeout(() => {
@@ -770,7 +773,7 @@ function BasicInfo(props) {
 							</div>
 							{aclCheck &&
 								data?.rocketMQParam?.acl?.rocketMQAccountList.map(
-									(item) => {
+									(item: rocketMQAccount) => {
 										return (
 											<RocketAclUserInfo
 												key={item.accessKey}

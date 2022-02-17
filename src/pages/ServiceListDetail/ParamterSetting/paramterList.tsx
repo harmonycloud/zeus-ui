@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Page } from '@alicloud/console-components-page';
+import { Page, Content } from '@alicloud/console-components-page';
 import {
 	Button,
 	Table,
@@ -19,6 +19,12 @@ import BalloonForm from '@/components/BalloonForm';
 import ParamterTemplateForm from './paramterTemplateForm';
 import messageConfig from '@/components/messageConfig';
 import { getConfigs, updateConfig } from '@/services/middleware';
+import {
+	ParamterListProps,
+	ConfigItem,
+	DetailParams,
+	ConfigSendData
+} from '../detail';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -27,16 +33,18 @@ const formItemLayout = {
 	labelCol: { fixedSpan: 0 },
 	wrapperCol: { span: 24 }
 };
-export default function ParamterLIst(props) {
+export default function ParamterList(props: ParamterListProps): JSX.Element {
 	const { clusterId, namespace, middlewareName, type, onFreshChange } = props;
-	const [dataSource, setDataSource] = useState([]);
-	const [checkedDataSource, setCheckedDataSource] = useState([]);
-	const [originData, setOriginData] = useState([]);
-	const [checked, setChecked] = useState(false);
-	const [submitDisabled, setSubmitDisabled] = useState(true);
-	const [visible, setVisible] = useState(false);
-	const [searchText, setSearchText] = useState('');
-	const params = useParams();
+	const [dataSource, setDataSource] = useState<ConfigItem[]>([]);
+	const [checkedDataSource, setCheckedDataSource] = useState<ConfigItem[]>(
+		[]
+	);
+	const [originData, setOriginData] = useState<ConfigItem[]>([]);
+	const [checked, setChecked] = useState<boolean>(false);
+	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+	const [visible, setVisible] = useState<boolean>(false);
+	const [searchText, setSearchText] = useState<string>('');
+	const params: DetailParams = useParams();
 	useEffect(() => {
 		const list = dataSource.filter(
 			(item) => item.value != item.modifiedValue
@@ -55,7 +63,12 @@ export default function ParamterLIst(props) {
 		}
 	}, [namespace]);
 
-	const getData = (clusterId, namespace, middlewareName, type) => {
+	const getData = (
+		clusterId: string,
+		namespace: string,
+		middlewareName: string,
+		type: string
+	) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -66,7 +79,7 @@ export default function ParamterLIst(props) {
 			if (res.success) {
 				const list =
 					res.data &&
-					res.data.map((item) => {
+					res.data.map((item: ConfigItem) => {
 						item.modifiedValue = item.value || item.defaultValue;
 						item.value = item.value || item.defaultValue;
 						return item;
@@ -75,16 +88,19 @@ export default function ParamterLIst(props) {
 			}
 		});
 	};
-	const onSearch = (value) => {
-		console.log(value);
+	const onSearch = (value: string) => {
 		setSearchText(value);
 	};
 
-	const onChange = (checked) => {
+	const onChange = (checked: boolean) => {
 		setChecked(checked);
 	};
 
-	const isRestartRender = (value, index, record) => {
+	const isRestartRender = (
+		value: boolean,
+		index: number,
+		record: ConfigItem
+	) => {
 		return record.restart ? '是' : '否';
 	};
 
@@ -159,7 +175,7 @@ export default function ParamterLIst(props) {
 		}
 	};
 
-	const updateData = (data) => {
+	const updateData = (data: ConfigSendData) => {
 		updateConfig(data)
 			.then((res) => {
 				if (res.success) {
@@ -205,7 +221,7 @@ export default function ParamterLIst(props) {
 		return flag;
 	};
 
-	const updateValue = (value, record) => {
+	const updateValue = (value: any, record: ConfigItem) => {
 		let cValue = value[record.name];
 		if (record.paramType === 'multiSelect') {
 			cValue = value[record.name].join(',');
@@ -226,9 +242,9 @@ export default function ParamterLIst(props) {
 		setSubmitDisabled(judgeSubmit());
 	};
 
-	const selectTemplate = (values) => {
+	const selectTemplate = (values: ConfigItem[]) => {
 		const list = dataSource.map((item) => {
-			values.map((it) => {
+			values.map((it: ConfigItem) => {
 				if (item.name === it.name) {
 					item.modifiedValue = it.value;
 				}
@@ -239,7 +255,7 @@ export default function ParamterLIst(props) {
 		setSubmitDisabled(judgeSubmit());
 		setVisible(false);
 	};
-	const descriptionRender = (value, index, record) => {
+	const descriptionRender = (value: string) => {
 		return (
 			<Tooltip
 				trigger={
@@ -278,7 +294,12 @@ export default function ParamterLIst(props) {
 			</Tooltip>
 		);
 	};
-	const tooltipRender = (value, index, record, width) => {
+	const tooltipRender = (
+		value: string,
+		index: number,
+		record: ConfigItem,
+		width: number
+	) => {
 		const e1 = document.createElement('div');
 		e1.className = 'hidden';
 		e1.innerText = value;
@@ -313,10 +334,10 @@ export default function ParamterLIst(props) {
 		}
 	};
 
-	const valueRender = (value, index, record) => {
+	const valueRender = (value: string, index: number, record: ConfigItem) => {
 		const flag = record.value != record.modifiedValue;
-		let selectList = [];
-		let defaultSelects = [];
+		let selectList: string[] = [];
+		let defaultSelects: string[] = [];
 		if (
 			record.paramType === 'select' ||
 			record.paramType === 'multiSelect'
@@ -413,7 +434,7 @@ export default function ParamterLIst(props) {
 
 	return (
 		<Page>
-			<Page.Content style={{ padding: '0 0' }}>
+			<Content style={{ padding: '0 0' }}>
 				<HeaderLayout
 					style={{ marginBottom: 8 }}
 					left={
@@ -464,18 +485,22 @@ export default function ParamterLIst(props) {
 						title="参数名"
 						dataIndex="name"
 						width={210}
-						cell={(value, index, record) =>
-							tooltipRender(value, index, record, 210)
-						}
+						cell={(
+							value: string,
+							index: number,
+							record: ConfigItem
+						) => tooltipRender(value, index, record, 210)}
 						lock="left"
 					/>
 					<Table.Column
 						title="参数默认值"
 						dataIndex="defaultValue"
 						width={210}
-						cell={(value, index, record) =>
-							tooltipRender(value, index, record, 210)
-						}
+						cell={(
+							value: string,
+							index: number,
+							record: ConfigItem
+						) => tooltipRender(value, index, record, 210)}
 					/>
 					<Table.Column
 						title="修改目标值"
@@ -493,9 +518,11 @@ export default function ParamterLIst(props) {
 						title="参数值范围"
 						dataIndex="ranges"
 						width={350}
-						cell={(value, index, record) =>
-							tooltipRender(value, index, record, 350)
-						}
+						cell={(
+							value: string,
+							index: number,
+							record: ConfigItem
+						) => tooltipRender(value, index, record, 350)}
 					/>
 					<Table.Column
 						title="参数描述"
@@ -505,7 +532,7 @@ export default function ParamterLIst(props) {
 						width={200}
 					/>
 				</Table>
-			</Page.Content>
+			</Content>
 			{visible && (
 				<ParamterTemplateForm
 					visible={visible}

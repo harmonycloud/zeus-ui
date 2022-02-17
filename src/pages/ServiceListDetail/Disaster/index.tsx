@@ -52,7 +52,7 @@ interface disasterProps {
 	namespace: string;
 	onRefresh: (key?: string) => void;
 	toDetail: () => void;
-	getData: () => void;
+	getData?: () => void;
 }
 interface OriginProps {
 	cluster: string;
@@ -198,7 +198,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 							setTimeout(() => {
 								history.location.pathname ===
 								'/disasterBackup/disasterCenter'
-									? getData()
+									? getData && getData()
 									: onRefresh('disaster');
 							}, 1000);
 						}}

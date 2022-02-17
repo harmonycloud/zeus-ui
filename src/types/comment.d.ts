@@ -20,6 +20,12 @@ export interface filtersProps {
 	children?: filtersProps[];
 	[propsName: string]: any;
 }
+
+export interface NodeAffinityItem {
+	label: string;
+	namespace: null | number;
+	required: boolean;
+}
 export interface middlewareDetailProps {
 	aliasName: string;
 	annotations: string | null;
@@ -42,7 +48,8 @@ export interface middlewareDetailProps {
 	mysqlDTO: any;
 	name: string;
 	namespace: string;
-	nodeAffinity: any | null;
+	nodeAffinity: NodeAffinityItem[] | null;
+	tolerations: string[] | null;
 	password: string;
 	podNum: any | null;
 	pods: any | null;
@@ -56,6 +63,7 @@ export interface middlewareDetailProps {
 	type: string;
 	version: string;
 	official: boolean;
+	isAllLvmStorage: boolean;
 }
 
 export interface basicDataProps {
@@ -106,16 +114,16 @@ export interface resourceProps {
 }
 
 export interface ingressProps {
-	address: string;
-	ingressClassName: string | null;
+	address?: string;
+	ingressClassName?: string | null;
 	globalVar?: globalVarProps;
-    entry?: string;
-    type?: string;
-    middlewareName?: string;
-	name: string;
-	middlewareNickName: string;
-	namespace: string;	
-	tcp: {
+	entry?: string;
+	type?: string;
+	middlewareName?: string;
+	name?: string;
+	middlewareNickName?: string;
+	namespace?: string;
+	tcp?: {
 		enabled: boolean;
 		configMapName: string;
 		namespace: string;
@@ -124,14 +132,14 @@ export interface ingressProps {
 
 export interface ingressCreateProps {
 	selectedInstance: {
-        name: string;
-    };
-    selectedService: {
-        serviceName: string;
-        portDetailDtoList: any[];
-    };
-    errors: any[];
-    values: any;
+		name: string;
+	};
+	selectedService: {
+		serviceName: string;
+		portDetailDtoList: any[];
+	};
+	errors: any[];
+	values: any;
 }
 
 export interface registryProps {

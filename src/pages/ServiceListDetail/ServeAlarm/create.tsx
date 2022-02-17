@@ -26,34 +26,45 @@ import { getMailInfo, getDing } from '@/services/alrem';
 import storage from '@/utils/storage';
 import { symbols, alarmWarn, silences } from '@/utils/const';
 import './index.scss';
+import {
+	AlarmItem,
+	AlarmSendData,
+	LabelItem,
+	ServiceRuleItem
+} from '../detail';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
 const { Tooltip } = Balloon;
 
-function CreateAlarm(props) {
+function CreateAlarm(): JSX.Element {
 	const { clusterId, namespace, middlewareName, type, alarmType, record } =
 		storage.getSession('alarm');
-	const [alarms, setAlarms] = useState([
+	const [alarms, setAlarms] = useState<AlarmItem[]>([
 		{
 			alert: null,
 			description: null
 		}
 	]);
-	const [alarmRules, setAlarmRules] = useState([]);
+	const [alarmRules, setAlarmRules] = useState<ServiceRuleItem[]>([]);
 	const [poolList, setPoolList] = useState([]);
-	const [systemId, setSystemId] = useState();
+	const [systemId, setSystemId] = useState<string>('');
 	const [users, setUsers] = useState([]);
-	const [insertUser, setInsertUser] = useState();
+	const [insertUser, setInsertUser] = useState<any[]>([]);
 	const [selectUser, setSelectUser] = useState([]);
-	const [mailChecked, setMailChecked] = useState(false);
-	const [dingChecked, setDingChecked] = useState(false);
-	const [isRule, setIsRule] = useState();
-	const [dingDisabled, setDingDisabled] = useState(false);
-	const [mailDisabled, setMailDisabled] = useState(false);
-	const [isReady, setIsReady] = useState(false);
+	const [mailChecked, setMailChecked] = useState<boolean>(false);
+	const [dingChecked, setDingChecked] = useState<boolean>(false);
+	const [isRule, setIsRule] = useState<boolean>();
+	const [dingDisabled, setDingDisabled] = useState<boolean>(false);
+	const [mailDisabled, setMailDisabled] = useState<boolean>(false);
+	const [isReady, setIsReady] = useState<boolean>(false);
 
-	const getCanUse = (clusterId, namespace, middlewareName, type) => {
+	const getCanUse = (
+		clusterId: string,
+		namespace: string,
+		middlewareName: string,
+		type: string
+	) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -63,7 +74,7 @@ function CreateAlarm(props) {
 		getCanUseAlarms(sendData).then((res) => {
 			if (res.success) {
 				setAlarms(JSON.parse(JSON.stringify(res.data)));
-				setAlarmRules([{}]);
+				setAlarmRules([]);
 				if (res.data.length < 0) {
 					Message.show(
 						messageConfig(
@@ -77,22 +88,24 @@ function CreateAlarm(props) {
 		});
 	};
 
-	const onChange = (value, record, type) => {
+	const onChange = (value: string, record: ServiceRuleItem, type: string) => {
 		if (type === 'alert') {
 			const listTemp = alarms;
-			const filterItem = listTemp.filter((item) => item.alert === value);
-			const list = alarmRules.map((item) => {
+			const filterItem: AlarmItem[] = listTemp.filter(
+				(item) => item.alert === value
+			);
+			const list = alarmRules.map((item: ServiceRuleItem) => {
 				if (item.id === record.id) {
 					item.alert = value;
 					item.annotations = filterItem[0].annotations;
-					item.description = filterItem[0].description;
-					item.expr = filterItem[0].expr;
-					item.labels = filterItem[0].labels;
-					item.name = filterItem[0].name;
-					item.status = filterItem[0].status;
-					item.time = filterItem[0].time;
-					item.type = filterItem[0].type;
-					item.unit = filterItem[0].unit;
+					item.description = filterItem[0].description as string;
+					item.expr = filterItem[0].expr as string;
+					item.labels = filterItem[0].labels as LabelItem;
+					item.name = filterItem[0].name as string;
+					item.status = filterItem[0].status as string;
+					item.time = filterItem[0].time as string;
+					item.type = filterItem[0].type as string;
+					item.unit = filterItem[0].unit as string;
 					return item;
 				} else {
 					return item;
@@ -151,7 +164,7 @@ function CreateAlarm(props) {
 	const addAlarm = () => {
 		setAlarmRules([...alarmRules, { id: Math.random() * 100 }]);
 	};
-	const copyAlarm = (index) => {
+	const copyAlarm = (index: number) => {
 		if (alarms && alarms.length > 0) {
 			const addItem = alarmRules[index];
 			setAlarmRules([
@@ -165,7 +178,7 @@ function CreateAlarm(props) {
 			]);
 		}
 	};
-	const delAlarm = (i) => {
+	const delAlarm = (i: number) => {
 		const list = alarmRules.filter((item) => item.id !== i);
 		setAlarmRules(list);
 	};
@@ -214,33 +227,33 @@ function CreateAlarm(props) {
 		});
 	}, []);
 
-	const handleChange = (value, data, extra) => {
+	const handleChange = (value: any, data: any, extra: any) => {
 		setInsertUser(data);
 	};
 
-	const getUserList = (sendData) => {
+	const getUserList = (sendData?: any) => {
 		getUsers(sendData).then((res) => {
 			if (!res.data) return;
-			const user = [];
+			const user: any[] = [];
 			res.data.userBy &&
 				res.data.userBy.length &&
-				res.data.userBy.find((item) => item.email) &&
+				res.data.userBy.find((item: any) => item.email) &&
 				setSelectUser(
 					res.data.userBy
-						.filter((item) => item.email)
-						.map((item) => item.id)
+						.filter((item: any) => item.email)
+						.map((item: any) => item.id)
 				);
 			res.data.userBy &&
 				res.data.userBy.length &&
-				res.data.users.map((item) => {
-					res.data.userBy.map((arr) => {
+				res.data.users.map((item: any) => {
+					res.data.userBy.map((arr: any) => {
 						arr.email && item.id === arr.id && user.push(item);
 					});
 				});
 			setIsReady(true);
 			setInsertUser(user);
 			setUsers(
-				res.data.users.map((item, index) => {
+				res.data.users.map((item: any) => {
 					return {
 						...item,
 						value: item.id,
@@ -258,7 +271,7 @@ function CreateAlarm(props) {
 		});
 	};
 
-	const transferRender = (item) => {
+	const transferRender = (item: any) => {
 		return item.email ? (
 			<span
 				key={item.id}
@@ -334,9 +347,9 @@ function CreateAlarm(props) {
 		};
 	}, []);
 
-	const onCreate = (value) => {
+	const onCreate = (value: any) => {
 		if (alarmType === 'system') {
-			const sendData = {
+			const sendData: AlarmSendData = {
 				url: {
 					clusterId: systemId
 				},
@@ -377,7 +390,7 @@ function CreateAlarm(props) {
 				});
 			}
 		} else {
-			const sendData = {
+			const sendData: AlarmSendData = {
 				url: {
 					clusterId: clusterId,
 					middlewareName: middlewareName,
@@ -453,7 +466,7 @@ function CreateAlarm(props) {
 					};
 				} else {
 					item.annotations = {
-						message: item.content
+						message: item.content as string
 					};
 				}
 				item.lay = 'system';
@@ -488,7 +501,10 @@ function CreateAlarm(props) {
 			}
 		} else {
 			const list = alarmRules.map((item) => {
-				item.labels = { ...item.labels, severity: item.severity };
+				item.labels = {
+					...item.labels,
+					severity: item.severity as string
+				};
 				item.lay = 'service';
 				record ? (item.enable = record.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
@@ -560,7 +576,7 @@ function CreateAlarm(props) {
 							disabled={record}
 						>
 							{poolList.length &&
-								poolList.map((item) => {
+								poolList.map((item: any) => {
 									return (
 										<Select.Option
 											value={item.id}
@@ -734,11 +750,11 @@ function CreateAlarm(props) {
 												style={{ width: '25%' }}
 												value={item.alertTime}
 												state={
-													(Number(item.alertTime) >
+													Number(item.alertTime) >
 														1440 ||
-														Number(item.alertTime) <
-															1) &&
-													'error'
+													Number(item.alertTime) < 1
+														? 'error'
+														: 'warning'
 												}
 												onChange={(value) => {
 													onChange(
@@ -755,12 +771,11 @@ function CreateAlarm(props) {
 												style={{ width: '25%' }}
 												value={item.alertTimes}
 												state={
-													(Number(item.alertTimes) >
-														1000 ||
-														Number(
-															item.alertTimes
-														) < 1) &&
-													'error'
+													Number(item.alertTime) >
+														1440 ||
+													Number(item.alertTime) < 1
+														? 'error'
+														: 'warning'
 												}
 												onChange={(value) => {
 													onChange(
@@ -860,7 +875,9 @@ function CreateAlarm(props) {
 											{index !== 0 && (
 												<Button
 													onClick={() =>
-														delAlarm(item.id)
+														delAlarm(
+															item.id as number
+														)
 													}
 												>
 													<Icon
@@ -1009,7 +1026,6 @@ function CreateAlarm(props) {
 					<Button
 						onClick={() => {
 							window.history.back();
-							// storage.setLocal('backKey', 'alarm');
 							storage.setLocal('systemTab', 'alarm');
 						}}
 					>

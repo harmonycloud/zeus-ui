@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog, Form, Field, Select } from '@alicloud/console-components';
-import { useHistory } from 'react-router';
+import { valuesProps, consoleProps } from '../detail';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -12,20 +12,7 @@ const formItemLayout = {
 		span: 18
 	}
 };
-interface consoleProps {
-	visible: boolean;
-	onCancel: () => void;
-	containers: string[];
-	data: {
-		clusterId: string;
-		namespace: string;
-		podName: string;
-	};
-}
-interface valuesProps {
-	container: string;
-	scriptType: string;
-}
+
 export default function Console(props: consoleProps): JSX.Element {
 	const { visible, onCancel, containers, data } = props;
 	const field = Field.useField();

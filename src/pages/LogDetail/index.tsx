@@ -53,11 +53,11 @@ export default function LogDetail(): JSX.Element {
 		>
 			{isService && data && JSON.stringify(data) !== '{}' && (
 				<Log
-					type={basicData?.type}
+					type={basicData?.type as string}
 					data={data}
-					middlewareName={basicData?.name}
-					clusterId={basicData?.clusterId}
-					namespace={basicData?.namespace}
+					middlewareName={basicData?.name as string}
+					clusterId={basicData?.clusterId as string}
+					namespace={basicData?.namespace as string}
 					customMid={data?.dynamicValues !== null}
 					capabilities={data?.capabilities || []}
 					logging={basicData?.logging}

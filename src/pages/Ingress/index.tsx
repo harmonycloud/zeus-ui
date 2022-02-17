@@ -36,9 +36,12 @@ function IngressList(props: ingressProps) {
 	const [active, setActive] = useState<boolean>(false); // 抽屉显示
 	const [iconVisible, setIconVisible] = useState<boolean>(false);
 	const [adress, setAdress] = useState<string>('');
-	const [lock, setLock] = useState<{lock: string} | null>({ lock: 'right' });
-	const [instanceTypeFilter, setInstanceTypeFilter] = useState<filtersProps[]>();
-	const [exposedWayFilter, setExposedWayFilter] = useState<filtersProps[]> ();
+	const [lock, setLock] = useState<{ lock: string } | null>({
+		lock: 'right'
+	});
+	const [instanceTypeFilter, setInstanceTypeFilter] =
+		useState<filtersProps[]>();
+	const [exposedWayFilter, setExposedWayFilter] = useState<filtersProps[]>();
 
 	useEffect(() => {
 		window.onresize = function () {
@@ -46,11 +49,11 @@ function IngressList(props: ingressProps) {
 				? setLock(null)
 				: setLock({ lock: 'right' });
 		};
-		if(entry === 'detail'){
+		if (entry === 'detail') {
 			setInstanceTypeFilter(instanceType);
 			setExposedWayFilter(exposedWay);
 		}
-	},[])
+	}, []);
 
 	useEffect(() => {
 		if (
@@ -68,7 +71,11 @@ function IngressList(props: ingressProps) {
 		}
 	}, [globalVar]);
 
-	const getData = (clusterId: string, namespace: string, keyword = searchText) => {
+	const getData = (
+		clusterId: string,
+		namespace: string,
+		keyword = searchText
+	) => {
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
@@ -81,7 +88,12 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
-	const getIngressByMid = (clusterId: string, namespace: string, type: string, middlewareName: string) => {
+	const getIngressByMid = (
+		clusterId: string,
+		namespace: string,
+		type: string,
+		middlewareName: string
+	) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -189,7 +201,7 @@ function IngressList(props: ingressProps) {
 	// * 浏览器复制到剪切板方法
 	const copyValue = (value: string, record: ingressProps) => {
 		const input = document.createElement('input');
-		setAdress(record.name);
+		setAdress(record.name as string);
 		setIconVisible(true);
 		document.body.appendChild(input);
 		input.style.position = 'absolute';
@@ -240,51 +252,53 @@ function IngressList(props: ingressProps) {
 				<div className="ingress-balloon-content">
 					<div className="ingress-balloon-list-content">
 						{record.serviceList &&
-							record.serviceList.map((item: any, index: number) => {
-								const address = `${record.exposeIP}:${item.exposePort}`;
-								if (index > 1) {
-									return null;
-								}
-								return (
-									<div key={index}>
-										<Balloon
-											trigger={
-												<CustomIcon
-													type="icon-fuzhi"
-													size="xs"
+							record.serviceList.map(
+								(item: any, index: number) => {
+									const address = `${record.exposeIP}:${item.exposePort}`;
+									if (index > 1) {
+										return null;
+									}
+									return (
+										<div key={index}>
+											<Balloon
+												trigger={
+													<CustomIcon
+														type="icon-fuzhi"
+														size="xs"
+														style={{
+															color: '#0070CC',
+															cursor: 'pointer'
+														}}
+														onClick={() =>
+															copyValue(
+																address,
+																record
+															)
+														}
+													/>
+												}
+												triggerType={'click'}
+												closable={false}
+												visible={
+													iconVisible &&
+													adress === record.name
+												}
+											>
+												<Icon
+													type={'success'}
 													style={{
-														color: '#0070CC',
-														cursor: 'pointer'
+														color: '#00A700',
+														marginRight: '5px'
 													}}
-													onClick={() =>
-														copyValue(
-															address,
-															record
-														)
-													}
+													size={'xs'}
 												/>
-											}
-											triggerType={'click'}
-											closable={false}
-											visible={
-												iconVisible &&
-												adress === record.name
-											}
-										>
-											<Icon
-												type={'success'}
-												style={{
-													color: '#00A700',
-													marginRight: '5px'
-												}}
-												size={'xs'}
-											/>
-											复制成功
-										</Balloon>
-										{address}
-									</div>
-								);
-							})}
+												复制成功
+											</Balloon>
+											{address}
+										</div>
+									);
+								}
+							)}
 					</div>
 					{record.serviceList.length > 2 && (
 						<Balloon
@@ -295,48 +309,53 @@ function IngressList(props: ingressProps) {
 							}
 							closable={false}
 						>
-							{record.serviceList.map((item: any, index: number) => {
-								const address = `${record.exposeIP}:${item.exposePort}`;
-								return (
-									<div key={index} className="balloon-tips">
-										<Balloon
-											trigger={
-												<CustomIcon
-													type="icon-fuzhi"
-													size="xs"
-													style={{
-														color: '#0070CC',
-														cursor: 'pointer'
-													}}
-													onClick={() =>
-														copyValue(
-															address,
-															record
-														)
-													}
-												/>
-											}
-											triggerType={'click'}
-											closable={false}
-											visible={
-												iconVisible &&
-												adress === record.name
-											}
+							{record.serviceList.map(
+								(item: any, index: number) => {
+									const address = `${record.exposeIP}:${item.exposePort}`;
+									return (
+										<div
+											key={index}
+											className="balloon-tips"
 										>
-											<Icon
-												type={'success'}
-												style={{
-													color: '#00A700',
-													marginRight: '5px'
-												}}
-												size={'xs'}
-											/>
-											复制成功
-										</Balloon>
-										{address}
-									</div>
-								);
-							})}
+											<Balloon
+												trigger={
+													<CustomIcon
+														type="icon-fuzhi"
+														size="xs"
+														style={{
+															color: '#0070CC',
+															cursor: 'pointer'
+														}}
+														onClick={() =>
+															copyValue(
+																address,
+																record
+															)
+														}
+													/>
+												}
+												triggerType={'click'}
+												closable={false}
+												visible={
+													iconVisible &&
+													adress === record.name
+												}
+											>
+												<Icon
+													type={'success'}
+													style={{
+														color: '#00A700',
+														marginRight: '5px'
+													}}
+													size={'xs'}
+												/>
+												复制成功
+											</Balloon>
+											{address}
+										</div>
+									);
+								}
+							)}
 						</Balloon>
 					)}
 				</div>
@@ -416,9 +435,7 @@ function IngressList(props: ingressProps) {
 
 	return (
 		<Page>
-			{entry !== 'detail' ? (
-				<Header title="对外路由"></Header>
-			) : null}
+			{entry !== 'detail' ? <Header title="对外路由"></Header> : null}
 			<Content
 				style={entry !== 'detail' ? {} : { padding: '0 0', margin: 0 }}
 			>

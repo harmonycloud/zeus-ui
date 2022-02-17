@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Page } from '@alicloud/console-components-page';
+import { Page, Header, Content } from '@alicloud/console-components-page';
 import {
 	Button,
 	Dialog,
@@ -31,6 +31,9 @@ import {
 import storage from '@/utils/storage';
 
 import './detail.scss';
+import { DetailParams, InstanceDetailsProps } from './detail';
+import { middlewareDetailProps, monitorProps } from '@/types/comment';
+import { StoreState } from '@/types';
 
 /*
  * 自定义中间tab页显示判断 后端
@@ -44,36 +47,27 @@ import './detail.scss';
  * 阈值告警  alert
  * 灾备服务  disaster(目前mysql中间件特有)
  */
-const { Menu } = Page;
-const InstanceDetails = (props) => {
-	const {
-		globalVar,
-		match: {
-			params: {
-				middlewareName,
-				type,
-				chartVersion,
-				currentTab,
-				name,
-				aliasName
-			}
-		},
-		setCluster,
-		setNamespace,
-		setRefreshCluster
-	} = props;
+
+const InstanceDetails = (props: InstanceDetailsProps) => {
+	const { globalVar, setCluster, setNamespace, setRefreshCluster } = props;
 	const {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = globalVar;
-	const [data, setData] = useState();
-	const [status, setStatus] = useState();
-	const [customMid, setCustomMid] = useState(false); // * 判断是否是自定义中间件
-	const [visible, setVisible] = useState(false);
-	const [waringVisible, setWaringVisible] = useState(true);
-	const [reason, setReason] = useState('');
 	const history = useHistory();
-	const [activeKey, setActiveKey] = useState(currentTab || 'basicInfo');
+	const params: DetailParams = useParams();
+	const { middlewareName, type, chartVersion, currentTab, name, aliasName } =
+		params;
+
+	const [data, setData] = useState<middlewareDetailProps>();
+	const [status, setStatus] = useState<string>('');
+	const [customMid, setCustomMid] = useState<boolean>(false); // * 判断是否是自定义中间件
+	const [visible, setVisible] = useState<boolean>(false);
+	const [waringVisible, setWaringVisible] = useState<boolean>(true);
+	const [reason, setReason] = useState<string>('');
+	const [activeKey, setActiveKey] = useState<string>(
+		currentTab || 'basicInfo'
+	);
 
 	useEffect(() => {
 		if (
@@ -88,7 +82,7 @@ const InstanceDetails = (props) => {
 		setActiveKey(currentTab);
 	}, []);
 
-	const getData = (clusterId, namespace) => {
+	const getData = (clusterId: string, namespace: string) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -116,123 +110,124 @@ const InstanceDetails = (props) => {
 		setActiveKey(key);
 	};
 
-	const childrenRender = (key) => {
-		switch (key) {
-			case 'basicInfo':
-				return (
-					<BasicInfo
-						middlewareName={middlewareName}
-						type={type}
-						data={data}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						chartName={type}
-						chartVersion={chartVersion}
-						customMid={customMid}
-						onRefresh={refresh}
-						toDetail={toDetail}
-					/>
-				);
-			case 'highAvailability':
-				return (
-					<HighAvailability
-						type={type}
-						data={data}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						chartName={type}
-						chartVersion={chartVersion}
-						onRefresh={refresh}
-						customMid={customMid}
-					/>
-				);
-			case 'backupRecovery':
-				return (
-					<BackupRecovery
-						type={type}
-						data={data}
-						storage={globalVar.cluster.storage}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						customMid={customMid}
-						capabilities={(data && data.capabilities) || []}
-					/>
-				);
-			case 'externalAccess':
-				return (
-					<ExternalAccess
-						type={type}
-						middlewareName={middlewareName}
-						customMid={customMid}
-						capabilities={(data && data.capabilities) || []}
-					/>
-				);
-			case 'monitor':
-				return (
-					<Monitor
-						type={type}
-						middlewareName={middlewareName}
-						monitor={globalVar.cluster.monitor}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						customMid={customMid}
-						chartVersion={chartVersion}
-						capabilities={(data && data.capabilities) || []}
-					/>
-				);
-			case 'log':
-				return (
-					<Log
-						type={type}
-						data={data}
-						middlewareName={middlewareName}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						customMid={customMid}
-						logging={globalVar.cluster.logging}
-					/>
-				);
-			case 'paramterSetting':
-				return (
-					<ParamterSetting
-						middlewareName={middlewareName}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						type={type}
-						customMid={customMid}
-						capabilities={(data && data.capabilities) || []}
-					/>
-				);
-			case 'alarm':
-				return (
-					<ServerAlarm
-						middlewareName={middlewareName}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						type={type}
-						customMid={customMid}
-						capabilities={(data && data.capabilities) || []}
-						monitor={globalVar.cluster.monitor}
-						alarmType={'service'}
-					/>
-				);
-			case 'disaster':
-				return (
-					<Disaster
-						chartName={type}
-						chartVersion={chartVersion}
-						middlewareName={middlewareName}
-						clusterId={globalVar.cluster.id}
-						namespace={globalVar.namespace.name}
-						data={data}
-						onRefresh={refresh}
-						toDetail={toDetail}
-					/>
-				);
+	const childrenRender = (key: string) => {
+		if (data) {
+			switch (key) {
+				case 'basicInfo':
+					return (
+						<BasicInfo
+							middlewareName={middlewareName}
+							type={type}
+							data={data}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							customMid={customMid}
+							onRefresh={refresh}
+							toDetail={toDetail}
+						/>
+					);
+				case 'highAvailability':
+					return (
+						<HighAvailability
+							type={type}
+							data={data}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							chartName={type}
+							chartVersion={chartVersion}
+							onRefresh={refresh}
+							customMid={customMid}
+						/>
+					);
+				case 'backupRecovery':
+					return (
+						<BackupRecovery
+							type={type}
+							data={data}
+							storage={globalVar.cluster.storage}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							customMid={customMid}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					);
+				case 'externalAccess':
+					return (
+						<ExternalAccess
+							type={type}
+							middlewareName={middlewareName}
+							customMid={customMid}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					);
+				case 'monitor':
+					return (
+						<Monitor
+							type={type}
+							middlewareName={middlewareName}
+							monitor={globalVar.cluster.monitor}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							customMid={customMid}
+							chartVersion={chartVersion}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					);
+				case 'log':
+					return (
+						<Log
+							type={type}
+							data={data}
+							middlewareName={middlewareName}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							customMid={customMid}
+							logging={globalVar.cluster.logging}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					);
+				case 'paramterSetting':
+					return (
+						<ParamterSetting
+							middlewareName={middlewareName}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							type={type}
+							customMid={customMid}
+							capabilities={(data && data.capabilities) || []}
+						/>
+					);
+				case 'alarm':
+					return (
+						<ServerAlarm
+							middlewareName={middlewareName}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							type={type}
+							customMid={customMid}
+							capabilities={(data && data.capabilities) || []}
+							monitor={globalVar.cluster.monitor as monitorProps}
+							alarmType={'service'}
+						/>
+					);
+				case 'disaster':
+					return (
+						<Disaster
+							chartName={type}
+							chartVersion={chartVersion}
+							middlewareName={middlewareName}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							data={data}
+							onRefresh={refresh}
+							toDetail={toDetail}
+						/>
+					);
+			}
 		}
 	};
 
-	const statusRender = (value) => {
+	const statusRender = (value: string) => {
 		switch (value) {
 			case 'Running':
 				return '运行正常';
@@ -246,20 +241,20 @@ const InstanceDetails = (props) => {
 	};
 	const unAcrossCluster = () => {
 		const cs = globalClusterList.filter(
-			(item) => item.id === data.mysqlDTO.relationClusterId
+			(item) => item.id === data?.mysqlDTO.relationClusterId
 		);
 		setCluster(cs[0]);
 		storage.setLocal('cluster', JSON.stringify(cs[0]));
 		const ns = globalNamespaceList.filter(
-			(item) => item.name === data.mysqlDTO.relationNamespace
+			(item) => item.name === data?.mysqlDTO.relationNamespace
 		);
 		setNamespace(ns[0]);
 		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
 			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
-				data.mysqlDTO.relationName
-			}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
+				data?.mysqlDTO.relationName
+			}/${data?.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 			state: {
 				flag: true
 			}
@@ -267,7 +262,7 @@ const InstanceDetails = (props) => {
 	};
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
-			(item) => item.id === data.mysqlDTO.relationClusterId
+			(item) => item.id === data?.mysqlDTO.relationClusterId
 		);
 		setCluster(cs[0]);
 		storage.setLocal('cluster', JSON.stringify(cs[0]));
@@ -278,15 +273,16 @@ const InstanceDetails = (props) => {
 			if (res.success) {
 				if (res.data.length > 0) {
 					const ns = res.data.filter(
-						(item) => item.name === data.mysqlDTO.relationNamespace
+						(item: any) =>
+							item.name === data?.mysqlDTO.relationNamespace
 					);
 					setNamespace(ns[0]);
 					storage.setLocal('namespace', JSON.stringify(ns[0]));
 					setRefreshCluster(true);
 					history.push({
 						pathname: `/serviceList${name}/${aliasName}/basicInfo/${
-							data.mysqlDTO.relationName
-						}/${data.mysqlDTO.type || 'mysql'}/${chartVersion}`,
+							data?.mysqlDTO.relationName
+						}/${data?.mysqlDTO.type || 'mysql'}/${chartVersion}`,
 						state: {
 							flag: true
 						}
@@ -295,7 +291,10 @@ const InstanceDetails = (props) => {
 			}
 		});
 	};
-	const SecondConfirm = (props) => {
+	const SecondConfirm = (props: {
+		visible: boolean;
+		onCancel: () => void;
+	}) => {
 		const { visible, onCancel } = props;
 		const onOk = () => {
 			storage.setLocal('firstAlert', 1);
@@ -327,7 +326,7 @@ const InstanceDetails = (props) => {
 		);
 	};
 	const toDetail = () => {
-		if (!data.mysqlDTO.relationExist) {
+		if (!data?.mysqlDTO.relationExist) {
 			Message.show(
 				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
 			);
@@ -348,8 +347,8 @@ const InstanceDetails = (props) => {
 		}
 	};
 
-	const onChange = (key) => {
-		setActiveKey(key);
+	const onChange = (key: string | number) => {
+		setActiveKey(key as string);
 		storage.removeSession('paramsTab');
 		history.push(
 			`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
@@ -364,14 +363,14 @@ const InstanceDetails = (props) => {
 
 	return (
 		<Page>
-			<Page.Header
+			<Header
 				title={
 					<h1>{`${type}:${middlewareName}(${
 						statusRender(status) || ''
 					})`}</h1>
 				}
 				hasBackArrow
-				renderBackArrow={(elem) => (
+				renderBackArrow={(elem: any) => (
 					<span
 						className="details-go-back"
 						onClick={() =>
@@ -403,7 +402,7 @@ const InstanceDetails = (props) => {
 						返回源服务
 					</Button>
 				) : null}
-			</Page.Header>
+			</Header>
 			{waringVisible && reason && status !== 'Running' && (
 				<div className="warning-info">
 					<Icon
@@ -420,7 +419,7 @@ const InstanceDetails = (props) => {
 					/>
 				</div>
 			)}
-			<Page.Content>
+			<Content>
 				<Tab
 					navStyle={{ marginBottom: '15px' }}
 					activeKey={activeKey}
@@ -458,7 +457,7 @@ const InstanceDetails = (props) => {
 						</Tab.Item>
 					) : null}
 				</Tab>
-			</Page.Content>
+			</Content>
 			<SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}
@@ -466,13 +465,11 @@ const InstanceDetails = (props) => {
 		</Page>
 	);
 };
-export default connect(
-	({ globalVar }) => ({
-		globalVar
-	}),
-	{
-		setCluster,
-		setNamespace,
-		setRefreshCluster
-	}
-)(InstanceDetails);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {
+	setCluster,
+	setNamespace,
+	setRefreshCluster
+})(InstanceDetails);

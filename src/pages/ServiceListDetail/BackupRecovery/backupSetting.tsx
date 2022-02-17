@@ -23,6 +23,8 @@ import { getPods } from '@/services/middleware';
 import { useHistory } from 'react-router';
 import { Button } from '@alifd/next';
 import { list } from '@/utils/const';
+import { StoreState } from '@/types';
+import { BackupRuleSendData, PodSendData } from '../detail';
 
 const formItemLayout = {
 	labelCol: {
@@ -33,7 +35,7 @@ const formItemLayout = {
 	}
 };
 const { Group: CheckboxGroup } = Checkbox;
-function BackupSetting(props) {
+function BackupSetting(): JSX.Element {
 	const field = Field.useField();
 	const {
 		clusterId,
@@ -45,20 +47,11 @@ function BackupSetting(props) {
 		selectObj,
 		dataSecurity
 	} = storage.getSession('detail');
-	const [topoData, setTopoData] = useState();
-	const [backupData, setBackupData] = useState({
-		configed: false,
-		limitRecord: 0,
-		cycle: '',
-		time: '',
-		nextBackupTime: '',
-		pause: 'on',
-		canPause: true
-	});
 	const history = useHistory();
+	const [topoData, setTopoData] = useState();
 	const [backupObj, setBackupObj] = useState();
-	const [checks, setChecks] = useState();
-	const [allChecked, setAllChecked] = useState();
+	const [checks, setChecks] = useState<number[]>();
+	const [allChecked, setAllChecked] = useState<boolean>();
 
 	const onOk = () => {
 		field.validate((error, values) => {
@@ -80,13 +73,13 @@ function BackupSetting(props) {
 				record.cron
 					.split(' ? ? ')[1]
 					.split(',')
-					.map((item) => Number(item))
+					.map((item: string) => Number(item))
 			);
 		record &&
 			record.cron
 				.split(' ? ? ')[1]
 				.split(',')
-				.map((item) => Number(item))
+				.map((item: string) => Number(item))
 				.join(',') === '0,1,2,3,4,5,6' &&
 			setAllChecked(true);
 		record &&
@@ -95,12 +88,14 @@ function BackupSetting(props) {
 				cycle: record.cron
 					.split(' ? ? ')[1]
 					.split(',')
-					.map((item) => Number(item)),
+					.map((item: string) => Number(item)),
 				time: record.cron
 					.split(' ? ? ')[0]
 					.split(' ')
 					.reverse()
-					.map((item) => (item.length === 1 ? '0' + item : item))
+					.map((item: string) =>
+						item.length === 1 ? '0' + item : item
+					)
 					.join(':')
 			});
 		record && setBackupObj(selectObj);
@@ -113,7 +108,7 @@ function BackupSetting(props) {
 	}, []);
 
 	// * 获取pod列表
-	const getPodList = (sendData) => {
+	const getPodList = (sendData: PodSendData) => {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				setTopoData(res.data);
@@ -123,7 +118,7 @@ function BackupSetting(props) {
 		});
 	};
 
-	const onCreate = (values) => {
+	const onCreate = (values: any) => {
 		if (!backupObj) {
 			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
 			return;
@@ -133,7 +128,7 @@ function BackupSetting(props) {
 			const hour = moment(values.time).get('hour');
 			const week = values.cycle.join(',');
 			const cron = `${minute} ${hour} ? ? ${week}`;
-			const sendData = {
+			const sendData: BackupRuleSendData = {
 				clusterId,
 				namespace,
 				middlewareName: listData.name,
@@ -175,7 +170,7 @@ function BackupSetting(props) {
 				const hour = moment(values.time).get('hour');
 				const week = values.cycle.join(',');
 				const cron = `${minute} ${hour} ? ? ${week}`;
-				const sendData = {
+				const sendData: BackupRuleSendData = {
 					clusterId,
 					namespace,
 					backupScheduleName: record.backupScheduleName,
@@ -211,7 +206,7 @@ function BackupSetting(props) {
 					}
 				});
 			} else {
-				const sendData = {
+				const sendData: BackupRuleSendData = {
 					clusterId,
 					namespace,
 					backupName: backup.backupName,
@@ -222,7 +217,9 @@ function BackupSetting(props) {
 				if (backupObj !== 'serve') {
 					sendData.pod = backupObj;
 				} else {
-					sendData.pod = listData.pods.map((item) => item.podName);
+					sendData.pod = listData.pods.map(
+						(item: any) => item.podName
+					);
 				}
 				Dialog.show({
 					title: '操作确认',
@@ -300,7 +297,7 @@ function BackupSetting(props) {
 						serverData={listData}
 						topoData={topoData}
 						backupObj={backupObj}
-						setBackupObj={(value) => setBackupObj(value)}
+						setBackupObj={(value: any) => setBackupObj(value)}
 						isEdit={isEdit}
 						selectObj={selectObj}
 						backup={backup}
@@ -338,7 +335,7 @@ function BackupSetting(props) {
 								onChange={(value) => {
 									value
 										? setChecks([0, 1, 2, 3, 4, 5, 6])
-										: setChecks();
+										: setChecks([]);
 									setAllChecked(value);
 								}}
 								checked={allChecked}
@@ -347,10 +344,11 @@ function BackupSetting(props) {
 								name="cycle"
 								dataSource={list}
 								value={checks}
-								onChange={(value) => {
+								onChange={(value: any) => {
 									setChecks(value);
-									value.sort((a, b) => a - b).join(',') ===
-									'0,1,2,3,4,5,6'
+									value
+										.sort((a: number, b: number) => a - b)
+										.join(',') === '0,1,2,3,4,5,6'
 										? setAllChecked(true)
 										: setAllChecked(false);
 								}}
@@ -408,7 +406,6 @@ function BackupSetting(props) {
 						{listData.type === 'mysql' && (
 							<Button
 								onClick={() => {
-									// console.log(listData);
 									if (!backupObj) {
 										Message.show(
 											messageConfig(
@@ -472,4 +469,7 @@ function BackupSetting(props) {
 		</Page>
 	);
 }
-export default connect(({ globalVar }) => ({ globalVar }), {})(BackupSetting);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {})(BackupSetting);

@@ -1,7 +1,6 @@
-
 export interface addIngressProps {
 	globalVar?: globalVarProps;
-    active: boolean;
+	active: boolean;
 	entry: string;
 	onCreate: (value: ingressCreateProps) => void;
 	onCancel: () => void;
@@ -9,15 +8,15 @@ export interface addIngressProps {
 }
 
 export interface selectedInstanceProps {
-    name: string;
+	name: string;
 }
 
-export interface instanceProps{
-    name: string;
-    type: string;
+export interface instanceProps {
+	name: string;
+	type: string;
 }
 
-export interface servicesProps{
-    serviceName: string;
-    portDetailDtoList: any[];
+export interface servicesProps {
+	serviceName: string;
+	portDetailDtoList: any[];
 }

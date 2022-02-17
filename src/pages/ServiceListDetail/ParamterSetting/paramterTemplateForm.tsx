@@ -7,8 +7,8 @@ import {
 	Message
 } from '@alicloud/console-components';
 import { getParamsTemps, getParamsTemp } from '@/services/template';
-// import { getParamTemp, getParamDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import { ParamterTemplateFormProps, ParamterTemplateItem } from '../detail';
 
 const formItemLayout = {
 	labelCol: {
@@ -20,29 +20,22 @@ const formItemLayout = {
 };
 const FormItem = Form.Item;
 const { Option } = Select;
-
-// const templates = [
-// 	{ label: '系统默认', value: 'default' },
-// 	{ label: '模板1', value: 'template1' },
-// 	{ label: '模板2', value: 'template2' }
-// ];
-
-export default function ParamterTemplateForm(props) {
+export default function ParamterTemplateForm(
+	props: ParamterTemplateFormProps
+): JSX.Element {
 	const { visible, onCreate, onCancel, type, chartVersion } = props;
-	const [templates, setTemplates] = useState();
-	const [template, setTemplate] = useState();
+	const [templates, setTemplates] = useState<ParamterTemplateItem[]>([]);
 	const field = Field.useField();
 
 	useEffect(() => {
 		getData(type);
 	}, [type]);
 
-	const getData = (type) => {
+	const getData = (type: string) => {
 		const sendData = {
 			type
 		};
 		getParamsTemps(sendData).then((res) => {
-			// console.log(res);
 			if (res.success) {
 				if (res.data.length > 0) {
 					setTemplates(res.data);
@@ -53,26 +46,20 @@ export default function ParamterTemplateForm(props) {
 		});
 	};
 
-	const onChange = (value) => {
-		// console.log(value);
-		setTemplate(value);
-	};
-
 	const onOk = () => {
-		field.validate((err, values) => {
+		field.validate((err) => {
+			const values: { templateUid: string } = field.getValues();
 			if (err) return;
-			// console.log(values);
 			const current = templates.filter(
 				(item) => item.uid === values.templateUid
 			);
 			const sendData = {
 				type,
-				templateName: current.name,
+				templateName: current[0].name,
 				uid: values.templateUid,
 				chartVersion
 			};
 			getParamsTemp(sendData).then((res) => {
-				// console.log(res);
 				if (res.success) {
 					onCreate(res.data.customConfigList);
 				}

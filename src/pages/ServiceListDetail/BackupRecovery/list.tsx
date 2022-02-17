@@ -5,30 +5,22 @@ import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import { getBackups, addBackupConfig, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
-import UseBackupForm from './useBackupForm';
 import { useHistory } from 'react-router';
 import moment from 'moment';
+import { BackupRecordItem, ListProps } from '../detail';
 
 const { Tooltip } = Balloon;
 
-export default function List(props) {
-	const {
-		clusterId,
-		namespace,
-		data: listData,
-		storage,
-		dataSecurity
-	} = props;
-	const [backups, setBackups] = useState([]);
-	const [backupData, setBackupData] = useState();
-	const [useVisible, setUseVisible] = useState(false);
+export default function List(props: ListProps): JSX.Element {
+	const { clusterId, namespace, data: listData, storage } = props;
+	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
 	const history = useHistory();
 	useEffect(() => {
 		if (
 			clusterId !== undefined &&
 			namespace !== undefined &&
 			listData !== undefined &&
-			storage.backup
+			storage?.backup
 		) {
 			getData();
 		}
@@ -38,15 +30,15 @@ export default function List(props) {
 		const sendData = {
 			clusterId,
 			namespace,
-			middlewareName: listData.name,
-			type: listData.type
+			middlewareName: listData?.name || '',
+			type: listData?.type || ''
 		};
 		getBackups(sendData).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
 					setBackups(
 						res.data.sort(
-							(a, b) =>
+							(a: BackupRecordItem, b: BackupRecordItem) =>
 								moment(b['backupTime']).valueOf() -
 								moment(a['backupTime']).valueOf()
 						)
@@ -61,7 +53,7 @@ export default function List(props) {
 	};
 
 	const backupOnNow = () => {
-		if (listData.type === 'elasticsearch') {
+		if (listData?.type === 'elasticsearch') {
 			if (!listData.isAllLvmStorage) {
 				Message.show(
 					messageConfig(
@@ -73,7 +65,7 @@ export default function List(props) {
 				return;
 			}
 		} else {
-			if (listData.type === 'mysql' && !listData.isAllLvmStorage) {
+			if (listData?.type === 'mysql' && !listData.isAllLvmStorage) {
 				Message.show(
 					messageConfig(
 						'error',
@@ -91,8 +83,8 @@ export default function List(props) {
 				const sendData = {
 					clusterId,
 					namespace,
-					middlewareName: listData.name,
-					type: listData.type
+					middlewareName: listData?.name || '',
+					type: listData?.type || ''
 				};
 				addBackupConfig(sendData)
 					.then((res) => {
@@ -111,13 +103,11 @@ export default function List(props) {
 		});
 	};
 
-	const toHandle = (backupName, backupFileName) => {
-		setBackupData({ backupName, backupFileName });
-		setUseVisible(true);
-	};
-
-	// 克隆服务
-	const actionRender = (value, index, record) => {
+	const actionRender = (
+		value: any,
+		index: number,
+		record: BackupRecordItem
+	) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -147,11 +137,10 @@ export default function List(props) {
 									clusterId,
 									namespace,
 									backupName: record.backupName,
-									middlewareName: listData.name,
-									type: listData.type,
+									middlewareName: listData?.name || '',
+									type: listData?.type || '',
 									backupFileName: record.backupFileName
 								};
-								// console.log(sendData);
 								deleteBackups(sendData)
 									.then((res) => {
 										if (res.success) {
@@ -173,11 +162,7 @@ export default function List(props) {
 										}
 									})
 									.finally(() => {
-										getData(
-											clusterId,
-											namespace,
-											listData.name
-										);
+										getData();
 									});
 							}
 						});
@@ -196,7 +181,7 @@ export default function List(props) {
 			</Button>
 		)
 	};
-	const addressListRender = (value, index, record) => {
+	const addressListRender = (value: string[]) => {
 		if (value) {
 			return (
 				<Tooltip
@@ -226,10 +211,12 @@ export default function List(props) {
 		}
 	};
 
-	const onSort = (dataIndex, order) => {
+	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'backupTime') {
 			const tempDataSource = backups.sort((a, b) => {
-				const result = a['backupTime'] - b['backupTime'];
+				const result =
+					moment(a['backupTime']).valueOf() -
+					moment(b['backupTime']).valueOf();
 				return order === 'asc'
 					? result > 0
 						? 1
@@ -250,14 +237,18 @@ export default function List(props) {
 		}
 	};
 
-	const roleRender = (value, index, record) => {
+	const roleRender = (
+		value: string,
+		index: number,
+		record: BackupRecordItem
+	) => {
 		if (value === 'Cluster') {
 			return '服务';
 		} else {
 			if (record.podRole.includes('exporter')) {
 				return 'exporter';
 			} else {
-				if (listData.type === 'elasticsearch') {
+				if (listData?.type === 'elasticsearch') {
 					if (record.podRole.includes('kibana')) {
 						return 'kibana';
 					} else if (record.podRole.includes('client')) {
@@ -295,7 +286,11 @@ export default function List(props) {
 		}
 	};
 
-	const sourceNameRender = (value, index, record) => {
+	const sourceNameRender = (
+		value: string,
+		index: number,
+		record: BackupRecordItem
+	) => {
 		if (record.backupType !== 'Cluster') {
 			return value;
 		} else {
@@ -354,17 +349,6 @@ export default function List(props) {
 				/>
 				<Table.Column title="操作" cell={actionRender} width={120} />
 			</Table>
-			{useVisible && backupData.backupName !== '' && (
-				<UseBackupForm
-					visible={useVisible}
-					onCancel={() => setUseVisible(false)}
-					backupData={backupData}
-					clusterId={clusterId}
-					namespace={namespace}
-					middlewareName={listData.name}
-					type={listData.type}
-				/>
-			)}
 		</div>
 	);
 }

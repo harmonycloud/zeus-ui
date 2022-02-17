@@ -26,7 +26,9 @@ function isPromise(obj: any) {
 		typeof obj.then === 'function'
 	);
 }
-const fn = () => {};
+const fn = () => {
+	console.log(' ');
+};
 const BalloonForm = (props: balloonFormProps): JSX.Element => {
 	// formProps是表单的属性， restProps是气泡的属性
 	const {
@@ -46,7 +48,7 @@ const BalloonForm = (props: balloonFormProps): JSX.Element => {
 	const hasVisible = visible !== undefined;
 
 	useEffect(() => {
-		setBalloonVisible(visible);
+		setBalloonVisible(visible as boolean);
 	}, [visible]);
 
 	const handleCancel = () => {

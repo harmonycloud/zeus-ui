@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Page } from '@alicloud/console-components-page';
+import { Page, Content } from '@alicloud/console-components-page';
 import { DatePicker } from '@alicloud/console-components';
+import moment, { Moment } from 'moment';
+
 import Table from '@/components/MidTable';
 import { getConfigHistory } from '@/services/middleware';
-import moment from 'moment';
 import transTime from '@/utils/transTime';
+import {
+	ParamterHistoryProps,
+	ParamterHistoryItem,
+	ParamterHistorySendData
+} from '../detail';
 
 const { RangePicker } = DatePicker;
-export default function ParamterHistory(props) {
+export default function ParamterHistory(
+	props: ParamterHistoryProps
+): JSX.Element {
 	const { clusterId, namespace, middlewareName, type } = props;
-	const [dataSource, setDataSource] = useState([]);
-	const [searchText, setSearchText] = useState();
-	const [startTime, setStartTime] = useState();
-	const [endTime, setEndTime] = useState();
+	const [dataSource, setDataSource] = useState<ParamterHistoryItem[]>([]);
+	const [searchText, setSearchText] = useState<string>('');
+	const [startTime, setStartTime] = useState<string>();
+	const [endTime, setEndTime] = useState<string>();
 
 	useEffect(() => {
 		if (clusterId && namespace && middlewareName && type) {
@@ -21,16 +29,15 @@ export default function ParamterHistory(props) {
 	}, [namespace]);
 
 	const getData = (
-		clusterId,
-		namespace,
-		middlewareName,
-		type,
-		searchText,
-		startTime = null,
-		endTime = null
+		clusterId: string,
+		namespace: string,
+		middlewareName: string,
+		type: string,
+		searchText: string,
+		startTime: string | null = null,
+		endTime: string | null = null
 	) => {
-		// console.log(startTime, endTime);
-		const sendData = {
+		const sendData: ParamterHistorySendData = {
 			clusterId,
 			namespace,
 			middlewareName,
@@ -51,7 +58,7 @@ export default function ParamterHistory(props) {
 		});
 	};
 
-	const onOk = (val) => {
+	const onOk = (val: any[]) => {
 		setStartTime(val[0]);
 		setEndTime(val[1]);
 		const start = moment(val[0]).format('YYYY-MM-DDTHH:mm:ss[Z]');
@@ -70,10 +77,10 @@ export default function ParamterHistory(props) {
 	const Operation = {
 		primary: <RangePicker onOk={onOk} />
 	};
-	const handleChange = (value) => {
+	const handleChange = (value: string) => {
 		setSearchText(value);
 	};
-	const handleSearch = (value) => {
+	const handleSearch = (value: string) => {
 		getData(
 			clusterId,
 			namespace,
@@ -85,17 +92,17 @@ export default function ParamterHistory(props) {
 		);
 	};
 
-	const dateRender = (value) => {
+	const dateRender = (value: string) => {
 		return transTime.gmt2local(value);
 	};
 
-	const statusRender = (value) => {
+	const statusRender = (value: boolean) => {
 		return value ? '是' : '否';
 	};
 
 	return (
 		<Page>
-			<Page.Content style={{ padding: '0 0' }}>
+			<Content style={{ padding: '0 0' }}>
 				<Table
 					dataSource={dataSource}
 					exact
@@ -149,7 +156,7 @@ export default function ParamterHistory(props) {
 						cell={dateRender}
 					/>
 				</Table>
-			</Page.Content>
+			</Content>
 		</Page>
 	);
 }

@@ -20,8 +20,9 @@ import {
 	updateAlarm
 } from '@/services/middleware';
 import storage from '@/utils/storage';
+import { RuleProps, ServiceRuleItem } from '../detail';
 
-function Rules(props) {
+function Rules(props: RuleProps): JSX.Element {
 	const history = useHistory();
 	const {
 		middlewareName,
@@ -33,9 +34,9 @@ function Rules(props) {
 		monitor,
 		alarmType
 	} = props;
-	const [searchText, setSearchText] = useState('');
-	const [dataSource, setDataSource] = useState([]);
-	const [originData, setOriginData] = useState([]);
+	const [searchText, setSearchText] = useState<string>('');
+	const [dataSource, setDataSource] = useState<ServiceRuleItem[]>([]);
+	const [originData, setOriginData] = useState<ServiceRuleItem[]>([]);
 	const [poolList, setPoolList] = useState([]);
 	const objFilter = {
 		filters: alarmType === 'system' ? poolList : null,
@@ -46,7 +47,7 @@ function Rules(props) {
 		getData(clusterId, middlewareName, namespace, searchText);
 	};
 
-	const createTimeRender = (value) => {
+	const createTimeRender = (value: string) => {
 		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
@@ -62,14 +63,19 @@ function Rules(props) {
 		getClusters().then((res) => {
 			if (!res.data) return;
 			setPoolList(
-				res.data.map((item) => {
+				res.data.map((item: any) => {
 					return { label: item.id, value: item.id };
 				})
 			);
 		});
 	}, [props]);
 
-	const getData = (clusterId, middlewareName, namespace, keyword) => {
+	const getData = (
+		clusterId: string,
+		middlewareName: string,
+		namespace: string,
+		keyword: string
+	) => {
 		if (alarmType === 'system') {
 			const sendData = {
 				clusterId,
@@ -103,7 +109,7 @@ function Rules(props) {
 		}
 	};
 
-	const removeAlarm = (record) => {
+	const removeAlarm = (record: ServiceRuleItem) => {
 		if (alarmType === 'system') {
 			const sendData = {
 				clusterId,
@@ -153,7 +159,11 @@ function Rules(props) {
 		}
 	};
 
-	const actionRender = (value, index, record) => {
+	const actionRender = (
+		value: any,
+		index: number,
+		record: ServiceRuleItem
+	) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -187,30 +197,31 @@ function Rules(props) {
 		)
 	};
 
-	const ruleRender = (value, index, record) =>
+	const ruleRender = (value: any, index: number, record: ServiceRuleItem) =>
 		`${record.description}${record.symbol}${record.threshold}%且${
 			record.alertTime || ''
 		}分钟内触发${record.alertTimes || ''}次`;
 
-	const levelRender = (value, index, record) => {
+	const levelRender = (value: any) => {
+		const temp = alarmWarn.find((item) => item.value === value.severity);
 		return (
-			<span className={value && value.severity + ' level'}>
-				{value &&
-				alarmWarn.find((item) => item.value === value.severity)
-					? alarmWarn.find((item) => item.value === value.severity)
-							.label
-					: ''}
+			<span className={value?.severity + ' level'}>
+				{value && temp ? temp?.label : ''}
 			</span>
 		);
 	};
 
-	const nameRender = (value, index, record) => {
+	const nameRender = (value: any, index: number, record: ServiceRuleItem) => {
 		return alarmType === 'system'
-			? record.labels.clusterId
+			? record.labels?.clusterId
 			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
 	};
 
-	const enableRender = (value, index, record) => {
+	const enableRender = (
+		value: string,
+		index: number,
+		record: ServiceRuleItem
+	) => {
 		return (
 			<Switch
 				checked={Number(value) === 1}
@@ -218,7 +229,7 @@ function Rules(props) {
 					if (alarmType === 'system') {
 						const sendData = {
 							url: {
-								clusterId: record.labels.clusterId
+								clusterId: record.labels?.clusterId
 							},
 							alertRuleId: record.alertId,
 							ding: record.ding,
@@ -295,9 +306,9 @@ function Rules(props) {
 		);
 	};
 
-	const onFilter = (filterParams) => {
+	const onFilter = (filterParams: any) => {
 		if (filterParams.labels) {
-			let {
+			const {
 				labels: { selectedKeys }
 			} = filterParams;
 			if (selectedKeys.length === 0) {
@@ -305,12 +316,12 @@ function Rules(props) {
 			} else {
 				let tempData = null;
 				tempData = originData.filter((item) => {
-					return item.labels.severity === selectedKeys[0];
+					return item.labels?.severity === selectedKeys[0];
 				});
 				setDataSource(tempData);
 			}
 		} else if (filterParams.silence) {
-			let {
+			const {
 				silence: { selectedKeys }
 			} = filterParams;
 			if (selectedKeys.length === 0) {
@@ -318,13 +329,12 @@ function Rules(props) {
 			} else {
 				let tempData = null;
 				tempData = originData.filter((item) => {
-					// console.log(item, selectedKeys[0]);
 					return item.silence === selectedKeys[0];
 				});
 				setDataSource(tempData);
 			}
 		} else if (filterParams.name) {
-			let {
+			const {
 				name: { selectedKeys }
 			} = filterParams;
 			if (selectedKeys.length === 0) {
@@ -340,7 +350,7 @@ function Rules(props) {
 		}
 	};
 
-	const onSort = (dataIndex, order) => {
+	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
 			const dsTemp = dataSource.sort((a, b) => {
 				const result =
@@ -380,7 +390,7 @@ function Rules(props) {
 			search={{
 				placeholder: '请输入规则ID、告警规则、告警内容进行搜索',
 				onSearch: () => onRefresh(),
-				onChange: (value) => setSearchText(value),
+				onChange: (value: string) => setSearchText(value),
 				value: searchText
 			}}
 			searchStyle={{
@@ -391,12 +401,21 @@ function Rules(props) {
 			onFilter={onFilter}
 		>
 			<Table.Column title="规则ID" dataIndex="alertId" />
-			<Table.Column
-				{...objFilter}
-				cell={nameRender}
-				title="告警对象"
-				dataIndex="name"
-			/>
+			{alarmType === 'system' ? (
+				<Table.Column
+					filters={poolList}
+					filterMode="single"
+					cell={nameRender}
+					title="告警对象"
+					dataIndex="name"
+				/>
+			) : (
+				<Table.Column
+					cell={nameRender}
+					title="告警对象"
+					dataIndex="name"
+				/>
+			)}
 			<Table.Column
 				title="告警规则"
 				dataIndex="threshold"

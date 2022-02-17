@@ -5,7 +5,6 @@ import {
 	Switch,
 	Icon,
 	Balloon,
-	Grid,
 	Button
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
@@ -30,8 +29,16 @@ import {
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import transTime from '@/utils/transTime';
+import {
+	ConsoleDataProps,
+	ContainerItem,
+	HighProps,
+	PodItem,
+	PodSendData,
+	QuotaParams
+} from '../detail';
 
-export default function HighAvailability(props) {
+export default function HighAvailability(props: HighProps): JSX.Element {
 	const {
 		type,
 		data,
@@ -42,23 +49,25 @@ export default function HighAvailability(props) {
 		onRefresh,
 		customMid
 	} = props;
-	const [pods, setPods] = useState([]);
-	const [switchValue, setSwitchValue] = useState(true);
-	const [podVisible, setPodVisible] = useState(false);
-	const [containers, setContainers] = useState([]);
-	const [consoleData, setConsoleData] = useState();
+	const [pods, setPods] = useState<PodItem[]>([]);
+	const [switchValue, setSwitchValue] = useState<boolean>(true);
+	const [podVisible, setPodVisible] = useState<boolean>(false);
+	const [containers, setContainers] = useState<string[]>([]);
+	const [consoleData, setConsoleData] = useState<ConsoleDataProps>();
 	// * 其他默认中间件修改阶段规格
-	const [visible, setVisible] = useState(false);
+	const [visible, setVisible] = useState<boolean>(false);
 	// * es中间件修改节点规格
-	const [esVisible, setEsVisible] = useState(false);
+	const [esVisible, setEsVisible] = useState<boolean>(false);
 	// * 自定义中间件修改节点规格
-	const [customVisible, setCustomVisible] = useState(false);
-	const [quotaValue, setQuotaValue] = useState();
+	const [customVisible, setCustomVisible] = useState<boolean>(false);
+	const [quotaValue, setQuotaValue] = useState<QuotaParams>();
 	const [topoData, setTopoData] = useState();
-	const [lock, setLock] = useState({ lock: 'right' });
-	const [yamlVisible, setYamlVisible] = useState(false);
-	const [podData, setPodData] = useState();
-	const [dilatationVisible, setDilationVisible] = useState(false);
+	const [lock, setLock] = useState<{ lock: string } | null>({
+		lock: 'right'
+	});
+	const [yamlVisible, setYamlVisible] = useState<boolean>(false);
+	const [podData, setPodData] = useState<PodItem>();
+	const [dilatationVisible, setDilationVisible] = useState<boolean>(false);
 
 	useEffect(() => {
 		window.onresize = function () {
@@ -70,7 +79,7 @@ export default function HighAvailability(props) {
 
 	useEffect(() => {
 		if (data !== undefined) {
-			const sendData = {
+			const sendData: PodSendData = {
 				clusterId,
 				namespace,
 				middlewareName: data.name,
@@ -81,7 +90,7 @@ export default function HighAvailability(props) {
 		}
 	}, [data]);
 	// * 获取pod列表
-	const getPodList = (sendData) => {
+	const getPodList = (sendData: PodSendData) => {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				setPods(res.data.pods);
@@ -111,7 +120,7 @@ export default function HighAvailability(props) {
 	};
 
 	// * 重启节点
-	const reStart = (record) => {
+	const reStart = (record: PodItem) => {
 		if (data.status === 'Running') {
 			const sendData = {
 				clusterId,
@@ -161,8 +170,10 @@ export default function HighAvailability(props) {
 			);
 		}
 	};
-	const openSSL = (record) => {
-		const strArr = record.containers.map((item) => item.name);
+	const openSSL = (record: PodItem) => {
+		const strArr = record.containers.map(
+			(item: ContainerItem) => item.name
+		);
 		const consoleDataTemp = {
 			podName: record.podName,
 			namespace: namespace,
@@ -173,7 +184,7 @@ export default function HighAvailability(props) {
 		setPodVisible(true);
 	};
 
-	const actionRender = (value, index, record) => {
+	const actionRender = (value: any, index: number, record: PodItem) => {
 		return (
 			<Actions>
 				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
@@ -190,13 +201,13 @@ export default function HighAvailability(props) {
 		);
 	};
 
-	const restartRender = (value, index, record) => {
+	const restartRender = (value: number, index: number, record: PodItem) => {
 		return `${value}(${
 			transTime.gmt2local(record.lastRestartTime) || '无'
 		})`;
 	};
 
-	const onChange = (checked) => {
+	const onChange = (checked: boolean) => {
 		if (data.status === 'Running') {
 			setSwitchValue(checked);
 			switchMiddleware(checked);
@@ -232,7 +243,7 @@ export default function HighAvailability(props) {
 		}
 	};
 
-	const switchMiddleware = (value) => {
+	const switchMiddleware = (value: boolean | null) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -264,7 +275,7 @@ export default function HighAvailability(props) {
 		});
 	};
 	// * 修改节点规格
-	const updateMid = (sendData) => {
+	const updateMid = (sendData: any) => {
 		Dialog.show({
 			title: '操作确认',
 			content: '实例规格修改后将导致服务重启，是否继续？',
@@ -298,7 +309,7 @@ export default function HighAvailability(props) {
 		});
 	};
 
-	const onCreate = (value) => {
+	const onCreate = (value: any) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -317,7 +328,7 @@ export default function HighAvailability(props) {
 		updateMid(sendData);
 	};
 
-	const onEsCreate = (values) => {
+	const onEsCreate = (values: any) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -330,7 +341,7 @@ export default function HighAvailability(props) {
 		updateMid(sendData);
 	};
 
-	const onCustomCreate = (values) => {
+	const onCustomCreate = (values: any) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -346,7 +357,7 @@ export default function HighAvailability(props) {
 		updateMid(sendData);
 	};
 
-	const roleRender = (value, index, record) => {
+	const roleRender = (value: string, index: number, record: PodItem) => {
 		if (record.podName.includes('exporter')) {
 			return 'exporter';
 		} else {
@@ -387,20 +398,20 @@ export default function HighAvailability(props) {
 		}
 	};
 
-	const resourceRender = (value, index, record) => {
+	const resourceRender = (value: string, index: number, record: PodItem) => {
 		return `${record.resources.cpu || 0}C/${record.resources.memory || 0}G`;
 	};
 
-	const storageRender = (value, index, record) => {
+	const storageRender = (value: string, index: number, record: PodItem) => {
 		return `${record.resources.storageClassQuota || '无'}(${
 			record.resources.storageClassName || '无'
 		})`;
 	};
 
-	const createTimeRender = (value) => {
+	const createTimeRender = (value: string) => {
 		return transTime.gmt2local(value);
 	};
-	const podNameRender = (value) => {
+	const podNameRender = (value: string) => {
 		return (
 			<div
 				style={{ width: '150px', wordBreak: 'break-all' }}
@@ -434,7 +445,7 @@ export default function HighAvailability(props) {
 			}
 		});
 	};
-	const onDilatationCreate = (values) => {
+	const onDilatationCreate = (values: any) => {
 		const sendData = {
 			clusterId,
 			namespace,
@@ -448,7 +459,6 @@ export default function HighAvailability(props) {
 				}
 			}
 		};
-		// console.log(sendData);
 		storageDilatation(sendData).then((res) => {
 			if (res.success) {
 				Message.show(
@@ -648,7 +658,7 @@ export default function HighAvailability(props) {
 					visible={visible}
 					onCreate={onCreate}
 					onCancel={() => setVisible(false)}
-					quota={quotaValue}
+					quota={quotaValue as QuotaParams}
 				/>
 			)}
 			{esVisible && (
@@ -664,10 +674,10 @@ export default function HighAvailability(props) {
 					visible={customVisible}
 					onCreate={onCustomCreate}
 					onCancel={() => setCustomVisible(false)}
-					quota={quotaValue}
+					quota={quotaValue as QuotaParams}
 				/>
 			)}
-			{podVisible && (
+			{podVisible && consoleData && (
 				<Console
 					visible={podVisible}
 					data={consoleData}
@@ -675,7 +685,7 @@ export default function HighAvailability(props) {
 					containers={containers}
 				/>
 			)}
-			{yamlVisible && (
+			{yamlVisible && podData && (
 				<YamlForm
 					visible={yamlVisible}
 					onCancel={() => setYamlVisible(false)}

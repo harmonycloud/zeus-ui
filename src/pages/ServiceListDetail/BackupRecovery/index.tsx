@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Tab } from '@alicloud/console-components';
-import { Page, Content } from '@alicloud/console-components-page';
+import { Page, Content, Menu } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
 import List from './list';
 import Config from './config';
 import DefaultPicture from '@/components/DefaultPicture';
 import ComponentNull from '@/components/ComponentsNull';
-const { Menu } = Page;
-export default function BackupRecovery(props) {
+import { BackupRecoveryProps, DetailParams } from '../detail';
+
+export default function BackupRecovery(
+	props: BackupRecoveryProps
+): JSX.Element {
 	const location = useLocation();
 	const { pathname } = location;
-	// const [selectedKey, setSelectedKey] = useState('list');
-	const { currentTab } = useParams();
-	const [selectedKey, setSelectedKey] = useState(
+	const params: DetailParams = useParams();
+	const { currentTab } = params;
+	const [selectedKey, setSelectedKey] = useState<string>(
 		localStorage.getItem('backupTab') || 'list'
 	);
-	const [customMid, setCustomMid] = useState(false);
-	const [capabilities, setCapabilities] = useState([]);
+	const [customMid, setCustomMid] = useState<boolean>(false);
+	const [capabilities, setCapabilities] = useState<string[]>([]);
 	const { storage } = props;
 	useEffect(() => {
 		setCustomMid(props.customMid);
 		setCapabilities(props.capabilities || []);
-		// localStorage.getItem('backKey') &&
-		// localStorage.getItem('backKey').indexOf('config') !== -1
-		// 	? setSelectedKey('config')
-		// 	: setSelectedKey('list');
 	}, [props]);
 	useEffect(() => {
 		currentTab && currentTab !== 'backupRecovery' && setSelectedKey('list');
@@ -33,11 +32,11 @@ export default function BackupRecovery(props) {
 	useEffect(() => {
 		localStorage.removeItem('backupTab');
 	}, []);
-	const menuSelect = (selectedKey) => {
+	const menuSelect = (selectedKey: string) => {
 		setSelectedKey(selectedKey);
 		localStorage.setItem('backupTab', selectedKey);
 	};
-	const childrenRender = (selected) => {
+	const childrenRender = (selected: string) => {
 		if (selected === 'list') {
 			return <List {...props} />;
 		} else {

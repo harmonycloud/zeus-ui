@@ -24,7 +24,9 @@ export default function SelectBlock(props: SelectBlockProps): JSX.Element {
 								? styles['active']
 								: ''
 						}`}
-						onClick={() => !disabled && onCallBack(option.value)}
+						onClick={() =>
+							!disabled && onCallBack && onCallBack(option.value)
+						}
 					>
 						{option.label}
 					</div>

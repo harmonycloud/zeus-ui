@@ -108,7 +108,7 @@ export const radioList = [
 		label: '严重'
 	}
 ];
-export const searchTypes = [
+export const searchTypes: filtersProps[] = [
 	{ label: '分词搜索', value: 'match' },
 	{ label: '精确搜索', value: 'matchPhrase' },
 	{ label: '模糊搜索', value: 'wildcard' },

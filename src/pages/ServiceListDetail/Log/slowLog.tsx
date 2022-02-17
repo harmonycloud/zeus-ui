@@ -13,28 +13,32 @@ import TimeSelect from '@/components/TimeSelect';
 import { getSlowLogs } from '@/services/middleware';
 import transTime from '@/utils/transTime';
 import styled from 'styled-components';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import messageConfig from '@/components/messageConfig';
 import NumberRange from '@/components/NumberRange';
 import { api } from '@/api.json';
 import styles from './log.module.scss';
 import ComponentsNull from '@/components/ComponentsNull';
 import { searchTypes } from '@/utils/const';
+import { CommonLogProps } from '../detail';
 
 const { Option } = Select;
 const { Row, Col } = Grid;
 // * 慢日志表格后端分页
 
-export default function SlowLog(props) {
+export default function SlowLog(props: CommonLogProps): JSX.Element {
 	const { logging } = props;
 	const { clusterId, middlewareName, namespace } = props.data;
 	const defaultStart = moment().subtract({ hours: 1 });
-	const [rangeTime, setRangeTime] = useState([defaultStart, moment()]);
+	const [rangeTime, setRangeTime] = useState<Moment[]>([
+		defaultStart,
+		moment()
+	]);
 	const [dataSource, setDataSource] = useState([]);
 	const [current, setCurrent] = useState(1);
 	const [total, setTotal] = useState(10);
-	const [fromQueryTime, setFromQueryTime] = useState();
-	const [toQueryTime, setToQueryTime] = useState('');
+	const [fromQueryTime, setFromQueryTime] = useState<number | string>();
+	const [toQueryTime, setToQueryTime] = useState<number | string>();
 	const [searchType, setSearchType] = useState('');
 	const [keyword, setKeyword] = useState('');
 
@@ -48,10 +52,10 @@ export default function SlowLog(props) {
 	}, []);
 
 	const getData = (
-		current,
-		size,
-		startTime,
-		endTime,
+		current: number,
+		size: number,
+		startTime: string,
+		endTime: string,
 		fromQueryTime = '',
 		toQueryTime = '',
 		searchType = '',
@@ -80,24 +84,23 @@ export default function SlowLog(props) {
 		});
 	};
 
-	const onTimeChange = (rangeTime) => {
-		const [start, end] = rangeTime;
+	const onTimeChange = (rangeTime: Moment[]) => {
 		setRangeTime(rangeTime);
 	};
 
-	const timeRender = (value) => {
+	const timeRender = (value: string) => {
 		return transTime.gmt2local(value);
 	};
 
-	const onChange = function (value) {
+	const onChange = function (value: number) {
 		setCurrent(value);
 		getData(
 			value,
 			10,
 			transTime.local2gmt2(rangeTime[0]),
 			transTime.local2gmt2(rangeTime[1]),
-			fromQueryTime,
-			toQueryTime,
+			fromQueryTime as string,
+			toQueryTime as string,
 			searchType,
 			keyword
 		);
@@ -112,11 +115,11 @@ export default function SlowLog(props) {
 		window.open(url);
 	};
 
-	const onSearchChange = (value) => {
+	const onSearchChange = (value: string) => {
 		setKeyword(value);
 	};
 
-	const onFilterChange = (value) => {
+	const onFilterChange = (value: string) => {
 		setSearchType(value);
 	};
 
@@ -127,13 +130,13 @@ export default function SlowLog(props) {
 			10,
 			transTime.local2gmt2(rangeTime[0]),
 			transTime.local2gmt2(rangeTime[1]),
-			fromQueryTime,
-			toQueryTime,
+			fromQueryTime as string,
+			toQueryTime as string,
 			searchType,
 			keyword
 		);
 	};
-	const numberRange = (value) => {
+	const numberRange = (value: string[]) => {
 		if (value[0] !== '' && value[1] !== '') {
 			if (Number(value[0]) > Number(value[1])) {
 				Message.show(

@@ -1,3 +1,5 @@
+import { Moment } from 'moment';
+
 /**
  * js日期转化
  * @param {Date} date js日期对象
@@ -76,10 +78,10 @@ const local2gmt = (input: string) => {
  * 本地时间转格林威治时间
  * @param {String} input YYYY-MM-DDTHH:mm:ss[Z]格式的日期
  */
-const local2gmt2 = (input: string) => {
+const local2gmt2 = (input: string | Moment) => {
 	//input是传入的字符串
 	if (input) {
-		const date = new Date(input);
+		const date = new Date(input as string);
 		let time = date.getTime();
 		time += date.getTimezoneOffset() * 60000;
 		return formatDate(new Date(time), 'YYYY-MM-ddThh:mm:ssZ');

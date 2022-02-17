@@ -1,35 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import {
-	Dialog,
-	Icon,
-	Message,
-	Switch,
-	Balloon,
-	Button
-} from '@alicloud/console-components';
+import { Dialog, Message, Switch, Button } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
-import BackupSettingForm from './backupSetting';
 import messageConfig from '@/components/messageConfig';
 import {
 	getBackupConfig,
-	addBackupConfig,
-	backupNow,
 	deleteBackupConfig,
 	updateBackupConfig
 } from '@/services/backup';
 import moment from 'moment';
 import storage from '@/utils/storage';
 import { weekMap } from '@/utils/const';
+import { BackupDataParams, BackupRuleItem, ConfigProps } from '../detail';
 
-export default function Config(props) {
-	const { clusterId, namespace, data: listData, dataSecurity } = props;
-	const [visible, setVisible] = useState(false);
-	const [backups, setBackups] = useState([]);
+export default function Config(props: ConfigProps): JSX.Element {
+	const { clusterId, namespace, data: listData } = props;
 	const history = useHistory();
-	const [keyword, setKeyword] = useState();
-	const [backupData, setBackupData] = useState({
+	const [backups, setBackups] = useState<BackupRuleItem[]>([]);
+	const [keyword, setKeyword] = useState<string>();
+	const [backupData, setBackupData] = useState<BackupDataParams>({
 		configed: false,
 		limitRecord: 0,
 		cycle: '',
@@ -53,8 +43,8 @@ export default function Config(props) {
 		const sendData = {
 			clusterId,
 			namespace,
-			middlewareName: listData.name,
-			type: listData.type,
+			middlewareName: listData?.name || '',
+			type: listData?.type || '',
 			keyword
 		};
 		getBackupConfig(sendData).then((res) => {
@@ -62,7 +52,7 @@ export default function Config(props) {
 				if (res.data.length > 0) {
 					setBackups(
 						res.data.sort(
-							(a, b) =>
+							(a: BackupRuleItem, b: BackupRuleItem) =>
 								moment(b['backupTime']).valueOf() -
 								moment(a['backupTime']).valueOf()
 						)
@@ -76,93 +66,7 @@ export default function Config(props) {
 		});
 	};
 
-	const onCreate = (values) => {
-		const minute = moment(values.time).get('minute');
-		const hour = moment(values.time).get('hour');
-		const week = values.cycle.join(',');
-		const cron = `${minute} ${hour} ? ? ${week}`;
-
-		const sendData = {
-			clusterId,
-			namespace,
-			middlewareName: listData.name,
-			type: listData.type,
-			limitRecord: values.count,
-			cron
-		};
-		if (backupData.configed) {
-			addBackupConfig(sendData)
-				.then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份设置成功')
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				})
-				.finally(() => {
-					getData();
-				});
-		} else {
-			backupNow(sendData)
-				.then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份设置成功')
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				})
-				.finally(() => {
-					getData();
-				});
-		}
-		setVisible(false);
-	};
-
-	const backupStatusChange = (checked, record) => {
-		// if (listData.type === 'elasticsearch') {
-		// 	const list = [];
-		// 	for (let i in listData.quota) {
-		// 		list.push(listData.quota[i].storageClassName);
-		// 	}
-		// 	if (list.includes('local-path')) {
-		// 		Message.show(
-		// 			messageConfig(
-		// 				'error',
-		// 				'失败',
-		// 				'存储类型为local-path时不支持立即备份功能'
-		// 			)
-		// 		);
-		// 		return;
-		// 	}
-		// } else {
-		// 	if (listData.type === 'mysql' && !listData.mysqlDTO.isLvmStorage) {
-		// 		Message.show(
-		// 			messageConfig(
-		// 				'error',
-		// 				'失败',
-		// 				'存储不使用lvm时，不支持备份设置功能'
-		// 			)
-		// 		);
-		// 		return;
-		// 	}
-		// 	if (
-		// 		listData.quota[listData.type].storageClassName === 'local-path'
-		// 	) {
-		// 		Message.show(
-		// 			messageConfig(
-		// 				'error',
-		// 				'失败',
-		// 				'存储类型为local-path时不支持备份设置功能'
-		// 			)
-		// 		);
-		// 		return;
-		// 	}
-		// }
-
+	const backupStatusChange = (checked: boolean, record: BackupRuleItem) => {
 		Dialog.show({
 			title: '操作确认',
 			content: checked
@@ -173,7 +77,7 @@ export default function Config(props) {
 					clusterId,
 					namespace,
 					backupScheduleName: record.backupScheduleName,
-					type: listData.type,
+					type: listData?.type || '',
 					limitRecord: record.limitRecord,
 					pause: checked ? 'off' : 'on',
 					cron: record.cron
@@ -211,9 +115,11 @@ export default function Config(props) {
 		});
 	};
 
-	const onSort = (dataIndex, order) => {
+	const onSort = (dataIndex: string, order: string) => {
 		const tempDataSource = backups.sort((a, b) => {
-			const result = a['createTime'] - b['createTime'];
+			const result =
+				moment(a['createTime']).valueOf() -
+				moment(b['createTime']).valueOf();
 			return order === 'asc'
 				? result > 0
 					? 1
@@ -230,7 +136,7 @@ export default function Config(props) {
 			<Button
 				type="primary"
 				onClick={() => {
-					if (listData.type === 'elasticsearch') {
+					if (listData?.type === 'elasticsearch') {
 						if (!listData.isAllLvmStorage) {
 							Message.show(
 								messageConfig(
@@ -243,7 +149,7 @@ export default function Config(props) {
 						}
 					} else {
 						if (
-							listData.type === 'mysql' &&
+							listData?.type === 'mysql' &&
 							!listData.isAllLvmStorage
 						) {
 							Message.show(
@@ -265,7 +171,11 @@ export default function Config(props) {
 		)
 	};
 
-	const statusRender = (value, index, record) => {
+	const statusRender = (
+		value: string,
+		index: number,
+		record: BackupRuleItem
+	) => {
 		return (
 			<Switch
 				onChange={(checked) => backupStatusChange(checked, record)}
@@ -276,14 +186,18 @@ export default function Config(props) {
 		);
 	};
 
-	const roleRender = (value, index, record) => {
+	const roleRender = (
+		value: string,
+		index: number,
+		record: BackupRuleItem
+	) => {
 		if (value === 'Cluster') {
 			return '服务';
 		} else {
 			if (record.podRole.includes('exporter')) {
 				return 'exporter';
 			} else {
-				if (listData.type === 'elasticsearch') {
+				if (listData?.type === 'elasticsearch') {
 					if (record.podRole.includes('kibana')) {
 						return 'kibana';
 					} else if (record.podRole.includes('client')) {
@@ -321,7 +235,11 @@ export default function Config(props) {
 		}
 	};
 
-	const sourceNameRender = (value, index, record) => {
+	const sourceNameRender = (
+		value: string,
+		index: number,
+		record: BackupRuleItem
+	) => {
 		if (record.backupType !== 'Cluster') {
 			return value;
 		} else {
@@ -334,7 +252,11 @@ export default function Config(props) {
 		}
 	};
 
-	const actionRender = (value, index, record) => {
+	const actionRender = (
+		value: any,
+		index: number,
+		record: BackupRuleItem
+	) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -360,11 +282,10 @@ export default function Config(props) {
 								const sendData = {
 									clusterId,
 									namespace,
-									type: listData.type,
+									type: listData?.type || '',
 									backupScheduleName:
 										record.backupScheduleName
 								};
-								// console.log(sendData);
 								deleteBackupConfig(sendData)
 									.then((res) => {
 										if (res.success) {
@@ -386,11 +307,7 @@ export default function Config(props) {
 										}
 									})
 									.finally(() => {
-										getData(
-											clusterId,
-											namespace,
-											listData.name
-										);
+										getData();
 									});
 							}
 						});
@@ -421,7 +338,7 @@ export default function Config(props) {
 				search={{
 					placeholder: '请输入备份源名称检索',
 					onSearch: onRefresh,
-					onChange: (value) => setKeyword(value),
+					onChange: (value: string) => setKeyword(value),
 					value: keyword
 				}}
 				searchStyle={{
@@ -448,7 +365,7 @@ export default function Config(props) {
 				<Table.Column
 					title="备份周期"
 					dataIndex="cron"
-					cell={(value) =>
+					cell={(value: string) =>
 						value
 							.split(' ? ? ')[1]
 							.split(',')
@@ -470,118 +387,6 @@ export default function Config(props) {
 				/>
 				<Table.Column title="操作" cell={actionRender} width={100} />
 			</Table>
-			{/* <div className="backup-display-content">
-				<div className="backup-setting">
-					<div className="backup-label">备份状态</div>
-					<div className="backup-value">
-						<Switch
-							onChange={backupStatusChange}
-							checked={backupData.pause === 'off'}
-						/>
-						<span>
-							{backupData.pause === 'off'
-								? '执行备份中'
-								: '备份已停止'}
-						</span>
-					</div>
-				</div>
-				<div
-					className="backup-setting"
-					style={{
-						color:
-							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
-					}}
-				>
-					<div
-						className="backup-label"
-						style={{
-							color:
-								backupData.pause === 'off'
-									? '#666666'
-									: '#9b9ea0'
-						}}
-					>
-						备份保留个数{' '}
-						<Balloon
-							trigger={<Icon type="question-circle" size="xs" />}
-							closable={false}
-						>
-							成功备份一次，保存一份备份文件，意味着保留最新的N份备份文件，超过数量的备份将自动删除
-						</Balloon>
-					</div>
-					<div className="backup-value">{backupData.limitRecord}</div>
-				</div>
-				<div
-					className="backup-setting"
-					style={{
-						color:
-							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
-					}}
-				>
-					<div
-						className="backup-label"
-						style={{
-							color:
-								backupData.pause === 'off'
-									? '#666666'
-									: '#9b9ea0'
-						}}
-					>
-						备份周期
-					</div>
-					<div className="backup-value">{backupData.cycle}</div>
-				</div>
-				<div
-					className="backup-setting"
-					style={{
-						color:
-							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
-					}}
-				>
-					<div
-						className="backup-label"
-						style={{
-							color:
-								backupData.pause === 'off'
-									? '#666666'
-									: '#9b9ea0'
-						}}
-					>
-						备份时间
-					</div>
-					<div className="backup-value">{backupData.time}</div>
-				</div>
-				<div
-					className="backup-setting"
-					style={{
-						color:
-							backupData.pause === 'off' ? '#666666' : '#9b9ea0'
-					}}
-				>
-					<div
-						className="backup-label"
-						style={{
-							color:
-								backupData.pause === 'off'
-									? '#666666'
-									: '#9b9ea0'
-						}}
-					>
-						预计下次备份时间
-					</div>
-					<div className="backup-value">
-						{transTime.gmt2local(backupData.nextBackupTime)}
-					</div>
-				</div>
-			</div> */}
-			{visible && (
-				<BackupSettingForm
-					visible={visible}
-					onCreate={onCreate}
-					onCancel={() => setVisible(false)}
-					data={backupData}
-				/>
-			)}
 		</div>
 	);
 }

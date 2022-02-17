@@ -7,33 +7,39 @@ import styles from './basicinfo.module.scss';
 import transTime from '@/utils/transTime';
 import imgNone from '@/assets/images/nodata.svg';
 import './basicinfo.scss';
+import { StoreState } from '@/types';
+import { EventItem, EventsListProps, EventsSendData } from '../detail';
 
 const successTip = <div className={styles['success-tip']}>正常</div>;
 
 const errorTip = <div className={styles['error-tip']}>异常</div>;
 
-const EventsList = (props) => {
+const EventsList = (props: EventsListProps) => {
 	const { type, middlewareName, eventType, kind, globalVar } = props;
-	const [eventList, setEventList] = useState([]);
-	const [originEventList, setOriginEventList] = useState([]);
+	const [eventList, setEventList] = useState<EventItem[]>([]);
+	const [originEventList, setOriginEventList] = useState<EventItem[]>([]);
 
-	const getEventsData = async (clusterId, namespace, kind) => {
-		let sendData = {
+	const getEventsData = async (
+		clusterId: string,
+		namespace: string,
+		kind: string
+	) => {
+		const sendData: EventsSendData = {
 			clusterId,
 			namespace,
 			middlewareName,
 			type
 		};
 		if (kind) sendData.kind = kind === 'All' ? '' : kind;
-		let res = await getMiddlewareEvents(sendData);
+		const res = await getMiddlewareEvents(sendData);
 		if (res.success) {
-			let temp = res.data.map((item) => ({
+			const temp = res.data.map((item: EventItem) => ({
 				...item,
 				show: false
 			}));
 			setOriginEventList(temp);
 			setEventList(
-				temp.filter((item) => {
+				temp.filter((item: EventItem) => {
 					if (eventType === 'All') return true;
 					else if (eventType === 'Normal')
 						return item.type === 'Normal';
@@ -43,8 +49,8 @@ const EventsList = (props) => {
 		}
 	};
 
-	const eventHander = (item, index) => {
-		let tempArr = [...eventList];
+	const eventHander = (item: EventItem, index: number) => {
+		const tempArr = [...eventList];
 		item.show = !item.show;
 		tempArr[index] = item;
 		setEventList(tempArr);
@@ -52,6 +58,7 @@ const EventsList = (props) => {
 
 	useEffect(() => {
 		if (
+			globalVar &&
 			JSON.stringify(globalVar.cluster) !== '{}' &&
 			JSON.stringify(globalVar.namespace) !== '{}'
 		) {
@@ -61,7 +68,7 @@ const EventsList = (props) => {
 
 	useEffect(() => {
 		if (eventType) {
-			let temp = originEventList.filter((item) => {
+			const temp = originEventList.filter((item) => {
 				if (eventType === 'All') return true;
 				else if (eventType === 'Normal') return item.type === 'Normal';
 				else return item.type !== 'Normal';
@@ -162,10 +169,7 @@ const EventsList = (props) => {
 		</>
 	);
 };
-
-export default connect(
-	({ globalVar }) => ({
-		globalVar
-	}),
-	null
-)(EventsList);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, null)(EventsList);

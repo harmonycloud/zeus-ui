@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Content } from '@alicloud/console-components-page';
+import { Page, Content, Menu } from '@alicloud/console-components-page';
 import { useParams } from 'react-router';
 import ParamterList from './paramterList';
 import ParamterHistory from './paramterHistory';
@@ -7,9 +7,11 @@ import ParamterTemplate from './paramterTemplate';
 import ConfigMapEdit from './configMapEdit';
 import DefaultPicture from '@/components/DefaultPicture';
 import storage from '@/utils/storage';
+import { ParamterSettingProps, DetailParams } from '../detail';
 
-const { Menu } = Page;
-export default function ParamterSetting(props) {
+export default function ParamterSetting(
+	props: ParamterSettingProps
+): JSX.Element {
 	const {
 		middlewareName,
 		clusterId,
@@ -22,9 +24,9 @@ export default function ParamterSetting(props) {
 	const [selectedKey, setSelectedKey] = useState(
 		storage.getSession('paramsTab') || 'list'
 	);
-	const params = useParams();
-	const { currentTab } = params;
-	const menuSelect = (selectedKey) => {
+	const params: DetailParams = useParams();
+	const { currentTab, chartVersion } = params;
+	const menuSelect = (selectedKey: string) => {
 		setSelectedKey(selectedKey);
 		storage.setSession('paramsTab', selectedKey);
 	};
@@ -46,7 +48,7 @@ export default function ParamterSetting(props) {
 			<Menu.Item key="configMap">ConfigMap编辑</Menu.Item>
 		</Menu>
 	);
-	const childrenRender = (selectedKey) => {
+	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
 			case 'list':
 				return (
@@ -65,7 +67,6 @@ export default function ParamterSetting(props) {
 						middlewareName={middlewareName}
 						namespace={namespace}
 						type={type}
-						refreshFlag={refreshFlag}
 					/>
 				);
 			case 'template':
@@ -73,7 +74,7 @@ export default function ParamterSetting(props) {
 					<ParamterTemplate
 						type={type}
 						middlewareName={middlewareName}
-						chartVersion={params.chartVersion}
+						chartVersion={chartVersion}
 					/>
 				);
 			case 'configMap':

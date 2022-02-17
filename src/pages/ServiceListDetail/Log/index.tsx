@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import { Tab } from '@alicloud/console-components';
-import { useLocation } from 'react-router';
-import { Page, Content } from '@alicloud/console-components-page';
+import { Page, Content, Menu } from '@alicloud/console-components-page';
 import DefaultPicture from '@/components/DefaultPicture';
 import RealtimeLog from './realtimeLog';
 import SlowLog from './slowLog';
 import StandardLog from './standardLog';
 import LogFile from './logFile';
+import { DetailParams, LogProps } from '../detail';
 
-const { Menu } = Page;
-export default function Log(props) {
+export default function Log(props: LogProps): JSX.Element {
 	const { type, data, customMid = false, logging } = props;
 	const location = useLocation();
 	const { pathname } = location;
-	const { currentTab } = useParams();
+	const params: DetailParams = useParams();
+	const { currentTab } = params;
 	const [selectedKey, setSelectedKey] = useState('realtime');
-	// console.log(logging);
-	const menuSelect = (selectedKey) => {
+	const menuSelect = (selectedKey: string) => {
 		setSelectedKey(selectedKey);
 	};
 	useEffect(() => {
@@ -35,7 +34,7 @@ export default function Log(props) {
 			{type === 'mysql' && <Menu.Item key="slow">慢日志查看</Menu.Item>}
 		</Menu>
 	);
-	const childrenRender = (selectedKey) => {
+	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
 			case 'realtime':
 				return <RealtimeLog data={props} />;

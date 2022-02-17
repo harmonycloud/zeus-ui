@@ -7,8 +7,9 @@ import ComponentNull from '@/components/ComponentsNull';
 
 import styles from './monitor.module.scss';
 import svg from '@/assets/images/grafana_icon.svg';
+import { MonitorProps } from '../detail';
 
-const Monitor = (props) => {
+const Monitor = (props: MonitorProps) => {
 	const {
 		clusterId,
 		namespace,
@@ -21,7 +22,6 @@ const Monitor = (props) => {
 	} = props;
 	const [url, setUrl] = useState('');
 	const [menuHide, setMenuHide] = useState(false);
-	// console.log(props);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('monitoring')) {
 			if (type && monitor?.grafana !== null) {
@@ -46,7 +46,7 @@ const Monitor = (props) => {
 
 	useEffect(() => {
 		if (url) {
-			let iframe = document.getElementById('iframe');
+			const iframe: any = document.getElementById('iframe');
 			iframe.onload = function () {
 				iframe.contentWindow.postMessage({ showMenu: false }, '*');
 			};
@@ -87,7 +87,7 @@ const Monitor = (props) => {
 								id="iframe"
 								src={url}
 								frameBorder="no"
-								border="0"
+								// border="0"
 								scrolling="no"
 								style={{
 									width: '100%',
