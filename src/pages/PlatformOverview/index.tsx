@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import Page from '@alicloud/console-components-page';
-import HomeCard from '@/components/HomeCard';
 import { connect } from 'react-redux';
 import { getClusters } from '@/services/common.js';
 import { api } from '@/api.json';
@@ -22,23 +21,37 @@ import {
 	getEvent,
 	getServers
 } from '@/services/platformOverview';
+
 import AlarmTimeLine from '@/components/AlarmTimeline';
+import HomeCard from '@/components/HomeCard';
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
+
 import { radioList } from '@/utils/const';
 import * as echarts from 'echarts/core';
 import moment from 'moment';
+
+import {
+	totalDataProps,
+	operatorListProps,
+	auditListProps,
+	alertSummaryProps,
+	briefInfoProps
+} from './platformOverview';
+import { StoreState } from '@/types';
+import { poolListItem, evevtDataProps } from '@/types/comment';
+
 import './platformOverview.scss';
 
 const Tooltip = Balloon.Tooltip;
 
-function PlatformOverview() {
+function PlatformOverview(): JSX.Element {
 	let x = [];
 
 	// 设置事件数据
-	const [eventData, setEventData] = useState(null);
+	const [eventData, setEventData] = useState<evevtDataProps[]>([]);
 	// 顶部统计数据
-	const [totalData, setTotalData] = useState({
+	const [totalData, setTotalData] = useState<totalDataProps>({
 		clusterNum: 0,
 		namespaceNum: 0,
 		totalCpu: 0,
@@ -49,52 +62,48 @@ function PlatformOverview() {
 		memoryUsedPercent: '0%'
 	});
 	// 服务信息列表
-	const [briefInfoList, setBriefInfoList] = useState([]);
+	const [briefInfoList, setBriefInfoList] = useState<briefInfoProps[]>([]);
 	// 单选按钮组
 	const RadioGroup = Radio.Group;
-	const [clusters, setClusters] = useState([]);
-	const [current, setCurrent] = useState(1); // 页码 current
-	const [level, setLevel] = useState(''); // level
-	const [total, setTotal] = useState(10); // 总数
-	const [poolList, setPoolList] = useState([]);
-	const [type, setType] = useState('all');
-	const [version, setVersion] = useState();
-	const [operatorData, setOperatorData] = useState();
-	const [operatorList, setOperatorList] = useState([]);
-	const [auditList, setAuditList] = useState([]);
-	const history = useHistory();
-	const [pieOption, setPieOption] = useState({});
-	const [lineOption, setLineOption] = useState({});
-	const [alertSummary, setAlertSummary] = useState();
-	// 资源迟选中项
+	const [current, setCurrent] = useState<number>(1); // 页码 current
+	const [level, setLevel] = useState<string | number | boolean>(''); // level
+	const [total, setTotal] = useState<number>(10); // 总数
+	const [poolList, setPoolList] = useState<poolListItem[]>([]);
+	const [type, setType] = useState<string>('all');
+	const [version, setVersion] = useState<string>();
+	const [operatorList, setOperatorList] = useState<operatorListProps[]>([]);
+	const [auditList, setAuditList] = useState<auditListProps[]>([]);
+	const history = useHistory<unknown>();
+	const [lineOption, setLineOption] = useState<any>({});
+	const [alertSummary, setAlertSummary] = useState<alertSummaryProps>({});
 
 	useEffect(() => {
 		getClusters().then((res) => {
-			// console.log(res.data);
 			if (!res.data) return;
 			res.data.unshift({ name: '全部', id: 'all' });
 			setPoolList(res.data);
 		});
 	}, []);
 	useEffect(() => {
-		let clusterId = type === 'all' ? null : type;
-		const chart = echarts.init(document.getElementById('id'));
+		const clusterId = type === 'all' ? null : type;
+		const id = document.getElementById('id');
+		let chart: any = null;
+		if (id) chart = echarts.init(id);
+
 		getPlatformOverview({ clusterId }).then((res) => {
 			if (!res.data) return;
-			let list = res.data.operatorDTO.operatorList.filter(
-				(item) => item.status !== 1
+			const list = res.data.operatorDTO.operatorList.filter(
+				(item: operatorListProps) => item.status !== 1
 			);
 			list.push(
 				...res.data.operatorDTO.operatorList.filter(
-					(item) => item.status == 1
+					(item: operatorListProps) => item.status == 1
 				)
 			);
 			setVersion(res.data.zeusVersion);
 			setTotalData(res.data.clusterQuota);
-			setOperatorData(res.data.operatorDTO);
 			setOperatorList(list);
 			setAuditList(res.data.auditList);
-			setPieOption(getPieOption(res.data.operatorDTO));
 			setLineOption(
 				getLineOption({
 					...res.data.alertSummary,
@@ -107,17 +116,17 @@ function PlatformOverview() {
 			});
 			chart.setOption(getPieOption(res.data.operatorDTO));
 
-			chart.on('legendselectchanged', (obj) => {
+			chart.on('legendselectchanged', (obj: any) => {
 				if (obj.selected['运行正常'] && !obj.selected['运行异常']) {
 					x = res.data.operatorDTO.operatorList.filter(
-						(item) => item.status === 1
+						(item: operatorListProps) => item.status === 1
 					);
 				} else if (
 					!obj.selected['运行正常'] &&
 					obj.selected['运行异常']
 				) {
 					x = res.data.operatorDTO.operatorList.filter(
-						(item) => item.status !== 1
+						(item: operatorListProps) => item.status !== 1
 					);
 				} else if (
 					obj.selected['运行正常'] &&
@@ -129,7 +138,7 @@ function PlatformOverview() {
 				}
 				setOperatorList(x);
 			});
-			window.onresize = chart.resize;
+			window.addEventListener('resize', () => chart.resize());
 		});
 		getServers({ clusterId }).then((res) => {
 			res.data && setBriefInfoList(res.data.briefInfoList);
@@ -152,18 +161,18 @@ function PlatformOverview() {
 		}
 	}, [eventData]);
 
-	const getEventsData = ({ current, level }) => {
+	const getEventsData = (data: any) => {
 		const sendData = {
-			current: current,
+			current: data.current,
 			size: 10,
-			level: level
+			level: data.level
 		};
 		getEvent(sendData).then((res) => {
 			setEventData(res.data ? res.data.list : []);
 			setTotal(res.data ? res.data.total : 0);
 		});
 	};
-	const onNormalChange = (value) => {
+	const onNormalChange = (value: string | number | boolean) => {
 		setLevel(value);
 		const alertData = {
 			current: current,
@@ -200,7 +209,7 @@ function PlatformOverview() {
 		}
 		getEventsData(alertData);
 	};
-	const paginationChange = (current) => {
+	const paginationChange = (current: number) => {
 		setCurrent(current);
 		const alertData = {
 			current: current,
@@ -208,12 +217,12 @@ function PlatformOverview() {
 		};
 		getEventsData(alertData);
 	};
-	const createTimeRender = (value) => {
+	const createTimeRender = (value: string) => {
 		if (!value) return '/';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 	const onRefresh = () => {
-		let clusterId = type === 'all' ? null : type;
+		const clusterId = type === 'all' ? null : type;
 
 		getPlatformOverview().then((res) => {
 			res.data && setTotalData(res.data.clusterQuota);
@@ -240,7 +249,7 @@ function PlatformOverview() {
 									defaultValue="全部"
 								>
 									{poolList.length &&
-										poolList.map((item) => {
+										poolList.map((item: poolListItem) => {
 											return (
 												<Select.Option
 													value={item.id}
@@ -404,83 +413,89 @@ function PlatformOverview() {
 							>
 								<div className="serve-info">
 									{briefInfoList?.length ? (
-										briefInfoList.map((item) => {
-											return (
-												<Tooltip
-													key={item.name}
-													trigger={
-														<div
-															className="info-item"
-															onClick={() => {
-																if (
-																	type ===
-																	'all'
-																)
-																	return;
-																history.push(
-																	`/serviceList/${
-																		item.name
-																	}/${
-																		item.name
-																			.charAt(
-																				0
+										briefInfoList.map(
+											(item: briefInfoProps) => {
+												return (
+													<Tooltip
+														key={item.name}
+														trigger={
+															<div
+																className="info-item"
+																onClick={() => {
+																	if (
+																		type ===
+																		'all'
+																	)
+																		return;
+																	history.push(
+																		`/serviceList/${
+																			item.name
+																		}/${
+																			item.name
+																				.charAt(
+																					0
+																				)
+																				.toUpperCase() +
+																			item.name.slice(
+																				1
 																			)
-																			.toUpperCase() +
-																		item.name.slice(
-																			1
-																		)
-																	}`
-																);
-															}}
-														>
-															<div className="info-img">
-																<img
-																	height={40}
-																	width={40}
-																	src={`${api}/images/middleware/${item.imagePath}`}
-																/>
-																{item.errServiceNum !==
-																0 ? (
-																	<Tooltip
-																		trigger={
-																			<span className="err-count">
-																				{
-																					item.errServiceNum
-																				}
-																			</span>
+																		}`
+																	);
+																}}
+															>
+																<div className="info-img">
+																	<img
+																		height={
+																			40
 																		}
-																		align="t"
+																		width={
+																			40
+																		}
+																		src={`${api}/images/middleware/${item.imagePath}`}
+																	/>
+																	{item.errServiceNum !==
+																	0 ? (
+																		<Tooltip
+																			trigger={
+																				<span className="err-count">
+																					{
+																						item.errServiceNum
+																					}
+																				</span>
+																			}
+																			align="t"
+																		>
+																			异常服务数
+																		</Tooltip>
+																	) : null}
+																</div>
+																<p className="info-name">
+																	{item.name}
+																</p>
+																<p className="info-count">
+																	<span>
+																		服务数{' '}
+																	</span>
+																	<span
+																		className={
+																			'total-count'
+																		}
 																	>
-																		异常服务数
-																	</Tooltip>
-																) : null}
+																		{
+																			item.serviceNum
+																		}
+																	</span>
+																</p>
 															</div>
-															<p className="info-name">
-																{item.name}
-															</p>
-															<p className="info-count">
-																<span>
-																	服务数{' '}
-																</span>
-																<span
-																	className={
-																		'total-count'
-																	}
-																>
-																	{
-																		item.serviceNum
-																	}
-																</span>
-															</p>
-														</div>
-													}
-													align="t"
-													triggerType="click"
-												>
-													请选择资源池后跳转
-												</Tooltip>
-											);
-										})
+														}
+														align="t"
+														triggerType="click"
+													>
+														请选择资源池后跳转
+													</Tooltip>
+												);
+											}
+										)
 									) : (
 										<Loading
 											tip="loading..."
@@ -539,9 +554,9 @@ function PlatformOverview() {
 													title="类型"
 													dataIndex="name"
 													cell={(
-														value,
-														obj,
-														record
+														value: string,
+														index: number,
+														record: operatorListProps
 													) => (
 														<span>
 															{record.name +
@@ -554,7 +569,7 @@ function PlatformOverview() {
 												<Table.Column
 													title="状态"
 													dataIndex="status"
-													cell={(value) => (
+													cell={(value: number) => (
 														<span>
 															<Icon
 																size="xs"
@@ -624,7 +639,11 @@ function PlatformOverview() {
 										/>
 										<Table.Column
 											title="模块"
-											cell={(value, index, record) => (
+											cell={(
+												value: string,
+												index: number,
+												record: auditListProps
+											) => (
 												<span>
 													{record.moduleChDesc +
 														'/' +
@@ -667,7 +686,6 @@ function PlatformOverview() {
 											marginTop: 16,
 											height: 'calc(100% - 110px)'
 										}}
-										clusters={clusters}
 										type="platform"
 									/>
 									<Pagination
@@ -703,4 +721,7 @@ function PlatformOverview() {
 		</Page>
 	);
 }
-export default connect(({ globalVar }) => ({ globalVar }))(PlatformOverview);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps)(PlatformOverview);

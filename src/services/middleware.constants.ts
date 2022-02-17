@@ -44,6 +44,8 @@ export const deleteAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespa
 export const deleteAlarmRule = `${api}/clusters/{clusterId}/rules/system`;
 // * 更新告警规则-服务
 export const updateAlarmRules = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules/update`;
+// * 获取告警规则详情
+export const getAlarmDetail = `${api}/rules/detail`;
 // * 获取自定义配置
 export const getCustomConfig = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/config`;
 // * 更新自定义配置

@@ -116,7 +116,7 @@ function IngressList(props: ingressProps) {
 		)
 	};
 
-	const nameRender = (record: ingressProps) => {
+	const nameRender = (value: string, index: number, record: ingressProps) => {
 		return (
 			<>
 				<div>{record.name}</div>
@@ -189,7 +189,11 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
-	const actionRender = (record: ingressProps) => {
+	const actionRender = (
+		value: string,
+		index: number,
+		record: ingressProps
+	) => {
 		return (
 			<Actions>
 				<LinkButton onClick={() => handleDelete(record)}>
@@ -219,7 +223,7 @@ function IngressList(props: ingressProps) {
 			setIconVisible(false);
 		}, 3000);
 	};
-	const addressRender = (record: any) => {
+	const addressRender = (value: string, index: number, record: any) => {
 		if (record.protocol === 'HTTP') {
 			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
 			return (
@@ -362,7 +366,7 @@ function IngressList(props: ingressProps) {
 			);
 		}
 	};
-	const portRender = (record: any) => {
+	const portRender = (value: string, index: number, record: any) => {
 		const port =
 			record.protocol === 'HTTP'
 				? record.rules[0].ingressHttpPaths[0].servicePort
@@ -429,7 +433,7 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
-	const exposeTypeRender = (record: any) => {
+	const exposeTypeRender = (value: string, index: number, record: any) => {
 		return `${record.exposeType}/${record.ingressClassName || '-'}`;
 	};
 

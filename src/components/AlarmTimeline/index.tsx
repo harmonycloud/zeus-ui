@@ -16,12 +16,6 @@ import { alarmTimeLineProps } from './alarmTimeLine';
 
 import './index.scss';
 
-/*
-	params
-	list:[{time:'',message:'',summary:'',level:''}]
-	style:内联样式
-	clusters:
-*/
 const Tooltip = Balloon.Tooltip;
 function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 	const {

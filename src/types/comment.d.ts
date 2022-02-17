@@ -201,3 +201,27 @@ export interface StorageClassProps {
 	type: null | any;
 	volumeBindingMode: string;
 }
+// * 资源池列表
+export interface poolListItem {
+	name?: string;
+	id: number;
+}
+
+// * 告警记录
+export interface evevtDataProps {
+	alert: string;
+	alertId: string;
+	capitalType: string;
+	chartVersion: string;
+	clusterId: string;
+	content: string;
+	expr: string;
+	lay: string;
+	level: string;
+	message: string;
+	name: string;
+	namespace: string;
+	summary: string;
+	time: string;
+	type: string;
+}

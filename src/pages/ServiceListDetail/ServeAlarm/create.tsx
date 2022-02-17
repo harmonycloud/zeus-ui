@@ -19,16 +19,20 @@ import {
 	getCanUseAlarms,
 	createAlarm,
 	updateAlarm,
-	updateAlarms
+	updateAlarms,
+	getAlarmDetail
 } from '@/services/middleware';
 import { getUsers } from '@/services/user';
-import { getMailInfo, getDing } from '@/services/alrem';
+import { getMailInfo, getDing } from '@/services/alarm';
 import storage from '@/utils/storage';
 import { symbols, alarmWarn, silences } from '@/utils/const';
+import { useParams } from 'react-router';
+
 import './index.scss';
 import {
 	AlarmItem,
 	AlarmSendData,
+	CreateServeAlarmProps,
 	LabelItem,
 	ServiceRuleItem
 } from '../detail';
@@ -38,8 +42,9 @@ const { Option } = Select;
 const { Tooltip } = Balloon;
 
 function CreateAlarm(): JSX.Element {
-	const { clusterId, namespace, middlewareName, type, alarmType, record } =
-		storage.getSession('alarm');
+	const params: CreateServeAlarmProps = useParams();
+	const { clusterId, namespace, middlewareName, type, alarmType, ruleId } =
+		params;
 	const [alarms, setAlarms] = useState<AlarmItem[]>([
 		{
 			alert: null,
@@ -58,6 +63,7 @@ function CreateAlarm(): JSX.Element {
 	const [dingDisabled, setDingDisabled] = useState<boolean>(false);
 	const [mailDisabled, setMailDisabled] = useState<boolean>(false);
 	const [isReady, setIsReady] = useState<boolean>(false);
+	const [detail, setDetail] = useState<ServiceRuleItem>();
 
 	const getCanUse = (
 		clusterId: string,
@@ -184,12 +190,17 @@ function CreateAlarm(): JSX.Element {
 	};
 
 	useEffect(() => {
-		if (record) {
-			setAlarmRules([{ ...record, severity: record.labels.severity }]);
-			record.ding ? setDingChecked(true) : setDingChecked(false);
-			record.mail ? setMailChecked(true) : setMailChecked(false);
-			setSystemId(record.clusterId);
-			getUserList({ alertRuleId: record.alertId });
+		if (ruleId) {
+			getAlarmDetail({ alertRuleId: ruleId }).then((res: any) => {
+				setAlarmRules([
+					{ ...res.data, severity: res.data.labels.severity }
+				]);
+				res.data.ding ? setDingChecked(true) : setDingChecked(false);
+				res.data.mail ? setMailChecked(true) : setMailChecked(false);
+				setSystemId(res.data.clusterId);
+				getUserList({ alertRuleId: ruleId });
+				setDetail(res.data);
+			});
 		} else {
 			if (alarmType === 'system') {
 				setAlarms([
@@ -359,8 +370,8 @@ function CreateAlarm(): JSX.Element {
 					users: insertUser
 				}
 			};
-			if (record) {
-				sendData.alertRuleId = record.alertId;
+			if (ruleId) {
+				sendData.alertRuleId = ruleId;
 				sendData.data = {
 					middlewareAlertsDTO: value[0],
 					users: insertUser
@@ -402,8 +413,8 @@ function CreateAlarm(): JSX.Element {
 					users: insertUser
 				}
 			};
-			if (record) {
-				sendData.alertRuleId = record.alertId;
+			if (ruleId) {
+				sendData.alertRuleId = ruleId;
 				sendData.data = {
 					middlewareAlertsDTO: value[0],
 					users: insertUser
@@ -459,9 +470,9 @@ function CreateAlarm(): JSX.Element {
 		if (alarmType === 'system') {
 			const data = alarmRules.map((item) => {
 				item.labels = { ...item.labels, severity: item.severity };
-				if (record) {
+				if (detail) {
 					item.annotations = {
-						...record.annotations,
+						...detail.annotations,
 						message: item.content
 					};
 				} else {
@@ -471,7 +482,7 @@ function CreateAlarm(): JSX.Element {
 				}
 				item.lay = 'system';
 				item.ip = window.location.host;
-				record ? (item.enable = record.enable) : (item.enable = 0);
+				detail ? (item.enable = detail.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				return item;
@@ -506,7 +517,7 @@ function CreateAlarm(): JSX.Element {
 					severity: item.severity as string
 				};
 				item.lay = 'service';
-				record ? (item.enable = record.enable) : (item.enable = 0);
+				detail ? (item.enable = detail.enable) : (item.enable = 0);
 				dingChecked ? (item.ding = 'ding') : (item.ding = '');
 				mailChecked ? (item.mail = 'mail') : (item.mail = '');
 				item.ip = window.location.host;
@@ -536,7 +547,7 @@ function CreateAlarm(): JSX.Element {
 		<Page className="create-alarm">
 			<Header
 				title={
-					record
+					detail
 						? '修改告警规则'
 						: `新建告警规则${
 								middlewareName ? '(' + middlewareName + ')' : ''
@@ -573,7 +584,7 @@ function CreateAlarm(): JSX.Element {
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
 							placeholder="请选择资源池"
-							disabled={record}
+							disabled={ruleId as unknown as boolean}
 						>
 							{poolList.length &&
 								poolList.map((item: any) => {
@@ -863,7 +874,9 @@ function CreateAlarm(): JSX.Element {
 												/>
 											</Button>
 											<Button
-												disabled={record}
+												disabled={
+													ruleId as unknown as boolean
+												}
 												onClick={() => addAlarm()}
 												style={{ marginRight: '8px' }}
 											>

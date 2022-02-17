@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import moment from 'moment';
 import { LinkButton, Actions } from '@alicloud/console-components-actions';
@@ -20,7 +21,7 @@ import {
 	updateAlarm
 } from '@/services/middleware';
 import storage from '@/utils/storage';
-import { RuleProps, ServiceRuleItem } from '../detail';
+import { DetailParams, RuleProps, ServiceRuleItem } from '../detail';
 
 function Rules(props: RuleProps): JSX.Element {
 	const history = useHistory();
@@ -34,17 +35,17 @@ function Rules(props: RuleProps): JSX.Element {
 		monitor,
 		alarmType
 	} = props;
+	const params: DetailParams = useParams();
+	const { name, aliasName, currentTab, chartVersion } = params;
 	const [searchText, setSearchText] = useState<string>('');
 	const [dataSource, setDataSource] = useState<ServiceRuleItem[]>([]);
 	const [originData, setOriginData] = useState<ServiceRuleItem[]>([]);
 	const [poolList, setPoolList] = useState([]);
-	const objFilter = {
-		filters: alarmType === 'system' ? poolList : null,
-		filterMode: alarmType === 'system' ? 'single' : null
-	};
 
 	const onRefresh = () => {
-		getData(clusterId, middlewareName, namespace, searchText);
+		if (middlewareName && namespace) {
+			getData(clusterId, middlewareName, namespace, searchText);
+		}
 	};
 
 	const createTimeRender = (value: string) => {
@@ -53,7 +54,9 @@ function Rules(props: RuleProps): JSX.Element {
 	};
 
 	useEffect(() => {
-		getData(clusterId, middlewareName, namespace, searchText);
+		if (middlewareName && namespace) {
+			getData(clusterId, middlewareName, namespace, searchText);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -122,7 +125,14 @@ function Rules(props: RuleProps): JSX.Element {
 				onOk: () => {
 					deleteAlarm(sendData).then((res) => {
 						if (res.success) {
-							getData(clusterId, middlewareName, namespace, '');
+							if (middlewareName && namespace) {
+								getData(
+									clusterId,
+									middlewareName,
+									namespace,
+									''
+								);
+							}
 							Message.show(
 								messageConfig('success', '成功', '删除成功')
 							);
@@ -146,7 +156,14 @@ function Rules(props: RuleProps): JSX.Element {
 				onOk: () => {
 					deleteAlarms(sendData).then((res) => {
 						if (res.success) {
-							getData(clusterId, middlewareName, namespace, '');
+							if (middlewareName && namespace) {
+								getData(
+									clusterId,
+									middlewareName,
+									namespace,
+									''
+								);
+							}
 							Message.show(
 								messageConfig('success', '成功', '删除成功')
 							);
@@ -168,7 +185,13 @@ function Rules(props: RuleProps): JSX.Element {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						history.push('/systemManagement/createAlarm');
+						alarmType === 'system'
+							? history.push(
+									`/systemManagement/systemAlarm/createAlarm/system/${record.alertId}`
+							  )
+							: history.push(
+									`/serviceList/${name}/${aliasName}/${currentTab}/createAlarm/${middlewareName}/${type}/${chartVersion}/${clusterId}/${namespace}/${record.alertId}`
+							  );
 						storage.setSession('alarm', { ...props, record });
 					}}
 				>
@@ -187,8 +210,12 @@ function Rules(props: RuleProps): JSX.Element {
 				type="primary"
 				onClick={() => {
 					alarmType === 'system'
-						? history.push('/systemManagement/createAlarm')
-						: history.push('/serviceList/createAlarm');
+						? history.push(
+								'/systemManagement/systemAlarm/createAlarm/system'
+						  )
+						: history.push(
+								`/serviceList/${name}/${aliasName}/${currentTab}/createAlarm/${middlewareName}/${type}/${chartVersion}/${clusterId}/${namespace}`
+						  );
 					storage.setSession('alarm', props);
 				}}
 			>
@@ -243,12 +270,14 @@ function Rules(props: RuleProps): JSX.Element {
 						};
 						updateAlarm(sendData).then((res) => {
 							if (res.success) {
-								getData(
-									clusterId,
-									middlewareName,
-									namespace,
-									''
-								);
+								if (middlewareName && namespace) {
+									getData(
+										clusterId,
+										middlewareName,
+										namespace,
+										''
+									);
+								}
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
@@ -281,12 +310,14 @@ function Rules(props: RuleProps): JSX.Element {
 						};
 						updateAlarms(sendData).then((res) => {
 							if (res.success) {
-								getData(
-									clusterId,
-									middlewareName,
-									namespace,
-									''
-								);
+								if (middlewareName && namespace) {
+									getData(
+										clusterId,
+										middlewareName,
+										namespace,
+										''
+									);
+								}
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
@@ -373,7 +404,7 @@ function Rules(props: RuleProps): JSX.Element {
 		);
 	}
 
-	if (customMid && !capabilities.includes('alert')) {
+	if (customMid && !capabilities?.includes('alert')) {
 		return <DefaultPicture />;
 	}
 

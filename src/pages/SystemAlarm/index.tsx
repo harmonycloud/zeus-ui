@@ -1,28 +1,33 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import { Tab } from '@alicloud/console-components';
+
 import AlarmRecord from './alarmRecord';
+import GuidePage from '../GuidePage';
 import AlarmSet from './alarmSet';
 import ServerAlarm from '@/pages/ServiceListDetail/ServeAlarm';
-import './index.scss';
+
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
-import GuidePage from '../GuidePage';
+import { StoreState } from '@/types';
+import { systemAlarmProps } from './systemAlarm';
 
-const { Menu } = Page;
-function SystemAlarm(props) {
+import './index.scss';
+import { monitorProps } from '@/types/comment';
+
+function SystemAlarm(props: systemAlarmProps) {
 	const [activeKey, setActiveKey] = useState(
 		storage.getLocal('systemTab') || 'alarmRecord'
 	);
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
-	const onChange = (key) => {
+	const onChange = (key: string | number) => {
 		setActiveKey(key);
 		storage.setLocal('systemTab', key);
 	};
 
 	useEffect(() => {
-		return () => storage.removeLocal('systemTab', '');
+		return () => storage.removeLocal('systemTab');
 	}, []);
 	if (
 		JSON.stringify(globalCluster) === '{}' &&
@@ -46,7 +51,7 @@ function SystemAlarm(props) {
 						<ServerAlarm
 							alarmType={'system'}
 							clusterId={globalCluster.id}
-							monitor={globalCluster.monitor}
+							monitor={globalCluster.monitor as monitorProps}
 						/>
 					</Tab.Item>
 					<Tab.Item title="告警设置" key="alarmSet">
@@ -58,4 +63,7 @@ function SystemAlarm(props) {
 	);
 }
 
-export default connect(({ globalVar }) => ({ globalVar }), {})(SystemAlarm);
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps)(SystemAlarm);

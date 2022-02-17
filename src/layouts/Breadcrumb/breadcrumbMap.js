@@ -18,6 +18,7 @@ export default {
 	dataSecurity: '数据安全',
 	systemManagement: '系统管理',
 	systemAlarm: '系统告警',
+	createAlarm: '新建告警',
 	userManagement: '用户管理',
 	roleManagement: '角色管理',
 	operationAudit: '操作审计',

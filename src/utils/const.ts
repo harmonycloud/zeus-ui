@@ -1,4 +1,5 @@
 import { filtersProps } from '@/types/comment';
+
 export const states: filtersProps[] = [
 	{ value: 'Creating', label: '启动中' },
 	{ value: 'Running', label: '运行正常' },
@@ -122,7 +123,7 @@ export const symbols = [
 	{ value: '<=', label: '<=' },
 	{ value: '!=', label: '!=' }
 ];
-export const alarmWarn = [
+export const alarmWarn: any[] = [
 	{
 		value: 'info',
 		label: '一般'

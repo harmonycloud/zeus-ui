@@ -605,7 +605,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								messageConfig(
 									'error',
 									'失败',
-									'服务控制台地址为空。'
+									`请先到服务暴露中，暴露${record.name}的${
+										record.name
+									}${
+										record.type === 'elasticsearch'
+											? '-kibana'
+											: record.type === 'kafka'
+											? '-manager-svc'
+											: '-console-svc'
+									}服务。`
 								)
 							);
 							return;

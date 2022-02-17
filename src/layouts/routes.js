@@ -280,7 +280,22 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/systemManagement/createAlarm"
+					path="/systemManagement/systemAlarm/createAlarm/:alarmType"
+					component={CreateAlarm}
+					exact
+				/>
+				<Route
+					path="/systemManagement/systemAlarm/createAlarm/:alarmType/:ruleId"
+					component={CreateAlarm}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/:currentTab/createAlarm/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
+					component={CreateAlarm}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/:currentTab/createAlarm/:middlewareName/:type/:chartVersion/:clusterId/:namespace/:ruleId"
 					component={CreateAlarm}
 					exact
 				/>

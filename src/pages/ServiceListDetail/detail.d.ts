@@ -350,12 +350,12 @@ export interface RealTimeProps extends CommonLogProps {
 	cleanRealLog: () => void;
 }
 export interface RuleProps {
-	middlewareName: string;
+	middlewareName?: string;
 	clusterId: string;
-	namespace: string;
-	type: string;
-	customMid: boolean;
-	capabilities: string[];
+	namespace?: string;
+	type?: string;
+	customMid?: boolean;
+	capabilities?: string[];
 	monitor: monitorProps;
 	alarmType: string;
 }
@@ -507,4 +507,13 @@ export interface InstanceDetailsProps {
 	setCluster: (value: any) => void;
 	setNamespace: (value: any) => void;
 	setRefreshCluster: (flag: boolean) => void;
+}
+
+export interface CreateServeAlarmProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	type: string;
+	alarmType: string;
+	ruleId: string;
 }

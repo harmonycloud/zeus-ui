@@ -85,6 +85,9 @@ export const getUsedAlarm = (params) => {
 export const getCanUseAlarms = (params) => {
 	return Axios.get(MIDDLEWARE.getCanUseAlarmRules, params);
 };
+export const getAlarmDetail = (params) => {
+	return Axios.get(MIDDLEWARE.getAlarmDetail, params);
+};
 export const createAlarms = (params) => {
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.addAlarmRules, params.url);
 	return Axios.json(restUrl + '?ding=' + params.ding, params.data);
