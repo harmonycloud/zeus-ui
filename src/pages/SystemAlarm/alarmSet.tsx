@@ -30,21 +30,22 @@ const formItemLayout = {
 	}
 };
 
-function AlarmSet(props) {
+function AlarmSet(props: any) {
 	const field = Field.useField();
+	const { activeKey } = props;
+
 	const dingField = Field.useField();
-	const [btnStatus, setBtnStatus] = useState(true);
-	const [dingBtnStatus, setDingBtnStatus] = useState(true);
+	const [btnStatus, setBtnStatus] = useState<boolean>(true);
+	const [dingBtnStatus, setDingBtnStatus] = useState<boolean>(true);
 	const [data, setData] = useState();
 	const [dingData, setDingData] = useState();
 	const [dingFormList, setDingFormList] = useState([
 		{ index: 0, id: Math.random() }
 	]);
-	const [connect, setConnect] = useState();
-	const [dingConnect, setDingConnect] = useState();
-	const [show, setShow] = useState(true);
-	const [dingShow, setDingShow] = useState(true);
-	const { activeKey } = props;
+	const [connect, setConnect] = useState<string>('');
+	const [dingConnect, setDingConnect] = useState<string[] | null>();
+	const [show, setShow] = useState<boolean>(true);
+	const [dingShow, setDingShow] = useState<boolean>(true);
 
 	useEffect(() => {
 		if (activeKey === 'alarmSet') {
@@ -56,17 +57,12 @@ function AlarmSet(props) {
 	const getDingData = () => {
 		getDing().then((res) => {
 			if (!res.data || !res.data.length) return;
-			// console.log(res);
-			dingField.setValues(
-				Object.assign(
-					...res.data.map((item, index) => {
-						return {
-							['webhook' + index]: item.webhook,
-							['secretKey' + index]: item.secretKey
-						};
-					})
-				)
-			);
+			res.data.map((item: any, index: number) => {
+				dingField.setValues({
+					['webhook' + index]: item.webhook,
+					['secretKey' + index]: item.secretKey
+				})
+			})
 			setDingFormList(res.data);
 			checkDingBtn();
 			setDingData(res.data);
@@ -76,7 +72,6 @@ function AlarmSet(props) {
 	const getMailInfoData = () => {
 		getMailInfo().then(async (res) => {
 			if (!res.data) return;
-			// console.log(res);
 			await field.setValues(res.data);
 			checkBtn();
 			setData(res.data);
@@ -87,7 +82,6 @@ function AlarmSet(props) {
 		field.validate((error, value) => {
 			if (error) return;
 			setMail(value).then((res) => {
-				// console.log(res);
 				if (res.data) return;
 				getMailInfoData();
 				Message.show(messageConfig('success', '成功', '邮箱设置成功'));
@@ -98,15 +92,15 @@ function AlarmSet(props) {
 	const dingSubmit = () => {
 		dingField.validate((error, value) => {
 			if (error) return;
-			let arr1 = [];
-			let arr2 = [];
+			let arr1: any[] = [];
+			let arr2: any[] = [];
 			for (let x in value) {
 				if (x.substring(0, x.length - 1) === 'webhook') {
-					arr1.splice(x.substring(x.length - 1, x.length), 0, {
+					arr1.splice(Number(x.substring(x.length - 1, x.length)), 0, {
 						[x.substring(0, x.length - 1)]: value[x]
 					});
 				} else {
-					arr2.splice(x.substring(x.length - 1, x.length), 0, {
+					arr2.splice(Number(x.substring(x.length - 1, x.length)), 0, {
 						[x.substring(0, x.length - 1)]: value[x]
 					});
 				}
@@ -118,9 +112,7 @@ function AlarmSet(props) {
 					...data
 				};
 			});
-			// console.log(arrs);
 			setDing(arrs).then((res) => {
-				// console.log(res);
 				if (res.data) return;
 				getDingData();
 				Message.show(
@@ -131,7 +123,7 @@ function AlarmSet(props) {
 	};
 
 	const checkBtn = () => {
-		let obj = {
+		let obj: any = {
 			port: null,
 			password: null,
 			mailPath: null,
@@ -176,7 +168,7 @@ function AlarmSet(props) {
 		}
 	};
 
-	const reduceDingFormList = (id, index) => {
+	const reduceDingFormList = (id: number, index: number) => {
 		dingFormList.length > 1 &&
 			setDingFormList(dingFormList.filter((arr) => id !== arr.id));
 		dingConnect &&
@@ -185,9 +177,10 @@ function AlarmSet(props) {
 	};
 
 	const testMail = () => {
+		let data: any = field.getValues();
 		let sendData = {
-			email: field.getValues().userName,
-			password: field.getValues().password
+			email: data.userName,
+			password: data.password
 		};
 		connectMail(sendData).then((res) => {
 			if (res.data) {
@@ -200,8 +193,8 @@ function AlarmSet(props) {
 	const testDing = () => {
 		dingField.validate((error, value) => {
 			if (error) return;
-			let arr1 = [];
-			let arr2 = [];
+			let arr1: any = [];
+			let arr2: any = [];
 			for (let x in value) {
 				if (x.substring(0, x.length - 1) === 'webhook') {
 					arr1.splice(x.substring(x.length - 1, x.length), 0, {
@@ -213,8 +206,8 @@ function AlarmSet(props) {
 					});
 				}
 			}
-			const arrs = arr1.map((item, index) => {
-				const data = arr2.find((i, key) => index == key);
+			const arrs = arr1.map((item: any, index: number) => {
+				const data = arr2.find((i: string, key: number) => index == key);
 				return {
 					...item,
 					...data
@@ -224,14 +217,13 @@ function AlarmSet(props) {
 				if (res.success) {
 					Message.show(messageConfig('success', '成功', '测试完成'));
 				}
-				setDingConnect(res.data.map((item) => item.success));
+				setDingConnect(res.data.map((item: any) => item.success));
 			});
 		});
 	};
 
 	return (
 		<div className="alarm-set">
-			{/* {console.log(data, dingData)} */}
 			<div className="box">
 				<div className="box-header" onClick={() => setShow(!show)}>
 					<div className="header-img">
@@ -337,7 +329,7 @@ function AlarmSet(props) {
 										onClick={() => {
 											field.reset();
 											checkBtn();
-											setConnect();
+											setConnect('');
 										}}
 									>
 										重置
@@ -466,7 +458,7 @@ function AlarmSet(props) {
 													</div>
 													{dingConnect &&
 														typeof dingConnect[
-															index
+														index
 														] !== 'undefined' && (
 															<div className="concat">
 																<span
@@ -511,7 +503,7 @@ function AlarmSet(props) {
 										onClick={() => {
 											dingField.reset();
 											setDingBtnStatus(true);
-											setDingConnect();
+											setDingConnect(null);
 										}}
 									>
 										重置

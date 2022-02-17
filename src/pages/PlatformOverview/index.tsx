@@ -31,8 +31,9 @@ import { radioList } from '@/utils/const';
 import * as echarts from 'echarts/core';
 import moment from 'moment';
 
-import { totalDataProps, evevtDataProps, operatorListProps, auditListProps,alertSummaryProps, poolListItem, briefInfoProps } from './platformOverview';
+import { totalDataProps, operatorListProps, auditListProps,alertSummaryProps, briefInfoProps } from './platformOverview';
 import { StoreState } from '@/types'
+import { poolListItem, evevtDataProps } from '@/types/comment'
 
 import './platformOverview.scss';
 

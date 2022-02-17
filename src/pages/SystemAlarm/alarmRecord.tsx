@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
+
 import Table from '@/components/MidTable';
+import ComponentsNull from '@/components/ComponentsNull';
+import DefaultPicture from '@/components/DefaultPicture';
+
 import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
-import ComponentsNull from '@/components/ComponentsNull';
 import { nullRender } from '@/utils/utils';
 import { getClusters } from '@/services/common.js';
 import { alarmWarn } from '@/utils/const';
 
-function AlarmRecord(props) {
+import { alarmRecordProps } from './systemAlarm';
+import { poolListItem, evevtDataProps} from '@/types/comment';
+
+function AlarmRecord(props: alarmRecordProps) {
 	const {
 		middlewareName,
 		clusterId,
@@ -18,24 +24,18 @@ function AlarmRecord(props) {
 		monitor,
 		alarmType
 	} = props;
-	const [current, setCurrent] = useState(1); // 页码 current
-	const [level, setLevel] = useState(''); // level
-	const [total, setTotal] = useState(10); // 总数
-	const [eventData, setEventData] = useState([]);
-	const [originData, setOriginData] = useState([]);
-	const [keyword, setKeyword] = useState('');
-	const [poolList, setPoolList] = useState([]);
-	const objFilter = {
-		filters: alarmType === 'system' ? poolList : null,
-		filterMode: alarmType === 'system' ? 'single' : null
-	};
+	const [eventData, setEventData] = useState<evevtDataProps[]>([]);
+	const [originData, setOriginData] = useState<evevtDataProps[]>([]);
+	const [keyword, setKeyword] = useState<string>('');
+	const [filters, setFilters] = useState<any[] | undefined>();
+	const [filterMode, setFilterMode] = useState<"single" | "multiple" | undefined>();
 
 	const onRefresh = () => {
 		getData();
 	};
 
-	const createTimeRender = (value) => {
-		if (!value) return '/';
+	const createTimeRender = (value: string) => {
+		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 
@@ -43,20 +43,21 @@ function AlarmRecord(props) {
 		getData();
 		getClusters().then((res) => {
 			if (!res.data) return;
-			setPoolList(
-				res.data.map((item) => {
-					return { label: item.id, value: item.id };
-				})
-			);
+			if (alarmType === 'system') {
+				setFilters(
+					res.data.map((item: poolListItem) => {
+						return { label: item.id, value: item.id };
+					})
+				);
+				setFilterMode('single');
+			}
 		});
 	}, [middlewareName]);
 
 	const getData = () => {
 		if (alarmType === 'system') {
 			const sendData = {
-				// current: current,
-				// size: 10,
-				level: level,
+				level: '',
 				clusterId,
 				lay: 'system',
 				keyword
@@ -64,13 +65,10 @@ function AlarmRecord(props) {
 			getEvent(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);
 				setOriginData(res.data ? res.data.list : []);
-				setTotal(res.data ? res.data.total : 0);
 			});
 		} else {
 			const sendData = {
-				// current: current,
-				// size: 10,
-				level: level,
+				level: '',
 				middlewareName,
 				clusterId,
 				namespace,
@@ -80,12 +78,11 @@ function AlarmRecord(props) {
 			getEvent(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);
 				setOriginData(res.data ? res.data.list : []);
-				setTotal(res.data ? res.data.total : 0);
 			});
 		}
 	};
 
-	const levelRender = (value, index, record) => {
+	const levelRender = (value: string) => {
 		return (
 			<span className={value + ' level'}>
 				{value && alarmWarn.find((item) => item.value === value)
@@ -95,7 +92,7 @@ function AlarmRecord(props) {
 		);
 	};
 
-	const onSort = (dataIndex, order) => {
+	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'time') {
 			const dsTemp = eventData.sort((a, b) => {
 				const result =
@@ -105,14 +102,14 @@ function AlarmRecord(props) {
 						? 1
 						: -1
 					: result > 0
-					? -1
-					: 1;
+						? -1
+						: 1;
 			});
 			setEventData([...dsTemp]);
 		}
 	};
 
-	const onFilter = (filterParams) => {
+	const onFilter = (filterParams: any) => {
 		if (filterParams.level) {
 			let {
 				level: { selectedKeys }
@@ -121,7 +118,7 @@ function AlarmRecord(props) {
 				setEventData(originData);
 			} else {
 				let tempData = null;
-				tempData = originData.filter((item) => {
+				tempData = originData.filter((item: evevtDataProps) => {
 					return item.level === selectedKeys[0];
 				});
 				setEventData(tempData);
@@ -134,7 +131,7 @@ function AlarmRecord(props) {
 				setEventData(originData);
 			} else {
 				let tempData = null;
-				tempData = originData.filter((item) => {
+				tempData = originData.filter((item: evevtDataProps) => {
 					return item.clusterId === selectedKeys[0];
 				});
 				setEventData(tempData);
@@ -142,7 +139,7 @@ function AlarmRecord(props) {
 		}
 	};
 
-	const nameRender = (value) => {
+	const nameRender = (value: string) => {
 		return alarmType === 'system'
 			? value
 			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
@@ -152,6 +149,10 @@ function AlarmRecord(props) {
 		return (
 			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
 		);
+	}
+
+	if (customMid && !capabilities.includes('alert')) {
+		return <DefaultPicture />;
 	}
 
 	return (
@@ -167,7 +168,7 @@ function AlarmRecord(props) {
 			search={{
 				placeholder: '请输入告警ID、告警内容、规则描述、实际监测搜索',
 				onSearch: onRefresh,
-				onChange: (value) => setKeyword(value),
+				onChange: (value: string) => setKeyword(value),
 				value: keyword
 			}}
 			searchStyle={{
@@ -200,7 +201,8 @@ function AlarmRecord(props) {
 				title="告警对象"
 				dataIndex="clusterId"
 				cell={nameRender}
-				{...objFilter}
+				filters={filters}
+				filterMode={filterMode}
 			/>
 			<Table.Column
 				title="规则描述"

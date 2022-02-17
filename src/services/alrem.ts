@@ -10,7 +10,7 @@ export const setMail = (params: any) => {
 	return Axios.json(Alarm.setMail, params, {}, 'POST');
 };
 
-export const getMailInfo = (params: any) => {
+export const getMailInfo = (params?: any) => {
 	return Axios.get(Alarm.getMail, params);
 };
 
@@ -30,7 +30,7 @@ export const setDing = (params: any) => {
 	return Axios.json(Alarm.ding, params, {}, 'POST');
 };
 
-export const getDing = (params: any) => {
+export const getDing = (params?: any) => {
 	return Axios.get(Alarm.ding, params);
 };
 

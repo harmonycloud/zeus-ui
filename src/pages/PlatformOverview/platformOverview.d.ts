@@ -9,29 +9,6 @@ export interface totalDataProps {
     memoryUsedPercent: string
 }
 
-export interface evevtDataProps {
-    alert: string;
-    alertId: string;
-    capitalType: string;
-    chartVersion: string;
-    clusterId: string;
-    content: string;
-    expr: string;
-    lay: string;
-    level: string;
-    message: string;
-    name: string;
-    namespace: string;
-    summary: string;
-    time: string;
-    type: string;
-}
-
-export interface poolListItem {
-    name: string;
-    id: number
-}
-
 export interface operatorListProps {
     name: string;
     clusterId: string;
