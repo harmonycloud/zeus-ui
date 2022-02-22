@@ -98,11 +98,11 @@ export const radioList = [
 	},
 	{
 		value: 'info',
-		label: '提示'
+		label: '一般'
 	},
 	{
 		value: 'warning',
-		label: '告警'
+		label: '重要'
 	},
 	{
 		value: 'critical',

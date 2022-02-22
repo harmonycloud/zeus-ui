@@ -78,9 +78,9 @@ function CreateAlarm(): JSX.Element {
 			type
 		};
 		getCanUseAlarms(sendData).then((res) => {
-			if (res.success) {
+			if (res.success) {				
 				setAlarms(JSON.parse(JSON.stringify(res.data)));
-				setAlarmRules([]);
+				setAlarmRules([{}]);
 				if (res.data.length < 0) {
 					Message.show(
 						messageConfig(
@@ -760,13 +760,6 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTime}
-												state={
-													Number(item.alertTime) >
-														1440 ||
-													Number(item.alertTime) < 1
-														? 'error'
-														: 'warning'
-												}
 												onChange={(value) => {
 													onChange(
 														value,
@@ -781,13 +774,6 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
-												state={
-													Number(item.alertTime) >
-														1440 ||
-													Number(item.alertTime) < 1
-														? 'error'
-														: 'warning'
-												}
 												onChange={(value) => {
 													onChange(
 														value,
