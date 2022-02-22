@@ -824,93 +824,101 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 						</div>
 					</FormBlock>
 					<FormBlock title="日志收集">
-						<div className={styles['log-collection']}>
-							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											文件日志收集
-										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
-											}
-											closable={false}
-										>
-											<span
-												style={{ lineHeight: '18px' }}
-											>
-												开启该功能，平台会将日志目录下的文件日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
+						<div className={styles['log-collection-content']}>
+							<div className={styles['log-collection']}>
+								<ul className="form-layout">
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span style={{ marginRight: 8 }}>
+												文件日志收集
 											</span>
-										</Balloon>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['file-log']}`}
-									>
-										<div className={styles['switch']}>
-											{fileLog ? '已开启' : '关闭'}
-											<Switch
-												checked={fileLog}
-												onChange={(value) =>
-													setFileLog(value)
+											<Balloon
+												trigger={
+													<Icon
+														type="question-circle"
+														size="xs"
+													/>
 												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-									</div>
-								</li>
-							</ul>
-						</div>
-						<div className={styles['log-collection']}>
-							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											标准日志收集
-										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
-											}
-											closable={false}
-										>
-											<span
-												style={{ lineHeight: '18px' }}
+												closable={false}
 											>
-												开启该功能，平台会将标准输出（stdout）的日志收集至Elasticsearch中，可以在服务详情下的“日志管理”菜单下查看具体的日志，如果当前资源池未部署/对接Elasticsearch组件，则无法启用该功能
-											</span>
-										</Balloon>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['standard-log']}`}
-									>
-										<div className={styles['switch']}>
-											{standardLog ? '已开启' : '关闭'}
-											<Switch
-												checked={standardLog}
-												onChange={(value) =>
-													setStandardLog(value)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
+												<span
+													style={{
+														lineHeight: '18px'
+													}}
+												>
+													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+												</span>
+											</Balloon>
+										</label>
+										<div
+											className={`form-content display-flex ${styles['file-log']}`}
+										>
+											<div className={styles['switch']}>
+												{fileLog ? '已开启' : '关闭'}
+												<Switch
+													checked={fileLog}
+													onChange={(value) =>
+														setFileLog(value)
+													}
+													size="small"
+													style={{
+														marginLeft: 16,
+														verticalAlign: 'middle'
+													}}
+												/>
+											</div>
 										</div>
-									</div>
-								</li>
-							</ul>
+									</li>
+								</ul>
+							</div>
+							<div className={styles['log-collection']}>
+								<ul className="form-layout">
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span style={{ marginRight: 8 }}>
+												标准日志收集
+											</span>
+											<Balloon
+												trigger={
+													<Icon
+														type="question-circle"
+														size="xs"
+													/>
+												}
+												closable={false}
+											>
+												<span
+													style={{
+														lineHeight: '18px'
+													}}
+												>
+													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+												</span>
+											</Balloon>
+										</label>
+										<div
+											className={`form-content display-flex ${styles['standard-log']}`}
+										>
+											<div className={styles['switch']}>
+												{standardLog
+													? '已开启'
+													: '关闭'}
+												<Switch
+													checked={standardLog}
+													onChange={(value) =>
+														setStandardLog(value)
+													}
+													size="small"
+													style={{
+														marginLeft: 16,
+														verticalAlign: 'middle'
+													}}
+												/>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</FormBlock>
 					<FormBlock title="Redis配置">
