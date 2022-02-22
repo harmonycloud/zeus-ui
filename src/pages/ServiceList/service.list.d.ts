@@ -48,9 +48,9 @@ export interface serviceListItemProps {
 	aliasName: string;
 }
 
-export interface CurrentService {
+interface ListParamsProps {
 	name: string;
-	type: string;
+	aliasName: string;
 }
 
 export interface middlewareProps {
