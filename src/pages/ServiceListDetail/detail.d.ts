@@ -191,6 +191,7 @@ export interface runParams {
 	model: string;
 	namespace: string;
 	storageType: string;
+	hostNetwork?: any
 }
 export interface DynamicDataParams {
 	title: string;

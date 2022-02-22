@@ -149,7 +149,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							className="name-link"
 							onClick={() => {
 								window.open(
-									'https://harmonycloudcaas.yuque.com/acntg9/wbcthn/msdsob'
+									'https://zeusharmonycloud.yuque.com/docs/share/b1cd76ac-08c8-481d-9dc7-d38565505bc7?#'
 								);
 							}}
 						>
