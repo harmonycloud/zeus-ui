@@ -4,18 +4,18 @@ import { Button, Radio, Message, Icon } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
 import { getMiddlewareRepository } from '@/services/repository';
+import messageConfig from '@/components/messageConfig';
+import MiddlewareItem from './MiddlewareItem';
+import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
+import GuidePage from '../GuidePage';
 import { StoreState } from '@/types/index';
 import {
 	middlewareProps,
 	middlewareListProps,
 	middlewareRepositoryProps
 } from './middleware';
-import timerClass from '@/utils/timerClass';
-import messageConfig from '@/components/messageConfig';
-import MiddlewareItem from './MiddlewareItem';
-import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
-import GuidePage from '../GuidePage';
 import { changeObjectIndex } from '@/utils/utils';
+import timerClass from '@/utils/timerClass';
 import './index.scss';
 
 const RadioGroup = Radio.Group;
