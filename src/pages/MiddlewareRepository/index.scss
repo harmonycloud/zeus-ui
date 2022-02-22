@@ -32,7 +32,8 @@ $component-name: 'middleware-repository';
 		height: auto;
 		padding: 16px 20px;
 		background-color: $white;
-		margin-bottom: 13px;
+		margin-top: 13px;
+		box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.09);
 		& > p {
 			font-size: $font-h2;
 			font-family: PingFangSC-Medium, PingFang SC;
