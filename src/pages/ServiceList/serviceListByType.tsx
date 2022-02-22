@@ -35,9 +35,9 @@ import {
 import {
 	serviceListItemProps,
 	serviceProps,
-	CurrentService,
 	serviceListProps,
-	middlewareProps
+	middlewareProps,
+	ListParamsProps
 } from './service.list';
 import { StoreState } from '@/types/index';
 import storage from '@/utils/storage';
@@ -60,10 +60,7 @@ const tabJudge: (record: serviceProps, tab: string) => boolean = (
 	}
 };
 const Tooltip = Balloon.Tooltip;
-interface paramsProps {
-	name: string;
-	aliasName: string;
-}
+
 const ServiceListByType = (props: serviceListProps) => {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
 	const {
@@ -72,7 +69,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
-	const [currentService, setCurrentServiceType] = useState<CurrentService>();
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
@@ -80,7 +76,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const [selectedKeys, setSelectKeys] = useState<string[]>([]);
 	const [cantRelease, setCantRelease] = useState<boolean>(false);
 	const history = useHistory();
-	const params: paramsProps = useParams();
+	const params: ListParamsProps = useParams();
 	const { name, aliasName } = params;
 	const [lock, setLock] = useState<any>({ lock: 'right' });
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
@@ -94,41 +90,31 @@ const ServiceListByType = (props: serviceListProps) => {
 		};
 	}, []);
 	useEffect(() => {
-		setCurrentServiceType({
-			name: aliasName,
-			type: name
-		});
-	}, [params]);
-	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
 			if (mounted) {
-				if (currentService && currentService?.type !== '') {
-					setLoadingVisible(true);
-					getList({
-						clusterId: cluster.id,
-						namespace: namespace.name,
-						keyword: keyword,
-						type: currentService?.type
-					})
-						.then((res) => {
-							if (res.success) {
-								res.data && setDataSource(res.data[0]);
-								if (res.data.length > 0) {
-									setShowDataSource(res.data[0].serviceList);
-								} else {
-									setShowDataSource([]);
-								}
+				setLoadingVisible(true);
+				getList({
+					clusterId: cluster.id,
+					namespace: namespace.name,
+					keyword: keyword,
+					type: name
+				})
+					.then((res) => {
+						if (res.success) {
+							res.data && setDataSource(res.data[0]);
+							if (res.data.length > 0) {
+								setShowDataSource(res.data[0].serviceList);
 							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
+								setShowDataSource([]);
 							}
-						})
-						.finally(() => {
-							setLoadingVisible(false);
-						});
-				}
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						setLoadingVisible(false);
+					});
 				getComponents({ clusterId: cluster.id }).then((res) => {
 					if (res.success) {
 						const temp = res.data.find(
@@ -146,9 +132,8 @@ const ServiceListByType = (props: serviceListProps) => {
 				});
 				getCanReleaseMiddleware({
 					clusterId: cluster.id,
-					type: params.name
+					type: name
 				}).then((res) => {
-					console.log(res);
 					if (res.success) {
 						setMiddlewareInfo(res.data);
 					} else {
@@ -158,16 +143,17 @@ const ServiceListByType = (props: serviceListProps) => {
 			}
 		}
 		return () => {
+			setShowDataSource([]);
 			mounted = false;
 		};
-	}, [namespace, currentService]);
+	}, [namespace, params]);
 	const getData = () => {
 		setLoadingVisible(true);
 		getList({
 			clusterId: cluster.id,
 			namespace: namespace.name,
 			keyword: keyword,
-			type: currentService?.type
+			type: name
 		})
 			.then((res) => {
 				if (res.success) {
@@ -296,33 +282,33 @@ const ServiceListByType = (props: serviceListProps) => {
 			switch (middlewareInfo.chartName) {
 				case 'mysql':
 					history.push(
-						`/serviceList/mysqlCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/mysqlCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'redis':
 					history.push(
-						`/serviceList/redisCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/redisCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'elasticsearch':
 					history.push(
-						`/serviceList/elasticsearchCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/elasticsearchCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'rocketmq':
 					history.push(
-						`/serviceList/rocketmqCreate/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/rocketmqCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				default:
 					history.push(
-						`/serviceList/dynamicForm/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
+						`/serviceList/dynamicForm/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
 					);
 					break;
 			}
 		} else {
 			history.push(
-				`/serviceList/dynamicForm/${currentService?.name}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
+				`/serviceList/dynamicForm/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
 			);
 		}
 	};
@@ -396,7 +382,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const operation = () => {
 		if (cantRelease) {
-			if (currentService?.type === 'mysql') {
+			if (name === 'mysql') {
 				return {
 					primary: (
 						<Tooltip
@@ -442,7 +428,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (!middlewareInfo) {
-			if (currentService?.type === 'mysql') {
+			if (name === 'mysql') {
 				return {
 					primary: (
 						<Tooltip
@@ -488,7 +474,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else {
-			if (currentService?.type === 'mysql') {
+			if (name === 'mysql') {
 				return {
 					primary: (
 						<Button
@@ -878,7 +864,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	return (
 		<Page>
 			<Header
-				title={`${currentService?.name || ''}服务列表`}
+				title={`${aliasName || ''}服务列表`}
 				subTitle="已发布中间件服务管理列表"
 			/>
 			<Content>

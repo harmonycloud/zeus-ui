@@ -82,17 +82,15 @@
 	background: $white;
 	border-top: 1px solid $border-color;
 }
-.log-collection {
-	padding: 8px 0 8px 0;
-	.file-log, .standard-log {
-		.switch {
-			width: 120px;
-			line-height: $line-height-lg * 2;
-		}
-	}
-	.file-log {
-		.input {
-			width: 50%;
+.log-collection-content{
+	display: flex;
+	.log-collection {
+		padding: 8px 0 8px 0;
+		.file-log, .standard-log {
+			.switch {
+				width: 120px;
+				line-height: $line-height-lg * 2;
+			}
 		}
 	}
 }
