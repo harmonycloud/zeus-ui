@@ -43,9 +43,9 @@ function Rules(props: RuleProps): JSX.Element {
 	const [poolList, setPoolList] = useState([]);
 
 	const onRefresh = () => {
-		if (middlewareName && namespace) {
+		// if (middlewareName && namespace) {
 			getData(clusterId, middlewareName, namespace, searchText);
-		}
+		// }
 	};
 
 	const createTimeRender = (value: string) => {
@@ -54,15 +54,15 @@ function Rules(props: RuleProps): JSX.Element {
 	};
 
 	useEffect(() => {
-		if (middlewareName && namespace) {
+		// if (middlewareName && namespace) {
 			getData(clusterId, middlewareName, namespace, searchText);
-		}
+		// }
 	}, []);
 
 	useEffect(() => {
-		if (clusterId && namespace && middlewareName) {
-			getData(clusterId, middlewareName, namespace, searchText);
-		}
+		// if (clusterId && namespace && middlewareName) {
+		getData(clusterId, middlewareName, namespace, searchText);
+		// }
 		getClusters().then((res) => {
 			if (!res.data) return;
 			setPoolList(
@@ -75,9 +75,9 @@ function Rules(props: RuleProps): JSX.Element {
 
 	const getData = (
 		clusterId: string,
-		middlewareName: string,
-		namespace: string,
-		keyword: string
+		middlewareName?: string,
+		namespace?: string,
+		keyword?: string
 	) => {
 		if (alarmType === 'system') {
 			const sendData = {
@@ -125,14 +125,14 @@ function Rules(props: RuleProps): JSX.Element {
 				onOk: () => {
 					deleteAlarm(sendData).then((res) => {
 						if (res.success) {
-							if (middlewareName && namespace) {
+							// if (middlewareName && namespace) {
 								getData(
 									clusterId,
 									middlewareName,
 									namespace,
 									''
 								);
-							}
+							// }
 							Message.show(
 								messageConfig('success', '成功', '删除成功')
 							);
@@ -156,14 +156,14 @@ function Rules(props: RuleProps): JSX.Element {
 				onOk: () => {
 					deleteAlarms(sendData).then((res) => {
 						if (res.success) {
-							if (middlewareName && namespace) {
+							// if (middlewareName && namespace) {
 								getData(
 									clusterId,
 									middlewareName,
 									namespace,
 									''
 								);
-							}
+							// }
 							Message.show(
 								messageConfig('success', '成功', '删除成功')
 							);
@@ -310,14 +310,14 @@ function Rules(props: RuleProps): JSX.Element {
 						};
 						updateAlarms(sendData).then((res) => {
 							if (res.success) {
-								if (middlewareName && namespace) {
+								// if (middlewareName && namespace) {
 									getData(
 										clusterId,
 										middlewareName,
 										namespace,
 										''
 									);
-								}
+								// }
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
