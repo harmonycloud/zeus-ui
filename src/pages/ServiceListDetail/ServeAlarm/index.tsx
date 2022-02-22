@@ -250,14 +250,12 @@ function Rules(props: RuleProps): JSX.Element {
 						};
 						updateAlarm(sendData).then((res) => {
 							if (res.success) {
-								if (middlewareName && namespace) {
 									getData(
 										clusterId,
 										middlewareName,
 										namespace,
 										''
 									);
-								}
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
@@ -290,14 +288,12 @@ function Rules(props: RuleProps): JSX.Element {
 						};
 						updateAlarms(sendData).then((res) => {
 							if (res.success) {
-								// if (middlewareName && namespace) {
 								getData(
 									clusterId,
 									middlewareName,
 									namespace,
 									''
 								);
-								// }
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
