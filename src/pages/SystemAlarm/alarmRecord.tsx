@@ -65,8 +65,8 @@ function AlarmRecord(props: alarmRecordProps) {
 				keyword
 			};
 			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.list : []);
-				setOriginData(res.data ? res.data.list : []);
+				setEventData(res.data ? res.data.alertPageInfo.list : []);
+				setOriginData(res.data ? res.data.alertPageInfo.list : []);
 			});
 		} else {
 			const sendData = {
@@ -78,8 +78,8 @@ function AlarmRecord(props: alarmRecordProps) {
 				keyword
 			};
 			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.list : []);
-				setOriginData(res.data ? res.data.list : []);
+				setEventData(res.data ? res.data.alertPageInfo.list : []);
+				setOriginData(res.data ? res.data.alertPageInfo.list : []);
 			});
 		}
 	};

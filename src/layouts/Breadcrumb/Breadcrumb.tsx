@@ -28,6 +28,14 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 		if (route.includes('middlewareRepository')) {
 			return '/middlewareRepository';
 		}
+		if(pathname.includes('alarm/createAlarm')) {
+			const arr = pathname.split('/');
+			arr.splice(5, 1);
+			arr.splice(8,2);
+			const result = arr.join('/');
+			return result;
+		}
+		
 		if (route) {
 			const arr = pathname.split('/');
 			arr.length = i === 0 ? 3 : i + 2;

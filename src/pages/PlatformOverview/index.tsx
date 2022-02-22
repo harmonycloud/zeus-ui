@@ -58,8 +58,8 @@ function PlatformOverview(): JSX.Element {
 		usedCpu: 0,
 		totalMemory: 0,
 		usedMemory: 0,
-		cpuUsedPercent: '0%',
-		memoryUsedPercent: '0%'
+		cpuUsedPercent: '',
+		memoryUsedPercent: ''
 	});
 	// 服务信息列表
 	const [briefInfoList, setBriefInfoList] = useState<briefInfoProps[]>([]);
@@ -87,6 +87,10 @@ function PlatformOverview(): JSX.Element {
 	useEffect(() => {
 		const clusterId = type === 'all' ? null : type;
 		const id = document.getElementById('id');
+		const alertData = {
+			current: current,
+			level: level
+		};
 		let chart: any = null;
 		if (id) chart = echarts.init(id);
 
@@ -104,16 +108,6 @@ function PlatformOverview(): JSX.Element {
 			setTotalData(res.data.clusterQuota);
 			setOperatorList(list);
 			setAuditList(res.data.auditList);
-			setLineOption(
-				getLineOption({
-					...res.data.alertSummary,
-					x: res.data.alertSummary.infoList
-				})
-			);
-			setAlertSummary({
-				...res.data.alertSummary,
-				x: res.data.alertSummary.infoList
-			});
 			chart.setOption(getPieOption(res.data.operatorDTO));
 
 			chart.on('legendselectchanged', (obj: any) => {
@@ -143,33 +137,29 @@ function PlatformOverview(): JSX.Element {
 		getServers({ clusterId }).then((res) => {
 			res.data && setBriefInfoList(res.data.briefInfoList);
 		});
+		getEventsData(alertData);
 	}, [type]);
-
-	useEffect(() => {
-		// 请求事件数据
-		if (!eventData) {
-			// 直接请求
-			const sendData = {
-				current: current,
-				size: 10,
-				level: level
-			};
-			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.list : []);
-				setTotal(res.data ? res.data.total : 0);
-			});
-		}
-	}, [eventData]);
 
 	const getEventsData = (data: any) => {
 		const sendData = {
-			current: data.current,
+			current: data.current || 1,
 			size: 10,
 			level: data.level
 		};
 		getEvent(sendData).then((res) => {
-			setEventData(res.data ? res.data.list : []);
-			setTotal(res.data ? res.data.total : 0);
+			setEventData(res.data ? res.data.alertPageInfo.list : []);
+			setTotal(res.data ? res.data.alertPageInfo.total : 0);
+			setTotal(res.data ? res.data.alertPageInfo.total : 0);
+				setLineOption(
+					getLineOption({
+						...res.data.alertSummary,
+						x: res.data.alertSummary.infoList
+					})
+				);
+				setAlertSummary({
+					...res.data.alertSummary,
+					x: res.data.alertSummary.infoList
+				});
 		});
 	};
 	const onNormalChange = (value: string | number | boolean) => {
@@ -223,6 +213,10 @@ function PlatformOverview(): JSX.Element {
 	};
 	const onRefresh = () => {
 		const clusterId = type === 'all' ? null : type;
+		const alertData = {
+			current: current,
+			level: level
+		};
 
 		getPlatformOverview().then((res) => {
 			res.data && setTotalData(res.data.clusterQuota);
@@ -230,6 +224,7 @@ function PlatformOverview(): JSX.Element {
 		getServers({ clusterId }).then((res) => {
 			res.data && setBriefInfoList(res.data.briefInfoList);
 		});
+		getEventsData(alertData);
 	};
 
 	return (
