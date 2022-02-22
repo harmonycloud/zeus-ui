@@ -7,7 +7,7 @@ import DefaultPicture from '@/components/DefaultPicture';
 import moment from 'moment';
 import { getEvent } from '@/services/platformOverview';
 import { nullRender } from '@/utils/utils';
-import { getClusters } from '@/services/common.js';
+import { getClusters } from '@/services/common';
 import { alarmWarn } from '@/utils/const';
 
 import { alarmRecordProps } from './systemAlarm';

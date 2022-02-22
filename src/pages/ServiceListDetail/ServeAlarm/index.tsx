@@ -5,7 +5,7 @@ import moment from 'moment';
 import { LinkButton, Actions } from '@alicloud/console-components-actions';
 import { Button, Switch } from '@alifd/next';
 import { useHistory } from 'react-router';
-import { getClusters } from '@/services/common.js';
+import { getClusters } from '@/services/common';
 import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
 import DefaultPicture from '@/components/DefaultPicture';

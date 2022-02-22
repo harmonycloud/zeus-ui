@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Timeline } from '@alicloud/console-components';
 import { Icon } from '@alifd/next';
-import { getMiddlewareEvents } from '@/services/middleware.js';
+import { getMiddlewareEvents } from '@/services/middleware';
 import styles from './basicinfo.module.scss';
 import transTime from '@/utils/transTime';
 import imgNone from '@/assets/images/nodata.svg';

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Message } from '@alicloud/console-components';
-import { getMiddlewareMonitorUrl } from '@/services/middleware.js';
+import { getMiddlewareMonitorUrl } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
 import ComponentNull from '@/components/ComponentsNull';

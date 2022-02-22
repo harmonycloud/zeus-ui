@@ -2,7 +2,7 @@ import Axios from './request';
 import * as COMMON from './common.constants';
 
 // * 获取集群列表
-export const getClusters = (params: any) => {
+export const getClusters = (params?: any) => {
 	return Axios.get(COMMON.clusters, params);
 };
 

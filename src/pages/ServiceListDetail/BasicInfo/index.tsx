@@ -18,8 +18,7 @@ import RocketAclEditForm from './rocketAclEditForm';
 import EventsList from './eventsList';
 import BalloonForm from '@/components/BalloonForm';
 
-import { getMiddlewareEvents } from '@/services/middleware.js';
-import { updateMiddleware } from '@/services/middleware';
+import { updateMiddleware,getMiddlewareEvents } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 
 import { statusRender } from '@/utils/utils';
@@ -373,7 +372,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					hostAffinity: `${
 						(data.nodeAffinity &&
 							data.nodeAffinity
-								.map((item) => item.label)
+								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
 					}(${

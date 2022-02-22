@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import moment from 'moment';
-import { getClusters } from '@/services/common.js';
+import { getClusters } from '@/services/common';
 import Table from '@/components/MidTable';
 import { clusterType } from '@/types';
 import messageConfig from '@/components/messageConfig';

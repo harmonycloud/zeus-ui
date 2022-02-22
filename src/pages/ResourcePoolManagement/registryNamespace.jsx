@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Dialog, Message } from '@alicloud/console-components';
 import { Icon } from '@alifd/next';
-import { getNamespaces, putNamespaces } from '@/services/common.js';
+import { getNamespaces, putNamespaces } from '@/services/common';
 import MidTable from '@/components/MidTable/index';
 import messageConfig from '@/components/messageConfig';
 import { setRefreshCluster } from '@/redux/globalVar/var';

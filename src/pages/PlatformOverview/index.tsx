@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import Page from '@alicloud/console-components-page';
 import { connect } from 'react-redux';
-import { getClusters } from '@/services/common.js';
+import { getClusters } from '@/services/common';
 import { api } from '@/api.json';
 import {
 	Radio,

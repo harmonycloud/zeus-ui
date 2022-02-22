@@ -11,7 +11,7 @@ import {
 } from '@alicloud/console-components';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
-import { getClusters } from '@/services/common.js';
+import { getClusters } from '@/services/common';
 import CustomIcon from '@/components/CustomIcon';
 import { Transfer } from '@alicloud/console-components';
 import {

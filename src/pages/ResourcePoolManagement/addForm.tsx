@@ -20,7 +20,7 @@ import {
 	getCluster,
 	putCluster,
 	getJoinCommand
-} from '@/services/common.js';
+} from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
