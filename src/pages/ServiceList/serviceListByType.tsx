@@ -282,33 +282,33 @@ const ServiceListByType = (props: serviceListProps) => {
 			switch (middlewareInfo.chartName) {
 				case 'mysql':
 					history.push(
-						`/serviceList/mysqlCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/${name}/${aliasName}/mysqlCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'redis':
 					history.push(
-						`/serviceList/redisCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/${name}/${aliasName}/redisCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'elasticsearch':
 					history.push(
-						`/serviceList/elasticsearchCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/${name}/${aliasName}/elasticsearchCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'rocketmq':
 					history.push(
-						`/serviceList/rocketmqCreate/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}`
+						`/serviceList/${name}/${aliasName}/rocketmqCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				default:
 					history.push(
-						`/serviceList/dynamicForm/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
+						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
 					);
 					break;
 			}
 		} else {
 			history.push(
-				`/serviceList/dynamicForm/${aliasName}/${middlewareInfo?.chartName}/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
+				`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
 			);
 		}
 	};
