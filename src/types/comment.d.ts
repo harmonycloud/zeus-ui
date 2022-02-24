@@ -50,6 +50,7 @@ export interface middlewareDetailProps {
 	namespace: string;
 	nodeAffinity: NodeAffinityItem[] | null;
 	tolerations: string[] | null;
+	hostNetwork?: any;
 	password: string;
 	podNum: any | null;
 	pods: any | null;

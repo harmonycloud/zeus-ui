@@ -18,7 +18,7 @@ import RocketAclEditForm from './rocketAclEditForm';
 import EventsList from './eventsList';
 import BalloonForm from '@/components/BalloonForm';
 
-import { updateMiddleware,getMiddlewareEvents } from '@/services/middleware';
+import { updateMiddleware, getMiddlewareEvents } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 
 import { statusRender } from '@/utils/utils';
@@ -122,7 +122,8 @@ const runStatus: runParams = {
 	createTime: '',
 	model: '',
 	namespace: '',
-	storageType: ''
+	storageType: '',
+	hostNetwork: ''
 };
 
 const events: eventsParams = {
@@ -181,6 +182,16 @@ const storageTypeConfig = {
 	dataIndex: 'storageType',
 	label: '存储类型'
 };
+const hostNetworkConfig = {
+	dataIndex: 'hostNetwork',
+	label: '主机网络',
+	render: (val: boolean) => (
+		<div style={{display: 'flex',alignItems: 'center'}}>
+			{val ? '已开启' : '已关闭'}
+			<Switch checked={val} size="small" style={{marginLeft: '8px'}} />
+		</div>
+	)
+};
 function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const {
 		type,
@@ -204,14 +215,26 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const [infoConfig, setInfoConfig] = useState(InfoConfig);
 	// * 运行状态
 	const [runData, setRunData] = useState(runStatus);
-	const [runConfig, setRunConfig] = useState([
-		titleConfig,
-		healthConfig,
-		createTimeConfig,
-		modelConfig,
-		namespaceConfig,
-		storageTypeConfig
-	]);
+	const [runConfig, setRunConfig] = useState(
+		type !== 'rocketmq'
+			? [
+					titleConfig,
+					healthConfig,
+					createTimeConfig,
+					modelConfig,
+					namespaceConfig,
+					storageTypeConfig
+			  ]
+			: [
+					titleConfig,
+					healthConfig,
+					createTimeConfig,
+					modelConfig,
+					namespaceConfig,
+					storageTypeConfig,
+					hostNetworkConfig
+			  ]
+	);
 	// * 配置信息
 	const [yamlConfig] = useState({
 		dataIndex: 'yaml',
@@ -434,7 +457,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				storageType:
 					data.quota && data.quota[data.type]
 						? data.quota[data.type].storageClassName || ''
-						: ''
+						: '',
+				hostNetwork: data.hostNetwork
 			});
 			setAclData({
 				title: '访问权限控制认证',

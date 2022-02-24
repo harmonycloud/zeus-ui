@@ -399,7 +399,7 @@ function AlarmSet(props: any) {
 						<span className="show-icon">
 							<Icon
 								type={
-									show
+									dingShow
 										? 'angle-double-up'
 										: 'angle-double-down'
 								}
