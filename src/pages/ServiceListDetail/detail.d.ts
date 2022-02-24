@@ -448,6 +448,8 @@ export interface ConsoleDataProps {
 	clusterId: string;
 	namespace: string;
 	podName: string;
+	type: string;
+	name: string;
 }
 export interface consoleProps {
 	visible: boolean;

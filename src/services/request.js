@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import axios from 'axios';
 import { Message } from '@alicloud/console-components';
@@ -8,8 +7,50 @@ import errorCode from './errorCode';
 import cache from '@/utils/storage';
 import messageConfig from '@/components/messageConfig';
 
+const baseURL = 'http://localhost:3000/api/';
 const TOKEN = 'token';
 const USERTOKEN = 'usertoken';
+
+const pending = []; // 声明一个数组用于存储每个ajax请求的队列
+const cancelToken = axios.CancelToken; // 初始化取消请求的构造函数
+let arr = []; // 区分是请求还是响应的头部
+
+const formatUrl = (url, params) => {
+	const result = url;
+	if (JSON.stringify(params) !== '{}') {
+		for (let i in params) {
+			result += `&${i}=${params[i]}`;
+		}
+	}
+	return result;
+};
+
+const removePending = (config, f) => {
+	console.log(config);
+	arr = config.url.split(baseURL);
+	console.log(arr);
+	arr = arr[arr.length - 1];
+	const restUrl = formatUrl(config.url, config.params);
+	console.log(restUrl);
+	// 每次请求存储在请求中队列的元素关键值,例如：一个地址为books/create的post请求处理之后为："books/create&post"
+	const flagUrl = arr + '&' + config.method;
+	console.log(flagUrl);
+	// 当前请求存在队列中，取消第二次请求
+	if (pending.indexOf(flagUrl) !== -1) {
+		if (f) {
+			// f为实例化的cancelToken函数
+			f();
+		} else {
+			pending.splice(pending.indexOf(flagUrl), 1);
+			// cancelToken不存在，则从队列中删除该请求
+		}
+	} else {
+		// 当前请求不在队列中，就加进队列
+		if (f) {
+			pending.push(flagUrl);
+		}
+	}
+};
 
 // To add to window  解决promise 在ie中未定义的问题
 if (!window.Promise) {
@@ -27,7 +68,12 @@ NProgress.configure({
 axios.interceptors.request.use(
 	(config) => {
 		NProgress.start();
-		if (config.method === 'GET') {
+		console.log(config);
+		if (config.method === 'get') {
+			// config.cancelToken = new cancelToken(cancel => {
+			// 	removePending(config, cancel)
+			// })
+			// * 添加noCache来防止缓存
 			let separator = config.url.indexOf('?') === -1 ? '?' : '&';
 			config.url += `${separator}noCache=${new Date().getTime()}`;
 		}
@@ -36,6 +82,7 @@ axios.interceptors.request.use(
 		return config;
 	},
 	(err) => {
+		console.log(err);
 		NProgress.done();
 		return Promise.reject(err);
 	}
@@ -114,6 +161,9 @@ axios.defaults.transformRequest = [
 axios.interceptors.response.use(
 	(response) => {
 		NProgress.done();
+		// if (response.config.method === 'GET') {
+		// 	removePending(response.config);
+		// }
 		// token过期
 		if (response.data.code === 401) {
 			Message.show(messageConfig('error', '错误', response.data));
@@ -128,6 +178,7 @@ axios.interceptors.response.use(
 		return response;
 	},
 	(err) => {
+		console.log(err);
 		NProgress.done();
 		if (err && err.response) {
 			err.message =
@@ -170,7 +221,8 @@ function _get(url, params = {}, option = {}, method = 'GET') {
 				resolve(res.data);
 			})
 			.catch((err) => {
-				reject(err.data);
+				console.log(err);
+				reject(err?.data);
 			});
 	});
 }

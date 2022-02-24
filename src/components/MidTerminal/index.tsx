@@ -17,15 +17,22 @@ const action = (type: any, data?: any) => {
 };
 interface ParamsProps {
 	url: string;
+	middlewareType: string;
+	source: string;
+	middlewareName: string;
 }
 export default function MidTerminal(): JSX.Element {
 	const params: ParamsProps = useParams();
 	// 添加https和http的支持
 	// wss://${window.location.hostname}:${window.location.port} 环境上使用
-	const socketUrl =
+	let socketUrl =
 		window.location.protocol.toLowerCase() === 'https:'
 			? `wss://${window.location.hostname}:${window.location.port}/ws/terminal?${params.url}`
 			: `ws://${window.location.hostname}:${window.location.port}/ws/terminal?${params.url}`;
+	socketUrl =
+		params.source === 'database'
+			? `${socketUrl}&&middlewareType=${params.middlewareType}&&middlewareName=${params.middlewareName}`
+			: socketUrl;
 	useEffect(() => {
 		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
 		const terminal = new Terminal({
