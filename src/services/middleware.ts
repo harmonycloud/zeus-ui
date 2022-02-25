@@ -202,3 +202,17 @@ export const storageDilatation = (params: any) => {
 export const getCanReleaseMiddleware = (params: any) => {
 	return Axios.get(MIDDLEWARE.getCanReleaseMiddleware, params);
 };
+// declare interface UploadLogParams {
+// 	clusterId: string;
+// 	namespace: string;
+// 	middlewareName: string;s
+// 	chartName: string;
+// 	chartVersion: string;
+// 	type: string;
+// 	filelogEnabled: boolean;
+// 	stdoutEnabled: boolean;
+// }
+// * 修改日志开关状态
+export const uploadLogSwitch = (params: any) => {
+	return Axios.json(MIDDLEWARE.getMiddlewareDetail, params, {}, 'PUT');
+};

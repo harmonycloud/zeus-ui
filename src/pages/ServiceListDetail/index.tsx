@@ -183,6 +183,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							namespace={globalVar.namespace.name}
 							customMid={customMid}
 							logging={globalVar.cluster.logging}
+							onRefresh={refresh}
 							capabilities={(data && data.capabilities) || []}
 						/>
 					);

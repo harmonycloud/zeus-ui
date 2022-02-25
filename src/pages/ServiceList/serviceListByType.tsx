@@ -102,8 +102,8 @@ const ServiceListByType = (props: serviceListProps) => {
 				})
 					.then((res) => {
 						if (res.success) {
-							res.data && setDataSource(res.data[0]);
 							if (res.data.length > 0) {
+								setDataSource(res.data[0]);
 								setShowDataSource(res.data[0].serviceList);
 							} else {
 								setShowDataSource([]);

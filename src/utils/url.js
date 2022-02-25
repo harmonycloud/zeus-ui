@@ -13,9 +13,9 @@
 // const apiUrl = 'http://10.10.136.63:8080';
 // const userUrl = 'http://10.10.136.63:8080';
 // const wsUrl = 'ws://10.10.136.63:8080/ws';
-const apiUrl = 'http://10.10.103.187:31088/api';
-const userUrl = 'http://10.10.103.187:31088/api';
-const wsUrl = 'ws:/10.10.103.187:31088/ws';
+const apiUrl = 'http://10.10.101.140:31088/api';
+const userUrl = 'http://10.10.101.140:31088/api';
+const wsUrl = 'ws:/10.10.101.140:31088/ws';
 var module;
 module.exports = {
 	apiUrl,

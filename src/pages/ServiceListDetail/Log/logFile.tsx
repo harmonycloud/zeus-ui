@@ -4,28 +4,33 @@ import {
 	Grid,
 	Input,
 	Button,
-	Message
+	Message,
+	Balloon,
+	Switch
 } from '@alicloud/console-components';
+import { useParams } from 'react-router';
 import { Icon } from '@alifd/next';
 import moment, { Moment } from 'moment';
-import styles from './log.module.scss';
 import { Controlled as CodeMirror } from 'react-codemirror2';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/twilight.css';
+import TimeSelect from '@/components/TimeSelect';
+import transTime from '@/utils/transTime';
+import messageConfig from '@/components/messageConfig';
+import ComponentsNull from '@/components/ComponentsNull';
+import SwitchForm from './SwitchForm';
+import { searchTypes } from '@/utils/const';
 import {
 	getPods,
 	getLogDetail,
 	download,
 	getStandardLogFiles
 } from '@/services/middleware';
-import TimeSelect from '@/components/TimeSelect';
-import transTime from '@/utils/transTime';
-import messageConfig from '@/components/messageConfig';
-import ComponentsNull from '@/components/ComponentsNull';
-import { searchTypes } from '@/utils/const';
+import styles from './log.module.scss';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/twilight.css';
 import {
 	CommonLogProps,
 	ContainerItem,
+	DetailParams,
 	DownLoadLogSendData,
 	LogDetailItem,
 	LogFileItem,
@@ -44,8 +49,17 @@ const options = {
 	lineWrapping: true
 };
 export default function LogFile(props: CommonLogProps): JSX.Element {
-	const { logging } = props;
-	const { type, middlewareName, clusterId, namespace } = props.data;
+	const { logging, onRefresh } = props;
+	console.log(props);
+	const params: DetailParams = useParams();
+	const { chartVersion } = params;
+	const {
+		type,
+		middlewareName,
+		clusterId,
+		namespace,
+		data: { filelogEnabled }
+	} = props.data;
 	// *------------显示-------------------
 	// * 日志显示是否全屏
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -79,6 +93,9 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 	// * logPath & logPaths  搜索后获取的日志文件和日志文件列表
 	const [logPath, setLogPath] = useState<LogFileItem>();
 	const [logPaths, setLogPaths] = useState<LogFileItem[]>([]);
+
+	const [switchVisible, setSwitchVisible] = useState<boolean>(false);
+	const [logFile, setLogFile] = useState<boolean>(filelogEnabled || false);
 
 	// * 当logList发生变化是去更新logs内容
 	useEffect(() => {
@@ -309,11 +326,19 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 		}&searchType=${searchType}&middlewareType=${type}&logPath=${
 			logPath?.logPath
 		}`;
-		// console.log(url);
 		window.open(url, '_target');
 	};
 	const onBeforeChange = (value: Editor) => {
 		console.log(value);
+	};
+
+	const uploadSwitch = (flag: boolean) => {
+		if (!flag) {
+			setLogFile(!logFile);
+		} else {
+			onRefresh && onRefresh();
+		}
+		setSwitchVisible(false);
 	};
 
 	if (!logging || !logging.elasticSearch) {
@@ -323,170 +348,242 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 	}
 	return (
 		<div>
-			<div className={`display-flex ${styles['filter-wrapper']}`}>
-				<div className={styles['filter-item-standard']}>
-					<Row>
-						<Col span={5}>
-							<label>实例列表</label>
-						</Col>
-						<Col span={19}>
-							<Select
-								placeholder="请选择实例"
-								value={pod}
-								onChange={changePod}
-								style={{ width: '100%' }}
-							>
-								<Option value="all">全部</Option>
-								{podList.map((item, index) => (
-									<Option value={item.podName} key={index}>
-										{item.podName}
-									</Option>
-								))}
-							</Select>
-						</Col>
-					</Row>
-				</div>
-				<div className={styles['filter-item-standard']}>
-					<Row>
-						<Col offset={2} span={3}>
-							<label>容器列表</label>
-						</Col>
-						<Col span={19}>
-							<Select
-								placeholder="请选择容器"
-								value={container}
-								onChange={changeContainr}
-								style={{ width: '100%' }}
-							>
-								<Option value="all">全部</Option>
-								{containerList.map((item, index) => (
-									<Option value={item.name} key={index}>
-										{item.name}
-									</Option>
-								))}
-							</Select>
-						</Col>
-					</Row>
-				</div>
-				<div className={styles['filter-item-standard']}>
-					<Row>
-						<Col span={5}>
-							<label>搜索类型</label>
-						</Col>
-						<Col span={19}>
-							<Select
-								placeholder="请选择搜索类型"
-								value={searchType}
-								onChange={changeSearchType}
-								style={{ width: '100%' }}
-							>
-								{searchTypes.map((item) => (
-									<Option key={item.value} value={item.value}>
-										{item.label}
-									</Option>
-								))}
-							</Select>
-						</Col>
-					</Row>
-				</div>
-				<div className={styles['filter-item-standard']}>
-					<Row>
-						<Col offset={2} span={3}>
-							<label>关键字</label>
-						</Col>
-						<Col span={19}>
-							<Input
-								style={{ width: '100%' }}
-								value={keyword}
-								onChange={handleChange}
-							/>
-						</Col>
-					</Row>
-				</div>
-				<div className={styles['filter-item-standard']}>
-					<Row>
-						<TimeSelect source="log" timeSelect={onTimeChange} />
-					</Row>
-				</div>
-				<div className={styles['filter-item-standard']}>
-					<Button type="primary" onClick={handleClick}>
-						搜索
-					</Button>
-				</div>
-			</div>
-			{logPaths.length > 0 && (
-				<div className="display-flex flex-column">
-					<div>日志文件数：{logPaths.length}</div>
-					<div className={styles['log-file-flex-wrapper']}>
-						{logPaths.map((item) => {
-							return (
-								<div
-									key={item.logPath}
-									className={`${styles['log-file-box']} ${
-										(logPath && logPath.logPath) ===
-										item.logPath
-											? styles['active']
-											: ''
-									}`}
-									onClick={() => logFilesClick(item)}
-								>
-									{item.name}
-								</div>
-							);
-						})}
-					</div>
-				</div>
-			)}
-			<div
-				className={`${styles['log-display']} ${
-					isFullscreen ? 'log-full-screen' : ''
-				}`}
-				style={{ marginTop: 16 }}
-			>
-				<div className={styles['title']}>
-					<div className="display-inline-block">日志详情</div>
-					<div className={`display-inline-block ${styles['tips']}`}>
-						<div
-							className={`display-inline-block ${styles['btn']}`}
-							onClick={downloadLog}
+			<ul className="form-layout display-flex flex-align">
+				<li className="display-flex form-li">
+					<label className="form-name">
+						<span style={{ marginRight: 8 }}>文件日志收集</span>
+						<Balloon
+							trigger={<Icon type="question-circle" size="xs" />}
+							closable={false}
 						>
-							日志导出 <Icon size="xs" type="download1" />
+							<span
+								style={{
+									lineHeight: '18px'
+								}}
+							>
+								安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+							</span>
+						</Balloon>
+					</label>
+					<div
+						className={`form-content display-flex flex-align ${styles['standard-log']}`}
+					>
+						<div className={styles['switch']}>
+							{logFile ? '已开启' : '关闭'}
+							<Switch
+								checked={logFile}
+								onChange={(value) => {
+									setLogFile(value);
+									setSwitchVisible(true);
+								}}
+								size="small"
+								style={{
+									marginLeft: 16,
+									verticalAlign: 'middle'
+								}}
+							/>
 						</div>
-						{!isFullscreen && (
-							<Icon
-								type="expand-alt"
-								size="xs"
-								onClick={screenExtend}
+					</div>
+				</li>
+			</ul>
+			<div className={styles['zeus-log-content']}>
+				<div
+					title="启用该功能后可操作，查看日志"
+					className={styles['zeus-log-block-disabled']}
+					style={{ display: logFile ? 'none' : 'block' }}
+				></div>
+				<div className={`display-flex ${styles['filter-wrapper']}`}>
+					<div className={styles['filter-item-standard']}>
+						<Row>
+							<Col span={5}>
+								<label>实例列表</label>
+							</Col>
+							<Col span={19}>
+								<Select
+									placeholder="请选择实例"
+									value={pod}
+									onChange={changePod}
+									style={{ width: '100%' }}
+								>
+									<Option value="all">全部</Option>
+									{podList.map((item, index) => (
+										<Option
+											value={item.podName}
+											key={index}
+										>
+											{item.podName}
+										</Option>
+									))}
+								</Select>
+							</Col>
+						</Row>
+					</div>
+					<div className={styles['filter-item-standard']}>
+						<Row>
+							<Col offset={2} span={3}>
+								<label>容器列表</label>
+							</Col>
+							<Col span={19}>
+								<Select
+									placeholder="请选择容器"
+									value={container}
+									onChange={changeContainr}
+									style={{ width: '100%' }}
+								>
+									<Option value="all">全部</Option>
+									{containerList.map((item, index) => (
+										<Option value={item.name} key={index}>
+											{item.name}
+										</Option>
+									))}
+								</Select>
+							</Col>
+						</Row>
+					</div>
+					<div className={styles['filter-item-standard']}>
+						<Row>
+							<Col span={5}>
+								<label>搜索类型</label>
+							</Col>
+							<Col span={19}>
+								<Select
+									placeholder="请选择搜索类型"
+									value={searchType}
+									onChange={changeSearchType}
+									style={{ width: '100%' }}
+								>
+									{searchTypes.map((item) => (
+										<Option
+											key={item.value}
+											value={item.value}
+										>
+											{item.label}
+										</Option>
+									))}
+								</Select>
+							</Col>
+						</Row>
+					</div>
+					<div className={styles['filter-item-standard']}>
+						<Row>
+							<Col offset={2} span={3}>
+								<label>关键字</label>
+							</Col>
+							<Col span={19}>
+								<Input
+									style={{ width: '100%' }}
+									value={keyword}
+									onChange={handleChange}
+								/>
+							</Col>
+						</Row>
+					</div>
+					<div className={styles['filter-item-standard']}>
+						<Row>
+							<TimeSelect
+								source="log"
+								timeSelect={onTimeChange}
 							/>
-						)}
-						{isFullscreen && (
-							<Icon
-								type="compress-alt"
-								size="xs"
-								onClick={screenShrink}
-							/>
-						)}
+						</Row>
+					</div>
+					<div className={styles['filter-item-standard']}>
+						<Button type="primary" onClick={handleClick}>
+							搜索
+						</Button>
 					</div>
 				</div>
-				<CodeMirror
-					value={logs}
-					options={options}
-					className="log-codeMirror"
-					onBeforeChange={onBeforeChange}
-				/>
-				{total > logList.length ? (
-					<div className={styles['foot']}>
-						<div className="display-inline-block">
-							<span
-								className={styles['foot-text']}
-								onClick={moreLogs}
-							>
-								更多日志 {'>'}
-								{'>'}
-							</span>
+				{logPaths.length > 0 && (
+					<div className="display-flex flex-column">
+						<div>日志文件数：{logPaths.length}</div>
+						<div className={styles['log-file-flex-wrapper']}>
+							{logPaths.map((item) => {
+								return (
+									<div
+										key={item.logPath}
+										className={`${styles['log-file-box']} ${
+											(logPath && logPath.logPath) ===
+											item.logPath
+												? styles['active']
+												: ''
+										}`}
+										onClick={() => logFilesClick(item)}
+									>
+										{item.name}
+									</div>
+								);
+							})}
 						</div>
 					</div>
-				) : null}
+				)}
+				<div
+					className={`${styles['log-display']} ${
+						isFullscreen ? 'log-full-screen' : ''
+					}`}
+					style={{ marginTop: 16 }}
+				>
+					<div className={styles['title']}>
+						<div className="display-inline-block">日志详情</div>
+						<div
+							className={`display-inline-block ${styles['tips']}`}
+						>
+							<div
+								className={`display-inline-block ${styles['btn']}`}
+								onClick={downloadLog}
+							>
+								日志导出 <Icon size="xs" type="download1" />
+							</div>
+							{!isFullscreen && (
+								<Icon
+									type="expand-alt"
+									size="xs"
+									onClick={screenExtend}
+								/>
+							)}
+							{isFullscreen && (
+								<Icon
+									type="compress-alt"
+									size="xs"
+									onClick={screenShrink}
+								/>
+							)}
+						</div>
+					</div>
+					<CodeMirror
+						value={logs}
+						options={options}
+						className="log-codeMirror"
+						onBeforeChange={onBeforeChange}
+					/>
+					{total > logList.length ? (
+						<div className={styles['foot']}>
+							<div className="display-inline-block">
+								<span
+									className={styles['foot-text']}
+									onClick={moreLogs}
+								>
+									更多日志 {'>'}
+									{'>'}
+								</span>
+							</div>
+						</div>
+					) : null}
+					{switchVisible && (
+						<SwitchForm
+							visible={switchVisible}
+							source="logfile"
+							flag={logFile}
+							data={{
+								clusterId,
+								namespace,
+								middlewareName,
+								type,
+								chartName: type,
+								chartVersion
+							}}
+							onCancel={uploadSwitch}
+						/>
+					)}
+				</div>
 			</div>
 		</div>
 	);
