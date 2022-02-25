@@ -146,7 +146,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 			}
 		}
 	};
-	// todo 优化 方法合并 可做可不做
+
 	const changeContainr = (value: string) => {
 		setContainer(value);
 	};
