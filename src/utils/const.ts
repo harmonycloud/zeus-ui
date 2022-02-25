@@ -27,11 +27,11 @@ export const instanceSpecList = [
 ];
 // 资源池、分区不可改变路由名单
 export const disabledRoute = [
-	'/serviceList/mysqlCreate',
-	'/serviceList/redisCreate',
-	'/serviceList/elasticsearchCreate',
-	'/serviceList/rocketmqCreate',
-	'/serviceList/dynamicForm',
+	'/mysqlCreate',
+	'/redisCreat',
+	'/elasticsearchCreate',
+	'/rocketmqCreate',
+	'/dynamicForm',
 	'/serviceList/versionManagement',
 	'/instanceList/detail',
 	'/serviceList/basicInfo',

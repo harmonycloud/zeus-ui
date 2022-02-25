@@ -426,7 +426,7 @@ function BackupSetting(): JSX.Element {
 											);
 										} else {
 											history.push(
-												`/serviceList/mysqlCreate/MySQL/mysql/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`
+												`/serviceList/mysql/MySQL/mysqlCreate/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`
 											);
 										}
 									}

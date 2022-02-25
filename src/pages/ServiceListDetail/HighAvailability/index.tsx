@@ -176,8 +176,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		);
 		const consoleDataTemp = {
 			podName: record.podName,
+			name: data.name,
 			namespace: namespace,
-			clusterId: clusterId
+			clusterId: clusterId,
+			type: data.type
 		};
 		setContainers(strArr);
 		setConsoleData(consoleDataTemp);

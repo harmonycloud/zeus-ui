@@ -72,53 +72,38 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 4款中间件发布 + 动态表单的发布*/}
 				<Route
-					path="/serviceList/mysqlCreate/:aliasName/:chartName/:chartVersion"
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion"
+					component={MysqlCreate}
+					exact
+				/>
+				{/* mysql备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/:backupFileName"
+					component={MysqlCreate}
+					exact
+				/>
+				{/* mysql灾备跳转使用 - 通过state中的disasterOriginName进行判断，可优化 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName"
 					component={MysqlCreate}
 					exact
 				/>
 				<Route
-					path="/serviceList/mysqlCreate/:aliasName/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={MysqlCreate}
-					exact
-				/>
-				<Route
-					path="/serviceList/mysqlCreate/:aliasName/:chartName/:chartVersion/:middlewareName"
-					component={MysqlCreate}
-					exact
-				/>
-				<Route
-					path="/serviceList/mysqlCreate/:chartName/:chartVersion"
-					component={MysqlCreate}
-					exact
-				/>
-				<Route
-					path="/serviceList/redisCreate/:aliasName/:chartName/:chartVersion"
+					path="/serviceList/:chartName/:aliasName/redisCreate/:chartVersion"
 					component={RedisCreate}
 					exact
 				/>
 				<Route
-					path="/serviceList/redisCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={RedisCreate}
-				/>
-				<Route
-					path="/serviceList/elasticsearchCreate/:aliasName/:chartName/:chartVersion"
+					path="/serviceList/:chartName/:aliasName/elasticsearchCreate/:chartVersion"
 					component={ElasticsearchCreate}
 					exact
 				/>
 				<Route
-					path="/serviceList/elasticsearchCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={ElasticsearchCreate}
-				/>
-				<Route
-					path="/serviceList/rocketmqCreate/:aliasName/:chartName/:chartVersion"
+					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion"
 					component={RocketMQCreate}
 				/>
 				<Route
-					path="/serviceList/rocketmqCreate/:chartName/:chartVersion/:middlewareName/:backupFileName"
-					component={RocketMQCreate}
-				/>
-				<Route
-					path="/serviceList/dynamicForm/:aliasName/:chartName/:chartVersion/:version"
+					path="/serviceList/:chartName/:aliasName/dynamicForm/:chartVersion/:version"
 					component={DynamicForm}
 				/>
 				{/* 服务列表 */}
@@ -300,7 +285,11 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				{/* 控制台 */}
-				<Route path="/terminal/:url" component={MidTerminal} exact />
+				<Route
+					path="/terminal/:url/:middlewareType/:source/:middlewareName"
+					component={MidTerminal}
+					exact
+				/>
 				{/* 个性化设置 */}
 				<Route
 					path="/dataOverview/personlization"

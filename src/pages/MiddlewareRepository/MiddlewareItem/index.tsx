@@ -163,6 +163,8 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			}
 		});
 	};
+
+	// ! 该页面包含了所有中间件发布的页面逻辑，发布服务页面的路由已修改,但releaseMiddleware中的还未修改，需要后端在返回的数据中添加一个aliasName字段，存储中间件的大写值
 	const releaseMiddleware = () => {
 		if (official) {
 			switch (chartName) {
