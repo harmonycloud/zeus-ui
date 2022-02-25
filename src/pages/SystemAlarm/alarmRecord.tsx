@@ -5,7 +5,7 @@ import ComponentsNull from '@/components/ComponentsNull';
 import DefaultPicture from '@/components/DefaultPicture';
 
 import moment from 'moment';
-import { getEvent } from '@/services/platformOverview';
+import { getEvents } from '@/services/platformOverview';
 import { nullRender } from '@/utils/utils';
 import { getClusters } from '@/services/common';
 import { alarmWarn } from '@/utils/const';
@@ -64,9 +64,9 @@ function AlarmRecord(props: alarmRecordProps) {
 				lay: 'system',
 				keyword
 			};
-			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.alertPageInfo.list : []);
-				setOriginData(res.data ? res.data.alertPageInfo.list : []);
+			getEvents(sendData).then((res) => {
+				setEventData(res.data ? res.data.list : []);
+				setOriginData(res.data ? res.data.list : []);
 			});
 		} else {
 			const sendData = {
@@ -77,9 +77,9 @@ function AlarmRecord(props: alarmRecordProps) {
 				lay: 'service',
 				keyword
 			};
-			getEvent(sendData).then((res) => {
-				setEventData(res.data ? res.data.alertPageInfo.list : []);
-				setOriginData(res.data ? res.data.alertPageInfo.list : []);
+			getEvents(sendData).then((res) => {
+				setEventData(res.data ? res.data.list : []);
+				setOriginData(res.data ? res.data.list : []);
 			});
 		}
 	};

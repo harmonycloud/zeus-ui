@@ -111,7 +111,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 					required
 					requiredMessage="请输入用户名"
 					pattern={pattern.aliasName}
-					patternMessage="用户名长度不可超过10字符"
+					patternMessage="用户名长度不可超过18字符"
 				>
 					<Input
 						name="aliasName"
