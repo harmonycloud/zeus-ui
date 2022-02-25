@@ -135,9 +135,23 @@ function PlatformOverview(): JSX.Element {
 			window.addEventListener('resize', () => chart.resize());
 		});
 		getServers({ clusterId }).then((res) => {
-			res.data && setBriefInfoList(res.data.briefInfoList);
+			res.data && setBriefInfoList(res.data);
 		});
-		getEventsData(alertData);
+		getEvent(alertData).then((res) => {
+			setEventData(res.data ? res.data.alertPageInfo.list : []);
+			setTotal(res.data ? res.data.alertPageInfo.total : 0);
+			setTotal(res.data ? res.data.alertPageInfo.total : 0);
+			setLineOption(
+				getLineOption({
+					...res.data.alertSummary,
+					x: res.data.alertSummary.infoList
+				})
+			);
+			setAlertSummary({
+				...res.data.alertSummary,
+				x: res.data.alertSummary.infoList
+			});
+		});
 	}, [type]);
 
 	const getEventsData = (data: any) => {
@@ -150,16 +164,10 @@ function PlatformOverview(): JSX.Element {
 			setEventData(res.data ? res.data.alertPageInfo.list : []);
 			setTotal(res.data ? res.data.alertPageInfo.total : 0);
 			setTotal(res.data ? res.data.alertPageInfo.total : 0);
-				setLineOption(
-					getLineOption({
-						...res.data.alertSummary,
-						x: res.data.alertSummary.infoList
-					})
-				);
-				setAlertSummary({
-					...res.data.alertSummary,
-					x: res.data.alertSummary.infoList
-				});
+			setAlertSummary({
+				...res.data.alertSummary,
+				x: res.data.alertSummary.infoList
+			});
 		});
 	};
 	const onNormalChange = (value: string | number | boolean) => {
@@ -222,13 +230,14 @@ function PlatformOverview(): JSX.Element {
 			res.data && setTotalData(res.data.clusterQuota);
 		});
 		getServers({ clusterId }).then((res) => {
-			res.data && setBriefInfoList(res.data.briefInfoList);
+			res.data && setBriefInfoList(res.data);
 		});
 		getEventsData(alertData);
 	};
 
 	return (
 		<Page>
+			{console.log(lineOption)}
 			<Page.Content style={{ paddingBottom: 0 }}>
 				<div className="platform_overview-content">
 					<div className="header">
