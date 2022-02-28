@@ -99,27 +99,18 @@ interface paramsProps {
 interface addFormProps {
 	setRefreshCluster: (flag: boolean) => void;
 }
+enum stateEnum {
+	error = 'error',
+	loading = 'loading',
+	success = 'success',
+	warning = 'warning'
+}
 function AddForm(props: addFormProps): JSX.Element {
 	const { setRefreshCluster } = props;
-
-	// const [isInstallMinio, setIsInstallMinio] = useState<string>('true');
-	// const [isInstallPrometheus, setIsInstallPrometheus] =
-	// 	useState<string>('true');
-	// const [isInstallAlert, setIsInstallAlert] = useState<string>('uninstall');
-	// const [isInstallGrafana, setIsInstallGrafana] =
-	// 	useState<string>('uninstall');
-	// const [isInstallLogging, setIsInstallLogging] =
-	// 	useState<string>('uninstall');
-	// const [isInstallIngress, setIsInstallIngress] =
-	// 	useState<string>('uninstall');
-
-	// const [logCollect, setLogCollect] = useState<boolean>(true);
 	const [dcId, setDcId] = useState<string>('');
 	const [quickName, setQuickName] = useState<string>();
-	// const [head, setHead] = useState('http://');
-	// const [mid, setMid] = useState();
-	// const [tail, setTail] = useState();
 	const [command, setCommand] = useState<string>('');
+	const [inputState, setInputState] = useState<stateEnum>();
 	const field = Field.useField();
 	const params: paramsProps = useParams();
 	const history = useHistory();
@@ -151,77 +142,12 @@ function AddForm(props: addFormProps): JSX.Element {
 								chartRepo: res.data.registry.chartRepo
 							});
 						}
-						// if (res.data.ingress) {
-						// 	// setIsInstallIngress('false');
-						// 	field.setValues({
-						// 		ingressAddress: res.data.ingress.address,
-						// 		ingressClassName:
-						// 			res.data.ingress.ingressClassName,
-						// 		namespace: res.data.ingress.tcp.namespace,
-						// 		configMapName:
-						// 			res.data.ingress.tcp.configMapName
-						// 	});
-						// }
-						// if (
-						// 	res.data.logging &&
-						// 	res.data.logging.elasticSearch
-						// ) {
-						// 	// setIsInstallLogging('false');
-						// 	field.setValues({
-						// 		protocolEs:
-						// 			res.data.logging.elasticSearch.protocol,
-						// 		hostEs: res.data.logging.elasticSearch.host,
-						// 		portEs: res.data.logging.elasticSearch.port,
-						// 		userEs: res.data.logging.elasticSearch.user,
-						// 		passwordEs:
-						// 			res.data.logging.elasticSearch.password,
-						// 		logCollect:
-						// 			res.data.logging.elasticSearch.logCollect
-						// 	});
-						// }
-						// if (res.data.monitor?.alertManager) {
-						// 	// setIsInstallAlert('false');
-						// 	field.setValues({
-						// 		protocolAlert:
-						// 			res.data.monitor.alertManager.protocol,
-						// 		hostAlert: res.data.monitor.alertManager.host,
-						// 		portAlert: res.data.monitor.alertManager.port
-						// 	});
-						// }
-						// if (res.data.monitor?.grafana) {
-						// 	// setIsInstallGrafana('false');
-						// 	field.setValues({
-						// 		protocolGrafana:
-						// 			res.data.monitor.grafana.protocol,
-						// 		hostGrafana: res.data.monitor.grafana.host,
-						// 		portGrafana: res.data.monitor.grafana.port
-						// 	});
-						// }
-						// if (res.data.monitor?.prometheus) {
-						// 	// setIsInstallPrometheus('false');
-						// 	field.setValues({
-						// 		protocolPrometheus:
-						// 			res.data.monitor.prometheus.protocol,
-						// 		hostPrometheus:
-						// 			res.data.monitor.prometheus.host,
-						// 		portPrometheus: res.data.monitor.prometheus.port
-						// 	});
-						// }
 					}
 				}
 			);
 		}
 	}, [params.clusterId]);
-	// useEffect(() => {
-	// 	// field.setValues({
-	// 	// 	protocolEs: 'http',
-	// 	// 	protocolAlert: 'http',
-	// 	// 	protocolGrafana: 'https',
-	// 	// 	protocolPrometheus: 'http'
-	// 	// });
-	// }, []);
 	const uploadConf = (e: any) => {
-		// console.log(e);
 		const reader = new window.FileReader();
 		reader.onload = function (e) {
 			field.setValue('cert', reader.result);
@@ -230,10 +156,8 @@ function AddForm(props: addFormProps): JSX.Element {
 	};
 	const onOk = () => {
 		field.validate((errors) => {
-			// console.log(errors);
 			if (errors) return;
 			const values: valuesProps = field.getValues();
-			// console.log(values);
 			const sendData: clusterAddType = {
 				cert: {
 					certificate: values.cert
@@ -252,93 +176,7 @@ function AddForm(props: addFormProps): JSX.Element {
 					type: 'harbor',
 					chartRepo: values.chartRepo
 				}
-				// componentsInstall: {
-				// 	alertManager: isInstallAlert === 'uninstall' ? false : true,
-				// 	grafana: isInstallGrafana === 'uninstall' ? false : true,
-				// 	ingress: isInstallIngress === 'uninstall' ? false : true,
-				// 	logging: isInstallLogging === 'uninstall' ? false : true,
-				// 	minio: isInstallMinio === 'uninstall' ? false : true,
-				// 	prometheus:
-				// 		isInstallPrometheus === 'uninstall' ? false : true
-				// }
 			};
-			// if (isInstallMinio === 'false') {
-			// 	sendData.storage = {
-			// 		backup: {
-			// 			storage: {
-			// 				accessKeyId: values.accessKeyId,
-			// 				secretAccessKey: values.secretAccessKey,
-			// 				bucketName: values.bucketName,
-			// 				endpoint: head + mid + ':' + tail + '',
-			// 				name: values.minioName
-			// 			}
-			// 		}
-			// 	};
-			// }
-			// if (isInstallIngress === 'false') {
-			// 	sendData.ingress = {
-			// 		address: values.ingressAddress,
-			// 		ingressClassName: values.ingressClassName,
-			// 		tcp: {
-			// 			enabled: true,
-			// 			namespace: values.namespace,
-			// 			configMapName: values.configMapName
-			// 		}
-			// 	};
-			// }
-			// if (isInstallLogging === 'false') {
-			// 	sendData.logging = {
-			// 		elasticSearch: {
-			// 			protocol: values.protocolEs,
-			// 			host: values.hostEs,
-			// 			port: values.portEs,
-			// 			user: values.userEs,
-			// 			password: values.passwordEs,
-			// 			logCollect: values.logCollect
-			// 		}
-			// 	};
-			// }
-			// if (isInstallAlert === 'false') {
-			// 	sendData.monitor = {
-			// 		...sendData.monitor,
-			// 		alertManager: {
-			// 			host: values.hostAlert,
-			// 			port: values.portAlert,
-			// 			protocol: values.protocolAlert
-			// 		}
-			// 	};
-			// }
-			// if (isInstallGrafana === 'false') {
-			// 	sendData.monitor = {
-			// 		...sendData.monitor,
-			// 		grafana: {
-			// 			host: values.hostGrafana,
-			// 			port: values.portGrafana,
-			// 			protocol: values.protocolGrafana
-			// 		}
-			// 	};
-			// } else {
-			// 	sendData.monitor = {
-			// 		...sendData.monitor,
-			// 		grafana: {
-			// 			protocol:
-			// 				window.location.protocol === 'https:'
-			// 					? 'https'
-			// 					: 'http'
-			// 		}
-			// 	};
-			// }
-			// if (isInstallPrometheus === 'false') {
-			// 	sendData.monitor = {
-			// 		...sendData.monitor,
-			// 		prometheus: {
-			// 			host: values.hostPrometheus,
-			// 			port: values.portPrometheus,
-			// 			protocol: values.protocolPrometheus
-			// 		}
-			// 	};
-			// }
-			// console.log(sendData);
 			if (params.clusterId) {
 				sendData.clusterId = params.clusterId;
 				sendData.dcId = dcId;
@@ -380,38 +218,13 @@ function AddForm(props: addFormProps): JSX.Element {
 			}
 		});
 	};
-	// const handleChange = (value: any, type: string) => {
-	// 	switch (type) {
-	// 		case 'head':
-	// 			setHead(value);
-	// 			break;
-	// 		case 'mid':
-	// 			setMid(value);
-	// 			break;
-	// 		case 'tail':
-	// 			setTail(value);
-	// 			break;
-	// 		default:
-	// 			break;
-	// 	}
-	// };
-	// const select = (
-	// 	<Select onChange={(value) => handleChange(value, 'head')} value={head}>
-	// 		<Option value="https://">https://</Option>
-	// 		<Option value="http://">http://</Option>
-	// 	</Select>
-	// );
-	// const input = (
-	// 	<Input
-	// 		htmlType="number"
-	// 		onChange={(value) => handleChange(value, 'tail')}
-	// 		style={{ width: '80px' }}
-	// 		value={tail}
-	// 	/>
-	// );
 	const onBlur = () => {
-		// console.log(quickName);
+		console.log(quickName);
 		// 构建到环境中使用
+		if (!quickName || quickName === '') {
+			setInputState(stateEnum.error);
+			return;
+		}
 		const apiAddress =
 			window.location.protocol.toLowerCase() === 'https:'
 				? `https://${window.location.hostname}:${window.location.port}/api`
@@ -432,8 +245,6 @@ function AddForm(props: addFormProps): JSX.Element {
 	// * 浏览器复制到剪切板方法
 	const copyValue = () => {
 		const input = document.createElement('input');
-		// setAdress(record.name);
-		// setIconVisible(true);
 		document.body.appendChild(input);
 		input.style.position = 'absolute';
 		input.style.top = '0px';
@@ -483,12 +294,15 @@ function AddForm(props: addFormProps): JSX.Element {
 							>
 								<div className="display-flex">
 									<Input
+										name="name"
 										value={quickName}
 										trim={true}
+										state={inputState}
 										placeholder="请输入英文简称"
-										onChange={(value: string) =>
-											setQuickName(value)
-										}
+										onChange={(value: string) => {
+											setQuickName(value);
+											setInputState(undefined);
+										}}
 										// onBlur={onBlur}
 										style={{
 											width: 'calc(100% - 100px)',
@@ -499,6 +313,17 @@ function AddForm(props: addFormProps): JSX.Element {
 										生成
 									</Button>
 								</div>
+								<p
+									style={{
+										display:
+											inputState === 'error'
+												? 'block'
+												: 'none',
+										color: '#Ef595C'
+									}}
+								>
+									请输入资源池的英文简称
+								</p>
 							</FormItem>
 							<div className="quick-model-content">
 								<div className="quick-model-title">
