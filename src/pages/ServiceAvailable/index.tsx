@@ -6,7 +6,6 @@ import {
 	Button,
 	Message,
 	Dialog,
-	Checkbox,
 	Balloon,
 	Icon
 } from '@alicloud/console-components';
@@ -29,6 +28,7 @@ import AddServiceAvailableForm from './AddServiceAvailableForm';
 import storage from '@/utils/storage';
 import { getList } from '@/services/serviceList';
 import GuidePage from '../GuidePage';
+import { protocolFilter } from '@/utils/const';
 
 interface stateProps {
 	middlewareName: string;
@@ -296,9 +296,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			</Button>
 		)
 	};
-	const nameRender = (value: string, index: number, record: any) => {
-		return <div className="name-link">{value}</div>;
-	};
 	// * 浏览器复制到剪切板方法
 	const copyValue = (value: any, record: any) => {
 		const input = document.createElement('input');
@@ -522,18 +519,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					: 1;
 			});
 			setShowDataSource([...tempDataSource]);
-		} else if (dataIndex === 'protocol') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['protocol'].length - b['protocol'].length;
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
 		}
 	};
 	const exposeTypeRedner = (
@@ -541,7 +526,20 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		index: number,
 		record: serviceAvailableItemProps
 	) => {
+		if (record.exposeType === 'NodePort') return value;
 		return `${value}/${record.ingressClassName || '-'}`;
+	};
+	const onFilter = (filterParams: any) => {
+		const keys = Object.keys(filterParams);
+		if (filterParams[keys[0]].selectedKeys.length > 0) {
+			const list = dataSource.filter(
+				(item) =>
+					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+			);
+			setShowDataSource(list);
+		} else {
+			setShowDataSource(dataSource);
+		}
 	};
 	if (
 		JSON.stringify(cluster) === '{}' &&
@@ -549,6 +547,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	) {
 		return <GuidePage />;
 	}
+
 	return (
 		<Page>
 			<Header
@@ -594,11 +593,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						width: '370px'
 					}}
 					onSort={onSort}
+					onFilter={onFilter}
 				>
 					<Table.Column
 						title="暴露服务名称"
 						dataIndex="name"
-						// cell={nameRender}
 						width={190}
 						lock="left"
 					/>
@@ -623,9 +622,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					/>
 					<Table.Column
 						title="协议"
-						width={80}
+						width={100}
 						dataIndex="protocol"
-						sortable={true}
+						filters={protocolFilter}
+						filterMode="single"
 					/>
 					<Table.Column
 						width={200}

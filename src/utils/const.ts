@@ -288,3 +288,7 @@ export const timeSelectDataSource = [
 		]
 	}
 ];
+export const protocolFilter = [
+	{ label: 'HTTP', value: 'HTTP' },
+	{ label: 'TCP', value: 'TCP' }
+];
