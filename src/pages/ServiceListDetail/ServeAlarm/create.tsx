@@ -36,6 +36,7 @@ import {
 	LabelItem,
 	ServiceRuleItem
 } from '../detail';
+import { number } from 'echarts';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -78,7 +79,7 @@ function CreateAlarm(): JSX.Element {
 			type
 		};
 		getCanUseAlarms(sendData).then((res) => {
-			if (res.success) {				
+			if (res.success) {
 				setAlarms(JSON.parse(JSON.stringify(res.data)));
 				setAlarmRules([{}]);
 				if (res.data.length < 0) {
@@ -202,22 +203,26 @@ function CreateAlarm(): JSX.Element {
 				setDetail(res.data);
 			});
 		} else {
-			if (alarmType === 'system') {
-				setAlarms([
-					{
-						alert: 'memoryUsingRate',
-						description: '内存使用率'
-					},
-					{
-						alert: 'CPUUsingRate',
-						description: 'CPU使用率'
-					}
-				]);
-				setAlarmRules([{}]);
-			} else {
-				getCanUse(clusterId, namespace, middlewareName, type);
-			}
 			getUserList();
+		}
+		if (alarmType === 'system') {
+			setAlarms([
+				{
+					alert: 'memoryUsingRate',
+					description: '内存使用率'
+				},
+				{
+					alert: 'CPUUsingRate',
+					description: 'CPU使用率'
+				},
+				{
+					alert: 'PVCUsingRate',
+					description: 'lvm使用率'
+				}
+			]);
+			setAlarmRules([{}]);
+		} else {
+			getCanUse(clusterId, namespace, middlewareName, type);
 		}
 		getClusters().then((res) => {
 			if (!res.data) return;
@@ -447,8 +452,8 @@ function CreateAlarm(): JSX.Element {
 	};
 
 	const onOk = () => {
-		const flag = alarmRules.map((item) => {
-			if (
+		const flag = alarmRules.every(
+			(item) =>
 				item.alert &&
 				item.alertTimes &&
 				item.alertTime &&
@@ -457,12 +462,7 @@ function CreateAlarm(): JSX.Element {
 				item.severity &&
 				item.silence &&
 				item.content
-			) {
-				return true;
-			} else {
-				return false;
-			}
-		});
+		);
 		if (isRule) {
 			Message.show(messageConfig('error', '失败', '监控项不符合规则'));
 			return;
@@ -488,7 +488,7 @@ function CreateAlarm(): JSX.Element {
 				return item;
 			});
 			if (systemId) {
-				if (flag[0]) {
+				if (flag) {
 					if (mailChecked) {
 						if (insertUser && insertUser.length) {
 							onCreate(data);
@@ -848,15 +848,16 @@ function CreateAlarm(): JSX.Element {
 										</Col>
 										<Col span={2}>
 											<Button
+												disabled={
+													ruleId as unknown as boolean
+												}
 												style={{ marginRight: '8px' }}
+												onClick={() => copyAlarm(index)}
 											>
 												<CustomIcon
 													type="icon-fuzhi1"
 													size={12}
 													style={{ color: '#0064C8' }}
-													onClick={() =>
-														copyAlarm(index)
-													}
 												/>
 											</Button>
 											<Button

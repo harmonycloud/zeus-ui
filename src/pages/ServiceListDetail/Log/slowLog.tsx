@@ -76,8 +76,20 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 		};
 		getSlowLogs(sendData).then((res) => {
 			if (res.success) {
-				setDataSource(res.data);
-				setTotal(res.count);
+				if (res.data.length > 0) {
+					setDataSource(res.data);
+					setTotal(res.count);
+				} else {
+					Message.show(
+						messageConfig(
+							'error',
+							'失败',
+							'根据当前查询条件未查询到任何日志文件。'
+						)
+					);
+					setDataSource([]);
+					setTotal(0);
+				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -107,11 +119,11 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 	};
 
 	const slowLogDownload = () => {
-		const url = `${api}/clusters/${clusterId}/${namespace}/middlewares/mysql/${middlewareName}/slowsql/file?startTime=${transTime.local2gmt2(
+		const url = `${api}/clusters/${clusterId}/middlewares/mysql/${middlewareName}/slowsql/file?startTime=${transTime.local2gmt2(
 			rangeTime[0]
 		)}&endTime=${transTime.local2gmt2(
 			rangeTime[1]
-		)}&searchType=${searchType}&searchWord=${keyword}`;
+		)}&searchType=${searchType}&searchWord=${keyword}&namespace=${namespace}`;
 		window.open(url);
 	};
 

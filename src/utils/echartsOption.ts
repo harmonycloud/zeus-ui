@@ -96,8 +96,6 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 const getLineOption = (
 	data: { [propName: string]: any } | null | undefined
 ) => {
-	// console.log('22',data);
-
 	const option = {
 		tooltip: {
 			trigger: 'axis'
