@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Grid } from '@alicloud/console-components';
+import { Select, Grid, Radio } from '@alicloud/console-components';
 import { connect } from 'react-redux';
 import { Icon } from '@alifd/next';
 import Socket from '@/services/websocket.js';
@@ -17,6 +17,7 @@ import { StoreState } from '@/types';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
+const { Group: RadioGroup } = Radio;
 
 const RealtimeLog = (props: RealTimeProps) => {
 	const { setRealLog, cleanRealLog } = props;
@@ -35,12 +36,15 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const [container, setContainer] = useState<string>('');
 	const [containerList, setContainerList] = useState<ContainerItem[]>([]);
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+	const [terminalType, setTerminalType] = useState<string>('stdoutlog');
+	const [lastRestart, setLastRestart] = useState<number>(0);
 	const ws = useRef<any>(null);
 
 	const changePod = (value: string) => {
 		setPod(value);
 		for (let i = 0; i < podList.length; i++) {
 			if (value === podList[i].podName) {
+				setLastRestart(podList[i].restartCount);
 				setContainerList(podList[i].containers);
 				if (podList[i].containers.length > 0)
 					setContainer(podList[i].containers[0].name);
@@ -72,6 +76,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 						setPodList(res.data.pods);
 						if (res.data.pods.length > 0) {
 							setPod(res.data.pods[0].podName);
+							setLastRestart(res.data.pods[0].restartCount);
 							setContainerList(res.data.pods[0].containers);
 							if (res.data.pods[0].containers.length > 0) {
 								setContainer(
@@ -86,10 +91,10 @@ const RealtimeLog = (props: RealTimeProps) => {
 	}, [clusterId, namespace, middlewareName]);
 
 	useEffect(() => {
-		if (pod && container) {
+		if (pod && container && terminalType) {
 			cleanRealLog();
 			ws.current = new Socket({
-				socketUrl: `/terminal?terminalType=stdoutlog&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
+				socketUrl: `/terminal?terminalType=${terminalType}&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
 				socketMessage: (receive: any) => {
 					const content = props.log + JSON.parse(receive.data).text;
@@ -115,10 +120,38 @@ const RealtimeLog = (props: RealTimeProps) => {
 				ws.current.onclose();
 			};
 		}
-	}, [pod, container]);
+	}, [pod, container, terminalType]);
 
 	return (
 		<>
+			<div className={`display-flex ${styles['filter-wrapper']}`}>
+				<div className={styles['filter-item-realtime']}>
+					<Row>
+						<Col span={5}>
+							<label>日志类型</label>
+						</Col>
+						<Col span={19}>
+							<RadioGroup
+								value={terminalType}
+								onChange={(value: string | number | boolean) =>
+									setTerminalType(value as string)
+								}
+							>
+								<Radio id="stdoutlog" value="stdoutlog">
+									实时日志
+								</Radio>
+								<Radio
+									id="previousLog"
+									value="previousLog"
+									disabled={lastRestart === 0}
+								>
+									上一次重启日志
+								</Radio>
+							</RadioGroup>
+						</Col>
+					</Row>
+				</div>
+			</div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
 				<div className={styles['filter-item-realtime']}>
 					<Row>
