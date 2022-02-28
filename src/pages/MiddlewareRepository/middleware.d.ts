@@ -30,6 +30,7 @@ export interface middlewareListProps {
 }
 export interface middlewareRepositoryProps {
 	globalVar: globalVarProps;
+	setMenuRefresh?: (flag: boolean) => void;
 }
 export interface paramsProps {
 	type: string;
