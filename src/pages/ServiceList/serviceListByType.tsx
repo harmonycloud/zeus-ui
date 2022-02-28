@@ -102,10 +102,11 @@ const ServiceListByType = (props: serviceListProps) => {
 				})
 					.then((res) => {
 						if (res.success) {
-							res.data && setDataSource(res.data[0]);
 							if (res.data.length > 0) {
+								setDataSource(res.data[0]);
 								setShowDataSource(res.data[0].serviceList);
 							} else {
+								setDataSource(undefined);
 								setShowDataSource([]);
 							}
 						} else {
@@ -157,8 +158,13 @@ const ServiceListByType = (props: serviceListProps) => {
 		})
 			.then((res) => {
 				if (res.success) {
-					setDataSource(res.data[0]);
-					res.data[0] && setShowDataSource(res.data[0].serviceList);
+					if (res.data.length > 0) {
+						setDataSource(res.data[0]);
+						setShowDataSource(res.data[0].serviceList);
+					} else {
+						setDataSource(undefined);
+						setShowDataSource([]);
+					}
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}

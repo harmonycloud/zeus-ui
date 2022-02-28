@@ -65,6 +65,8 @@ export interface middlewareDetailProps {
 	version: string;
 	official: boolean;
 	isAllLvmStorage: boolean;
+	stdoutEnabled: boolean;
+	filelogEnabled: boolean;
 }
 
 export interface basicDataProps {

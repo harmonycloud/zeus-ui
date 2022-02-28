@@ -32,7 +32,6 @@ export default function LogDetail(): JSX.Element {
 				type,
 				middlewareName: name
 			}).then((res) => {
-				// console.log(res);
 				if (res.success) {
 					setIsService(true);
 					setData(res.data);
@@ -43,6 +42,21 @@ export default function LogDetail(): JSX.Element {
 		} else {
 			setIsService(false);
 		}
+	};
+	const getData = () => {
+		getMiddlewareDetail({
+			clusterId: basicData?.clusterId,
+			namespace: basicData?.namespace,
+			type: basicData?.type,
+			middlewareName: basicData?.name
+		}).then((res) => {
+			if (res.success) {
+				setIsService(true);
+				setData(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	};
 	return (
 		<SecondLayout
@@ -61,6 +75,7 @@ export default function LogDetail(): JSX.Element {
 					customMid={data?.dynamicValues !== null}
 					capabilities={data?.capabilities || []}
 					logging={basicData?.logging}
+					onRefresh={getData}
 				/>
 			)}
 			{!isService && <NoService />}

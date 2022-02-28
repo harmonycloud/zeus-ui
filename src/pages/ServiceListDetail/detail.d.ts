@@ -191,7 +191,7 @@ export interface runParams {
 	model: string;
 	namespace: string;
 	storageType: string;
-	hostNetwork?: any
+	hostNetwork?: any;
 }
 export interface DynamicDataParams {
 	title: string;
@@ -291,6 +291,7 @@ export interface LogProps {
 	clusterId: string;
 	namespace: string;
 	capabilities: string[];
+	onRefresh?: () => void;
 }
 export interface ContainerItem {
 	exitCode: null;
@@ -343,7 +344,11 @@ export interface CommonLogProps {
 		middlewareName: string;
 		clusterId: string;
 		namespace: string;
+		stdoutEnabled?: boolean;
+		filelogEnabled?: boolean;
+		data?: any;
 	};
+	onRefresh?: () => void;
 }
 export interface RealTimeProps extends CommonLogProps {
 	log: string;

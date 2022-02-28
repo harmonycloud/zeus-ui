@@ -17,22 +17,38 @@ const action = (type: any, data?: any) => {
 };
 interface ParamsProps {
 	url: string;
-	middlewareType: string;
-	source: string;
-	middlewareName: string;
+}
+interface ObjParams {
+	[propsName: string]: any;
 }
 export default function MidTerminal(): JSX.Element {
 	const params: ParamsProps = useParams();
+	console.log(params);
+	const { url } = params;
+	const obj: ObjParams = {};
+	url.split('&').map((item) => {
+		const itemArr = item.split('=');
+		obj[itemArr[0]] = itemArr[1];
+	});
+	const databaseUrl = url.replace('&source=database', '');
+	const containerUrl = url.replace(
+		`middlewareName=${obj.middlewareName}&middlewareType=${obj.middlewareType}&source=container&`,
+		''
+	);
 	// 添加https和http的支持
 	// wss://${window.location.hostname}:${window.location.port} 环境上使用
-	let socketUrl =
-		window.location.protocol.toLowerCase() === 'https:'
-			? `wss://${window.location.hostname}:${window.location.port}/ws/terminal?${params.url}`
-			: `ws://${window.location.hostname}:${window.location.port}/ws/terminal?${params.url}`;
+	let socketUrl = url.includes('&source=database')
+		? databaseUrl
+		: containerUrl;
 	socketUrl =
-		params.source === 'database'
-			? `${socketUrl}&&middlewareType=${params.middlewareType}&&middlewareName=${params.middlewareName}`
-			: socketUrl;
+		window.location.protocol.toLowerCase() === 'https:'
+			? `wss://10.10.101.140:31088/ws/terminal?${socketUrl}`
+			: `ws://10.10.101.140:31088/ws/terminal?${socketUrl}`;
+	console.log(socketUrl);
+	// socketUrl =
+	// 	window.location.protocol.toLowerCase() === 'https:'
+	// 		? `wss://${window.location.hostname}:${window.location.port}/ws/terminal?${socketUrl}`
+	// 		: `ws://${window.location.hostname}:${window.location.port}/ws/terminal?${socketUrl}`;
 	useEffect(() => {
 		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
 		const terminal = new Terminal({

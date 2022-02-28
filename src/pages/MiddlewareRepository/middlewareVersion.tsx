@@ -16,6 +16,7 @@ import {
 } from '@/services/repository';
 import messageConfig from '@/components/messageConfig';
 import { middlewareRepositoryProps, paramsProps } from './middleware';
+import { setMenuRefresh } from '@/redux/menu/menu';
 
 import { middlewareProps } from './middleware';
 import { iconTypeRender } from '@/utils/utils';
@@ -25,7 +26,8 @@ import './index.scss';
 
 function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	const {
-		globalVar: { cluster }
+		globalVar: { cluster },
+		setMenuRefresh
 	} = props;
 	const params: paramsProps = useParams();
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
@@ -180,6 +182,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 									'已升级到该版本'
 								)
 							);
+							setMenuRefresh && setMenuRefresh(true);
 						} else {
 							const dialog = Dialog.show({
 								title: '失败',
@@ -306,6 +309,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
-	globalVar: state.globalVar
+	globalVar: state.globalVar,
+	menu: state.menu
 });
-export default connect(mapStateToProps, {})(MiddlewareVersion);
+export default connect(mapStateToProps, { setMenuRefresh })(MiddlewareVersion);

@@ -29,8 +29,12 @@ export default class webSocket {
 		// console.log(window.location);
 		let url = '';
 		if (window.location.protocol.toLowerCase() === 'https:') {
+			// url = `${wsUrl}${socketUrl}`;
+
 			url = `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
 		} else {
+			// url = `${wsUrl}${socketUrl}`;
+
 			url = `ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
 		}
 		// 检测当前浏览器是什么浏览器来决定用什么socket

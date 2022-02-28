@@ -5,7 +5,7 @@ export const nodePorts = `${api}/clusters/{clusterId}/nodes/labels`;
 export const nodeTaints = `${api}/clusters/{clusterid}/nodes/taints`;
 export const storageClasses = `${api}/clusters/{clusterId}/storageclasses`;
 export const middleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares`;
-// * 获取中间件详情
+// * 获取中间件详情 / 修改日志开关状态
 export const getMiddlewareDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}`;
 // * 修改中间件
 export const updateMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}`;

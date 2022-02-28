@@ -285,11 +285,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				{/* 控制台 */}
-				<Route
-					path="/terminal/:url/:middlewareType/:source/:middlewareName"
-					component={MidTerminal}
-					exact
-				/>
+				<Route path="/terminal/:url" component={MidTerminal} exact />
 				{/* 个性化设置 */}
 				<Route
 					path="/dataOverview/personlization"

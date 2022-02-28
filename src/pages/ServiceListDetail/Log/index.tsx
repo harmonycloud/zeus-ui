@@ -10,7 +10,7 @@ import LogFile from './logFile';
 import { DetailParams, LogProps } from '../detail';
 
 export default function Log(props: LogProps): JSX.Element {
-	const { type, data, customMid = false, logging } = props;
+	const { type, data, customMid = false, logging, onRefresh } = props;
 	const location = useLocation();
 	const { pathname } = location;
 	const params: DetailParams = useParams();
@@ -39,9 +39,21 @@ export default function Log(props: LogProps): JSX.Element {
 			case 'realtime':
 				return <RealtimeLog data={props} />;
 			case 'standard':
-				return <StandardLog data={props} logging={logging} />;
+				return (
+					<StandardLog
+						data={props}
+						logging={logging}
+						onRefresh={onRefresh}
+					/>
+				);
 			case 'file':
-				return <LogFile data={props} logging={logging} />;
+				return (
+					<LogFile
+						data={props}
+						logging={logging}
+						onRefresh={onRefresh}
+					/>
+				);
 			case 'slow':
 				return <SlowLog data={props} logging={logging} />;
 			default:
