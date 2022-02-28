@@ -244,7 +244,7 @@ function Visualization(props) {
 		if (direction === 'LR') {
 			return cfg.level === 'serve' ? 87 : 168;
 		} else {
-			return cfg.level === 'serve' ? 27 : 106;
+			return cfg.level === 'serve' ? 23 : 131;
 		}
 	};
 
@@ -252,7 +252,7 @@ function Visualization(props) {
 		if (direction === 'LR') {
 			return cfg.level === 'serve' ? 95 : 176;
 		} else {
-			return cfg.level === 'serve' ? 35 : 114;
+			return cfg.level === 'serve' ? 31 : 139;
 		}
 	};
 
@@ -1105,7 +1105,7 @@ function Visualization(props) {
 		};
 		graph.data(res);
 		graph.render();
-		topoData.pods.length && topoData.pods.length >= 4
+		(topoData.pods.length && topoData.pods.length >= 4) || direction === 'TB'
 			? graph.fitView()
 			: graph.fitCenter();
 
@@ -1126,7 +1126,6 @@ function Visualization(props) {
 		});
 
 		graph.on('type-image:mouseenter',(evt) => {
-			console.log(111);
 			evt.target.attr({img: select})
 		})
 
@@ -1347,12 +1346,12 @@ function Visualization(props) {
 						x: item.getModel().depth === 1 ? 95 : 176
 					});
 				} else {
-					collapseBack.attr('y', 62);
+					collapseBack.attr('y', 108);
 					collapseText.attr({
 						text: '-',
 						y: /macintosh|mac os x/i.test(navigator.userAgent)
-							? 69
-							: 71
+							? 114
+							: 116
 					});
 				}
 			}
