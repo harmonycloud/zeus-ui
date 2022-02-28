@@ -41,7 +41,12 @@ const Namespace = (props: NamespaceProps) => {
 							Number(a.registered) - Number(b.registered);
 						return result > 0 ? -1 : 1;
 					});
-					setDataSource([...temp]);
+					const newTemp = temp.sort(function (a: any, b: any) {
+						const result =
+							Number(a.phase === 'Active') - Number(b.phase === 'Active');							
+						return result > 0 ? -1 : 1;
+					});
+					setDataSource([...newTemp]);
 					setDataSource(res.data);
 				}
 			} else {
@@ -65,7 +70,12 @@ const Namespace = (props: NamespaceProps) => {
 					const result = Number(a.registered) - Number(b.registered);
 					return result > 0 ? -1 : 1;
 				});
-				setDataSource([...temp]);
+				const newTemp = temp.sort(function (a: any, b: any) {
+					const result =
+						Number(a.phase === 'Active') - Number(b.phase === 'Active');							
+					return result > 0 ? -1 : 1;
+				});
+				setDataSource([...newTemp]);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -158,6 +168,7 @@ const Namespace = (props: NamespaceProps) => {
 		) : (
 			<Switch
 				checked={value}
+				disabled={record.phase !== 'Active'}
 				onChange={(value: boolean) => handleChange(value, record)}
 			/>
 		);
@@ -167,13 +178,13 @@ const Namespace = (props: NamespaceProps) => {
 		index: number,
 		record: NamespaceResourceProps
 	) => {
-		if (record.registered && record.middlewareReplicas) {
+		if ((record.registered && record.middlewareReplicas) || record.phase !== 'Active') {
 			return (
 				<Tooltip
 					trigger={<span className="delete-disabled">删除</span>}
 					align="l"
 				>
-					本资源分区已发布中间件服务，使用中，不可操作
+					{record.phase === 'Active' ? '本资源分区已发布中间件服务，使用中，不可操作' : '该分区正在删除中，无法操作'}
 				</Tooltip>
 			);
 		}
@@ -223,6 +234,13 @@ const Namespace = (props: NamespaceProps) => {
 		const result = record.quotas?.cpu[1] || '-';
 		return <span>{result}</span>;
 	};
+	const nameRender = (
+		value: any,
+		index: number,
+		record: NamespaceResourceProps
+	) => {
+		return <span className={record.phase !== 'Active' ? 'delete-disabled' : ''}>{value}</span>;
+	};
 	return (
 		<div style={{ marginTop: 16 }}>
 			<Table
@@ -239,7 +257,7 @@ const Namespace = (props: NamespaceProps) => {
 					placeholder: '请输入资源分区名称搜索'
 				}}
 			>
-				<Table.Column title="资源分区" dataIndex="name" />
+				<Table.Column title="资源分区" dataIndex="name" cell={nameRender} />
 				<Table.Column
 					title="CPU配额（核）"
 					dataIndex="cpu"

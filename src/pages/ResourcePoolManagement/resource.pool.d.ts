@@ -36,6 +36,7 @@ export interface NamespaceResourceProps {
 		[propName: string]: string[];
 	};
 	registered: boolean;
+	phase: string;
 }
 export interface ClusterQuotaDTO {
 	clusterNum: number;
