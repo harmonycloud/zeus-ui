@@ -220,7 +220,7 @@ function Visualization(props) {
 		if (direction === 'LR') {
 			return cfg.level === 'pod' ? 30 : 0;
 		} else {
-			return cfg.level === 'pod' ? 84 : 4;
+			return cfg.level === 'pod' ? 108 : 0;
 		}
 	};
 
@@ -228,15 +228,15 @@ function Visualization(props) {
 		if (direction === 'LR') {
 			return cfg.level === 'pod' ? 60 : 30;
 		} else {
-			return cfg.level === 'pod' ? 114 : 34;
+			return cfg.level === 'pod' ? 138 : 30;
 		}
 	};
 
 	const circleTextY = (direction, cfg) => {
 		if (direction === 'LR') {
-			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 53 : 54;
+			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 87 : 88;
 		} else {
-			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 13 : 13;
+			return 13;
 		}
 	};
 
@@ -274,7 +274,7 @@ function Visualization(props) {
 								width: 60,
 								height: 20,
 								radius: 10,
-								y: direction === 'LR' ? 40 : 0,
+								y: direction === 'LR' ? 75 : 0,
 								x: circleX(direction, cfg),
 								cursor: 'pointer'
 							},
@@ -304,7 +304,7 @@ function Visualization(props) {
 							group.addShape('rect', {
 								attrs: {
 									x: collapseBackX(direction, cfg),
-									y: direction === 'LR' ? 42 : 62,
+									y: direction === 'LR' ? 76 : 108,
 									width: 16,
 									height: 16,
 									radius: 8,
@@ -323,13 +323,13 @@ function Visualization(props) {
 											? /macintosh|mac os x/i.test(
 													navigator.userAgent
 											  )
-												? 48
-												: 50
+												? 82
+												: 84
 											: /macintosh|mac os x/i.test(
 													navigator.userAgent
 											  )
-											? 68
-											: 70,
+											? 114
+											: 116,
 									textAlign: 'center',
 									textBaseline: 'middle',
 									text: cfg.collapsed ? '+' : '-',
@@ -346,145 +346,243 @@ function Visualization(props) {
 						const box = group.addShape('rect', {
 							attrs: {
 								fill: isSelect(cfg) ? '#fff' : '#EBEBEB',
-								stroke: '#666',
+								stroke: '#eee',
 								x: 0,
 								y: 0,
-								width: 228,
-								height: 100,
+								width: 276,
+								height: 170,
 								opacity: isSelect(cfg) ? 1 : 0.6
 							},
 							name: 'rect-shape'
 						});
-						group.addShape('rect', {
-							attrs: {
-								fill: podStatus.filter(
-									(item) => item.status === cfg.status
-								)[0]
-									? podStatus.filter(
-											(item) => item.status === cfg.status
-									  )[0].color
-									: '#FFC440',
-								x: 0,
-								y: 0,
-								width: 40,
-								height: 100,
-								cursor: 'pointer'
-							},
-							name: 'status'
-						});
-						group.addShape('image', {
-							attrs: {
-								img: podStatus.filter(
-									(item) => item.status === cfg.status
-								)[0]
-									? podStatus.filter(
-											(item) => item.status === cfg.status
-									  )[0].image
-									: NotReady,
-								x: 12,
-								y: 42,
-								width: 16,
-								height: 16,
-								cursor: 'pointer'
-							},
-							name: 'status-image'
-						});
-						group.addShape('text', {
-							attrs: {
-								text: !cfg.depth
-									? serverData.name &&
-									  serverData.name.length >= 25
-										? serverData.name.substring(0, 15)
-										: serverData.name
-									: 'IP: ' + (cfg.podIp ? cfg.podIp : ''),
-								x: 50,
-								y: !cfg.depth
-									? hasConfigBackup(cfg)
-										? 33
-										: 40
-									: hasConfigBackup(cfg)
-									? 23
-									: 30,
-								textBaseline: 'middle',
-								fill: '#333',
-								fontWeight: 500,
-								lineHeight: 18,
-								fontFamily: 'PingFangSC-Medium, PingFang SC'
-							},
-							name: 'text-shape1'
-						});
-						if (cfg.depth) {
+						if (!cfg.depth) {
+							const type = group.addShape('image', {
+								attrs: {
+									img: `${api}/images/middleware/${imagePath}`,
+									x: 16,
+									y: 5,
+									width: 20,
+									height: 20
+								},
+								name: 'type-image'
+							});
+							const typeWidth = type.getBBox().width;
+							const name = group.addShape('text', {
+								attrs: {
+									text: cfg.name,
+									x: typeWidth + 24,
+									y: 16,
+									textBaseline: 'middle',
+									fill: '#0070cc',
+									fontSize: 14,
+									fontWeight: 500,
+									fontFamily: 'PingFangSC-Medium, PingFang SC'
+								},
+								name: 'text-shape1'
+							});
+							const nameWidth = name.getBBox().width;
+							group.addShape('text', {
+								attrs: {
+									text: podStatus.filter(
+										(item) => item.status === cfg.status
+									)[0]
+										&& '(' + podStatus.filter(
+												(item) =>
+													item.status === cfg.status
+										  )[0].title + ')',
+									x: typeWidth + nameWidth + 32,
+									y: 15,
+									fontSize: 14,
+									fontWeight: 500,
+									textBaseline: 'middle',
+									fill: '#0070cc',
+								},
+								name: 'status'
+							});
+							group.addShape('text', {
+								attrs: {
+									text:
+										'中文别名：' +
+										(cfg.aliasName
+											? cfg.aliasName
+											: cfg.name),
+									x: 16,
+									y: 37,
+									textBaseline: 'middle',
+									fill: '#999',
+									fontFamily: 'PingFangSC-Medium, PingFang SC'
+								},
+								name: 'text-shape3'
+							});
+						} else {
+							const ip = group.addShape('text', {
+								attrs: {
+									text: 'IP: ' + (cfg.podIp ? cfg.podIp : ''),
+									x: 16,
+									y: 15,
+									textBaseline: 'middle',
+									fill: '#000',
+									fontSize: 14,
+									fontWeight: 500,
+									fontFamily: 'PingFangSC-Medium, PingFang SC'
+								},
+								name: 'text-shape1'
+							});
+							const ipWidth = ip.getBBox().width;
+							group.addShape('text', {
+								attrs: {
+									text: podStatus.filter(
+										(item) => item.status === cfg.status
+									)[0]
+										&& '(' + podStatus.filter(
+												(item) =>
+													item.status === cfg.status
+										  )[0].title + ')',
+									x: ipWidth + 24,
+									y: 15,
+									fontSize: 14,
+									fontWeight: 500,
+									textBaseline: 'middle',
+									fill: '#0070cc',
+								},
+								name: 'status'
+							});
 							group.addShape('text', {
 								attrs: {
 									text:
 										cfg.podName && cfg.podName.length >= 25
-											? cfg.podName.substring(0, 15) +
+											? '名称：' +
+											  cfg.podName.substring(0, 15) +
 											  '...' +
 											  cfg.podName.substring(
 													cfg.podName.length - 6,
 													cfg.podName.length
 											  )
-											: cfg.podName,
-									x: 50,
-									y: hasConfigBackup(cfg) ? 40 : 50,
+											: '名称：' + cfg.podName,
+									x: 16,
+									y: 37,
 									textBaseline: 'middle',
-									fill: '#333',
-									fontWeight: 500,
-									lineHeight: 18,
-									fontFamily: 'PingFangSC-Medium, PingFang SC'
+									fill: '#999'
 								},
 								name: 'text-shape3'
+							});
+							group.addShape('text', {
+								attrs: {
+									text:
+										'节点资源/存储: ' +
+										cfg?.resources?.cpu +
+										'C/' +
+										cfg?.resources?.memory +
+										'G' +
+										'/' +
+										(cfg?.resources?.storageClassQuota
+											? cfg?.resources?.storageClassQuota
+											: ''),
+									x: 16,
+									y: 71,
+									fill: '#999'
+								},
+								name: 'text-shape2'
 							});
 						}
 						group.addShape('text', {
 							attrs: {
-								text: !cfg.depth
-									? serverData.aliasName &&
-									  serverData.aliasName.length >= 25
-										? serverData.aliasName.substring(0, 15)
-										: serverData.aliasName
-									: '资源/存储: ' +
-									  cfg?.resources?.cpu +
-									  'C/' +
-									  cfg?.resources?.memory +
-									  'G' +
-									  '/' +
-									  (cfg?.resources?.storageClassQuota
-											? cfg?.resources?.storageClassQuota
-											: ''),
-								x: 50,
-								y: !cfg.depth
-									? hasConfigBackup(cfg)
-										? 53
-										: 60
-									: hasConfigBackup(cfg)
-									? 57
-									: 70,
-								textBaseline: 'middle',
-								fill: '#666',
-								fontWeight: 400
+								text:
+									'存储类型：' +
+									(cfg.isAllLvmStorage ? 'LVM' : '其他'),
+								x: 16,
+								y: 57,
+								fill: '#999'
 							},
-							name: 'text-shape2'
+							name: 'text-shape3'
 						});
-						group.addShape('image', {
+						group.addShape('text', {
 							attrs: {
-								img: `${api}/images/middleware/${imagePath}`,
-								x: 160,
-								y: 34,
-								width: 32,
-								height: 32
-								// opacity: 0.3
+								text: '...',
+								x: 248,
+								y: 15,
+								fontSize: 16,
+								fontWeight: 900,
+								fill: '#666'
 							},
-							visible: !cfg.depth,
-							name: 'type-image'
+							name: 'text-shape3'
 						});
-						group.addShape('rect', {
+						// group.addShape('rect', {
+						// 	attrs: {
+						// 		fill: podStatus.filter(
+						// 			(item) => item.status === cfg.status
+						// 		)[0]
+						// 			? podStatus.filter(
+						// 					(item) => item.status === cfg.status
+						// 			  )[0].color
+						// 			: '#FFC440',
+						// 		x: 0,
+						// 		y: 0,
+						// 		width: 40,
+						// 		height: 100,
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'status'
+						// });
+						// group.addShape('image', {
+						// 	attrs: {
+						// 		img: podStatus.filter(
+						// 			(item) => item.status === cfg.status
+						// 		)[0]
+						// 			? podStatus.filter(
+						// 					(item) => item.status === cfg.status
+						// 			  )[0].image
+						// 			: NotReady,
+						// 		x: 12,
+						// 		y: 42,
+						// 		width: 8,
+						// 		height: 8,
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'status-image'
+						// });
+						// if (cfg.depth) {
+						// 	group.addShape('text', {
+						// 		attrs: {
+						// 			text:
+						// 				cfg.podName && cfg.podName.length >= 25
+						// 					? '名称：' +
+						// 					  cfg.podName.substring(0, 15) +
+						// 					  '...' +
+						// 					  cfg.podName.substring(
+						// 							cfg.podName.length - 6,
+						// 							cfg.podName.length
+						// 					  )
+						// 					: '名称：' + cfg.podName,
+						// 			x: 50,
+						// 			y: hasConfigBackup(cfg) ? 40 : 50,
+						// 			textBaseline: 'middle',
+						// 			fill: '#333',
+						// 			fontWeight: 500,
+						// 			lineHeight: 18,
+						// 			fontFamily: 'PingFangSC-Medium, PingFang SC'
+						// 		},
+						// 		name: 'text-shape3'
+						// 	});
+						// }
+						// group.addShape('image', {
+						// 	attrs: {
+						// 		img: `${api}/images/middleware/${imagePath}`,
+						// 		x: 160,
+						// 		y: 34,
+						// 		width: 32,
+						// 		height: 32
+						// 	},
+						// 	visible: !cfg.depth,
+						// 	name: 'type-image'
+						// });
+						group.addShape('polygon', {
 							attrs: {
-								x: 50,
-								y: 70,
-								width: 60,
-								height: 20,
-								radius: 10,
+								points: [
+									[276,144],
+									[276,170],
+									[250,170]
+								],
 								fill: '#6236FF',
 								opacity: 0.6
 							},
@@ -493,72 +591,217 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '已设置备份',
-								x: 58,
-								y: 85,
-								fontSize: 9,
+								text: '备',
+								x: 264,
+								y: 166,
+								fontSize: 10,
 								fill: '#fff'
 							},
 							visible: hasConfigBackup(cfg),
 							name: 'text1'
 						});
-						group.addShape('text', {
+						group.addShape('rect', {
 							attrs: {
-								text: '设',
-								x: 212,
-								y: 44,
-								fill: '#fff'
-							},
-							visible: hasConfigBackup(cfg),
-							name: 'text2'
-						});
-						group.addShape('text', {
-							attrs: {
-								text: '置',
-								x: 212,
-								y: 56,
-								fill: '#fff'
-							},
-							visible: hasConfigBackup(cfg),
-							name: 'text3'
-						});
-						group.addShape('text', {
-							attrs: {
-								text: '备',
-								x: 212,
-								y: 68,
-								fill: '#fff'
-							},
-							visible: hasConfigBackup(cfg),
-							name: 'text4'
-						});
-						group.addShape('text', {
-							attrs: {
-								text: '份',
-								x: 212,
+								width: 244,
+								height: 76,
+								x: 16,
 								y: 80,
-								fill: '#fff'
+								fill: '#efefef',
+								fillOpacity: 0.7
 							},
-							visible: hasConfigBackup(cfg),
-							name: 'text5'
+							name: 'text1'
 						});
-						group.addShape('image', {
+						group.addShape('text', {
 							attrs: {
-								x: 204,
-								y: 76,
-								width: 24,
-								height: 24,
-								img: select
+								text: '存储',
+								x: 24,
+								y: 97,
+								fontSize: 10,
+								textBaseline: 'middle',
+								fill: '#333'
 							},
-							visible:
-								record &&
-								(cfg.podName === selectObj ||
-									selectObj === cfg.name)
-									? true
-									: false,
-							// visible: false,
-							name: 'select-image'
+							name: 'text1'
 						});
+						group.addShape('rect', {
+							attrs: {
+								width: 150,
+								height: 10,
+								x: 50,
+								y: 92,
+								radius: 5,
+								fill: '#ddd',
+								fillOpacity: 0.7
+							},
+							name: 'text1'
+						});
+						group.addShape('rect', {
+							attrs: {
+								width: 75,
+								height: 10,
+								x: 50,
+								y: 92,
+								radius: 5,
+								fill: '#0064C8'
+							},
+							name: 'text1'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '50%',
+								x: 210,
+								y: 97,
+								fontSize: 10,
+								textBaseline: 'middle',
+								fill: '#333'
+							},
+							name: 'text1'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: 'CPU',
+								x: 24,
+								y: 117,
+								fontSize: 10,
+								textBaseline: 'middle',
+								fill: '#333'
+							},
+							name: 'text1'
+						});
+						group.addShape('rect', {
+							attrs: {
+								width: 150,
+								height: 10,
+								x: 50,
+								y: 112,
+								radius: 5,
+								fill: '#ddd',
+								fillOpacity: 0.7
+							},
+							name: 'text1'
+						});
+						group.addShape('rect', {
+							attrs: {
+								width: 90,
+								height: 10,
+								x: 50,
+								y: 112,
+								radius: 5,
+								fill: '#FAC800'
+							},
+							name: 'text1'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '60%',
+								x: 210,
+								y: 117,
+								fontSize: 10,
+								textBaseline: 'middle',
+								fill: '#333'
+							},
+							name: 'text1'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '内存',
+								x: 24,
+								y: 137,
+								fontSize: 10,
+								textBaseline: 'middle',
+								fill: '#333'
+							},
+							name: 'text1'
+						});
+						group.addShape('rect', {
+							attrs: {
+								width: 150,
+								height: 10,
+								x: 50,
+								y: 132,
+								radius: 5,
+								fill: '#ddd',
+								fillOpacity: 0.7
+							},
+							name: 'text1'
+						});
+						group.addShape('rect', {
+							attrs: {
+								width: 135,
+								height: 10,
+								x: 50,
+								y: 132,
+								radius: 5,
+								fill: '#C80000'
+							},
+							name: 'text1'
+						});
+						group.addShape('text', {
+							attrs: {
+								text: '90%',
+								x: 210,
+								y: 137,
+								fontSize: 10,
+								textBaseline: 'middle',
+								fill: '#333'
+							},
+							name: 'text1'
+						});
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: '设',
+						// 		x: 212,
+						// 		y: 44,
+						// 		fill: '#fff'
+						// 	},
+						// 	visible: hasConfigBackup(cfg),
+						// 	name: 'text2'
+						// });
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: '置',
+						// 		x: 212,
+						// 		y: 56,
+						// 		fill: '#fff'
+						// 	},
+						// 	visible: hasConfigBackup(cfg),
+						// 	name: 'text3'
+						// });
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: '备',
+						// 		x: 212,
+						// 		y: 68,
+						// 		fill: '#fff'
+						// 	},
+						// 	visible: hasConfigBackup(cfg),
+						// 	name: 'text4'
+						// });
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: '份',
+						// 		x: 212,
+						// 		y: 80,
+						// 		fill: '#fff'
+						// 	},
+						// 	visible: hasConfigBackup(cfg),
+						// 	name: 'text5'
+						// });
+						// group.addShape('image', {
+						// 	attrs: {
+						// 		x: 204,
+						// 		y: 76,
+						// 		width: 24,
+						// 		height: 24,
+						// 		img: select
+						// 	},
+						// 	visible:
+						// 		record &&
+						// 		(cfg.podName === selectObj ||
+						// 			selectObj === cfg.name)
+						// 			? true
+						// 			: false,
+						// 	name: 'select-image'
+						// });
 						const hasChildren =
 							cfg.children && cfg.children.length > 0;
 						if (!cfg.depth) {
@@ -816,10 +1059,10 @@ function Visualization(props) {
 					return d.id;
 				},
 				getHeight: function getHeight() {
-					return 100;
+					return 190;
 				},
 				getWidth: function getWidth(d) {
-					return d.level === 'serve' ? 60 : 220;
+					return d.level === 'serve' ? 60 : 276;
 				},
 				getVGap: function getVGap() {
 					return 10;
@@ -882,97 +1125,102 @@ function Visualization(props) {
 			});
 		});
 
-		graph.on('node:mouseenter', (evt) => {
-			if (!evt.target.cfg.modelId) {
-				const { item } = evt;
-				const group = item.getContainer();
-				const button1 = group.find((e) => e.get('name') === 'button1');
-				const button2 = group.find((e) => e.get('name') === 'button2');
-				const button3 = group.find((e) => e.get('name') === 'button3');
-				const restart = group.find((e) => e.get('name') === 'restart');
-				const edit = group.find((e) => e.get('name') === 'edit');
-				const control = group.find((e) => e.get('name') === 'control');
-				const info = group.find((e) => e.get('name') === 'info');
-				const textButton1 = group.find(
-					(e) => e.get('name') === 'text-button1'
-				);
-				const textButton2 = group.find(
-					(e) => e.get('name') === 'text-button2'
-				);
-				const textButton3 = group.find(
-					(e) => e.get('name') === 'text-button3'
-				);
-				const infoText = group.find(
-					(e) => e.get('name') === 'info-text'
-				);
-				graph.setItemState(item, 'hover', true);
-				if (pathname.includes('addBackup')) return;
-				if (button1 && button3) {
-					button1.cfg.visible = true;
-					button3.cfg.visible = true;
-					restart.cfg.visible = true;
-					control.cfg.visible = true;
-					textButton1.cfg.visible = true;
-					textButton3.cfg.visible = true;
-				}
-				if (button2) {
-					button2.cfg.visible = true;
-					edit.cfg.visible = true;
-					textButton2.cfg.visible = true;
-				}
-			}
-		});
-		graph.on('node:mouseleave', (evt) => {
-			if (!evt.target.cfg.modelId) {
-				const { item } = evt;
-				const group = item.getContainer();
-				const button1 = group.find((e) => e.get('name') === 'button1');
-				const button2 = group.find((e) => e.get('name') === 'button2');
-				const button3 = group.find((e) => e.get('name') === 'button3');
-				const restart = group.find((e) => e.get('name') === 'restart');
-				const edit = group.find((e) => e.get('name') === 'edit');
-				const control = group.find((e) => e.get('name') === 'control');
-				const info = group.find((e) => e.get('name') === 'info');
-				const textButton1 = group.find(
-					(e) => e.get('name') === 'text-button1'
-				);
-				const textButton2 = group.find(
-					(e) => e.get('name') === 'text-button2'
-				);
-				const textButton3 = group.find(
-					(e) => e.get('name') === 'text-button3'
-				);
-				const infoText = group.find(
-					(e) => e.get('name') === 'info-text'
-				);
-				graph.setItemState(item, 'hover', false);
-				if (info) {
-					info.cfg.visible = false;
-					infoText.cfg.visible = false;
-				}
-				if (button1 && button3) {
-					button1.cfg.visible = false;
-					button3.cfg.visible = false;
-					restart.cfg.visible = false;
-					control.cfg.visible = false;
-					textButton1.cfg.visible = false;
-					textButton3.cfg.visible = false;
-				}
-				if (button2) {
-					button2.cfg.visible = false;
-					edit.cfg.visible = false;
-					textButton2.cfg.visible = false;
-				}
-			}
-		});
+		graph.on('type-image:mouseenter',(evt) => {
+			console.log(111);
+			evt.target.attr({img: select})
+		})
+
+		// graph.on('node:mouseenter', (evt) => {
+		// 	if (!evt.target.cfg.modelId) {
+		// 		const { item } = evt;
+		// 		const group = item.getContainer();
+		// 		const button1 = group.find((e) => e.get('name') === 'button1');
+		// 		const button2 = group.find((e) => e.get('name') === 'button2');
+		// 		const button3 = group.find((e) => e.get('name') === 'button3');
+		// 		const restart = group.find((e) => e.get('name') === 'restart');
+		// 		const edit = group.find((e) => e.get('name') === 'edit');
+		// 		const control = group.find((e) => e.get('name') === 'control');
+		// 		const info = group.find((e) => e.get('name') === 'info');
+		// 		const textButton1 = group.find(
+		// 			(e) => e.get('name') === 'text-button1'
+		// 		);
+		// 		const textButton2 = group.find(
+		// 			(e) => e.get('name') === 'text-button2'
+		// 		);
+		// 		const textButton3 = group.find(
+		// 			(e) => e.get('name') === 'text-button3'
+		// 		);
+		// 		const infoText = group.find(
+		// 			(e) => e.get('name') === 'info-text'
+		// 		);
+		// 		graph.setItemState(item, 'hover', true);
+		// 		if (pathname.includes('addBackup')) return;
+		// 		if (button1 && button3) {
+		// 			button1.cfg.visible = true;
+		// 			button3.cfg.visible = true;
+		// 			restart.cfg.visible = true;
+		// 			control.cfg.visible = true;
+		// 			textButton1.cfg.visible = true;
+		// 			textButton3.cfg.visible = true;
+		// 		}
+		// 		if (button2) {
+		// 			button2.cfg.visible = true;
+		// 			edit.cfg.visible = true;
+		// 			textButton2.cfg.visible = true;
+		// 		}
+		// 	}
+		// });
+		// graph.on('node:mouseleave', (evt) => {
+		// 	if (!evt.target.cfg.modelId) {
+		// 		const { item } = evt;
+		// 		const group = item.getContainer();
+		// 		const button1 = group.find((e) => e.get('name') === 'button1');
+		// 		const button2 = group.find((e) => e.get('name') === 'button2');
+		// 		const button3 = group.find((e) => e.get('name') === 'button3');
+		// 		const restart = group.find((e) => e.get('name') === 'restart');
+		// 		const edit = group.find((e) => e.get('name') === 'edit');
+		// 		const control = group.find((e) => e.get('name') === 'control');
+		// 		const info = group.find((e) => e.get('name') === 'info');
+		// 		const textButton1 = group.find(
+		// 			(e) => e.get('name') === 'text-button1'
+		// 		);
+		// 		const textButton2 = group.find(
+		// 			(e) => e.get('name') === 'text-button2'
+		// 		);
+		// 		const textButton3 = group.find(
+		// 			(e) => e.get('name') === 'text-button3'
+		// 		);
+		// 		const infoText = group.find(
+		// 			(e) => e.get('name') === 'info-text'
+		// 		);
+		// 		graph.setItemState(item, 'hover', false);
+		// 		if (info) {
+		// 			info.cfg.visible = false;
+		// 			infoText.cfg.visible = false;
+		// 		}
+		// 		if (button1 && button3) {
+		// 			button1.cfg.visible = false;
+		// 			button3.cfg.visible = false;
+		// 			restart.cfg.visible = false;
+		// 			control.cfg.visible = false;
+		// 			textButton1.cfg.visible = false;
+		// 			textButton3.cfg.visible = false;
+		// 		}
+		// 		if (button2) {
+		// 			button2.cfg.visible = false;
+		// 			edit.cfg.visible = false;
+		// 			textButton2.cfg.visible = false;
+		// 		}
+		// 	}
+		// });
 
 		graph.on('node:click', (evt) => {
 			const { item } = evt;
 			const group = item.getContainer();
 			const nodes = graph.getNodes();
-			const selectImage = group.find(
-				(e) => e.get('name') === 'select-image'
-			);
+			// const selectImage = group.find(
+			// 	(e) => e.get('name') === 'select-image'
+			// );
 			const box = group.find((e) => e.get('name') === 'rect-shape');
 			if (!setBackupObj) return;
 			if (evt.target.cfg.modelId) return;
@@ -1001,7 +1249,7 @@ function Visualization(props) {
 				if (item._cfg.states.find((arr) => arr === 'select')) {
 					setBackupObj(null);
 					graph.setItemState(item, 'select', false);
-					selectImage.cfg.visible = false;
+					// selectImage.cfg.visible = false;
 					nodes.some((str) => {
 						if (
 							!str.hasState('select') &&
@@ -1029,7 +1277,7 @@ function Visualization(props) {
 						? setBackupObj('serve')
 						: setBackupObj(evt.item._cfg.model.podName);
 					graph.setItemState(item, 'select', true);
-					selectImage.cfg.visible = true;
+					// selectImage.cfg.visible = true;
 					nodes.some((str) => {
 						if (
 							!str.hasState('select') &&

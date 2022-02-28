@@ -194,7 +194,6 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 									</Button>
 								)
 							});
-							// Message.show(messageConfig('error', '失败', res));
 						}
 					})
 					.finally(() => {
