@@ -8,7 +8,7 @@ import { setRealLog, cleanRealLog } from '@/redux/log/log';
 
 import { getPods } from '@/services/middleware';
 
-import { Controlled as CodeMirror } from 'react-codemirror2';
+import { UnControlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/twilight.css';
 import { ContainerItem, PodItem, RealTimeProps } from '../detail';
@@ -39,6 +39,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 	const [terminalType, setTerminalType] = useState<string>('stdoutlog');
 	const [lastRestart, setLastRestart] = useState<number>(0);
+	// const [currentLog, setCurrentLog] = useState<string>(props.log);
 	const ws = useRef<any>(null);
 
 	const changePod = (value: string) => {
@@ -65,9 +66,9 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const screenShrink = () => {
 		setIsFullscreen(false);
 	};
-	const onBeforeChange = (editor: Editor) => {
-		console.log(editor);
-	};
+	// useEffect(() => {
+	// 	setCurrentLog(props.log);
+	// }, [props.log]);
 
 	useEffect(() => {
 		if (clusterId && namespace && middlewareName) {
@@ -98,13 +99,10 @@ const RealtimeLog = (props: RealTimeProps) => {
 				socketUrl: `/terminal?terminalType=${terminalType}&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
 				socketMessage: (receive: any) => {
-					console.log(receive);
-					console.log(props.log);
 					const content = props.log + JSON.parse(receive.data).text;
 					setRealLog(content);
 				},
 				socketClose: (msg: any) => {
-					cleanRealLog();
 					console.log(msg);
 				},
 				socketError: () => {
@@ -121,7 +119,6 @@ const RealtimeLog = (props: RealTimeProps) => {
 				console.log(e);
 			}
 			return () => {
-				console.log('close websocket');
 				ws.current.onclose();
 			};
 		}
@@ -230,7 +227,6 @@ const RealtimeLog = (props: RealTimeProps) => {
 					value={props.log}
 					options={options}
 					className="log-codeMirror"
-					onBeforeChange={onBeforeChange}
 				/>
 			</div>
 		</>
