@@ -22,11 +22,12 @@ import {
 import messageConfig from '@/components/messageConfig';
 import CustomIcon from '@/components/CustomIcon';
 
-import { instanceType, exposedWay } from '@/utils/const';
+import { instanceType, exposedWay, protocolFilter } from '@/utils/const';
 import { StoreState } from '@/types';
 import { ingressProps, filtersProps } from '@/types/comment';
 
 import './ingress.scss';
+import { timeRender } from '@/utils/utils';
 
 function IngressList(props: ingressProps) {
 	const { globalVar, entry = 'menu', type = '', middlewareName = '' } = props;
@@ -39,20 +40,12 @@ function IngressList(props: ingressProps) {
 	const [lock, setLock] = useState<{ lock: string } | null>({
 		lock: 'right'
 	});
-	const [instanceTypeFilter, setInstanceTypeFilter] =
-		useState<filtersProps[]>();
-	const [exposedWayFilter, setExposedWayFilter] = useState<filtersProps[]>();
-
 	useEffect(() => {
 		window.onresize = function () {
 			document.body.clientWidth >= 2300
 				? setLock(null)
 				: setLock({ lock: 'right' });
 		};
-		if (entry === 'detail') {
-			setInstanceTypeFilter(instanceType);
-			setExposedWayFilter(exposedWay);
-		}
 	}, []);
 
 	useEffect(() => {
@@ -60,34 +53,15 @@ function IngressList(props: ingressProps) {
 			JSON.stringify(globalVar.cluster) !== '{}' &&
 			JSON.stringify(globalVar.namespace) !== '{}'
 		) {
-			entry !== 'detail'
-				? getData(globalVar.cluster.id, globalVar.namespace.name)
-				: getIngressByMid(
-						globalVar.cluster.id,
-						globalVar.namespace.name,
-						type,
-						middlewareName
-				  );
+			getIngressByMid(
+				globalVar.cluster.id,
+				globalVar.namespace.name,
+				type,
+				middlewareName
+			);
 		}
 	}, [globalVar]);
 
-	const getData = (
-		clusterId: string,
-		namespace: string,
-		keyword = searchText
-	) => {
-		const sendData = {
-			clusterId: clusterId,
-			namespace: namespace,
-			keyword: keyword
-		};
-		getIngresses(sendData).then((res) => {
-			if (res.success) {
-				setDataSource(res.data);
-				setShowDataSource(res.data);
-			}
-		});
-	};
 	const getIngressByMid = (
 		clusterId: string,
 		namespace: string,
@@ -104,6 +78,8 @@ function IngressList(props: ingressProps) {
 			if (res.success) {
 				setShowDataSource(res.data);
 				setDataSource(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
@@ -130,10 +106,6 @@ function IngressList(props: ingressProps) {
 		);
 	};
 
-	const handleSearch = (value: string) => {
-		setSearchText(value);
-		getData(globalVar.cluster.id, globalVar.namespace.name, value);
-	};
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
@@ -174,17 +146,12 @@ function IngressList(props: ingressProps) {
 						}
 					})
 					.finally(() => {
-						entry !== 'detail'
-							? getData(
-									globalVar.cluster.id,
-									globalVar.namespace.name
-							  )
-							: getIngressByMid(
-									globalVar.cluster.id,
-									globalVar.namespace.name,
-									type,
-									middlewareName
-							  );
+						getIngressByMid(
+							globalVar.cluster.id,
+							globalVar.namespace.name,
+							type,
+							middlewareName
+						);
 					});
 			}
 		});
@@ -434,15 +401,40 @@ function IngressList(props: ingressProps) {
 		});
 	};
 	const exposeTypeRender = (value: string, index: number, record: any) => {
+		if (record.exposeType === 'NodePort') return value;
 		return `${record.exposeType}/${record.ingressClassName || '-'}`;
+	};
+	const onSort = (dataIndex: string, order: string) => {
+		if (dataIndex === 'createTime') {
+			const tempDataSource = showDataSource.sort((a, b) => {
+				const result = a['createTimeNum'] - b['createTimeNum'];
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setShowDataSource([...tempDataSource]);
+		} else if (dataIndex === 'exposeType') {
+			const tempDataSource = showDataSource.sort((a, b) => {
+				const result = a['exposeType'].length - b['exposeType'].length;
+				return order === 'asc'
+					? result > 0
+						? 1
+						: -1
+					: result > 0
+					? -1
+					: 1;
+			});
+			setShowDataSource([...tempDataSource]);
+		}
 	};
 
 	return (
 		<Page>
-			{entry !== 'detail' ? <Header title="对外路由"></Header> : null}
-			<Content
-				style={entry !== 'detail' ? {} : { padding: '0 0', margin: 0 }}
-			>
+			<Content style={{ padding: '0 0', margin: 0 }}>
 				<Table
 					dataSource={showDataSource}
 					exact
@@ -451,29 +443,18 @@ function IngressList(props: ingressProps) {
 					showColumnSetting
 					showRefresh
 					onRefresh={() =>
-						entry !== 'detail'
-							? getData(
-									globalVar.cluster.id,
-									globalVar.namespace.name
-							  )
-							: getIngressByMid(
-									globalVar.cluster.id,
-									globalVar.namespace.name,
-									type,
-									middlewareName
-							  )
+						getIngressByMid(
+							globalVar.cluster.id,
+							globalVar.namespace.name,
+							type,
+							middlewareName
+						)
 					}
 					primaryKey="key"
 					operation={Operation}
-					search={
-						entry === 'detail'
-							? null
-							: {
-									onSearch: handleSearch,
-									placeholder: '请输入搜索内容'
-							  }
-					}
-					onFilter={entry === 'detail' ? null : onFilter}
+					search={null}
+					onSort={onSort}
+					onFilter={onFilter}
 				>
 					<Table.Column
 						title="路由名称/映射名称"
@@ -482,23 +463,17 @@ function IngressList(props: ingressProps) {
 						cell={nameRender}
 					/>
 					<Table.Column
-						title="服务类型"
-						dataIndex="middlewareType"
-						filters={instanceTypeFilter}
-						filterMode="single"
-						width={150}
-					/>
-					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
-						filters={exposedWayFilter}
-						filterMode="single"
 						width={200}
+						sortable={true}
 						cell={exposeTypeRender}
 					/>
 					<Table.Column
 						title="协议"
 						dataIndex="protocol"
+						filters={protocolFilter}
+						filterMode="single"
 						width={100}
 					/>
 					<Table.Column
@@ -511,6 +486,13 @@ function IngressList(props: ingressProps) {
 						dataIndex="httpExposePort"
 						cell={portRender}
 						width={100}
+					/>
+					<Table.Column
+						title="创建时间"
+						width={160}
+						dataIndex="createTime"
+						sortable={true}
+						cell={timeRender}
 					/>
 					<Table.Column
 						title="操作"
