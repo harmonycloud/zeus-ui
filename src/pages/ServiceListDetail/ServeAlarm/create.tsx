@@ -36,7 +36,6 @@ import {
 	LabelItem,
 	ServiceRuleItem
 } from '../detail';
-import { number } from 'echarts';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -81,7 +80,25 @@ function CreateAlarm(): JSX.Element {
 		getCanUseAlarms(sendData).then((res) => {
 			if (res.success) {
 				setAlarms(JSON.parse(JSON.stringify(res.data)));
-				setAlarmRules([{}]);
+				if (ruleId) {
+					getAlarmDetail({ alertRuleId: ruleId }).then((res: any) => {
+						setAlarmRules([
+							{ ...res.data, severity: res.data.labels.severity }
+						]);
+						res.data.ding
+							? setDingChecked(true)
+							: setDingChecked(false);
+						res.data.mail
+							? setMailChecked(true)
+							: setMailChecked(false);
+						setSystemId(res.data.clusterId);
+						getUserList({ alertRuleId: ruleId });
+						setDetail(res.data);
+					});
+				} else {
+					getUserList();
+					setAlarmRules([{}]);
+				}
 				if (res.data.length < 0) {
 					Message.show(
 						messageConfig(
@@ -191,20 +208,6 @@ function CreateAlarm(): JSX.Element {
 	};
 
 	useEffect(() => {
-		if (ruleId) {
-			getAlarmDetail({ alertRuleId: ruleId }).then((res: any) => {
-				setAlarmRules([
-					{ ...res.data, severity: res.data.labels.severity }
-				]);
-				res.data.ding ? setDingChecked(true) : setDingChecked(false);
-				res.data.mail ? setMailChecked(true) : setMailChecked(false);
-				setSystemId(res.data.clusterId);
-				getUserList({ alertRuleId: ruleId });
-				setDetail(res.data);
-			});
-		} else {
-			getUserList();
-		}
 		if (alarmType === 'system') {
 			setAlarms([
 				{
@@ -220,7 +223,25 @@ function CreateAlarm(): JSX.Element {
 					description: 'lvm使用率'
 				}
 			]);
-			setAlarmRules([{}]);
+			if (ruleId) {
+				getAlarmDetail({ alertRuleId: ruleId }).then((res: any) => {
+					setAlarmRules([
+						{ ...res.data, severity: res.data.labels.severity }
+					]);
+					res.data.ding
+						? setDingChecked(true)
+						: setDingChecked(false);
+					res.data.mail
+						? setMailChecked(true)
+						: setMailChecked(false);
+					setSystemId(res.data.clusterId);
+					getUserList({ alertRuleId: ruleId });
+					setDetail(res.data);
+				});
+			} else {
+				getUserList();
+				setAlarmRules([{}]);
+			}
 		} else {
 			getCanUse(clusterId, namespace, middlewareName, type);
 		}
@@ -462,7 +483,7 @@ function CreateAlarm(): JSX.Element {
 				item.severity &&
 				item.silence &&
 				item.content
-		);		
+		);
 		if (isRule) {
 			Message.show(messageConfig('error', '失败', '监控项不符合规则'));
 			return;
@@ -547,7 +568,7 @@ function CreateAlarm(): JSX.Element {
 		<Page className="create-alarm">
 			<Header
 				title={
-					detail
+					ruleId
 						? '修改告警规则'
 						: `新建告警规则${
 								middlewareName ? '(' + middlewareName + ')' : ''
