@@ -462,7 +462,7 @@ function CreateAlarm(): JSX.Element {
 				item.severity &&
 				item.silence &&
 				item.content
-		);
+		);		
 		if (isRule) {
 			Message.show(messageConfig('error', '失败', '监控项不符合规则'));
 			return;
@@ -523,7 +523,7 @@ function CreateAlarm(): JSX.Element {
 				item.ip = window.location.host;
 				return item;
 			});
-			if (flag[0]) {
+			if (flag) {
 				if (mailChecked) {
 					if (insertUser && insertUser.length) {
 						onCreate(list);
