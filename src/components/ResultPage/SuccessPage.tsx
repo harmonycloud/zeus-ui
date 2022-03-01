@@ -9,8 +9,12 @@ export default function SuccessPage(props: SuccessPageProps): JSX.Element {
 	return (
 		<Content>
 			<div className="zeus-success-content">
-				<Icon type="success-filling" style={{ color: '#68B642' }} />
-				<h2>{title}</h2>
+				<Icon
+					size="xxxl"
+					type="success-filling"
+					style={{ color: '#68B642' }}
+				/>
+				<p className="zeus-result-title">{title}</p>
 				<div className="zeus-button-content">
 					<Button type="primary" onClick={leftHandle}>
 						{leftText}

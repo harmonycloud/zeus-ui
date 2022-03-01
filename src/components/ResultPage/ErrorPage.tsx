@@ -9,8 +9,8 @@ export default function ErrorPage(props: ErrorPageProps): JSX.Element {
 	return (
 		<Content>
 			<div className="zeus-success-content">
-				<Icon type="error" style={{ color: '#Ef595C' }} />
-				<h2>{title}</h2>
+				<Icon size="xxxl" type="error" style={{ color: '#Ef595C' }} />
+				<p className="zeus-result-title">{title}</p>
 				<div>
 					<Button type="primary" onClick={btnHandle}>
 						{btnText}

@@ -5,6 +5,9 @@ import Page from '@alicloud/console-components-page';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
+import SuccessPage from '@/components/ResultPage/SuccessPage';
+import ErrorPage from '@/components/ResultPage/ErrorPage';
+import LoadingPage from '@/components/ResultPage/LoadingPage';
 import {
 	Form,
 	Field,
@@ -20,7 +23,6 @@ import {
 	// NumberPicker 一主多从
 } from '@alicloud/console-components';
 import pattern from '@/utils/pattern';
-import styles from './mysql.module.scss';
 import {
 	getNodePort,
 	getNodeTaint,
@@ -49,6 +51,7 @@ import { data } from '@alicloud/console-components/types/cascader';
 import { instanceSpecList } from '@/utils/const';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
+import styles from './mysql.module.scss';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -160,6 +163,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [reClusterFlag, setReClusterFlag] = useState<boolean>(false);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
+
+	// * 是否点击提交跳转至结果页
+	const [commitFlag, setCommitFlag] = useState<boolean>(false);
+	// * 发布成功
+	const [successFlag, setSuccessFlag] = useState<boolean>(false);
+	// * 发布失败
+	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -504,6 +514,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						}
 					});
 				} else {
+					setCommitFlag(true);
 					postMiddleware(sendData).then((res) => {
 						if (res.success) {
 							Message.show(
@@ -511,9 +522,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									data: '中间件Mysql正在创建中'
 								})
 							);
-							history.push({
-								pathname: `/serviceList/${chartName}/${aliasName}`
-							});
 						} else {
 							Message.show(messageConfig('error', '错误', res));
 						}
@@ -730,6 +738,21 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 		});
 	};
+	if (!commitFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<LoadingPage
+					title="创建中"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
 
 	return (
 		<Page>

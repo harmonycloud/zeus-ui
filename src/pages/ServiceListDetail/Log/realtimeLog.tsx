@@ -21,6 +21,7 @@ const { Group: RadioGroup } = Radio;
 
 const RealtimeLog = (props: RealTimeProps) => {
 	const { setRealLog, cleanRealLog } = props;
+	console.log(props);
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	const options = {
 		mode: 'xml',
@@ -97,10 +98,13 @@ const RealtimeLog = (props: RealTimeProps) => {
 				socketUrl: `/terminal?terminalType=${terminalType}&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
 				socketMessage: (receive: any) => {
+					console.log(receive);
+					console.log(props.log);
 					const content = props.log + JSON.parse(receive.data).text;
 					setRealLog(content);
 				},
 				socketClose: (msg: any) => {
+					cleanRealLog();
 					console.log(msg);
 				},
 				socketError: () => {
@@ -117,6 +121,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 				console.log(e);
 			}
 			return () => {
+				console.log('close websocket');
 				ws.current.onclose();
 			};
 		}
