@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Message, Button, Dialog, Balloon } from '@alicloud/console-components';
+import { Message, Button, Dialog } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { StoreState, globalVarProps } from '@/types/index';
+import { StoreState } from '@/types/index';
 import { Page, Content, Header } from '@alicloud/console-components-page';
-import { getVersions, upgradeChart } from '@/services/serviceList';
+import {
+	getVersions,
+	upgradeChart,
+	upgradeCheck
+} from '@/services/serviceList';
 import messageConfig from '@/components/messageConfig';
 import { useHistory } from 'react-router';
 import { middlewareProps } from './service.list';
@@ -15,7 +19,6 @@ import { iconTypeRender } from '@/utils/utils';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import { serviceVersionStatus } from '@/utils/enum';
 import { versionProps, paramsProps } from './service.list';
-const { Tooltip } = Balloon;
 
 function ServiceVersion(props: versionProps): JSX.Element {
 	const {
@@ -26,10 +29,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
-	const url = window.location.href.split('/');
 	const history = useHistory();
-	const [installNum, setInstallNum] = useState<number>();
-	const [curIndex, setCurIndex] = useState<number>();
 
 	const getData = () => {
 		getVersions({
@@ -55,28 +55,11 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const type = filterParams[keys[0]].selectedKeys[0];
-			if (
-				type === 'future' ||
-				type === 'updating' ||
-				type === 'needUpgradeOperator' ||
-				type === 'canUpgrade'
-			) {
-				const list = originData.filter(
-					(item) =>
-						item[keys[0]] === 'future' ||
-						item[keys[0]] === 'updating' ||
-						item[keys[0]] === 'needUpgradeOperator' ||
-						item[keys[0]] === 'canUpgrade'
-				);
-				setDataSource(list);
-			} else {
-				const list = originData.filter(
-					(item) =>
-						item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-				);
-				setDataSource(list);
-			}
+			const list = originData.filter(
+				(item) =>
+					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+			);
+			setDataSource(list);
 		} else {
 			setDataSource(originData);
 		}
@@ -137,68 +120,116 @@ function ServiceVersion(props: versionProps): JSX.Element {
 				{record.versionStatus === 'future' ||
 				record.versionStatus === 'updating' ? (
 					<LinkButton
-						style={{ color: `${dataSource.find(item => item.versionStatus === 'updataing') && record.versionStatus !== 'updating' ? '#3DBCFB' : '#cccccc'}` }}
+						style={{
+							color: `${
+								dataSource.find(
+									(item) => item.versionStatus === 'updating'
+								) && record.versionStatus !== 'updating'
+									? '#cccccc'
+									: '#0070cc'
+							}`
+						}}
 						onClick={() => installUpdate(index, record)}
 					>
-						{record.versionStatus === 'future' ? '升级' : '升级中'}
-						{index === curIndex && installNum && record.versionStatus === 'future' 
-							? '中(' + installNum + 's)'
-							: ''}
+						{record.versionStatus === 'future'
+							? '升级'
+							: '升级中...'}
 					</LinkButton>
 				) : null}
 			</Actions>
 		);
 	};
 	const installUpdate = (index: number, record: middlewareProps) => {
-		Dialog.show({
-			title: '操作确认',
-			content: '是否确认升级新版本？',
-			onOk: () => {
-				return upgradeChart({
-					clusterId: cluster.id,
-					namespace: namespace.name,
-					middlewareName,
-					type,
-					chartName: record.chartName,
-					upgradeChartVersion: record.chartVersion
-				}).then((res) => {
-					if (res.success) {
-						let count = 6;
-						setCurIndex(index);
-						const timeout = setInterval(() => {
-							setInstallNum(--count);
-							if (count <= 0) {
-								clearInterval(timeout);
+		originData.forEach((item: any, i: number) => {
+			if (i === index) {
+				item.versionStatus = 'updating';
+			}
+			return item;
+		});
+		setDataSource([...originData]);
+		upgradeCheck({
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			middlewareName,
+			type,
+			chartName: record.chartName,
+			upgradeChartVersion: record.chartVersion
+		}).then((res) => {
+			if (res.success) {
+				Dialog.show({
+					title: '操作确认',
+					content: '是否确认升级新版本？',
+					onOk: () => {
+						return upgradeChart({
+							clusterId: cluster.id,
+							namespace: namespace.name,
+							middlewareName,
+							type,
+							chartName: record.chartName,
+							upgradeChartVersion: record.chartVersion
+						}).then((res) => {
+							if (res.success) {
 								getData();
+							}else{
+								originData.forEach((item: any, i: number) => {
+									if (i === index) {
+										item.versionStatus = 'future';
+									}
+									return item;
+								});
+								setDataSource([...originData]);
+								Message.show(
+									messageConfig('error', '失败', res.errorMsg)
+								);
 							}
-						}, 1000);
-					} else if (res.code === 720004) {
-						const dialog = Dialog.show({
-							title: '操作确认',
-							content:
-								'经系统检测，该版本的中间件还未安装，请到中间件市场进行升级安装',
-							footer: (
-								<>
-									<Button
-										type="primary"
-										onClick={() => dialog.hide()}
-									>
-										我知道了
-									</Button>
-									<Button
-										onClick={() => {
-											dialog.hide();
-											history.push(
-												`/middlewareRepository/versionManagement/${type}`
-											);
-										}}
-									>
-										现在去升级
-									</Button>
-								</>
-							)
 						});
+					},
+					onCancel: () => {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
 					}
+				});
+			} else if (res.code === 720004) {
+				const dialog = Dialog.show({
+					title: '操作确认',
+					content:
+						'经系统检测，该版本的中间件还未安装，请到中间件市场进行升级安装',
+					footer: (
+						<>
+							<Button
+								type="primary"
+								onClick={() => {
+									originData.forEach(
+										(item: any, i: number) => {
+											if (i === index) {
+												item.versionStatus = 'future';
+											}
+											return item;
+										}
+									);
+									setDataSource([...originData]);
+									dialog.hide();
+								}}
+							>
+								我知道了
+							</Button>
+							<Button
+								onClick={() => {
+									dialog.hide();
+									history.push(
+										`/middlewareRepository/versionManagement/${type}`
+									);
+								}}
+							>
+								现在去升级
+							</Button>
+						</>
+					)
 				});
 			}
 		});
