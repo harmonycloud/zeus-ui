@@ -42,26 +42,22 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 			filelogEnabled,
 			stdoutEnabled
 		};
-		console.log(sendData);
-		uploadLogSwitch(sendData)
-			.then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig(
-							'success',
-							'成功',
-							`${
-								source === 'standard' ? '标准日志' : '文件日志'
-							}${flag ? '开启' : '关闭'}成功`
-						)
-					);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			})
-			.finally(() => {
-				onCancel(true);
-			});
+		onCancel(true);
+		uploadLogSwitch(sendData).then((res) => {
+			if (res.success) {
+				Message.show(
+					messageConfig(
+						'success',
+						'成功',
+						`${source === 'standard' ? '标准日志' : '文件日志'}${
+							flag ? '开启' : '关闭'
+						}成功`
+					)
+				);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	};
 	return (
 		<Dialog

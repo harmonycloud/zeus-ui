@@ -52,6 +52,8 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	const [successFlag, setSuccessFlag] = useState<boolean>(false);
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
+	// * 创建返回的服务名称
+	const [createData, setCreateData] = useState<string>();
 	const history = useHistory();
 	const field = Field.useField();
 	useEffect(() => {
@@ -192,20 +194,14 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
+					setCreateData(res.data);
 					setSuccessFlag(true);
 					setErrorFlag(false);
 					setCommitFlag(false);
-					// Message.show(
-					// 	messageConfig('success', '成功', '中间件创建成功')
-					// );
-					// history.push({
-					// 	pathname: `/serviceList/${chartName}/${aliasName}`
-					// });
 				} else {
 					setSuccessFlag(false);
 					setErrorFlag(true);
 					setCommitFlag(false);
-					// Message.show(messageConfig('error', '错误', res));
 				}
 			});
 		});
@@ -227,8 +223,6 @@ function DynamicForm(props: CreateProps): JSX.Element {
 		);
 	}
 	if (successFlag) {
-		// todo 这里中间件名称的获取待后端返回
-		const middlewareName = '?';
 		return (
 			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
 				<SuccessPage
@@ -242,7 +236,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					}}
 					rightHandle={() => {
 						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${middlewareName}/${chartName}/${chartVersion}`
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
 						});
 					}}
 				/>

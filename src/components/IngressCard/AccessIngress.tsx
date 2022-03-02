@@ -109,7 +109,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					labelTextAlign="left"
 					asterisk={false}
 					pattern={pattern.ingressName}
-					patternMessage="请输入由小写字母数字及“-”组成的1-63个字符"
+					patternMessage="请输入由小写字母数字及“-”组成的1-40个字符"
 				>
 					<Input
 						htmlType="text"
