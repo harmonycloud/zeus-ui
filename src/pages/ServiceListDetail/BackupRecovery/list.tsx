@@ -113,7 +113,7 @@ export default function List(props: ListProps): JSX.Element {
 				<LinkButton
 					disabled={record.backupName === ''}
 					onClick={() => {
-						history.push('/disasterBackup/dataSecurity/addBackup');
+						history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
 						sessionStorage.setItem(
 							'detail',
 							JSON.stringify({

@@ -10,7 +10,7 @@ export const getMiddlewareDetail = `${api}/clusters/{clusterId}/namespaces/{name
 // * 修改中间件
 export const updateMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}`;
 // * 查询pod列表
-export const getPods = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/pods`;
+export const getPods = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/topology`;
 // * 重启pod
 export const restartPod = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/pods/{podName}/restart`;
 export const middlewareName = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}`;

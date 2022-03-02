@@ -5,18 +5,17 @@ import { useParams } from 'react-router';
 import { Button, Icon, Balloon } from '@alicloud/console-components';
 import CustomIcon from '@/components/CustomIcon';
 import { api } from '@/api.json';
-import select from '@/assets/images/tree-select.svg';
-import Completed from '@/assets/images/Completed.svg';
-import NotReady from '@/assets/images/NotReady.svg';
-import Terminating from '@/assets/images/Terminating.svg';
-import Running from '@/assets/images/Running.svg';
 import Restart from '@/assets/images/restart.svg';
+import RestartHover from '@/assets/images/restart_hover.svg';
 import Edit from '@/assets/images/edit.svg';
+import EditHover from '@/assets/images/edit_hover.svg';
 import Control from '@/assets/images/control.svg';
+import ControlHover from '@/assets/images/control_hover.svg';
 import { useLocation } from 'react-router';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
 import { modelMap } from '@/utils/const';
+import { states, podStatus } from '@/utils/const';
 import insertCss from 'insert-css';
 
 insertCss(`
@@ -44,51 +43,6 @@ insertCss(`
 
 const { Tooltip } = Balloon;
 
-const podStatus = [
-	{
-		status: 'Completed',
-		color: '#1E8E3E',
-		image: Completed,
-		title: '即将完成'
-	},
-	{
-		status: 'Terminating',
-		color: '#D93026',
-		image: Terminating,
-		title: '已停止'
-	},
-	{
-		status: 'Running',
-		color: '#0091FF',
-		image: Running,
-		title: '运行中'
-	},
-	{
-		status: 'NotReady',
-		color: '#FFC440',
-		image: NotReady,
-		title: '运行异常'
-	},
-	{
-		status: 'Creating',
-		color: '#1E8E3E',
-		image: Completed,
-		title: '即将完成'
-	},
-	{
-		status: 'RunningError',
-		color: '#FFC440',
-		image: NotReady,
-		title: '运行异常'
-	},
-	{
-		status: 'Error',
-		color: '#FFC440',
-		image: NotReady,
-		title: '运行异常'
-	}
-];
-
 function Visualization(props) {
 	const {
 		topoData,
@@ -101,7 +55,6 @@ function Visualization(props) {
 		setEsVisible,
 		selectObj,
 		backup,
-		record
 	} = props;
 	const location = useLocation();
 	const { pathname } = location;
@@ -369,7 +322,12 @@ function Visualization(props) {
 							const typeWidth = type.getBBox().width;
 							const name = group.addShape('text', {
 								attrs: {
-									text: cfg.name,
+									text:
+										cfg.name && cfg.name.length >= 8
+											? '名称：' +
+											  cfg.name.substring(0, 8) +
+											  '...'
+											: '名称：' + cfg.name,
 									x: typeWidth + 24,
 									y: 16,
 									textBaseline: 'middle',
@@ -378,41 +336,52 @@ function Visualization(props) {
 									fontWeight: 500,
 									fontFamily: 'PingFangSC-Medium, PingFang SC'
 								},
-								name: 'text-shape1'
+								name: 'name'
 							});
 							const nameWidth = name.getBBox().width;
 							group.addShape('text', {
 								attrs: {
-									text: podStatus.filter(
-										(item) => item.status === cfg.status
-									)[0]
-										&& '(' + podStatus.filter(
+									text: states.find(
+										(item) => item.value === cfg.status
+									)
+										? ('(' +
+										  states.find(
 												(item) =>
-													item.status === cfg.status
-										  )[0].title + ')',
+													item.value === cfg.status
+										  ).label +
+										  ')')
+										: '(运行异常)',
 									x: typeWidth + nameWidth + 32,
 									y: 15,
 									fontSize: 14,
 									fontWeight: 500,
 									textBaseline: 'middle',
-									fill: '#0070cc',
+									fill:
+										states.filter(
+											(item) => item.value === cfg.status
+										)[0] &&
+										states.filter(
+											(item) => item.value === cfg.status
+										)[0].color
 								},
 								name: 'status'
 							});
 							group.addShape('text', {
 								attrs: {
 									text:
-										'中文别名：' +
-										(cfg.aliasName
-											? cfg.aliasName
-											: cfg.name),
+										cfg.aliasName &&
+										cfg.aliasName.length >= 15
+											? '中文别名：' +
+											  cfg.aliasName.substring(0, 13) +
+											  '...'
+											: '中文别名：' + cfg.aliasName,
 									x: 16,
 									y: 37,
 									textBaseline: 'middle',
 									fill: '#999',
 									fontFamily: 'PingFangSC-Medium, PingFang SC'
 								},
-								name: 'text-shape3'
+								name: 'aliasName'
 							});
 						} else {
 							const ip = group.addShape('text', {
@@ -431,19 +400,28 @@ function Visualization(props) {
 							const ipWidth = ip.getBBox().width;
 							group.addShape('text', {
 								attrs: {
-									text: podStatus.filter(
-										(item) => item.status === cfg.status
-									)[0]
-										&& '(' + podStatus.filter(
+									text:
+										podStatus.filter(
+											(item) => item.value === cfg.status
+										)[0] &&
+										'(' +
+											podStatus.filter(
 												(item) =>
-													item.status === cfg.status
-										  )[0].title + ')',
+													item.value === cfg.status
+											)[0].label +
+											')',
 									x: ipWidth + 24,
 									y: 15,
 									fontSize: 14,
 									fontWeight: 500,
 									textBaseline: 'middle',
-									fill: '#0070cc',
+									fill:
+										podStatus.filter(
+											(item) => item.value === cfg.status
+										)[0] &&
+										podStatus.filter(
+											(item) => item.value === cfg.status
+										)[0].color
 								},
 								name: 'status'
 							});
@@ -464,7 +442,7 @@ function Visualization(props) {
 									textBaseline: 'middle',
 									fill: '#999'
 								},
-								name: 'text-shape3'
+								name: 'podName'
 							});
 							group.addShape('text', {
 								attrs: {
@@ -489,7 +467,9 @@ function Visualization(props) {
 							attrs: {
 								text:
 									'存储类型：' +
-									(cfg.isAllLvmStorage ? 'LVM' : '其他'),
+									(cfg?.resources?.isLvmStorage
+										? 'LVMasdas'
+										: '其他'),
 								x: 16,
 								y: 57,
 								fill: '#999'
@@ -503,85 +483,17 @@ function Visualization(props) {
 								y: 15,
 								fontSize: 16,
 								fontWeight: 900,
-								fill: '#666'
+								fill: '#666',
+								cursor: 'pointer'
 							},
-							name: 'text-shape3'
+							name: 'more'
 						});
-						// group.addShape('rect', {
-						// 	attrs: {
-						// 		fill: podStatus.filter(
-						// 			(item) => item.status === cfg.status
-						// 		)[0]
-						// 			? podStatus.filter(
-						// 					(item) => item.status === cfg.status
-						// 			  )[0].color
-						// 			: '#FFC440',
-						// 		x: 0,
-						// 		y: 0,
-						// 		width: 40,
-						// 		height: 100,
-						// 		cursor: 'pointer'
-						// 	},
-						// 	name: 'status'
-						// });
-						// group.addShape('image', {
-						// 	attrs: {
-						// 		img: podStatus.filter(
-						// 			(item) => item.status === cfg.status
-						// 		)[0]
-						// 			? podStatus.filter(
-						// 					(item) => item.status === cfg.status
-						// 			  )[0].image
-						// 			: NotReady,
-						// 		x: 12,
-						// 		y: 42,
-						// 		width: 8,
-						// 		height: 8,
-						// 		cursor: 'pointer'
-						// 	},
-						// 	name: 'status-image'
-						// });
-						// if (cfg.depth) {
-						// 	group.addShape('text', {
-						// 		attrs: {
-						// 			text:
-						// 				cfg.podName && cfg.podName.length >= 25
-						// 					? '名称：' +
-						// 					  cfg.podName.substring(0, 15) +
-						// 					  '...' +
-						// 					  cfg.podName.substring(
-						// 							cfg.podName.length - 6,
-						// 							cfg.podName.length
-						// 					  )
-						// 					: '名称：' + cfg.podName,
-						// 			x: 50,
-						// 			y: hasConfigBackup(cfg) ? 40 : 50,
-						// 			textBaseline: 'middle',
-						// 			fill: '#333',
-						// 			fontWeight: 500,
-						// 			lineHeight: 18,
-						// 			fontFamily: 'PingFangSC-Medium, PingFang SC'
-						// 		},
-						// 		name: 'text-shape3'
-						// 	});
-						// }
-						// group.addShape('image', {
-						// 	attrs: {
-						// 		img: `${api}/images/middleware/${imagePath}`,
-						// 		x: 160,
-						// 		y: 34,
-						// 		width: 32,
-						// 		height: 32
-						// 	},
-						// 	visible: !cfg.depth,
-						// 	name: 'type-image'
-						// });
 						group.addShape('polygon', {
 							attrs: {
 								points: [
-									[276,144],
-									[276,170],
-									[250,170]
+									[276, 144],
+									[276, 170],
+									[250, 170]
 								],
 								fill: '#6236FF',
 								opacity: 0.6
@@ -598,7 +510,7 @@ function Visualization(props) {
 								fill: '#fff'
 							},
 							visible: hasConfigBackup(cfg),
-							name: 'text1'
+							name: 'bei'
 						});
 						group.addShape('rect', {
 							attrs: {
@@ -609,8 +521,11 @@ function Visualization(props) {
 								fill: '#efefef',
 								fillOpacity: 0.7
 							},
-							name: 'text1'
+							name: 'percent'
 						});
+						const storageUsage = Math.round(
+							cfg?.monitorResourceQuota?.storage?.usage
+						);
 						group.addShape('text', {
 							attrs: {
 								text: '存储',
@@ -620,7 +535,7 @@ function Visualization(props) {
 								textBaseline: 'middle',
 								fill: '#333'
 							},
-							name: 'text1'
+							name: 'storage-info'
 						});
 						group.addShape('rect', {
 							attrs: {
@@ -632,30 +547,44 @@ function Visualization(props) {
 								fill: '#ddd',
 								fillOpacity: 0.7
 							},
-							name: 'text1'
+							name: 'storage-box'
 						});
 						group.addShape('rect', {
 							attrs: {
-								width: 75,
+								width:
+									storageUsage < 100
+										? storageUsage * 1.5
+										: 150,
 								height: 10,
 								x: 50,
 								y: 92,
 								radius: 5,
-								fill: '#0064C8'
+								fill:
+									storageUsage < 60
+										? '#0064C8'
+										: storageUsage < 80
+										? '#FAC800'
+										: '#C80000'
 							},
-							name: 'text1'
+							name: 'storage'
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '50%',
+								text:
+									storageUsage < 100
+										? storageUsage + '%'
+										: '100%',
 								x: 210,
 								y: 97,
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
 							},
-							name: 'text1'
+							name: 'storage-text'
 						});
+						const cpuUsage = Math.round(
+							cfg?.monitorResourceQuota?.cpu?.usage
+						);
 						group.addShape('text', {
 							attrs: {
 								text: 'CPU',
@@ -665,7 +594,7 @@ function Visualization(props) {
 								textBaseline: 'middle',
 								fill: '#333'
 							},
-							name: 'text1'
+							name: 'cpu-info'
 						});
 						group.addShape('rect', {
 							attrs: {
@@ -677,30 +606,38 @@ function Visualization(props) {
 								fill: '#ddd',
 								fillOpacity: 0.7
 							},
-							name: 'text1'
+							name: 'cpu-box'
 						});
 						group.addShape('rect', {
 							attrs: {
-								width: 90,
+								width: cpuUsage < 100 ? cpuUsage * 1.5 : 150,
 								height: 10,
 								x: 50,
 								y: 112,
 								radius: 5,
-								fill: '#FAC800'
+								fill:
+									cpuUsage < 60
+										? '#0064C8'
+										: cpuUsage < 80
+										? '#FAC800'
+										: '#C80000'
 							},
-							name: 'text1'
+							name: 'cpu'
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '60%',
+								text: cpuUsage < 100 ? cpuUsage + '%' : '100%',
 								x: 210,
 								y: 117,
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
 							},
-							name: 'text1'
+							name: 'cpu-text'
 						});
+						const memoryUsage = Math.round(
+							cfg?.monitorResourceQuota?.memory?.usage
+						);
 						group.addShape('text', {
 							attrs: {
 								text: '内存',
@@ -710,7 +647,7 @@ function Visualization(props) {
 								textBaseline: 'middle',
 								fill: '#333'
 							},
-							name: 'text1'
+							name: 'memory-info'
 						});
 						group.addShape('rect', {
 							attrs: {
@@ -722,98 +659,64 @@ function Visualization(props) {
 								fill: '#ddd',
 								fillOpacity: 0.7
 							},
-							name: 'text1'
+							name: 'memory-box'
 						});
 						group.addShape('rect', {
 							attrs: {
-								width: 135,
+								width:
+									memoryUsage < 100 ? memoryUsage * 1.5 : 150,
 								height: 10,
 								x: 50,
 								y: 132,
 								radius: 5,
-								fill: '#C80000'
+								fill:
+									memoryUsage < 60
+										? '#0064C8'
+										: memoryUsage < 80
+										? '#FAC800'
+										: '#C80000'
 							},
-							name: 'text1'
+							name: 'memory'
 						});
 						group.addShape('text', {
 							attrs: {
-								text: '90%',
+								text:
+									memoryUsage < 100
+										? memoryUsage + '%'
+										: '100%',
 								x: 210,
 								y: 137,
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
 							},
-							name: 'text1'
+							name: 'memory-text'
 						});
-						// group.addShape('text', {
-						// 	attrs: {
-						// 		text: '设',
-						// 		x: 212,
-						// 		y: 44,
-						// 		fill: '#fff'
-						// 	},
-						// 	visible: hasConfigBackup(cfg),
-						// 	name: 'text2'
-						// });
-						// group.addShape('text', {
-						// 	attrs: {
-						// 		text: '置',
-						// 		x: 212,
-						// 		y: 56,
-						// 		fill: '#fff'
-						// 	},
-						// 	visible: hasConfigBackup(cfg),
-						// 	name: 'text3'
-						// });
-						// group.addShape('text', {
-						// 	attrs: {
-						// 		text: '备',
-						// 		x: 212,
-						// 		y: 68,
-						// 		fill: '#fff'
-						// 	},
-						// 	visible: hasConfigBackup(cfg),
-						// 	name: 'text4'
-						// });
-						// group.addShape('text', {
-						// 	attrs: {
-						// 		text: '份',
-						// 		x: 212,
-						// 		y: 80,
-						// 		fill: '#fff'
-						// 	},
-						// 	visible: hasConfigBackup(cfg),
-						// 	name: 'text5'
-						// });
-						// group.addShape('image', {
-						// 	attrs: {
-						// 		x: 204,
-						// 		y: 76,
-						// 		width: 24,
-						// 		height: 24,
-						// 		img: select
-						// 	},
-						// 	visible:
-						// 		record &&
-						// 		(cfg.podName === selectObj ||
-						// 			selectObj === cfg.name)
-						// 			? true
-						// 			: false,
-						// 	name: 'select-image'
-						// });
+						group.addShape('rect', {
+							attrs: {
+								x: 184,
+								y: 30,
+								width: 92,
+								height: !cfg.depth ? 50 : 84,
+								stroke: '#C0C6CC',
+								cursor: 'pointer',
+								fill: '#fff',
+								cursor: 'pointer'
+							},
+							visible: false,
+							name: 'button'
+						});
 						const hasChildren =
 							cfg.children && cfg.children.length > 0;
 						if (!cfg.depth) {
 							group.addShape('rect', {
 								attrs: {
-									x: 0,
-									y: 0,
-									width: 228,
-									height: 100,
-									fill: '#000',
-									opacity: 0.65,
-									cursor: 'pointer'
+									x: 185,
+									y: 38,
+									width: 89,
+									height: 34,
+									cursor: 'pointer',
+									fill: '#fff'
 								},
 								visible: false,
 								name: 'button2'
@@ -821,8 +724,8 @@ function Visualization(props) {
 							group.addShape('image', {
 								attrs: {
 									img: Edit,
-									x: 82,
-									y: 44,
+									x: 192,
+									y: 50,
 									width: 12,
 									height: 12
 								},
@@ -832,11 +735,11 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text: '修改规格',
-									x: 119,
-									y: 50,
+									x: 230,
+									y: 55,
 									textAlign: 'center',
 									textBaseline: 'middle',
-									fill: '#fff',
+									fill: '#999',
 									cursor: 'pointer'
 								},
 								visible: false,
@@ -846,12 +749,11 @@ function Visualization(props) {
 						if (!hasChildren && cfg.depth) {
 							group.addShape('rect', {
 								attrs: {
-									x: 0,
-									y: 0,
-									width: 114,
-									height: 100,
-									fill: '#000',
-									opacity: 0.65,
+									x: 185,
+									y: 72,
+									width: 89,
+									height: 34,
+									fill: '#fff',
 									cursor: 'pointer'
 								},
 								name: 'button1',
@@ -860,22 +762,22 @@ function Visualization(props) {
 							group.addShape('image', {
 								attrs: {
 									img: Restart,
-									x: 35,
-									y: 44,
+									x: 192,
+									y: 83,
 									width: 12,
 									height: 12
 								},
-								visible: false,
-								name: 'restart'
+								name: 'restart',
+								visible: false
 							});
 							group.addShape('text', {
 								attrs: {
 									text: '重启',
-									x: 63,
-									y: 50,
+									x: 220,
+									y: 89,
 									textAlign: 'center',
 									textBaseline: 'middle',
-									fill: '#fff',
+									fill: '#999',
 									cursor: 'pointer'
 								},
 								name: 'text-button1',
@@ -883,13 +785,12 @@ function Visualization(props) {
 							});
 							group.addShape('rect', {
 								attrs: {
-									x: 114,
-									y: 0,
-									width: 114,
-									height: 100,
-									fill: '#000',
-									opacity: 0.65,
-									cursor: 'pointer'
+									x: 185,
+									y: 38,
+									width: 89,
+									height: 34,
+									cursor: 'pointer',
+									fill: '#fff'
 								},
 								visible: false,
 								name: 'button3'
@@ -897,8 +798,8 @@ function Visualization(props) {
 							group.addShape('image', {
 								attrs: {
 									img: Control,
-									x: 147,
-									y: 44,
+									x: 192,
+									y: 50,
 									width: 12,
 									height: 12
 								},
@@ -908,53 +809,17 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text: '控制台',
-									x: 180,
-									y: 50,
+									x: 225,
+									y: 55,
 									textAlign: 'center',
 									textBaseline: 'middle',
-									fill: '#fff',
+									fill: '#999',
 									cursor: 'pointer'
 								},
 								name: 'text-button3',
 								visible: false
 							});
 						}
-						group.addShape('rect', {
-							attrs: {
-								fill: '#fff',
-								stroke: '#ccc',
-								x: -18,
-								y: 65,
-								width: 70,
-								height: 25
-							},
-							name: 'info',
-							visible: false
-						});
-						group.addShape('text', {
-							attrs: {
-								text: podStatus.filter(
-									(item) =>
-										item.status === cfg.status ||
-										item.status === serverData.status
-								)[0]
-									? podStatus.filter(
-											(item) =>
-												item.status === cfg.status ||
-												item.status ===
-													serverData.status
-									  )[0].title
-									: '运行异常',
-								fill: '#666',
-								x: 0,
-								y: 83,
-								fontWeight: 500,
-								lineHeight: 18,
-								fontFamily: 'PingFangSC-Medium, PingFang SC'
-							},
-							name: 'info-text',
-							visible: false
-						});
 						return box;
 					}
 				}
@@ -1095,6 +960,9 @@ function Visualization(props) {
 			name: serverData.name,
 			hasConfigBackup: topoData.hasConfigBackup,
 			status: topoData.status,
+			aliasName: topoData.aliasName,
+			monitorResourceQuota: topoData.monitorResourceQuota,
+			storageClassName: topoData.storageClassName,
 			children: [
 				{
 					adentify: serveRender() || '未知',
@@ -1105,7 +973,8 @@ function Visualization(props) {
 		};
 		graph.data(res);
 		graph.render();
-		(topoData.pods.length && topoData.pods.length >= 4) || direction === 'TB'
+		(topoData.pods.length && topoData.pods.length >= 4) ||
+		direction === 'TB'
 			? graph.fitView()
 			: graph.fitCenter();
 
@@ -1125,101 +994,10 @@ function Visualization(props) {
 			});
 		});
 
-		graph.on('type-image:mouseenter',(evt) => {
-			evt.target.attr({img: select})
-		})
-
-		// graph.on('node:mouseenter', (evt) => {
-		// 	if (!evt.target.cfg.modelId) {
-		// 		const { item } = evt;
-		// 		const group = item.getContainer();
-		// 		const button1 = group.find((e) => e.get('name') === 'button1');
-		// 		const button2 = group.find((e) => e.get('name') === 'button2');
-		// 		const button3 = group.find((e) => e.get('name') === 'button3');
-		// 		const restart = group.find((e) => e.get('name') === 'restart');
-		// 		const edit = group.find((e) => e.get('name') === 'edit');
-		// 		const control = group.find((e) => e.get('name') === 'control');
-		// 		const info = group.find((e) => e.get('name') === 'info');
-		// 		const textButton1 = group.find(
-		// 			(e) => e.get('name') === 'text-button1'
-		// 		);
-		// 		const textButton2 = group.find(
-		// 			(e) => e.get('name') === 'text-button2'
-		// 		);
-		// 		const textButton3 = group.find(
-		// 			(e) => e.get('name') === 'text-button3'
-		// 		);
-		// 		const infoText = group.find(
-		// 			(e) => e.get('name') === 'info-text'
-		// 		);
-		// 		graph.setItemState(item, 'hover', true);
-		// 		if (pathname.includes('addBackup')) return;
-		// 		if (button1 && button3) {
-		// 			button1.cfg.visible = true;
-		// 			button3.cfg.visible = true;
-		// 			restart.cfg.visible = true;
-		// 			control.cfg.visible = true;
-		// 			textButton1.cfg.visible = true;
-		// 			textButton3.cfg.visible = true;
-		// 		}
-		// 		if (button2) {
-		// 			button2.cfg.visible = true;
-		// 			edit.cfg.visible = true;
-		// 			textButton2.cfg.visible = true;
-		// 		}
-		// 	}
-		// });
-		// graph.on('node:mouseleave', (evt) => {
-		// 	if (!evt.target.cfg.modelId) {
-		// 		const { item } = evt;
-		// 		const group = item.getContainer();
-		// 		const button1 = group.find((e) => e.get('name') === 'button1');
-		// 		const button2 = group.find((e) => e.get('name') === 'button2');
-		// 		const button3 = group.find((e) => e.get('name') === 'button3');
-		// 		const restart = group.find((e) => e.get('name') === 'restart');
-		// 		const edit = group.find((e) => e.get('name') === 'edit');
-		// 		const control = group.find((e) => e.get('name') === 'control');
-		// 		const info = group.find((e) => e.get('name') === 'info');
-		// 		const textButton1 = group.find(
-		// 			(e) => e.get('name') === 'text-button1'
-		// 		);
-		// 		const textButton2 = group.find(
-		// 			(e) => e.get('name') === 'text-button2'
-		// 		);
-		// 		const textButton3 = group.find(
-		// 			(e) => e.get('name') === 'text-button3'
-		// 		);
-		// 		const infoText = group.find(
-		// 			(e) => e.get('name') === 'info-text'
-		// 		);
-		// 		graph.setItemState(item, 'hover', false);
-		// 		if (info) {
-		// 			info.cfg.visible = false;
-		// 			infoText.cfg.visible = false;
-		// 		}
-		// 		if (button1 && button3) {
-		// 			button1.cfg.visible = false;
-		// 			button3.cfg.visible = false;
-		// 			restart.cfg.visible = false;
-		// 			control.cfg.visible = false;
-		// 			textButton1.cfg.visible = false;
-		// 			textButton3.cfg.visible = false;
-		// 		}
-		// 		if (button2) {
-		// 			button2.cfg.visible = false;
-		// 			edit.cfg.visible = false;
-		// 			textButton2.cfg.visible = false;
-		// 		}
-		// 	}
-		// });
-
 		graph.on('node:click', (evt) => {
 			const { item } = evt;
 			const group = item.getContainer();
 			const nodes = graph.getNodes();
-			// const selectImage = group.find(
-			// 	(e) => e.get('name') === 'select-image'
-			// );
 			const box = group.find((e) => e.get('name') === 'rect-shape');
 			if (!setBackupObj) return;
 			if (evt.target.cfg.modelId) return;
@@ -1248,7 +1026,6 @@ function Visualization(props) {
 				if (item._cfg.states.find((arr) => arr === 'select')) {
 					setBackupObj(null);
 					graph.setItemState(item, 'select', false);
-					// selectImage.cfg.visible = false;
 					nodes.some((str) => {
 						if (
 							!str.hasState('select') &&
@@ -1276,7 +1053,6 @@ function Visualization(props) {
 						? setBackupObj('serve')
 						: setBackupObj(evt.item._cfg.model.podName);
 					graph.setItemState(item, 'select', true);
-					// selectImage.cfg.visible = true;
 					nodes.some((str) => {
 						if (
 							!str.hasState('select') &&
@@ -1296,6 +1072,7 @@ function Visualization(props) {
 			}
 		});
 		const handleCollapse = (e) => {
+			console.log(e.target);
 			const target = e.target;
 			const id = target.get('modelId');
 			const item = graph.findById(id);
@@ -1314,7 +1091,6 @@ function Visualization(props) {
 			const collapseBack = group.find(
 				(e) => e.get('name') === 'collapse-back'
 			);
-			const podLine = group.find((e) => e.get('name') === 'pod-line');
 			const text = collapseText.attr('text');
 			if (text === '-') {
 				if (direction === 'LR') {
@@ -1373,11 +1149,11 @@ function Visualization(props) {
 				if (direction === 'LR') {
 					collapseBack.attr(
 						'x',
-						item.getModel().depth === 1 ? 60 : 90
+						item.getModel().depth === 2 ? 60 : 90
 					);
 					collapseText.attr({
 						text: '+',
-						x: item.getModel().depth === 1 ? 68 : 98
+						x: item.getModel().depth === 2 ? 68 : 98
 					});
 				} else {
 					collapseBack.attr('y', 20);
@@ -1411,11 +1187,93 @@ function Visualization(props) {
 			graph.refreshItem(item);
 			handleCollapse(e);
 		});
+
+		graph.on('more:click', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const button = group.find((e) => e.get('name') === 'button');
+			const button1 = group.find((e) => e.get('name') === 'button1');
+			const button2 = group.find((e) => e.get('name') === 'button2');
+			const button3 = group.find((e) => e.get('name') === 'button3');
+			const restart = group.find((e) => e.get('name') === 'restart');
+			const edit = group.find((e) => e.get('name') === 'edit');
+			const control = group.find((e) => e.get('name') === 'control');
+			const textButton1 = group.find(
+				(e) => e.get('name') === 'text-button1'
+			);
+			const textButton2 = group.find(
+				(e) => e.get('name') === 'text-button2'
+			);
+			const textButton3 = group.find(
+				(e) => e.get('name') === 'text-button3'
+			);
+			if (setBackupObj) return;
+			if (button1 && button3) {
+				button.cfg.visible = !button.cfg.visible;
+				button1.cfg.visible = !button1.cfg.visible;
+				button3.cfg.visible = !button3.cfg.visible;
+				restart.cfg.visible = !restart.cfg.visible;
+				control.cfg.visible = !control.cfg.visible;
+				textButton1.cfg.visible = !textButton1.cfg.visible;
+				textButton3.cfg.visible = !textButton3.cfg.visible;
+			}
+			if (button2) {
+				button.cfg.visible = !button.cfg.visible;
+				button2.cfg.visible = !button2.cfg.visible;
+				edit.cfg.visible = !edit.cfg.visible;
+				textButton2.cfg.visible = !textButton2.cfg.visible;
+			}
+			item.refresh();
+		});
+
 		graph.on('button1:click', (evt) => {
 			if (!reStart) return;
 			const { item } = evt;
 			reStart(item.getModel());
 		});
+		graph.on('button1:mouseover', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const textButton1 = group.find(
+				(e) => e.get('name') === 'text-button1'
+			);
+			const restart = group.find(
+				(e) => e.get('name') === 'restart'
+			);
+			evt.target.attr({ fill: '#F7F9FA' });
+			textButton1.attr({ fill: '#0064C8' });
+			restart.attr({img: RestartHover});
+		});
+		graph.on('button1:mouseleave', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const textButton1 = group.find(
+				(e) => e.get('name') === 'text-button1'
+			);
+			const restart = group.find(
+				(e) => e.get('name') === 'restart'
+			);
+			evt.target.attr({ fill: '#fff' });
+			textButton1.attr({ fill: '#999' });
+			restart.attr({img: Restart});
+		});
+		graph.on('text-button1:click', (evt) => {
+			if (!reStart) return;
+			const { item } = evt;
+			reStart(item.getModel());
+		});
+		graph.on('text-button1:mouseover', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const button1 = group.find((e) => e.get('name') === 'button1');
+			const restart = group.find(
+				(e) => e.get('name') === 'restart'
+			);
+			evt.target.attr({ fill: '#0064C8' });
+			button1.attr({ fill: '#F7F9FA' });
+			restart.attr({img: RestartHover});
+		});
+
 		graph.on('button2:click', (evt) => {
 			if (!setEsVisible && !editConfiguration) return;
 			if (serverData.type === 'elasticsearch') {
@@ -1424,15 +1282,31 @@ function Visualization(props) {
 				editConfiguration();
 			}
 		});
-		graph.on('button3:click', (evt) => {
-			if (!openSSL) return;
+		graph.on('button2:mouseover', (evt) => {
 			const { item } = evt;
-			openSSL(item.getModel());
+			const group = item.getContainer();
+			const textButton2 = group.find(
+				(e) => e.get('name') === 'text-button2'
+			);
+			const edit = group.find(
+				(e) => e.get('name') === 'edit'
+			);
+			evt.target.attr({ fill: '#F7F9FA' });
+			textButton2.attr({ fill: '#0064C8' });
+			edit.attr({img: EditHover});
 		});
-		graph.on('text-button1:click', (evt) => {
-			if (!reStart) return;
+		graph.on('button2:mouseleave', (evt) => {
 			const { item } = evt;
-			reStart(item.getModel());
+			const group = item.getContainer();
+			const textButton2 = group.find(
+				(e) => e.get('name') === 'text-button2'
+			);
+			const edit = group.find(
+				(e) => e.get('name') === 'edit'
+			);
+			evt.target.attr({ fill: '#fff' });
+			textButton2.attr({ fill: '#999' });
+			edit.attr({img: Edit});
 		});
 		graph.on('text-button2:click', (evt) => {
 			if (!setEsVisible && !editConfiguration) return;
@@ -1442,10 +1316,64 @@ function Visualization(props) {
 				editConfiguration();
 			}
 		});
+		graph.on('text-button2:mouseover', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const button2 = group.find((e) => e.get('name') === 'button2');
+			const edit = group.find(
+				(e) => e.get('name') === 'edit'
+			);
+			evt.target.attr({ fill: '#0064C8' });
+			button2.attr({ fill: '#F7F9FA' });
+			edit.attr({img: EditHover});
+		});
+
+		graph.on('button3:click', (evt) => {
+			if (!openSSL) return;
+			const { item } = evt;
+			openSSL(item.getModel());
+		});
 		graph.on('text-button3:click', (evt) => {
 			if (!openSSL) return;
 			const { item } = evt;
 			openSSL(item.getModel());
+		});
+		graph.on('button3:mouseover', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const textButton3 = group.find(
+				(e) => e.get('name') === 'text-button3'
+			);
+			const control = group.find(
+				(e) => e.get('name') === 'control'
+			);
+			evt.target.attr({ fill: '#F7F9FA' });
+			textButton3.attr({ fill: '#0064C8' });
+			control.attr({img: ControlHover});
+		});
+		graph.on('button3:mouseleave', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const textButton3 = group.find(
+				(e) => e.get('name') === 'text-button3'
+			);
+			const control = group.find(
+				(e) => e.get('name') === 'control'
+			);
+			evt.target.attr({ fill: '#fff' });
+			textButton3.attr({ fill: '#999' });
+			control.attr({img: Control});
+		});
+		graph.on('text-button3:mouseover', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const button3 = group.find((e) => e.get('name') === 'button3');
+			const control = group.find(
+				(e) => e.get('name') === 'control'
+			);
+			evt.target.attr({ fill: '#0064C8' });
+			button3.attr({ fill: '#F7F9FA' });
+			control.attr({img: ControlHover});
 		});
 
 		window.graph = graph;
@@ -1598,36 +1526,6 @@ function Visualization(props) {
 						>
 							回到原点
 						</Tooltip>
-					</div>
-					<div className={styles['legend']}>
-						<p>
-							<img
-								src={Completed}
-								style={{ background: '#1E8E3E' }}
-							/>
-							<span>即将完成</span>
-						</p>
-						<p>
-							<img
-								src={NotReady}
-								style={{ background: '#FFC440' }}
-							/>
-							<span>运行异常</span>
-						</p>
-						<p>
-							<img
-								src={Running}
-								style={{ background: '#0091FF' }}
-							/>
-							<span>进行中</span>
-						</p>
-						<p>
-							<img
-								src={Terminating}
-								style={{ background: '#D93026' }}
-							/>
-							<span>已停止</span>
-						</p>
 					</div>
 				</div>
 				<div id="topology" style={{ position: 'relative' }}></div>

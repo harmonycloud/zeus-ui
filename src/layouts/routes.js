@@ -84,7 +84,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* mysql灾备跳转使用 - 通过state中的disasterOriginName进行判断，可优化 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName"
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:middlewareName/:chartVersion"
 					component={MysqlCreate}
 					exact
 				/>
@@ -193,7 +193,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/disasterBackup/dataSecurity/addBackup"
+					path="/disasterBackup/dataSecurity/addBackup/:middlewareName/:type/:chartVersion"
 					component={BackupSetting}
 					exact
 				/>
