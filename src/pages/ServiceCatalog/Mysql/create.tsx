@@ -115,11 +115,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '5.7',
 			value: '5.7'
+		},
+		{
+			label: '8.0(beta)版',
+			value: '8.0'
 		}
-		// {
-		// 	label: '8.0(beta)版',
-		// 	value: '8.0'
-		// }
 	];
 	const [charSet, setCharSet] = useState<string>('utf8mb4');
 	const charSetList = [
@@ -169,8 +169,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [successFlag, setSuccessFlag] = useState<boolean>(false);
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
-	// * 创建返回的服务详情
-	const [createData, setCreateData] = useState<middlewareDetailProps>();
+	// * 创建返回的服务名称
+	const [createData, setCreateData] = useState<string>();
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -501,6 +501,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					setCommitFlag(true);
 					addDisasterIns(sendData).then((res) => {
 						if (res.success) {
+							setCreateData(res.data);
 							setSuccessFlag(true);
 							setErrorFlag(false);
 							setCommitFlag(false);
@@ -514,6 +515,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					setCommitFlag(true);
 					postMiddleware(sendData).then((res) => {
 						if (res.success) {
+							setCreateData(res.data);
 							setSuccessFlag(true);
 							setErrorFlag(false);
 							setCommitFlag(false);
@@ -752,8 +754,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		);
 	}
 	if (successFlag) {
-		// todo 这里中间件名称的获取不能这么做
-		const values: MysqlCreateValuesParams = field.getValues();
 		return (
 			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
 				<SuccessPage
@@ -767,7 +767,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					}}
 					rightHandle={() => {
 						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${values.name}/${chartName}/${chartVersion}`
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
 						});
 					}}
 				/>

@@ -169,6 +169,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [successFlag, setSuccessFlag] = useState<boolean>(false);
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
+	// * 创建返回的服务名称
+	const [createData, setCreateData] = useState<string>();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -389,6 +391,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				setCommitFlag(true);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
+						setCreateData(res.data);
 						setSuccessFlag(true);
 						setErrorFlag(false);
 						setCommitFlag(false);
@@ -459,8 +462,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		);
 	}
 	if (successFlag) {
-		// todo 这里中间件名称的获取需要后端返回
-		const middlewareName = '?';
 		return (
 			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
 				<SuccessPage
@@ -474,7 +475,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					}}
 					rightHandle={() => {
 						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${middlewareName}/${chartName}/${chartVersion}`
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
 						});
 					}}
 				/>
