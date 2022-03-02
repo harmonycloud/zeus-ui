@@ -11,17 +11,22 @@ import {
 } from '@alicloud/console-components';
 import FormBlock from '@/components/FormBlock';
 import { renderFormItem } from '@/components/renderFormItem';
+// * 结果页相关-start
+import LoadingPage from '@/components/ResultPage/LoadingPage';
+import SuccessPage from '@/components/ResultPage/SuccessPage';
+import ErrorPage from '@/components/ResultPage/ErrorPage';
+// * 结果页相关-end
 import { getDynamicFormData } from '@/services/middleware';
 import { postMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
+
 import {
 	CreateProps,
 	DynamicSendDataParams,
 	DynamicCreateValueParams
 } from '../catalog';
 import { StoreState } from '@/types';
-
 const { Item: FormItem } = Form;
 
 const formItemLayout = {
@@ -41,6 +46,12 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	} = props.match;
 	const [dataSource, setDataSource] = useState<any>();
 	const [capabilities, setCapabilities] = useState<string[]>([]);
+	// * 是否点击提交跳转至结果页
+	const [commitFlag, setCommitFlag] = useState<boolean>(false);
+	// * 发布成功
+	const [successFlag, setSuccessFlag] = useState<boolean>(false);
+	// * 发布失败
+	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	const history = useHistory();
 	const field = Field.useField();
 	useEffect(() => {
@@ -178,21 +189,82 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					return;
 				}
 			}
+			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '中间件创建成功')
-					);
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					setSuccessFlag(true);
+					setErrorFlag(false);
+					setCommitFlag(false);
+					// Message.show(
+					// 	messageConfig('success', '成功', '中间件创建成功')
+					// );
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				} else {
-					Message.show(messageConfig('error', '错误', res));
+					setSuccessFlag(false);
+					setErrorFlag(true);
+					setCommitFlag(false);
+					// Message.show(messageConfig('error', '错误', res));
 				}
 			});
 		});
 	};
+	// * 结果页相关
+	if (commitFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<LoadingPage
+					title="发布中"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
+	if (successFlag) {
+		// todo 这里中间件名称的获取待后端返回
+		const middlewareName = '?';
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<SuccessPage
+					title="发布成功"
+					leftText="返回列表"
+					rightText="查看详情"
+					leftHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					rightHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${middlewareName}/${chartName}/${chartVersion}`
+						});
+					}}
+				/>
+			</div>
+		);
+	}
 
+	if (errorFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<ErrorPage
+					title="发布失败"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
 	return (
 		<Page>
 			<Page.Header

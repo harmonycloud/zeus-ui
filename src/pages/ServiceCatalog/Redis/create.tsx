@@ -27,6 +27,11 @@ import {
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
+// * 结果页相关-start
+import SuccessPage from '@/components/ResultPage/SuccessPage';
+import ErrorPage from '@/components/ResultPage/ErrorPage';
+import LoadingPage from '@/components/ResultPage/LoadingPage';
+// * 结果页相关-end
 import { instanceSpecList } from '@/utils/const';
 import {
 	CreateProps,
@@ -45,17 +50,9 @@ import { StorageClassProps } from '@/types/comment';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
+import { formItemLayout614 } from '@/utils/const';
 
 const { Item: FormItem } = Form;
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
-
 const RedisCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
 ) => {
@@ -165,6 +162,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
+
+	// * 是否点击提交跳转至结果页
+	const [commitFlag, setCommitFlag] = useState<boolean>(false);
+	// * 发布成功
+	const [successFlag, setSuccessFlag] = useState<boolean>(false);
+	// * 发布失败
+	const [errorFlag, setErrorFlag] = useState<boolean>(false);
+
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -381,18 +386,16 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 						}
 					}
 				}
+				setCommitFlag(true);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', {
-								message: '中间件Redis正在创建中'
-							})
-						);
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
+						setSuccessFlag(true);
+						setErrorFlag(false);
+						setCommitFlag(false);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						setSuccessFlag(false);
+						setErrorFlag(true);
+						setCommitFlag(false);
 					}
 				});
 			}
@@ -439,6 +442,61 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			}
 		});
 	}, [globalNamespace]);
+	// * 结果页相关
+	if (commitFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<LoadingPage
+					title="发布中"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
+	if (successFlag) {
+		// todo 这里中间件名称的获取需要后端返回
+		const middlewareName = '?';
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<SuccessPage
+					title="发布成功"
+					leftText="返回列表"
+					rightText="查看详情"
+					leftHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					rightHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${middlewareName}/${chartName}/${chartVersion}`
+						});
+					}}
+				/>
+			</div>
+		);
+	}
+
+	if (errorFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<ErrorPage
+					title="发布失败"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
 
 	return (
 		<Page>
@@ -451,7 +509,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}}
 			/>
 			<Page.Content>
-				<Form {...formItemLayout} field={field} onChange={formHandle}>
+				<Form
+					{...formItemLayout614}
+					field={field}
+					onChange={formHandle}
+				>
 					<FormBlock title="基础信息">
 						<div className={styles['basic-info']}>
 							<ul className="form-layout">

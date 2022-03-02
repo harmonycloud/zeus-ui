@@ -193,20 +193,14 @@ const ServiceListByType = (props: serviceListProps) => {
 					.then((res) => {
 						if (res.success) {
 							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'删除成功, 3秒后刷新'
-								)
+								messageConfig('success', '成功', '删除成功')
 							);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
 					})
 					.finally(() => {
-						setTimeout(() => {
-							getData();
-						}, 3000);
+						getData();
 					});
 			}
 		});
@@ -371,7 +365,7 @@ const ServiceListByType = (props: serviceListProps) => {
 								messageConfig(
 									'success',
 									'成功',
-									'该服务已彻底删除,3秒后刷新'
+									'该服务已彻底删除'
 								)
 							);
 						} else {
@@ -379,9 +373,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						}
 					})
 					.finally(() => {
-						setTimeout(() => {
-							getData();
-						}, 3000);
+						getData();
 					});
 			}
 		});

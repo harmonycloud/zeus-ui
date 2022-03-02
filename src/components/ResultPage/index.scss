@@ -10,6 +10,8 @@
 		font-weight: $font-weight-lg;
 	}
 	.zeus-button-content {
-
+		& > button {
+			margin-left: $margin-sm;
+		}
 	}
 }
