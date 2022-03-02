@@ -31,13 +31,13 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 	const onOk = () => {
 		field.validate((errors, values) => {
 			if (errors) return;
+			onCancel();
 			installIngress({ ...values, clusterId }).then((res) => {
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '服务暴露安装成功')
 					);
 					onRefresh();
-					onCancel();
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}

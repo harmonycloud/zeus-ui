@@ -63,24 +63,26 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 				sendData.ingressName = value.ingressClassName;
 			}
 			if (data) {
+				onCancel();
 				updateIngress(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '服务暴露修改成功')
 						);
-						onCancel();
+
 						onRefresh();
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
 				});
 			} else {
+				onCancel();
 				accessIngress(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '服务暴露接入成功')
 						);
-						onCancel();
+
 						onRefresh();
 					} else {
 						Message.show(messageConfig('error', '失败', res));

@@ -177,7 +177,7 @@ const MidCard = (props: MidCardProps) => {
 						<div className="mid-card-title">
 							<div
 								title={title}
-								className="text-overflow"
+								className="text-overflow-2"
 								style={titleStyle}
 							>
 								{title}
