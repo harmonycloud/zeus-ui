@@ -8,6 +8,7 @@ import {
 } from '@alicloud/console-components';
 import { installIngress } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
+import pattern from '@/utils/pattern';
 
 interface InstallIngressProps {
 	visible: boolean;
@@ -60,6 +61,8 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
+					pattern={pattern.ingressName}
+					patternMessage="请输入由小写字母数字及“-”组成的1-63个字符"
 				>
 					<Input
 						htmlType="text"

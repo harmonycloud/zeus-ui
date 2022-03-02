@@ -9,6 +9,7 @@ import {
 import { accessIngress, updateIngress } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
+import pattern from '@/utils/pattern';
 
 interface AccessIngressProps {
 	visible: boolean;
@@ -105,6 +106,8 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
+					pattern={pattern.ingressName}
+					patternMessage="请输入由小写字母数字及“-”组成的1-63个字符"
 				>
 					<Input
 						htmlType="text"
