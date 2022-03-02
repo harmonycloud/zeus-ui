@@ -520,6 +520,51 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				<DefaultPicture />
 			) : (
 				<>
+					{type === 'mysql' ? (
+						<>
+							<div className="title-content">
+								<div className="blue-line"></div>
+								<div className="detail-title">
+									主从切换{' '}
+									<span
+										className="name-link"
+										style={{ marginLeft: 60 }}
+										onClick={autoSwitch}
+									>
+										手动切换
+									</span>{' '}
+								</div>
+							</div>
+							<div
+								className="display-flex switch-master"
+								style={{ marginTop: 12 }}
+							>
+								<span style={{ marginRight: 12 }}>
+									自动切换
+								</span>
+								<Balloon
+									trigger={
+										<Icon
+											type="question-circle"
+											size="xs"
+										/>
+									}
+									closable={false}
+									align={'r'}
+								>
+									<span className="balloon-text">
+										开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行资源池异常的处理。
+									</span>
+								</Balloon>
+								<Switch
+									style={{ marginLeft: 68 }}
+									checked={switchValue}
+									onChange={onChange}
+								/>
+							</div>
+							<div className="detail-divider" />
+						</>
+					) : null}
 					<Table
 						dataSource={pods}
 						showColumnSetting
@@ -594,53 +639,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							{...lock}
 						/>
 					</Table>
-					<div style={{marginBottom: '24px'}}></div>
-
-					{type === 'mysql' ? (
-						<>
-							<div className="title-content">
-								<div className="blue-line"></div>
-								<div className="detail-title">
-									主从切换{' '}
-									<span
-										className="name-link"
-										style={{ marginLeft: 60 }}
-										onClick={autoSwitch}
-									>
-										手动切换
-									</span>{' '}
-								</div>
-							</div>
-							<div
-								className="display-flex switch-master"
-								style={{ marginTop: 12 }}
-							>
-								<span style={{ marginRight: 12 }}>
-									自动切换
-								</span>
-								<Balloon
-									trigger={
-										<Icon
-											type="question-circle"
-											size="xs"
-										/>
-									}
-									closable={false}
-									align={'r'}
-								>
-									<span className="balloon-text">
-										开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行资源池异常的处理。
-									</span>
-								</Balloon>
-								<Switch
-									style={{ marginLeft: 68 }}
-									checked={switchValue}
-									onChange={onChange}
-								/>
-							</div>
-							<div className="detail-divider" />
-						</>
-					) : null}
+					<div style={{ marginBottom: '24px' }}></div>
 
 					{topoData && (
 						<>

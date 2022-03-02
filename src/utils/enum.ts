@@ -15,6 +15,12 @@ export enum versionStatus {
 	history = '历史版本',
 	updating = '升级中'
 }
+export enum serviceVersionStatus {
+	now = '当前版本',
+	future = '可升级版本',
+	history = '历史版本',
+	updating = '升级中'
+}
 export enum name {
 	alertmanager = '监控告警',
 	prometheus = '数据监控',

@@ -53,7 +53,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 			onClose={onCancel}
 		>
 			<Form field={field} {...formItemLayout}>
-				<FormItem label="资源分区英文名:" required>
+				<FormItem label="资源分区英文名:" required pattern={'^[a-z][a-z0-9-]{0,60}[a-z0-9]$'}>
 					<Input id="name" name="name" />
 				</FormItem>
 			</Form>

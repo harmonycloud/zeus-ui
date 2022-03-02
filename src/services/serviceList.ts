@@ -29,6 +29,10 @@ export const upgradeChart = (params: any) => {
 	return Axios.post(SERVICE.upgradeChart, params);
 };
 
+export const upgradeCheck = (params: any) => {
+	return Axios.post(SERVICE.upgradeCheck, params);
+};
+
 export const deleteMiddlewareStorage = (params: ParamsProps) => {
 	return Axios.delete(SERVICE.deleteMiddlewareStorage, params);
 };
