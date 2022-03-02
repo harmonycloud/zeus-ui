@@ -53,7 +53,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 			onClose={onCancel}
 		>
 			<Form field={field} {...formItemLayout}>
-				<FormItem label="资源分区英文名:" required pattern={'^[a-z][a-z0-9-]{0,60}[a-z0-9]$'}>
+				<FormItem label="资源分区英文名:" required pattern={'^[a-z][a-z0-9-]{0,60}[a-z0-9]$'} patternMessage={'namespace是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-63个字符'}>
 					<Input id="name" name="name" />
 				</FormItem>
 			</Form>
