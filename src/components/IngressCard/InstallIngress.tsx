@@ -8,6 +8,7 @@ import {
 } from '@alicloud/console-components';
 import { installIngress } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
+import pattern from '@/utils/pattern';
 
 interface InstallIngressProps {
 	visible: boolean;
@@ -30,13 +31,13 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 	const onOk = () => {
 		field.validate((errors, values) => {
 			if (errors) return;
+			onCancel();
 			installIngress({ ...values, clusterId }).then((res) => {
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '服务暴露安装成功')
 					);
 					onRefresh();
-					onCancel();
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -60,6 +61,8 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
+					pattern={pattern.ingressName}
+					patternMessage="请输入由小写字母数字及“-”组成的1-63个字符"
 				>
 					<Input
 						htmlType="text"

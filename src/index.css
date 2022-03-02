@@ -548,6 +548,13 @@ table.table-list tbody tr td {
 	white-space:nowrap;
 	text-overflow:ellipsis;
 }
+.text-overflow-2 {
+	overflow:hidden;
+	text-overflow:ellipsis;
+	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+}
 .text-overflow-one {
 	max-height: 20px;
 	overflow: hidden;

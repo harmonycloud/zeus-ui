@@ -1,8 +1,17 @@
-.zeus-success-content {
+.zeus-result-content {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: space-around;
+	height: 150px;
+	.zeus-result-title {
+		margin: $margin * 2 0;
+		font-size: $font-h1;
+		font-weight: $font-weight-lg;
+	}
 	.zeus-button-content {
-
+		& > button {
+			margin-left: $margin-sm;
+		}
 	}
 }

@@ -8,7 +8,7 @@ import { setRealLog, cleanRealLog } from '@/redux/log/log';
 
 import { getPods } from '@/services/middleware';
 
-import { Controlled as CodeMirror } from 'react-codemirror2';
+import { UnControlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/twilight.css';
 import { ContainerItem, PodItem, RealTimeProps } from '../detail';
@@ -21,6 +21,7 @@ const { Group: RadioGroup } = Radio;
 
 const RealtimeLog = (props: RealTimeProps) => {
 	const { setRealLog, cleanRealLog } = props;
+	console.log(props);
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	const options = {
 		mode: 'xml',
@@ -38,6 +39,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 	const [terminalType, setTerminalType] = useState<string>('stdoutlog');
 	const [lastRestart, setLastRestart] = useState<number>(0);
+	// const [currentLog, setCurrentLog] = useState<string>(props.log);
 	const ws = useRef<any>(null);
 
 	const changePod = (value: string) => {
@@ -64,9 +66,9 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const screenShrink = () => {
 		setIsFullscreen(false);
 	};
-	const onBeforeChange = (editor: Editor) => {
-		console.log(editor);
-	};
+	// useEffect(() => {
+	// 	setCurrentLog(props.log);
+	// }, [props.log]);
 
 	useEffect(() => {
 		if (clusterId && namespace && middlewareName) {
@@ -225,7 +227,6 @@ const RealtimeLog = (props: RealTimeProps) => {
 					value={props.log}
 					options={options}
 					className="log-codeMirror"
-					onBeforeChange={onBeforeChange}
 				/>
 			</div>
 		</>

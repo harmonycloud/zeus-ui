@@ -9,7 +9,7 @@ export default function logReducer(state = defaultState, action) {
 		case SET_REAL_LOG:
 			return { ...state, log: data + state.log };
 		case CLEAN_REAL_LOG:
-			return { ...state, log: `` };
+			return { ...state, log: `clean log \r\n` };
 		default:
 			return state;
 	}

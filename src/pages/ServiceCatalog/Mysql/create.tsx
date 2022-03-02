@@ -5,6 +5,11 @@ import Page from '@alicloud/console-components-page';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
+// * 结果页相关-start
+import SuccessPage from '@/components/ResultPage/SuccessPage';
+import ErrorPage from '@/components/ResultPage/ErrorPage';
+import LoadingPage from '@/components/ResultPage/LoadingPage';
+// * 结果页相关-end
 import {
 	Form,
 	Field,
@@ -19,8 +24,6 @@ import {
 	CascaderSelect
 	// NumberPicker 一主多从
 } from '@alicloud/console-components';
-import pattern from '@/utils/pattern';
-import styles from './mysql.module.scss';
 import {
 	getNodePort,
 	getNodeTaint,
@@ -31,9 +34,6 @@ import {
 } from '@/services/middleware';
 import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
-import transUnit from '@/utils/transUnit';
-import { StoreState, clusterType, namespaceType } from '@/types/index';
-import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import {
 	CreateProps,
 	CreateParams,
@@ -45,20 +45,18 @@ import {
 	MysqlCreateValuesParams,
 	MysqlSendDataTempParams
 } from '../catalog';
+import { StoreState, clusterType, namespaceType } from '@/types/index';
+import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import { data } from '@alicloud/console-components/types/cascader';
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, formItemLayout614 } from '@/utils/const';
+import transUnit from '@/utils/transUnit';
+import pattern from '@/utils/pattern';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 
+import styles from './mysql.module.scss';
+
 const { Item: FormItem } = Form;
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
 const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
 ) => {
@@ -118,6 +116,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			label: '5.7',
 			value: '5.7'
 		}
+		// {
+		// 	label: '8.0(beta)版',
+		// 	value: '8.0'
+		// }
 	];
 	const [charSet, setCharSet] = useState<string>('utf8mb4');
 	const charSetList = [
@@ -161,6 +163,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 
+	// * 是否点击提交跳转至结果页
+	const [commitFlag, setCommitFlag] = useState<boolean>(false);
+	// * 发布成功
+	const [successFlag, setSuccessFlag] = useState<boolean>(false);
+	// * 发布失败
+	const [errorFlag, setErrorFlag] = useState<boolean>(false);
+	// * 创建返回的服务详情
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
+
 	useEffect(() => {
 		getClusters().then((res) => {
 			if (res.success) {
@@ -201,7 +212,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [props]);
 
 	const handleSubmit = () => {
-		field.validate((err, value) => {
+		field.validate((err) => {
 			const values: MysqlCreateValuesParams = field.getValues();
 			if (!err) {
 				let sendData: MysqlSendDataParams = {
@@ -487,35 +498,29 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					sendData = sendDataTemp;
 				}
 				if (state && state.disasterOriginName) {
+					setCommitFlag(true);
 					addDisasterIns(sendData).then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'中间件mysql正在创建中'
-								)
-							);
-							history.push({
-								pathname: `/serviceList/${chartName}/${aliasName}`
-							});
+							setSuccessFlag(true);
+							setErrorFlag(false);
+							setCommitFlag(false);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							setSuccessFlag(false);
+							setErrorFlag(true);
+							setCommitFlag(false);
 						}
 					});
 				} else {
+					setCommitFlag(true);
 					postMiddleware(sendData).then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', {
-									data: '中间件Mysql正在创建中'
-								})
-							);
-							history.push({
-								pathname: `/serviceList/${chartName}/${aliasName}`
-							});
+							setSuccessFlag(true);
+							setErrorFlag(false);
+							setCommitFlag(false);
 						} else {
-							Message.show(messageConfig('error', '错误', res));
+							setSuccessFlag(false);
+							setErrorFlag(true);
+							setCommitFlag(false);
 						}
 					});
 				}
@@ -730,6 +735,61 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 		});
 	};
+	// * 结果页相关
+	if (commitFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<LoadingPage
+					title="发布中"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
+	if (successFlag) {
+		// todo 这里中间件名称的获取不能这么做
+		const values: MysqlCreateValuesParams = field.getValues();
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<SuccessPage
+					title="发布成功"
+					leftText="返回列表"
+					rightText="查看详情"
+					leftHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					rightHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${values.name}/${chartName}/${chartVersion}`
+						});
+					}}
+				/>
+			</div>
+		);
+	}
+
+	if (errorFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<ErrorPage
+					title="发布失败"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
 
 	return (
 		<Page>
@@ -744,7 +804,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}}
 			/>
 			<Page.Content>
-				<Form {...formItemLayout} field={field}>
+				<Form {...formItemLayout614} field={field}>
 					{state && state.disasterOriginName ? (
 						<>
 							<FormBlock title="源服务信息">

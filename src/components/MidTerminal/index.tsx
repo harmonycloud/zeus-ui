@@ -40,15 +40,15 @@ export default function MidTerminal(): JSX.Element {
 	let socketUrl = url.includes('&source=database')
 		? databaseUrl
 		: containerUrl;
-	socketUrl =
-		window.location.protocol.toLowerCase() === 'https:'
-			? `wss://10.10.101.140:31088/ws/terminal?${socketUrl}`
-			: `ws://10.10.101.140:31088/ws/terminal?${socketUrl}`;
-	console.log(socketUrl);
 	// socketUrl =
 	// 	window.location.protocol.toLowerCase() === 'https:'
-	// 		? `wss://${window.location.hostname}:${window.location.port}/ws/terminal?${socketUrl}`
-	// 		: `ws://${window.location.hostname}:${window.location.port}/ws/terminal?${socketUrl}`;
+	// 		? `wss://10.10.101.140:31088/ws/terminal?${socketUrl}`
+	// 		: `ws://10.10.101.140:31088/ws/terminal?${socketUrl}`;
+	console.log(socketUrl);
+	socketUrl =
+		window.location.protocol.toLowerCase() === 'https:'
+			? `wss://${window.location.hostname}:${window.location.port}/ws/terminal?${socketUrl}`
+			: `ws://${window.location.hostname}:${window.location.port}/ws/terminal?${socketUrl}`;
 	useEffect(() => {
 		const socket = new WebSocket(socketUrl, cache.getLocal(TOKEN));
 		const terminal = new Terminal({

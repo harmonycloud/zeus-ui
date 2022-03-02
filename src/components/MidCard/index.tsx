@@ -103,14 +103,6 @@ const MidCard = (props: MidCardProps) => {
 	useEffect(() => {
 		if (seconds !== 0 && status === 2) {
 			const msToSecond = Math.floor(seconds / 1000);
-			// const plus1min = moment(createTime).valueOf() + 39000;
-			// const now = moment(new Date()).valueOf();
-			// console.log(now, plus1min);
-			// if (now < plus1min) {
-			// 	const countDownTemp = Math.trunc((plus1min - now) / 1000);
-			// 	console.log(countDownTemp);
-			// 	setCountDown(countDownTemp);
-			// }
 			setCountDown(60 - msToSecond);
 		} else {
 			setCountDown(-1);
@@ -183,7 +175,13 @@ const MidCard = (props: MidCardProps) => {
 							/>
 						</div>
 						<div className="mid-card-title">
-							<div style={titleStyle}>{title}</div>
+							<div
+								title={title}
+								className="text-overflow-2"
+								style={titleStyle}
+							>
+								{title}
+							</div>
 							<div className="mid-card-icon">
 								{iconRender(status)}
 							</div>

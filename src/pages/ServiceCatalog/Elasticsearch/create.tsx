@@ -25,13 +25,17 @@ import {
 } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
+// * 结果页相关-start
+import LoadingPage from '@/components/ResultPage/LoadingPage';
+import SuccessPage from '@/components/ResultPage/SuccessPage';
+import ErrorPage from '@/components/ResultPage/ErrorPage';
+// * 结果页相关-end
 import {
 	CreateProps,
 	CreateParams,
 	AffinityProps,
 	AffinityLabelsItem,
 	TolerationsProps,
-	NodeModifyParams,
 	EsSendDataParams,
 	EsCreateValuesParams
 } from '../catalog';
@@ -40,16 +44,9 @@ import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
+import { formItemLayout614 } from '@/utils/const';
 
 const { Item: FormItem } = Form;
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
 
 const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
@@ -103,6 +100,10 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '6.8',
 			value: '6.8'
+		},
+		{
+			label: '7.16',
+			value: '7.16'
 		}
 	];
 	const [mode, setMode] = useState<string>('simple');
@@ -181,6 +182,12 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
+	// * 是否点击提交跳转至结果页
+	const [commitFlag, setCommitFlag] = useState<boolean>(false);
+	// * 发布成功
+	const [successFlag, setSuccessFlag] = useState<boolean>(false);
+	// * 发布失败
+	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 
 	const handleSubmit = () => {
 		field.validate((err) => {
@@ -266,18 +273,25 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						}
 					}
 				}
+				setCommitFlag(true);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', {
-								data: '中间件Elasticsearch正在创建中'
-							})
-						);
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
+						setSuccessFlag(true);
+						setErrorFlag(false);
+						setCommitFlag(false);
+						// Message.show(
+						// 	messageConfig('success', '成功', {
+						// 		data: '中间件Elasticsearch正在创建中'
+						// 	})
+						// );
+						// history.push({
+						// 	pathname: `/serviceList/${chartName}/${aliasName}`
+						// });
 					} else {
-						Message.show(messageConfig('error', '错误', res));
+						setSuccessFlag(false);
+						setErrorFlag(true);
+						setCommitFlag(false);
+						// Message.show(messageConfig('error', '错误', res));
 					}
 				});
 			}
@@ -350,6 +364,62 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 		}
 	}, [mode]);
 
+	// * 结果页相关
+	if (commitFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<LoadingPage
+					title="发布中"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
+	if (successFlag) {
+		// todo 这里中间件名称,可让后端保存返回
+		const middlewareName = '?';
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<SuccessPage
+					title="发布成功"
+					leftText="返回列表"
+					rightText="查看详情"
+					leftHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					rightHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${middlewareName}/${chartName}/${chartVersion}`
+						});
+					}}
+				/>
+			</div>
+		);
+	}
+
+	if (errorFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<ErrorPage
+					title="发布失败"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
+
 	return (
 		<Page>
 			<Page.Header
@@ -361,7 +431,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				}}
 			/>
 			<Page.Content>
-				<Form {...formItemLayout} field={field}>
+				<Form {...formItemLayout614} field={field}>
 					<FormBlock title="基础信息">
 						<div className={styles['basic-info']}>
 							<ul className="form-layout">

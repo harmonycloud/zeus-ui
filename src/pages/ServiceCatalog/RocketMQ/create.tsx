@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Page from '@alicloud/console-components-page';
-import FormBlock from '@/components/FormBlock';
-import SelectBlock from '@/components/SelectBlock';
-import TableRadio from '../components/TableRadio/index';
 import {
 	Form,
 	Field,
@@ -17,18 +14,23 @@ import {
 	Button,
 	Message
 } from '@alicloud/console-components';
-import pattern from '@/utils/pattern';
-import styles from './rocketmq.module.scss';
+import FormBlock from '@/components/FormBlock';
+import SelectBlock from '@/components/SelectBlock';
+import TableRadio from '../components/TableRadio/index';
+import RocketACLForm from '@/components/RocketACLForm';
+import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
+// * 结果页相关-start
+import SuccessPage from '@/components/ResultPage/SuccessPage';
+import ErrorPage from '@/components/ResultPage/ErrorPage';
+import LoadingPage from '@/components/ResultPage/LoadingPage';
+// * 结果页相关-end
+import messageConfig from '@/components/messageConfig';
 import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
 	postMiddleware
 } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
-import RocketACLForm from '@/components/RocketACLForm';
-import { instanceSpecList } from '@/utils/const';
-import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
 import {
 	CreateProps,
 	CreateParams,
@@ -38,11 +40,14 @@ import {
 	RMQSendDataParams,
 	RMQCreateValuesParams
 } from '../catalog';
+import { StoreState } from '@/types';
+import { StorageClassProps } from '@/types/comment';
+import pattern from '@/utils/pattern';
+import { instanceSpecList } from '@/utils/const';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
-import { StoreState } from '@/types';
-import { StorageClassProps } from '@/types/comment';
+import styles from './rocketmq.module.scss';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -136,6 +141,12 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [customForm, setCustomForm] = useState<any>();
 	// * 集群外访问
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// * 是否点击提交跳转至结果页
+	const [commitFlag, setCommitFlag] = useState<boolean>(false);
+	// * 发布成功
+	const [successFlag, setSuccessFlag] = useState<boolean>(false);
+	// * 发布失败
+	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -262,18 +273,25 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					sendData.rocketMQParam.acl.rocketMQAccountList =
 						values.rocketMQAccountList;
 				}
+				setCommitFlag(true);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', {
-								data: '中间件RocketMQ正在创建中'
-							})
-						);
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
+						setSuccessFlag(true);
+						setErrorFlag(false);
+						setCommitFlag(false);
+						// Message.show(
+						// 	messageConfig('success', '成功', {
+						// 		data: '中间件RocketMQ正在创建中'
+						// 	})
+						// );
+						// history.push({
+						// 	pathname: `/serviceList/${chartName}/${aliasName}`
+						// });
 					} else {
-						Message.show(messageConfig('error', '错误', res));
+						setSuccessFlag(false);
+						setErrorFlag(true);
+						setCommitFlag(false);
+						// Message.show(messageConfig('error', '错误', res));
 					}
 				});
 			}
@@ -320,7 +338,61 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			}
 		});
 	}, [globalNamespace]);
+	// * 结果页相关
+	if (commitFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<LoadingPage
+					title="发布中"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
+	if (successFlag) {
+		// todo 这里中间件名称的获取需要后端返回
+		const middlewareName = '?';
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<SuccessPage
+					title="发布成功"
+					leftText="返回列表"
+					rightText="查看详情"
+					leftHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					rightHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${middlewareName}/${chartName}/${chartVersion}`
+						});
+					}}
+				/>
+			</div>
+		);
+	}
 
+	if (errorFlag) {
+		return (
+			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
+				<ErrorPage
+					title="发布失败"
+					btnHandle={() => {
+						history.push({
+							pathname: `/serviceList/${chartName}/${aliasName}`
+						});
+					}}
+					btnText="返回列表"
+				/>
+			</div>
+		);
+	}
 	return (
 		<Page>
 			<Page.Header
