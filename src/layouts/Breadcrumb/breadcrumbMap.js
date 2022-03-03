@@ -3,6 +3,7 @@ export default {
 	redisCreate: 'Redis创建',
 	elasticsearchCreate: 'Elasticsearch创建',
 	rocketmqCreate: 'RocketMQ创建',
+	kafkaCreate: 'Kafka创建',
 	dynamicForm: '发布服务',
 	dataOverview: '数据总览',
 	middlewareRepository: '中间件市场',

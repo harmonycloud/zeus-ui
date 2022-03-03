@@ -516,11 +516,20 @@ table.table-list tbody tr td {
 /* 离线字体 */
 @font-face {
   font-family: NextIcon;
-  src: url("./assets/wind-bold.woff2");
-  src: url("./assets/wind-medium.woff2");
-  src: url("./assets/wind-regular.woff2");
-  src: url("./assets/wind.woff2");
+  src: url("./assets/roboto-bold.woff2");
+  src: url("./assets/roboto-medium.woff2");
+  src: url("./assets/roboto-regular.woff2");
+  src: url("./assets/wind-font-2.woff2");
+  src: url("./assets/wind-font.woff2");
 }
+.next-icon {
+	display: inline-block;
+	font-family: NextIcon !important;
+	font-style: normal;
+	font-weight: normal;
+	text-transform: none;
+}
+
 .text-hidden {
   overflow: hidden;
   white-space: nowrap;
@@ -536,13 +545,7 @@ table.table-list tbody tr td {
 .next-table-filter-footer {
   margin: 10px 10px 10px;
 }
-.next-icon {
-  display: inline-block;
-  font-family: NextIcon !important;
-  font-style: normal;
-  font-weight: normal;
-  text-transform: none;
-}
+
 .text-overflow {
 	overflow:hidden;
 	white-space:nowrap;
