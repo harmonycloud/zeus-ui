@@ -120,7 +120,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务详情 - 版本管理*/}
 				<Route
-					path="/serviceList/serverVersion/:type/:middlewareName/:aliasName"
+					path="/serviceList/:name/:aliasName/serverVersion/:middlewareName/:type"
 					component={ServiceVersion}
 				/>
 				{/* 服务详情 - 实例详情*/}
