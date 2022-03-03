@@ -380,7 +380,8 @@ function Visualization(props) {
 						} else {
 							const ip = group.addShape('text', {
 								attrs: {
-									text: 'IP: ' + (cfg.podIp ? cfg.podIp : '--'),
+									text:
+										'IP: ' + (cfg.podIp ? cfg.podIp : '--'),
 									x: 16,
 									y: 15,
 									textBaseline: 'middle',
@@ -1506,7 +1507,8 @@ function Visualization(props) {
 	}, [direction]);
 
 	const reset = () => {
-		topoData.pods.length && topoData.pods.length >= 4
+		(topoData.pods.length && topoData.pods.length >= 4) ||
+		direction === 'TB'
 			? window.graph.fitView()
 			: window.graph.fitCenter();
 	};
