@@ -349,6 +349,9 @@ const Overview = () => {
 				<Radio id="memory" value="memory">
 					内存
 				</Radio>
+				<Radio id="storage" value="storage">
+					存储
+				</Radio>
 			</RadioGroup>
 		)
 	};
@@ -388,7 +391,7 @@ const Overview = () => {
 		}
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		const temp = originData.sort(function (
+		const temp = dataSource.sort(function (
 			a: MiddlewareResourceProps,
 			b: MiddlewareResourceProps
 		) {
@@ -415,170 +418,194 @@ const Overview = () => {
 			setDataSource(originData);
 		}
 	};
+	const handleSearch = (value: string) => {
+		const list = originData.filter((item: MiddlewareResourceProps) =>
+			item.name.includes(value)
+		);
+		setDataSource(list);
+	};
 	return (
 		<div>
 			<FormBlock title="资源信息" className="resource-pool-info">
-				<div className="resource-pool-info-content">
-					<div className="resource-pool-gauge-content">
-						<div className="resource-pool-gauge-item">
-							<ReactEChartsCore
-								echarts={echarts}
-								option={option1}
-								notMerge={true}
-								lazyUpdate={true}
-								style={{
-									height: '100%',
-									width: 'calc(100% - 120px)'
-								}}
-							/>
-							<div className="resource-pool-gauge-info">
-								总容量：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
-								核
-								<br />
-								已使用：
-								{(Number(clusterQuota?.usedCpu) || 0).toFixed(
-									2
-								)}
-								核 <br />
-								剩余容量：
-								{(
-									(Number(clusterQuota?.totalCpu) || 0) -
-										Number(clusterQuota?.usedCpu) || 0
-								).toFixed(2) || 0}
-								核
-								<br />
-							</div>
+				<div className="resource-pool-gauge-content">
+					<div className="resource-pool-gauge-item">
+						<ReactEChartsCore
+							echarts={echarts}
+							option={option1}
+							notMerge={true}
+							lazyUpdate={true}
+							style={{
+								height: '100%',
+								width: 'calc(100% - 360px)'
+							}}
+						/>
+						<div className="resource-pool-gauge-info">
+							总容量：
+							{(Number(clusterQuota?.totalCpu) || 0).toFixed(2)}核
+							| 已使用：
+							{(Number(clusterQuota?.usedCpu) || 0).toFixed(2)}核
+							| 剩余容量：
+							{(
+								(Number(clusterQuota?.totalCpu) || 0) -
+									Number(clusterQuota?.usedCpu) || 0
+							).toFixed(2) || 0}
+							核
 						</div>
-						<div className="resource-pool-gauge-item">
-							<ReactEChartsCore
-								echarts={echarts}
-								option={option2}
-								notMerge={true}
-								lazyUpdate={true}
-								style={{
-									height: '100%',
-									width: 'calc(100% - 120px)'
-								}}
-							/>
-							<div className="resource-pool-gauge-info">
-								总容量：
-								{(
-									Number(clusterQuota?.totalMemory) || 0
-								).toFixed(2)}
-								GB
-								<br />
-								已使用：
-								{(
+					</div>
+					<div className="resource-pool-gauge-item">
+						<ReactEChartsCore
+							echarts={echarts}
+							option={option2}
+							notMerge={true}
+							lazyUpdate={true}
+							style={{
+								height: '100%',
+								width: 'calc(100% - 360px)'
+							}}
+						/>
+						<div className="resource-pool-gauge-info">
+							总容量：
+							{(Number(clusterQuota?.totalMemory) || 0).toFixed(
+								2
+							)}
+							GB | 已使用：
+							{(Number(clusterQuota?.usedMemory) || 0).toFixed(2)}
+							GB | 剩余容量：
+							{(
+								(Number(clusterQuota?.totalMemory) || 0) -
 									Number(clusterQuota?.usedMemory) || 0
-								).toFixed(2)}
-								GB
-								<br />
-								剩余容量：
-								{(
-									(Number(clusterQuota?.totalMemory) || 0) -
-										Number(clusterQuota?.usedMemory) || 0
-								).toFixed(2)}
-								GB
-								<br />
-							</div>
+							).toFixed(2)}
+							GB
 						</div>
 					</div>
-					<div className="resource-pool-table-content">
-						<Table
-							dataSource={dataSource}
-							exact
-							primaryKey="key"
-							operation={Operation}
-							fixedHeader={true}
-							maxBodyHeight="225px"
-							onSort={onSort}
-							onFilter={onFilter}
-						>
+				</div>
+				<div className="resource-pool-table-content">
+					<Table
+						dataSource={dataSource}
+						exact
+						primaryKey="key"
+						operation={Operation}
+						fixedHeader={true}
+						maxBodyHeight="280px"
+						search={
+							viewType === 'service'
+								? {
+										onSearch: handleSearch,
+										placeholder: '请输入服务名称搜索'
+								  }
+								: null
+						}
+						onSort={onSort}
+						onFilter={onFilter}
+					>
+						<Table.Column
+							title="资源分区"
+							dataIndex="namespace"
+							filters={namespaceFilter}
+							filterMode="single"
+							width={200}
+							lock="left"
+						/>
+						{viewType === 'service' && (
 							<Table.Column
-								title="资源分区"
-								dataIndex="namespace"
-								filters={namespaceFilter}
+								title="类型"
+								dataIndex="type"
+								cell={iconTypeRender}
+								filters={typeFilter}
 								filterMode="single"
-								width={200}
-								lock="left"
+								width={180}
 							/>
-							{viewType === 'service' && (
-								<Table.Column
-									title="类型"
-									dataIndex="type"
-									cell={iconTypeRender}
-									filters={typeFilter}
-									filterMode="single"
-									width={200}
-								/>
-							)}
-							{viewType === 'service' && (
-								<Table.Column
-									title="服务名称/中文别名"
-									dataIndex="name"
-									cell={nameRender}
-									width={180}
-								/>
-							)}
-							{tableType === 'cpu' && (
-								<Table.Column
-									title="CPU配额（核）"
-									dataIndex="requestCpu"
-									cell={nullRender}
-									width={200}
-									sortable
-								/>
-							)}
-							{tableType === 'cpu' && (
-								<Table.Column
-									title="近5min平均使用额（核）"
-									dataIndex="per5MinCpu"
-									cell={nullRender}
-									width={200}
-									sortable
-								/>
-							)}
-							{tableType === 'cpu' && (
-								<Table.Column
-									title="CPU使用率（%）"
-									dataIndex="cpuRate"
-									cell={nullRender}
-									width={200}
-									sortable
-								/>
-							)}
-							{tableType === 'memory' && (
-								<Table.Column
-									title="内存配额（GB）"
-									dataIndex="requestMemory"
-									cell={nullRender}
-									width={200}
-									sortable
-								/>
-							)}
-							{tableType === 'memory' && (
-								<Table.Column
-									title="近5min平均使用额（GB）"
-									dataIndex="per5MinMemory"
-									cell={nullRender}
-									width={200}
-									sortable
-								/>
-							)}
-							{tableType === 'memory' && (
-								<Table.Column
-									title="内存使用率（%）"
-									dataIndex="memoryRate"
-									cell={nullRender}
-									width={200}
-									sortable
-								/>
-							)}
-						</Table>
-					</div>
+						)}
+						{viewType === 'service' && (
+							<Table.Column
+								title="服务名称/中文别名"
+								dataIndex="name"
+								cell={nameRender}
+								width={180}
+							/>
+						)}
+						{tableType === 'cpu' && (
+							<Table.Column
+								title="CPU配额（核）"
+								dataIndex="requestCpu"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'cpu' && (
+							<Table.Column
+								title="近5min平均使用额（核）"
+								dataIndex="per5MinCpu"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'cpu' && (
+							<Table.Column
+								title="CPU使用率（%）"
+								dataIndex="cpuRate"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'memory' && (
+							<Table.Column
+								title="内存配额（GB）"
+								dataIndex="requestMemory"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'memory' && (
+							<Table.Column
+								title="近5min平均使用额（GB）"
+								dataIndex="per5MinMemory"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'memory' && (
+							<Table.Column
+								title="内存使用率（%）"
+								dataIndex="memoryRate"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'storage' && (
+							<Table.Column
+								title="存储配额（G）"
+								dataIndex="requestStorage"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'storage' && (
+							<Table.Column
+								title="近5min平均使用额（%）"
+								dataIndex="per5MinStorage"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+						{tableType === 'storage' && (
+							<Table.Column
+								title="存储使用率（%）"
+								dataIndex="storageRate"
+								cell={nullRender}
+								width={200}
+								sortable
+							/>
+						)}
+					</Table>
 				</div>
 			</FormBlock>
 			<div>

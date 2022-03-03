@@ -21,8 +21,11 @@ export interface MiddlewareResourceProps {
 	namespace?: string;
 	per5MinCpu: number;
 	per5MinMemory: number;
+	per5MinStorage: number;
 	requestCpu?: number;
 	requestMemory?: number;
+	requestStorage?: number;
+	storageRate: number;
 	type?: string;
 }
 
