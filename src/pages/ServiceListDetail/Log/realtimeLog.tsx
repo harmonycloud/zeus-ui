@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Grid, Radio } from '@alicloud/console-components';
+import { Select, Grid, Radio, Icon } from '@alicloud/console-components';
 import { connect } from 'react-redux';
-import { Icon } from '@alifd/next';
-import Socket from '@/services/websocket.js';
-import styles from './log.module.scss';
+import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { setRealLog, cleanRealLog } from '@/redux/log/log';
 
+import Socket from '@/services/websocket.js';
 import { getPods } from '@/services/middleware';
 
-import { UnControlled as CodeMirror } from 'react-codemirror2';
+import { ContainerItem, PodItem, RealTimeProps } from '../detail';
+import { StoreState } from '@/types';
+
+import styles from './log.module.scss';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/twilight.css';
-import { ContainerItem, PodItem, RealTimeProps } from '../detail';
-import { Editor } from 'codemirror';
-import { StoreState } from '@/types';
 
 const { Row, Col } = Grid;
 const { Option } = Select;
@@ -21,7 +20,6 @@ const { Group: RadioGroup } = Radio;
 
 const RealtimeLog = (props: RealTimeProps) => {
 	const { setRealLog, cleanRealLog } = props;
-	console.log(props);
 	const { type, middlewareName, clusterId, namespace } = props.data;
 	const options = {
 		mode: 'xml',
@@ -69,7 +67,6 @@ const RealtimeLog = (props: RealTimeProps) => {
 	// useEffect(() => {
 	// 	setCurrentLog(props.log);
 	// }, [props.log]);
-
 	useEffect(() => {
 		if (clusterId && namespace && middlewareName) {
 			getPods({ clusterId, namespace, middlewareName, type }).then(
@@ -93,12 +90,13 @@ const RealtimeLog = (props: RealTimeProps) => {
 	}, [clusterId, namespace, middlewareName]);
 
 	useEffect(() => {
-		if (pod && container && terminalType) {
+		if (pod && container) {
 			cleanRealLog();
 			ws.current = new Socket({
 				socketUrl: `/terminal?terminalType=${terminalType}&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
 				socketMessage: (receive: any) => {
+					console.log(props);
 					const content = props.log + JSON.parse(receive.data).text;
 					setRealLog(content);
 				},
@@ -109,7 +107,9 @@ const RealtimeLog = (props: RealTimeProps) => {
 					console.log('连接建立失败');
 				},
 				socketOpen: () => {
+					// setCurrentLog('');
 					console.log('连接建立成功');
+					console.log(props);
 				}
 			});
 			try {

@@ -512,6 +512,15 @@ const ServiceListByType = (props: serviceListProps) => {
 		index: number,
 		record: serviceProps
 	) => {
+		if (record.status === 'Preparing' || record.status === 'failed') {
+			return (
+				<Actions>
+					<LinkButton onClick={() => deleteFn(record)}>
+						删除
+					</LinkButton>
+				</Actions>
+			);
+		}
 		if (record.status === 'Deleted') {
 			return (
 				<Actions>
@@ -802,7 +811,11 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const nameRender = (value: string, index: number, record: serviceProps) => {
-		if (record.status === 'Deleted') {
+		if (
+			record.status === 'Deleted' ||
+			record.status === 'Preparing' ||
+			record.status === 'failed'
+		) {
 			return (
 				<div style={{ maxWidth: '160px' }}>
 					<div className="displayed-name text-overflow">
@@ -855,7 +868,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					storage.setLocal('backKey', 'highAvailability');
 				}}
 			>
-				{value}
+				{value || '--'}
 			</span>
 		);
 	};

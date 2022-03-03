@@ -39,25 +39,13 @@ export default class webSocket {
 		}
 		// 检测当前浏览器是什么浏览器来决定用什么socket
 		if ('WebSocket' in window) {
-			this.socket = new WebSocket(
-				// `${wsUrl}${socketUrl}`,
-				url,
-				cache.getLocal(TOKEN)
-			);
+			this.socket = new WebSocket(url, cache.getLocal(TOKEN));
 		} else if ('MozWebSocket' in window) {
 			// eslint-disable-next-line no-undef
-			this.socket = new MozWebSocket(
-				// `${wsUrl}${socketUrl}`,
-				url,
-				cache.getLocal(TOKEN)
-			);
+			this.socket = new MozWebSocket(url, cache.getLocal(TOKEN));
 		} else {
 			// eslint-disable-next-line no-undef
-			this.socket = new SockJS(
-				// `${wsUrl}${socketUrl}`,
-				url,
-				cache.getLocal(TOKEN)
-			);
+			this.socket = new SockJS(url, cache.getLocal(TOKEN));
 		}
 		this.socket.onopen = this.onopen;
 		this.socket.onmessage = this.onmessage;
@@ -95,7 +83,7 @@ export default class webSocket {
 	// 关闭连接触发
 	onclose = (e) => {
 		this.isSucces = true; //关闭将标识符改为true
-		// console.log('关闭socket收到的数据');
+		console.log('关闭socket收到的数据', e);
 		let { socketClose } = this.param;
 		socketClose && socketClose(e);
 		// 根据后端返回的状态码做操作，重连等

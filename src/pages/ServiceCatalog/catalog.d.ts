@@ -232,4 +232,5 @@ export interface DynamicCreateValueParams {
 	nodeAffinity: boolean;
 	nodeAffinityLabel: any[];
 	nodeAffinityForce: boolean;
+	version: string;
 }
