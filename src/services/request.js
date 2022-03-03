@@ -68,7 +68,7 @@ NProgress.configure({
 axios.interceptors.request.use(
 	(config) => {
 		NProgress.start();
-		console.log(config);
+		// console.log(config);
 		if (config.method === 'get') {
 			// config.cancelToken = new cancelToken(cancel => {
 			// 	removePending(config, cancel)
