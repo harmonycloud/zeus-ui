@@ -736,7 +736,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				<LinkButton
 					onClick={() =>
 						history.push(
-							`/serviceList/serverVersion/${record.type}/${record.name}/${record.aliasName}`
+							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}`
 						)
 					}
 				>

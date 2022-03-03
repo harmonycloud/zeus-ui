@@ -47,8 +47,10 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		});
 	};
 	useEffect(() => {
-		getData();
-	}, []);
+		if (JSON.stringify(namespace) !== '{}') {
+			getData();
+		}
+	}, [namespace]);
 	const onCreate = () => {
 		getData();
 	};
@@ -192,6 +194,15 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							return item;
 						});
 						setDataSource([...originData]);
+					},
+					onClose: () => {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
 					}
 				});
 			} else if (res.code === 720004) {
@@ -229,17 +240,99 @@ function ServiceVersion(props: versionProps): JSX.Element {
 								现在去升级
 							</Button>
 						</>
-					)
+					),
+					onClose: () => {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
+					}
 				});
 			} else if (res.code === 720003) {
 				const dialog = Dialog.show({
 					title: '操作确认',
 					content: 'operator升级中,请稍后升级',
 					footer: (
-						<Button type="primary" onClick={() => dialog.hide()}>
+						<Button
+							type="primary"
+							onClick={() => {
+								originData.forEach((item: any, i: number) => {
+									if (i === index) {
+										item.versionStatus = 'future';
+									}
+									return item;
+								});
+								setDataSource([...originData]);
+								dialog.hide();
+							}}
+						>
 							我知道了
 						</Button>
-					)
+					),
+					onClose: () => {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
+					}
+				});
+			} else if (res.code === 720002) {
+				const dialog = Dialog.show({
+					title: '操作确认',
+					content: res.errorMsg,
+					footer: (
+						<>
+							<Button
+								type="primary"
+								onClick={() => {
+									originData.forEach(
+										(item: any, i: number) => {
+											if (i === index) {
+												item.versionStatus = 'future';
+											}
+											return item;
+										}
+									);
+									setDataSource([...originData]);
+									dialog.hide();
+								}}
+							>
+								确认
+							</Button>
+							<Button
+								type="primary"
+								onClick={() => {
+									originData.forEach(
+										(item: any, i: number) => {
+											if (i === index) {
+												item.versionStatus = 'future';
+											}
+											return item;
+										}
+									);
+									setDataSource([...originData]);
+									dialog.hide();
+								}}
+							>
+								取消
+							</Button>
+						</>
+					),
+					onClose: () => {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
+					}
 				});
 			}
 		});

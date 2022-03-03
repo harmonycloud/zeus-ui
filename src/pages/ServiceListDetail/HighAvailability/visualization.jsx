@@ -14,7 +14,7 @@ import ControlHover from '@/assets/images/control_hover.svg';
 import { useLocation } from 'react-router';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
-import { modelMap } from '@/utils/const';
+import { initMenu, modelMap } from '@/utils/const';
 import { states, podStatus } from '@/utils/const';
 import insertCss from 'insert-css';
 
@@ -32,6 +32,8 @@ insertCss(`
 	border-radius: 4px;
 	border: 1px solid #979797;
 	outline: none !important;
+	top: 0 !important;
+	height: 90% !important;
 }
 .g6-minimap{
 	position: absolute;
@@ -54,7 +56,7 @@ function Visualization(props) {
 		editConfiguration,
 		setEsVisible,
 		selectObj,
-		backup,
+		backup
 	} = props;
 	const location = useLocation();
 	const { pathname } = location;
@@ -195,7 +197,7 @@ function Visualization(props) {
 
 	const collapseBackX = (direction, cfg) => {
 		if (direction === 'LR') {
-			return cfg.level === 'serve' ? 87 : 168;
+			return cfg.level === 'serve' ? 87 : 195;
 		} else {
 			return cfg.level === 'serve' ? 23 : 131;
 		}
@@ -203,7 +205,7 @@ function Visualization(props) {
 
 	const collapseTextX = (direction, cfg) => {
 		if (direction === 'LR') {
-			return cfg.level === 'serve' ? 95 : 176;
+			return cfg.level === 'serve' ? 95 : 203;
 		} else {
 			return cfg.level === 'serve' ? 31 : 139;
 		}
@@ -339,30 +341,22 @@ function Visualization(props) {
 								name: 'name'
 							});
 							const nameWidth = name.getBBox().width;
+							const serviceStatus = states.find(
+								(item) => item.value === cfg.status
+							);
 							group.addShape('text', {
 								attrs: {
-									text: states.find(
-										(item) => item.value === cfg.status
-									)
-										? ('(' +
-										  states.find(
-												(item) =>
-													item.value === cfg.status
-										  ).label +
-										  ')')
+									text: serviceStatus
+										? '(' + serviceStatus.label + ')'
 										: '(运行异常)',
 									x: typeWidth + nameWidth + 32,
 									y: 15,
 									fontSize: 14,
 									fontWeight: 500,
 									textBaseline: 'middle',
-									fill:
-										states.filter(
-											(item) => item.value === cfg.status
-										)[0] &&
-										states.filter(
-											(item) => item.value === cfg.status
-										)[0].color
+									fill: serviceStatus
+										? serviceStatus.color
+										: '#DA372E'
 								},
 								name: 'status'
 							});
@@ -386,7 +380,8 @@ function Visualization(props) {
 						} else {
 							const ip = group.addShape('text', {
 								attrs: {
-									text: 'IP: ' + (cfg.podIp ? cfg.podIp : ''),
+									text:
+										'IP: ' + (cfg.podIp ? cfg.podIp : '--'),
 									x: 16,
 									y: 15,
 									textBaseline: 'middle',
@@ -465,11 +460,13 @@ function Visualization(props) {
 						}
 						group.addShape('text', {
 							attrs: {
-								text:
-									'存储类型：' +
-									(cfg?.resources?.isLvmStorage
-										? 'LVMasdas'
-										: '其他'),
+								text: `存储类型：${
+									cfg.depth
+										? cfg.resources.isLvmStorage
+											? 'LVM'
+											: '其他'
+										: cfg.storageClassName
+								}`,
 								x: 16,
 								y: 57,
 								fill: '#999'
@@ -480,9 +477,10 @@ function Visualization(props) {
 							attrs: {
 								text: '...',
 								x: 248,
-								y: 15,
+								y: 10,
 								fontSize: 16,
 								fontWeight: 900,
+								textBaseline: 'middle',
 								fill: '#666',
 								cursor: 'pointer'
 							},
@@ -558,9 +556,9 @@ function Visualization(props) {
 								height: 10,
 								x: 50,
 								y: 92,
-								radius: 5,
+								radius: storageUsage > 0 ? 5 : 0,
 								fill:
-									storageUsage < 60
+									storageUsage < 50
 										? '#0064C8'
 										: storageUsage < 80
 										? '#FAC800'
@@ -614,9 +612,9 @@ function Visualization(props) {
 								height: 10,
 								x: 50,
 								y: 112,
-								radius: 5,
+								radius: cpuUsage > 0 ? 5 : 0,
 								fill:
-									cpuUsage < 60
+									cpuUsage < 50
 										? '#0064C8'
 										: cpuUsage < 80
 										? '#FAC800'
@@ -668,9 +666,9 @@ function Visualization(props) {
 								height: 10,
 								x: 50,
 								y: 132,
-								radius: 5,
+								radius: memoryUsage > 0 ? 5 : 0,
 								fill:
-									memoryUsage < 60
+									memoryUsage < 50
 										? '#0064C8'
 										: memoryUsage < 80
 										? '#FAC800'
@@ -820,6 +818,65 @@ function Visualization(props) {
 								visible: false
 							});
 						}
+						const breath = Math.max(
+							storageUsage,
+							cpuUsage,
+							memoryUsage
+						);
+						group.addShape('rect', {
+							attrs: {
+								x: 0,
+								y: 0,
+								width: 276,
+								height: 2,
+								fill:
+									breath < 50
+										? '#0064C8'
+										: breath < 80
+										? '#FAC800'
+										: '#C80000',
+								cursor: 'pointer'
+							},
+							name: 'breath'
+						});
+						// group.addShape('rect', {
+						// 	attrs: {
+						// 		width: 420,
+						// 		height: 30,
+						// 		x: -90,
+						// 		y: -40,
+						// 		stroke: '#aaa',
+						// 		fill: '#fff',
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'breath-box',
+						// 	visible: false
+						// });
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: '当存储、CPU、内存任何一个指标使用率过高时，都将爆红，请您重点关注',
+						// 		x: 120,
+						// 		y: -25,
+						// 		textAlign: 'center',
+						// 		textBaseline: 'middle',
+						// 		fill: '#000',
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'breath-text',
+						// 	visible: false
+						// });
+						// group.addShape('polygon', {
+						// 	attrs: {
+						// 		points: [
+						// 			[130, 0],
+						// 			[120, -10],
+						// 			[140, -10]
+						// 		],
+						// 		fill: '#fff',
+						// 		stroke: '#aaa'
+						// 	},
+						// 	name: 'breath-info'
+						// });
 						return box;
 					}
 				}
@@ -880,11 +937,40 @@ function Visualization(props) {
 
 		const topology = document.getElementById('topology');
 		const minimapDom = document.getElementById('minimap');
+		const tooltip = new G6.Tooltip({
+			offsetX: -70,
+			offsetY: -185,
+			getContent(e) {
+				const outDiv = document.createElement('div');
+				const memoryUsage = Math.round(
+					e.item.getModel()?.monitorResourceQuota?.memory?.usage
+				);
+				const cpuUsage = Math.round(
+					e.item.getModel()?.monitorResourceQuota?.cpu?.usage
+				);
+				const storageUsage = Math.round(
+					e.item.getModel()?.monitorResourceQuota?.storage?.usage
+				);
+				const max = Math.max(memoryUsage, cpuUsage, storageUsage);
+				outDiv.style.width = '300px';
+				outDiv.innerHTML = `<h4 style={text-align: 'center'}>${
+					max < 50
+						? '当前存储、CPU、内存任何一个指标使用率都＜50%，可放心使用'
+						: max < 80
+						? '当存储、CPU、内存任何一个指标使用率已经处于≥50%但＜80%内，将展示黄色，请关注'
+						: '当存储、CPU、内存任何一个指标使用率≥80%时，都将爆红，请您重点关注，或采取必要措施'
+				}</h4>`;
+				return outDiv;
+			},
+			itemTypes: ['node'],
+			// fixToNode: [0,0],
+			shouldBegin: (evt) => evt.target.cfg.name === 'breath'
+		});
 		const width = topology.scrollWidth || 800;
 		const height = topology.scrollHeight || 480;
 		const minimap = new G6.Minimap({
 			container: minimapDom,
-			size: [130, 100],
+			size: [110, 80],
 			viewportClassName: 'mini-view'
 		});
 		const graph = new G6.TreeGraph({
@@ -892,9 +978,9 @@ function Visualization(props) {
 			width,
 			height,
 			fitViewPadding: [20, 30, 20, 30],
-			plugins: [minimap],
+			plugins: [minimap, tooltip],
 			modes: {
-				default: ['drag-canvas']
+				default: ['drag-canvas', 'zoom-canvas']
 			},
 			nodeStateStyles: {
 				hover: {
@@ -1072,7 +1158,6 @@ function Visualization(props) {
 			}
 		});
 		const handleCollapse = (e) => {
-			console.log(e.target);
 			const target = e.target;
 			const id = target.get('modelId');
 			const item = graph.findById(id);
@@ -1083,6 +1168,70 @@ function Visualization(props) {
 			graph.setItemState(item, 'select', false);
 		};
 		graph.on('collapse-text:click', (e) => {
+			const { item } = e;
+			const group = item.getContainer();
+			const collapseText = group.find(
+				(e) => e.get('name') === 'collapse-text'
+			);
+			const collapseBack = group.find(
+				(e) => e.get('name') === 'collapse-back'
+			);
+			const nodes = graph.getNodes();
+			const text = collapseText.attr('text');
+			console.log(item.getModel().children);
+			if (text === '-') {
+				if (direction === 'LR') {
+					collapseBack.attr(
+						'x',
+						item.getModel().depth === 1 ? 60 : 90
+					);
+					collapseText.attr({
+						text: '+',
+						x: item.getModel().depth === 1 ? 68 : 98
+					});
+				} else {
+					collapseBack.attr('y', 20);
+					collapseText.attr({
+						text: '+',
+						y: /macintosh|mac os x/i.test(navigator.userAgent)
+							? 26
+							: 28
+					});
+				}
+				nodes.map((i) => {
+					if (item.getModel().depth === 1 && i.getModel().depth > 1) {
+						graph.hideItem(i);
+					}
+				});
+			} else {
+				if (direction === 'LR') {
+					collapseBack.attr(
+						'x',
+						item.getModel().depth === 1 ? 87 : 195
+					);
+					collapseText.attr({
+						text: '-',
+						x: item.getModel().depth === 1 ? 95 : 203
+					});
+				} else {
+					collapseBack.attr('y', 108);
+					collapseText.attr({
+						text: '-',
+						y: /macintosh|mac os x/i.test(navigator.userAgent)
+							? 114
+							: 116
+					});
+				}
+				nodes.map((i) => {
+					if (item.getModel().depth === 1 && i.getModel().depth > 1) {
+						graph.showItem(i);
+					}
+				});
+			}
+			item.refresh();
+			item.getModel().depth === 2 && handleCollapse(e);
+		});
+		graph.on('collapse-back:click', (e) => {
 			const { item } = e;
 			const group = item.getContainer();
 			const collapseText = group.find(
@@ -1111,68 +1260,20 @@ function Visualization(props) {
 							: 28
 					});
 				}
+				nodes.map((i) => {
+					if (item.getModel().depth === 1 && i.getModel().depth > 1) {
+						graph.hideItem(i);
+					}
+				});
 			} else {
 				if (direction === 'LR') {
 					collapseBack.attr(
 						'x',
-						item.getModel().depth === 1 ? 87 : 168
+						item.getModel().depth === 1 ? 87 : 195
 					);
 					collapseText.attr({
 						text: '-',
-						x: item.getModel().depth === 1 ? 95 : 176
-					});
-				} else {
-					collapseBack.attr('y', 108);
-					collapseText.attr({
-						text: '-',
-						y: /macintosh|mac os x/i.test(navigator.userAgent)
-							? 114
-							: 116
-					});
-				}
-			}
-			graph.refreshItem(item);
-			handleCollapse(e);
-		});
-		graph.on('collapse-back:click', (e) => {
-			const { item } = e;
-			const group = item.getContainer();
-			const collapseText = group.find(
-				(e) => e.get('name') === 'collapse-text'
-			);
-
-			const collapseBack = group.find(
-				(e) => e.get('name') === 'collapse-back'
-			);
-			const text = collapseText.attr('text');
-			if (text === '-') {
-				if (direction === 'LR') {
-					collapseBack.attr(
-						'x',
-						item.getModel().depth === 2 ? 60 : 90
-					);
-					collapseText.attr({
-						text: '+',
-						x: item.getModel().depth === 2 ? 68 : 98
-					});
-				} else {
-					collapseBack.attr('y', 20);
-					collapseText.attr({
-						text: '+',
-						y: /macintosh|mac os x/i.test(navigator.userAgent)
-							? 26
-							: 28
-					});
-				}
-			} else {
-				if (direction === 'LR') {
-					collapseBack.attr(
-						'x',
-						item.getModel().depth === 1 ? 87 : 168
-					);
-					collapseText.attr({
-						text: '-',
-						x: item.getModel().depth === 1 ? 95 : 176
+						x: item.getModel().depth === 1 ? 95 : 203
 					});
 				} else {
 					collapseBack.attr('y', 62);
@@ -1183,9 +1284,14 @@ function Visualization(props) {
 							: 71
 					});
 				}
+				nodes.map((i) => {
+					if (item.getModel().depth === 1 && i.getModel().depth > 1) {
+						graph.showItem(i);
+					}
+				});
 			}
 			graph.refreshItem(item);
-			handleCollapse(e);
+			item.getModel().depth === 2 && handleCollapse(e);
 		});
 
 		graph.on('more:click', (evt) => {
@@ -1237,12 +1343,10 @@ function Visualization(props) {
 			const textButton1 = group.find(
 				(e) => e.get('name') === 'text-button1'
 			);
-			const restart = group.find(
-				(e) => e.get('name') === 'restart'
-			);
+			const restart = group.find((e) => e.get('name') === 'restart');
 			evt.target.attr({ fill: '#F7F9FA' });
 			textButton1.attr({ fill: '#0064C8' });
-			restart.attr({img: RestartHover});
+			restart.attr({ img: RestartHover });
 		});
 		graph.on('button1:mouseleave', (evt) => {
 			const { item } = evt;
@@ -1250,12 +1354,10 @@ function Visualization(props) {
 			const textButton1 = group.find(
 				(e) => e.get('name') === 'text-button1'
 			);
-			const restart = group.find(
-				(e) => e.get('name') === 'restart'
-			);
+			const restart = group.find((e) => e.get('name') === 'restart');
 			evt.target.attr({ fill: '#fff' });
 			textButton1.attr({ fill: '#999' });
-			restart.attr({img: Restart});
+			restart.attr({ img: Restart });
 		});
 		graph.on('text-button1:click', (evt) => {
 			if (!reStart) return;
@@ -1266,12 +1368,10 @@ function Visualization(props) {
 			const { item } = evt;
 			const group = item.getContainer();
 			const button1 = group.find((e) => e.get('name') === 'button1');
-			const restart = group.find(
-				(e) => e.get('name') === 'restart'
-			);
+			const restart = group.find((e) => e.get('name') === 'restart');
 			evt.target.attr({ fill: '#0064C8' });
 			button1.attr({ fill: '#F7F9FA' });
-			restart.attr({img: RestartHover});
+			restart.attr({ img: RestartHover });
 		});
 
 		graph.on('button2:click', (evt) => {
@@ -1288,12 +1388,10 @@ function Visualization(props) {
 			const textButton2 = group.find(
 				(e) => e.get('name') === 'text-button2'
 			);
-			const edit = group.find(
-				(e) => e.get('name') === 'edit'
-			);
+			const edit = group.find((e) => e.get('name') === 'edit');
 			evt.target.attr({ fill: '#F7F9FA' });
 			textButton2.attr({ fill: '#0064C8' });
-			edit.attr({img: EditHover});
+			edit.attr({ img: EditHover });
 		});
 		graph.on('button2:mouseleave', (evt) => {
 			const { item } = evt;
@@ -1301,12 +1399,10 @@ function Visualization(props) {
 			const textButton2 = group.find(
 				(e) => e.get('name') === 'text-button2'
 			);
-			const edit = group.find(
-				(e) => e.get('name') === 'edit'
-			);
+			const edit = group.find((e) => e.get('name') === 'edit');
 			evt.target.attr({ fill: '#fff' });
 			textButton2.attr({ fill: '#999' });
-			edit.attr({img: Edit});
+			edit.attr({ img: Edit });
 		});
 		graph.on('text-button2:click', (evt) => {
 			if (!setEsVisible && !editConfiguration) return;
@@ -1320,12 +1416,10 @@ function Visualization(props) {
 			const { item } = evt;
 			const group = item.getContainer();
 			const button2 = group.find((e) => e.get('name') === 'button2');
-			const edit = group.find(
-				(e) => e.get('name') === 'edit'
-			);
+			const edit = group.find((e) => e.get('name') === 'edit');
 			evt.target.attr({ fill: '#0064C8' });
 			button2.attr({ fill: '#F7F9FA' });
-			edit.attr({img: EditHover});
+			edit.attr({ img: EditHover });
 		});
 
 		graph.on('button3:click', (evt) => {
@@ -1344,12 +1438,10 @@ function Visualization(props) {
 			const textButton3 = group.find(
 				(e) => e.get('name') === 'text-button3'
 			);
-			const control = group.find(
-				(e) => e.get('name') === 'control'
-			);
+			const control = group.find((e) => e.get('name') === 'control');
 			evt.target.attr({ fill: '#F7F9FA' });
 			textButton3.attr({ fill: '#0064C8' });
-			control.attr({img: ControlHover});
+			control.attr({ img: ControlHover });
 		});
 		graph.on('button3:mouseleave', (evt) => {
 			const { item } = evt;
@@ -1357,24 +1449,45 @@ function Visualization(props) {
 			const textButton3 = group.find(
 				(e) => e.get('name') === 'text-button3'
 			);
-			const control = group.find(
-				(e) => e.get('name') === 'control'
-			);
+			const control = group.find((e) => e.get('name') === 'control');
 			evt.target.attr({ fill: '#fff' });
 			textButton3.attr({ fill: '#999' });
-			control.attr({img: Control});
+			control.attr({ img: Control });
 		});
 		graph.on('text-button3:mouseover', (evt) => {
 			const { item } = evt;
 			const group = item.getContainer();
 			const button3 = group.find((e) => e.get('name') === 'button3');
-			const control = group.find(
-				(e) => e.get('name') === 'control'
-			);
+			const control = group.find((e) => e.get('name') === 'control');
 			evt.target.attr({ fill: '#0064C8' });
 			button3.attr({ fill: '#F7F9FA' });
-			control.attr({img: ControlHover});
+			control.attr({ img: ControlHover });
 		});
+
+		// graph.on('breath:mouseover', (evt) => {
+		// 	const { item } = evt;
+		// 	const group = item.getContainer();
+		// 	const breathBox = group.find((e) => e.get('name') === 'breath-box');
+		// 	const breathText = group.find(
+		// 		(e) => e.get('name') === 'breath-text'
+		// 	);
+		// 	if (setBackupObj) return;
+		// 	breathBox.cfg.visible = true;
+		// 	breathText.cfg.visible = true;
+		// 	graph.refresh();
+		// });
+		// graph.on('breath:mouseleave', (evt) => {
+		// 	const { item } = evt;
+		// 	const group = item.getContainer();
+		// 	const breathBox = group.find((e) => e.get('name') === 'breath-box');
+		// 	const breathText = group.find(
+		// 		(e) => e.get('name') === 'breath-text'
+		// 	);
+		// 	if (setBackupObj) return;
+		// 	breathBox.cfg.visible = false;
+		// 	breathText.cfg.visible = false;
+		// 	graph.refresh();
+		// });
 
 		window.graph = graph;
 	};
@@ -1394,7 +1507,8 @@ function Visualization(props) {
 	}, [direction]);
 
 	const reset = () => {
-		topoData.pods.length && topoData.pods.length >= 4
+		(topoData.pods.length && topoData.pods.length >= 4) ||
+		direction === 'TB'
 			? window.graph.fitView()
 			: window.graph.fitCenter();
 	};
@@ -1447,7 +1561,7 @@ function Visualization(props) {
 						: '选择备份对象'
 					: '关系拓扑'}
 			</h2>
-			<div style={{ background: '#f9f9f9', height: '530px', ...option }}>
+			<div style={{ background: '#f9f9f9', height: '560px', ...option }}>
 				<div className={styles['tools']}>
 					<div>
 						<Tooltip
