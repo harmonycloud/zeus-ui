@@ -170,7 +170,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						}).then((res) => {
 							if (res.success) {
 								getData();
-							}else{
+							} else {
 								originData.forEach((item: any, i: number) => {
 									if (i === index) {
 										item.versionStatus = 'future';
@@ -229,6 +229,16 @@ function ServiceVersion(props: versionProps): JSX.Element {
 								现在去升级
 							</Button>
 						</>
+					)
+				});
+			} else if (res.code === 720003) {
+				const dialog = Dialog.show({
+					title: '操作确认',
+					content: 'operator升级中,请稍后升级',
+					footer: (
+						<Button type="primary" onClick={() => dialog.hide()}>
+							我知道了
+						</Button>
 					)
 				});
 			}
