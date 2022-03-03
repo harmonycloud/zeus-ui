@@ -87,7 +87,7 @@ export default function ParamterTemplateForm(
 					<Select
 						style={{ width: 300 }}
 						name="templateUid"
-						defaultValue={templates && templates[0].uid}
+						defaultValue={templates[0] && templates[0].uid}
 					>
 						{templates &&
 							templates.map((item) => {

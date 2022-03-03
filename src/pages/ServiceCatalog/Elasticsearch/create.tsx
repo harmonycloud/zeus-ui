@@ -928,9 +928,23 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span className="ne-required">
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
 											模式
 										</span>
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											主节点负责集群管理相关操作；数据节点负责数据存储；协调节点负责负载均衡，路由分发；冷节点负责低优先级数据存储
+										</Balloon>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['es-mode']}`}
