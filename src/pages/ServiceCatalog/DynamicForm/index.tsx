@@ -132,7 +132,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 				type: chartName,
 				chartName: chartName,
 				chartVersion: chartVersion,
-				version: version,
+				version: values.version,
 				name: values.name,
 				aliasName: values.aliasName,
 				description: values.description,
