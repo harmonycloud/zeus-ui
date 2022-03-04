@@ -68,7 +68,9 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 			onOk={onOk}
 		>
 			<Icon type="warning" style={{ color: '#0070cc' }} />{' '}
-			{`${flag ? '开启' : '关闭'}将导致服务重启，是否继续？`}
+			{`${flag ? '开启' : '关闭'}将导致服务重启${
+				flag ? ',数据同步ES也需要等待一会' : ''
+			}，是否继续？`}
 			<br />
 			<br />
 			<Checkbox
