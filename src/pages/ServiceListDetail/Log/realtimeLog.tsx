@@ -37,7 +37,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 	const [terminalType, setTerminalType] = useState<string>('stdoutlog');
 	const [lastRestart, setLastRestart] = useState<number>(0);
-	// const [currentLog, setCurrentLog] = useState<string>(props.log);
+	const [websocketFlag, setWebsocketFlag] = useState<number>(0);
 	const ws = useRef<any>(null);
 
 	const changePod = (value: string) => {
@@ -64,9 +64,6 @@ const RealtimeLog = (props: RealTimeProps) => {
 	const screenShrink = () => {
 		setIsFullscreen(false);
 	};
-	// useEffect(() => {
-	// 	setCurrentLog(props.log);
-	// }, [props.log]);
 	useEffect(() => {
 		if (clusterId && namespace && middlewareName) {
 			getPods({ clusterId, namespace, middlewareName, type }).then(
@@ -90,26 +87,27 @@ const RealtimeLog = (props: RealTimeProps) => {
 	}, [clusterId, namespace, middlewareName]);
 
 	useEffect(() => {
+		cleanRealLog();
 		if (pod && container) {
-			cleanRealLog();
+			console.log(props);
 			ws.current = new Socket({
 				socketUrl: `/terminal?terminalType=${terminalType}&pod=${pod}&namespace=${namespace}&container=${container}&clusterId=${clusterId}`,
 				timeout: 5000,
 				socketMessage: (receive: any) => {
+					setWebsocketFlag(websocketFlag + 1);
+					console.log(receive);
 					console.log(props);
 					const content = props.log + JSON.parse(receive.data).text;
 					setRealLog(content);
 				},
 				socketClose: (msg: any) => {
-					console.log(msg);
+					cleanRealLog();
 				},
 				socketError: () => {
 					console.log('连接建立失败');
 				},
 				socketOpen: () => {
-					// setCurrentLog('');
 					console.log('连接建立成功');
-					console.log(props);
 				}
 			});
 			try {
@@ -122,6 +120,9 @@ const RealtimeLog = (props: RealTimeProps) => {
 				ws.current.onclose();
 			};
 		}
+		return () => {
+			cleanRealLog();
+		};
 	}, [pod, container, terminalType]);
 
 	return (
@@ -221,6 +222,11 @@ const RealtimeLog = (props: RealTimeProps) => {
 								onClick={screenShrink}
 							/>
 						)}
+						<Icon
+							type="compress-alt"
+							size="xs"
+							onClick={() => cleanRealLog()}
+						/>
 					</div>
 				</div>
 				<CodeMirror

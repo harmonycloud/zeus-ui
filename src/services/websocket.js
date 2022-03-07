@@ -86,6 +86,7 @@ export default class webSocket {
 		console.log('关闭socket收到的数据', e);
 		let { socketClose } = this.param;
 		socketClose && socketClose(e);
+		this.socket.close();
 		// 根据后端返回的状态码做操作，重连等
 		// if (e.code == '4500') {
 		// 	this.socket.close();
