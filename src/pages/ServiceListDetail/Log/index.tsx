@@ -72,12 +72,20 @@ export default function Log(props: LogProps): JSX.Element {
 					</Tab.Item>
 					{!customMid ? (
 						<Tab.Item title="标准日志">
-							<StandardLog data={props} logging={logging} />
+							<StandardLog
+								data={props}
+								logging={logging}
+								onRefresh={onRefresh}
+							/>
 						</Tab.Item>
 					) : null}
 					{!customMid ? (
 						<Tab.Item title="日志文件">
-							<LogFile data={props} logging={logging} />
+							<LogFile
+								data={props}
+								logging={logging}
+								onRefresh={onRefresh}
+							/>
 						</Tab.Item>
 					) : null}
 					{type === 'mysql' && (

@@ -22,7 +22,11 @@ import ErrorPage from '@/components/ResultPage/ErrorPage';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio';
 
-import { getNodePort, getNodeTaint } from '@/services/middleware';
+import {
+	getNodePort,
+	getNodeTaint,
+	postMiddleware
+} from '@/services/middleware';
 
 import {
 	AffinityLabelsItem,
@@ -125,6 +129,23 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<string>();
+	// * 根据命名空间，来提示可编辑的最大最小值
+	useEffect(() => {
+		if (globalNamespace.quotas) {
+			const cpuMax =
+				Number(globalNamespace.quotas.cpu[1]) -
+				Number(globalNamespace.quotas.cpu[2]);
+			setMaxCpu({
+				max: cpuMax
+			});
+			const memoryMax =
+				Number(globalNamespace.quotas.memory[1]) -
+				Number(globalNamespace.quotas.memory[2]);
+			setMaxMemory({
+				max: memoryMax
+			});
+		}
+	}, [props]);
 	// 全局资源池更新
 	useEffect(() => {
 		if (JSON.stringify(globalCluster) !== '{}') {
@@ -154,6 +175,25 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	// * 表单提交
 	const handleSubmit = () => {
 		console.log('submit');
+		field.validate((err) => {
+			const values = field.getValues();
+			if (err) return;
+			const sendData = {};
+			// todo kafka sendData的数据拼接
+			setCommitFlag(true);
+			postMiddleware(sendData).then((res) => {
+				if (res.success) {
+					setCreateData(res.data);
+					setSuccessFlag(true);
+					setErrorFlag(false);
+					setCommitFlag(false);
+				} else {
+					setSuccessFlag(false);
+					setErrorFlag(true);
+					setCommitFlag(false);
+				}
+			});
+		});
 	};
 	// * 结果页相关
 	if (commitFlag) {

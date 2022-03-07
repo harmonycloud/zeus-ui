@@ -55,6 +55,7 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 					)
 				);
 			} else {
+				onCancel(false);
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
