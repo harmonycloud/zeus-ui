@@ -46,14 +46,17 @@ const RealtimeLog = (props: RealTimeProps) => {
 			if (value === podList[i].podName) {
 				setLastRestart(podList[i].restartCount);
 				setContainerList(podList[i].containers);
-				if (podList[i].containers.length > 0)
+				if (podList[i].containers.length > 0) {
+					cleanRealLog();
 					setContainer(podList[i].containers[0].name);
+				}
 				break;
 			}
 		}
 	};
 
 	const changeContainr = (value: string) => {
+		cleanRealLog();
 		setContainer(value);
 	};
 
@@ -98,6 +101,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 					console.log(receive);
 					console.log(props);
 					const content = props.log + JSON.parse(receive.data).text;
+					// const content =JSON.parse(receive.data).text;
 					setRealLog(content);
 				},
 				socketClose: (msg: any) => {
@@ -136,9 +140,12 @@ const RealtimeLog = (props: RealTimeProps) => {
 						<Col span={19}>
 							<RadioGroup
 								value={terminalType}
-								onChange={(value: string | number | boolean) =>
-									setTerminalType(value as string)
-								}
+								onChange={(
+									value: string | number | boolean
+								) => {
+									cleanRealLog();
+									setTerminalType(value as string);
+								}}
 							>
 								<Radio id="stdoutlog" value="stdoutlog">
 									实时日志
