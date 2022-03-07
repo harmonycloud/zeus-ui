@@ -11,7 +11,7 @@ import {
 import { useParams } from 'react-router';
 import { Icon } from '@alifd/next';
 import moment, { Moment } from 'moment';
-import { Controlled as CodeMirror } from 'react-codemirror2';
+import { UnControlled as CodeMirror } from 'react-codemirror2';
 import TimeSelect from '@/components/TimeSelect';
 import transTime from '@/utils/transTime';
 import messageConfig from '@/components/messageConfig';
@@ -97,6 +97,9 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 	const [switchVisible, setSwitchVisible] = useState<boolean>(false);
 	const [logFile, setLogFile] = useState<boolean>(filelogEnabled || false);
 
+	useEffect(() => {
+		setLogFile(props.data.data.filelogEnabled);
+	}, [props.data.data.filelogEnabled]);
 	// * 当logList发生变化是去更新logs内容
 	useEffect(() => {
 		setLogs(logList.join('\n'));
@@ -328,15 +331,14 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 		}`;
 		window.open(url, '_target');
 	};
-	const onBeforeChange = (value: Editor) => {
-		console.log(value);
-	};
 
 	const uploadSwitch = (flag: boolean) => {
 		if (!flag) {
 			setLogFile(!logFile);
 		} else {
-			onRefresh && onRefresh();
+			setTimeout(() => {
+				onRefresh && onRefresh();
+			}, 5000);
 		}
 		setSwitchVisible(false);
 	};
@@ -552,7 +554,6 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						value={logs}
 						options={options}
 						className="log-codeMirror"
-						onBeforeChange={onBeforeChange}
 					/>
 					{total > logList.length ? (
 						<div className={styles['foot']}>
@@ -578,7 +579,8 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 								middlewareName,
 								type,
 								chartName: type,
-								chartVersion
+								chartVersion:
+									chartVersion || props.data.data.chartVersion
 							}}
 							onCancel={uploadSwitch}
 						/>

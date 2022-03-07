@@ -222,11 +222,6 @@ const RealtimeLog = (props: RealTimeProps) => {
 								onClick={screenShrink}
 							/>
 						)}
-						<Icon
-							type="compress-alt"
-							size="xs"
-							onClick={() => cleanRealLog()}
-						/>
 					</div>
 				</div>
 				<CodeMirror

@@ -99,6 +99,9 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 			}
 		}
 	};
+	useEffect(() => {
+		setStandardLog(props.data.data.stdoutEnabled);
+	}, [props.data.data.stdoutEnabled]);
 
 	useEffect(() => {
 		if (
@@ -336,7 +339,9 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 		if (!flag) {
 			setStandardLog(!standardLog);
 		} else {
-			onRefresh && onRefresh();
+			setTimeout(() => {
+				onRefresh && onRefresh();
+			}, 5000);
 		}
 		setSwitchVisible(false);
 	};
@@ -580,7 +585,8 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 								middlewareName,
 								type,
 								chartName: type,
-								chartVersion
+								chartVersion:
+									chartVersion || props.data.data.chartVersion
 							}}
 							onCancel={uploadSwitch}
 						/>
