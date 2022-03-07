@@ -714,7 +714,7 @@ function CreateAlarm(): JSX.Element {
 													width: '100%'
 												}}
 												autoWidth={false}
-												value={item.alert}
+												value={alarmType === 'system' ? item.alert?.split('-')[0] : item.alert}
 											>
 												{alarms &&
 													alarms.map((i) => {
