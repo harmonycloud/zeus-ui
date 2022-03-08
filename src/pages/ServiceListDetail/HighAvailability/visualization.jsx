@@ -443,14 +443,14 @@ function Visualization(props) {
 								attrs: {
 									text:
 										'节点资源/存储: ' +
-										cfg?.resources?.cpu +
+										(cfg?.resources?.cpu || 0) +
 										'C/' +
-										cfg?.resources?.memory +
+										(cfg?.resources?.memory || 0) +
 										'G' +
 										'/' +
 										(cfg?.resources?.storageClassQuota
 											? cfg?.resources?.storageClassQuota
-											: ''),
+											: '无'),
 									x: 16,
 									y: 71,
 									fill: '#999'
