@@ -12,6 +12,7 @@ import { alarmWarn } from '@/utils/const';
 
 import { alarmRecordProps } from './systemAlarm';
 import { poolListItem, evevtDataProps } from '@/types/comment';
+import storage from '@/utils/storage';
 
 function AlarmRecord(props: alarmRecordProps) {
 	const {
@@ -28,6 +29,7 @@ function AlarmRecord(props: alarmRecordProps) {
 	const [originData, setOriginData] = useState<evevtDataProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [filters, setFilters] = useState<any[] | undefined>();
+	const systemTab = storage.getLocal('systemTab');
 	const [filterMode, setFilterMode] = useState<
 		'single' | 'multiple' | undefined
 	>();
@@ -55,6 +57,10 @@ function AlarmRecord(props: alarmRecordProps) {
 			}
 		});
 	}, [middlewareName]);
+	
+	useEffect(() => {
+		getData();
+	},[systemTab])
 
 	const getData = () => {
 		if (alarmType === 'system') {
