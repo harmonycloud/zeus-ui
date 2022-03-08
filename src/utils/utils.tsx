@@ -255,6 +255,48 @@ export const serviceListStatusRender: (
 					</span>
 				</Balloon>
 			);
+		case 'Preparing':
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="sync-alt"
+								size="xs"
+								style={{ color: '#0091FF' }}
+							/>{' '}
+							创建中
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						服务创建中，无法操作
+					</span>
+				</Balloon>
+			);
+		case 'failed':
+			return (
+				<Balloon
+					trigger={
+						<span style={{ cursor: 'pointer' }}>
+							<Icon
+								type="sync-alt"
+								size="xs"
+								style={{ color: '#0091FF' }}
+							/>{' '}
+							创建失败
+						</span>
+					}
+					closable={false}
+				>
+					中间件状态异常原因 <br />
+					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
+						服务创建失败，无法操作
+					</span>
+				</Balloon>
+			);
 		case 'Deleted':
 			return (
 				<>

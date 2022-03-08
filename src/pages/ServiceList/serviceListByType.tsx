@@ -816,14 +816,36 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const nameRender = (value: string, index: number, record: serviceProps) => {
-		if (
-			record.status === 'Deleted' ||
-			record.status === 'Preparing' ||
-			record.status === 'failed'
-		) {
+		if (record.status === 'Deleted') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
 					<div className="displayed-name text-overflow">
+						{record.name}
+					</div>
+					<div className="text-overflow">{record.aliasName}</div>
+				</div>
+			);
+		}
+		if (record.status === 'Preparing') {
+			return (
+				<div style={{ maxWidth: '160px' }}>
+					<div
+						className="displayed-name text-overflow"
+						title="服务创建中，无法操作"
+					>
+						{record.name}
+					</div>
+					<div className="text-overflow">{record.aliasName}</div>
+				</div>
+			);
+		}
+		if (record.status === 'failed') {
+			return (
+				<div style={{ maxWidth: '160px' }}>
+					<div
+						className="displayed-name text-overflow"
+						title="服务创建失败，无法操作"
+					>
 						{record.name}
 					</div>
 					<div className="text-overflow">{record.aliasName}</div>
