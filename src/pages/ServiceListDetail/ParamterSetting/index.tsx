@@ -43,8 +43,8 @@ export default function ParamterSetting(
 			style={{ height: '100%' }}
 		>
 			<Menu.Item key="list">参数列表</Menu.Item>
-			<Menu.Item key="config">参数修改历史</Menu.Item>
 			<Menu.Item key="template">参数模板</Menu.Item>
+			<Menu.Item key="config">参数修改历史</Menu.Item>
 			<Menu.Item key="configMap">ConfigMap编辑</Menu.Item>
 		</Menu>
 	);
