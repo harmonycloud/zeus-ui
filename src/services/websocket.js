@@ -29,13 +29,13 @@ export default class webSocket {
 		// console.log(window.location);
 		let url = '';
 		if (window.location.protocol.toLowerCase() === 'https:') {
-			url = `${wsUrl}${socketUrl}`;
+			// url = `${wsUrl}${socketUrl}`;
 
-			// url = `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
+			url = `wss://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
 		} else {
-			url = `${wsUrl}${socketUrl}`;
+			// url = `${wsUrl}${socketUrl}`;
 
-			// url = `ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
+			url = `ws://${window.location.hostname}:${window.location.port}/ws${socketUrl}`;
 		}
 		// 检测当前浏览器是什么浏览器来决定用什么socket
 		if ('WebSocket' in window) {
@@ -86,7 +86,7 @@ export default class webSocket {
 		console.log('关闭socket收到的数据', e);
 		let { socketClose } = this.param;
 		socketClose && socketClose(e);
-		this.socket.close();
+		this.socket && this.socket.close();
 		// 根据后端返回的状态码做操作，重连等
 		// if (e.code == '4500') {
 		// 	this.socket.close();
