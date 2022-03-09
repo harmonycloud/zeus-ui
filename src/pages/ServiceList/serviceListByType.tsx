@@ -300,11 +300,11 @@ const ServiceListByType = (props: serviceListProps) => {
 						`/serviceList/${name}/${aliasName}/rocketmqCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
-				// case 'kafka':
-				// 	history.push(
-				// 		`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
-				// 	);
-				// break;
+				case 'kafka':
+					history.push(
+						`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
+					);
+					break;
 				default:
 					history.push(
 						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`

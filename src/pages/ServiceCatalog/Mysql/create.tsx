@@ -21,8 +21,8 @@ import {
 	Select,
 	Button,
 	Message,
-	CascaderSelect
-	// NumberPicker 一主多从
+	CascaderSelect,
+	NumberPicker
 } from '@alicloud/console-components';
 import {
 	getNodePort,
@@ -139,8 +139,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
 		{
-			label: '主从模式',
+			label: '一主一从',
 			value: '1m-1s'
+		},
+		{
+			label: '一主多从（beta版）',
+			value: '1m-ns'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -150,7 +154,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
-	// const [replicaCount, setReplicaCount] = useState(1); // * 一主多从
+	const [replicaCount, setReplicaCount] = useState(1); // * 一主多从
 
 	// * 灾备
 	const [backupFlag, setBackupFlag] = useState<boolean>(false);
@@ -240,9 +244,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						}
 					},
 					mysqlDTO: {
-						replicaCount: 1,
+						replicaCount: replicaCount,
 						openDisasterRecoveryMode: backupFlag,
-						type: 'master-master'
+						type:
+							mode === '1m-1s' ? 'master-master' : 'master-slave'
 					}
 				};
 				// * 动态表单相关
@@ -330,8 +335,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						values.relationAliasName;
 					sendData.mysqlDTO.relationClusterId = relationClusterId;
 					sendData.mysqlDTO.relationNamespace = relationNamespace;
-					sendData.mysqlDTO.type = 'master-master';
+					sendData.mysqlDTO.type =
+						mode === '1m-1s' ? 'master-master' : 'master-slave';
 					sendData.mysqlDTO.isSource = true;
+					sendData.mysqlDTO.replicaCount = replicaCount;
 					sendData.relationMiddleware = {
 						chartName: chartName,
 						chartVersion: chartVersion,
@@ -402,13 +409,17 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							}
 						},
 						mysqlDTO: {
-							replicaCount: 1,
+							replicaCount: replicaCount,
 							openDisasterRecoveryMode: true,
 							relationName: values.name,
 							relationAliasName: values.aliasName,
 							relationClusterId: relationClusterId,
 							relationNamespace: relationNamespace,
-							isSource: true
+							isSource: true,
+							type:
+								mode === '1m-1s'
+									? 'master-master'
+									: 'master-slave'
 						},
 						relationMiddleware: {
 							chartName: chartName,
@@ -1459,7 +1470,20 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>模式</span>
+										<span style={{ marginRight: 8 }}>
+											模式
+										</span>
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											本模式中的主、从节点，特指不同类型实例个数
+										</Balloon>
 									</label>
 									<div
 										className={`form-content display-flex`}
@@ -1471,23 +1495,28 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												setMode(value)
 											}
 										/>
-										{/* 一主多从 */}
-										{/* <div>
+										<div
+											style={{
+												display:
+													mode === '1m-1s'
+														? 'none'
+														: 'block'
+											}}
+										>
 											<label style={{ margin: '0 16px' }}>
-												自定义从节点数量
+												自定义从节点实例数量
 											</label>
 											<NumberPicker
-												type="inline"
 												name="从节点数量字段"
 												defaultValue={1}
 												onChange={(value) =>
 													setReplicaCount(value)
 												}
 												value={replicaCount}
-												max={10}
-												min={1}
+												max={6}
+												min={2}
 											/>
-										</div> */}
+										</div>
 									</div>
 								</li>
 								<li className="display-flex form-li">

@@ -134,6 +134,7 @@ const events: eventsParams = {
 const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
+	'1m-ns': '一主多从',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
 	'complex-cold': 'N主N数据N冷',
@@ -186,9 +187,9 @@ const hostNetworkConfig = {
 	dataIndex: 'hostNetwork',
 	label: '主机网络',
 	render: (val: boolean) => (
-		<div style={{display: 'flex',alignItems: 'center'}}>
+		<div style={{ display: 'flex', alignItems: 'center' }}>
 			{val ? '已开启' : '已关闭'}
-			<Switch checked={val} size="small" style={{marginLeft: '8px'}} />
+			<Switch checked={val} size="small" style={{ marginLeft: '8px' }} />
 		</div>
 	)
 };
