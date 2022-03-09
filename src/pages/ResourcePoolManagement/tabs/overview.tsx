@@ -200,7 +200,7 @@ const Overview = () => {
 	) => {
 		return (
 			<div style={{ maxWidth: '160px' }}>
-				<div title={record.name} className="name-link text-overflow">
+				<div title={record.name} className="text-overflow">
 					{record.name}
 				</div>
 				<div title={record.aliasName} className="text-overflow">
