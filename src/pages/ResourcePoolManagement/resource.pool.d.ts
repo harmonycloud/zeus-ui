@@ -27,6 +27,9 @@ export interface MiddlewareResourceProps {
 	requestStorage?: number;
 	storageRate: number;
 	type?: string;
+	pvcRate: number;
+	pvcRequest: number;
+	per5MinPvc: number;
 }
 
 export interface NamespaceResourceProps {

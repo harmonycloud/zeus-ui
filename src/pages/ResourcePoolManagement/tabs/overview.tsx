@@ -141,16 +141,6 @@ const Overview = () => {
 			}
 		});
 	};
-	const getNode = () => {
-		getNodeResource({ clusterId: id }).then((res) => {
-			if (res.success) {
-				setNodeOriginData(res.data);
-				setNodeDataSource(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	};
 	const getNamespace = () => {
 		getNamespaceResource({ clusterId: id }).then((res) => {
 			if (res.success) {
@@ -162,7 +152,10 @@ const Overview = () => {
 						cpuRate: item.cpuRate,
 						requestMemory: item.memoryRequest,
 						per5MinMemory: item.per5MinMemory,
-						memoryRate: item.memoryRate
+						memoryRate: item.memoryRate,
+						requestStorage: item.pvcRequest,
+						per5MinStorage: item.per5MinPvc,
+						storageRate: item.pvcRate
 					};
 				});
 				setNamespaceFilter(
