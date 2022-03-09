@@ -183,12 +183,14 @@
 }
 .warning-info{
 	margin: 0 24px 16px 24px;
-	height: 32px;
+	height: auto;
 	background: #FFF7D1;
+	padding: 10px;
 	border-radius: $border-radius;
+	position: relative;
 	&>.warning-icon{
 		font-size: $font-h2;
-		margin: 0 10px;
+		margin-right: 10px;
 		color: #FAC800;
 	}
 	&>.info-text{
@@ -199,9 +201,9 @@
 		line-height: $line-height-lg * 2;
 	}
 	&>.warning-close{
-		float: right;
-		margin-right: 10px !important;
-		line-height: $line-height-lg * 2;
+		position: absolute;
+		top: 10px;
+		right: 10px;
 		color: $text-color-title;
 	}
 }

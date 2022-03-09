@@ -135,6 +135,7 @@ const events: eventsParams = {
 const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
+	'1m-ns': '一主多从',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
 	'complex-cold': 'N主N数据N冷',

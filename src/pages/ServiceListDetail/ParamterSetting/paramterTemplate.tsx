@@ -48,20 +48,11 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 					}}
 					type="primary"
 				>
-					新增
+					新建
 				</Button>
+
 				<Button
 					onClick={() => {
-						if (selectedRowKeys.length === 0) {
-							Message.show(
-								messageConfig(
-									'error',
-									'失败',
-									'请选择需要删除模板！'
-								)
-							);
-							return;
-						}
 						const sendData = {
 							type,
 							uids: selectedRowKeys.join(',')
@@ -69,6 +60,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 						deleteTemp(sendData);
 					}}
 					type="primary"
+					warning
 				>
 					删除
 				</Button>

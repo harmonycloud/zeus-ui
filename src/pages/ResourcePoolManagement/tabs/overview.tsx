@@ -141,16 +141,6 @@ const Overview = () => {
 			}
 		});
 	};
-	const getNode = () => {
-		getNodeResource({ clusterId: id }).then((res) => {
-			if (res.success) {
-				setNodeOriginData(res.data);
-				setNodeDataSource(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	};
 	const getNamespace = () => {
 		getNamespaceResource({ clusterId: id }).then((res) => {
 			if (res.success) {
@@ -162,7 +152,10 @@ const Overview = () => {
 						cpuRate: item.cpuRate,
 						requestMemory: item.memoryRequest,
 						per5MinMemory: item.per5MinMemory,
-						memoryRate: item.memoryRate
+						memoryRate: item.memoryRate,
+						requestStorage: item.pvcRequest,
+						per5MinStorage: item.per5MinPvc,
+						storageRate: item.pvcRate
 					};
 				});
 				setNamespaceFilter(
@@ -200,8 +193,12 @@ const Overview = () => {
 	) => {
 		return (
 			<div style={{ maxWidth: '160px' }}>
-				<div className="name-link text-overflow">{record.name}</div>
-				<div className="text-overflow">{record.aliasName}</div>
+				<div title={record.name} className="text-overflow">
+					{record.name}
+				</div>
+				<div title={record.aliasName} className="text-overflow">
+					{record.aliasName}
+				</div>
 			</div>
 		);
 	};

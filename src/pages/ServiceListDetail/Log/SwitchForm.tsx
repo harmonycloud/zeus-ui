@@ -78,9 +78,9 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 				style={{ marginLeft: 24 }}
 				checked={checked}
 				onChange={(checked: boolean) => setChecked(checked)}
-				label={`若${
-					source === 'standard' ? '文件日志' : '标准日志'
-				}未启用，您可以选择同步${flag ? '开启' : '关闭'}`}
+				label={`若${source === 'standard' ? '文件日志' : '标准日志'}${
+					flag ? '未启用' : '启用中'
+				}，您可以选择同步${flag ? '开启' : '关闭'}`}
 			/>
 		</Dialog>
 	);
