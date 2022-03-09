@@ -46,6 +46,7 @@ const info: InfoParams = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
+	chartVersion: '',
 	description: '',
 	annotations: '',
 	tolerations: ''
@@ -80,8 +81,8 @@ const InfoConfig = [
 		label: '标签'
 	},
 	{
-		dataIndex: 'hostAffinity',
-		label: '主机亲和',
+		dataIndex: 'annotations',
+		label: '注解',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
@@ -89,8 +90,8 @@ const InfoConfig = [
 		)
 	},
 	{
-		dataIndex: 'annotations',
-		label: '注解',
+		dataIndex: 'hostAffinity',
+		label: '主机亲和',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
@@ -186,9 +187,9 @@ const hostNetworkConfig = {
 	dataIndex: 'hostNetwork',
 	label: '主机网络',
 	render: (val: boolean) => (
-		<div style={{display: 'flex',alignItems: 'center'}}>
+		<div style={{ display: 'flex', alignItems: 'center' }}>
 			{val ? '已开启' : '已关闭'}
-			<Switch checked={val} size="small" style={{marginLeft: '8px'}} />
+			<Switch checked={val} size="small" style={{ marginLeft: '8px' }} />
 		</div>
 	)
 };
@@ -403,6 +404,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							? '强制'
 							: '非强制'
 					})`,
+					chartVersion: data.chartVersion,
 					disasterInstanceName: data.mysqlDTO.relationName || '-',
 					annotations: data.annotations || '-',
 					description: data.description || '无',
@@ -427,6 +429,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							? '强制'
 							: '非强制'
 					})`,
+					chartVersion: data.chartVersion,
 					annotations: data.annotations || '-',
 					tolerations: `${
 						(data.tolerations && data.tolerations.join(',')) || '/'
@@ -609,7 +612,34 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					);
 				}
 			};
-			infoConfigTemp.push(descriptionTemp);
+			infoConfigTemp.splice(
+				infoConfigTemp.length - 1,
+				0,
+				descriptionTemp
+			);
+		}
+		if (!dataIndexList.includes('description')) {
+			const version = {
+				dataIndex: 'chartVersion',
+				label: '版本管理',
+				render: (val: string) => (
+					<div title={val}>
+						{val}
+						<span
+							className="name-link"
+							style={{ marginLeft: '8px' }}
+							onClick={() => 								
+								history.push(
+									`/serviceList/${params.name}/${params.aliasName}/serverVersion/${params.middlewareName}/${params.type}`
+								)
+							}
+						>
+							(版本管理)
+						</span>
+					</div>
+				)
+			};
+			infoConfigTemp.splice(4, 0, version);
 		}
 		setInfoConfig(infoConfigTemp);
 	}, [props]);

@@ -171,6 +171,7 @@ export interface InfoParams {
 	name: string;
 	aliasName: string;
 	label: string;
+	chartVersion?: string;
 	hostAffinity: string;
 	description: string;
 	annotations: string;

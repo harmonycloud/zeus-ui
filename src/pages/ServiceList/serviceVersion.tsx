@@ -285,7 +285,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			} else if (res.code === 720002) {
 				const dialog = Dialog.show({
 					title: '操作确认',
-					content: res.errorMsg,
+					content: res.errorDetail,
 					footer: (
 						<>
 							<Button
