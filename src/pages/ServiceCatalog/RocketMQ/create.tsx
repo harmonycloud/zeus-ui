@@ -48,6 +48,7 @@ import { instanceSpecList } from '@/utils/const';
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import styles from './rocketmq.module.scss';
+import { NumberPicker } from '@alifd/next';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -126,6 +127,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '三主三从',
 			value: '3m-3s'
+		},
+		{
+			label: 'DLedger模式',
+			value: 'DLedger'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -149,6 +154,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<string>();
+	// * DLedger模式节点数量
+	const [replicaCount, setReplicaCount] = useState(1);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -938,7 +945,23 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>模式</span>
+										<span style={{ marginRight: 8 }}>
+											模式
+										</span>
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											<p>双主：主实例宕机期间，未被消费的信息在机器未恢复之前不可消费</p>
+											<p>双主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例</p>
+											<p>三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例</p>
+											<p>多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费</p>
+										</Balloon>
 									</label>
 									<div
 										className={`form-content display-flex`}
@@ -950,6 +973,29 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												setMode(value)
 											}
 										/>
+										<div
+											style={{
+												display:
+													mode === 'DLedger'
+														? 'block'
+														: 'none'
+											}}
+										>
+											<label
+												style={{ margin: '0 16px' }}
+											>
+												自定义集群实例数量
+											</label>
+											<NumberPicker
+												name="节点数量"
+												defaultValue={1}
+												onChange={(value) =>
+													setReplicaCount(value)
+												}
+												min={3}
+												max={10}
+											/>
+										</div>
 									</div>
 								</li>
 								<li className="display-flex form-li">
