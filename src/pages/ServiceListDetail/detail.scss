@@ -308,3 +308,14 @@
 		}
 	}
 }
+.zeus-edit-param-summit-btn {
+	width: calc(100% - 256px);
+	padding: 0px 16px 16px 0px;
+	background: $white;
+	& > button {
+		margin-right: $margin;
+	}
+}
+.zeus-param-edit-table-content {
+	margin-bottom: 16px;
+}

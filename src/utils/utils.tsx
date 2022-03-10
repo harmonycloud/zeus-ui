@@ -400,7 +400,13 @@ export const tooltipRender = (
 		);
 	}
 };
-
+export const questionTooltipRender = (value: string, index: number) => {
+	return (
+		<Tooltip trigger={<Icon size="xs" type="question-circle" />}>
+			{value}
+		</Tooltip>
+	);
+};
 // * 函数复用
 // * 判断两个数组中是否含有相同的元素（简单数组）
 export const judgeArrays: (

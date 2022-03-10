@@ -1,3 +1,4 @@
+import { ConfigItem } from '@/pages/ServiceListDetail/detail';
 import {
 	monitorProps,
 	storageProps,
@@ -45,9 +46,15 @@ export interface globalVarProps {
 export interface menuReduxProps {
 	flag: boolean;
 }
+export interface paramReduxProps {
+	name: string;
+	description: string;
+	customConfigList: ConfigItem[];
+}
 export interface StoreState {
 	user: any;
 	globalVar: globalVarProps;
 	log: any;
 	menu: menuReduxProps;
+	param: paramReduxProps;
 }

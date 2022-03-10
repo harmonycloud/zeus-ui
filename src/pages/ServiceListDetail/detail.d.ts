@@ -3,7 +3,7 @@ import {
 	middlewareDetailProps,
 	storageProps
 } from '@/types/comment';
-import { globalVarProps } from '@/types';
+import { globalVarProps, paramReduxProps } from '@/types';
 export interface aclEditProps {
 	visible: boolean;
 	onCancel: (value: boolean) => void;
@@ -48,8 +48,10 @@ export interface ConfigItem {
 	pattern: null | string;
 	ranges: string;
 	restart: boolean;
+	topping: null | boolean;
 	value: string;
 	modifiedValue: string;
+	updateTime: string;
 }
 export interface ConfigSendData {
 	url: {
@@ -524,4 +526,23 @@ export interface CreateServeAlarmProps {
 	type: string;
 	alarmType: string;
 	ruleId: string;
+}
+
+export interface EditParamTemplateProps {
+	param: paramReduxProps;
+	setParamTemplateBasic: (value: BasicProps) => void;
+	setParamTemplateConfig: (value: ConfigItem[]) => void;
+	setParamTemplateBasicClear: () => void;
+	setParamTemplateConfigClear: () => void;
+}
+export interface ParamterItem {
+	defaultValue: string;
+	modifiedValue: string;
+	description: string;
+	name: string;
+	paramType: null | any;
+	pattern: null | any;
+	ranges: string;
+	restart: boolean;
+	value: null | any;
 }

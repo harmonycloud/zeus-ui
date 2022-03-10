@@ -41,6 +41,7 @@ import GuidePage from '@/pages/GuidePage';
 import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
 import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
+import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 
 const Routes = withRouter((props) => {
 	return (
@@ -141,7 +142,7 @@ const Routes = withRouter((props) => {
 				/>
 				<Route
 					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion"
-					component={ParamterEdit}
+					component={EditParamTemplate}
 					exact
 				/>
 				<Route

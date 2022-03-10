@@ -50,20 +50,42 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				>
 					新建
 				</Button>
-
-				<Button
-					onClick={() => {
-						const sendData = {
-							type,
-							uids: selectedRowKeys.join(',')
-						};
-						deleteTemp(sendData);
-					}}
-					type="primary"
-					warning
-				>
-					删除
-				</Button>
+				{selectedRowKeys.length > 0 && (
+					<Button
+						onClick={() => {
+							console.log('click');
+						}}
+						type="secondary"
+						disabled={selectedRowKeys.length !== 2}
+					>
+						对比
+					</Button>
+				)}
+				{selectedRowKeys.length > 0 && (
+					<Button
+						onClick={() => {
+							const sendData = {
+								type,
+								uids: selectedRowKeys.join(',')
+							};
+							deleteTemp(sendData);
+						}}
+						type="primary"
+						warning
+					>
+						删除
+					</Button>
+				)}
+				{selectedRowKeys.length > 0 && (
+					<Button
+						type="normal"
+						onClick={() => {
+							setSelectedRowKeys([]);
+						}}
+					>
+						取消
+					</Button>
+				)}
 			</>
 		)
 	};
@@ -94,6 +116,17 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
 						);
 					}}
+					disabled={selectedRowKeys.length > 0}
+				>
+					使用
+				</LinkButton>
+				<LinkButton
+					onClick={() => {
+						history.push(
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
+						);
+					}}
+					disabled={selectedRowKeys.length > 0}
 				>
 					编辑
 				</LinkButton>
@@ -105,6 +138,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 						};
 						deleteTemp(sendData);
 					}}
+					disabled={selectedRowKeys.length > 0}
 				>
 					删除
 				</LinkButton>
@@ -139,6 +173,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 		>
 			<Table.Column title="模板名称" dataIndex="name" width={160} />
 			<Table.Column title="模板描述" dataIndex="description" />
+			<Table.Column title="创建时间" dataIndex="createTime" />
 			<Table.Column
 				title="操作"
 				dataIndex="action"
