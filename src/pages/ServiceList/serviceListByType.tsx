@@ -610,26 +610,26 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={!record.managePlatform}
+					disabled={!record.managePlatform || record.managePlatformAddress === ''}
 					onClick={() => {
-						if (record.managePlatformAddress === '') {
-							Message.show(
-								messageConfig(
-									'error',
-									'失败',
-									`请先到服务暴露中，暴露${record.name}的${
-										record.name
-									}${
-										record.type === 'elasticsearch'
-											? '-kibana'
-											: record.type === 'kafka'
-											? '-manager-svc'
-											: '-console-svc'
-									}服务。`
-								)
-							);
-							return;
-						}
+						// if (record.managePlatformAddress === '') {
+						// 	Message.show(
+						// 		messageConfig(
+						// 			'error',
+						// 			'失败',
+						// 			`请先到服务暴露中，暴露${record.name}的${
+						// 				record.name
+						// 			}${
+						// 				record.type === 'elasticsearch'
+						// 					? '-kibana'
+						// 					: record.type === 'kafka'
+						// 					? '-manager-svc'
+						// 					: '-console-svc'
+						// 			}服务。`
+						// 		)
+						// 	);
+						// 	return;
+						// }
 						window.open(
 							`${window.location.protocol.toLowerCase()}//${
 								record.managePlatformAddress as string
@@ -640,9 +640,19 @@ const ServiceListByType = (props: serviceListProps) => {
 				>
 					<span
 						title={
-							!record.managePlatform
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '服务控制台'
+							record.managePlatform
+								? record.managePlatformAddress === ''
+									? `请先到服务暴露中，暴露${record.name}的${
+											record.name
+									  }${
+											record.type === 'elasticsearch'
+												? '-kibana'
+												: record.type === 'kafka'
+												? '-manager-svc'
+												: '-console-svc'
+									  }服务。`
+									: '服务控制台'
+								: '该中间件发布的服务组件暂不支持该功能'
 						}
 					>
 						服务控制台
