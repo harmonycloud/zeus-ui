@@ -809,12 +809,19 @@ const ServiceListByType = (props: serviceListProps) => {
 						}}
 					>
 						<div
+							title={record?.mysqlDTO?.relationName || '--'}
 							className="name-link text-overflow"
 							onClick={() => toDetail(record)}
 						>
 							{record?.mysqlDTO?.relationName || '--'}
 						</div>
-						<div className="text-overflow">
+						<div
+							title={
+								record?.mysqlDTO?.relationAliasName ||
+								record?.mysqlDTO?.relationName
+							}
+							className="text-overflow"
+						>
 							{record?.mysqlDTO?.relationAliasName ||
 								record?.mysqlDTO?.relationName}
 						</div>
@@ -829,10 +836,18 @@ const ServiceListByType = (props: serviceListProps) => {
 		if (record.status === 'Deleted') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
-					<div className="displayed-name text-overflow">
+					<div
+						title={record.name}
+						className="displayed-name text-overflow"
+					>
 						{record.name}
 					</div>
-					<div className="text-overflow">{record.aliasName}</div>
+					<div
+						title={record.aliasName || ''}
+						className="text-overflow"
+					>
+						{record.aliasName}
+					</div>
 				</div>
 			);
 		}
@@ -886,10 +901,16 @@ const ServiceListByType = (props: serviceListProps) => {
 								`/serviceList/${name}/${aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}`
 							);
 						}}
+						title={record.name}
 					>
 						{record.name}
 					</div>
-					<div className="text-overflow">{record.aliasName}</div>
+					<div
+						title={record.aliasName || ''}
+						className="text-overflow"
+					>
+						{record.aliasName}
+					</div>
 				</div>
 			</div>
 		);
