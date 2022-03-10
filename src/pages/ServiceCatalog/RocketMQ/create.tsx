@@ -130,7 +130,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		},
 		{
 			label: 'DLedger模式',
-			value: 'DLedger'
+			value: 'dledger'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -203,9 +203,12 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					rocketMQParam: {
 						acl: {
 							enable: aclCheck
-						}
+						},
 					}
 				};
+				if(mode === 'dledger'){
+					sendData.rocketMQParam.replicas = replicaCount;
+				}
 				// * 动态表单相关
 				if (customForm) {
 					const dynamicValues = {};
@@ -976,7 +979,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										<div
 											style={{
 												display:
-													mode === 'DLedger'
+													mode === 'dledger'
 														? 'block'
 														: 'none'
 											}}

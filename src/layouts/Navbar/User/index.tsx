@@ -56,7 +56,7 @@ function User(props: userProps): JSX.Element {
 						}
 					>
 						<CustomIcon type="icon-gexinghua" size={15} />
-						<span style={{ marginLeft: '5px' }}>个性化</span>
+						<span style={{ marginLeft: '5px' }}>平台管理</span>
 					</li>
 				)}
 				<li

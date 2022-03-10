@@ -4,6 +4,7 @@ import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
+
 import moment from 'moment';
 
 import Table from '@/components/MidTable';
@@ -17,6 +18,7 @@ import {
 import messageConfig from '@/components/messageConfig';
 import { middlewareRepositoryProps, paramsProps } from './middleware';
 import { setMenuRefresh } from '@/redux/menu/menu';
+import { getMiddlewareRepository } from '@/services/repository';
 
 import { middlewareProps } from './middleware';
 import { iconTypeRender } from '@/utils/utils';
@@ -26,7 +28,7 @@ import './index.scss';
 
 function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	const {
-		globalVar: { cluster },
+		globalVar: { cluster, namespace },
 		setMenuRefresh
 	} = props;
 	const params: paramsProps = useParams();
@@ -54,6 +56,10 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 		};
 	}, [props]);
 	const getData = () => {
+		getMiddlewareRepository({
+			clusterId: cluster.id,
+			namespace: namespace.name
+		});
 		getTypeVersion({
 			clusterId: cluster.id,
 			type: params.type
