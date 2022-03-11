@@ -139,6 +139,33 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
 }
+export interface KafkaDTO {
+	custom?: boolean;
+	path: string;
+	zkAddress: string;
+	zkPort: string | number;
+}
+export interface KafkaCreateValuesParams extends CreateValuesParams {
+	kafkaDTO: KafkaDTO;
+}
+export interface KafkaSendDataParams extends CommonSendDataParams {
+	clusterId: string;
+	namespace: string;
+	name: string;
+	aliasName: string;
+	dynamicValues?: any;
+	nodeAffinity?: AffinityItem[];
+	tolerations?: string[];
+	kafkaDTO: KafkaDTO;
+	quota: {
+		kafka: {
+			cpu?: number;
+			memory?: string;
+			storageClassName?: string;
+			storageClassQuota?: string;
+		};
+	};
+}
 export interface NodeModifyParams {
 	nodeName: string;
 	flag: boolean;

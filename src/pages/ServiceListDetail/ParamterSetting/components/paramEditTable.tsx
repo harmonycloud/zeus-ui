@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Search } from '@alicloud/console-components';
+import {
+	Table,
+	Button,
+	Search,
+	Form,
+	Input,
+	Select
+} from '@alicloud/console-components';
 import {
 	setParamTemplateConfig,
 	setParamTemplateConfigClear
@@ -10,6 +17,9 @@ import { questionTooltipRender, tooltipRender } from '@/utils/utils';
 import { ConfigItem, ParamterItem } from '../../detail';
 import { paramReduxProps, StoreState } from '@/types';
 import HeaderLayout from '@/components/HeaderLayout';
+
+const { Option } = Select;
+const FormItem = Form.Item;
 interface ParamEditTableProps {
 	param: paramReduxProps;
 	setParamTemplateConfig: (value: ConfigItem[]) => void;
@@ -49,10 +59,96 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		index: number,
 		record: ConfigItem
 	) => {
+		let selectList: string[] = [];
+		const defaultSelects: string[] = [];
+		if (
+			record.paramType === 'select' ||
+			record.paramType === 'multiSelect'
+		) {
+			const selects = record.ranges.substring(
+				2,
+				record.ranges.length - 2
+			);
+			const listTemp = selects.split('|');
+			selectList = listTemp;
+		}
 		if (editFlag) {
-			console.log('edit');
+			console.log(record);
+			switch (record.paramType) {
+				case 'input':
+					return (
+						<FormItem
+							pattern={record.pattern}
+							patternMessage="输入的值不在参数范围中。"
+						>
+							<Input
+								name={record.name}
+								placeholder="请输入"
+								defaultValue={record.modifiedValue}
+							/>
+						</FormItem>
+					);
+				case 'select':
+					return (
+						<FormItem>
+							<Select
+								name={record.name}
+								defaultValue={record.modifiedValue}
+							>
+								{selectList &&
+									selectList.map((item) => {
+										return (
+											<Option key={item} value={item}>
+												{item}
+											</Option>
+										);
+									})}
+							</Select>
+						</FormItem>
+					);
+				case 'multiSelect':
+					return (
+						<FormItem>
+							<Select
+								name={record.name}
+								defaultValue={defaultSelects}
+								mode="multiple"
+							>
+								{selectList &&
+									selectList.map((item) => {
+										return (
+											<Option key={item} value={item}>
+												{item}
+											</Option>
+										);
+									})}
+							</Select>
+						</FormItem>
+					);
+				default:
+					return (
+						<FormItem
+							pattern={record.pattern}
+							patternMessage="输入的值不在参数范围中。"
+						>
+							<Input
+								name={record.name}
+								placeholder="请输入"
+								defaultValue={record.modifiedValue}
+							/>
+						</FormItem>
+					);
+			}
 		} else {
-			return value;
+			const flag = record.value != record.modifiedValue;
+			return (
+				<span
+					title={value}
+					className={flag ? 'updated-value' : 'before-update'}
+				>
+					{value}
+				</span>
+			);
 		}
 	};
 
