@@ -213,6 +213,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 			globalWhiteRemoteAddresses?: string;
 			rocketMQAccountList?: rocketMQAccount[];
 		};
+		replicas?: number;
 	};
 }
 export interface RMQCreateValuesParams extends CreateValuesParams {

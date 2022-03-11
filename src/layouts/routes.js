@@ -32,7 +32,7 @@ import AddResourcePool from '@/pages/ResourcePoolManagement/addResourcePool';
 import AddForm from '@/pages/ResourcePoolManagement/addForm';
 import MidTerminal from '@/components/MidTerminal';
 import ServiceListByType from '@/pages/ServiceList/serviceListByType';
-import Personlization from '@/pages/Personalization/index';
+import Personlization from '@/pages/PlatformManagement/index';
 import ServiceVersion from '@/pages/ServiceList/serviceVersion';
 import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';

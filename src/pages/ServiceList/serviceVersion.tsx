@@ -25,7 +25,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		globalVar: { cluster, namespace }
 	} = props;
 	const params: paramsProps = useParams();
-	const { middlewareName, type, aliasName } = params;
+	const { name, middlewareName, type, aliasName } = params;
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -139,6 +139,23 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					</LinkButton>
 				) : null}
 			</Actions>
+		);
+	};
+	const nameRender = (value: string, index: number, record: any) => {
+		return (
+			<div style={{ maxWidth: '160px' }}>
+				<div
+					className="name-link text-overflow"
+					onClick={() =>
+						history.push(
+							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${record.chartVersion}`
+						)
+					}
+				>
+					{middlewareName}
+				</div>
+				<div className="text-overflow">{middlewareName}</div>
+			</div>
 		);
 	};
 	const installUpdate = (index: number, record: middlewareProps) => {
@@ -364,12 +381,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						<Table.Column
 							title="服务名称/中文名称"
 							dataIndex="chartName"
-							cell={
-								<div>
-									<p>{middlewareName}</p>
-									<p>{aliasName}</p>
-								</div>
-							}
+							cell={nameRender}
 						/>
 						<Table.Column
 							title="类型"

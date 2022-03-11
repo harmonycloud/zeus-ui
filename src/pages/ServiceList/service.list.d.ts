@@ -89,6 +89,7 @@ export interface versionProps {
 	globalVar: globalVarProps;
 }
 export interface paramsProps {
+	name: string;
 	type: string;
 	middlewareName: string;
 	aliasName: string;
