@@ -218,6 +218,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				kafkaDTO: kfkDTO,
 				quota: {
 					kafka: {
+						num: customCluster,
 						storageClassName: values.storageClass,
 						storageClassQuota: values.storageQuota
 					}

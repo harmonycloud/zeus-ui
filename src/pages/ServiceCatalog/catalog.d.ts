@@ -159,6 +159,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	kafkaDTO: KafkaDTO;
 	quota: {
 		kafka: {
+			num?: number;
 			cpu?: number;
 			memory?: string;
 			storageClassName?: string;
