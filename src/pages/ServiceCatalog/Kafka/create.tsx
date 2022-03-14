@@ -108,7 +108,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
 		path: '',
 		zkAddress: '',
-		zkPort: ''
+		zkPort: 0
 	});
 	// * Kafka配置-end
 	// * 规格配置 -start
