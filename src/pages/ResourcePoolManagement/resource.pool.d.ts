@@ -82,3 +82,10 @@ export interface IngressItemProps {
 	createTime: string | null;
 	seconds: number;
 }
+
+export interface MirrorParams {
+	clusterId: string;
+	namespace: string;
+	keyword?: string;
+	id?: number | number;
+}

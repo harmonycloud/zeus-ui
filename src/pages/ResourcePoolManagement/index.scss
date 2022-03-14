@@ -1,4 +1,4 @@
-.resource-pool-content{
+.resource-pool-content {
 	width: 361px;
 	height: 120px;
 	// border: 1px dashed #888888;
@@ -14,7 +14,6 @@
 		margin-left: 37px;
 	}
 	i {
-
 		align-self: flex-end;
 	}
 	div {
@@ -24,17 +23,17 @@
 		font-size: $font-h1;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: $font-weight;
-		color: #40454A;
+		color: #40454a;
 		line-height: $line-height * 2;
 		margin-left: 40px;
 	}
 }
-.second-form-content{
-	background: #F1F1F2;
+.second-form-content {
+	background: #f1f1f2;
 	padding: 16px 24px;
 	margin-bottom: 16px;
 }
-.upload-parse-file{
+.upload-parse-file {
 	width: 100px;
 	height: 32px;
 	background-color: $primary-color;
@@ -47,7 +46,7 @@
 	right: -120px;
 	bottom: 24px;
 }
-#my-upload-parse{
+#my-upload-parse {
 	width: 100px;
 	height: 32px;
 	opacity: 0;
@@ -56,17 +55,17 @@
 	bottom: 0px;
 	cursor: pointer;
 }
-.upload-position{
+.upload-position {
 	position: relative;
 }
-.cpu-content{
+.cpu-content {
 	display: flex;
 	position: relative;
-	.cpu-content-line{
+	.cpu-content-line {
 		width: 48px;
 		height: 16px;
 		margin-right: 12px;
-		background-color: #F4F6FB;
+		background-color: #f4f6fb;
 	}
 	img {
 		position: absolute;
@@ -75,7 +74,7 @@
 }
 
 // * 资源池详情
-.resource-pool-info{
+.resource-pool-info {
 	margin-top: 16px;
 	margin-bottom: 0;
 	border: none;
@@ -123,12 +122,12 @@
 // 		}
 // 	}
 // }
-.resource-pool-gauge-content{
+.resource-pool-gauge-content {
 	width: 100%;
 	height: 100%;
 	margin-top: 16px;
 	display: flex;
-	.resource-pool-gauge-item{
+	.resource-pool-gauge-item {
 		width: 100%;
 		height: 140px;
 		display: flex;
@@ -138,7 +137,7 @@
 		&:nth-child(1) {
 			margin-right: $margin;
 		}
-		.resource-pool-gauge-info{
+		.resource-pool-gauge-info {
 			width: 360px;
 			font-size: $font-size;
 			font-family: PingFangSC-Regular, PingFang SC;
@@ -148,25 +147,25 @@
 		}
 	}
 }
-.resource-pool-table-content{
+.resource-pool-table-content {
 	width: 100%;
 	height: 100%;
 	margin: $margin * 2 0;
-	.resource-pool-table-header{
+	.resource-pool-table-header {
 		display: flex;
 		justify-content: space-between;
 	}
-	.resource-pool-table-content{
+	.resource-pool-table-content {
 		margin-top: 8px;
 		width: 100%;
 	}
 }
 .batch-install-title-content,
-.node-title-content{
+.node-title-content {
 	display: flex !important;
 	align-items: center;
 	.batch-install-name,
-	.node-title-name{
+	.node-title-name {
 		font-size: $font-h2;
 		font-weight: $font-weight;
 		color: $text-color-title;
@@ -176,19 +175,19 @@
 		margin: 8px 0;
 	}
 }
-.delete-disabled{
-	color: #CCCCCC;
+.delete-disabled {
+	color: #cccccc;
 }
 .error-text {
-	color: #C80000;
+	color: #c80000;
 	font-size: $font-size;
 }
-.quick-model-content{
+.quick-model-content {
 	width: 100%;
 	min-height: 182px;
-	background: #F5F5F5;
+	background: #f5f5f5;
 	padding: 16px;
-	.quick-model-title{
+	.quick-model-title {
 		height: 22px;
 		font-size: $font-size;
 		font-family: PingFangSC-Regular, PingFang SC;
@@ -196,29 +195,29 @@
 		color: $text-color-title;
 		line-height: 22px;
 	}
-	.quick-model-text{
+	.quick-model-text {
 		width: calc(100% - 46px);
 		margin-top: 16px;
 		min-height: 113px;
 		background: #272822;
 		padding: 24px;
-		word-wrap:break-word;
+		word-wrap: break-word;
 	}
-	.quick-model-copy{
+	.quick-model-copy {
 		margin-top: 16px;
 		width: 46px;
 		min-height: 113px;
-		background: #0064C8;
+		background: #0064c8;
 	}
 }
-.component-plugging-content{
+.component-plugging-content {
 	display: flex;
 	flex-wrap: wrap;
 }
-.batch-install-component-item{
+.batch-install-component-item {
 	width: 667px;
 	height: 72px;
-	border-bottom: 1px solid #EBEBEB;
+	border-bottom: 1px solid #ebebeb;
 	display: flex;
 	align-items: center;
 	margin-bottom: 1px;
@@ -226,25 +225,25 @@
 	label {
 		margin-bottom: 8px;
 	}
-	.batch-install-component-title{
+	.batch-install-component-title {
 		display: flex;
 		width: 250px;
-		.batch-install-component-title-icon{
+		.batch-install-component-title-icon {
 			width: 40px;
 			height: 40px;
 			border-radius: $border-radius-lg;
 			text-align: center;
 			padding-top: 4.5px;
-			&.operator{
+			&.operator {
 				border: 1px solid #e7e9de;
 			}
 		}
-		.batch-install-component-title-info{
+		.batch-install-component-title-info {
 			margin-left: 8px;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
-			.batch-install-component-title-name{
+			.batch-install-component-title-name {
 				height: 22px;
 				font-size: $font-h2;
 				font-family: PingFangSC-Medium, PingFang SC;
@@ -252,7 +251,7 @@
 				color: $text-color-title;
 				line-height: 22px;
 			}
-			.batch-install-component-status-tag{
+			.batch-install-component-status-tag {
 				width: 52px;
 				height: 16px;
 				border-radius: $border-radius-xxl;
@@ -264,7 +263,41 @@
 		}
 	}
 }
-.ingresses-content{
+.ingresses-content {
 	display: flex;
 	flex-wrap: wrap;
+}
+.display-form {
+	display: flex;
+	width: 100%;
+	flex: 1 1;
+	.label {
+		width: 25%;
+		height: 32px;
+		line-height: 32px;
+		margin-right: 16px;
+		font-size: 12px;
+		color: #555555;
+		&::before {
+			margin-right: 4px;
+			content: '*';
+			color: #c80000;
+			color: var(--form-error-color, #c80000);
+		}
+		vertical-align: top;
+	}
+	.next-form-item {
+		margin-left: 8px;
+		&:first-of-type {
+			margin-left: 0;
+		}
+	}
+	&.user {
+		.label{
+			margin-right: 0;
+		}
+		.next-form-item {
+			width: calc((75% - 8px) / 2);
+		}
+	}
 }

@@ -101,3 +101,19 @@ export const sendInsertUser = (params: any) => {
 export const insertDing = (params: any) => {
 	return Axios.json(USER.insertDing, params, {}, 'POST');
 };
+// * LDAP 连接测试
+export const checkLDAP = (params: any) => {
+	return Axios.json(USER.connectionCheck, params, {}, 'POST');
+};
+// * 开启LDAP
+export const enableLDAP = (params: any) => {
+	return Axios.json(USER.enable, params, {}, 'POST');
+};
+// * 查询LDAP信息
+export const getLDAP = () => {
+	return Axios.get(USER.detail);
+};
+// * 关闭LDAP
+export const disableLDAP = () => {
+	return Axios.put(USER.disable);
+};
