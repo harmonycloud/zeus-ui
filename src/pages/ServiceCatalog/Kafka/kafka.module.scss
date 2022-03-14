@@ -122,3 +122,10 @@
 		cursor: pointer;
 	}
 }
+.zeus-zk-service {
+	.zeus-zk-address,
+	.zeus-zk-port,
+	.zeus-zk-path {
+		margin-right: 8px;
+	}
+}

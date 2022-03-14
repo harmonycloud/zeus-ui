@@ -3,7 +3,7 @@ interface patternProps {
 }
 
 const pattern: patternProps = {
-	name: '^[a-z][a-z0-9-]{0,28}[a-z0-9]$',
+	name: '^[a-z][a-z0-9-]{0,22}[a-z0-9]$',
 	labels: '^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+([,][a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+)*$',
 	path: '^/$|^(/[A-Za-z0-9]+([-_.][A-Za-z0-9]+)*)+$',
 	domain: '[a-z0-9]([-a-z0-9]*[a-z0-9])?(.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*',

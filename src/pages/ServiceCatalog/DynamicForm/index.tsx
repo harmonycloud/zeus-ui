@@ -285,12 +285,12 @@ function DynamicForm(props: CreateProps): JSX.Element {
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-30个字符"
+											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
 										>
 											<Input
 												style={{ width: '390px' }}
 												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-30个字符"
+												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
 												trim
 											/>
 										</FormItem>

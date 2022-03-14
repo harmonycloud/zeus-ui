@@ -203,10 +203,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					rocketMQParam: {
 						acl: {
 							enable: aclCheck
-						},
+						}
 					}
 				};
-				if(mode === 'dledger'){
+				if (mode === 'dledger') {
 					sendData.rocketMQParam.replicas = replicaCount;
 				}
 				// * 动态表单相关
@@ -421,11 +421,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-30个字符"
+											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
 										>
 											<Input
 												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-30个字符"
+												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
 												trim
 											/>
 										</FormItem>
@@ -960,10 +960,18 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											}
 											closable={false}
 										>
-											<p>双主：主实例宕机期间，未被消费的信息在机器未恢复之前不可消费</p>
-											<p>双主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例</p>
-											<p>三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例</p>
-											<p>多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费</p>
+											<p>
+												双主：主实例宕机期间，未被消费的信息在机器未恢复之前不可消费
+											</p>
+											<p>
+												双主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
+											</p>
+											<p>
+												三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
+											</p>
+											<p>
+												多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费
+											</p>
 										</Balloon>
 									</label>
 									<div
@@ -984,9 +992,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														: 'none'
 											}}
 										>
-											<label
-												style={{ margin: '0 16px' }}
-											>
+											<label style={{ margin: '0 16px' }}>
 												自定义集群实例数量
 											</label>
 											<NumberPicker

@@ -25,29 +25,34 @@ import TableRadio from '../components/TableRadio';
 import {
 	getNodePort,
 	getNodeTaint,
+	getStorageClass,
 	postMiddleware
 } from '@/services/middleware';
+import { getAspectFrom } from '@/services/common';
 
 import {
 	AffinityLabelsItem,
 	AffinityProps,
 	CreateParams,
 	CreateProps,
+	KafkaCreateValuesParams,
+	KafkaDTO,
+	KafkaSendDataParams,
 	TolerationsProps
 } from '../catalog';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
 import { StorageClassProps } from '@/types/comment';
 import { StoreState } from '@/types';
 import { formItemLayout614, instanceSpecList } from '@/utils/const';
-import { childrenRender } from '@/utils/utils';
+import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
+import messageConfig from '@/components/messageConfig';
 
 import styles from './kafka.module.scss';
-import messageConfig from '@/components/messageConfig';
-import { getAspectFrom } from '@/services/common';
 
 const { AutoComplete } = Select;
 const FormItem = Form.Item;
+
 function KafkaCreate(props: CreateProps): JSX.Element {
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
@@ -100,7 +105,11 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			value: '2.6.0'
 		}
 	];
-	// todo zookeeper服务
+	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
+		path: '',
+		zkAddress: '',
+		zkPort: ''
+	});
 	// * Kafka配置-end
 	// * 规格配置 -start
 	const [mode, setMode] = useState<string>('cluster');
@@ -172,14 +181,122 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			});
 		}
 	}, [globalCluster]);
+	// 全局分区更新
+	useEffect(() => {
+		getStorageClass({
+			clusterId: globalCluster.id,
+			namespace: globalNamespace.name
+		}).then((res) => {
+			if (res.success) {
+				setStorageClassList(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	}, [globalNamespace]);
 	// * 表单提交
 	const handleSubmit = () => {
 		console.log('submit');
 		field.validate((err) => {
-			const values = field.getValues();
+			const values: KafkaCreateValuesParams = field.getValues();
 			if (err) return;
-			const sendData = {};
-			// todo kafka sendData的数据拼接
+			const sendData: KafkaSendDataParams = {
+				chartName,
+				chartVersion,
+				clusterId: globalCluster.id,
+				namespace: globalNamespace.name,
+				type: 'kafka',
+				name: values.name,
+				aliasName: values.aliasName,
+				labels: values.labels,
+				annotations: values.annotations,
+				description: values.description,
+				version: version,
+				mode,
+				filelogEnabled: fileLog,
+				stdoutEnabled: standardLog,
+				kafkaDTO: kfkDTO,
+				quota: {
+					kafka: {
+						num: customCluster,
+						storageClassName: values.storageClass,
+						storageClassQuota: values.storageQuota
+					}
+				}
+			};
+			// * 动态表单相关
+			if (customForm) {
+				const dynamicValues = {};
+				let keys: string[] = [];
+				for (const i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					dynamicValues[item] = values[item];
+				});
+				sendData.dynamicValues = dynamicValues;
+			}
+			// * 主机亲和
+			if (affinity.flag) {
+				if (!affinityLabels.length) {
+					Message.show(
+						messageConfig('error', '错误', '请选择主机亲和。')
+					);
+					return;
+				} else {
+					sendData.nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: affinity.checked,
+							namespace: globalNamespace.name
+						};
+					});
+				}
+			}
+			// * 主机容忍
+			if (tolerations.flag) {
+				if (!tolerationsLabels.length) {
+					Message.show(
+						messageConfig('error', '错误', '请选择主机容忍。')
+					);
+					return;
+				} else {
+					sendData.tolerations = tolerationsLabels.map(
+						(item) => item.label
+					);
+				}
+			}
+			// * 配额
+			if (instanceSpec === 'General') {
+				switch (specId) {
+					case '1':
+						sendData.quota.kafka.cpu = 1;
+						sendData.quota.kafka.memory = '2Gi';
+						break;
+					case '2':
+						sendData.quota.kafka.cpu = 2;
+						sendData.quota.kafka.memory = '4Gi';
+						break;
+					case '3':
+						sendData.quota.kafka.cpu = 4;
+						sendData.quota.kafka.memory = '16Gi';
+						break;
+					case '4':
+						sendData.quota.kafka.cpu = 8;
+						sendData.quota.kafka.memory = '32Gi';
+						break;
+					case '5':
+						sendData.quota.kafka.cpu = 16;
+						sendData.quota.kafka.memory = '64Gi';
+						break;
+					default:
+						break;
+				}
+			} else if (instanceSpec === 'Customize') {
+				sendData.quota.kafka.cpu = values.cpu;
+				sendData.quota.kafka.memory = values.memory + 'Gi';
+			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -276,11 +393,11 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-30个字符"
+											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
 										>
 											<Input
 												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-30个字符"
+												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
 												trim
 											/>
 										</FormItem>
@@ -766,7 +883,46 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											Zookeeper服务
 										</span>
 									</label>
-									<div></div>
+									<div
+										className={`form-content display-flex ${styles['zeus-zk-service']}`}
+									>
+										<Input
+											className={
+												styles['zeus-zk-address']
+											}
+											placeholder="请输入服务地址"
+											value={kfkDTO.zkAddress}
+											onChange={(value: string) =>
+												setKfkDTO({
+													...kfkDTO,
+													zkAddress: value
+												})
+											}
+										/>
+										<NumberPicker
+											className={styles['zeus-zk-port']}
+											style={{ width: '135px' }}
+											value={kfkDTO.zkPort}
+											placeholder="请输入服务端口"
+											onChange={(value: number) =>
+												setKfkDTO({
+													...kfkDTO,
+													zkPort: value
+												})
+											}
+										/>
+										<Input
+											className={styles['zeus-zk-path']}
+											value={kfkDTO.path}
+											placeholder="请输入服务路径"
+											onChange={(value: string) =>
+												setKfkDTO({
+													...kfkDTO,
+													path: value
+												})
+											}
+										/>
+									</div>
 								</li>
 							</ul>
 						</div>
@@ -776,7 +932,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>模式</span>
+										<span style={{ marginRight: 8 }}>
+											模式
+										</span>
 										<Balloon
 											trigger={
 												<Icon
