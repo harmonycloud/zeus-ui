@@ -465,11 +465,17 @@ function Visualization(props) {
 										? cfg.resources.isLvmStorage
 											? 'LVM'
 											: '其他'
+										: cfg.storageClassName.length >= 20
+										? cfg.storageClassName.substring(
+												0,
+												20
+										  ) + '...'
 										: cfg.storageClassName
 								}`,
 								x: 16,
 								y: 57,
-								fill: '#999'
+								fill: '#999',
+								cursor: 'pointer'
 							},
 							name: 'text-shape3'
 						});
@@ -839,44 +845,42 @@ function Visualization(props) {
 							},
 							name: 'breath'
 						});
-						// group.addShape('rect', {
-						// 	attrs: {
-						// 		width: 420,
-						// 		height: 30,
-						// 		x: -90,
-						// 		y: -40,
-						// 		stroke: '#aaa',
-						// 		fill: '#fff',
-						// 		cursor: 'pointer'
-						// 	},
-						// 	name: 'breath-box',
-						// 	visible: false
-						// });
-						// group.addShape('text', {
-						// 	attrs: {
-						// 		text: '当存储、CPU、内存任何一个指标使用率过高时，都将爆红，请您重点关注',
-						// 		x: 120,
-						// 		y: -25,
-						// 		textAlign: 'center',
-						// 		textBaseline: 'middle',
-						// 		fill: '#000',
-						// 		cursor: 'pointer'
-						// 	},
-						// 	name: 'breath-text',
-						// 	visible: false
-						// });
-						// group.addShape('polygon', {
-						// 	attrs: {
-						// 		points: [
-						// 			[130, 0],
-						// 			[120, -10],
-						// 			[140, -10]
-						// 		],
-						// 		fill: '#fff',
-						// 		stroke: '#aaa'
-						// 	},
-						// 	name: 'breath-info'
-						// });
+						let breathWidth = 200;
+						if (cfg.storageClassName) {
+							breathWidth = cfg.storageClassName.length * 8;
+						}
+						group.addShape('rect', {
+							attrs: {
+								width: !cfg.depth ? breathWidth >= 250 ? breathWidth : 250 : 120,
+								height: 20,
+								x: 16,
+								y: 22,
+								stroke: '#ccc',
+								radius: 5,
+								fill: '#fff',
+								cursor: 'pointer'
+							},
+							name: 'breath-box',
+							visible: false
+						});
+						group.addShape('text', {
+							attrs: {
+								text: `存储类型：${
+									cfg.depth
+										? cfg.resources.isLvmStorage
+											? 'LVM'
+											: '其他'
+										: cfg.storageClassName
+								}`,
+								x: 24,
+								y: 32,
+								textBaseline: 'middle',
+								fill: '#999',
+								cursor: 'pointer'
+							},
+							name: 'breath-text',
+							visible: false
+						});
 						return box;
 					}
 				}
@@ -1464,30 +1468,32 @@ function Visualization(props) {
 			control.attr({ img: ControlHover });
 		});
 
-		// graph.on('breath:mouseover', (evt) => {
-		// 	const { item } = evt;
-		// 	const group = item.getContainer();
-		// 	const breathBox = group.find((e) => e.get('name') === 'breath-box');
-		// 	const breathText = group.find(
-		// 		(e) => e.get('name') === 'breath-text'
-		// 	);
-		// 	if (setBackupObj) return;
-		// 	breathBox.cfg.visible = true;
-		// 	breathText.cfg.visible = true;
-		// 	graph.refresh();
-		// });
-		// graph.on('breath:mouseleave', (evt) => {
-		// 	const { item } = evt;
-		// 	const group = item.getContainer();
-		// 	const breathBox = group.find((e) => e.get('name') === 'breath-box');
-		// 	const breathText = group.find(
-		// 		(e) => e.get('name') === 'breath-text'
-		// 	);
-		// 	if (setBackupObj) return;
-		// 	breathBox.cfg.visible = false;
-		// 	breathText.cfg.visible = false;
-		// 	graph.refresh();
-		// });
+		graph.on('text-shape3:mouseover', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const breathBox = group.find((e) => e.get('name') === 'breath-box');
+			const breathText = group.find(
+				(e) => e.get('name') === 'breath-text'
+			);
+			if (setBackupObj) return;
+			breathBox.cfg.visible = true;
+			breathText.cfg.visible = true;
+			item.toFront();
+			item.refresh();
+		});
+		graph.on('text-shape3:mouseleave', (evt) => {
+			const { item } = evt;
+			const group = item.getContainer();
+			const breathBox = group.find((e) => e.get('name') === 'breath-box');
+			const breathText = group.find(
+				(e) => e.get('name') === 'breath-text'
+			);
+			if (setBackupObj) return;
+			breathBox.cfg.visible = false;
+			breathText.cfg.visible = false;
+			item.toFront();
+			item.refresh();
+		});
 
 		window.graph = graph;
 	};
