@@ -316,3 +316,13 @@ export const protocolFilter = [
 	{ label: 'HTTP', value: 'HTTP' },
 	{ label: 'TCP', value: 'TCP' }
 ];
+export const address = [
+	{
+		key: 'https',
+		value: 'https'
+	},
+	{
+		key: 'http',
+		value: 'http'
+	}
+];
