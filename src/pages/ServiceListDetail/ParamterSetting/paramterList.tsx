@@ -434,105 +434,99 @@ export default function ParamterList(props: ParamterListProps): JSX.Element {
 
 	return (
 		<Page>
-			<Content style={{ padding: '0 0' }}>
-				<HeaderLayout
-					style={{ marginBottom: 8 }}
-					left={
-						<>
-							<Button
-								className="mr-8"
-								type="primary"
-								disabled={submitDisabled}
-								onClick={handleSubmit}
-							>
-								提交修改
-							</Button>
-							<Button
-								className="mr-8"
-								type="primary"
-								disabled={submitDisabled}
-								onClick={handleCancel}
-							>
-								重新编辑
-							</Button>
-							<Button
-								className="mr-8"
-								onClick={() => setVisible(true)}
-							>
-								选择参数模板
-							</Button>
-							<Search
-								onSearch={onSearch}
-								style={{ width: '200px' }}
-								placeholder="请输入搜索内容"
-							/>
-						</>
-					}
-					right={
-						<Checkbox
-							onChange={onChange}
-							checked={checked}
-							label="只显示已编辑参数"
+			{/* <Content style={{ padding: '0 0', margin: '0' }}> */}
+			<HeaderLayout
+				style={{ marginBottom: 8 }}
+				left={
+					<>
+						<Button
+							className="mr-8"
+							type="primary"
+							disabled={submitDisabled}
+							onClick={handleSubmit}
+						>
+							提交修改
+						</Button>
+						<Button
+							className="mr-8"
+							type="primary"
+							disabled={submitDisabled}
+							onClick={handleCancel}
+						>
+							重新编辑
+						</Button>
+						<Button
+							className="mr-8"
+							onClick={() => setVisible(true)}
+						>
+							选择参数模板
+						</Button>
+						<Search
+							onSearch={onSearch}
+							style={{ width: '200px' }}
+							placeholder="请输入搜索内容"
 						/>
+					</>
+				}
+				right={
+					<Checkbox
+						onChange={onChange}
+						checked={checked}
+						label="只显示已编辑参数"
+					/>
+				}
+			/>
+			<Table
+				dataSource={checked ? checkedDataSource : dataSource}
+				hasBorder={false}
+				tableWidth={1270}
+			>
+				<Table.Column
+					title="参数名"
+					dataIndex="name"
+					width={210}
+					cell={(value: string, index: number, record: ConfigItem) =>
+						tooltipRender(value, index, record, 210)
+					}
+					lock="left"
+				/>
+				<Table.Column
+					title="参数默认值"
+					dataIndex="defaultValue"
+					width={210}
+					cell={(value: string, index: number, record: ConfigItem) =>
+						tooltipRender(value, index, record, 210)
 					}
 				/>
-				<Table
-					dataSource={checked ? checkedDataSource : dataSource}
-					hasBorder={false}
-					tableWidth={1270}
-				>
-					<Table.Column
-						title="参数名"
-						dataIndex="name"
-						width={210}
-						cell={(
-							value: string,
-							index: number,
-							record: ConfigItem
-						) => tooltipRender(value, index, record, 210)}
-						lock="left"
-					/>
-					<Table.Column
-						title="参数默认值"
-						dataIndex="defaultValue"
-						width={210}
-						cell={(
-							value: string,
-							index: number,
-							record: ConfigItem
-						) => tooltipRender(value, index, record, 210)}
-					/>
-					<Table.Column
-						title="修改目标值"
-						dataIndex="modifiedValue"
-						cell={valueRender}
-						width={250}
-					/>
-					<Table.Column
-						title="是否重启"
-						dataIndex="restart"
-						cell={isRestartRender}
-						width={100}
-					/>
-					<Table.Column
-						title="参数值范围"
-						dataIndex="ranges"
-						width={350}
-						cell={(
-							value: string,
-							index: number,
-							record: ConfigItem
-						) => tooltipRender(value, index, record, 350)}
-					/>
-					<Table.Column
-						title="参数描述"
-						dataIndex="description"
-						cell={descriptionRender}
-						// {...lock}
-						width={200}
-					/>
-				</Table>
-			</Content>
+				<Table.Column
+					title="修改目标值"
+					dataIndex="modifiedValue"
+					cell={valueRender}
+					width={250}
+				/>
+				<Table.Column
+					title="是否重启"
+					dataIndex="restart"
+					cell={isRestartRender}
+					width={100}
+				/>
+				<Table.Column
+					title="参数值范围"
+					dataIndex="ranges"
+					width={350}
+					cell={(value: string, index: number, record: ConfigItem) =>
+						tooltipRender(value, index, record, 350)
+					}
+				/>
+				<Table.Column
+					title="参数描述"
+					dataIndex="description"
+					cell={descriptionRender}
+					// {...lock}
+					width={200}
+				/>
+			</Table>
+			{/* </Content> */}
 			{visible && (
 				<ParamterTemplateForm
 					visible={visible}

@@ -7,7 +7,11 @@ export default function LoadingPage(props: LoadingPageProps): JSX.Element {
 	const { title, btnText, btnHandle } = props;
 	return (
 		<div className="zeus-result-content">
-			<Icon size="xxxl" type="warning" style={{ color: '#0070cc' }} />
+			<Icon
+				size="xxxl"
+				type="warning"
+				style={{ color: '#0070cc', height: 64 }}
+			/>
 			<p className="zeus-result-title">{title}</p>
 			<div>
 				<Button type="primary" onClick={btnHandle}>

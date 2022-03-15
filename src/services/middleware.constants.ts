@@ -88,3 +88,5 @@ export const valueYamlApi = `${api}/clusters/{clusterId}/namespaces/{namespace}/
 export const dilatationStorage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/storage`;
 // * 查询可发布的中间件信息
 export const getCanReleaseMiddleware = `${api}/middlewares/info/{type}`;
+// * 置顶/取消置顶参数
+export const topConfigParam = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/config/{configName}/top`;

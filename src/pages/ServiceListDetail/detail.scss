@@ -316,6 +316,39 @@
 		margin-right: $margin;
 	}
 }
+.zeus-edit-return-list {
+	text-align: center;
+}
 .zeus-param-edit-table-content {
 	margin-bottom: 16px;
+}
+.zeus-param-display-area-content {
+	width: 442px;
+	height: 140px;
+	background: rgba(245, 245, 245, 0.5);
+	border-radius: 2px;
+	padding: 22px 56px;
+	margin: 24px 0px 20px;
+	.zeus-param-display-info {
+		& li{
+			height: 18px;
+			font-size: $font-size;
+			font-weight: $font-weight-sm;
+			color: $text-color-title;
+			line-height: $line-height-xl;
+			margin-bottom: 16px;
+			display: flex;
+			text-align: left;
+			& label{
+				width: 80px;
+				font-weight: $font-weight-lg;
+			}
+			& span {
+				max-width: 210px;
+				overflow: hidden;
+				white-space:nowrap;
+				text-overflow:ellipsis;
+			}
+		}
+	}
 }

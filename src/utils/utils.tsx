@@ -407,6 +407,13 @@ export const questionTooltipRender = (value: string, index: number) => {
 		</Tooltip>
 	);
 };
+export const defaultValueRender = (value: string) => {
+	return (
+		<div title={value} style={{ width: '100%' }} className="text-overflow">
+			{value}
+		</div>
+	);
+};
 // * 函数复用
 // * 判断两个数组中是否含有相同的元素（简单数组）
 export const judgeArrays: (

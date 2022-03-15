@@ -52,6 +52,7 @@ export interface ConfigItem {
 	value: string;
 	modifiedValue: string;
 	updateTime: string;
+	[propName: string]: string;
 }
 export interface ConfigSendData {
 	url: {
@@ -531,6 +532,7 @@ export interface CreateServeAlarmProps {
 
 export interface EditParamTemplateProps {
 	param: paramReduxProps;
+	globalVar: globalVarProps;
 	setParamTemplateBasic: (value: BasicProps) => void;
 	setParamTemplateConfig: (value: ConfigItem[]) => void;
 	setParamTemplateBasicClear: () => void;

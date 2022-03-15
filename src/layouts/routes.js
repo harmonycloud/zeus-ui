@@ -42,6 +42,8 @@ import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSettin
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
 import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
+import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
+import UseTemplate from '@/pages/ServiceListDetail/ParamterSetting/useTemplate';
 
 const Routes = withRouter((props) => {
 	return (
@@ -140,14 +142,28 @@ const Routes = withRouter((props) => {
 					component={YamlEdit}
 					exact
 				/>
+				{/* 新建模版 */}
 				<Route
 					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion"
 					component={EditParamTemplate}
 					exact
 				/>
+				{/* 模版对比 */}
+				<Route
+					path="/serviceList/:name/:aliasName/paramterSetting/compareTemplate/:type/:chartVersion/:uid1/:uid2/compare"
+					component={CompareParamTemplate}
+					exact
+				/>
+				{/* 编辑模版 */}
 				<Route
 					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName"
-					component={ParamterEdit}
+					component={EditParamTemplate}
+					exact
+				/>
+				{/* 使用模版 */}
+				<Route
+					path="/serviceList/:name/:aliasName/paramterSetting/useTemplate/:middlewareName/:type/:chartVersion/:uid"
+					component={UseTemplate}
 					exact
 				/>
 				{/* 服务暴露 */}

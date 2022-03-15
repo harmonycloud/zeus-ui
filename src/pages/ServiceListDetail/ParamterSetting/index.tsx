@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Content, Menu } from '@alicloud/console-components-page';
 import { useParams } from 'react-router';
-import ParamterList from './paramterList';
+import ParamterList from './paramerListVersiontwo';
 import ParamterHistory from './paramterHistory';
 import ParamterTemplate from './paramterTemplate';
 import ConfigMapEdit from './configMapEdit';
@@ -57,7 +57,7 @@ export default function ParamterSetting(
 						middlewareName={middlewareName}
 						namespace={namespace}
 						type={type}
-						onFreshChange={handleChange}
+						// onFreshChange={handleChange}
 					/>
 				);
 			case 'config':
