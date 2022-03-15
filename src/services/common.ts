@@ -1,5 +1,6 @@
 import Axios from './request';
 import * as COMMON from './common.constants';
+import { MirrorParams } from '@/pages/ResourcePoolManagement/resource.pool';
 
 // * 获取集群列表
 export const getClusters = (params?: any) => {
@@ -63,6 +64,19 @@ export const deleteNamespace = (params: any) => {
 };
 export const regNamespace = (params: any) => {
 	return Axios.put(COMMON.updateNamespace, params);
+};
+// * 镜像仓库
+export const getMirror = (params: MirrorParams) => {
+	return Axios.get(COMMON.mirror, params);
+};
+export const updateMirror = (params: MirrorParams) => {
+	return Axios.json(COMMON.mirror, params, {}, 'PUT');
+};
+export const addMirror = (params: any) => {
+	return Axios.json(COMMON.mirror, params, {}, 'POST');
+};
+export const deleteMirror = (params: MirrorParams) => {
+	return Axios.delete(COMMON.mirror, params);
 };
 // * 平台组件
 export const getComponents = (params: any) => {

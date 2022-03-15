@@ -6,14 +6,12 @@ import {
 	Field,
 	Grid,
 	Message,
-	Icon
+	Icon,
+	Switch,
+	Balloon
 } from '@alicloud/console-components';
 import LDAP from '@/assets/images/LDAP.svg';
-import {
-	getMailInfo,
-	setMail,
-	connectMail
-} from '@/services/alarm';
+import { getLDAP, enableLDAP, disableLDAP, checkLDAP } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 
 const { Row, Col } = Grid;
@@ -31,62 +29,102 @@ function OpenCenter(props: { activeKey: string | number }) {
 	const { activeKey } = props;
 
 	const [btnStatus, setBtnStatus] = useState<boolean>(true);
-	const [data, setData] = useState();
 	const [connect, setConnect] = useState<string>('');
 	const [show, setShow] = useState<boolean>(true);
+	const [formShow, setFormShow] = useState<boolean>(true);
 
 	useEffect(() => {
 		activeKey === 'openCenter' && getMailInfoData();
 	}, [activeKey]);
 
 	const getMailInfoData = () => {
-		// getMailInfo().then(async (res) => {
-		// 	if (!res.data) return;
-		// 	await field.setValues(res.data);
-		// 	checkBtn();
-		// 	setData(res.data);
-		// });
+		getLDAP().then(async (res) => {
+			if (!res.data) return;
+			await field.setValues(res.data);
+			checkBtn();
+			res.data.isOn ? setFormShow(true) : setFormShow(false);
+		});
 	};
 
 	const submit = () => {
-		field.validate((error, value) => {
-			if (error) return;
-			setMail(value).then((res) => {
-				if (res.data) return;
-				getMailInfoData();
-				Message.show(messageConfig('success', '成功', '邮箱设置成功'));
+		field.validate((errors, values) => {
+			if (errors) return;
+			enableLDAP({ ...values, isOn: '1' }).then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '保存成功')
+					);
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
 			});
 		});
 	};
 
 	const checkBtn = () => {
 		const obj: any = {
+			ip: null,
 			port: null,
+			base: null,
 			password: null,
-			mailPath: null,
-			mailServer: null,
-			userName: null,
+			userdn: null,
+			objectClass: null,
+			searchAttribute: null,
+			displayNameAttribute: null,
 			...field.getValues()
 		};
 		const arr = [];
 		for (const key in obj) {
-			key !== 'time' && arr.push(obj[key]);
+			key !== 'id' && key !== 'isOn' && arr.push(obj[key]);
 		}
 		arr.every((item) => item) ? setBtnStatus(false) : setBtnStatus(true);
 	};
 
 	const testMail = () => {
 		const data: any = field.getValues();
-		const sendData = {
-			email: data.userName,
-			password: data.password
-		};
-		connectMail(sendData).then((res) => {
+		delete data.isOn;
+		delete data.id;
+		checkLDAP(data).then((res) => {
 			if (res.data) {
 				Message.show(messageConfig('success', '成功', '测试完成'));
 			}
-			res.data ? setConnect('good') : setConnect('bad');
+			res.success ? setConnect('good') : setConnect('bad');
 		});
+	};
+
+	const changeLDAP = (value: any) => {
+		if (formShow) {
+			disableLDAP().then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', 'LDAP已关闭')
+					);
+					setFormShow(value);
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
+			});
+		} else {
+			checkBtn();
+			field.validate((errors, values) => {
+				if (!errors) {
+					enableLDAP({ ...values, isOn: '1' }).then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig('success', '成功', 'LDAP已启用')
+							);
+							setFormShow(value);
+						} else {
+							Message.show(
+								messageConfig('error', '失败', res.errorMsg)
+							);
+						}
+					});
+				} else {
+					setFormShow(value);
+				}
+			});
+		}
 	};
 
 	return (
@@ -99,8 +137,10 @@ function OpenCenter(props: { activeKey: string | number }) {
 					<div className="header-info">
 						<div>
 							<span className="type">LDAP</span>
-							<span className={data ? 'status' : 'status none'}>
-								{data ? '已启用' : '未启用'}
+							<span
+								className={formShow ? 'status' : 'status none'}
+							>
+								{formShow ? '已启用' : '未启用'}
 							</span>
 						</div>
 						<p>可有效解决多系统账户对接、统一管理问题</p>
@@ -125,10 +165,39 @@ function OpenCenter(props: { activeKey: string | number }) {
 				>
 					<Row>
 						<Col span={13} offset={4}>
+							<div
+								className={`form-display ${
+									!formShow ? 'padding' : ''
+								}`}
+							>
+								<label className="form-name">
+									<span style={{ marginRight: 8 }}>
+										启用开关
+									</span>
+									<Balloon
+										trigger={
+											<Icon
+												type="question-circle"
+												size="xs"
+											/>
+										}
+										closable={false}
+									>
+										开启LDAP认证会自动禁用系统当前的用户系统，取而代之的是利用对接的LDAP服务器来做用户的登陆认证
+									</Balloon>
+								</label>
+								<Switch
+									checked={formShow}
+									onChange={changeLDAP}
+								/>
+							</div>
 							<Form
 								field={field}
 								{...formItemLayout}
-								style={{ padding: '24px' }}
+								style={{
+									padding: '24px',
+									display: formShow ? 'block' : 'none'
+								}}
 							>
 								<Form.Item
 									required
@@ -137,7 +206,7 @@ function OpenCenter(props: { activeKey: string | number }) {
 								>
 									<Input
 										placeholder="请输入内容"
-										name="mailServer"
+										name="ip"
 										onChange={checkBtn}
 									/>
 									{connect && (
@@ -166,7 +235,7 @@ function OpenCenter(props: { activeKey: string | number }) {
 								<Form.Item required label="基准DN">
 									<Input
 										placeholder="请输入内容"
-										name="userName"
+										name="base"
 										onChange={checkBtn}
 										onBlur={(e) =>
 											field.setValues({
@@ -178,35 +247,35 @@ function OpenCenter(props: { activeKey: string | number }) {
 								<Form.Item required label="管理DN">
 									<Input
 										placeholder="请输入内容"
-										name="password"
+										name="userdn"
 										onChange={checkBtn}
 									/>
 								</Form.Item>
 								<Form.Item required label="密码">
 									<Input.Password
 										placeholder="请输入内容"
-										name="mailPath"
+										name="password"
 										onChange={checkBtn}
 									/>
 								</Form.Item>
 								<Form.Item required label="用户属性名">
 									<Input
 										placeholder="请输入内容"
-										name="mailPath"
+										name="searchAttribute"
 										onChange={checkBtn}
 									/>
 								</Form.Item>
 								<Form.Item required label="过滤条件">
 									<Input
 										placeholder="请输入内容"
-										name="mailPath"
+										name="objectClass"
 										onChange={checkBtn}
 									/>
 								</Form.Item>
 								<Form.Item required label="用户姓名的属性名">
 									<Input
 										placeholder="请输入内容"
-										name="mailPath"
+										name="displayNameAttribute"
 										onChange={checkBtn}
 									/>
 								</Form.Item>

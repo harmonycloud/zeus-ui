@@ -259,6 +259,26 @@
 				}
 			}
 		}
+		.form-display {
+			padding: 24px 24px 0 24px;
+			transform: translateY(16px);
+			display: flex;
+			align-items: center;
+			&.padding {
+				padding: 24px;
+				transform: translateY(0);
+			}
+			label {
+				width: 25%;
+				padding: 0 16px 0 0;
+				&::before {
+					margin-right: 4px;
+					content: '*';
+					color: #c80000;
+					color: var(--form-error-color, #c80000);
+				}
+			}
+		}
 	}
 }
 .next-upload-list-item-thumbnail {

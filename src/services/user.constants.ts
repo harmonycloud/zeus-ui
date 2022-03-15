@@ -32,3 +32,11 @@ export const users = `${api}/user/users`;
 export const insertUser = `${api}/mail/insertUser`;
 // * 选择被通知人
 export const insertDing = `${api}/mail/ding/insertUser`;
+// * LDAP 连接测试
+export const connectionCheck = `${api}/ldap/connectionCheck`;
+// * 开启LDAP
+export const enable = `${api}/ldap/enable`;
+// * 查询LDAP信息
+export const detail = `${api}/ldap/detail`;
+// * 关闭LDAP
+export const disable = `${api}/ldap/disable`;

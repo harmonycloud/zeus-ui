@@ -143,7 +143,7 @@ export interface KafkaDTO {
 	custom?: boolean;
 	path: string;
 	zkAddress: string;
-	zkPort: string | number;
+	zkPort: number | undefined;
 }
 export interface KafkaCreateValuesParams extends CreateValuesParams {
 	kafkaDTO: KafkaDTO;

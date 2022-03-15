@@ -21,3 +21,5 @@ export const deleteIngress = `${api}/clusters/{clusterId}/ingress/{ingressName}`
 export const getAspectFrom = `${api}/aspect/form`;
 // * 接入组件
 export const cutInComponents = `${api}/clusters/{clusterId}/components/{componentName}/integrate`;
+// * 镜像仓库
+export const mirror = `${api}/clusters/{clusterId}/namespaces/{namespace}/mirror`;
