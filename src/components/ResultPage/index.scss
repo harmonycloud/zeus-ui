@@ -3,9 +3,9 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-around;
-	height: 150px;
+	min-height: 150px;
 	.zeus-result-title {
-		margin: $margin * 2 0;
+		@include lineHeight(50px);
 		font-size: $font-h1;
 		font-weight: $font-weight-lg;
 	}

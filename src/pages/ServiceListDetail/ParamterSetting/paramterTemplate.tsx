@@ -22,7 +22,6 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 	const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 	const history = useHistory();
 	const params: paramsProps = useParams();
-	console.log(params);
 	useEffect(() => {
 		getData();
 	}, []);
@@ -50,13 +49,14 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				>
 					新建
 				</Button>
-				{selectedRowKeys.length > 0 && (
+				{selectedRowKeys.length === 2 && (
 					<Button
 						onClick={() => {
-							console.log('click');
+							history.push(
+								`/serviceList/${params.name}/${params.aliasName}/paramterSetting/compareTemplate/${type}/${chartVersion}/${selectedRowKeys[0]}/${selectedRowKeys[1]}/compare`
+							);
 						}}
 						type="secondary"
-						disabled={selectedRowKeys.length !== 2}
 					>
 						对比
 					</Button>
@@ -113,7 +113,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/useTemplate/${middlewareName}/${type}/${chartVersion}/${record.uid}`
 						);
 					}}
 					disabled={selectedRowKeys.length > 0}
@@ -171,16 +171,10 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				selectedRowKeys: selectedRowKeys
 			}}
 		>
-			<Table.Column title="模板名称" dataIndex="name" width={160} />
+			<Table.Column title="模板名称" dataIndex="name" />
 			<Table.Column title="模板描述" dataIndex="description" />
 			<Table.Column title="创建时间" dataIndex="createTime" />
-			<Table.Column
-				title="操作"
-				dataIndex="action"
-				cell={actionRender}
-				lock="right"
-				width={100}
-			/>
+			<Table.Column title="操作" dataIndex="action" cell={actionRender} />
 		</Table>
 	);
 };

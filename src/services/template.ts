@@ -2,7 +2,7 @@ import Axios from './request.js';
 import * as TEMPLATE from './template.constants';
 
 interface GetParamsProps {
-	templateName: string;
+	templateName?: string;
 	type: string;
 	uid: string;
 	chartVersion: string;

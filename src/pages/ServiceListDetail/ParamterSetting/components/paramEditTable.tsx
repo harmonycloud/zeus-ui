@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
 	Table,
@@ -6,53 +6,211 @@ import {
 	Search,
 	Form,
 	Input,
-	Select
+	Select,
+	Message,
+	Dialog
 } from '@alicloud/console-components';
-import {
-	setParamTemplateConfig,
-	setParamTemplateConfigClear
-} from '@/redux/param/param';
-import { questionTooltipRender, tooltipRender } from '@/utils/utils';
+import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import { useParams } from 'react-router';
 
-import { ConfigItem, ParamterItem } from '../../detail';
+import { getConfigs, topParam, updateConfig } from '@/services/middleware';
+import {
+	nullRender,
+	questionTooltipRender,
+	tooltipRender
+} from '@/utils/utils';
+import { setParamTemplateConfig } from '@/redux/param/param';
+
+import { ConfigItem } from '../../detail';
 import { paramReduxProps, StoreState } from '@/types';
 import HeaderLayout from '@/components/HeaderLayout';
+import messageConfig from '@/components/messageConfig';
+import { ParamsProps } from '../editParamTemplate';
 
 const { Option } = Select;
 const FormItem = Form.Item;
 interface ParamEditTableProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	type: string;
 	param: paramReduxProps;
+	source?: string;
 	setParamTemplateConfig: (value: ConfigItem[]) => void;
-	setParamTemplateConfigClear: () => void;
 }
 function ParamEditTable(props: ParamEditTableProps): JSX.Element {
-	const { param, setParamTemplateConfig, setParamTemplateConfigClear } =
-		props;
-	const [dataSource, setDataSource] = useState<ConfigItem[]>(
-		param.customConfigList.map((item) => {
-			item.value = item.value || item.defaultValue;
-			item.modifiedValue = item.value || item.defaultValue;
-			return item;
-		})
-	);
+	const {
+		param,
+		clusterId,
+		namespace,
+		middlewareName,
+		type,
+		source = 'template',
+		setParamTemplateConfig
+	} = props;
+	const { uid }: ParamsProps = useParams();
+	const [dataSource, setDataSource] = useState<ConfigItem[]>([]);
+	const [showDataSource, setShowDataSource] = useState<ConfigItem[]>([]);
 	const [editFlag, setEditFlag] = useState<boolean>(false);
-
-	const handleSearch = (value: string) => {
-		const list = param.customConfigList.filter((item: any) =>
-			item.name.includes(value)
-		);
-		setDataSource(list);
+	useEffect(() => {
+		if (source === 'template') {
+			if (param.customConfigList.length === 0) {
+				if (clusterId && namespace && middlewareName && type) {
+					getData(clusterId, namespace, middlewareName, type);
+				}
+			}
+			if (uid) {
+				const list = param.customConfigList.map((item: ConfigItem) => {
+					item.modifiedValue =
+						item.modifiedValue || item.value || item.defaultValue;
+					item.value = item.value || item.defaultValue;
+					return item;
+				});
+				setDataSource(list);
+				setShowDataSource(list);
+			}
+		} else {
+			if (clusterId && namespace && middlewareName && type) {
+				getData(clusterId, namespace, middlewareName, type);
+			}
+		}
+	}, [props]);
+	const getData = (
+		clusterId: string,
+		namespace: string,
+		middlewareName: string,
+		type: string
+	) => {
+		const sendData = {
+			clusterId,
+			namespace,
+			middlewareName,
+			type
+		};
+		getConfigs(sendData).then((res) => {
+			if (res.success) {
+				const list =
+					res.data &&
+					res.data.map((item: ConfigItem) => {
+						item.modifiedValue = item.value || item.defaultValue;
+						item.value = item.value || item.defaultValue;
+						return item;
+					});
+				setDataSource(list);
+				setShowDataSource(list);
+			}
+		});
 	};
 	const saveTemplate = () => {
-		setParamTemplateConfig(dataSource);
+		if (source === 'template') {
+			setParamTemplateConfig(dataSource);
+		} else {
+			const list = dataSource.filter(
+				(item) => item.value != item.modifiedValue
+			);
+			// const restartFlag = list.some((item) => {
+			// 	if (item.restart === true) return true;
+			// 	return false;
+			// });
+			Dialog.show({
+				title: '操作确认',
+				content: '修改后可能导致服务重启，是否继续',
+				// content: restartFlag
+				// 	? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
+				// 	: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
+				onOk: () => {
+					const sendList = list.map((item) => {
+						item.value = item.modifiedValue;
+						return item;
+					});
+					const sendData = {
+						url: {
+							clusterId,
+							middlewareName,
+							namespace
+						},
+						data: {
+							clusterId,
+							middlewareName,
+							namespace,
+							type,
+							customConfigList: sendList
+						}
+					};
+					updateConfig(sendData)
+						.then((res) => {
+							if (res.success) {
+								Message.show(
+									messageConfig(
+										'success',
+										'修改成功',
+										`共修改了${sendData.data.customConfigList.length}个参数`
+									)
+								);
+							} else {
+								Message.show(
+									messageConfig('error', '失败', res)
+								);
+							}
+						})
+						.finally(() => {
+							getData(clusterId, namespace, middlewareName, type);
+						});
+				}
+			});
+		}
 		setEditFlag(false);
 	};
-	const isRestartRender = (
-		value: boolean,
-		index: number,
-		record: ParamterItem
-	) => {
+	const handleSearch = (value: string) => {
+		const list = dataSource.filter((item) => item.name.includes(value));
+		setShowDataSource(list);
+	};
+	const onFilter = (filterParams: any) => {
+		const {
+			restart: { selectedKeys }
+		} = filterParams;
+		if (selectedKeys.length === 0) {
+			setShowDataSource(dataSource);
+		} else {
+			const tempData = dataSource.filter(
+				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
+			);
+			setShowDataSource(tempData);
+		}
+	};
+	const isRestartRender = (value: boolean) => {
 		return value ? '是' : '否';
+	};
+	const defaultValueRender = (value: string) => {
+		return (
+			<div
+				title={value}
+				style={{ width: '100%' }}
+				className="text-overflow"
+			>
+				{value}
+			</div>
+		);
+	};
+	const updateValue = (value: any, record: ConfigItem) => {
+		let cValue = value;
+		if (record.paramType === 'multiSelect') {
+			cValue = value.join(',');
+		}
+		const flag = typeof cValue === 'string' && cValue.trim();
+		if (flag === null || flag === undefined || flag === '') {
+			Message.show(
+				messageConfig('error', '失败', '不能将目标值设置为空!')
+			);
+			return;
+		}
+		if (record.paramType === 'multiSelect') {
+			record.modifiedValue = value.join(',');
+		} else {
+			record.modifiedValue = value;
+		}
+		setDataSource([...dataSource]);
+		setShowDataSource([...showDataSource]);
 	};
 	const modifyValueRender = (
 		value: string,
@@ -60,7 +218,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		record: ConfigItem
 	) => {
 		let selectList: string[] = [];
-		const defaultSelects: string[] = [];
+		let defaultSelects: string[] = [];
 		if (
 			record.paramType === 'select' ||
 			record.paramType === 'multiSelect'
@@ -72,8 +230,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			const listTemp = selects.split('|');
 			selectList = listTemp;
 		}
+		if (record.paramType === 'multiSelect') {
+			const arr1 = record.modifiedValue.split(',');
+			defaultSelects = [...arr1];
+		}
 		if (editFlag) {
-			console.log(record);
 			switch (record.paramType) {
 				case 'input':
 					return (
@@ -85,6 +246,9 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								name={record.name}
 								placeholder="请输入"
 								defaultValue={record.modifiedValue}
+								onChange={(value: string) => {
+									updateValue(value, record);
+								}}
 							/>
 						</FormItem>
 					);
@@ -92,8 +256,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					return (
 						<FormItem>
 							<Select
+								style={{ width: '100%' }}
 								name={record.name}
 								defaultValue={record.modifiedValue}
+								onChange={(value: any) => {
+									updateValue(value, record);
+								}}
 							>
 								{selectList &&
 									selectList.map((item) => {
@@ -113,6 +281,9 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								name={record.name}
 								defaultValue={defaultSelects}
 								mode="multiple"
+								onChange={(value: any, actionType: string) => {
+									updateValue(value, record);
+								}}
 							>
 								{selectList &&
 									selectList.map((item) => {
@@ -135,6 +306,9 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								name={record.name}
 								placeholder="请输入"
 								defaultValue={record.modifiedValue}
+								onChange={(value: string) => {
+									updateValue(value, record);
+								}}
 							/>
 						</FormItem>
 					);
@@ -142,16 +316,65 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		} else {
 			const flag = record.value != record.modifiedValue;
 			return (
-				<span
+				<div
 					title={value}
-					className={flag ? 'updated-value' : 'before-update'}
+					style={{
+						width: '100%',
+						color: flag ? '#C80000' : '#333333'
+					}}
+					className="text-overflow"
 				>
 					{value}
-				</span>
+				</div>
 			);
 		}
 	};
-
+	const topConfigParam = (record: ConfigItem) => {
+		const sendData = {
+			clusterId,
+			namespace,
+			type,
+			middlewareName,
+			configName: record.name
+		};
+		topParam(sendData)
+			.then((res) => {
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '参数置顶成功')
+					);
+				} else {
+					Message.show(
+						messageConfig('error', '失败', '参数置顶失败')
+					);
+				}
+			})
+			.finally(() => {
+				getData(clusterId, namespace, middlewareName, type);
+			});
+	};
+	const actionRender = (value: string, index: number, record: ConfigItem) => {
+		return (
+			<Actions>
+				{record.topping && (
+					<LinkButton
+						disabled={editFlag}
+						onClick={() => topConfigParam(record)}
+					>
+						取消置顶
+					</LinkButton>
+				)}
+				{!record.topping && (
+					<LinkButton
+						disabled={editFlag}
+						onClick={() => topConfigParam(record)}
+					>
+						置顶
+					</LinkButton>
+				)}
+			</Actions>
+		);
+	};
 	return (
 		<div className="zeus-param-edit-table-content">
 			<HeaderLayout
@@ -196,12 +419,17 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					</>
 				}
 			/>
-			<Table dataSource={dataSource} hasBorder={false} primaryKey="name">
+			<Table
+				dataSource={showDataSource}
+				hasBorder={false}
+				primaryKey="name"
+				onFilter={onFilter}
+			>
 				<Table.Column
 					title="参数名"
 					dataIndex="name"
 					width={210}
-					cell={(value: string, index: number, record: any) =>
+					cell={(value: string, index: number, record: ConfigItem) =>
 						tooltipRender(value, index, record, 210)
 					}
 					lock="left"
@@ -209,21 +437,25 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				<Table.Column
 					title="默认值"
 					dataIndex="defaultValue"
-					cell={(value: string, index: number, record: any) =>
-						tooltipRender(value, index, record, 410)
-					}
-					width={410}
+					cell={defaultValueRender}
+					width={310}
 				/>
 				<Table.Column
 					title="修改目标值"
 					dataIndex="modifiedValue"
 					cell={modifyValueRender}
+					width={410}
 				/>
 				<Table.Column
 					title="是否重启"
 					dataIndex="restart"
 					cell={isRestartRender}
-					width={100}
+					filterMode="single"
+					filters={[
+						{ value: 'true', label: '是' },
+						{ value: 'false', label: '否' }
+					]}
+					width={120}
 				/>
 				<Table.Column
 					title="参数值范围"
@@ -237,6 +469,22 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					cell={questionTooltipRender}
 					width={100}
 				/>
+				{source === 'list' && (
+					<Table.Column
+						title="修改时间"
+						dataIndex="updateTime"
+						cell={nullRender}
+						width={150}
+					/>
+				)}
+				{source === 'list' && (
+					<Table.Column
+						title="操作"
+						dataIndex="action"
+						cell={actionRender}
+						width={100}
+					/>
+				)}
 			</Table>
 		</div>
 	);
@@ -244,7 +492,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 const mapStateToProps = (state: StoreState) => ({
 	param: state.param
 });
-export default connect(mapStateToProps, {
-	setParamTemplateConfig,
-	setParamTemplateConfigClear
-})(ParamEditTable);
+export default connect(mapStateToProps, { setParamTemplateConfig })(
+	ParamEditTable
+);

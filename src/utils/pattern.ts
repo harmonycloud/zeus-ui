@@ -17,7 +17,8 @@ const pattern: patternProps = {
 	userName: '^[A-Za-z0-9-]{1,10}$',
 	aliasName: '^[^s]{1,18}$',
 	roleName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$',
-	ingressName: '^[a-z0-9-]{0,40}$'
+	ingressName: '^[a-z0-9-]{0,40}$',
+	paramTemplateName: '[a-z0-9-]{2,30}$'
 };
 
 export default pattern;
