@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
-import { Button, Message, Switch, Balloon } from '@alicloud/console-components';
-import Confirm from '@alicloud/console-components-confirm';
+import { Button, Message, Dialog, Balloon } from '@alicloud/console-components';
+import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { StoreState, globalVarProps } from '@/types';
 import { connect } from 'react-redux';
 import { getMirror, deleteMirror } from '@/services/common';
@@ -12,22 +12,20 @@ import { paramsProps } from '../detail';
 import { nullRender } from '@/utils/utils';
 import AddMirrorWarehouse from './addMirrorWarehouse';
 import { setRefreshCluster } from '@/redux/globalVar/var';
-interface NamespaceProps {
-	globalVar: globalVarProps;
-}
-const Tooltip = Balloon.Tooltip;
-const MirrorWarehouse = (props: NamespaceProps) => {
-	const { cluster, namespace } = props.globalVar;
 
+const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
+	const { namespace } = props.globalVar;
 	const [dataSource, setDataSource] = useState<NamespaceResourceProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
+	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
+	const [formData, setFormData] = useState<any>();
 	const { id }: paramsProps = useParams();
 	useEffect(() => {
 		let mounted = true;
 		getMirror({
 			clusterId: id,
-            namespace: namespace.name,
+			namespace: namespace.name,
 			keyword: keyword
 		}).then((res) => {
 			if (res.success) {
@@ -57,105 +55,75 @@ const MirrorWarehouse = (props: NamespaceProps) => {
 	};
 	const Operation = {
 		primary: (
-			<Button type="primary" onClick={() => setVisible(true)}>
+			<Button type="primary" onClick={() => {
+				setIsEdit(false);
+				setVisible(true);
+			}}>
 				新增
 			</Button>
 		)
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'cpu') {
-			const temp = dataSource.sort(function (a, b) {
-				const result =
-					Number(a.quotas?.cpu[1] || null) -
-					Number(b.quotas?.cpu[1] || null);
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...temp]);
-		} else if (dataIndex === 'memory') {
-			const temp = dataSource.sort(function (a, b) {
-				const result =
-					Number(a.quotas?.memory[1] || null) -
-					Number(b.quotas?.memory[1] || null);
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...temp]);
-		} else {
-			const temp = dataSource.sort(function (a, b) {
-				const result = a[dataIndex] - b[dataIndex];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...temp]);
-		}
+		const temp = dataSource.sort(function (a, b) {
+			const result = a[dataIndex] - b[dataIndex];
+			return order === 'asc'
+				? result > 0
+					? 1
+					: -1
+				: result > 0
+				? -1
+				: 1;
+		});
+		setDataSource([...temp]);
 	};
 	const handleSearch = (value: string) => {
 		setKeyword(value);
+	};
+	const editMirror = (record: any) => {
+		setIsEdit(true);
+		console.log(record);
+		
+		setFormData(record);
+		setVisible(true);
+	}
+	const deleteMirrors = (record: any) => {
+		Dialog.show({
+			title: '操作确认',
+			content: '删除将无法找回，是否继续?',
+			onOk: () => {
+				deleteMirror({
+					clusterId: id,
+					namespace: namespace.name,
+					id: record.id
+				}).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '镜像仓库删除成功')
+						);
+						getData();
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			}
+		});
 	};
 	const actionRender = (
 		value: any,
 		index: number,
 		record: NamespaceResourceProps
 	) => {
-		if (
-			(record.registered && record.middlewareReplicas) ||
-			record.phase !== 'Active'
-		) {
-			return (
-				<Tooltip
-					trigger={<span className="delete-disabled">删除</span>}
-					align="l"
-				>
-					{record.phase === 'Active'
-						? '本资源分区已发布中间件服务，使用中，不可操作'
-						: '该分区正在删除中，无法操作'}
-				</Tooltip>
-			);
-		}
 		return (
-			<Confirm
-				type="error"
-				title="确认删除"
-				content="确认要删除该资源分区？"
-				onConfirm={() => {
-					deleteMirror({ clusterId: id, namespace: namespace.name }).then(
-						(res) => {
-							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'资源分区删除成功'
-									)
-								);
-								getData();
-							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
-							}
-						}
-					);
-				}}
-			>
-				<span className="name-link">删除</span>
-			</Confirm>
+			<Actions>
+				<LinkButton
+					onClick={() => editMirror(record)}
+				>
+					编辑
+				</LinkButton>
+				<LinkButton onClick={() => deleteMirrors(record)}>
+					删除
+				</LinkButton>
+			</Actions>
 		);
 	};
 	return (
@@ -196,8 +164,9 @@ const MirrorWarehouse = (props: NamespaceProps) => {
 					visible={visible}
 					onCancel={() => setVisible(false)}
 					clusterId={id}
-                    namespace={namespace.name}
+					namespace={namespace.name}
 					onRefresh={getData}
+					data={isEdit ? formData : null}
 				/>
 			)}
 		</div>

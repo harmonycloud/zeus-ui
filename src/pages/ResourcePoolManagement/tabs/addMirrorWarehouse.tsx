@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
 	Dialog,
 	Form,
@@ -7,16 +7,11 @@ import {
 	Message,
 	Select
 } from '@alicloud/console-components';
-import { addMirror } from '@/services/common';
+import { addMirror, updateMirror } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
+import { address } from '@/utils/const';
+import { AddMirrorWarehouseProps } from '../resource.pool';
 
-interface AddMirrorWarehouseProps {
-	visible: boolean;
-	onCancel: () => void;
-	clusterId: string;
-	onRefresh: () => void;
-	namespace: string;
-}
 const FormItem = Form.Item;
 const { Option } = Select;
 const formItemLayout = {
@@ -28,41 +23,55 @@ const formItemLayout = {
 	}
 };
 
-const address = [
-	{
-		key: 'https',
-		value: 'https'
-	},
-	{
-		key: 'http',
-		value: 'http'
-	}
-];
-
 const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
-	const { visible, onCancel, clusterId, onRefresh, namespace } = props;
+	const { visible, onCancel, clusterId, onRefresh, namespace, data } = props;
 	const field = Field.useField();
 	const onOk = () => {
-		field.validate((errors, values) => {
-			if (errors) return;
-			addMirror({
-				clusterId,
-				namespace,
-				...field.getValues(),
-				hostAddress: ''
-			}).then((res) => {
-				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '镜像仓库创建成功')
-					);
-					onCancel();
-					onRefresh();
-				} else {
-					field.setError('name', res.errorMsg);
-				}
+		if (!data) {
+			field.validate((errors, values) => {
+				if (errors) return;
+				addMirror({
+					clusterId,
+					namespace,
+					...values
+				}).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '镜像仓库创建成功')
+						);
+						onCancel();
+						onRefresh();
+					} else {
+						field.setError('name', res.errorMsg);
+					}
+				});
 			});
-		});
+		} else {
+			field.validate((errors, values) => {
+				if (errors) return;
+				updateMirror({
+					clusterId,
+					namespace,
+					...values,
+					id: data.id
+				}).then((res) => {
+					if (res.success) {
+						Message.show(
+							messageConfig('success', '成功', '修改成功')
+						);
+						onCancel();
+						onRefresh();
+					} else {
+						field.setError('name', res.errorMsg);
+					}
+				});
+			});
+		}
 	};
+	useEffect(() => {
+		data && field.setValues(data);
+	}, [data]);
+
 	return (
 		<Dialog
 			title="新增镜像仓库"
@@ -88,7 +97,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 					<FormItem required style={{ width: '40%' }}>
 						<Input
 							id="name"
-							name="address"
+							name="hostAddress"
 							placeholder="请输入harbor主机地址"
 						/>
 					</FormItem>
