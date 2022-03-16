@@ -5,7 +5,7 @@ export interface StackTraceElement {
 	lineNumber: number;
 }
 export interface resProps {
-	code?: number;
+	readonly code?: number;
 	errorMsg?: string | null;
 	errorDetail?: string | null;
 	success?: boolean;
