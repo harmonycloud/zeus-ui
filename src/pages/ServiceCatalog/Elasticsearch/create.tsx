@@ -23,6 +23,7 @@ import {
 	getNodeTaint,
 	postMiddleware
 } from '@/services/middleware';
+import { getMirror } from '@/services/common';
 import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
 // * 结果页相关-start
@@ -129,6 +130,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 			value: 'cold-complex'
 		}
 	];
+	const [mirrorList, setMirrorList] = useState<string[]>([]);
 	const [nodeObj, setNodeObj] = useState({
 		master: {
 			disabled: false,
@@ -294,7 +296,10 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 
 	// 全局资源池更新
 	useEffect(() => {
-		if (JSON.stringify(globalCluster) !== '{}') {
+		if (
+			JSON.stringify(globalCluster) !== '{}' &&
+			JSON.stringify(globalNamespace) !== '{}'
+		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setLabelList(res.data);
@@ -316,8 +321,18 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					Message.show(messageConfig('error', '失败', res));
 				}
 			});
+			getMirror({
+				clusterId: globalCluster.id,
+				namespace: globalNamespace.name
+			}).then((res) => {
+				if (res.success) {
+					setMirrorList(
+						res.data.list.map((item: any) => item.address)
+					);
+				}
+			});
 		}
-	}, [globalCluster]);
+	}, [globalCluster, globalNamespace]);
 
 	// 模式变更
 	useEffect(() => {
@@ -918,6 +933,28 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												trim
 											/>
 										</FormItem>
+									</div>
+								</li>
+								<li className="display-flex">
+									<label className="form-name">
+										<span>镜像仓库</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<Select.AutoComplete
+											value={affinity.label}
+											onChange={(value) =>
+												changeAffinity(value, 'label')
+											}
+											placeholder="请选择"
+											hasClear={true}
+											dataSource={mirrorList}
+											style={{
+												width: '100%'
+											}}
+										/>
 									</div>
 								</li>
 							</ul>

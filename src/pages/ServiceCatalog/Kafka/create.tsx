@@ -28,6 +28,7 @@ import {
 	getStorageClass,
 	postMiddleware
 } from '@/services/middleware';
+import { getMirror } from '@/services/common';
 import { getAspectFrom } from '@/services/common';
 
 import {
@@ -60,6 +61,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const params: CreateParams = useParams();
 	const field = Field.useField();
 	const { chartName, aliasName, chartVersion } = params;
+	const [mirrorList, setMirrorList] = useState<string[]>([]);
 	// * 主机亲和-start
 	const [affinity, setAffinity] = useState<AffinityProps>({
 		flag: false,
@@ -155,9 +157,12 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			});
 		}
 	}, [props]);
-	// 全局资源池更新
+	// 全局资源池、分区更新
 	useEffect(() => {
-		if (JSON.stringify(globalCluster) !== '{}') {
+		if (
+			JSON.stringify(globalCluster) !== '{}' &&
+			JSON.stringify(globalNamespace) !== '{}'
+		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setLabelList(res.data);
@@ -179,21 +184,28 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					Message.show(messageConfig('error', '失败', res));
 				}
 			});
+			getMirror({
+				clusterId: globalCluster.id,
+				namespace: globalNamespace.name
+			}).then((res) => {
+				if (res.success) {
+					setMirrorList(
+						res.data.list.map((item: any) => item.address)
+					);
+				}
+			});
+			getStorageClass({
+				clusterId: globalCluster.id,
+				namespace: globalNamespace.name
+			}).then((res) => {
+				if (res.success) {
+					setStorageClassList(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
 		}
-	}, [globalCluster]);
-	// 全局分区更新
-	useEffect(() => {
-		getStorageClass({
-			clusterId: globalCluster.id,
-			namespace: globalNamespace.name
-		}).then((res) => {
-			if (res.success) {
-				setStorageClassList(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	}, [globalNamespace]);
+	}, [globalCluster, globalNamespace]);
 	// * 表单提交
 	const handleSubmit = () => {
 		console.log('submit');
@@ -921,6 +933,28 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													path: value
 												})
 											}
+										/>
+									</div>
+								</li>
+								<li className="display-flex">
+									<label className="form-name">
+										<span>镜像仓库</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<Select.AutoComplete
+											value={affinity.label}
+											onChange={(value) =>
+												changeAffinity(value, 'label')
+											}
+											placeholder="请选择"
+											hasClear={true}
+											dataSource={mirrorList}
+											style={{
+												width: '100%'
+											}}
 										/>
 									</div>
 								</li>

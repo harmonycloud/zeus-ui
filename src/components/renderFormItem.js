@@ -11,6 +11,7 @@ import FormStorageClass from '@/components/FormStorageClass';
 import FormPVC from '@/components/FormPVC';
 import FormSecret from '@/components/FormSecret';
 import FormTolerations from './FormTolerations';
+import FormMirror from './FormMirror';
 
 /*
  *	名称 —— 对应后端判断
@@ -100,6 +101,14 @@ export const renderFormItem = (
 		case 'secret':
 			return (
 				<FormSecret
+					{...formValue}
+					cluster={cluster}
+					namespace={namespace}
+				/>
+			);
+		case 'mirrorImage':
+			return (
+				<FormMirror
 					{...formValue}
 					cluster={cluster}
 					namespace={namespace}

@@ -89,3 +89,11 @@ export interface MirrorParams {
 	keyword?: string;
 	id?: number | number;
 }
+export interface AddMirrorWarehouseProps {
+	visible: boolean;
+	onCancel: () => void;
+	clusterId: string;
+	onRefresh: () => void;
+	namespace: string;
+	data: any;
+}
