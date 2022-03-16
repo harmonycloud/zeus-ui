@@ -7,6 +7,7 @@ export interface SuccessPageProps {
 	rightBtn?: boolean;
 	leftBtn?: boolean;
 	children?: any;
+	countDown?: number;
 }
 export interface LoadingPageProps {
 	title: string;
@@ -16,5 +17,6 @@ export interface LoadingPageProps {
 export interface ErrorPageProps {
 	title: string;
 	btnText: string;
+	countDown?: number;
 	btnHandle: () => void;
 }

@@ -220,7 +220,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 									? '恭喜，模版修改完成!'
 									: '恭喜，模版创建完成!'
 							}
-							leftText={`返回列表(${5}s)`}
+							leftText={`返回列表`}
+							countDown={5}
 							leftHandle={() => {
 								history.push(
 									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`

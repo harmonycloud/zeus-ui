@@ -1508,7 +1508,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											</label>
 											<NumberPicker
 												name="从节点数量字段"
-												defaultValue={1}
+												defaultValue={2}
 												onChange={(value) =>
 													setReplicaCount(value)
 												}
