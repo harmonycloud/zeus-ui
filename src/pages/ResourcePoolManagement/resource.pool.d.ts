@@ -85,7 +85,6 @@ export interface IngressItemProps {
 
 export interface MirrorParams {
 	clusterId: string;
-	namespace: string;
 	keyword?: string;
 	id?: number | number;
 }
@@ -94,6 +93,5 @@ export interface AddMirrorWarehouseProps {
 	onCancel: () => void;
 	clusterId: string;
 	onRefresh: () => void;
-	namespace: string;
 	data: any;
 }

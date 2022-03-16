@@ -13,13 +13,10 @@ export default function FormString(props: any): JSX.Element {
 
 	useEffect(() => {
 		getMirror({
-			clusterId: cluster.id,
-			namespace: namespace.name
+			clusterId: cluster.id
 		}).then((res) => {
 			if (res.success) {
-				setMirrorList(
-					res.data.list.map((item: any) => item.address)
-				);
+				setMirrorList(res.data.list.map((item: any) => item.address));
 			}
 		});
 	}, [cluster]);

@@ -1063,7 +1063,7 @@ function Visualization(props) {
 		};
 		graph.data(res);
 		graph.render();
-		(topoData.pods.length && topoData.pods.length >= 4) ||
+		(topoData.pods.length && topoData.pods.length >= 3) ||
 		direction === 'TB'
 			? graph.fitView()
 			: graph.fitCenter();
@@ -1513,7 +1513,7 @@ function Visualization(props) {
 	}, [direction]);
 
 	const reset = () => {
-		(topoData.pods.length && topoData.pods.length >= 4) ||
+		(topoData.pods.length && topoData.pods.length >= 3) ||
 		direction === 'TB'
 			? window.graph.fitView()
 			: window.graph.fitCenter();

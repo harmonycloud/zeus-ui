@@ -20,6 +20,7 @@ import { getDynamicFormData } from '@/services/middleware';
 import { postMiddleware } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
+import { getMirror } from '@/services/common';
 
 import {
 	CreateProps,
@@ -54,10 +55,14 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<string>();
+	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	const history = useHistory();
 	const field = Field.useField();
 	useEffect(() => {
-		if (JSON.stringify(props.globalVar.cluster) !== '{}') {
+		if (
+			JSON.stringify(props.globalVar.cluster) !== '{}' &&
+			JSON.stringify(props.globalVar.namespace) !== '{}'
+		) {
 			const sendData = {
 				clusterId: globalCluster.id,
 				chartName: chartName,
@@ -70,6 +75,13 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					setCapabilities(res.data.capabilities);
 				} else {
 					Message.show(messageConfig('error', '失败', res));
+				}
+			});
+			getMirror({
+				clusterId: globalCluster.id,
+			}).then((res) => {
+				if (res.success) {
+					setMirrorList(res.data.list);
 				}
 			});
 		}
@@ -172,6 +184,17 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					index !== 'tolerations' &&
 					index !== 'tolerationsLabels'
 				) {
+					if (index === 'image.repository') {
+						dynamicValues['mirrorImageId'] = mirrorList.find(
+							(item) => item.address === values[index]
+						)
+							? mirrorList
+									.find(
+										(item) => item.address === values[index]
+									)
+									.id.toString()
+							: '';
+					}
 					dynamicValues[index] = values[index];
 				}
 			}
