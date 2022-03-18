@@ -157,7 +157,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
-	const [replicaCount, setReplicaCount] = useState(1); // * 一主多从
+	const [replicaCount, setReplicaCount] = useState(2); // * 一主多从
 
 	// * 灾备
 	const [backupFlag, setBackupFlag] = useState<boolean>(false);
