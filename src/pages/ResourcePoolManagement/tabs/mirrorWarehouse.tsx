@@ -137,8 +137,8 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					placeholder: '请输入关键字搜索'
 				}}
 			>
-				<Table.Column title="镜像仓库地址" dataIndex="address" />
-				<Table.Column title="镜像仓库项目" dataIndex="project" />
+				<Table.Column title="镜像仓库地址" dataIndex="address" width={150} />
+				<Table.Column title="镜像仓库项目" dataIndex="project" width={150} />
 				<Table.Column
 					title="描述"
 					dataIndex="description"
@@ -148,11 +148,13 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					title="创建时间"
 					dataIndex="createTime"
 					sortable
+					width={180}
 				/>
 				<Table.Column
 					title="操作"
 					dataIndex="action"
 					cell={actionRender}
+					width={150}
 				/>
 			</Table>
 			{visible && (
