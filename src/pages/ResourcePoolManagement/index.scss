@@ -293,11 +293,17 @@
 		}
 	}
 	&.user {
-		.label{
+		.label {
 			margin-right: 0;
 		}
 		.next-form-item {
 			width: calc((75% - 8px) / 2);
 		}
+	}
+}
+
+.ne-require {
+	label {
+		padding-left: 10px;
 	}
 }
