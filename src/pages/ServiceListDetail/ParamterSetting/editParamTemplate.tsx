@@ -137,6 +137,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					type
 				};
 				createParamsTemp(sendData).then((res) => {
+					console.log(res);
 					if (res.success) {
 						setCurrent(2);
 					} else {

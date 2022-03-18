@@ -98,6 +98,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					});
 				setDataSource(list);
 				setShowDataSource(list);
+				setParamTemplateConfig(list);
 			}
 		});
 	};
