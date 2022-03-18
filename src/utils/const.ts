@@ -59,7 +59,16 @@ export const disabledRoute = [
 	'/serviceList/versionManagement',
 	'/instanceList/detail',
 	'/serviceList/basicInfo',
-	'/serviceList/paramterSetting'
+	'/serviceList/paramterSetting',
+	'/basicInfo/',
+	'/highAvailability/',
+	'/paramterSetting/',
+	'/backupRecovery/',
+	'/externalAccess/',
+	'/monitor/',
+	'/log/',
+	'/alarm/',
+	'/disaster/'
 ];
 
 // 资源池、分区不显示路由名单
