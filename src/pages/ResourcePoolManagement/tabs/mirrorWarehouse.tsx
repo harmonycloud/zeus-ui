@@ -14,7 +14,6 @@ import AddMirrorWarehouse from './addMirrorWarehouse';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 
 const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
-	const { namespace } = props.globalVar;
 	const [dataSource, setDataSource] = useState<NamespaceResourceProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -25,7 +24,6 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 		let mounted = true;
 		getMirror({
 			clusterId: id,
-			namespace: namespace.name,
 			keyword: keyword
 		}).then((res) => {
 			if (res.success) {
@@ -43,7 +41,6 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 	const getData = () => {
 		getMirror({
 			clusterId: id,
-			namespace: namespace.name,
 			keyword: keyword
 		}).then((res) => {
 			if (res.success) {
@@ -93,7 +90,6 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 			onOk: () => {
 				deleteMirror({
 					clusterId: id,
-					namespace: namespace.name,
 					id: record.id
 				}).then((res) => {
 					if (res.success) {
@@ -164,7 +160,6 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					visible={visible}
 					onCancel={() => setVisible(false)}
 					clusterId={id}
-					namespace={namespace.name}
 					onRefresh={getData}
 					data={isEdit ? formData : null}
 				/>

@@ -61,7 +61,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const params: CreateParams = useParams();
 	const field = Field.useField();
 	const { chartName, aliasName, chartVersion } = params;
-	const [mirrorList, setMirrorList] = useState<string[]>([]);
+	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	// * 主机亲和-start
 	const [affinity, setAffinity] = useState<AffinityProps>({
 		flag: false,
@@ -186,12 +186,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			});
 			getMirror({
 				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
 			}).then((res) => {
 				if (res.success) {
-					setMirrorList(
-						res.data.list.map((item: any) => item.address)
-					);
+					setMirrorList(res.data.list);
 				}
 			});
 			getStorageClass({
@@ -234,7 +231,17 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 						storageClassName: values.storageClass,
 						storageClassQuota: values.storageQuota
 					}
-				}
+				},
+				mirrorImageId: mirrorList.find(
+					(item) => item.address === values['mirrorImageId']
+				)
+					? mirrorList
+							.find(
+								(item) =>
+									item.address === values['mirrorImageId']
+							)
+							.id.toString()
+					: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -938,24 +945,33 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 								</li>
 								<li className="display-flex">
 									<label className="form-name">
-										<span>镜像仓库</span>
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											镜像仓库
+										</span>
 									</label>
 									<div
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<Select.AutoComplete
-											value={affinity.label}
-											onChange={(value) =>
-												changeAffinity(value, 'label')
-											}
-											placeholder="请选择"
-											hasClear={true}
-											dataSource={mirrorList}
-											style={{
-												width: '100%'
-											}}
-										/>
+										<FormItem
+											required
+											requiredMessage="请选择镜像仓库"
+										>
+											<Select.AutoComplete
+												name="mirrorImageId"
+												placeholder="请选择"
+												hasClear={true}
+												dataSource={mirrorList.map(
+													(item: any) => item.address
+												)}
+												style={{
+													width: '100%'
+												}}
+											/>
+										</FormItem>
 									</div>
 								</li>
 							</ul>

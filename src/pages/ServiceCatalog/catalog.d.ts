@@ -106,6 +106,7 @@ export interface MysqlSendDataParams extends CommonSendDataParams {
 	middlewareName?: string;
 	backupFileName?: string;
 	relationMiddleware?: RelationMiddlewareParams;
+	mirrorImageId?: any;
 }
 export interface MysqlSendDataTempParams extends MysqlSendDataParams {
 	relationMiddleware: RelationMiddlewareParams;
@@ -135,6 +136,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 			storageClassQuota?: string;
 		};
 	};
+	mirrorImageId?: any;
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
@@ -166,6 +168,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 			storageClassQuota?: string;
 		};
 	};
+	mirrorImageId?: any;
 }
 export interface NodeModifyParams {
 	nodeName: string;
@@ -216,6 +219,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 		};
 		replicas?: number;
 	};
+	mirrorImageId?: any;
 }
 export interface RMQCreateValuesParams extends CreateValuesParams {
 	globalWhiteRemoteAddresses?: string;
@@ -230,6 +234,7 @@ export interface EsSendDataParams extends CommonSendDataParams {
 	dynamicValues?: any;
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
+	mirrorImageId?: any;
 	quota?: any;
 }
 export interface EsCreateValuesParams extends CreateValuesParams {

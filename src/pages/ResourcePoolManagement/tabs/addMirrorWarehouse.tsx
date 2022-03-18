@@ -24,7 +24,7 @@ const formItemLayout = {
 };
 
 const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
-	const { visible, onCancel, clusterId, onRefresh, namespace, data } = props;
+	const { visible, onCancel, clusterId, onRefresh, data } = props;
 	const field = Field.useField();
 	const onOk = () => {
 		if (!data) {
@@ -32,7 +32,6 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 				if (errors) return;
 				addMirror({
 					clusterId,
-					namespace,
 					...values
 				}).then((res) => {
 					if (res.success) {
@@ -51,7 +50,6 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 				if (errors) return;
 				updateMirror({
 					clusterId,
-					namespace,
 					...values,
 					id: data.id
 				}).then((res) => {
