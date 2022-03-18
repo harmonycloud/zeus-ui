@@ -154,6 +154,19 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 	const onChange = (selectedRowKeys: string[], record: any) => {
 		setSelectedRowKeys(selectedRowKeys);
 	};
+	const onSort = (dataIndex: string, order: string) => {
+		const tempDataSource = dataSource.sort((a, b) => {
+			const result = a['createTimeNum'] - b['createTimeNum'];
+			return order === 'asc'
+				? result > 0
+					? 1
+					: -1
+				: result > 0
+				? -1
+				: 1;
+		});
+		setDataSource([...tempDataSource]);
+	};
 	return (
 		<Table
 			dataSource={dataSource}
@@ -170,10 +183,11 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				onChange: onChange,
 				selectedRowKeys: selectedRowKeys
 			}}
+			onSort={onSort}
 		>
 			<Table.Column title="模板名称" dataIndex="name" />
 			<Table.Column title="模板描述" dataIndex="description" />
-			<Table.Column title="创建时间" dataIndex="createTime" />
+			<Table.Column title="创建时间" dataIndex="createTime" sortable />
 			<Table.Column title="操作" dataIndex="action" cell={actionRender} />
 		</Table>
 	);
