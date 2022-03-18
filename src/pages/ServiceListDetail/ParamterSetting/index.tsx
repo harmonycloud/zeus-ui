@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Content, Menu } from '@alicloud/console-components-page';
+import { Dialog } from '@alicloud/console-components';
 import { useParams } from 'react-router';
 import ParamterList from './paramerListVersiontwo';
 import ParamterHistory from './paramterHistory';
@@ -27,8 +28,24 @@ export default function ParamterSetting(
 	const params: DetailParams = useParams();
 	const { currentTab, chartVersion } = params;
 	const menuSelect = (selectedKey: string) => {
-		setSelectedKey(selectedKey);
-		storage.setSession('paramsTab', selectedKey);
+		if (storage.getSession('templateEdit')) {
+			Dialog.show({
+				title: '操作确认',
+				content: '是否退出编辑',
+				onOk: () => {
+					setSelectedKey(selectedKey);
+					storage.setSession('templateEdit', false);
+					storage.setSession('paramsTab', selectedKey);
+				},
+				onCancel: () => {
+					return;
+				}
+			});
+		} else {
+			setSelectedKey(selectedKey);
+			storage.setSession('templateEdit', false);
+			storage.setSession('paramsTab', selectedKey);
+		}
 	};
 	useEffect(() => {
 		currentTab &&

@@ -12,6 +12,9 @@ import {
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { useParams } from 'react-router';
+import moment from 'moment';
+import HeaderLayout from '@/components/HeaderLayout';
+import messageConfig from '@/components/messageConfig';
 
 import { getConfigs, topParam, updateConfig } from '@/services/middleware';
 import {
@@ -20,13 +23,11 @@ import {
 	tooltipRender
 } from '@/utils/utils';
 import { setParamTemplateConfig } from '@/redux/param/param';
+import storage from '@/utils/storage';
 
 import { ConfigItem } from '../../detail';
 import { paramReduxProps, StoreState } from '@/types';
-import HeaderLayout from '@/components/HeaderLayout';
-import messageConfig from '@/components/messageConfig';
 import { ParamsProps } from '../editParamTemplate';
-import moment from 'moment';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -76,6 +77,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			}
 		}
 	}, [props]);
+	useEffect(() => {
+		if (!storage.getSession('templateEdit') && source === 'list') {
+			setEditFlag(false);
+		}
+	}, [storage.getSession('templateEdit')]);
+
 	const getData = (
 		clusterId: string,
 		namespace: string,
@@ -164,6 +171,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			});
 		}
 		setEditFlag(false);
+		source === 'list' && storage.setSession('templateEdit', false);
 	};
 	const handleSearch = (value: string) => {
 		const list = dataSource.filter((item) => item.name.includes(value));
@@ -412,7 +420,14 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								<Button
 									className="mr-8"
 									type="normal"
-									onClick={() => setEditFlag(false)}
+									onClick={() => {
+										setEditFlag(false);
+										source === 'list' &&
+											storage.setSession(
+												'templateEdit',
+												false
+											);
+									}}
 								>
 									取消
 								</Button>
@@ -423,6 +438,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								className="mr-8"
 								onClick={() => {
 									setEditFlag(true);
+									source === 'list' &&
+										storage.setSession(
+											'templateEdit',
+											true
+										);
 								}}
 								type="primary"
 							>
