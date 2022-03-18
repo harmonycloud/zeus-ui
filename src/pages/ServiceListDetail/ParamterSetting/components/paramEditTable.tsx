@@ -402,6 +402,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		});
 		setShowDataSource([...tempDataSource]);
 	};
+	const onRowProps = (record: ConfigItem) => {
+		if (record.topping) {
+			return { style: { background: '#F8F8F9' } };
+		}
+	};
 	return (
 		<div className="zeus-param-edit-table-content">
 			<HeaderLayout
@@ -463,6 +468,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				hasBorder={false}
 				primaryKey="name"
 				onFilter={onFilter}
+				rowProps={onRowProps}
 				// onSort={source === 'list' ? onSort : undefined}
 			>
 				<Table.Column
