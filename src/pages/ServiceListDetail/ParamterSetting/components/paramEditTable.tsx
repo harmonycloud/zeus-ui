@@ -26,6 +26,7 @@ import { paramReduxProps, StoreState } from '@/types';
 import HeaderLayout from '@/components/HeaderLayout';
 import messageConfig from '@/components/messageConfig';
 import { ParamsProps } from '../editParamTemplate';
+import moment from 'moment';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -98,7 +99,9 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					});
 				setDataSource(list);
 				setShowDataSource(list);
-				setParamTemplateConfig(list);
+				source === 'template' && setParamTemplateConfig(list);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	};
@@ -376,6 +379,21 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			</Actions>
 		);
 	};
+	const onSort = (dataIndex: string, order: string) => {
+		const tempDataSource = showDataSource.sort((a, b) => {
+			const result =
+				moment(a['updateTime']).valueOf() -
+				moment(b['updateTime']).valueOf();
+			return order === 'asc'
+				? result > 0
+					? 1
+					: -1
+				: result > 0
+				? -1
+				: 1;
+		});
+		setShowDataSource([...tempDataSource]);
+	};
 	return (
 		<div className="zeus-param-edit-table-content">
 			<HeaderLayout
@@ -425,6 +443,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				hasBorder={false}
 				primaryKey="name"
 				onFilter={onFilter}
+				// onSort={source === 'list' ? onSort : undefined}
 			>
 				<Table.Column
 					title="参数名"
@@ -475,6 +494,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 						title="修改时间"
 						dataIndex="updateTime"
 						cell={nullRender}
+						// sortable={true}
 						width={150}
 					/>
 				)}

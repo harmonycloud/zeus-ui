@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import { getParamsTemps, deleteParamsTemp } from '@/services/template';
 import messageConfig from '@/components/messageConfig';
+import moment from 'moment';
 
 interface ParamterTemplateProps {
 	type: string;
@@ -156,7 +157,9 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		const tempDataSource = dataSource.sort((a, b) => {
-			const result = a['createTimeNum'] - b['createTimeNum'];
+			const result =
+				moment(a['createTime']).valueOf() -
+				moment(b['createTime']).valueOf();
 			return order === 'asc'
 				? result > 0
 					? 1
