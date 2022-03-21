@@ -32,10 +32,9 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const location = useLocation();
 	useEffect(() => {
 		let mounted = true;
-		if (JSON.stringify(namespace) !== '{}') {
+		if (JSON.stringify(cluster) !== '{}') {
 			getMiddlewareRepository({
-				clusterId: cluster.id,
-				namespace: namespace.name
+				clusterId: cluster.id
 			}).then((res) => {
 				if (res.success) {
 					if (mounted) {
@@ -51,7 +50,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			mounted = false;
 			clearInterval(timer);
 		};
-	}, [namespace, location.pathname]);
+	}, [cluster, location.pathname]);
 	useEffect(() => {
 		if (rule === 'type') {
 			const list = Array.from(

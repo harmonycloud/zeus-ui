@@ -123,6 +123,10 @@ function Navbar(props: NavbarProps): JSX.Element {
 					setNamespace(res.data[0]);
 					storage.setLocal('namespace', JSON.stringify(res.data[0]));
 				}
+			} else {
+				setCurrentNamespace({ name: '' });
+				setNamespace({});
+				storage.setLocal('namespace', '');
 			}
 			setNamespaceList(res.data);
 			setGlobalNamespaceList(res.data);

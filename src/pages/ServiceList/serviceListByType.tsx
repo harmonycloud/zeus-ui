@@ -610,7 +610,10 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={!record.managePlatform || record.managePlatformAddress === ''}
+					disabled={
+						!record.managePlatform ||
+						record.managePlatformAddress === ''
+					}
 					onClick={() => {
 						// if (record.managePlatformAddress === '') {
 						// 	Message.show(

@@ -12,6 +12,9 @@ import {
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { useParams } from 'react-router';
+import moment from 'moment';
+import HeaderLayout from '@/components/HeaderLayout';
+import messageConfig from '@/components/messageConfig';
 
 import { getConfigs, topParam, updateConfig } from '@/services/middleware';
 import {
@@ -20,13 +23,11 @@ import {
 	tooltipRender
 } from '@/utils/utils';
 import { setParamTemplateConfig } from '@/redux/param/param';
+import storage from '@/utils/storage';
 
 import { ConfigItem } from '../../detail';
 import { paramReduxProps, StoreState } from '@/types';
-import HeaderLayout from '@/components/HeaderLayout';
-import messageConfig from '@/components/messageConfig';
 import { ParamsProps } from '../editParamTemplate';
-import moment from 'moment';
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -76,6 +77,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			}
 		}
 	}, [props]);
+	useEffect(() => {
+		if (!storage.getSession('templateEdit') && source === 'list') {
+			setEditFlag(false);
+		}
+	}, [storage.getSession('templateEdit')]);
+
 	const getData = (
 		clusterId: string,
 		namespace: string,
@@ -112,16 +119,16 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			const list = dataSource.filter(
 				(item) => item.value != item.modifiedValue
 			);
-			// const restartFlag = list.some((item) => {
-			// 	if (item.restart === true) return true;
-			// 	return false;
-			// });
+			const restartFlag = list.some((item) => {
+				if (item.restart === true) return true;
+				return false;
+			});
 			Dialog.show({
 				title: '操作确认',
-				content: '修改后可能导致服务重启，是否继续',
-				// content: restartFlag
-				// 	? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
-				// 	: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
+				// content: '修改后可能导致服务重启，是否继续',
+				content: restartFlag
+					? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
+					: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
 				onOk: () => {
 					const sendList = list.map((item) => {
 						item.value = item.modifiedValue;
@@ -164,6 +171,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			});
 		}
 		setEditFlag(false);
+		source === 'list' && storage.setSession('templateEdit', false);
 	};
 	const handleSearch = (value: string) => {
 		const list = dataSource.filter((item) => item.name.includes(value));
@@ -394,6 +402,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		});
 		setShowDataSource([...tempDataSource]);
 	};
+	const onRowProps = (record: ConfigItem) => {
+		if (record.topping) {
+			return { style: { background: '#F8F8F9' } };
+		}
+	};
 	return (
 		<div className="zeus-param-edit-table-content">
 			<HeaderLayout
@@ -412,7 +425,14 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								<Button
 									className="mr-8"
 									type="normal"
-									onClick={() => setEditFlag(false)}
+									onClick={() => {
+										setEditFlag(false);
+										source === 'list' &&
+											storage.setSession(
+												'templateEdit',
+												false
+											);
+									}}
 								>
 									取消
 								</Button>
@@ -423,6 +443,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								className="mr-8"
 								onClick={() => {
 									setEditFlag(true);
+									source === 'list' &&
+										storage.setSession(
+											'templateEdit',
+											true
+										);
 								}}
 								type="primary"
 							>
@@ -443,6 +468,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				hasBorder={false}
 				primaryKey="name"
 				onFilter={onFilter}
+				rowProps={onRowProps}
 				// onSort={source === 'list' ? onSort : undefined}
 			>
 				<Table.Column
