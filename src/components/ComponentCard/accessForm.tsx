@@ -85,7 +85,8 @@ const AccessForm = (props: AccessFormProps) => {
 							cluster?.storage?.backup?.storage.bucketName,
 						minioName: cluster?.storage?.backup?.storage.name,
 						secretAccessKey:
-							cluster?.storage?.backup?.storage.secretAccessKey
+							cluster?.storage?.backup?.storage.secretAccessKey,
+						endpoint: cluster?.storage?.backup?.storage.endpoint
 					});
 				}
 			} else {
@@ -196,7 +197,7 @@ const AccessForm = (props: AccessFormProps) => {
 	const childrenRender = () => {
 		switch (title) {
 			case 'minio':
-				return <MinioRender field={field} />;
+				return <MinioRender data={field.getValues()} field={field} />;
 			case 'prometheus':
 				return <PrometheusRender />;
 			case 'alertmanager':

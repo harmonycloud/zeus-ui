@@ -379,23 +379,26 @@ export const AlertRender = () => (
 	</FormItem>
 );
 export const MinioRender = (props: any) => {
-	const { field } = props;
+	const { field, data } = props;
 	const [head, setHead] = useState<string>('http://');
 	const [mid, setMid] = useState<string>();
 	const [tail, setTail] = useState<number>();
+	const { endpoint } = data;
 	useEffect(() => {
 		field.setValue('endpoint', head + mid + ':' + tail + '');
 	}, [head, mid, tail]);
 	useEffect(() => {
-		const cluster = JSON.parse(storage.getLocal('cluster'));
-		// console.log(cluster);
-		if (cluster?.storage?.backup?.storage) {
-			const endpoint = cluster.storage.backup.storage.endpoint.split(':');
-			setHead(`${endpoint[0]}://`);
-			setMid(endpoint[1].substring(2));
-			setTail(endpoint[2]);
+		if (endpoint) {
+			const endpoints = endpoint.split(':');
+			setHead(`${endpoints[0]}://`);
+			setMid(
+				endpoints[1].substring(2) === 'undefined'
+					? ''
+					: endpoints[1].substring(2)
+			);
+			setTail(endpoints[2]);
 		}
-	}, [props]);
+	}, [endpoint]);
 	const handleChange = (value: any, type: string) => {
 		switch (type) {
 			case 'head':
