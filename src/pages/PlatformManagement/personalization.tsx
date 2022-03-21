@@ -17,6 +17,7 @@ import { api } from '@/api.json';
 
 import storage from '@/utils/storage';
 import { getPersonalConfig, personalized } from '@/services/user';
+import { log } from 'console';
 
 const formItemLayout = {
 	labelCol: {
@@ -66,6 +67,23 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 		return new Blob([uInt8Array], { type: contentType });
 	};
 
+	function change_icon(iconUrl: string) {
+		const changeFavicon = (link: any) => {
+			let $favicon: any = document.querySelector('link[rel="icon"]');
+			if ($favicon !== null) {
+				$favicon.href = link;
+			} else {
+				$favicon = document.createElement('link');
+				$favicon.rel = 'icon';
+				$favicon.href = link;
+				document.head.appendChild($favicon);
+			}
+		};
+
+		// 动态修改网站图标
+		changeFavicon(iconUrl);
+	}
+
 	const imageData = (name: string, data: string) => {
 		return [
 			{
@@ -81,9 +99,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 
 	const getData = () => {
 		getPersonalConfig().then((res) => {
-			console.log(res);
 			if (res.success) {
-				// if (res.data) {
 				setData(res.data);
 				setStatus(res.data.status);
 				storage.setLocal('personalization', res.data);
@@ -96,13 +112,12 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				setHomeValue(imageData('home.svg', res.data.homeLogo));
 				document.title =
 					res.data && res.data.title ? res.data.title : 'Zeus';
+				// change_icon(res.data.homeLogo);
 			}
 		});
 	};
 
 	const beforeUpload = (info: any) => {
-		console.log(info);
-
 		if (info.size / 1024 / 1024 > 2) {
 			Message.show(
 				messageConfig('warning', '提示', '图片过大，请重新上传')
@@ -145,27 +160,34 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 	};
 
 	const onSuccess = (type = '', info: any) => {
-		console.log(info);
 		if (!info.response.code)
 			Message.show(messageConfig('success', '成功', '图片上传成功'));
 		if (info) {
+			const url =
+				`data:image/${
+					info.response.data.type === 'svg'
+						? 'svg+xml'
+						: info.response.data.type === 'png'
+						? 'png'
+						: 'jpeg'
+				};base64,` + info.response.data.bytes;
 			if (type === 'background') {
-				setBackgroundValue(imageData('background.svg', info.imgURL));
+				setBackgroundValue(imageData('background.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
-					backgroundImage: info.imgURL
+					backgroundImage: url
 				});
 			} else if (type === 'home') {
-				setHomeValue(imageData('home.svg', info.imgURL));
+				setHomeValue(imageData('home.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
-					homeLogo: info.imgURL
+					homeLogo: url
 				});
 			} else {
-				setLoginValue(imageData('loginlogo.svg', info.imgURL));
+				setLoginValue(imageData('loginlogo.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
-					loginLogo: info.imgURL
+					loginLogo: url
 				});
 			}
 			setImgRule(false);
@@ -376,6 +398,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					</Radio.Group>
 				</Form.Item>
 			</Form>
+
 			<div className="detail-divider" />
 			<div>
 				<Button type="primary" onClick={onSubmit}>
