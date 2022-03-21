@@ -119,16 +119,16 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			const list = dataSource.filter(
 				(item) => item.value != item.modifiedValue
 			);
-			// const restartFlag = list.some((item) => {
-			// 	if (item.restart === true) return true;
-			// 	return false;
-			// });
+			const restartFlag = list.some((item) => {
+				if (item.restart === true) return true;
+				return false;
+			});
 			Dialog.show({
 				title: '操作确认',
-				content: '修改后可能导致服务重启，是否继续',
-				// content: restartFlag
-				// 	? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
-				// 	: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
+				// content: '修改后可能导致服务重启，是否继续',
+				content: restartFlag
+					? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
+					: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
 				onOk: () => {
 					const sendList = list.map((item) => {
 						item.value = item.modifiedValue;
