@@ -54,6 +54,7 @@ function OpenCenter(props: { activeKey: string | number }) {
 					Message.show(
 						messageConfig('success', '成功', '保存成功')
 					);
+					getMailInfoData();
 				} else {
 					Message.show(messageConfig('error', '失败', res.errorMsg));
 				}

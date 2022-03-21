@@ -83,8 +83,14 @@ function AlarmSet(props: any) {
 			if (error) return;
 			setMail(value).then((res) => {
 				if (res.data) return;
-				getMailInfoData();
-				Message.show(messageConfig('success', '成功', '邮箱设置成功'));
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '邮箱设置成功')
+					);
+					getMailInfoData();
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
 			});
 		});
 	};
@@ -121,11 +127,14 @@ function AlarmSet(props: any) {
 				};
 			});
 			setDing(arrs).then((res) => {
-				if (res.data) return;
-				getDingData();
-				Message.show(
-					messageConfig('success', '成功', '钉钉机器人设置成功')
-				);
+				if (res.success) {
+					Message.show(
+						messageConfig('success', '成功', '钉钉机器人设置成功')
+					);
+					getDingData();
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
 			});
 		});
 	};
