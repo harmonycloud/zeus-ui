@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, Field, Form, Message } from '@alicloud/console-components';
-import { putComponent, cutInComponent } from '@/services/common';
+import { putComponent, cutInComponent, getCluster } from '@/services/common';
 import {
 	PrometheusRender,
 	IngressRender,
@@ -34,63 +34,68 @@ const AccessForm = (props: AccessFormProps) => {
 		status
 	} = props;
 	const field = Field.useField();
-	// console.log(props);
 	useEffect(() => {
-		// console.log(JSON.parse(storage.getLocal('cluster')));
-		const cluster = JSON.parse(storage.getLocal('cluster'));
-		if (cluster.ingress) {
-			field.setValues({
-				ingressAddress: cluster.ingress.address,
-				ingressClassName: cluster.ingress.ingressClassName,
-				namespace: cluster.ingress.tcp.namespace,
-				configMapName: cluster.ingress.tcp.configMapName
-			});
-		}
-		if (cluster.logging && cluster.logging.elasticSearch) {
-			field.setValues({
-				protocolEs: cluster.logging.elasticSearch.protocol,
-				hostEs: cluster.logging.elasticSearch.host,
-				portEs: cluster.logging.elasticSearch.port,
-				userEs: cluster.logging.elasticSearch.user,
-				passwordEs: cluster.logging.elasticSearch.password,
-				logCollect: cluster.logging.elasticSearch.logCollect
-			});
-		}
-		if (cluster.monitor?.alertManager) {
-			field.setValues({
-				protocolAlert: cluster.monitor.alertManager.protocol,
-				hostAlert: cluster.monitor.alertManager.host,
-				portAlert: cluster.monitor.alertManager.port
-			});
-		}
-		if (cluster.monitor?.grafana) {
-			field.setValues({
-				protocolGrafana: cluster.monitor.grafana.protocol,
-				hostGrafana: cluster.monitor.grafana.host,
-				portGrafana: cluster.monitor.grafana.port
-			});
-		}
-		if (cluster.monitor?.prometheus) {
-			field.setValues({
-				protocolPrometheus: cluster.monitor.prometheus.protocol,
-				hostPrometheus: cluster.monitor.prometheus.host,
-				portPrometheus: cluster.monitor.prometheus.port
-			});
-		}
-		if (cluster?.storage?.backup?.storage) {
-			field.setValues({
-				accessKeyId: cluster?.storage?.backup?.storage.accessKeyId,
-				bucketName: cluster?.storage?.backup?.storage.bucketName,
-				minioName: cluster?.storage?.backup?.storage.name,
-				secretAccessKey:
-					cluster?.storage?.backup?.storage.secretAccessKey
-			});
-		}
+		getCluster({ clusterId: clusterId, detail: true }).then((res) => {
+			if (res.success) {
+				const cluster = res.data;
+				if (cluster.ingress) {
+					field.setValues({
+						ingressAddress: cluster.ingress.address,
+						ingressClassName: cluster.ingress.ingressClassName,
+						namespace: cluster.ingress.tcp.namespace,
+						configMapName: cluster.ingress.tcp.configMapName
+					});
+				}
+				if (cluster.logging && cluster.logging.elasticSearch) {
+					field.setValues({
+						protocolEs: cluster.logging.elasticSearch.protocol,
+						hostEs: cluster.logging.elasticSearch.host,
+						portEs: cluster.logging.elasticSearch.port,
+						userEs: cluster.logging.elasticSearch.user,
+						passwordEs: cluster.logging.elasticSearch.password,
+						logCollect: cluster.logging.elasticSearch.logCollect
+					});
+				}
+				if (cluster.monitor?.alertManager) {
+					field.setValues({
+						protocolAlert: cluster.monitor.alertManager.protocol,
+						hostAlert: cluster.monitor.alertManager.host,
+						portAlert: cluster.monitor.alertManager.port
+					});
+				}
+				if (cluster.monitor?.grafana) {
+					field.setValues({
+						protocolGrafana: cluster.monitor.grafana.protocol,
+						hostGrafana: cluster.monitor.grafana.host,
+						portGrafana: cluster.monitor.grafana.port
+					});
+				}
+				if (cluster.monitor?.prometheus) {
+					field.setValues({
+						protocolPrometheus: cluster.monitor.prometheus.protocol,
+						hostPrometheus: cluster.monitor.prometheus.host,
+						portPrometheus: cluster.monitor.prometheus.port
+					});
+				}
+				if (cluster?.storage?.backup?.storage) {
+					field.setValues({
+						accessKeyId:
+							cluster?.storage?.backup?.storage.accessKeyId,
+						bucketName:
+							cluster?.storage?.backup?.storage.bucketName,
+						minioName: cluster?.storage?.backup?.storage.name,
+						secretAccessKey:
+							cluster?.storage?.backup?.storage.secretAccessKey
+					});
+				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	}, []);
 	const onOk = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
-			// console.log({ ...values, title });
 			const sendData: any = {
 				clusterId,
 				componentName: title
