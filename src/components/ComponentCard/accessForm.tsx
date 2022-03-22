@@ -144,7 +144,7 @@ const AccessForm = (props: AccessFormProps) => {
 				};
 			} else if (title === 'alertmanager') {
 				sendData.monitor = {
-					grafana: {
+					alertmanager: {
 						host: values.hostAlert,
 						port: values.portAlert,
 						protocol: values.protocolAlert
