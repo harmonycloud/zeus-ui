@@ -153,8 +153,10 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 			return;
 		}
 		if (record.paramType === 'multiSelect') {
+			record[temp?.name || ''] = value.join(',');
 			record.modifiedValue = value.join(',');
 		} else {
+			record[temp?.name || ''] = value;
 			record.modifiedValue = value;
 		}
 		setDataSource([...dataSource]);
@@ -265,6 +267,12 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		const list = dataSource.filter(
 			(item) => item.value != item[temp?.name || '']
 		);
+		if (list.length === 0) {
+			Message.show(
+				messageConfig('error', '失败', '当前模版已启用，无差异值。')
+			);
+			return;
+		}
 		const restartFlag = list.some((item) => {
 			if (item.restart === true) return true;
 			return false;
