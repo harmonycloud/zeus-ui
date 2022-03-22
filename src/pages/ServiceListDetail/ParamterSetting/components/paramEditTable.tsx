@@ -8,7 +8,8 @@ import {
 	Input,
 	Select,
 	Message,
-	Dialog
+	Dialog,
+	Icon
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { useParams } from 'react-router';
@@ -454,6 +455,37 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 							placeholder="请输入搜索内容"
 						/>
 					</>
+				}
+				right={
+					<Button
+						disabled={editFlag}
+						onClick={() => {
+							setEditFlag(false);
+							if (source === 'list') {
+								getData(
+									clusterId,
+									namespace,
+									middlewareName,
+									type,
+									''
+								);
+							} else {
+								const list = param.customConfigList.map(
+									(item) => {
+										item.modifiedValue =
+											item.value || item.defaultValue;
+										item.value =
+											item.value || item.defaultValue;
+										return item;
+									}
+								);
+								setDataSource(list);
+								setShowDataSource(list);
+							}
+						}}
+					>
+						<Icon type="refresh" />
+					</Button>
 				}
 			/>
 			<Table
