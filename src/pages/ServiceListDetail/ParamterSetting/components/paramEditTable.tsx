@@ -8,7 +8,8 @@ import {
 	Input,
 	Select,
 	Message,
-	Dialog
+	Dialog,
+	Icon
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { useParams } from 'react-router';
@@ -87,13 +88,15 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		clusterId: string,
 		namespace: string,
 		middlewareName: string,
-		type: string
+		type: string,
+		order = ''
 	) => {
 		const sendData = {
 			clusterId,
 			namespace,
 			middlewareName,
-			type
+			type,
+			order
 		};
 		getConfigs(sendData).then((res) => {
 			if (res.success) {
@@ -388,19 +391,10 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		const tempDataSource = showDataSource.sort((a, b) => {
-			const result =
-				moment(a['updateTime']).valueOf() -
-				moment(b['updateTime']).valueOf();
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setShowDataSource([...tempDataSource]);
+		console.log(order);
+		const o = order === 'desc' ? 'descend' : 'ascend';
+		getData(clusterId, namespace, middlewareName, type, o);
+		// setShowDataSource([...tempDataSource]);
 	};
 	const onRowProps = (record: ConfigItem) => {
 		if (record.topping) {
@@ -462,6 +456,37 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 						/>
 					</>
 				}
+				right={
+					<Button
+						disabled={editFlag}
+						onClick={() => {
+							setEditFlag(false);
+							if (source === 'list') {
+								getData(
+									clusterId,
+									namespace,
+									middlewareName,
+									type,
+									''
+								);
+							} else {
+								const list = param.customConfigList.map(
+									(item) => {
+										item.modifiedValue =
+											item.value || item.defaultValue;
+										item.value =
+											item.value || item.defaultValue;
+										return item;
+									}
+								);
+								setDataSource(list);
+								setShowDataSource(list);
+							}
+						}}
+					>
+						<Icon type="refresh" />
+					</Button>
+				}
 			/>
 			<Table
 				dataSource={showDataSource}
@@ -469,7 +494,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				primaryKey="name"
 				onFilter={onFilter}
 				rowProps={onRowProps}
-				// onSort={source === 'list' ? onSort : undefined}
+				onSort={onSort}
 			>
 				<Table.Column
 					title="参数名"
@@ -520,7 +545,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 						title="修改时间"
 						dataIndex="updateTime"
 						cell={nullRender}
-						// sortable={true}
+						sortable={true}
 						width={150}
 					/>
 				)}
