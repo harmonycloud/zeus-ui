@@ -13,6 +13,7 @@ import {
 import LDAP from '@/assets/images/LDAP.svg';
 import { getLDAP, enableLDAP, disableLDAP, checkLDAP } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
+import storage from '@/utils/storage';
 
 const { Row, Col } = Grid;
 const formItemLayout = {
@@ -51,10 +52,9 @@ function OpenCenter(props: { activeKey: string | number }) {
 			if (errors) return;
 			enableLDAP({ ...values, isOn: '1' }).then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '保存成功')
-					);
+					Message.show(messageConfig('success', '成功', '保存成功'));
 					getMailInfoData();
+					storage.setLocal('isLDAP', true);
 				} else {
 					Message.show(messageConfig('error', '失败', res.errorMsg));
 				}
@@ -101,6 +101,7 @@ function OpenCenter(props: { activeKey: string | number }) {
 						messageConfig('success', '成功', 'LDAP已关闭')
 					);
 					setFormShow(value);
+					storage.setLocal('isLDAP', false);
 				} else {
 					Message.show(messageConfig('error', '失败', res.errorMsg));
 				}
@@ -115,6 +116,7 @@ function OpenCenter(props: { activeKey: string | number }) {
 								messageConfig('success', '成功', 'LDAP已启用')
 							);
 							setFormShow(value);
+							storage.setLocal('isLDAP', true);
 						} else {
 							Message.show(
 								messageConfig('error', '失败', res.errorMsg)
