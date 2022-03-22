@@ -39,6 +39,7 @@ interface ParamEditTableProps {
 	type: string;
 	param: paramReduxProps;
 	source?: string;
+	handleBtnClick?: (value: boolean) => void;
 	setParamTemplateConfig: (value: ConfigItem[]) => void;
 }
 function ParamEditTable(props: ParamEditTableProps): JSX.Element {
@@ -48,6 +49,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		namespace,
 		middlewareName,
 		type,
+		handleBtnClick,
 		source = 'template',
 		setParamTemplateConfig
 	} = props;
@@ -61,6 +63,9 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				if (clusterId && namespace && middlewareName && type) {
 					getData(clusterId, namespace, middlewareName, type);
 				}
+			} else {
+				setDataSource(param.customConfigList);
+				setShowDataSource(param.customConfigList);
 			}
 			if (uid) {
 				const list = param.customConfigList.map((item: ConfigItem) => {
@@ -118,6 +123,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 	const saveTemplate = () => {
 		if (source === 'template') {
 			setParamTemplateConfig(dataSource);
+			handleBtnClick && handleBtnClick(false);
 		} else {
 			const list = dataSource.filter(
 				(item) => item.value != item.modifiedValue
@@ -395,13 +401,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		console.log(order);
 		const o = order === 'desc' ? 'descend' : 'ascend';
 		getData(clusterId, namespace, middlewareName, type, o);
-		// setShowDataSource([...tempDataSource]);
 	};
 	const onRowProps = (record: ConfigItem) => {
-		if (record.topping) {
+		if ((source === 'list' && record.topping) || editFlag) {
 			return { style: { background: '#F8F8F9' } };
 		}
 	};
@@ -424,12 +428,22 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									className="mr-8"
 									type="normal"
 									onClick={() => {
-										setEditFlag(false);
+										getData(
+											clusterId,
+											namespace,
+											middlewareName,
+											type
+										);
 										source === 'list' &&
 											storage.setSession(
 												'templateEdit',
 												false
 											);
+										setTimeout(() => {
+											setEditFlag(false);
+											handleBtnClick &&
+												handleBtnClick(false);
+										}, 1000);
 									}}
 								>
 									取消
@@ -440,6 +454,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 							<Button
 								className="mr-8"
 								onClick={() => {
+									handleBtnClick && handleBtnClick(true);
 									setEditFlag(true);
 									source === 'list' &&
 										storage.setSession(
@@ -461,11 +476,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					</>
 				}
 				right={
-					<Button
-						disabled={editFlag}
-						onClick={() => {
-							setEditFlag(false);
-							if (source === 'list') {
+					source === 'list' ? (
+						<Button
+							disabled={editFlag}
+							onClick={() => {
+								setEditFlag(false);
 								getData(
 									clusterId,
 									namespace,
@@ -473,23 +488,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									type,
 									''
 								);
-							} else {
-								const list = param.customConfigList.map(
-									(item) => {
-										item.modifiedValue =
-											item.value || item.defaultValue;
-										item.value =
-											item.value || item.defaultValue;
-										return item;
-									}
-								);
-								setDataSource(list);
-								setShowDataSource(list);
-							}
-						}}
-					>
-						<Icon type="refresh" />
-					</Button>
+							}}
+						>
+							<Icon type="refresh" />
+						</Button>
+					) : undefined
 				}
 			/>
 			<Table

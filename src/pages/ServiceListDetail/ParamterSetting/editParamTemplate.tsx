@@ -54,7 +54,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		name,
 		aliasName
 	}: ParamsProps = useParams();
-	console.log(uid);
 	const {
 		param,
 		globalVar: {
@@ -68,6 +67,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	} = props;
 	console.log(param);
 	const [current, setCurrent] = useState<number>(0);
+	const [btnDisable, setBtnDisable] = useState<boolean>(false);
 	const field = Field.useField();
 	const history = useHistory();
 	useEffect(() => {
@@ -94,6 +94,9 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	useEffect(() => {
 		field.setValues({ name: param.name, description: param.description });
 	}, [props.param]);
+	// useEffect(() => {
+
+	// }, []);
 	const goNext = () => {
 		if (current === 0) {
 			field.validate((error) => {
@@ -204,6 +207,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						namespace={namespace}
 						middlewareName={middlewareName}
 						type={type}
+						handleBtnClick={setBtnDisable}
 					/>
 				);
 			case 2:
@@ -302,20 +306,47 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					<Step.Item key={2} title="完成" />
 				</Step>
 				{childrenRender(current)}
-				{(current === 0 || current === 1) && (
+				{current === 0 && (
 					<div className="zeus-edit-param-summit-btn">
-						{current === 1 && (
-							<Button
-								type="normal"
-								onClick={() => setCurrent(current - 1)}
-							>
-								上一步
-							</Button>
-						)}
 						<Button type="primary" onClick={goNext}>
 							下一步
 						</Button>
 						<Button
+							type="normal"
+							onClick={() => {
+								window.history.back();
+								setParamTemplateBasicClear();
+								setParamTemplateConfigClear();
+							}}
+						>
+							取消
+						</Button>
+					</div>
+				)}
+				{current === 1 && (
+					<div
+						className="zeus-edit-param-summit-btn zeus-edit-param-summit-btn-fix"
+						style={{
+							background: btnDisable ? '#F8F8F9' : '#ffffff',
+							cursor: btnDisable ? 'not-allowed' : 'auto'
+						}}
+					>
+						<Button
+							disabled={btnDisable}
+							type="normal"
+							onClick={() => setCurrent(current - 1)}
+						>
+							上一步
+						</Button>
+						<Button
+							disabled={btnDisable}
+							type="primary"
+							onClick={goNext}
+						>
+							下一步
+						</Button>
+						<Button
+							disabled={btnDisable}
 							type="normal"
 							onClick={() => {
 								window.history.back();
