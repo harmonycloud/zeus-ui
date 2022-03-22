@@ -13,7 +13,6 @@ import {
 } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import { useParams } from 'react-router';
-import moment from 'moment';
 import HeaderLayout from '@/components/HeaderLayout';
 import messageConfig from '@/components/messageConfig';
 
