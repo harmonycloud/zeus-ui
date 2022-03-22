@@ -356,7 +356,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			.then((res) => {
 				if (res.success) {
 					Message.show(
-						messageConfig('success', '成功', '参数置顶成功')
+						messageConfig(
+							'success',
+							'成功',
+							`参数${record.topping ? '取消置顶' : '置顶'}成功`
+						)
 					);
 				} else {
 					Message.show(
