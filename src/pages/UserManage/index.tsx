@@ -9,7 +9,8 @@ import {
 	deleteUser,
 	resetPassword,
 	getRoles,
-	updateUser
+	updateUser,
+	getLDAP
 } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import { userProps, roleProps } from './user';
@@ -30,6 +31,7 @@ function UserManage(): JSX.Element {
 	const [roles, setRoles] = useState<roleProps[]>([]);
 	const [role, setRole] = useState<any>();
 	const [record, setRecord] = useState<userProps>();
+	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 
 	useEffect(() => {
 		getRoles().then((res) => {
@@ -44,6 +46,9 @@ function UserManage(): JSX.Element {
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
+		});
+		getLDAP().then((res) => {
+			res.success && setIsLDAP(res.data.isOn);
 		});
 	}, []);
 	useEffect(() => {
@@ -203,8 +208,14 @@ function UserManage(): JSX.Element {
 						关联角色
 					</LinkButton>
 				) : null}
-				<LinkButton onClick={() => resetPasswordHandle(record)}>
-					密码重置
+				<LinkButton onClick={() => resetPasswordHandle(record)} disabled={record.userName !== 'admin' && isLDAP}>
+					{record.userName !== 'admin' && isLDAP ? (
+						<span title={'请联系LDAP管理员修改密码。'}>
+							密码重置
+						</span>
+					) : (
+						<span>密码重置</span>
+					)}
 				</LinkButton>
 			</Actions>
 		);
