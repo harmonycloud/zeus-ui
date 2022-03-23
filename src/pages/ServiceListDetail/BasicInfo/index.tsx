@@ -147,7 +147,8 @@ const modelMap = {
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
 	6: '三主三从',
-	10: '五主五从'
+	10: '五主五从',
+	dledger: '多副本模式'
 };
 const titleConfig = {
 	dataIndex: 'title',
