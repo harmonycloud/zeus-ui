@@ -211,7 +211,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				storage.getLocal('personalization').backgroundImage;
 			values.loginLogo = storage.getLocal('personalization').loginLogo;
 			values.homeLogo = storage.getLocal('personalization').homeLogo;
-			values.tabLogo = storage.getLocal('personalization').tabLogo;
+			values.tabLogo = storage.getLocal('personalization').browserLogo;
 
 			if (values.status === '1') {
 				values.status = 'init';
