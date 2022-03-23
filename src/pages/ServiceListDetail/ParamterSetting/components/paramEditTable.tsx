@@ -52,7 +52,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		source = 'template',
 		setParamTemplateConfig
 	} = props;
-	const { uid }: ParamsProps = useParams();
+	const { uid, currentTab }: ParamsProps = useParams();
 	const [dataSource, setDataSource] = useState<ConfigItem[]>([]);
 	const [showDataSource, setShowDataSource] = useState<ConfigItem[]>([]);
 	const [editFlag, setEditFlag] = useState<boolean>(false);
@@ -83,11 +83,8 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		}
 	}, [props]);
 	useEffect(() => {
-		if (!storage.getSession('templateEdit') && source === 'list') {
-			setEditFlag(false);
-		}
-	}, [storage.getSession('templateEdit')]);
-
+		setEditFlag(false);
+	}, [currentTab]);
 	const getData = (
 		clusterId: string,
 		namespace: string,
@@ -179,7 +176,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			});
 		}
 		setEditFlag(false);
-		source === 'list' && storage.setSession('templateEdit', false);
 	};
 	const handleSearch = (value: string) => {
 		const list = dataSource.filter((item) => item.name.includes(value));
@@ -427,22 +423,24 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									className="mr-8"
 									type="normal"
 									onClick={() => {
-										getData(
-											clusterId,
-											namespace,
-											middlewareName,
-											type
-										);
-										source === 'list' &&
-											storage.setSession(
-												'templateEdit',
-												false
-											);
-										setTimeout(() => {
-											setEditFlag(false);
-											handleBtnClick &&
-												handleBtnClick(false);
-										}, 1000);
+										Dialog.show({
+											title: '操作确认',
+											content:
+												'取消后，编辑后数据将会丢失，请谨慎操作',
+											onOk: () => {
+												getData(
+													clusterId,
+													namespace,
+													middlewareName,
+													type
+												);
+												setTimeout(() => {
+													setEditFlag(false);
+													handleBtnClick &&
+														handleBtnClick(false);
+												}, 1000);
+											}
+										});
 									}}
 								>
 									取消
@@ -455,11 +453,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								onClick={() => {
 									handleBtnClick && handleBtnClick(true);
 									setEditFlag(true);
-									source === 'list' &&
-										storage.setSession(
-											'templateEdit',
-											true
-										);
 								}}
 								type="primary"
 							>

@@ -349,29 +349,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	};
 
 	const onChange = (key: string | number) => {
-		if (storage.getSession('templateEdit')) {
-			Dialog.show({
-				title: '操作确认',
-				content: '是否退出编辑',
-				onOk: () => {
-					setActiveKey(key as string);
-					storage.setSession('templateEdit', false);
-					storage.removeSession('paramsTab');
-					history.push(
-						`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
-					);
-				},
-				onCancel: () => {
-					return;
-				}
-			});
-		} else {
-			setActiveKey(key as string);
-			storage.removeSession('paramsTab');
-			history.push(
-				`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
-			);
-		}
+		setActiveKey(key as string);
+		storage.removeSession('paramsTab');
+		history.push(
+			`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
+		);
 	};
 
 	useEffect(() => {

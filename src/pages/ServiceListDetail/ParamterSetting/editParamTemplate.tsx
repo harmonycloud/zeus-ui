@@ -41,6 +41,7 @@ export interface ParamsProps {
 	templateName: string;
 	name: string;
 	aliasName: string;
+	currentTab: string;
 }
 
 const FormItem = Form.Item;
