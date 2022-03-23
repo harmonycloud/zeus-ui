@@ -40,6 +40,7 @@ export default function Login() {
 			storage.setLocal('personalization', res.data);
 			document.title =
 				res.data && res.data.title ? res.data.title : 'Zeus';
+			change_icon(res.data.tabLogo);
 		});
 	}, []);
 
@@ -59,6 +60,23 @@ export default function Login() {
 		encrypt.setPublicKey(publicKey);
 		const encrypted = encrypt.encrypt(text);
 		return encrypted;
+	}
+
+	function change_icon(iconUrl: string) {
+		const changeFavicon = (link: any) => {
+			let $favicon: any = document.querySelector('link[rel="icon"]');
+			if ($favicon !== null) {
+				$favicon.href = link;
+			} else {
+				$favicon = document.createElement('link');
+				$favicon.rel = 'icon';
+				$favicon.href = link;
+				document.head.appendChild($favicon);
+			}
+		};
+
+		// 动态修改网站图标
+		changeFavicon(iconUrl);
 	}
 
 	const submit = (e: any) => {

@@ -17,7 +17,6 @@ import { api } from '@/api.json';
 
 import storage from '@/utils/storage';
 import { getPersonalConfig, personalized } from '@/services/user';
-import { log } from 'console';
 
 const formItemLayout = {
 	labelCol: {
@@ -37,13 +36,15 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 	const { activeKey } = props;
 	const [data, setData] = useState<personalizationProps>();
 	const [status, setStatus] = useState<number | string | boolean>('0');
-	const [bgSelect, setBgSelect] = useState(false);
-	const [loginSelect, setLoginSelect] = useState(false);
-	const [homeSelect, setHomeSelect] = useState(false);
-	const [imgRule, setImgRule] = useState(false);
+	const [bgSelect, setBgSelect] = useState<boolean>(false);
+	const [loginSelect, setLoginSelect] = useState<boolean>(false);
+	const [homeSelect, setHomeSelect] = useState<boolean>(false);
+	const [browserSelect,setBrowserSelect] = useState<boolean>(false);
+	const [imgRule, setImgRule] = useState<boolean>(false);
 	const [backgroundValue, setBackgroundValue] = useState<any>();
 	const [loginValue, setLoginValue] = useState<any>();
 	const [homeValue, setHomeValue] = useState<any>();
+	const [browserValue,setBrowserValue] = useState<any>();
 
 	useEffect(() => {
 		getData();
@@ -90,7 +91,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				name: name,
 				state: 'done',
 				size: 1024,
-				downloadURL: URL.createObjectURL(base64ToBlob(data)),
+				downloadURL: data ? URL.createObjectURL(base64ToBlob(data)) : data,
 				fileURL: data,
 				imgURL: data
 			}
@@ -110,9 +111,10 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				);
 				setLoginValue(imageData('loginlogo.svg', res.data.loginLogo));
 				setHomeValue(imageData('home.svg', res.data.homeLogo));
+				setBrowserValue(imageData('browser.svg', res.data.tabLogo));
 				document.title =
 					res.data && res.data.title ? res.data.title : 'Zeus';
-				// change_icon(res.data.homeLogo);
+				change_icon(res.data.tabLogo);
 			}
 		});
 	};
@@ -183,11 +185,17 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					...storage.getLocal('personalization'),
 					homeLogo: url
 				});
-			} else {
+			} else if(type === 'login') {
 				setLoginValue(imageData('loginlogo.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
 					loginLogo: url
+				});
+			}else{
+				setBrowserValue(imageData('browser.svg', url));
+				storage.setLocal('personalization', {
+					...storage.getLocal('personalization'),
+					browserLogo: url
 				});
 			}
 			setImgRule(false);
@@ -196,18 +204,14 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 
 	const onSubmit = () => {
 		field.validate((errors, values: any) => {
-			if (errors || bgSelect || homeSelect || loginSelect || imgRule)
+			if (errors || bgSelect || homeSelect || loginSelect || browserSelect || imgRule)
 				return;
-			delete values.backgroundPath;
-			delete values.loginLogoPath;
-			delete values.homeLogoPath;
-			delete values.backgroundImage;
-			delete values.loginLogo;
-			delete values.homeLogo;
+				
 			values.backgroundImage =
 				storage.getLocal('personalization').backgroundImage;
 			values.loginLogo = storage.getLocal('personalization').loginLogo;
 			values.homeLogo = storage.getLocal('personalization').homeLogo;
+			values.tabLogo = storage.getLocal('personalization').tabLogo;
 
 			if (values.status === '1') {
 				values.status = 'init';
@@ -252,7 +256,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					<Upload
 						style={{ display: 'inline' }}
 						listType="card"
-						action={`${api}/user/uploadFile?type=background`}
+						action={`${api}/user/uploadFile`}
 						accept="image/svg,image/jpg,image/png,.svg"
 						limit={1}
 						useDataURL={true}
@@ -283,7 +287,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					<Upload
 						style={{ display: 'inline' }}
 						listType="image"
-						action={`${api}/user/uploadFile?type=login`}
+						action={`${api}/user/uploadFile`}
 						accept="image/svg,.svg"
 						limit={1}
 						useDataURL={true}
@@ -345,7 +349,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					<Upload
 						style={{ display: 'inline' }}
 						listType="card"
-						action={`${api}/user/uploadFile?type=home`}
+						action={`${api}/user/uploadFile`}
 						accept="image/svg,.svg"
 						headers={headers}
 						useDataURL={true}
@@ -366,6 +370,34 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					</Upload>
 					<p className="upload-info">图片支持2M以下的svg格式</p>
 					{homeSelect && (
+						<div style={{ color: '#D93026' }}>请上传图片</div>
+					)}
+				</Form.Item>
+				<Form.Item label="浏览器logo" required labelTextAlign="left">
+					<Upload
+						style={{ display: 'inline' }}
+						listType="card"
+						action={`${api}/user/uploadFile`}
+						accept="image/svg,.svg"
+						headers={headers}
+						useDataURL={true}
+						limit={1}
+						beforeUpload={logoBeforeUpload}
+						onSuccess={(info) => onSuccess('browser', info)}
+						onChange={(value) => {
+							!value.length
+								? setBrowserSelect(true)
+								: setBrowserSelect(false);
+						}}
+						value={browserValue}
+					>
+						<div className="next-upload-card">
+							<Icon type="upload" size="large" />
+							<div className="next-upload-text">上传</div>
+						</div>
+					</Upload>
+					<p className="upload-info">图片支持2M以下的svg格式</p>
+					{browserSelect && (
 						<div style={{ color: '#D93026' }}>请上传图片</div>
 					)}
 				</Form.Item>
