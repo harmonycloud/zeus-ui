@@ -200,9 +200,6 @@ function AlarmSet(props: any) {
 			password: data.password
 		};
 		connectMail(sendData).then((res) => {
-			if (res.data) {
-				Message.show(messageConfig('success', '成功', '测试完成'));
-			}
 			res.data ? setConnect('good') : setConnect('bad');
 		});
 	};
@@ -233,9 +230,6 @@ function AlarmSet(props: any) {
 				};
 			});
 			connectDing(arrs).then((res) => {
-				if (res.success) {
-					Message.show(messageConfig('success', '成功', '测试完成'));
-				}
 				setDingConnect(res.data.map((item: any) => item.success));
 			});
 		});

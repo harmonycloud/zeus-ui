@@ -124,7 +124,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			value: '2m-noslave'
 		},
 		{
-			label: '双主双从',
+			label: '两主两从',
 			value: '2m-2s'
 		},
 		{
@@ -1015,7 +1015,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												双主：主实例宕机期间，未被消费的信息在机器未恢复之前不可消费
 											</p>
 											<p>
-												双主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
+												两主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
 											</p>
 											<p>
 												三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例

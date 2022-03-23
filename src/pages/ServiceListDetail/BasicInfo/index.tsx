@@ -49,7 +49,8 @@ const info: InfoParams = {
 	chartVersion: '',
 	description: '',
 	annotations: '',
-	tolerations: ''
+	tolerations: '',
+	mirror: ''
 };
 
 const InfoConfig = [
@@ -406,12 +407,13 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							: '非强制'
 					})`,
 					chartVersion: data.chartVersion,
-					disasterInstanceName: data.mysqlDTO.relationName || '-',
+					disasterInstanceName: data.mysqlDTO.relationName || '/',
 					annotations: data.annotations || '-',
 					description: data.description || '无',
 					tolerations: `${
 						(data.tolerations && data.tolerations.join(',')) || '/'
-					}`
+					}`,
+					mirror: data.mirrorImage || '/'
 				});
 			} else {
 				setBasicData({
@@ -435,7 +437,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					tolerations: `${
 						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`,
-					description: data.description || '无'
+					description: data.description || '无',
+					mirror: data.mirrorImage || '/'
 				});
 			}
 			setConfigData({
@@ -493,7 +496,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 			setDynamicConfig(listConfig);
 			setDynamicData(listData);
 		}
-	}, [data]);
+	}, []);
 
 	useEffect(() => {
 		let listConfigTemp = [...configConfig];
@@ -570,6 +573,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 			const list = infoConfigTemp.splice(5, 0, originInstanceConfig);
 			setInfoConfig(list);
 		}
+		if (!dataIndexList.includes('description') && !data.dynamicValues) {
+			const mirror = {
+				dataIndex: 'mirror',
+				label: '镜像仓库',
+				render: (val: string) => <div title={val}>{val}</div>
+			};
+			infoConfigTemp.push(mirror);
+		}
 		if (!dataIndexList.includes('description')) {
 			const descriptionTemp = {
 				dataIndex: 'description',
@@ -613,11 +624,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					);
 				}
 			};
-			infoConfigTemp.splice(
-				infoConfigTemp.length - 1,
-				0,
-				descriptionTemp
-			);
+			infoConfigTemp.push(descriptionTemp);
 		}
 		if (!dataIndexList.includes('description')) {
 			const version = {
@@ -629,7 +636,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						<span
 							className="name-link"
 							style={{ marginLeft: '8px' }}
-							onClick={() => 								
+							onClick={() =>
 								history.push(
 									`/serviceList/${params.name}/${params.aliasName}/serverVersion/${params.middlewareName}/${params.type}`
 								)
