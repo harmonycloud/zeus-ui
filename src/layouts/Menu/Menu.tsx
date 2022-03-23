@@ -79,7 +79,7 @@ function Menu(props: MenuProps): JSX.Element {
 		);
 		if (res.success) {
 			const itemsTemp = res.data.map((item: any) => {
-				if (item.subMenu) {
+				if (item.subMenu && item.subMenu.length > 0) {
 					return {
 						key: `/${item.url}`,
 						label: item.aliasName,
