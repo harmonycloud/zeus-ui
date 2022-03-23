@@ -7,7 +7,9 @@ import {
 	LoggingRender,
 	GrafanaRender,
 	AlertRender,
-	MinioRender
+	MinioRender,
+	LvmRender,
+	LocalPathRender
 } from './componenstsForm';
 import messageConfig from '../messageConfig';
 import storage from '@/utils/storage';
@@ -89,6 +91,36 @@ const AccessForm = (props: AccessFormProps) => {
 						endpoint: cluster?.storage?.backup?.storage.endpoint
 					});
 				}
+				if (cluster?.storage?.support) {
+					if (
+						cluster?.storage?.support.find(
+							(item: any) => item.type === 'lvm'
+						)
+					) {
+						field.setValues({
+							lvmName: cluster?.storage?.support.find(
+								(item: any) => item.type === 'lvm'
+							).name,
+							lvmNamespace: cluster?.storage?.support.find(
+								(item: any) => item.type === 'lvm'
+							).namespace
+						});
+					}
+					if (
+						cluster?.storage?.support.find(
+							(item: any) => item.type === 'local-path'
+						)
+					) {
+						field.setValues({
+							localPathName: cluster?.storage?.support.find(
+								(item: any) => item.type === 'local-path'
+							).name,
+							localPathNamespace: cluster?.storage?.support.find(
+								(item: any) => item.type === 'local-path'
+							).namespace
+						});
+					}
+				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -158,8 +190,28 @@ const AccessForm = (props: AccessFormProps) => {
 						protocol: values.protocolPrometheus
 					}
 				};
+			} else if (title === 'lvm') {
+				sendData.storage = {
+					support: [
+						{
+							name: values.lvmName,
+							namespace: values.lvmNamespace,
+							type: 'lvm'
+						}
+					]
+				};
+			} else if (title === 'local-path') {
+				sendData.storage = {
+					support: [
+						{
+							name: values.localPathName,
+							namespace: values.localPathNamespace,
+							type: 'local-path'
+						}
+					]
+				};
 			}
-			// console.log(sendData);
+			console.log(sendData);
 			if (status === 0) {
 				cutInComponent(sendData).then((res) => {
 					if (res.success) {
@@ -208,6 +260,10 @@ const AccessForm = (props: AccessFormProps) => {
 				return <LoggingRender />;
 			case 'ingress':
 				return <IngressRender />;
+			case 'lvm':
+				return <LvmRender />;
+			case 'local-path':
+				return <LocalPathRender />;
 			default:
 				break;
 		}

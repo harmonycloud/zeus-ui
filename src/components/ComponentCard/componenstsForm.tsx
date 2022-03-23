@@ -6,8 +6,6 @@ import {
 	Grid,
 	Switch
 } from '@alicloud/console-components';
-import storage from '@/utils/storage';
-import pattern from '@/utils/pattern';
 const formItemLayout = {
 	labelCol: {
 		span: 5
@@ -53,8 +51,8 @@ export const PrometheusRender = () => (
 				<FormItem
 					required
 					requiredMessage="请输入ip地址"
-					pattern={pattern.ip}
-					patternMessage="请输入正确的ip地址！"
+					// pattern={pattern.ip}
+					// patternMessage="请输入正确的ip地址！"
 					style={{
 						marginLeft: -2
 					}}
@@ -183,8 +181,8 @@ export const LoggingRender = () => (
 					<FormItem
 						required
 						requiredMessage="请输入ip地址"
-						pattern={pattern.ip}
-						patternMessage="请输入正确的ip地址！"
+						// pattern={pattern.ip}
+						// patternMessage="请输入正确的ip地址！"
 						style={{
 							marginLeft: -2
 						}}
@@ -286,8 +284,8 @@ export const GrafanaRender = () => (
 				<FormItem
 					required
 					requiredMessage="请输入ip地址"
-					pattern={pattern.ip}
-					patternMessage="请输入正确的ip地址！"
+					// pattern={pattern.ip}
+					// patternMessage="请输入正确的ip地址！"
 					style={{
 						marginLeft: -2
 					}}
@@ -345,8 +343,8 @@ export const AlertRender = () => (
 				<FormItem
 					required
 					requiredMessage="请输入ip地址"
-					pattern={pattern.ip}
-					patternMessage="请输入正确的ip地址！"
+					// pattern={pattern.ip}
+					// patternMessage="请输入正确的ip地址！"
 					style={{
 						marginLeft: -2
 					}}
@@ -485,6 +483,82 @@ export const MinioRender = (props: any) => {
 				className="ne-required-ingress"
 			>
 				<Input name="secretAccessKey" />
+			</FormItem>
+		</>
+	);
+};
+export const LvmRender = () => {
+	return (
+		<>
+			<FormItem
+				{...formItemLayout}
+				label="名称"
+				required
+				requiredMessage="请输入名称"
+				className="ne-required-ingress"
+				labelTextAlign="left"
+				asterisk={false}
+			>
+				<Input
+					htmlType="text"
+					name="lvmName"
+					trim={true}
+					placeholder="请输入名称"
+				/>
+			</FormItem>
+			<FormItem
+				{...formItemLayout}
+				label="分区"
+				required
+				requiredMessage="请输入分区"
+				className="ne-required-ingress"
+				labelTextAlign="left"
+				asterisk={false}
+			>
+				<Input
+					htmlType="text"
+					name="lvmNamespace"
+					trim={true}
+					placeholder="请输入分区"
+				/>
+			</FormItem>
+		</>
+	);
+};
+export const LocalPathRender = () => {
+	return (
+		<>
+			<FormItem
+				{...formItemLayout}
+				label="名称"
+				required
+				requiredMessage="请输入名称"
+				className="ne-required-ingress"
+				labelTextAlign="left"
+				asterisk={false}
+			>
+				<Input
+					htmlType="text"
+					name="localPathName"
+					trim={true}
+					placeholder="请输入名称"
+				/>
+			</FormItem>
+			<FormItem
+				{...formItemLayout}
+				label="分区"
+				required
+				requiredMessage="请输入分区"
+				className="ne-required-ingress"
+				labelTextAlign="left"
+				asterisk={false}
+			>
+				<Input
+					htmlType="text"
+					name="localPathNamespace"
+					trim={true}
+					placeholder="请输入分区"
+				/>
 			</FormItem>
 		</>
 	);

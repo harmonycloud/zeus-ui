@@ -28,24 +28,8 @@ export default function ParamterSetting(
 	const params: DetailParams = useParams();
 	const { currentTab, chartVersion } = params;
 	const menuSelect = (selectedKey: string) => {
-		if (storage.getSession('templateEdit')) {
-			Dialog.show({
-				title: '操作确认',
-				content: '是否退出编辑',
-				onOk: () => {
-					setSelectedKey(selectedKey);
-					storage.setSession('templateEdit', false);
-					storage.setSession('paramsTab', selectedKey);
-				},
-				onCancel: () => {
-					return;
-				}
-			});
-		} else {
-			setSelectedKey(selectedKey);
-			storage.setSession('templateEdit', false);
-			storage.setSession('paramsTab', selectedKey);
-		}
+		setSelectedKey(selectedKey);
+		storage.setSession('paramsTab', selectedKey);
 	};
 	useEffect(() => {
 		currentTab &&
