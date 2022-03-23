@@ -144,7 +144,7 @@ const AccessForm = (props: AccessFormProps) => {
 				};
 			} else if (title === 'alertmanager') {
 				sendData.monitor = {
-					alertmanager: {
+					alertManager: {
 						host: values.hostAlert,
 						port: values.portAlert,
 						protocol: values.protocolAlert

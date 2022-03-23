@@ -93,7 +93,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		namespace: string,
 		middlewareName: string,
 		type: string,
-		order = ''
+		order = 'descend'
 	) => {
 		const sendData = {
 			clusterId,
