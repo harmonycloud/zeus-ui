@@ -540,7 +540,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		}
 		return (
 			<Actions>
-				<LinkButton
+				{/* <LinkButton
 					disabled={tabJudge(record, 'high')}
 					onClick={() => {
 						storage.setSession(
@@ -608,7 +608,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					>
 						日志详情
 					</span>
-				</LinkButton>
+				</LinkButton> */}
 				<LinkButton
 					disabled={
 						!record.managePlatform ||
@@ -661,7 +661,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						服务控制台
 					</span>
 				</LinkButton>
-				<LinkButton
+				{/* <LinkButton
 					disabled={record.type !== 'mysql'}
 					onClick={() => {
 						history.push({
@@ -745,7 +745,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					>
 						参数设置
 					</span>
-				</LinkButton>
+				</LinkButton> */}
 				<LinkButton
 					onClick={() =>
 						history.push(

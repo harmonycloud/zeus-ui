@@ -316,6 +316,12 @@
 		margin-right: $margin;
 	}
 }
+.zeus-edit-param-summit-btn-fix {
+	position: fixed;
+	z-index: 999;
+	bottom: 0;
+	padding: 16px 16px 16px 0px;
+}
 .zeus-edit-return-list {
 	text-align: center;
 }

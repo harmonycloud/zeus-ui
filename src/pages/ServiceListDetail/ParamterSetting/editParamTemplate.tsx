@@ -54,7 +54,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		name,
 		aliasName
 	}: ParamsProps = useParams();
-	console.log(uid);
 	const {
 		param,
 		globalVar: {
@@ -68,8 +67,16 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	} = props;
 	console.log(param);
 	const [current, setCurrent] = useState<number>(0);
+	const [btnDisable, setBtnDisable] = useState<boolean>(false);
+	const [fixFlag, setFixFlag] = useState<boolean>(false);
 	const field = Field.useField();
 	const history = useHistory();
+	useEffect(() => {
+		return () => {
+			setParamTemplateBasicClear();
+			setParamTemplateConfigClear();
+		};
+	}, []);
 	useEffect(() => {
 		if (uid) {
 			const sendData = {
@@ -94,6 +101,53 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	useEffect(() => {
 		field.setValues({ name: param.name, description: param.description });
 	}, [props.param]);
+	useEffect(() => {
+		const content =
+			document.getElementsByClassName('windcc-app-layout__content')[0]
+				?.clientHeight - 147;
+		const OneArea = document.getElementsByClassName(
+			'param-step-one-content'
+		)[0]?.clientHeight;
+		const twoArea = document.getElementsByClassName(
+			'zeus-param-edit-table-content'
+		)[0]?.clientHeight;
+		if (current === 0) {
+			if (content > OneArea) {
+				setFixFlag(false);
+			} else {
+				setFixFlag(true);
+			}
+		} else {
+			if (content > twoArea) {
+				setFixFlag(false);
+			} else {
+				setFixFlag(true);
+			}
+		}
+		window.onresize = function () {
+			const content =
+				document.getElementsByClassName('windcc-app-layout__content')[0]
+					?.clientHeight - 147;
+			const OneArea = document.getElementsByClassName(
+				'param-step-one-content'
+			)[0]?.clientHeight;
+			const twoArea = document.getElementsByClassName(
+				'zeus-param-edit-table-content'
+			)[0]?.clientHeight;
+			if (content > OneArea) {
+				setFixFlag(false);
+			} else if (content > twoArea) {
+				setFixFlag(false);
+			} else {
+				setFixFlag(true);
+			}
+		};
+	}, [
+		document.getElementsByClassName('zeus-param-edit-table-content')[0]
+			?.clientHeight,
+		document.getElementsByClassName('param-step-one-content')[0]
+			?.clientHeight
+	]);
 	const goNext = () => {
 		if (current === 0) {
 			field.validate((error) => {
@@ -151,7 +205,10 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		switch (value) {
 			case 0:
 				return (
-					<FormBlock title="基础信息">
+					<FormBlock
+						title="基础信息"
+						className="param-step-one-content"
+					>
 						<Form
 							{...formItemLayout614}
 							field={field}
@@ -204,6 +261,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						namespace={namespace}
 						middlewareName={middlewareName}
 						type={type}
+						handleBtnClick={setBtnDisable}
 					/>
 				);
 			case 2:
@@ -290,7 +348,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					setParamTemplateConfigClear();
 				}}
 			/>
-			<Content>
+			<Content className="param-content">
 				<Step
 					style={{ marginBottom: 32 }}
 					current={current}
@@ -303,19 +361,33 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				</Step>
 				{childrenRender(current)}
 				{(current === 0 || current === 1) && (
-					<div className="zeus-edit-param-summit-btn">
+					<div
+						className={`zeus-edit-param-summit-btn ${
+							fixFlag ? 'zeus-edit-param-summit-btn-fix' : ''
+						}`}
+						style={{
+							background: btnDisable ? '#F8F8F9' : '#ffffff',
+							cursor: btnDisable ? 'not-allowed' : 'auto'
+						}}
+					>
 						{current === 1 && (
 							<Button
+								disabled={btnDisable}
 								type="normal"
 								onClick={() => setCurrent(current - 1)}
 							>
 								上一步
 							</Button>
 						)}
-						<Button type="primary" onClick={goNext}>
+						<Button
+							disabled={btnDisable}
+							type="primary"
+							onClick={goNext}
+						>
 							下一步
 						</Button>
 						<Button
+							disabled={btnDisable}
 							type="normal"
 							onClick={() => {
 								window.history.back();
