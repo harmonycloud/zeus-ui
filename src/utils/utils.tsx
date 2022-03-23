@@ -5,6 +5,7 @@ import JSEncrypt from 'jsencrypt';
 import moment from 'moment';
 import { renderFormItem } from '@/components/renderFormItem';
 import FormBlock from '@/components/FormBlock';
+import nodata from '@/assets/images/nodata.svg';
 
 const Tooltip = Balloon.Tooltip;
 // * 组件复用
@@ -339,7 +340,11 @@ export const iconTypeRender = (value: string, index: number, record: any) => {
 			<img
 				width={14}
 				height={14}
-				src={`${api}/images/middleware/${record.imagePath}`}
+				src={
+					record.imagePath
+						? `${api}/images/middleware/${record.imagePath}`
+						: nodata
+				}
 				alt={record.chartName}
 			/>
 			{value}

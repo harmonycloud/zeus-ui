@@ -122,18 +122,16 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={
-							title !== 'local-path' &&
-							title !== 'middleware-controller' &&
-							title !== 'lvm'
-								? 2
-								: 1
-						}
+						actionCount={title !== 'middleware-controller' ? 2 : 1}
 						leftText="安装"
 						rightText="接入"
 						leftClass="link"
 						rightClass="link"
-						leftHandle={installComponent}
+						leftHandle={() => {
+							title !== 'lvm'
+								? installComponent()
+								: setLvmVisible(true);
+						}}
 						rightHandle={() => setAccessVisible(true)}
 						centerText="安装"
 						centerClass="link"
@@ -190,13 +188,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={
-							title !== 'local-path' &&
-							title !== 'middleware-controller' &&
-							title !== 'lvm'
-								? 2
-								: 1
-						}
+						actionCount={title !== 'middleware-controller' ? 2 : 1}
 						leftText="卸载"
 						leftClass="danger"
 						rightText="编辑"
@@ -217,13 +209,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={
-							title !== 'local-path' &&
-							title !== 'middleware-controller' &&
-							title !== 'lvm'
-								? 2
-								: 1
-						}
+						actionCount={title !== 'middleware-controller' ? 2 : 1}
 						leftText="卸载"
 						leftClass="danger"
 						rightClass="link"
@@ -262,13 +248,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={
-							title !== 'local-path' &&
-							title !== 'middleware-controller' &&
-							title !== 'lvm'
-								? 2
-								: 1
-						}
+						actionCount={title !== 'middleware-controller' ? 2 : 1}
 						leftText="卸载"
 						leftClass="danger"
 						rightText="编辑"
