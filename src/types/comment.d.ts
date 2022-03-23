@@ -67,6 +67,7 @@ export interface middlewareDetailProps {
 	isAllLvmStorage: boolean;
 	stdoutEnabled: boolean;
 	filelogEnabled: boolean;
+	mirrorImage?: data.mirrorImage
 }
 
 export interface basicDataProps {

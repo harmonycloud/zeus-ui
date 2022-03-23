@@ -180,6 +180,7 @@ export interface InfoParams {
 	annotations: string;
 	tolerations: string;
 	disasterInstanceName?: string;
+	mirror?: string;
 }
 export interface configParams {
 	title: string;
