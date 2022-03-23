@@ -40,3 +40,7 @@ export const deleteMiddlewareStorage = (params: ParamsProps) => {
 export const recoveryMiddleware = (params: ParamsProps) => {
 	return Axios.json(SERVICE.recoveryMiddleware, params, {}, 'POST');
 };
+
+export const getPlatformAdd = (params: ParamsProps) => {
+	return Axios.get(SERVICE.getPlatform, params);
+};
