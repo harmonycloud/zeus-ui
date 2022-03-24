@@ -342,7 +342,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title={uid ? '修改模版参数' : '新建参数模版'}
+				title={uid ? '修改参数模版' : '新建参数模版'}
 				hasBackArrow
 				onBackArrowClick={() => {
 					window.history.back();
