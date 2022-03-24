@@ -323,7 +323,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					>
 						<ErrorPage
 							title={uid ? '模版修改失败' : '模版创建失败'}
-							btnText={`返回创建列表(${5}s)`}
+							btnText={`返回创建列表`}
+							countDown={5}
 							btnHandle={() => {
 								history.push(
 									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
