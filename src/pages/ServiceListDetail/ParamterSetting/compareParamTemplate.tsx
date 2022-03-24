@@ -126,7 +126,7 @@ export default function CompareParamTemplate(): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title="模版参数对比"
+				title="参数模版对比"
 				hasBackArrow
 				onBackArrowClick={() => window.history.back()}
 			/>
