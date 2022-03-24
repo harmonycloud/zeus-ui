@@ -143,12 +143,13 @@ const modelMap = {
 	'cold-complex': 'N主N数据N冷N协调',
 	regular: 'N主N数据',
 	sentinel: '哨兵',
-	'2m-noslave': '两主',
+	'2m-noslave': '双主',
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
 	6: '三主三从',
 	10: '五主五从',
-	dledger: '多副本模式'
+	dledger: 'DLedger模式',
+	cluster: '集群模式'
 };
 const titleConfig = {
 	dataIndex: 'title',
