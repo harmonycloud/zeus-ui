@@ -405,7 +405,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 					/>
 				</Table>
 				<div
-					className="zeus-edit-param-summit-btn"
+					className="zeus-edit-param-summit-btn zeus-edit-param-summit-btn-fix"
 					style={{ paddingTop: 16 }}
 				>
 					<Button type="primary" onClick={confirmUse}>
