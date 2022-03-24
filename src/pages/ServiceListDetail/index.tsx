@@ -19,6 +19,7 @@ import Log from './Log/index';
 import ServerAlarm from './ServeAlarm';
 import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';
+import DataBase from './Database/index';
 
 import { getMiddlewareDetail } from '@/services/middleware';
 import { getNamespaces } from '@/services/common';
@@ -214,6 +215,19 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				case 'disaster':
 					return (
 						<Disaster
+							chartName={type}
+							chartVersion={chartVersion}
+							middlewareName={middlewareName}
+							clusterId={globalVar.cluster.id}
+							namespace={globalVar.namespace.name}
+							data={data}
+							onRefresh={refresh}
+							toDetail={toDetail}
+						/>
+					);
+				case 'database':
+					return (
+						<DataBase
 							chartName={type}
 							chartVersion={chartVersion}
 							middlewareName={middlewareName}
@@ -455,6 +469,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					{type === 'mysql' ? (
 						<Tab.Item title="灾备服务" key="disaster">
 							{childrenRender('disaster')}
+						</Tab.Item>
+					) : null}
+					{type === 'mysql' ? (
+						<Tab.Item title="数据库管理" key="database">
+							{childrenRender('database')}
 						</Tab.Item>
 					) : null}
 				</Tab>
