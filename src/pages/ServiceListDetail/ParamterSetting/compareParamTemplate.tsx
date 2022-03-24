@@ -107,11 +107,18 @@ export default function CompareParamTemplate(): JSX.Element {
 		const {
 			restart: { selectedKeys }
 		} = filterParams;
+		let list = dataSource;
 		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource);
+			list = list.filter(
+				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
+			);
+			setShowDataSource(list);
 		} else {
-			const tempData = dataSource.filter(
+			let tempData = list.filter(
 				(item: any) => item.restart + '' === selectedKeys[0]
+			);
+			tempData = tempData.filter(
+				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
 			);
 			setShowDataSource(tempData);
 		}

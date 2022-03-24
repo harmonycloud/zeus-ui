@@ -128,11 +128,16 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		const {
 			restart: { selectedKeys }
 		} = filterParams;
+		let list = dataSource;
 		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource);
+			list = list.filter((item) => item[temp?.name || ''] !== item.value);
+			setShowDataSource(list);
 		} else {
-			const tempData = dataSource.filter(
+			let tempData = dataSource.filter(
 				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
+			);
+			tempData = tempData.filter(
+				(item) => item[temp?.name || ''] !== item.value
 			);
 			setShowDataSource(tempData);
 		}
@@ -301,7 +306,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						customConfigList: list
 					}
 				};
-				console.log(sendData);
+				// console.log(sendData);
 				return updateConfig(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
