@@ -359,8 +359,8 @@ export const nullRender: (value: string | null) => JSX.Element = (
 	value: string | null
 ) => {
 	return (
-		<div className="text-overflow-one" title={value || '--'}>
-			{value || '--'}
+		<div className="text-overflow-one" title={value || '/'}>
+			{value || '/'}
 		</div>
 	);
 };
