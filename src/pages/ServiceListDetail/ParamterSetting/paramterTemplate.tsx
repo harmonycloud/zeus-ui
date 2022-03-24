@@ -119,7 +119,13 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 					}}
 					disabled={selectedRowKeys.length > 0}
 				>
-					使用
+					<span
+						title={
+							selectedRowKeys.length > 0 ? '请取消勾选后操作' : ''
+						}
+					>
+						使用
+					</span>
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -129,7 +135,13 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 					}}
 					disabled={selectedRowKeys.length > 0}
 				>
-					编辑
+					<span
+						title={
+							selectedRowKeys.length > 0 ? '请取消勾选后操作' : ''
+						}
+					>
+						编辑
+					</span>
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -141,7 +153,13 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 					}}
 					disabled={selectedRowKeys.length > 0}
 				>
-					删除
+					<span
+						title={
+							selectedRowKeys.length > 0 ? '请取消勾选后操作' : ''
+						}
+					>
+						删除
+					</span>
 				</LinkButton>
 			</Actions>
 		);
