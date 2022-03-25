@@ -18,7 +18,11 @@ import { getConfigs, updateConfig } from '@/services/middleware';
 import { globalVarProps, StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { ConfigItem, ParamterTemplateItem } from '../detail';
-import { defaultValueRender, questionTooltipRender } from '@/utils/utils';
+import {
+	defaultValueRender,
+	questionTooltipRender,
+	tooltipRender
+} from '@/utils/utils';
 import messageConfig from '@/components/messageConfig';
 
 interface UseTemplateParams {
@@ -371,14 +375,18 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="参数名"
 						dataIndex="name"
 						width={210}
-						cell={defaultValueRender}
+						cell={(
+							value: string,
+							index: number,
+							record: ConfigItem
+						) => tooltipRender(value, index, record, 210)}
 						lock="left"
 					/>
 					<Table.Column
 						title="当前运行值"
 						dataIndex="value"
 						cell={defaultValueRender}
-						width={310}
+						width={180}
 					/>
 					<Table.Column
 						title="模版值"
@@ -390,7 +398,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="默认值"
 						dataIndex="defaultValue"
 						cell={defaultValueRender}
-						width={310}
+						width={180}
 					/>
 					<Table.Column
 						title="是否重启"
@@ -401,7 +409,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							{ value: 'true', label: '是' },
 							{ value: 'false', label: '否' }
 						]}
-						width={140}
+						width={120}
 					/>
 					<Table.Column
 						title="参数值范围"
@@ -413,7 +421,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="参数描述"
 						dataIndex="description"
 						cell={questionTooltipRender}
-						width={100}
+						width={80}
 					/>
 				</Table>
 				<div

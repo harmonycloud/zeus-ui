@@ -200,7 +200,7 @@ function RoleManage(): JSX.Element {
 								}}
 								onClick={() => permissionEdit(record)}
 							>
-								分配角色 & 分区
+								分配角色权限
 							</LinkButton>
 						}
 						closable={false}
@@ -225,7 +225,7 @@ function RoleManage(): JSX.Element {
 						}}
 						onClick={() => permissionEdit(record)}
 					>
-						分配角色 & 分区
+						分配角色权限
 					</LinkButton>
 				)}
 			</Actions>
