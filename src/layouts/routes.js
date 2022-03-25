@@ -44,6 +44,7 @@ import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
 import UseTemplate from '@/pages/ServiceListDetail/ParamterSetting/useTemplate';
+import ProjectManage from '@/pages/ProjectManage';
 
 const Routes = withRouter((props) => {
 	return (
@@ -294,6 +295,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/systemAlarm/createAlarm/:alarmType/:ruleId"
 					component={CreateAlarm}
+					exact
+				/>
+				{/* 项目管理 */}
+				<Route
+					path="/systemManagement/projectManagement"
+					component={ProjectManage}
 					exact
 				/>
 				<Route

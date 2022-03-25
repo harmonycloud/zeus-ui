@@ -6,6 +6,7 @@ import Table from '@/components/MidTable';
 import { getParamsTemps, deleteParamsTemp } from '@/services/template';
 import messageConfig from '@/components/messageConfig';
 import moment from 'moment';
+import { defaultValueRender } from '@/utils/utils';
 
 interface ParamterTemplateProps {
 	type: string;
@@ -206,10 +207,29 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 			}}
 			onSort={onSort}
 		>
-			<Table.Column title="模板名称" dataIndex="name" />
-			<Table.Column title="模板描述" dataIndex="description" />
-			<Table.Column title="创建时间" dataIndex="createTime" sortable />
-			<Table.Column title="操作" dataIndex="action" cell={actionRender} />
+			<Table.Column
+				title="模板名称"
+				dataIndex="name"
+				width={150}
+				cell={defaultValueRender}
+			/>
+			<Table.Column
+				title="模板描述"
+				dataIndex="description"
+				cell={defaultValueRender}
+			/>
+			<Table.Column
+				title="创建时间"
+				dataIndex="createTime"
+				width={180}
+				sortable
+			/>
+			<Table.Column
+				title="操作"
+				dataIndex="action"
+				width={180}
+				cell={actionRender}
+			/>
 		</Table>
 	);
 };

@@ -7,10 +7,12 @@ import MidTable from '@/components/MidTable';
 
 import { getProjects, deleteProject } from '@/services/project';
 import messageConfig from '@/components/messageConfig';
+import { nullRender } from '@/utils/utils';
 
 export default function ProjectManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState([]);
 	const [keyword, setKeyword] = useState<string>('');
+	const [visible, setVisible] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		getData();
@@ -22,10 +24,7 @@ export default function ProjectManage(): JSX.Element {
 	};
 	const Operation = {
 		primary: (
-			<Button
-				onClick={() => console.log('create project')}
-				type="primary"
-			>
+			<Button onClick={() => setVisible(true)} type="primary">
 				创建项目
 			</Button>
 		)
@@ -91,9 +90,8 @@ export default function ProjectManage(): JSX.Element {
 					exact
 					fixedBarExpandWidth={[24]}
 					affixActionBar
-					showColumnSetting
 					showRefresh
-					onRefresh={() => console.log('refresh')}
+					onRefresh={getData}
 					primaryKey="name"
 					operation={Operation}
 					search={{
@@ -113,7 +111,11 @@ export default function ProjectManage(): JSX.Element {
 						title="命名空间数"
 						dataIndex="namespaceCount"
 					/>
-					<MidTable.Column title="备注" dataIndex="description" />
+					<MidTable.Column
+						title="备注"
+						dataIndex="description"
+						cell={nullRender}
+					/>
 					<MidTable.Column
 						title="操作"
 						dataIndex="action"
