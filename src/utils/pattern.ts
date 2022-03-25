@@ -18,7 +18,9 @@ const pattern: patternProps = {
 	aliasName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,18}$',
 	roleName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$',
 	ingressName: '^[a-z0-9-]{0,40}$',
-	paramTemplateName: '[a-z0-9-]{2,30}$'
+	paramTemplateName: '[a-z0-9-]{2,30}$',
+	projectName: '[a-z][a-z0-9-]{0,38}[a-z0-9]$',
+	projectAliasName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{0,80}$'
 };
 
 export default pattern;

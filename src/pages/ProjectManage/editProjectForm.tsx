@@ -35,13 +35,22 @@ export default function EditProjectform(
 					asterisk={false}
 					label="英文简称"
 					required
-					requiredMessage="请输入登录账户名称"
-					pattern={pattern.userName}
-					patternMessage="登录账户名只允许英文大小写+数字组合，长度不可超过10字符"
+					requiredMessage="请输入英文名称"
+					pattern={pattern.projectName}
+					patternMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
 				>
 					<Input name="name" />
 				</FormItem>
-				<FormItem label="项目名称">
+				<FormItem
+					className="ne-required-ingress"
+					labelTextAlign="left"
+					asterisk={false}
+					label="项目名称"
+					required
+					requiredMessage="请输入英文名称"
+					pattern={pattern.projectAliasName}
+					patternMessage="请输入名称，且最大长度不超过80个字符"
+				>
 					<Input name="aliasName" />
 				</FormItem>
 				<FormItem label="备注">

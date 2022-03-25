@@ -463,7 +463,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 							onSearch={handleSearch}
 							hasClear
 							style={{ width: '200px' }}
-							placeholder="请输入搜索内容"
+							placeholder="请输入关键词搜索"
 						/>
 					</>
 				}

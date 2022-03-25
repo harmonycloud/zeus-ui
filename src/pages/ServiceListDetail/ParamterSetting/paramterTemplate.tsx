@@ -199,7 +199,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 			operation={Operation}
 			search={{
 				onSearch: handleSearch,
-				placeholder: '请输入搜索内容'
+				placeholder: '请输入关键词搜索'
 			}}
 			rowSelection={{
 				onChange: onChange,
