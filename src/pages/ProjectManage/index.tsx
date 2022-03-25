@@ -39,7 +39,7 @@ export default function ProjectManage(): JSX.Element {
 	const nameRender = (value: string, index: number, record: any) => {
 		return (
 			<span
-				className="name-link"
+				className="text-overflow name-link"
 				onClick={() => console.log('to detail')}
 			>
 				{value}
@@ -99,13 +99,14 @@ export default function ProjectManage(): JSX.Element {
 						value: keyword,
 						onChange: handleChange,
 						onSearch: handleSearch,
-						placeholder: '请输入搜索内容'
+						placeholder: '请输入关键词搜索'
 					}}
 				>
 					<MidTable.Column
 						title="项目名称"
 						dataIndex="projectName"
 						cell={nameRender}
+						lock="left"
 					/>
 					<MidTable.Column title="成员数" dataIndex="memberCount" />
 					<MidTable.Column
@@ -121,6 +122,7 @@ export default function ProjectManage(): JSX.Element {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
+						width={180}
 					/>
 				</MidTable>
 			</Content>

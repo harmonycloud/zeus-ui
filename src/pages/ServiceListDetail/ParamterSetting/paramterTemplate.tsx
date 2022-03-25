@@ -210,13 +210,15 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 			<Table.Column
 				title="模板名称"
 				dataIndex="name"
-				width={150}
 				cell={defaultValueRender}
+				lock="left"
+				width={150}
 			/>
 			<Table.Column
 				title="模板描述"
 				dataIndex="description"
 				cell={defaultValueRender}
+				// width={300}
 			/>
 			<Table.Column
 				title="创建时间"
