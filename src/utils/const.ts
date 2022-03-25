@@ -264,6 +264,14 @@ export const formItemLayout614 = {
 		span: 14
 	}
 };
+export const formItemLayout619 = {
+	labelCol: {
+		fixedSpan: 6
+	},
+	wrapperCol: {
+		span: 19
+	}
+};
 export const timeSelectDataSource = [
 	{
 		value: '1',

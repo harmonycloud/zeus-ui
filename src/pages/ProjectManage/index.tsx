@@ -4,6 +4,7 @@ import { useHistory } from 'react-router';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import MidTable from '@/components/MidTable';
+import EditProjectForm from './editProjectForm';
 
 import { getProjects, deleteProject } from '@/services/project';
 import messageConfig from '@/components/messageConfig';
@@ -123,6 +124,13 @@ export default function ProjectManage(): JSX.Element {
 					/>
 				</MidTable>
 			</Content>
+			{visible && (
+				<EditProjectForm
+					visible={visible}
+					onCancel={() => setVisible(false)}
+					onCreate={() => console.log('create')}
+				/>
+			)}
 		</Page>
 	);
 }

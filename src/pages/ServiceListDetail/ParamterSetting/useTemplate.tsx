@@ -384,6 +384,13 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="模版值"
 						dataIndex={temp?.name}
 						cell={modifyValueRender}
+						width={310}
+					/>
+					<Table.Column
+						title="默认值"
+						dataIndex="defaultValue"
+						cell={defaultValueRender}
+						width={310}
 					/>
 					<Table.Column
 						title="是否重启"
