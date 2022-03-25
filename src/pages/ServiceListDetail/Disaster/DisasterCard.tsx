@@ -25,7 +25,7 @@ export const DisasterOriginCard: (props: disasterCardProps) => JSX.Element = (
 			</div>
 			<ul className="disaster-card-info">
 				<li>
-					<label>资源池名称/资源分区 :</label>
+					<label>集群名称/命名空间 :</label>
 					<span>
 						{originData.cluster}/{originData.namespace}
 					</span>
@@ -84,7 +84,7 @@ export const DisasterBackupCard: (props: disasterCardProps) => JSX.Element = (
 			</div>
 			<ul className="disaster-card-info">
 				<li>
-					<label>资源池名称/资源分区 :</label>
+					<label>集群名称/命名空间 :</label>
 					<span>
 						{backupData.cluster}/{backupData.namespace}
 					</span>

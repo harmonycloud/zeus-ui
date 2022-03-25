@@ -42,7 +42,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 	);
 	const [clusterList, setClusterList] = useState<any[]>([]);
 	const [namespaceList, setNamespaceList] = useState<any[]>([]);
-	// 控制资源池和分区
+	// 控制集群和分区
 	const [disabled, setDisabled] = useState(false);
 	const [hideFlag, setHideFlag] = useState(false);
 	// * 用户信息
@@ -227,7 +227,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 			>
 				{hideFlag === false && (
 					<>
-						<span style={{ marginRight: 8 }}>资源池</span>
+						<span style={{ marginRight: 8 }}>集群</span>
 						<Select
 							className="no-shadow"
 							value={currentCluster.id}
@@ -247,7 +247,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 								);
 							})}
 						</Select>
-						<span style={{ marginLeft: 24 }}>资源分区</span>
+						<span style={{ marginLeft: 24 }}>命名空间</span>
 						<Select
 							style={{ marginLeft: 8 }}
 							className="no-shadow"

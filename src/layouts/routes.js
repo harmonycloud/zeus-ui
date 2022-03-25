@@ -250,7 +250,7 @@ const Routes = withRouter((props) => {
 					component={OperationAuditDetail}
 					exact
 				/>
-				{/* 资源池管理 */}
+				{/* 集群管理 */}
 				<Route
 					path="/systemManagement/resourcePoolManagement"
 					component={ResourcePoolManagement}

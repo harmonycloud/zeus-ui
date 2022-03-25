@@ -283,7 +283,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							messageConfig(
 								'error',
 								'失败',
-								'当前资源分区下无服务'
+								'当前命名空间下无服务'
 							)
 						);
 					} else {

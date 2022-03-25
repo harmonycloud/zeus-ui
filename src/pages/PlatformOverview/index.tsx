@@ -243,7 +243,7 @@ function PlatformOverview(): JSX.Element {
 					<div className="header">
 						<div className="header-btn">
 							<div>
-								资源池:
+								集群:
 								<Select
 									style={{
 										width: '226px',
@@ -290,7 +290,7 @@ function PlatformOverview(): JSX.Element {
 											<span>个</span>
 										</p>
 										<p className="type">
-											资源池总数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											集群总数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										</p>
 									</div>
 								</div>
@@ -315,7 +315,7 @@ function PlatformOverview(): JSX.Element {
 											<span>个</span>
 										</p>
 										<span className="type">
-											总资源分区总数
+											总命名空间总数
 										</span>
 									</div>
 								</div>
@@ -495,7 +495,7 @@ function PlatformOverview(): JSX.Element {
 														align="t"
 														triggerType="click"
 													>
-														请选择资源池后跳转
+														请选择集群后跳转
 													</Tooltip>
 												);
 											}

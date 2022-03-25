@@ -250,12 +250,12 @@ function Rules(props: RuleProps): JSX.Element {
 						};
 						updateAlarm(sendData).then((res) => {
 							if (res.success) {
-									getData(
-										clusterId,
-										middlewareName,
-										namespace,
-										''
-									);
+								getData(
+									clusterId,
+									middlewareName,
+									namespace,
+									''
+								);
 								Message.show(
 									messageConfig('success', '成功', '修改成功')
 								);
@@ -376,7 +376,7 @@ function Rules(props: RuleProps): JSX.Element {
 
 	if (!monitor || !monitor.alertManager) {
 		return (
-			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);
 	}
 

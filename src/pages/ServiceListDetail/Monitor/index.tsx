@@ -73,7 +73,7 @@ const Monitor = (props: MonitorProps) => {
 	return (
 		<div className={styles['monitor']}>
 			{monitor?.grafana === null ? (
-				<ComponentNull title="该功能所需要数据监控和监控面板工具支持，您可前往“资源池——>平台组件进行安装" />
+				<ComponentNull title="该功能所需要数据监控和监控面板工具支持，您可前往“集群——>平台组件进行安装" />
 			) : (
 				<>
 					<div

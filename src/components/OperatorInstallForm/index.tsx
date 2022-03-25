@@ -44,7 +44,7 @@ const OperatorInstallForm = (props: installFormProps) => {
 				<div className="install-title-name">选择安装规格</div>
 			</div>
 			<p className="install-subtitle">
-				依据您资源池资源的富余情况进行灵活选择
+				依据您集群资源的富余情况进行灵活选择
 			</p>
 			<div
 				className="install-item"

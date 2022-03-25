@@ -34,7 +34,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 			createNamespace({ clusterId, ...field.getValues() }).then((res) => {
 				if (res.success) {
 					Message.show(
-						messageConfig('success', '成功', '资源分区创建成功')
+						messageConfig('success', '成功', '命名空间创建成功')
 					);
 					onCancel();
 					onRefresh();
@@ -46,7 +46,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 	};
 	return (
 		<Dialog
-			title="新增资源分区"
+			title="新增命名空间"
 			visible={visible}
 			onCancel={onCancel}
 			onOk={onOk}
@@ -54,7 +54,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 		>
 			<Form field={field} {...formItemLayout}>
 				<FormItem
-					label="资源分区英文名:"
+					label="命名空间英文名:"
 					required
 					pattern={'^[a-z][a-z0-9-]{0,61}[a-z0-9]$'}
 					patternMessage={

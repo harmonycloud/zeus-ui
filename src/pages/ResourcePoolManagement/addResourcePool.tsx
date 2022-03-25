@@ -12,12 +12,12 @@ export default function AddResourcePool(): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title="添加资源池"
+				title="添加集群"
 				hasBackArrow={true}
 				onBackArrowClick={() => window.history.back()}
 			/>
 			<Content>
-				<FormBlock title="纳管现有资源池">
+				<FormBlock title="纳管现有集群">
 					<div
 						className="resource-pool-content"
 						onClick={() =>
@@ -31,7 +31,7 @@ export default function AddResourcePool(): JSX.Element {
 							width={80}
 							height={80}
 						/>
-						<div>基于已有资源池</div>
+						<div>基于已有集群</div>
 						<CustomIcon type="icon-xuanzhong" />
 					</div>
 				</FormBlock>

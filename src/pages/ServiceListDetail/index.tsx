@@ -336,7 +336,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					</div>
 				}
 			>
-				该备用服务不在当前资源池资源分区，返回源服务页面请点击右上角“返回源服务”按钮
+				该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮
 			</Dialog>
 		);
 	};
@@ -347,7 +347,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 			);
 			return;
 		} else {
-			// * 源示例和备服务在用一个资源池时
+			// * 源示例和备服务在用一个集群时
 			if (data.mysqlDTO.relationClusterId === globalVar.cluster.id) {
 				unAcrossCluster();
 			} else {

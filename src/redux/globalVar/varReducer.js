@@ -12,7 +12,7 @@ import {
 const defaultState = {
 	cluster: {},
 	namespace: {},
-	flag: false, // 触发资源池重新获取的标识
+	flag: false, // 触发集群重新获取的标识
 	clusterList: [],
 	namespaceList: []
 };

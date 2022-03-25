@@ -165,7 +165,7 @@ function AddForm(props: addFormProps): JSX.Element {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', {
-								data: '资源池修改成功'
+								data: '集群修改成功'
 							})
 						);
 						setRefreshCluster(true);
@@ -181,7 +181,7 @@ function AddForm(props: addFormProps): JSX.Element {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', {
-								data: '资源池接入成功'
+								data: '集群接入成功'
 							})
 						);
 						setRefreshCluster(true);
@@ -245,8 +245,8 @@ function AddForm(props: addFormProps): JSX.Element {
 			<Header
 				title={
 					params.clusterId
-						? '编辑资源池（其他资源池）'
-						: '添加资源池（其他资源池）'
+						? '编辑集群（其他集群）'
+						: '添加集群（其他集群）'
 				}
 				hasBackArrow={true}
 				onBackArrowClick={() => window.history.back()}
@@ -300,12 +300,12 @@ function AddForm(props: addFormProps): JSX.Element {
 										color: '#Ef595C'
 									}}
 								>
-									请输入资源池的英文简称
+									请输入集群的英文简称
 								</p>
 							</FormItem>
 							<div className="quick-model-content">
 								<div className="quick-model-title">
-									在已有资源池的任意一个master节点上运行以下指令，实现资源池纳管
+									在已有集群的任意一个master节点上运行以下指令，实现集群纳管
 								</div>
 								<div className="display-flex">
 									<div className="quick-model-text">

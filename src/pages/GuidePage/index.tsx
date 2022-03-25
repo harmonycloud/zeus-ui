@@ -68,7 +68,7 @@ const GuidePage = (props: GuideProps) => {
 									1
 								</div>
 								<div className="guide-page-img-info">
-									添加资源池
+									添加集群
 								</div>
 								<div
 									className="guide-page-line"
@@ -85,7 +85,7 @@ const GuidePage = (props: GuideProps) => {
 								></div>
 							</div>
 							<div>
-								添加资源池用以发布中间件。
+								添加集群用以发布中间件。
 								<span
 									className="name-link"
 									onClick={() => {
@@ -116,7 +116,7 @@ const GuidePage = (props: GuideProps) => {
 									2
 								</div>
 								<div className="guide-page-img-info">
-									安装或接入资源池组件
+									安装或接入集群组件
 								</div>
 								<div
 									className="guide-page-line-2"

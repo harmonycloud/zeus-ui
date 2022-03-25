@@ -23,7 +23,7 @@ export default {
 	userManagement: '用户管理',
 	roleManagement: '角色管理',
 	operationAudit: '操作审计',
-	resourcePoolManagement: '资源池',
+	resourcePoolManagement: '集群管理',
 	versionManagement: '版本管理',
 	basicInfo: '服务详情',
 	highAvailability: '实例详情',
@@ -34,9 +34,9 @@ export default {
 	log: '日志详情',
 	alarm: '服务告警',
 	disaster: '灾备服务',
-	addResourcePool: '添加资源池',
-	addOther: '添加其他资源池',
-	editResourcePool: '编辑资源池',
-	editOther: '编辑其他资源池',
-	resourcePoolDetail: '资源池详情'
+	addResourcePool: '添加集群',
+	addOther: '添加其他集群',
+	editResourcePool: '编辑集群',
+	editOther: '编辑其他集群',
+	resourcePoolDetail: '集群详情'
 };

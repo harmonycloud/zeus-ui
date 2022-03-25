@@ -49,7 +49,7 @@ export const instanceSpecList = [
 		value: 'Customize'
 	}
 ];
-// 资源池、分区不可改变路由名单
+// 集群、分区不可改变路由名单
 export const disabledRoute = [
 	'/mysqlCreate',
 	'/redisCreat',
@@ -71,7 +71,7 @@ export const disabledRoute = [
 	'/disaster/'
 ];
 
-// 资源池、分区不显示路由名单
+// 集群、分区不显示路由名单
 export const hideRoute = [
 	'/basicResource',
 	'/authManage',

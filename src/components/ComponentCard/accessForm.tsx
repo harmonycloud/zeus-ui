@@ -283,7 +283,7 @@ const AccessForm = (props: AccessFormProps) => {
 				</div>
 			</div>
 			<p className="access-subtitle">
-				若您的资源池已经安装了对应工具，可直接
+				若您的集群已经安装了对应工具，可直接
 				{status === 0 || status === 1 ? '接入' : '编辑'}
 				使用
 			</p>

@@ -64,7 +64,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 				}
 				type="primary"
 			>
-				添加资源池
+				添加集群
 			</Button>
 		)
 	};
@@ -191,7 +191,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 							const dialog = Dialog.show({
 								title: '提示',
 								content:
-									'该资源池正在被中间件服务使用，请删除后再试',
+									'该集群正在被中间件服务使用，请删除后再试',
 								footer: (
 									<Button
 										type="primary"
@@ -317,7 +317,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title="资源池"
+				title="集群管理"
 				subTitle="发布中间件需要消耗CPU、内存等资源"
 			/>
 			<Content>
@@ -332,7 +332,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 						value: key,
 						onSearch: handleSearch,
 						onChange: handleChange,
-						placeholder: '请输入资源池名称搜索'
+						placeholder: '请输入集群名称搜索'
 					}}
 					primaryKey="key"
 					operation={Operation}
@@ -340,12 +340,12 @@ export default function ResourcePoolManagement(): JSX.Element {
 					onSort={onSort}
 				>
 					<Table.Column
-						title="资源池名称"
+						title="集群名称"
 						dataIndex="nickname"
 						cell={clusterNameRender}
 					/>
 					<Table.Column
-						title="资源分区"
+						title="命名空间"
 						dataIndex="attributes.nsCount"
 						cell={nameRender}
 						sortable
