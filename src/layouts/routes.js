@@ -40,11 +40,15 @@ import CreateAlarm from '@/pages/ServiceListDetail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
 import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
-import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
 import UseTemplate from '@/pages/ServiceListDetail/ParamterSetting/useTemplate';
 import ProjectManage from '@/pages/ProjectManage';
+import MyProject from '@/pages/MyProject';
+import ProjectDetail from '@/pages/ProjectDetail';
+
+// ! 已弃用
+import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
 
 const Routes = withRouter((props) => {
 	return (
@@ -70,6 +74,9 @@ const Routes = withRouter((props) => {
 					component={MiddlewareRepository}
 					exact
 				/>
+				{/* 我的项目 */}
+				<Route path="/myProject" component={MyProject} exact />
+				<Route path="/myProject/:id" component={ProjectDetail} exact />
 				{/* 中间件市场-版本管理 */}
 				<Route
 					path="/middlewareRepository/versionManagement/:type"

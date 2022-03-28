@@ -264,6 +264,14 @@ export const formItemLayout614 = {
 		span: 14
 	}
 };
+export const formItemLayout618 = {
+	labelCol: {
+		span: 6
+	},
+	wrapperCol: {
+		span: 18
+	}
+};
 export const formItemLayout619 = {
 	labelCol: {
 		fixedSpan: 6
