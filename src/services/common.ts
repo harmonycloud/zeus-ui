@@ -2,7 +2,7 @@ import Axios from './request';
 import * as COMMON from './common.constants';
 import { MirrorParams } from '@/pages/ResourcePoolManagement/resource.pool';
 
-// * 获取集群列表
+// * 获取资源池列表
 export const getClusters = (params?: any) => {
 	return Axios.get(COMMON.clusters, params);
 };
@@ -102,7 +102,7 @@ export const deleteComponent = (params: any) => {
 export const mulInstallComponent = (params: any) => {
 	return Axios.json(COMMON.multipleComponents, params, {}, 'POST');
 };
-// * 获取集群纳管命令指令
+// * 获取资源池纳管命令指令
 export const getJoinCommand = (params: any) => {
 	return Axios.get(COMMON.getClusterJoinCommand, params);
 };

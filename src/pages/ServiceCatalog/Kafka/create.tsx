@@ -117,7 +117,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [mode, setMode] = useState<string>('cluster');
 	const modeList = [
 		{
-			label: '集群模式（beta版）',
+			label: '资源池模式（beta版）',
 			value: 'cluster'
 		}
 	];
@@ -994,7 +994,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											}
 											closable={false}
 										>
-											集群模式中，具备自动选举leader能力，保证高可用
+											资源池模式中，具备自动选举leader能力，保证高可用
 										</Balloon>
 									</label>
 									<div
@@ -1014,7 +1014,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												]
 											}
 										>
-											自定义集群实例数量
+											自定义资源池实例数量
 										</label>
 										<NumberPicker
 											min={3}

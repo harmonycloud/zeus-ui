@@ -147,7 +147,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [aclCheck, setAclCheck] = useState<boolean>(false);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
-	// * 集群外访问
+	// * 资源池外访问
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 是否点击提交跳转至结果页
 	const [commitFlag, setCommitFlag] = useState<boolean>(false);
@@ -1044,7 +1044,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											}}
 										>
 											<label style={{ margin: '0 16px' }}>
-												自定义集群实例数量
+												自定义资源池实例数量
 											</label>
 											<NumberPicker
 												name="节点数量"
