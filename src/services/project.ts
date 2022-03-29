@@ -3,6 +3,7 @@ import * as PROJECT from './project.constants';
 
 interface paramProps {
 	projectId: string;
+	[propName: string]: any;
 }
 export const getProjects = () => {
 	return Axios.get(PROJECT.getProjects);
@@ -18,4 +19,7 @@ export const getProjectNamespace = (param: paramProps) => {
 };
 export const getProjectMember = (param: paramProps) => {
 	return Axios.get(PROJECT.getProjectMember, param);
+};
+export const bingNamespace = (params: paramProps) => {
+	return Axios.json(PROJECT.getProjectNamespace, params, {}, 'POST');
 };

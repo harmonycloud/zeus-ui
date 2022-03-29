@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import { Tab } from '@alicloud/console-components';
 import Namespace from './namespace';
 import Member from './member';
+import storage from '@/utils/storage';
 
 export default function ProjectDetail(): JSX.Element {
 	const [activeKey, setActiveKey] = useState<string>('namespace');
 	const onChange = (key: string | number) => {
 		setActiveKey(key as string);
 	};
+	useEffect(() => {
+		return () => {
+			storage.removeSession('project');
+		};
+	}, []);
 	return (
 		<Page>
 			<Header

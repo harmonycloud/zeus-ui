@@ -8,11 +8,17 @@ import {
 	Select,
 	Message
 } from '@alicloud/console-components';
-import { AddNamespaceProps } from './projectDetail';
-import { formItemLayout618 } from '@/utils/const';
-import { getClusters } from '@/services/common';
-import { clusterType } from '@/types';
+
 import messageConfig from '@/components/messageConfig';
+import storage from '@/utils/storage';
+
+import { getClusters, createNamespace } from '@/services/common';
+import { bingNamespace } from '@/services/project';
+import { formItemLayout618 } from '@/utils/const';
+import { clusterType } from '@/types';
+import { AddNamespaceFieldValues, AddNamespaceProps } from './projectDetail';
+import { ProjectItem } from '../ProjectManage/project';
+
 const list = [
 	{
 		value: 'create',
@@ -30,18 +36,99 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 	const { visible, onCancel, onRefresh } = props;
 	const [source, setSource] = useState<string>('create');
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
+	const [currentCluster, setCurrentCluster] = useState<string>('');
+	const [namespaceList, setNamespaceList] = useState([]);
+	const [project, setProject] = useState<ProjectItem>(
+		JSON.parse(storage.getSession('project'))
+	);
 	const field = Field.useField();
 	useEffect(() => {
-		getClusters({ detail: true, key: '' }).then((res) => {
+		getClusters({ detail: true }).then((res) => {
 			if (res.success) {
 				setClusterList(res.data);
+				if (res.data.length > 0) {
+					setNamespaceList(res.data[0].namespaceList);
+					setCurrentCluster(res.data[0].id);
+				} else {
+					setNamespaceList([]);
+					setCurrentCluster('');
+				}
 			} else {
+				setClusterList([]);
+				setNamespaceList([]);
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
 	}, []);
+	useEffect(() => {
+		clusterList.map((item: clusterType) => {
+			if (item.id === currentCluster) {
+				setNamespaceList(item.namespaceList);
+			}
+		});
+	}, [currentCluster]);
 	const onOk = () => {
-		console.log('ok');
+		field.validate((errors) => {
+			if (errors) return;
+			const values: AddNamespaceFieldValues = field.getValues();
+			onCancel();
+			if (source === 'access') {
+				const currentNamespace: any = namespaceList.find(
+					(item: any) => item.name === values.namespace
+				);
+				const sendData = {
+					clusterId: values.clusterId,
+					name: values.namespace,
+					projectId: values.projectId,
+					aliasName: currentNamespace?.aliasName || null
+				};
+				bingNamespace(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'命名空间接入成功'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						onRefresh();
+					});
+			} else {
+				console.log(values);
+				const sendData = {
+					clusterId: values.clusterId,
+					name: values.name,
+					projectId: values.projectId,
+					aliasName: values.aliasName
+				};
+				createNamespace(sendData)
+					.then((res) => {
+						if (res.success) {
+							Message.show(
+								messageConfig(
+									'success',
+									'成功',
+									'命名空间新建成功'
+								)
+							);
+						} else {
+							Message.show(messageConfig('error', '失败', res));
+						}
+					})
+					.finally(() => {
+						onRefresh();
+					});
+			}
+		});
+	};
+	const handleChange = (value: string) => {
+		setCurrentCluster(value);
 	};
 	return (
 		<Dialog
@@ -92,7 +179,16 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 					</FormItem>
 				)}
 				<FormItem label="绑定项目">
-					<Select disabled={true}></Select>
+					<Select
+						name="projectId"
+						value={project.projectId}
+						disabled={true}
+						style={{ width: '100%' }}
+					>
+						<Option value={project.projectId}>
+							{project.aliasName}
+						</Option>
+					</Select>
 				</FormItem>
 				<FormItem
 					label="绑定集群"
@@ -100,8 +196,9 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 					requiredMessage="英文简称必填"
 				>
 					<Select
-						defaultValue={clusterList[0]?.id}
 						name="clusterId"
+						value={currentCluster}
+						onChange={handleChange}
 						style={{ width: '100%' }}
 					>
 						{clusterList.map((item: clusterType) => {
@@ -113,6 +210,23 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 						})}
 					</Select>
 				</FormItem>
+				{source === 'access' && (
+					<FormItem
+						label="选择命名空间"
+						required
+						requiredMessage="请选择命名空间"
+					>
+						<Select name="namespace" style={{ width: '100%' }}>
+							{namespaceList.map((item: any) => {
+								return (
+									<Option key={item.name} value={item.name}>
+										{item.aliasName || item.name}
+									</Option>
+								);
+							})}
+						</Select>
+					</FormItem>
+				)}
 			</Form>
 		</Dialog>
 	);

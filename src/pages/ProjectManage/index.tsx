@@ -10,6 +10,7 @@ import { getProjects, deleteProject } from '@/services/project';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import { ProjectItem } from './project';
+import storage from '@/utils/storage';
 
 export default function ProjectManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
@@ -46,6 +47,7 @@ export default function ProjectManage(): JSX.Element {
 			<span
 				className="text-overflow name-link"
 				onClick={() => {
+					storage.setSession('project', JSON.stringify(record));
 					history.push(
 						`/systemManagement/projectManagement/projectDetail/${record.projectId}`
 					);
