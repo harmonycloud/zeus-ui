@@ -134,15 +134,19 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		} = filterParams;
 		let list = dataSource;
 		if (selectedKeys.length === 0) {
-			list = list.filter((item) => item[temp?.name || ''] !== item.value);
+			if (checked)
+				list = list.filter(
+					(item) => item[temp?.name || ''] !== item.value
+				);
 			setShowDataSource(list);
 		} else {
 			let tempData = dataSource.filter(
 				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
 			);
-			tempData = tempData.filter(
-				(item) => item[temp?.name || ''] !== item.value
-			);
+			if (checked)
+				tempData = tempData.filter(
+					(item) => item[temp?.name || ''] !== item.value
+				);
 			setShowDataSource(tempData);
 		}
 	};

@@ -237,13 +237,9 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							</FormItem>
 							<FormItem
 								label="模板描述"
-								required
 								labelTextAlign="left"
-								asterisk={false}
-								className="ne-required-ingress"
 								minmaxLengthMessage="模板描述长度不可超过100字符"
 								maxLength={100}
-								requiredMessage="请输入模板描述"
 							>
 								<Input.TextArea
 									placeholder="请输入模板描述"

@@ -57,9 +57,15 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	} = globalVar;
 	const history = useHistory();
 	const params: DetailParams = useParams();
-	const { middlewareName, type, chartVersion, currentTab, name, aliasName } =
-		params;
-
+	const {
+		middlewareName,
+		type,
+		chartVersion,
+		currentTab,
+		name,
+		aliasName,
+		namespace
+	} = params;
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [status, setStatus] = useState<string>('');
 	const [customMid, setCustomMid] = useState<boolean>(false); // * 判断是否是自定义中间件
@@ -71,11 +77,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	);
 
 	useEffect(() => {
-		if (
-			JSON.stringify(globalVar.cluster) !== '{}' &&
-			JSON.stringify(globalVar.namespace) !== '{}'
-		) {
-			getData(globalVar.cluster.id, globalVar.namespace.name);
+		if (JSON.stringify(globalVar.cluster) !== '{}') {
+			getData(globalVar.cluster.id, namespace);
 		}
 	}, [globalVar]);
 
@@ -107,7 +110,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	};
 
 	const refresh = (key = activeKey) => {
-		getData(globalVar.cluster.id, globalVar.namespace.name);
+		getData(globalVar.cluster.id, namespace);
 		setActiveKey(key);
 	};
 
@@ -121,7 +124,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							type={type}
 							data={data}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							customMid={customMid}
 							onRefresh={refresh}
 							toDetail={toDetail}
@@ -133,7 +136,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							type={type}
 							data={data}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							chartName={type}
 							chartVersion={chartVersion}
 							onRefresh={refresh}
@@ -147,7 +150,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							data={data}
 							storage={globalVar.cluster.storage}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							customMid={customMid}
 							capabilities={(data && data.capabilities) || []}
 						/>
@@ -168,7 +171,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							middlewareName={middlewareName}
 							monitor={globalVar.cluster.monitor}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							customMid={customMid}
 							chartVersion={chartVersion}
 							capabilities={(data && data.capabilities) || []}
@@ -181,7 +184,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							data={data}
 							middlewareName={middlewareName}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							customMid={customMid}
 							logging={globalVar.cluster.logging}
 							onRefresh={refresh}
@@ -193,7 +196,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<ParamterSetting
 							middlewareName={middlewareName}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							type={type}
 							customMid={customMid}
 							capabilities={(data && data.capabilities) || []}
@@ -204,7 +207,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<ServerAlarm
 							middlewareName={middlewareName}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							type={type}
 							customMid={customMid}
 							capabilities={(data && data.capabilities) || []}
@@ -219,7 +222,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							chartVersion={chartVersion}
 							middlewareName={middlewareName}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							data={data}
 							onRefresh={refresh}
 							toDetail={toDetail}
@@ -232,7 +235,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							chartVersion={chartVersion}
 							middlewareName={middlewareName}
 							clusterId={globalVar.cluster.id}
-							namespace={globalVar.namespace.name}
+							namespace={namespace}
 							data={data}
 							onRefresh={refresh}
 							toDetail={toDetail}
@@ -254,6 +257,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				return '运行异常';
 		}
 	};
+	// todo 服务详情页路由修改
 	const unAcrossCluster = () => {
 		const cs = globalClusterList.filter(
 			(item) => item.id === data?.mysqlDTO.relationClusterId
@@ -275,6 +279,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 			}
 		});
 	};
+	// todo 服务详情页路由修改
 	const acrossCluster = () => {
 		const cs = globalClusterList.filter(
 			(item) => item.id === data?.mysqlDTO.relationClusterId
@@ -366,7 +371,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		setActiveKey(key as string);
 		storage.removeSession('paramsTab');
 		history.push(
-			`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}`
+			`/serviceList/${name}/${aliasName}/${key}/${middlewareName}/${type}/${chartVersion}/${namespace}`
 		);
 	};
 

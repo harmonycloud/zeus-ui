@@ -784,7 +784,9 @@ const ServiceListByType = (props: serviceListProps) => {
 		history.push({
 			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
 				record.mysqlDTO.relationName
-			}/${record.mysqlDTO.type || 'mysql'}/${record.chartVersion}`,
+			}/${record.mysqlDTO.type || 'mysql'}/${record.chartVersion}/${
+				record.namespace
+			}`,
 			state: {
 				flag: true
 			}
@@ -905,7 +907,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						className="name-link text-overflow"
 						onClick={() => {
 							history.push(
-								`/serviceList/${name}/${aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}`
+								`/serviceList/${name}/${aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
 							);
 						}}
 						title={record.name}

@@ -250,7 +250,7 @@ const Namespace = (props: NamespaceProps) => {
 			<span
 				className={record.phase !== 'Active' ? 'delete-disabled' : ''}
 			>
-				{value}
+				{record.aliasName || value}
 			</span>
 		);
 	};

@@ -24,6 +24,7 @@ export interface DetailParams {
 	middlewareName: string;
 	type: string;
 	chartVersion: string;
+	namespace: string;
 }
 export interface ParamterSettingProps {
 	middlewareName: string;

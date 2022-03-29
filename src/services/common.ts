@@ -57,7 +57,7 @@ export const getNamespaceResource = (params: any) => {
 };
 // * 命名空间
 export const createNamespace = (params: any) => {
-	return Axios.post(COMMON.namespaces, params);
+	return Axios.json(COMMON.namespaces, params, {}, 'POST');
 };
 export const deleteNamespace = (params: any) => {
 	return Axios.delete(COMMON.updateNamespace, params);

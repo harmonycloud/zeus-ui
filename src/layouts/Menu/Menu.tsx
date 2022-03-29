@@ -32,6 +32,7 @@ const mapLocationToActiveKey = (location: Location) => {
 		return '/systemManagement/operationAudit';
 	else if (pathArray.includes('resourcePoolManagement'))
 		return '/systemManagement/resourcePoolManagement';
+	else if (pathArray.includes('my/projectDetail')) return '/myProject';
 	else if (pathArray.includes('serviceList'))
 		return storage.getSession('menuPath');
 	return location.pathname;

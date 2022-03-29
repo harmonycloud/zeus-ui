@@ -82,7 +82,23 @@ export const hideRoute = [
 	'/roleManagement',
 	'/dataOverview',
 	'/systemManagement',
-	'/terminal'
+	'/terminal',
+	'/myProject',
+	'/projectDetail'
+];
+// * 项目不显示路由名单
+export const projectHideRoute = [
+	'/basicResource',
+	'/authManage',
+	'/platformOverview',
+	'/operationAudit',
+	'/userManagement',
+	'/resourcePoolManagement',
+	'/roleManagement',
+	'/dataOverview',
+	'/systemManagement',
+	'/terminal',
+	'/myProject'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },

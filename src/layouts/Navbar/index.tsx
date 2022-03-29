@@ -7,6 +7,7 @@ import { Nav, Select, Message } from '@alicloud/console-components';
 import User from './User';
 
 import { getClusters, getNamespaces } from '@/services/common';
+import { getProjects } from '@/services/project';
 import {
 	setCluster,
 	setNamespace,
@@ -16,7 +17,7 @@ import {
 } from '@/redux/globalVar/var';
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
-import { disabledRoute, hideRoute } from '@/utils/const';
+import { disabledRoute, hideRoute, projectHideRoute } from '@/utils/const';
 import { StoreState } from '@/types/index';
 import { NavbarProps } from './navbar';
 
@@ -40,8 +41,13 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const [currentNamespace, setCurrentNamespace] = useState<{ name?: string }>(
 		{}
 	);
+	const [currentProject, setCurrentProject] = useState({});
 	const [clusterList, setClusterList] = useState<any[]>([]);
 	const [namespaceList, setNamespaceList] = useState<any[]>([]);
+	const [projectList, setProjectList] = useState<any[]>([]);
+	// * 控制项目
+	const [projectDisAbled, setProjectDisabled] = useState<boolean>(false);
+	const [projectHideFlag, setProjectHideFlag] = useState<boolean>(false);
 	// 控制集群和分区
 	const [disabled, setDisabled] = useState(false);
 	const [hideFlag, setHideFlag] = useState(false);
@@ -70,6 +76,31 @@ function Navbar(props: NavbarProps): JSX.Element {
 			setRole(res.data);
 		} else {
 			Message.show(messageConfig('error', '失败', res));
+		}
+	};
+
+	const getProjectList = async () => {
+		const res = await getProjects();
+		if (res.success) {
+			if (res.data.length > 0) {
+				const jsonLocalProject = storage.getLocal('project');
+				if (
+					jsonLocalProject &&
+					res.data.some(
+						(item: any) =>
+							item.name === JSON.parse(jsonLocalProject).name
+					)
+				) {
+					const localProjectTemp = res.data.find(
+						(item: any) =>
+							item.name === JSON.parse(jsonLocalProject).name
+					);
+					setCurrentProject(localProjectTemp);
+				} else {
+					setCurrentProject(res.data[0].name);
+				}
+			}
+			setProjectList(res.data);
 		}
 	};
 
@@ -106,30 +137,23 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const getNamespaceList = async (clusterId: string | undefined) => {
 		const res = await getNamespaces({ clusterId, withQuota: true });
 		if (res.success) {
-			if (res.data.length > 0) {
-				const jsonLocalNamespace = storage.getLocal('namespace');
-				if (
-					jsonLocalNamespace &&
-					res.data.some((item: any) => {
-						return (
-							item.name === JSON.parse(jsonLocalNamespace).name
-						);
-					})
-				) {
-					setCurrentNamespace(JSON.parse(jsonLocalNamespace));
-					setNamespace(JSON.parse(jsonLocalNamespace));
-				} else {
-					setCurrentNamespace(res.data[0]);
-					setNamespace(res.data[0]);
-					storage.setLocal('namespace', JSON.stringify(res.data[0]));
-				}
+			const list = [{ name: '*', aliasName: '全部' }, ...res.data];
+			const jsonLocalNamespace = storage.getLocal('namespace');
+			if (
+				jsonLocalNamespace &&
+				list.some((item: any) => {
+					return item.name === JSON.parse(jsonLocalNamespace).name;
+				})
+			) {
+				setCurrentNamespace(JSON.parse(jsonLocalNamespace));
+				setNamespace(JSON.parse(jsonLocalNamespace));
 			} else {
-				setCurrentNamespace({ name: '' });
-				setNamespace({});
-				storage.setLocal('namespace', '');
+				setCurrentNamespace(list[0]);
+				setNamespace(list[0]);
+				storage.setLocal('namespace', JSON.stringify(list[0]));
 			}
-			setNamespaceList(res.data);
-			setGlobalNamespaceList(res.data);
+			setNamespaceList(list);
+			setGlobalNamespaceList(list);
 		}
 	};
 
@@ -178,17 +202,30 @@ function Navbar(props: NavbarProps): JSX.Element {
 				disabledRoute.some((item) => {
 					return location.pathname.indexOf(item) > -1;
 				})
-			)
+			) {
 				setDisabled(true);
-			else setDisabled(false);
-			// 是否显示
+				setProjectDisabled(true);
+			} else setDisabled(false);
+			// 是否显示 - 集群/分区
 			if (
 				hideRoute.some((item) => {
 					return location.pathname.indexOf(item) > -1;
 				})
-			)
+			) {
 				setHideFlag(true);
-			else setHideFlag(false);
+			} else {
+				setHideFlag(false);
+			}
+			// * 是否显示 - 项目
+			if (
+				projectHideRoute.some(
+					(item: string) => location.pathname.indexOf(item) > -1
+				)
+			) {
+				setProjectHideFlag(true);
+			} else {
+				setProjectHideFlag(false);
+			}
 		}
 	}, [location]);
 
@@ -225,10 +262,22 @@ function Navbar(props: NavbarProps): JSX.Element {
 					zIndex: 999
 				}}
 			>
+				{projectHideFlag === false && (
+					<>
+						<span style={{ marginRight: 8 }}>项目</span>
+						<Select
+							className="no-shadow"
+							hasBorder={false}
+							disabled={projectDisAbled}
+							autoWidth={false}
+						></Select>
+					</>
+				)}
 				{hideFlag === false && (
 					<>
-						<span style={{ marginRight: 8 }}>集群</span>
+						<span style={{ marginLeft: 24 }}>集群</span>
 						<Select
+							style={{ marginLeft: 8 }}
 							className="no-shadow"
 							value={currentCluster.id}
 							hasBorder={false}

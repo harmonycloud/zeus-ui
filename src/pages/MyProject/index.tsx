@@ -25,7 +25,7 @@ export default function MyProject(): JSX.Element {
 								<div
 									className="name-link"
 									onClick={() => {
-										history.push(`/myProject/sss`);
+										history.push(`/my/projectDetail/sss`);
 									}}
 								>
 									管理

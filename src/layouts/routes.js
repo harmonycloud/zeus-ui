@@ -76,7 +76,16 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 我的项目 */}
 				<Route path="/myProject" component={MyProject} exact />
-				<Route path="/myProject/:id" component={ProjectDetail} exact />
+				<Route
+					path="/my/projectDetail/:id"
+					component={ProjectDetail}
+					exact
+				/>
+				<Route
+					path="/systemManagement/projectManagement/projectDetail/:id"
+					component={ProjectDetail}
+					exact
+				/>
 				{/* 中间件市场-版本管理 */}
 				<Route
 					path="/middlewareRepository/versionManagement/:type"
@@ -141,7 +150,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务详情 - 实例详情*/}
 				<Route
-					path="/serviceList/:name/:aliasName/:currentTab/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:name/:aliasName/:currentTab/:middlewareName/:type/:chartVersion/:namespace"
 					component={InstanceDetails}
 					exact
 				/>

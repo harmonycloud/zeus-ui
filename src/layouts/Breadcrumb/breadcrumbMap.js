@@ -39,5 +39,8 @@ export default {
 	addOther: '添加其他集群',
 	editResourcePool: '编辑集群',
 	editOther: '编辑其他集群',
-	resourcePoolDetail: '集群详情'
+	resourcePoolDetail: '集群详情',
+	projectDetail: '项目详情',
+	my: '我的项目',
+	myProject: '我的项目'
 };

@@ -109,17 +109,21 @@ export default function CompareParamTemplate(): JSX.Element {
 		} = filterParams;
 		let list = dataSource;
 		if (selectedKeys.length === 0) {
-			list = list.filter(
-				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
-			);
+			if (checked)
+				list = list.filter(
+					(item) =>
+						item[temp1?.name || ''] !== item[temp2?.name || '']
+				);
 			setShowDataSource(list);
 		} else {
 			let tempData = list.filter(
 				(item: any) => item.restart + '' === selectedKeys[0]
 			);
-			tempData = tempData.filter(
-				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
-			);
+			if (checked)
+				tempData = tempData.filter(
+					(item) =>
+						item[temp1?.name || ''] !== item[temp2?.name || '']
+				);
 			setShowDataSource(tempData);
 		}
 	};
