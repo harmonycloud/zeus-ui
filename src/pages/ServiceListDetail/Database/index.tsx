@@ -5,6 +5,10 @@ import DefaultPicture from '@/components/DefaultPicture';
 import storage from '@/utils/storage';
 import { DetailParams } from '../detail';
 import UserManage from './userManage';
+import DatabaseManage from './databaseManage';
+import SqlAudit from './sqlAudit'
+
+import './index.scss'
 
 export default function DataBase(
 	props: any
@@ -49,9 +53,9 @@ export default function DataBase(
 			case 'userManage':
 				return <UserManage />;
 			case 'databaseManage':
-				return <div>222</div>;
+				return <DatabaseManage />;
 			case 'audit':
-				return <div>333</div>;
+				return <SqlAudit />;
 			default:
 				return null;
 		}

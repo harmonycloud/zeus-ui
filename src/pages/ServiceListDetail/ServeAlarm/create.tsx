@@ -54,9 +54,9 @@ function CreateAlarm(): JSX.Element {
 	const [alarmRules, setAlarmRules] = useState<ServiceRuleItem[]>([]);
 	const [poolList, setPoolList] = useState([]);
 	const [systemId, setSystemId] = useState<string>('');
-	const [users, setUsers] = useState([]);
+	const [users, setUsers] = useState<any[]>([]);
 	const [insertUser, setInsertUser] = useState<any[]>([]);
-	const [selectUser, setSelectUser] = useState([]);
+	const [selectUser, setSelectUser] = useState<any[]>([]);
 	const [mailChecked, setMailChecked] = useState<boolean>(false);
 	const [dingChecked, setDingChecked] = useState<boolean>(false);
 	const [isRule, setIsRule] = useState<boolean>();

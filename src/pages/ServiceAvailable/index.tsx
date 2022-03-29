@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
@@ -60,6 +61,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [adress, setAdress] = useState<string>('');
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
 	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const history = useHistory();
 
 	useEffect(() => {
 		let mounted = true;
@@ -287,12 +289,12 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							)
 						);
 					} else {
-						setVisible(true);
+						history.push('/serviceAvailable/addServiceAvailable');
 					}
 				}}
 				type="primary"
 			>
-				暴露服务
+				新增
 			</Button>
 		)
 	};
@@ -488,6 +490,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const actionRender = (value: string, index: number, record: any) => {
 		return (
 			<Actions>
+				<LinkButton onClick={() => history.push('/serviceAvailable/addServiceAvailable')}>
+					编辑
+				</LinkButton>
 				<LinkButton onClick={() => handleDelete(record)}>
 					删除
 				</LinkButton>
@@ -596,48 +601,47 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					onFilter={onFilter}
 				>
 					<Table.Column
-						title="暴露服务名称"
-						dataIndex="name"
-						width={190}
-						lock="left"
-					/>
-					<Table.Column
 						title="服务名称/中文别名"
 						dataIndex="middlewareName"
-						width={140}
+						width={130}
 						cell={middlewareNameRender}
 					/>
 					<Table.Column
 						title="服务类型"
 						dataIndex="middlewareType"
 						cell={iconTypeRender}
-						width={130}
+						width={100}
 					/>
 					<Table.Column
 						title="暴露方式"
 						dataIndex="exposeType"
 						cell={exposeTypeRedner}
-						width={210}
+						width={100}
 						sortable={true}
 					/>
 					<Table.Column
+						width={200}
+						title="暴露详情"
+						cell={addressRender}
+					/>
+					<Table.Column
+						title="被暴露服务名"
+						dataIndex="name"
+						width={150}
+					/>
+					<Table.Column
+						title="被暴露服务端口"
+						width={120}
+						dataIndex="httpExposePort"
+						cell={portRender}
+					/>
+					{/* <Table.Column
 						title="协议"
 						width={100}
 						dataIndex="protocol"
 						filters={protocolFilter}
 						filterMode="single"
-					/>
-					<Table.Column
-						width={200}
-						title="访问地址"
-						cell={addressRender}
-					/>
-					<Table.Column
-						title="实例端口"
-						width={100}
-						dataIndex="httpExposePort"
-						cell={portRender}
-					/>
+					/> */}
 					<Table.Column
 						title="创建时间"
 						width={160}
@@ -649,8 +653,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={70}
-						{...lock}
+						width={100}
 					/>
 				</Table>
 			</Content>

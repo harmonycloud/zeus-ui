@@ -19,6 +19,8 @@ const pattern: patternProps = {
 	roleName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$',
 	ingressName: '^[a-z0-9-]{0,40}$',
 	paramTemplateName: '[a-z0-9-]{2,30}$',
+	databaseUser: '^[0-9a-zA-Z_-]{1,32}$',
+	databaseName: '^[a-zA-Z][0-9a-zA-Z_-]{0,62}[0-9a-zA-Z]$',
 	projectName: '[a-z][a-z0-9-]{0,38}[a-z0-9]$',
 	projectAliasName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{0,80}$'
 };

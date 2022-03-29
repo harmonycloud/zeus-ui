@@ -112,7 +112,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [mode, setMode] = useState<string>('cluster');
 	const modeList = [
 		{
-			label: '集群模式',
+			label: '资源池模式',
 			value: 'cluster'
 		},
 		{

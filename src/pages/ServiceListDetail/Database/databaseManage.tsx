@@ -7,18 +7,10 @@ import Table from '@/components/MidTable';
 import {
 	getUserList,
 	deleteUser,
-	resetPassword,
-	getRoles,
-	updateUser,
-	getLDAP
 } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
-import UserForm from './userForm';
-import PasswordForm from './passwordForm';
-import storage from '@/utils/storage';
-
-const RadioGroup = Radio.Group;
+import DatabaseForm from './databaseForm';
 
 function UserManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<any[]>([]);
@@ -119,12 +111,6 @@ function UserManage(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => {
-                    setIsEdit(true);
-                    setPasswordVisible(true);
-                }}>
-					修改密码
-				</LinkButton>
 				<LinkButton onClick={() => deleteUserHandle(record)}>
 					删除
 				</LinkButton>
@@ -160,7 +146,7 @@ function UserManage(): JSX.Element {
 				onRefresh={onRefresh}
 				primaryKey="key"
 				search={{
-					placeholder: '请输入账户名称、已授权数据库名称检索',
+					placeholder: '请输入',
 					onSearch: handleSearch,
 					onChange: handleChange,
 					value: keyword
@@ -171,11 +157,15 @@ function UserManage(): JSX.Element {
 				operation={Operation}
 				onSort={onSort}
 			>
-				<Table.Column title="账户" dataIndex="userName" />
 				<Table.Column title="授权数据库" dataIndex="aliasName" />
 				<Table.Column
-					title="密码"
+					title="字符集"
 					dataIndex="email"
+					cell={nullRender}
+				/>
+                <Table.Column
+					title="关联账户"
+					dataIndex="roleName"
 					cell={nullRender}
 				/>
 				<Table.Column
@@ -190,18 +180,13 @@ function UserManage(): JSX.Element {
 					sortable
 				/>
 				<Table.Column
-					title="密码校验"
-					dataIndex="roleName"
-					cell={nullRender}
-				/>
-				<Table.Column
 					title="操作"
 					dataIndex="action"
 					cell={actionRender}
 				/>
 			</Table>
 			{visible && (
-				<UserForm
+				<DatabaseForm
 					visible={visible}
 					onCreate={() => {
 						setVisible(false);
@@ -209,18 +194,6 @@ function UserManage(): JSX.Element {
 					}}
 					onCancel={() => setVisible(false)}
 					data={isEdit ? updateData : null}
-				/>
-			)}
-			{passwordVisible && (
-				<PasswordForm
-					visible={passwordVisible}
-					// onCreate={() => {
-					// 	setVisible(false);
-					// 	onRefresh();
-					// }}
-					onCancel={() => setPasswordVisible(false)}
-					userName="11"
-					// data={isEdit ? updateData : null}
 				/>
 			)}
 		</>

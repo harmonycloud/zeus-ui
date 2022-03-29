@@ -43,6 +43,7 @@ import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
 import UseTemplate from '@/pages/ServiceListDetail/ParamterSetting/useTemplate';
+import AddServiceAvailableForm from '@/pages/ServiceAvailable/AddServiceAvailableForm';
 import ProjectManage from '@/pages/ProjectManage';
 import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
@@ -187,6 +188,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceAvailable"
 					component={ServiceAvailable}
+					exact
+				/>
+				<Route 
+					path="/serviceAvailable/addServiceAvailable"
+					component={AddServiceAvailableForm}
 					exact
 				/>
 				<Route

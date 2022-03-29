@@ -930,7 +930,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				className="name-link"
 				onClick={() => {
 					history.push(
-						`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}`
+						`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
 					);
 					storage.setLocal('backKey', 'highAvailability');
 				}}

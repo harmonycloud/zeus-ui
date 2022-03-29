@@ -30,3 +30,9 @@ export interface serviceAvailablesProps {
 	serviceNum: number;
 	version: string;
 }
+export interface httpListProps {
+	serviceName: string;
+	servicePort: string;
+	domain: string;
+	path: string;
+}
