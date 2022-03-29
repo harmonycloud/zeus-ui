@@ -200,7 +200,7 @@ function RoleManage(): JSX.Element {
 								}}
 								onClick={() => permissionEdit(record)}
 							>
-								分配角色 & 分区
+								分配角色权限
 							</LinkButton>
 						}
 						closable={false}
@@ -225,7 +225,7 @@ function RoleManage(): JSX.Element {
 						}}
 						onClick={() => permissionEdit(record)}
 					>
-						分配角色 & 分区
+						分配角色权限
 					</LinkButton>
 				)}
 			</Actions>
@@ -236,7 +236,6 @@ function RoleManage(): JSX.Element {
 			const dsTemp = dataSource.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				// console.log(result);
 				return order === 'asc'
 					? result > 0
 						? 1

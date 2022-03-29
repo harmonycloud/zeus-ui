@@ -38,7 +38,7 @@ function DeleteCard(props: deleteCardProps): JSX.Element {
 			onClose={onCancel}
 			onOk={onOk}
 		>
-			该资源池所有的数据都将被清空，无法找回，是否继续
+			该集群所有的数据都将被清空，无法找回，是否继续
 		</Dialog>
 	);
 }

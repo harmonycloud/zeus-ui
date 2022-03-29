@@ -178,13 +178,13 @@ function DisasterCenter(props: disasterCenterProps) {
 					</div>
 				}
 			>
-				该备用服务不在当前资源池资源分区，返回源服务页面请点击右上角“返回源服务”按钮
+				该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮
 			</Dialog>
 		);
 	};
 	const toDetail = () => {
 		if ((data as middlewareDetailProps).mysqlDTO.openDisasterRecoveryMode) {
-			// * 源示例和备服务在用一个资源池时
+			// * 源示例和备服务在用一个集群时
 			if (
 				(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
 				basicData?.clusterId
@@ -211,7 +211,7 @@ function DisasterCenter(props: disasterCenterProps) {
 		}
 	};
 	const toSourceDetail = () => {
-		// * 源示例和备服务在用一个资源池时
+		// * 源示例和备服务在用一个集群时
 		if (
 			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
 			basicData?.clusterId
@@ -290,7 +290,7 @@ function DisasterCenter(props: disasterCenterProps) {
 	return (
 		<SecondLayout
 			title="灾备中心"
-			subTitle="为保障中间件服务高可用性，可跨资源池创建备用服务，随时接手主服务的数据流量"
+			subTitle="为保障中间件服务高可用性，可跨集群创建备用服务，随时接手主服务的数据流量"
 			hasBackArrow={true}
 			onChange={onChange}
 		>

@@ -348,7 +348,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 
 	if (!logging || !logging.elasticSearch) {
 		return (
-			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“资源池——>平台组件“进行安装" />
+			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);
 	}
 

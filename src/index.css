@@ -611,3 +611,34 @@ table.table-list tbody tr td {
 	border-bottom: 1px solid #444023;
 }
 
+/* 自定义标签样式 */
+.blue-tip{
+	display: inline;
+	padding: 2px;
+	border-radius: 2px;
+	font-weight: 400;
+	font-size: 12px;
+	background: #C7ECFF;
+	border: 1px solid #94DBFF;
+	color: #00A7FA;
+}
+.orange-tip{
+	display: inline;
+	padding: 2px;
+	border-radius: 2px;
+	font-weight: 400;
+	font-size: 12px;
+	background: #FFECC7;
+	border: 1px solid #FFDB94;
+	color: #FAA700;
+}
+.red-tip{
+	display: inline;
+	padding: 2px;
+	border-radius: 2px;
+	font-weight: 400;
+	font-size: 12px;
+	background: #FFF1F0;
+	border: 1px solid #FFA39E;
+	color: #FF4D4F;
+}

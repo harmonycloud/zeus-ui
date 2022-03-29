@@ -6,6 +6,7 @@ import Table from '@/components/MidTable';
 import { getParamsTemps, deleteParamsTemp } from '@/services/template';
 import messageConfig from '@/components/messageConfig';
 import moment from 'moment';
+import { defaultValueRender } from '@/utils/utils';
 
 interface ParamterTemplateProps {
 	type: string;
@@ -15,6 +16,7 @@ interface ParamterTemplateProps {
 interface paramsProps {
 	name: string;
 	aliasName: string;
+	namespace: string;
 }
 const ParamterTemplate = (props: ParamterTemplateProps) => {
 	const { type, chartVersion, middlewareName } = props;
@@ -43,7 +45,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<Button
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${params.namespace}`
 						);
 					}}
 					type="primary"
@@ -54,7 +56,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 					<Button
 						onClick={() => {
 							history.push(
-								`/serviceList/${params.name}/${params.aliasName}/paramterSetting/compareTemplate/${type}/${chartVersion}/${selectedRowKeys[0]}/${selectedRowKeys[1]}/compare`
+								`/serviceList/${params.name}/${params.aliasName}/paramterSetting/compareTemplate/${type}/${chartVersion}/${selectedRowKeys[0]}/${selectedRowKeys[1]}/${params.namespace}/compare`
 							);
 						}}
 						type="secondary"
@@ -114,7 +116,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/useTemplate/${middlewareName}/${type}/${chartVersion}/${record.uid}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/useTemplate/${middlewareName}/${type}/${chartVersion}/${record.uid}/${params.namespace}`
 						);
 					}}
 					disabled={selectedRowKeys.length > 0}
@@ -130,7 +132,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}/${params.namespace}`
 						);
 					}}
 					disabled={selectedRowKeys.length > 0}
@@ -198,7 +200,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 			operation={Operation}
 			search={{
 				onSearch: handleSearch,
-				placeholder: '请输入搜索内容'
+				placeholder: '请输入关键词搜索'
 			}}
 			rowSelection={{
 				onChange: onChange,
@@ -206,10 +208,31 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 			}}
 			onSort={onSort}
 		>
-			<Table.Column title="模板名称" dataIndex="name" />
-			<Table.Column title="模板描述" dataIndex="description" />
-			<Table.Column title="创建时间" dataIndex="createTime" sortable />
-			<Table.Column title="操作" dataIndex="action" cell={actionRender} />
+			<Table.Column
+				title="模板名称"
+				dataIndex="name"
+				cell={defaultValueRender}
+				lock="left"
+				width={150}
+			/>
+			<Table.Column
+				title="模板描述"
+				dataIndex="description"
+				cell={defaultValueRender}
+				// width={300}
+			/>
+			<Table.Column
+				title="创建时间"
+				dataIndex="createTime"
+				width={180}
+				sortable
+			/>
+			<Table.Column
+				title="操作"
+				dataIndex="action"
+				width={180}
+				cell={actionRender}
+			/>
 		</Table>
 	);
 };

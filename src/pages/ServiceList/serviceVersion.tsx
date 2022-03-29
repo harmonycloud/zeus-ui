@@ -364,7 +364,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			/>
 			<Content>
 				<Message type="warning">
-					本系统范围内其它资源池使用过的中间件版本，都可以自主选择是否安装升级到更新版本
+					本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本
 				</Message>
 				<div className="middleware-version-content">
 					<Table

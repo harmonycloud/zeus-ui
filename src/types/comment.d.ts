@@ -67,7 +67,7 @@ export interface middlewareDetailProps {
 	isAllLvmStorage: boolean;
 	stdoutEnabled: boolean;
 	filelogEnabled: boolean;
-	mirrorImage?: data.mirrorImage
+	mirrorImage?: data.mirrorImage;
 }
 
 export interface basicDataProps {
@@ -205,7 +205,7 @@ export interface StorageClassProps {
 	type: null | any;
 	volumeBindingMode: string;
 }
-// * 资源池列表
+// * 集群列表
 export interface poolListItem {
 	name?: string;
 	id: number;

@@ -63,7 +63,7 @@ export default function BackupRecovery(
 			!storage.support['CSI-LVM']
 		) {
 			return (
-				<ComponentNull title="该功能所需要备份存储工具支持，您可前往“资源池——>平台组件进行安装" />
+				<ComponentNull title="该功能所需要备份存储工具支持，您可前往“集群——>平台组件进行安装" />
 			);
 		}
 	}

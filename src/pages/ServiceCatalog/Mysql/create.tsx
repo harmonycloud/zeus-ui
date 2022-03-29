@@ -555,7 +555,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		});
 	};
 
-	// 全局资源池更新
+	// 全局集群更新
 	useEffect(() => {
 		if (
 			JSON.stringify(globalCluster) !== '{}' &&
@@ -849,7 +849,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									<ul className="form-layout">
 										<li className="display-flex">
 											<label className="form-name">
-												<span>资源池</span>
+												<span>集群</span>
 											</label>
 											<div className="form-content">
 												<FormItem>
@@ -908,13 +908,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										<li className="display-flex">
 											<label className="form-name">
 												<span className="ne-required">
-													灾备服务资源池
+													灾备服务集群
 												</span>
 											</label>
 											<div className="form-content">
 												<FormItem
 													required
-													requiredMessage="请选择灾备服务资源池"
+													requiredMessage="请选择灾备服务集群"
 												>
 													<CascaderSelect
 														listStyle={{
@@ -932,7 +932,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												</FormItem>
 												{reClusterFlag && (
 													<Form.Error>
-														若有可用的其它资源池的情况下，不建议将灾备服务和源服务部署在一个资源池
+														若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
 													</Form.Error>
 												)}
 											</div>
@@ -1747,7 +1747,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														lineHeight: '18px'
 													}}
 												>
-													开启该模式，您可在本资源池或者其他资源池内创建一个同样配置的备用MySQL服务，可在“服务列表→灾备管理”菜单查看详情
+													开启该模式，您可在本集群或者其他集群内创建一个同样配置的备用MySQL服务，可在“服务列表→灾备管理”菜单查看详情
 												</span>
 											</Balloon>
 										</label>
@@ -1782,13 +1782,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<li className="display-flex">
 												<label className="form-name">
 													<span className="ne-required">
-														灾备服务资源池
+														灾备服务集群
 													</span>
 												</label>
 												<div className="form-content">
 													<FormItem
 														required
-														requiredMessage="请选择灾备服务资源池"
+														requiredMessage="请选择灾备服务集群"
 													>
 														<CascaderSelect
 															listStyle={{
@@ -1812,7 +1812,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 													{reClusterFlag && (
 														<Form.Error>
-															若有可用的其它资源池的情况下，不建议将灾备服务和源服务部署在一个资源池
+															若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
 														</Form.Error>
 													)}
 												</div>

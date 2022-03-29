@@ -43,7 +43,8 @@ const Namespace = (props: NamespaceProps) => {
 					});
 					const newTemp = temp.sort(function (a: any, b: any) {
 						const result =
-							Number(a.phase === 'Active') - Number(b.phase === 'Active');							
+							Number(a.phase === 'Active') -
+							Number(b.phase === 'Active');
 						return result > 0 ? -1 : 1;
 					});
 					setDataSource([...newTemp]);
@@ -72,7 +73,8 @@ const Namespace = (props: NamespaceProps) => {
 				});
 				const newTemp = temp.sort(function (a: any, b: any) {
 					const result =
-						Number(a.phase === 'Active') - Number(b.phase === 'Active');							
+						Number(a.phase === 'Active') -
+						Number(b.phase === 'Active');
 					return result > 0 ? -1 : 1;
 				});
 				setDataSource([...newTemp]);
@@ -141,7 +143,7 @@ const Namespace = (props: NamespaceProps) => {
 			registered: value
 		}).then((res) => {
 			if (res.success) {
-				const msg = value ? '资源分区注册成功' : '资源分区关闭成功';
+				const msg = value ? '命名空间注册成功' : '命名空间关闭成功';
 				Message.show(messageConfig('success', '成功', msg));
 				const list = dataSource.map((item) => {
 					if (item.name === record.name) {
@@ -163,7 +165,7 @@ const Namespace = (props: NamespaceProps) => {
 	) => {
 		return record.registered && record.middlewareReplicas ? (
 			<Tooltip trigger={<Switch checked={value} />} align="l">
-				本资源分区已发布中间件服务，使用中，不可关闭
+				本命名空间已发布中间件服务，使用中，不可关闭
 			</Tooltip>
 		) : (
 			<Switch
@@ -178,13 +180,18 @@ const Namespace = (props: NamespaceProps) => {
 		index: number,
 		record: NamespaceResourceProps
 	) => {
-		if ((record.registered && record.middlewareReplicas) || record.phase !== 'Active') {
+		if (
+			(record.registered && record.middlewareReplicas) ||
+			record.phase !== 'Active'
+		) {
 			return (
 				<Tooltip
 					trigger={<span className="delete-disabled">删除</span>}
 					align="l"
 				>
-					{record.phase === 'Active' ? '本资源分区已发布中间件服务，使用中，不可操作' : '该分区正在删除中，无法操作'}
+					{record.phase === 'Active'
+						? '本命名空间已发布中间件服务，使用中，不可操作'
+						: '该分区正在删除中，无法操作'}
 				</Tooltip>
 			);
 		}
@@ -192,7 +199,7 @@ const Namespace = (props: NamespaceProps) => {
 			<Confirm
 				type="error"
 				title="确认删除"
-				content="确认要删除该资源分区？"
+				content="确认要删除该命名空间？"
 				onConfirm={() => {
 					deleteNamespace({ clusterId: id, name: record.name }).then(
 						(res) => {
@@ -201,7 +208,7 @@ const Namespace = (props: NamespaceProps) => {
 									messageConfig(
 										'success',
 										'成功',
-										'资源分区删除成功'
+										'命名空间删除成功'
 									)
 								);
 								getData();
@@ -239,7 +246,13 @@ const Namespace = (props: NamespaceProps) => {
 		index: number,
 		record: NamespaceResourceProps
 	) => {
-		return <span className={record.phase !== 'Active' ? 'delete-disabled' : ''}>{value}</span>;
+		return (
+			<span
+				className={record.phase !== 'Active' ? 'delete-disabled' : ''}
+			>
+				{record.aliasName || value}
+			</span>
+		);
 	};
 	return (
 		<div style={{ marginTop: 16 }}>
@@ -254,10 +267,14 @@ const Namespace = (props: NamespaceProps) => {
 				onSort={onSort}
 				search={{
 					onSearch: handleSearch,
-					placeholder: '请输入资源分区名称搜索'
+					placeholder: '请输入命名空间名称搜索'
 				}}
 			>
-				<Table.Column title="资源分区" dataIndex="name" cell={nameRender} />
+				<Table.Column
+					title="命名空间"
+					dataIndex="name"
+					cell={nameRender}
+				/>
 				<Table.Column
 					title="CPU配额（核）"
 					dataIndex="cpu"

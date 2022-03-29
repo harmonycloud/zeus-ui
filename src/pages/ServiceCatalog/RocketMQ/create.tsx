@@ -315,7 +315,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		});
 	};
 
-	// 全局资源池、分区更新
+	// 全局集群、分区更新
 	useEffect(() => {
 		if (
 			JSON.stringify(globalCluster) !== '{}' &&

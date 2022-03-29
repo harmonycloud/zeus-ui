@@ -42,6 +42,7 @@ export interface ParamsProps {
 	name: string;
 	aliasName: string;
 	currentTab: string;
+	namespace: string;
 }
 
 const FormItem = Form.Item;
@@ -53,13 +54,13 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		uid,
 		templateName,
 		name,
-		aliasName
+		aliasName,
+		namespace
 	}: ParamsProps = useParams();
 	const {
 		param,
 		globalVar: {
-			cluster: { id: clusterId },
-			namespace: { name: namespace }
+			cluster: { id: clusterId }
 		},
 		setParamTemplateBasic,
 		setParamTemplateConfig,
@@ -237,13 +238,9 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							</FormItem>
 							<FormItem
 								label="模板描述"
-								required
 								labelTextAlign="left"
-								asterisk={false}
-								className="ne-required-ingress"
 								minmaxLengthMessage="模板描述长度不可超过100字符"
 								maxLength={100}
-								requiredMessage="请输入模板描述"
 							>
 								<Input.TextArea
 									placeholder="请输入模板描述"
@@ -284,7 +281,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							countDown={5}
 							leftHandle={() => {
 								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
 								);
 								setParamTemplateBasicClear();
 								setParamTemplateConfigClear();
@@ -323,10 +320,11 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					>
 						<ErrorPage
 							title={uid ? '模版修改失败' : '模版创建失败'}
-							btnText={`返回创建列表(${5}s)`}
+							btnText={`返回创建列表`}
+							countDown={5}
 							btnHandle={() => {
 								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
 								);
 								setParamTemplateBasicClear();
 								setParamTemplateConfigClear();
@@ -341,7 +339,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	return (
 		<Page>
 			<Header
-				title={uid ? '修改模版参数' : '新建参数模版'}
+				title={uid ? '修改参数模版' : '新建参数模版'}
 				hasBackArrow
 				onBackArrowClick={() => {
 					window.history.back();

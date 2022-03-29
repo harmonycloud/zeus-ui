@@ -434,7 +434,6 @@ export default function ParamterList(props: ParamterListProps): JSX.Element {
 
 	return (
 		<Page>
-			{/* <Content style={{ padding: '0 0', margin: '0' }}> */}
 			<HeaderLayout
 				style={{ marginBottom: 8 }}
 				left={
@@ -526,7 +525,6 @@ export default function ParamterList(props: ParamterListProps): JSX.Element {
 					width={200}
 				/>
 			</Table>
-			{/* </Content> */}
 			{visible && (
 				<ParamterTemplateForm
 					visible={visible}

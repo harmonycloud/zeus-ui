@@ -208,7 +208,10 @@ function UserManage(): JSX.Element {
 						关联角色
 					</LinkButton>
 				) : null}
-				<LinkButton onClick={() => resetPasswordHandle(record)} disabled={record.userName !== 'admin' && isLDAP}>
+				<LinkButton
+					onClick={() => resetPasswordHandle(record)}
+					disabled={record.userName !== 'admin' && isLDAP}
+				>
 					{record.userName !== 'admin' && isLDAP ? (
 						<span title={'请联系LDAP管理员修改密码。'}>
 							密码重置

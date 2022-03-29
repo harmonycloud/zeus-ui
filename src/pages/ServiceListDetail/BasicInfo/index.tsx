@@ -287,7 +287,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							Dialog.show({
 								title: '提醒',
 								content:
-									'该备用服务不在当前资源池资源分区，返回源服务页面请点击右上角“返回源服务”按钮',
+									'该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮',
 								onOk: () => {
 									toDetail();
 								}

@@ -40,11 +40,16 @@ import CreateAlarm from '@/pages/ServiceListDetail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
 import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
-import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
 import UseTemplate from '@/pages/ServiceListDetail/ParamterSetting/useTemplate';
 import AddServiceAvailableForm from '@/pages/ServiceAvailable/AddServiceAvailableForm';
+import ProjectManage from '@/pages/ProjectManage';
+import MyProject from '@/pages/MyProject';
+import ProjectDetail from '@/pages/ProjectDetail';
+
+// ! 已弃用
+import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
 
 const Routes = withRouter((props) => {
 	return (
@@ -68,6 +73,18 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/middlewareRepository"
 					component={MiddlewareRepository}
+					exact
+				/>
+				{/* 我的项目 */}
+				<Route path="/myProject" component={MyProject} exact />
+				<Route
+					path="/my/projectDetail/:id"
+					component={ProjectDetail}
+					exact
+				/>
+				<Route
+					path="/systemManagement/projectManagement/projectDetail/:id"
+					component={ProjectDetail}
 					exact
 				/>
 				{/* 中间件市场-版本管理 */}
@@ -134,7 +151,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务详情 - 实例详情*/}
 				<Route
-					path="/serviceList/:name/:aliasName/:currentTab/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:name/:aliasName/:currentTab/:middlewareName/:type/:chartVersion/:namespace"
 					component={InstanceDetails}
 					exact
 				/>
@@ -145,25 +162,25 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 新建模版 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:namespace"
 					component={EditParamTemplate}
 					exact
 				/>
 				{/* 模版对比 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/compareTemplate/:type/:chartVersion/:uid1/:uid2/compare"
+					path="/serviceList/:name/:aliasName/paramterSetting/compareTemplate/:type/:chartVersion/:uid1/:uid2/:namespace/compare"
 					component={CompareParamTemplate}
 					exact
 				/>
 				{/* 编辑模版 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName"
+					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName/:namespace"
 					component={EditParamTemplate}
 					exact
 				/>
 				{/* 使用模版 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/useTemplate/:middlewareName/:type/:chartVersion/:uid"
+					path="/serviceList/:name/:aliasName/paramterSetting/useTemplate/:middlewareName/:type/:chartVersion/:uid/:namespace"
 					component={UseTemplate}
 					exact
 				/>
@@ -256,7 +273,7 @@ const Routes = withRouter((props) => {
 					component={OperationAuditDetail}
 					exact
 				/>
-				{/* 资源池管理 */}
+				{/* 集群管理 */}
 				<Route
 					path="/systemManagement/resourcePoolManagement"
 					component={ResourcePoolManagement}
@@ -300,6 +317,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/systemAlarm/createAlarm/:alarmType/:ruleId"
 					component={CreateAlarm}
+					exact
+				/>
+				{/* 项目管理 */}
+				<Route
+					path="/systemManagement/projectManagement"
+					component={ProjectManage}
 					exact
 				/>
 				<Route

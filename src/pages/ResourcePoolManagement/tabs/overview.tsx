@@ -328,7 +328,7 @@ const Overview = () => {
 					}
 					align="t"
 				>
-					资源分区视角
+					命名空间视角
 				</Tooltip>
 			</RadioGroup>
 		),
@@ -496,7 +496,7 @@ const Overview = () => {
 						onFilter={onFilter}
 					>
 						<Table.Column
-							title="资源分区"
+							title="命名空间"
 							dataIndex="namespace"
 							filters={namespaceFilter}
 							filterMode="single"

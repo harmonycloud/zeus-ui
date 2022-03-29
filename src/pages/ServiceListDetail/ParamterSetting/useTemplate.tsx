@@ -18,7 +18,11 @@ import { getConfigs, updateConfig } from '@/services/middleware';
 import { globalVarProps, StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { ConfigItem, ParamterTemplateItem } from '../detail';
-import { defaultValueRender, questionTooltipRender } from '@/utils/utils';
+import {
+	defaultValueRender,
+	questionTooltipRender,
+	tooltipRender
+} from '@/utils/utils';
 import messageConfig from '@/components/messageConfig';
 
 interface UseTemplateParams {
@@ -28,6 +32,7 @@ interface UseTemplateParams {
 	chartVersion: string;
 	name: string;
 	aliasName: string;
+	namespace: string;
 }
 interface UseTemplateProps {
 	globalVar: globalVarProps;
@@ -41,13 +46,13 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		uid,
 		chartVersion,
 		name,
-		aliasName
+		aliasName,
+		namespace
 	}: UseTemplateParams = useParams();
 	const history = useHistory();
 	const {
 		globalVar: {
-			cluster: { id: clusterId },
-			namespace: { name: namespace }
+			cluster: { id: clusterId }
 		}
 	} = props;
 	const [checked, setChecked] = useState<boolean>(true);
@@ -57,7 +62,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 	const [configs, setConfigs] = useState<ConfigItem[]>([]);
 	const [searchText, setSearchText] = useState<string>('');
 	useEffect(() => {
-		if (clusterId && namespace) {
+		if (clusterId) {
 			getParamsTemp({ type, chartVersion, uid }).then((res) => {
 				if (res.success) {
 					setTemp(res.data);
@@ -82,7 +87,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				}
 			);
 		}
-	}, [clusterId, namespace]);
+	}, [clusterId]);
 	useEffect(() => {
 		if (temp && configs) {
 			const list = configs;
@@ -128,12 +133,21 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		const {
 			restart: { selectedKeys }
 		} = filterParams;
+		let list = dataSource;
 		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource);
+			if (checked)
+				list = list.filter(
+					(item) => item[temp?.name || ''] !== item.value
+				);
+			setShowDataSource(list);
 		} else {
-			const tempData = dataSource.filter(
+			let tempData = dataSource.filter(
 				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
 			);
+			if (checked)
+				tempData = tempData.filter(
+					(item) => item[temp?.name || ''] !== item.value
+				);
 			setShowDataSource(tempData);
 		}
 	};
@@ -301,7 +315,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						customConfigList: list
 					}
 				};
-				console.log(sendData);
+				// console.log(sendData);
 				return updateConfig(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -366,19 +380,30 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="参数名"
 						dataIndex="name"
 						width={210}
-						cell={defaultValueRender}
+						cell={(
+							value: string,
+							index: number,
+							record: ConfigItem
+						) => tooltipRender(value, index, record, 210)}
 						lock="left"
 					/>
 					<Table.Column
 						title="当前运行值"
 						dataIndex="value"
 						cell={defaultValueRender}
-						width={310}
+						width={180}
 					/>
 					<Table.Column
 						title="模版值"
 						dataIndex={temp?.name}
 						cell={modifyValueRender}
+						width={310}
+					/>
+					<Table.Column
+						title="默认值"
+						dataIndex="defaultValue"
+						cell={defaultValueRender}
+						width={180}
 					/>
 					<Table.Column
 						title="是否重启"
@@ -389,7 +414,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							{ value: 'true', label: '是' },
 							{ value: 'false', label: '否' }
 						]}
-						width={140}
+						width={120}
 					/>
 					<Table.Column
 						title="参数值范围"
@@ -401,7 +426,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="参数描述"
 						dataIndex="description"
 						cell={questionTooltipRender}
-						width={100}
+						width={80}
 					/>
 				</Table>
 				<div

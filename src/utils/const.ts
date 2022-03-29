@@ -49,7 +49,7 @@ export const instanceSpecList = [
 		value: 'Customize'
 	}
 ];
-// 资源池、分区不可改变路由名单
+// 集群、分区不可改变路由名单
 export const disabledRoute = [
 	'/mysqlCreate',
 	'/redisCreat',
@@ -71,7 +71,7 @@ export const disabledRoute = [
 	'/disaster/'
 ];
 
-// 资源池、分区不显示路由名单
+// 集群、分区不显示路由名单
 export const hideRoute = [
 	'/basicResource',
 	'/authManage',
@@ -82,7 +82,23 @@ export const hideRoute = [
 	'/roleManagement',
 	'/dataOverview',
 	'/systemManagement',
-	'/terminal'
+	'/terminal',
+	'/myProject',
+	'/projectDetail'
+];
+// * 项目不显示路由名单
+export const projectHideRoute = [
+	'/basicResource',
+	'/authManage',
+	'/platformOverview',
+	'/operationAudit',
+	'/userManagement',
+	'/resourcePoolManagement',
+	'/roleManagement',
+	'/dataOverview',
+	'/systemManagement',
+	'/terminal',
+	'/myProject'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },
@@ -262,6 +278,22 @@ export const formItemLayout614 = {
 	},
 	wrapperCol: {
 		span: 14
+	}
+};
+export const formItemLayout618 = {
+	labelCol: {
+		span: 6
+	},
+	wrapperCol: {
+		span: 18
+	}
+};
+export const formItemLayout619 = {
+	labelCol: {
+		fixedSpan: 6
+	},
+	wrapperCol: {
+		span: 19
 	}
 };
 export const timeSelectDataSource = [

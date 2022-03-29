@@ -34,7 +34,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 			createNamespace({ clusterId, ...field.getValues() }).then((res) => {
 				if (res.success) {
 					Message.show(
-						messageConfig('success', '成功', '资源分区创建成功')
+						messageConfig('success', '成功', '命名空间创建成功')
 					);
 					onCancel();
 					onRefresh();
@@ -46,19 +46,30 @@ const AddNamespace = (props: AddNamespaceProps) => {
 	};
 	return (
 		<Dialog
-			title="新增资源分区"
+			title="新增命名空间"
 			visible={visible}
 			onCancel={onCancel}
 			onOk={onOk}
 			onClose={onCancel}
+			style={{ width: '450px' }}
 		>
 			<Form field={field} {...formItemLayout}>
 				<FormItem
-					label="资源分区英文名:"
+					label="命名空间名称:"
 					required
+					requiredMessage="命名空间名称必填"
+					maxLength={64}
+					minmaxLengthMessage="请输入名称，且最大长度不超过64个字符"
+				>
+					<Input id="aliasName" name="aliasName" />
+				</FormItem>
+				<FormItem
+					label="英文简称:"
+					required
+					requiredMessage="英文简称必填"
 					pattern={'^[a-z][a-z0-9-]{0,61}[a-z0-9]$'}
 					patternMessage={
-						'namespace是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-63个字符'
+						'命名空间是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-63个字符'
 					}
 				>
 					<Input id="name" name="name" />

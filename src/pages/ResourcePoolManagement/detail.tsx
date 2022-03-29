@@ -9,7 +9,7 @@ import Ingress from './tabs/ingress';
 import MirrorWarehouse from './tabs/mirrorWarehouse';
 import storage from '@/utils/storage';
 
-import './index.scss'
+import './index.scss';
 
 export interface paramsProps {
 	id: string;
@@ -44,7 +44,7 @@ const ResourcePoolDetail = () => {
 					<Tab.Item title="概览" key="overview">
 						<Overview />
 					</Tab.Item>
-					<Tab.Item title="资源分区" key="namespace">
+					<Tab.Item title="命名空间" key="namespace">
 						<Namespace />
 					</Tab.Item>
 					<Tab.Item title="负载均衡" key="ingress">

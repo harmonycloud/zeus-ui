@@ -43,7 +43,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 		);
 	};
 
-	// 跨资源池跳转
+	// 跨集群跳转
 	const getNamespaceList = async (item: any) => {
 		const clusterData = clusters.filter(
 			(c: any) => c.id === item.clusterId
@@ -73,7 +73,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 			}
 		}
 	};
-	// * 非跨资源池跳转
+	// * 非跨集群跳转
 	const unAcross = async (item: any) => {
 		const res = await getNamespaces({
 			clusterId: item.clusterId,
@@ -110,10 +110,10 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 			return;
 		} else {
 			if (item.clusterId === clusterTemp.id) {
-				// * 非跨资源池群跳转
+				// * 非跨集群群跳转
 				unAcross(item);
 			} else {
-				// * 跨资源池跳转
+				// * 跨集群跳转
 				getNamespaceList(item);
 			}
 		}

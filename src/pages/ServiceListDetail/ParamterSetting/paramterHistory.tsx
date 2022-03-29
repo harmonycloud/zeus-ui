@@ -126,7 +126,7 @@ export default function ParamterHistory(
 						value: searchText,
 						onSearch: handleSearch,
 						onChange: handleChange,
-						placeholder: '请输入搜索内容'
+						placeholder: '请输入关键词搜索'
 					}}
 				>
 					<Table.Column

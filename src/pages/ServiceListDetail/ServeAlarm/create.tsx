@@ -529,7 +529,7 @@ function CreateAlarm(): JSX.Element {
 					Message.show(messageConfig('error', '失败', '缺少监控项'));
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', '请选择资源池'));
+				Message.show(messageConfig('error', '失败', '请选择集群'));
 			}
 		} else {
 			const list = alarmRules.map((item) => {
@@ -590,12 +590,12 @@ function CreateAlarm(): JSX.Element {
 			<Content>
 				{alarmType === 'system' && (
 					<>
-						<h2>资源池选择</h2>
+						<h2>集群选择</h2>
 						<span
 							className="ne-required"
 							style={{ marginLeft: '10px' }}
 						>
-							选择资源池
+							选择集群
 						</span>
 						<Select
 							style={{
@@ -604,7 +604,7 @@ function CreateAlarm(): JSX.Element {
 							}}
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
-							placeholder="请选择资源池"
+							placeholder="请选择集群"
 							disabled={ruleId as unknown as boolean}
 						>
 							{poolList.length &&
@@ -714,7 +714,13 @@ function CreateAlarm(): JSX.Element {
 													width: '100%'
 												}}
 												autoWidth={false}
-												value={alarmType === 'system' ? item.alert?.split('-')[0] : item.alert}
+												value={
+													alarmType === 'system'
+														? item.alert?.split(
+																'-'
+														  )[0]
+														: item.alert
+												}
 											>
 												{alarms &&
 													alarms.map((i) => {

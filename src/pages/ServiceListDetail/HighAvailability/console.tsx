@@ -21,12 +21,12 @@ const formItemLayout = {
 };
 const list = [
 	{
-		value: 'database',
-		label: '进入数据库'
-	},
-	{
 		value: 'container',
 		label: '进入容器'
+	},
+	{
+		value: 'database',
+		label: '进入数据库'
 	}
 ];
 const mysqlDatabaseContainer: string[] = ['mysql'];

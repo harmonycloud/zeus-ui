@@ -304,7 +304,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 		});
 	};
 
-	// 全局资源池更新
+	// 全局集群更新
 	useEffect(() => {
 		if (
 			JSON.stringify(globalCluster) !== '{}' &&
@@ -332,7 +332,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				}
 			});
 			getMirror({
-				clusterId: globalCluster.id,
+				clusterId: globalCluster.id
 			}).then((res) => {
 				if (res.success) {
 					setMirrorList(res.data.list);
