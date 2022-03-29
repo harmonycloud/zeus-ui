@@ -574,10 +574,7 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text:
-									storageUsage < 100
-										? storageUsage + '%'
-										: '100%',
+								text: storageUsage + '%',
 								x: 210,
 								y: 97,
 								fontSize: 10,
@@ -630,7 +627,7 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text: cpuUsage < 100 ? cpuUsage + '%' : '100%',
+								text: cpuUsage + '%',
 								x: 210,
 								y: 117,
 								fontSize: 10,
@@ -684,10 +681,7 @@ function Visualization(props) {
 						});
 						group.addShape('text', {
 							attrs: {
-								text:
-									memoryUsage < 100
-										? memoryUsage + '%'
-										: '100%',
+								text: memoryUsage + '%',
 								x: 210,
 								y: 137,
 								fontSize: 10,
@@ -851,7 +845,11 @@ function Visualization(props) {
 						}
 						group.addShape('rect', {
 							attrs: {
-								width: !cfg.depth ? breathWidth >= 250 ? breathWidth : 250 : 120,
+								width: !cfg.depth
+									? breathWidth >= 250
+										? breathWidth
+										: 250
+									: 120,
 								height: 20,
 								x: 16,
 								y: 22,
