@@ -32,6 +32,7 @@ interface UseTemplateParams {
 	chartVersion: string;
 	name: string;
 	aliasName: string;
+	namespace: string;
 }
 interface UseTemplateProps {
 	globalVar: globalVarProps;
@@ -45,13 +46,13 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		uid,
 		chartVersion,
 		name,
-		aliasName
+		aliasName,
+		namespace
 	}: UseTemplateParams = useParams();
 	const history = useHistory();
 	const {
 		globalVar: {
-			cluster: { id: clusterId },
-			namespace: { name: namespace }
+			cluster: { id: clusterId }
 		}
 	} = props;
 	const [checked, setChecked] = useState<boolean>(true);
@@ -61,7 +62,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 	const [configs, setConfigs] = useState<ConfigItem[]>([]);
 	const [searchText, setSearchText] = useState<string>('');
 	useEffect(() => {
-		if (clusterId && namespace) {
+		if (clusterId) {
 			getParamsTemp({ type, chartVersion, uid }).then((res) => {
 				if (res.success) {
 					setTemp(res.data);
@@ -86,7 +87,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				}
 			);
 		}
-	}, [clusterId, namespace]);
+	}, [clusterId]);
 	useEffect(() => {
 		if (temp && configs) {
 			const list = configs;

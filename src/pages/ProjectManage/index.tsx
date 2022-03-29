@@ -9,9 +9,10 @@ import EditProjectForm from './editProjectForm';
 import { getProjects, deleteProject } from '@/services/project';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
+import { ProjectItem } from './project';
 
 export default function ProjectManage(): JSX.Element {
-	const [dataSource, setDataSource] = useState([]);
+	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
 	const history = useHistory();
@@ -20,7 +21,11 @@ export default function ProjectManage(): JSX.Element {
 	}, []);
 	const getData = () => {
 		getProjects().then((res) => {
-			console.log(res);
+			if (res.success) {
+				setDataSource(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
 		});
 	};
 	const Operation = {
@@ -36,15 +41,22 @@ export default function ProjectManage(): JSX.Element {
 	const handleSearch = (value: string) => {
 		console.log(value);
 	};
-	const nameRender = (value: string, index: number, record: any) => {
+	const nameRender = (value: string, index: number, record: ProjectItem) => {
 		return (
 			<span
 				className="text-overflow name-link"
-				onClick={() => console.log('to detail')}
+				onClick={() => {
+					history.push(
+						`/systemManagement/projectManagement/projectDetail/${record.projectId}`
+					);
+				}}
 			>
 				{value}
 			</span>
 		);
+	};
+	const nullToZeroRender = (value: string) => {
+		return value || 0;
 	};
 	const actionRender = (value: string, index: number, record: any) => {
 		return (
@@ -104,14 +116,20 @@ export default function ProjectManage(): JSX.Element {
 				>
 					<MidTable.Column
 						title="项目名称"
-						dataIndex="projectName"
+						dataIndex="aliasName"
 						cell={nameRender}
+						width={200}
 						lock="left"
 					/>
-					<MidTable.Column title="成员数" dataIndex="memberCount" />
+					<MidTable.Column
+						title="成员数"
+						dataIndex="memberCount"
+						cell={nullToZeroRender}
+					/>
 					<MidTable.Column
 						title="命名空间数"
 						dataIndex="namespaceCount"
+						cell={nullToZeroRender}
 					/>
 					<MidTable.Column
 						title="备注"
@@ -130,7 +148,7 @@ export default function ProjectManage(): JSX.Element {
 				<EditProjectForm
 					visible={visible}
 					onCancel={() => setVisible(false)}
-					onCreate={() => console.log('create')}
+					onRefresh={getData}
 				/>
 			)}
 		</Page>

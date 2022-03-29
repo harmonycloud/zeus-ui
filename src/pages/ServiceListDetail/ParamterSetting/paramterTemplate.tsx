@@ -16,6 +16,7 @@ interface ParamterTemplateProps {
 interface paramsProps {
 	name: string;
 	aliasName: string;
+	namespace: string;
 }
 const ParamterTemplate = (props: ParamterTemplateProps) => {
 	const { type, chartVersion, middlewareName } = props;
@@ -44,7 +45,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<Button
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${params.namespace}`
 						);
 					}}
 					type="primary"
@@ -55,7 +56,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 					<Button
 						onClick={() => {
 							history.push(
-								`/serviceList/${params.name}/${params.aliasName}/paramterSetting/compareTemplate/${type}/${chartVersion}/${selectedRowKeys[0]}/${selectedRowKeys[1]}/compare`
+								`/serviceList/${params.name}/${params.aliasName}/paramterSetting/compareTemplate/${type}/${chartVersion}/${selectedRowKeys[0]}/${selectedRowKeys[1]}/${params.namespace}/compare`
 							);
 						}}
 						type="secondary"
@@ -115,7 +116,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/useTemplate/${middlewareName}/${type}/${chartVersion}/${record.uid}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/useTemplate/${middlewareName}/${type}/${chartVersion}/${record.uid}/${params.namespace}`
 						);
 					}}
 					disabled={selectedRowKeys.length > 0}
@@ -131,7 +132,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				<LinkButton
 					onClick={() => {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}`
+							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}/${params.namespace}`
 						);
 					}}
 					disabled={selectedRowKeys.length > 0}

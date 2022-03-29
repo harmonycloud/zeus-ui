@@ -27,15 +27,6 @@ export default function EditProjectForm(
 		>
 			<Form {...formItemLayout618} field={field}>
 				<FormItem
-					label="英文简称"
-					required
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-				>
-					<Input disabled />
-				</FormItem>
-				<FormItem
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
@@ -46,6 +37,15 @@ export default function EditProjectForm(
 					patternMessage="请输入名称，且最大长度不超过80个字符"
 				>
 					<Input name="aliasName" />
+				</FormItem>
+				<FormItem
+					label="英文简称"
+					required
+					className="ne-required-ingress"
+					labelTextAlign="left"
+					asterisk={false}
+				>
+					<Input disabled />
 				</FormItem>
 				<FormItem label="备注">
 					<Input name="description" />

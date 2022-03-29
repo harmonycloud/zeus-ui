@@ -108,6 +108,27 @@ export default function MyProject(): JSX.Element {
 							</ul>
 						</div>
 					</div>
+					<div className="zeus-my-project-card-item">
+						<div className="zeus-my-project-card-title-content">
+							<div>项目1</div>
+							<div className="zeus-my-project-card-action">
+								<div className="name-link">编辑</div>
+								<div className="name-link">管理</div>
+							</div>
+						</div>
+						<div className="red-tip">项目管理员</div>
+						<div className="zeus-my-project-card-ul">
+							<ul>
+								<li>
+									英文简称：ddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+								</li>
+								<li>创建时间：ddddd</li>
+								<li>命名空间数：ddddd</li>
+								<li>成员数：ddddd</li>
+								<li>备注：ddddd</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 				<div className="zeus-my-project-table-list-content">
 					<MiddlewareTable />

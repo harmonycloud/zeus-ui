@@ -26,8 +26,10 @@ export default function Member(): JSX.Element {
 					placeholder: '请输入服务名称搜索'
 				}}
 			>
-				<Table.Column title="命名空间名称" dataIndex="name" />
-				<Table.Column title="所属集群" dataIndex="cluster" />
+				<Table.Column title="登陆账户" dataIndex="name" />
+				<Table.Column title="用户名" dataIndex="cluster" />
+				<Table.Column title="角色" dataIndex="action" />
+				<Table.Column title="邮箱" dataIndex="cluster" />
 				<Table.Column title="操作" dataIndex="action" />
 			</Table>
 		</div>

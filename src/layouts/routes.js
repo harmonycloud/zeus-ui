@@ -161,25 +161,25 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 新建模版 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion"
+					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:namespace"
 					component={EditParamTemplate}
 					exact
 				/>
 				{/* 模版对比 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/compareTemplate/:type/:chartVersion/:uid1/:uid2/compare"
+					path="/serviceList/:name/:aliasName/paramterSetting/compareTemplate/:type/:chartVersion/:uid1/:uid2/:namespace/compare"
 					component={CompareParamTemplate}
 					exact
 				/>
 				{/* 编辑模版 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName"
+					path="/serviceList/:name/:aliasName/paramterSetting/template/:middlewareName/:type/:chartVersion/:uid/:templateName/:namespace"
 					component={EditParamTemplate}
 					exact
 				/>
 				{/* 使用模版 */}
 				<Route
-					path="/serviceList/:name/:aliasName/paramterSetting/useTemplate/:middlewareName/:type/:chartVersion/:uid"
+					path="/serviceList/:name/:aliasName/paramterSetting/useTemplate/:middlewareName/:type/:chartVersion/:uid/:namespace"
 					component={UseTemplate}
 					exact
 				/>

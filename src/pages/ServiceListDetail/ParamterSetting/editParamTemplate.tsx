@@ -42,6 +42,7 @@ export interface ParamsProps {
 	name: string;
 	aliasName: string;
 	currentTab: string;
+	namespace: string;
 }
 
 const FormItem = Form.Item;
@@ -53,13 +54,13 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		uid,
 		templateName,
 		name,
-		aliasName
+		aliasName,
+		namespace
 	}: ParamsProps = useParams();
 	const {
 		param,
 		globalVar: {
-			cluster: { id: clusterId },
-			namespace: { name: namespace }
+			cluster: { id: clusterId }
 		},
 		setParamTemplateBasic,
 		setParamTemplateConfig,
@@ -280,7 +281,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							countDown={5}
 							leftHandle={() => {
 								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
 								);
 								setParamTemplateBasicClear();
 								setParamTemplateConfigClear();
@@ -323,7 +324,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							countDown={5}
 							btnHandle={() => {
 								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
 								);
 								setParamTemplateBasicClear();
 								setParamTemplateConfigClear();
