@@ -39,15 +39,11 @@ export default {
 	database: '数据库管理',
 	addResourcePool: '添加资源池',
 	addOther: '添加其他资源池',
-	editResourcePool: '编辑资源池',
-	editOther: '编辑其他资源池',
-	resourcePoolDetail: '资源池详情',
-	addResourcePool: '添加集群',
-	addOther: '添加其他集群',
 	editResourcePool: '编辑集群',
 	editOther: '编辑其他集群',
 	resourcePoolDetail: '集群详情',
 	projectDetail: '项目详情',
 	my: '我的项目',
-	myProject: '我的项目'
+	myProject: '我的项目',
+	allotRole: '分配角色权限'
 };

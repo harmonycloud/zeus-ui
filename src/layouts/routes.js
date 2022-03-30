@@ -50,6 +50,7 @@ import ProjectDetail from '@/pages/ProjectDetail';
 
 // ! 已弃用
 import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
+import AllotRole from '@/pages/RoleManage/allotRole';
 
 const Routes = withRouter((props) => {
 	return (
@@ -190,7 +191,7 @@ const Routes = withRouter((props) => {
 					component={ServiceAvailable}
 					exact
 				/>
-				<Route 
+				<Route
 					path="/serviceAvailable/addServiceAvailable"
 					component={AddServiceAvailableForm}
 					exact
@@ -260,6 +261,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/roleManagement"
 					component={RoleManage}
+					exact
+				/>
+				<Route
+					path="/systemManagement/roleManagement/allotRole"
+					component={AllotRole}
 					exact
 				/>
 				{/* 操作审计 */}
