@@ -17,9 +17,18 @@ export const deleteProject = (param: paramProps) => {
 export const getProjectNamespace = (param: paramProps) => {
 	return Axios.get(PROJECT.getProjectNamespace, param);
 };
+export const bingNamespace = (params: paramProps) => {
+	return Axios.json(PROJECT.getProjectNamespace, params, {}, 'POST');
+};
 export const getProjectMember = (param: paramProps) => {
 	return Axios.get(PROJECT.getProjectMember, param);
 };
-export const bingNamespace = (params: paramProps) => {
-	return Axios.json(PROJECT.getProjectNamespace, params, {}, 'POST');
+export const bindProjectMember = (param: paramProps) => {
+	return Axios.json(PROJECT.getProjectMember, param, {}, 'POST');
+};
+export const updateProjectMember = (param: paramProps) => {
+	return Axios.json(PROJECT.getProjectMember, param, {}, 'PUT');
+};
+export const deleteProjectMember = (param: paramProps) => {
+	return Axios.delete(PROJECT.getProjectMember, param);
 };

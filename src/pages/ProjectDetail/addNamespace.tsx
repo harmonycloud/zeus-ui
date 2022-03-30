@@ -100,7 +100,6 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 						onRefresh();
 					});
 			} else {
-				console.log(values);
 				const sendData = {
 					clusterId: values.clusterId,
 					name: values.name,

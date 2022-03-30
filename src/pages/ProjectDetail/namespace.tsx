@@ -12,6 +12,7 @@ import { deleteNamespace } from '@/services/common';
 
 export default function Namespace(): JSX.Element {
 	const [dataSource, setDataSource] = useState<NamespaceItem[]>([]);
+	const [showDataSource, setShowDataSource] = useState<NamespaceItem[]>([]);
 	const params: DetailParams = useParams();
 	const { id } = params;
 	const [visible, setVisible] = useState<boolean>(false);
@@ -21,6 +22,7 @@ export default function Namespace(): JSX.Element {
 			if (mounted) {
 				if (res.success) {
 					setDataSource(res.data);
+					setShowDataSource(res.data);
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -33,6 +35,7 @@ export default function Namespace(): JSX.Element {
 	const getData = () => {
 		getProjectNamespace({ projectId: id }).then((res) => {
 			if (res.success) {
+				setShowDataSource(res.data);
 				setDataSource(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -85,12 +88,15 @@ export default function Namespace(): JSX.Element {
 		)
 	};
 	const handleSearch = (value: string) => {
-		console.log(value);
+		const list = dataSource.filter((item: NamespaceItem) =>
+			item.aliasName.includes(value)
+		);
+		setShowDataSource(list);
 	};
 	return (
 		<div className="mt-8">
 			<Table
-				dataSource={dataSource}
+				dataSource={showDataSource}
 				exact
 				primaryKey="key"
 				operation={Operation}
@@ -99,7 +105,7 @@ export default function Namespace(): JSX.Element {
 				onRefresh={getData}
 				search={{
 					onSearch: handleSearch,
-					placeholder: '请输入服务名称搜索'
+					placeholder: '请输入关键字搜索'
 				}}
 			>
 				<Table.Column title="命名空间名称" dataIndex="aliasName" />
