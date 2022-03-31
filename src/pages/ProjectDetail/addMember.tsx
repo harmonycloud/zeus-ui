@@ -21,8 +21,8 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 	const [key, setKey] = useState<string>('');
 	const [primaryKeys, setPrimaryKeys] = useState<string[]>([]);
 	const [roles, setRoles] = useState<roleProps[]>([]);
-	const [project, setProject] = useState<ProjectItem>(
-		JSON.parse(storage.getSession('project'))
+	const [project] = useState<ProjectItem>(
+		JSON.parse(storage.getLocal('project'))
 	);
 	useEffect(() => {
 		getUserList({ keyword: '' }).then((res) => {
@@ -53,8 +53,6 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 		record.roleId = value;
 	};
 	const onOk = () => {
-		console.log(primaryKeys);
-		console.log(dataSource);
 		if (primaryKeys.length === 0) {
 			Message.show(messageConfig('error', '失败', '请选择新增的成员'));
 			return;

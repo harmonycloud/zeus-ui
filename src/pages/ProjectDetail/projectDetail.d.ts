@@ -1,3 +1,5 @@
+import { ProjectItem } from '../ProjectManage/project';
+
 export interface DetailParams {
 	id: string;
 }
@@ -60,4 +62,7 @@ export interface EditMemberFieldValues {
 	userName: string;
 	aliasName: string;
 	roleId: number;
+}
+export interface ProjectDetailProps {
+	project: ProjectItem;
 }

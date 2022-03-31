@@ -38,8 +38,8 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [currentCluster, setCurrentCluster] = useState<string>('');
 	const [namespaceList, setNamespaceList] = useState([]);
-	const [project, setProject] = useState<ProjectItem>(
-		JSON.parse(storage.getSession('project'))
+	const [project] = useState<ProjectItem>(
+		JSON.parse(storage.getLocal('project'))
 	);
 	const field = Field.useField();
 	useEffect(() => {

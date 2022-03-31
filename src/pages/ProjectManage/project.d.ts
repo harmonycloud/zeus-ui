@@ -19,6 +19,8 @@ export interface ProjectItem {
 	projectId: string;
 	user: string;
 	userDtoList: null | any;
+	roleName: string | null;
+	roleId: number | null;
 }
 export interface clusterListProps {
 	id: string;

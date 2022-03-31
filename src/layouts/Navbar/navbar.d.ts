@@ -6,6 +6,7 @@ export interface NavbarProps {
 	style?: any;
 	setCluster: (cluster: any) => void;
 	setNamespace: (namespace: any) => void;
+	setProject: (project: any) => void;
 	setRefreshCluster: (flag: boolean) => void;
 	setGlobalClusterList: (clusterList: any) => void;
 	setGlobalNamespaceList: (namespaceList: any) => void;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
 import { Nav, Select, Message } from '@alicloud/console-components';
@@ -11,6 +12,7 @@ import { getProjects } from '@/services/project';
 import {
 	setCluster,
 	setNamespace,
+	setProject,
 	setRefreshCluster,
 	setGlobalClusterList,
 	setGlobalNamespaceList
@@ -30,6 +32,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		style,
 		setCluster,
 		setNamespace,
+		setProject,
 		setRefreshCluster,
 		setGlobalClusterList,
 		setGlobalNamespaceList,
@@ -37,11 +40,14 @@ function Navbar(props: NavbarProps): JSX.Element {
 	} = props;
 	const { flag } = props.globalVar;
 	const location = useLocation();
+	const history = useHistory();
 	const [currentCluster, setCurrentCluster] = useState<{ id?: string }>({});
 	const [currentNamespace, setCurrentNamespace] = useState<{ name?: string }>(
 		{}
 	);
-	const [currentProject, setCurrentProject] = useState({});
+	const [currentProject, setCurrentProject] = useState<{
+		projectId?: string;
+	}>({});
 	const [clusterList, setClusterList] = useState<any[]>([]);
 	const [namespaceList, setNamespaceList] = useState<any[]>([]);
 	const [projectList, setProjectList] = useState<any[]>([]);
@@ -88,16 +94,20 @@ function Navbar(props: NavbarProps): JSX.Element {
 					jsonLocalProject &&
 					res.data.some(
 						(item: any) =>
-							item.name === JSON.parse(jsonLocalProject).name
+							item.projectId ===
+							JSON.parse(jsonLocalProject).projectId
 					)
 				) {
 					const localProjectTemp = res.data.find(
 						(item: any) =>
-							item.name === JSON.parse(jsonLocalProject).name
+							item.projectId ===
+							JSON.parse(jsonLocalProject).projectId
 					);
 					setCurrentProject(localProjectTemp);
+					setProject(localProjectTemp);
 				} else {
-					setCurrentProject(res.data[0].name);
+					setCurrentProject(res.data[0].projectId);
+					setProject(res.data[0]);
 				}
 			}
 			setProjectList(res.data);
@@ -177,15 +187,26 @@ function Navbar(props: NavbarProps): JSX.Element {
 			}
 		}
 	};
+	const projectHandle = (projectId: string) => {
+		for (let i = 0; i < projectList.length; i++) {
+			if (projectList[i].projectId === projectId) {
+				setCurrentProject(projectList[i]);
+				setProject(projectList[i]);
+				storage.setLocal('project', JSON.stringify(projectList[i]));
+			}
+		}
+	};
 
 	useEffect(() => {
 		getClusterList();
+		getProjectList();
 		getUserInfo();
 	}, []);
 
 	useEffect(() => {
 		if (flag) {
 			getClusterList();
+			getProjectList();
 			setRefreshCluster(false);
 		}
 	}, [flag]);
@@ -270,7 +291,20 @@ function Navbar(props: NavbarProps): JSX.Element {
 							hasBorder={false}
 							disabled={projectDisAbled}
 							autoWidth={false}
-						></Select>
+							value={currentProject.projectId}
+							onChange={projectHandle}
+						>
+							{projectList.map((project, index) => {
+								return (
+									<Select.Option
+										key={index}
+										value={project.projectId}
+									>
+										{project.aliasName}
+									</Select.Option>
+								);
+							})}
+						</Select>
 					</>
 				)}
 				{hideFlag === false && (
@@ -330,6 +364,7 @@ const mapStateToProps = (state: StoreState) => ({
 export default connect(mapStateToProps, {
 	setCluster,
 	setNamespace,
+	setProject,
 	setRefreshCluster,
 	setGlobalClusterList,
 	setGlobalNamespaceList

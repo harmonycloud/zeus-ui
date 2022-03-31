@@ -47,7 +47,7 @@ export default function ProjectManage(): JSX.Element {
 			<span
 				className="text-overflow name-link"
 				onClick={() => {
-					storage.setSession('project', JSON.stringify(record));
+					storage.setLocal('project', JSON.stringify(record));
 					history.push(
 						`/systemManagement/projectManagement/projectDetail/${record.projectId}`
 					);

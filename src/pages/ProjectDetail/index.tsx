@@ -1,27 +1,37 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useHistory } from 'react-router';
 import { Page, Header, Content } from '@alicloud/console-components-page';
+import { connect } from 'react-redux';
 import { Tab } from '@alicloud/console-components';
 import Namespace from './namespace';
 import Member from './member';
-import storage from '@/utils/storage';
+import { StoreState } from '@/types';
+import { ProjectDetailProps } from './projectDetail';
 
-export default function ProjectDetail(): JSX.Element {
+function ProjectDetail(props: ProjectDetailProps): JSX.Element {
+	const { project } = props;
 	const [activeKey, setActiveKey] = useState<string>('namespace');
+	const location = useLocation();
+	const history = useHistory();
 	const onChange = (key: string | number) => {
 		setActiveKey(key as string);
 	};
 	useEffect(() => {
-		return () => {
-			storage.removeSession('project');
-		};
-	}, []);
+		history.push(`/my/projectDetail/${project.projectId}`);
+	}, [project]);
 	return (
 		<Page>
 			<Header
 				title="项目详情"
 				subTitle="管理用户自己的项目"
 				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
+				onBackArrowClick={() => {
+					if (location.pathname.includes('my')) {
+						history.push('/myProject');
+					} else {
+						history.push('/systemManagement/projectManagement');
+					}
+				}}
 			/>
 			<Content>
 				<Tab activeKey={activeKey} onChange={onChange}>
@@ -36,3 +46,7 @@ export default function ProjectDetail(): JSX.Element {
 		</Page>
 	);
 }
+const mapStateToProps = (state: StoreState) => ({
+	project: state.globalVar.project
+});
+export default connect(mapStateToProps)(ProjectDetail);

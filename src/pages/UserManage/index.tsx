@@ -195,24 +195,28 @@ function UserManage(): JSX.Element {
 						edit(record);
 						setIsEdit(true);
 					}}
+					disabled={isLDAP}
 				>
 					编辑
 				</LinkButton>
 				{record.userName !== storage.getLocal('userName') ? (
-					<LinkButton onClick={() => deleteUserHandle(record)}>
+					<LinkButton
+						disabled={isLDAP}
+						onClick={() => deleteUserHandle(record)}
+					>
 						删除
 					</LinkButton>
 				) : null}
-				{record.userName !== 'admin' ? (
+				{/* {record.userName !== 'admin' ? (
 					<LinkButton onClick={() => editRole(record)}>
 						关联角色
 					</LinkButton>
-				) : null}
+				) : null} */}
 				<LinkButton
 					onClick={() => resetPasswordHandle(record)}
-					disabled={record.userName !== 'admin' && isLDAP}
+					disabled={isLDAP}
 				>
-					{record.userName !== 'admin' && isLDAP ? (
+					{isLDAP ? (
 						<span title={'请联系LDAP管理员修改密码。'}>
 							密码重置
 						</span>
@@ -235,6 +239,7 @@ function UserManage(): JSX.Element {
 					setVisible(true);
 					setIsEdit(false);
 				}}
+				disabled={isLDAP}
 			>
 				新增
 			</Button>

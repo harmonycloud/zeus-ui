@@ -23,7 +23,7 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 	console.log(data);
 	const [roles, setRoles] = useState<roleProps[]>([]);
 	const [project] = useState<ProjectItem>(
-		JSON.parse(storage.getSession('project'))
+		JSON.parse(storage.getLocal('project'))
 	);
 	const field = Field.useField();
 	useEffect(() => {
