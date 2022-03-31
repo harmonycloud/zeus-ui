@@ -33,3 +33,7 @@ export interface FieldValues {
 	user: string;
 	clusterList?: clusterListProps[];
 }
+export interface ProjectManageProps {
+	setProject: (project: any) => void;
+	setRefreshCluster: (flag: boolean) => void;
+}

@@ -86,9 +86,15 @@ function MyProject(props: MyProjectProps): JSX.Element {
 										>
 											<div
 												className="name-link"
-												onClick={() =>
-													setEditVisible(true)
-												}
+												onClick={() => {
+													storage.setLocal(
+														'project',
+														JSON.stringify(item)
+													);
+													setEditVisible(true);
+													setProject(item);
+													setRefreshCluster(true);
+												}}
 											>
 												编辑
 											</div>
@@ -138,6 +144,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 				<EditProjectForm
 					visible={editVisible}
 					onCancel={() => setEditVisible(false)}
+					onRefresh={getData}
 				/>
 			)}
 		</Page>

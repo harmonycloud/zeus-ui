@@ -17,7 +17,9 @@ function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 		setActiveKey(key as string);
 	};
 	useEffect(() => {
-		history.push(`/my/projectDetail/${project.projectId}`);
+		if (location.pathname.includes('my')) {
+			history.push(`/my/projectDetail/${project.projectId}`);
+		}
 	}, [project]);
 	return (
 		<Page>

@@ -22,7 +22,7 @@ export interface NamespaceItem {
 	clusterId: string;
 	createTime: null;
 	middlewareReplicas: null;
-	name: null;
+	name: string;
 	phase: null;
 	projectId: string;
 	quotas: null;
@@ -65,4 +65,7 @@ export interface EditMemberFieldValues {
 }
 export interface ProjectDetailProps {
 	project: ProjectItem;
+}
+export interface NamespaceProps {
+	clusterList: clusterType[];
 }

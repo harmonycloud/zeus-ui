@@ -25,13 +25,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 		JSON.parse(storage.getLocal('project'))
 	);
 	useEffect(() => {
-		getUserList({ keyword: '' }).then((res) => {
-			if (res.success) {
-				setDataSource(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
+		getData();
 		getRoleList({ key: '' }).then((res) => {
 			if (res.success) {
 				setRoles(res.data);
@@ -40,11 +34,20 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			}
 		});
 	}, []);
+	const getData = (keyword: string = key) => {
+		getUserList({ keyword: keyword }).then((res) => {
+			if (res.success) {
+				setDataSource(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
 	const handleChange = (value: string) => {
-		console.log(value);
+		setKey(value);
 	};
 	const handleSearch = (value: string) => {
-		console.log(value);
+		getData(value);
 	};
 	const onChange = (selectedRowKeys: any) => {
 		setPrimaryKeys(selectedRowKeys);

@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Message } from '@alicloud/console-components';
 import Confirm from '@alicloud/console-components-confirm';
+import { connect } from 'react-redux';
 import { useParams } from 'react-router';
 import Table from '@/components/MidTable';
 import { getProjectNamespace } from '@/services/project';
-import { DetailParams, NamespaceItem } from './projectDetail';
+import { DetailParams, NamespaceItem, NamespaceProps } from './projectDetail';
 import AddNamespace from './addNamespace';
 import messageConfig from '@/components/messageConfig';
 import { Actions, LinkButton } from '@alicloud/console-components-actions';
 import { deleteNamespace } from '@/services/common';
+import { clusterType, StoreState } from '@/types';
+import { filtersProps } from '@/types/comment';
 
-export default function Namespace(): JSX.Element {
+function Namespace(props: NamespaceProps): JSX.Element {
+	const { clusterList } = props;
 	const [dataSource, setDataSource] = useState<NamespaceItem[]>([]);
 	const [showDataSource, setShowDataSource] = useState<NamespaceItem[]>([]);
 	const params: DetailParams = useParams();
 	const { id } = params;
 	const [visible, setVisible] = useState<boolean>(false);
+	const [filters, setFilters] = useState<filtersProps[]>([]);
 	useEffect(() => {
 		let mounted = true;
 		getProjectNamespace({ projectId: id }).then((res) => {
@@ -32,6 +37,15 @@ export default function Namespace(): JSX.Element {
 			mounted = false;
 		};
 	}, [id]);
+	useEffect(() => {
+		const lt = clusterList.map((item: clusterType) => {
+			return {
+				label: item.name,
+				value: item.id
+			};
+		});
+		setFilters(lt);
+	}, [clusterList]);
 	const getData = () => {
 		getProjectNamespace({ projectId: id }).then((res) => {
 			if (res.success) {
@@ -87,10 +101,36 @@ export default function Namespace(): JSX.Element {
 			</Button>
 		)
 	};
+	const aliasNameRender = (
+		value: string,
+		index: number,
+		record: NamespaceItem
+	) => {
+		return value || record.name;
+	};
 	const handleSearch = (value: string) => {
-		const list = dataSource.filter((item: NamespaceItem) =>
-			item.aliasName.includes(value)
-		);
+		const list = dataSource
+			.map((item: NamespaceItem) => {
+				item.aliasName = item.aliasName || item.name;
+				return item;
+			})
+			.filter((item: NamespaceItem) => item.aliasName.includes(value));
+		setShowDataSource(list);
+	};
+	const onFilter = (filterParams: any) => {
+		let list: NamespaceItem[] = [];
+		Object.keys(filterParams).forEach((key) => {
+			const { selectedKeys } = filterParams[key];
+			if (selectedKeys.length) {
+				list = dataSource.filter((record) => {
+					return selectedKeys.some((value: any) => {
+						return record.clusterId === value;
+					});
+				});
+			} else {
+				list = dataSource;
+			}
+		});
 		setShowDataSource(list);
 	};
 	return (
@@ -107,9 +147,19 @@ export default function Namespace(): JSX.Element {
 					onSearch: handleSearch,
 					placeholder: '请输入关键字搜索'
 				}}
+				onFilter={onFilter}
 			>
-				<Table.Column title="命名空间名称" dataIndex="aliasName" />
-				<Table.Column title="所属集群" dataIndex="clusterAliasName" />
+				<Table.Column
+					title="命名空间名称"
+					dataIndex="aliasName"
+					cell={aliasNameRender}
+				/>
+				<Table.Column
+					title="所属集群"
+					dataIndex="clusterAliasName"
+					filterMode="single"
+					filters={filters}
+				/>
 				<Table.Column
 					title="操作"
 					dataIndex="action"
@@ -126,3 +176,7 @@ export default function Namespace(): JSX.Element {
 		</div>
 	);
 }
+const mapStateToProps = (state: StoreState) => ({
+	clusterList: state.globalVar.clusterList
+});
+export default connect(mapStateToProps)(Namespace);

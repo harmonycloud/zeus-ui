@@ -14,6 +14,9 @@ export const createProject = (params: any) => {
 export const deleteProject = (param: paramProps) => {
 	return Axios.delete(PROJECT.deleteProject, param);
 };
+export const updateProject = (param: paramProps) => {
+	return Axios.json(PROJECT.deleteProject, param, {}, 'PUT');
+};
 export const getProjectNamespace = (param: paramProps) => {
 	return Axios.get(PROJECT.getProjectNamespace, param);
 };
