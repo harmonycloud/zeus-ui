@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
 	Dialog,
 	Form,
@@ -8,10 +8,11 @@ import {
 	Icon,
 	Balloon
 } from '@alicloud/console-components';
-import { createUser, updateUser } from '@/services/user';
+import { createDb, updateDb } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { Select } from '@alifd/next';
+import { FormProps } from './database';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -25,28 +26,38 @@ const formItemLayout = {
 		span: 18
 	}
 };
-interface userFormProps {
-	visible: boolean;
-	onCreate: () => void;
-	onCancel: () => void;
-	data: any | undefined | null;
-}
-export default function DataBaseForm(props: userFormProps): JSX.Element {
-	const { visible, onCreate, onCancel, data } = props;
+export default function DataBaseForm(props: FormProps): JSX.Element {
+	const {
+		visible,
+		onCreate,
+		onCancel,
+		data,
+		clusterId,
+		namespace,
+		middlewareName,
+		charsetList
+	} = props;
 	const field: Field = Field.useField();
 
 	useEffect(() => {
-		console.log(111);
-	}, []);
+		if (data) {
+			field.setValues(data);
+		}
+	}, [data]);
 	const onOk: () => void = () => {
-		field.validate((errors, values) => {
+		field.validate((errors, values: any) => {
 			if (errors) return;
-			const sendData = {
-				...(values as unknown as any)
-			};
+
 			if (data) {
-				// * 修改用户
-				updateUser(sendData).then((res) => {
+				// * 修改数据库
+				const sendData = {
+					clusterId,
+					namespace,
+					middlewareName,
+					id: values.id,
+					description: values.description
+				};
+				updateDb(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户修改成功')
@@ -57,8 +68,14 @@ export default function DataBaseForm(props: userFormProps): JSX.Element {
 					}
 				});
 			} else {
-				// * 创建用户
-				createUser(sendData).then((res) => {
+				// * 创建数据库
+				const sendData = {
+					clusterId,
+					namespace,
+					middlewareName,
+					...(values as unknown as any)
+				};
+				createDb(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户创建成功')
@@ -74,13 +91,13 @@ export default function DataBaseForm(props: userFormProps): JSX.Element {
 
 	return (
 		<Dialog
-			title={!data ? '新增用户' : '编辑用户'}
+			title={!data ? '新增数据库' : '编辑数据库'}
 			visible={visible}
 			footerAlign="right"
 			onOk={onOk}
 			onCancel={onCancel}
 			onClose={onCancel}
-            style={{width: 540}}
+			style={{ width: 540 }}
 		>
 			<Form field={field} {...formItemLayout} style={{ paddingLeft: 12 }}>
 				<FormItem
@@ -103,13 +120,13 @@ export default function DataBaseForm(props: userFormProps): JSX.Element {
 							</Tooltip>
 						</div>
 					}
-					required
+					required={!data}
 					requiredMessage="请输入数据库名称"
 					pattern={pattern.databaseName}
 					patternMessage="数据库名称不合法"
 				>
 					<Input
-						name="userName"
+						name="db"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入"
@@ -120,24 +137,28 @@ export default function DataBaseForm(props: userFormProps): JSX.Element {
 					labelTextAlign="left"
 					asterisk={false}
 					label="支持的字符集"
-					required
+					required={!data}
 					requiredMessage="请选择字符集"
 				>
 					<Select
-						name="password"
+						name="charset"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请选择"
-                        style={{width: '100%'}}
+						style={{ width: '100%' }}
 					>
-						<Option key="utf-8" value="utf-8">
-							utf-8
-						</Option>
+						{charsetList.map((item: string) => {
+							return (
+								<Option key={item} value={item}>
+									{item}
+								</Option>
+							);
+						})}
 					</Select>
 				</FormItem>
 				<FormItem labelTextAlign="left" asterisk={false} label="备注">
 					<TextArea
-						name="email"
+						name="description"
 						trim={true}
 						placeholder="限定200字符串"
 					/>

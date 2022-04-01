@@ -211,3 +211,52 @@ export const uploadLogSwitch = (params: any) => {
 export const topParam = (param: any) => {
 	return Axios.put(MIDDLEWARE.topConfigParam, param);
 };
+
+// * 创建数据库用户
+export const createUser = (param: any) => {
+	return Axios.json(MIDDLEWARE.createUser, param, {}, 'POST', true);
+};
+// * 查询数据库用户列表
+export const listUser = (param: any) => {
+	return Axios.get(MIDDLEWARE.listUser, param);
+};
+// * 创建数据库
+export const createDb = (param: any) => {
+	return Axios.json(MIDDLEWARE.createDb, param, {}, 'POST', true);
+};
+// * 更改用户备注
+export const updateUserInfo = (param: any) => {
+	return Axios.put(MIDDLEWARE.createDb, param);
+};
+// * 查询mysql字符集
+export const listCharset = (param: any) => {
+	return Axios.get(MIDDLEWARE.listCharset, param);
+};
+// * 查询数据库列表
+export const listDb = (param: any) => {
+	return Axios.get(MIDDLEWARE.listDb, param);
+};
+// * 删除数据库
+export const deleteDb = (param: any) => {
+	return Axios.delete(MIDDLEWARE.deleteDb, param);
+};
+// * 更改数据库备注
+export const updateDb = (param: any) => {
+	return Axios.json(MIDDLEWARE.updateDb, param, {}, 'PUT', true);
+};
+// * 修改用户
+export const grantUser = (param: any) => {
+	return Axios.json(MIDDLEWARE.grantUser, param, {}, 'POST', true);
+};
+// * 修改密码
+export const updatePassword = (param: any) => {
+	return Axios.json(MIDDLEWARE.updatePassword, param, {}, 'PUT', true);
+};
+// * 删除用户
+export const deleteUser = (param: any) => {
+	return Axios.delete(MIDDLEWARE.deleteUser, param);
+};
+// * sql审计
+export const queryAuditSql = (param: any) => {
+	return Axios.json(MIDDLEWARE.queryAuditSql, param, {}, 'POST', true);
+};

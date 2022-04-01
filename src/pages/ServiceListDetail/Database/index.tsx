@@ -6,13 +6,11 @@ import storage from '@/utils/storage';
 import { DetailParams } from '../detail';
 import UserManage from './userManage';
 import DatabaseManage from './databaseManage';
-import SqlAudit from './sqlAudit'
+import SqlAudit from './sqlAudit';
 
-import './index.scss'
+import './index.scss';
 
-export default function DataBase(
-	props: any
-): JSX.Element {
+export default function DataBase(props: any): JSX.Element {
 	const {
 		middlewareName,
 		clusterId,
@@ -32,9 +30,7 @@ export default function DataBase(
 		storage.setSession('paramsTab', selectedKey);
 	};
 	useEffect(() => {
-		currentTab &&
-			currentTab !== 'database' &&
-			setSelectedKey('userManage');
+		currentTab && currentTab !== 'database' && setSelectedKey('userManage');
 	}, [currentTab]);
 
 	const ConsoleMenu = () => (
@@ -51,11 +47,29 @@ export default function DataBase(
 	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
 			case 'userManage':
-				return <UserManage />;
+				return (
+					<UserManage
+						clusterId={clusterId}
+						namespace={namespace}
+						middlewareName={middlewareName}
+					/>
+				);
 			case 'databaseManage':
-				return <DatabaseManage />;
+				return (
+					<DatabaseManage
+						clusterId={clusterId}
+						namespace={namespace}
+						middlewareName={middlewareName}
+					/>
+				);
 			case 'audit':
-				return <SqlAudit />;
+				return (
+					<SqlAudit
+						clusterId={clusterId}
+						namespace={namespace}
+						middlewareName={middlewareName}
+					/>
+				);
 			default:
 				return null;
 		}

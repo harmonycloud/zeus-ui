@@ -9,24 +9,14 @@ import {
 	Message
 } from '@alicloud/console-components';
 
-import { encrypt } from '@/utils/utils';
-import { updatePassword } from '@/services/user';
+import { updatePassword } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 
 import Storage from '@/utils/storage';
+import { FormProps } from './database';
 
 import styles from '@/layouts/Navbar/User/./user.module.scss';
 
-interface sendDataProps {
-	password: string;
-	newPassword: string;
-	reNewPassword: string;
-}
-interface editProps {
-	visible: boolean;
-	onCancel: () => void;
-	userName: string;
-}
 const formItemLayout = {
 	labelCol: {
 		span: 10
@@ -36,40 +26,41 @@ const formItemLayout = {
 	}
 };
 const FormItem = Form.Item;
-export default function PasswordForm(props: editProps): JSX.Element {
-	const { visible, onCancel, userName } = props;
-	const [checks, setChecks] = useState<boolean[]>([
-		false,
-		false,
-		false,
-		false
-	]);
-	const [publicKey] = useState<string>(Storage.getSession('rsa'));
+export default function PasswordForm(props: FormProps): JSX.Element {
+	const {
+		visible,
+		onCancel,
+		onCreate,
+		clusterId,
+		namespace,
+		middlewareName,
+		data
+	} = props;
+	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	const field = Field.useField();
 
 	const onOk: () => void = () => {
-		field.validate((error) => {
+		field.validate((error, values: any) => {
 			if (error) return;
 			if (checks.includes(false)) {
 				Message.warning('密码格式不正确!');
 				return;
 			}
-			const v: sendDataProps = field.getValues();
-			const rsaPass = encrypt(v.password, publicKey);
-			const newRsaPass = encrypt(v.newPassword, publicKey);
-			const reNewRsaPass = encrypt(v.reNewPassword, publicKey);
+
 			const sendData = {
-				userName,
-				password: rsaPass,
-				newPassword: newRsaPass,
-				reNewPassword: reNewRsaPass
+				clusterId,
+				namespace,
+				middlewareName,
+				id: data.id,
+				user: data.user,
+				password: values.newPassword
 			};
 			updatePassword(sendData).then((res) => {
 				if (res.success) {
 					Message.show(
 						messageConfig('success', '成功', '密码修改成功')
 					);
-					onCancel();
+					onCreate();
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}
@@ -79,29 +70,19 @@ export default function PasswordForm(props: editProps): JSX.Element {
 	const handleChange = (value: string, type: string) => {
 		if (type === 'new') {
 			const temp = [...checks];
-			if (/[A-Za-z]/.test(value)) {
+			if (value.length >= 8 && value.length <= 32) {
 				temp[0] = true;
 			} else {
 				temp[0] = false;
 			}
-			if (/\d/.test(value)) {
+			if (
+				/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{3,32}$/.test(
+					value
+				)
+			) {
 				temp[1] = true;
 			} else {
 				temp[1] = false;
-			}
-			if (
-				value.includes('.') ||
-				value.includes('@') ||
-				value.includes('-')
-			) {
-				temp[2] = true;
-			} else {
-				temp[2] = false;
-			}
-			if (value.length >= 8 && value.length <= 16) {
-				temp[3] = true;
-			} else {
-				temp[3] = false;
 			}
 			setChecks(temp);
 		} else {
@@ -154,7 +135,7 @@ export default function PasswordForm(props: editProps): JSX.Element {
 									size="xs"
 								/>
 							)}
-							<span>英文大写或小写</span>
+							<span>(长度需要8-32之间)</span>
 						</li>
 						<li className={styles['edit-form-icon-style']}>
 							{checks[1] ? (
@@ -170,54 +151,11 @@ export default function PasswordForm(props: editProps): JSX.Element {
 									size="xs"
 								/>
 							)}
-							<span>数字</span>
-						</li>
-						<li className={styles['edit-form-icon-style']}>
-							{checks[2] ? (
-								<Icon
-									type="success-filling1"
-									style={{ color: '#68B642', marginRight: 4 }}
-									size="xs"
-								/>
-							) : (
-								<Icon
-									type="times-circle-fill"
-									style={{ color: '#Ef595C', marginRight: 4 }}
-									size="xs"
-								/>
-							)}
 							<span>
-								&quot;.&quot;或&quot;@&quot;或&quot;-&quot;
-							</span>
-						</li>
-						<li className={styles['edit-form-icon-style']}>
-							{checks[3] ? (
-								<Icon
-									type="success-filling1"
-									style={{ color: '#68B642', marginRight: 4 }}
-									size="xs"
-								/>
-							) : (
-								<Icon
-									type="times-circle-fill"
-									style={{ color: '#Ef595C', marginRight: 4 }}
-									size="xs"
-								/>
-							)}
-							<span>
-								目前长度为
-								{
-									(
-										(field.getValue(
-											'newPassword'
-										) as string) || ''
-									).length
-								}
-								(长度需要8-16之间)
+								至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
 							</span>
 						</li>
 					</ul>
-					要求：密码需要满足以上四个条件
 				</Balloon>
 				<FormItem
 					label="新密码二次确认"

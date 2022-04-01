@@ -238,12 +238,18 @@ function _delete(url, params = {}, option = {}) {
  * @param {Object} option [请求配置]
  * @param {String} method [请求方法]
  */
-function _post(url, params = {}, option = {}, method = 'POST') {
+function _post(
+	url,
+	params = {},
+	option = {},
+	method = 'POST',
+	withParam = false
+) {
 	return new Promise((resolve, reject) => {
 		const { restUrl, data } = restfulAPI(url, params);
 		let options = {
 			url: restUrl,
-			data,
+			data: withParam ? params : data,
 			method,
 			headers: {
 				'Content-Type':
@@ -251,6 +257,7 @@ function _post(url, params = {}, option = {}, method = 'POST') {
 			},
 			...option
 		};
+		console.log(options);
 		axios(options)
 			.then((res) => {
 				resolve(res.data);
@@ -261,8 +268,8 @@ function _post(url, params = {}, option = {}, method = 'POST') {
 	});
 }
 
-function _put(url, params = {}, option = {}) {
-	return _post(url, params, option, 'PUT');
+function _put(url, params = {}, option = {}, withParam = false) {
+	return _post(url, params, option, 'PUT', withParam);
 }
 
 /**
@@ -272,12 +279,18 @@ function _put(url, params = {}, option = {}) {
  * @param {Object} option [请求配置]
  * @param {String} method [请求方法]
  */
-function _json(url, params = {}, option = {}, method = 'POST') {
+function _json(
+	url,
+	params = {},
+	option = {},
+	method = 'POST',
+	withParam = false
+) {
 	return new Promise((resolve, reject) => {
 		const { restUrl, data } = restfulAPI(url, params);
 		let options = {
 			url: restUrl,
-			data: JSON.stringify(data),
+			data: withParam ? JSON.stringify(params) : JSON.stringify(data),
 			method,
 			headers: {
 				'Content-Type': 'application/json;charset=UTF-8'

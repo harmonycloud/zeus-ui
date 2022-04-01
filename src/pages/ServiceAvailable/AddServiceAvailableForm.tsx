@@ -491,7 +491,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					{protocol === 'HTTP' &&
 						httpList.map((item, index) => {
 							return (
-								<div className="http-form">
+								<div className="http-form" key={index}>
 									<FormItem
 										label="选择暴露对象"
 										required
@@ -640,6 +640,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 										<Button
 											style={{ marginLeft: '8px' }}
 											onClick={() => copyHttpList(index)}
+											disabled={httpList.length >= 10}
 										>
 											<CustomIcon
 												type="icon-fuzhi1"
