@@ -8,7 +8,7 @@ import { Nav, Select, Message } from '@alicloud/console-components';
 import User from './User';
 
 import { getClusters, getNamespaces } from '@/services/common';
-import { getProjects } from '@/services/project';
+import { getProjects, switchProjectGetToken } from '@/services/project';
 import {
 	setCluster,
 	setNamespace,
@@ -144,6 +144,13 @@ function Navbar(props: NavbarProps): JSX.Element {
 		}
 	};
 
+	const switchProject = async (projectId: string) => {
+		const res = await switchProjectGetToken({ projectId });
+		if (!res.success) {
+			Message.show(messageConfig('error', '失败', '项目切换失败'));
+		}
+	};
+
 	const getNamespaceList = async (clusterId: string | undefined) => {
 		const res = await getNamespaces({ clusterId, withQuota: true });
 		if (res.success) {
@@ -190,9 +197,11 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const projectHandle = (projectId: string) => {
 		for (let i = 0; i < projectList.length; i++) {
 			if (projectList[i].projectId === projectId) {
-				setCurrentProject(projectList[i]);
-				setProject(projectList[i]);
-				storage.setLocal('project', JSON.stringify(projectList[i]));
+				switchProject(projectId).finally(() => {
+					setCurrentProject(projectList[i]);
+					setProject(projectList[i]);
+					storage.setLocal('project', JSON.stringify(projectList[i]));
+				});
 			}
 		}
 	};

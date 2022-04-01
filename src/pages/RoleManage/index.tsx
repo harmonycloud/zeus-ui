@@ -102,7 +102,7 @@ function RoleManage(): JSX.Element {
 	};
 	const permissionEdit: (record: roleProps) => void = (record: roleProps) => {
 		if (record.id === 1 || Number(roleId) === record.id) return;
-		storage.setSession('rolePower', JSON.stringify(record.power));
+		storage.setSession('rolePower', JSON.stringify(record));
 		history.push('/systemManagement/roleManagement/allotRole');
 		// setPermissionData(record);
 		// setPermissionVisible(true);

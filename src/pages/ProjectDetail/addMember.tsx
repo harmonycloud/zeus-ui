@@ -3,7 +3,8 @@ import { Dialog, Message, Select } from '@alicloud/console-components';
 import MidTable from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 
-import { getUserList } from '@/services/user';
+import { getProjectMember } from '@/services/project';
+// import { getUserList } from '@/services/user';
 import { getRoleList } from '@/services/role';
 import { bindProjectMember } from '@/services/project';
 import { nullRender } from '@/utils/utils';
@@ -18,6 +19,7 @@ const Option = Select.Option;
 export default function AddMember(props: AddMemberProps): JSX.Element {
 	const { visible, onCancel, onRefresh } = props;
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
+	const [showDataSource, setShowDataSource] = useState<userProps[]>([]);
 	const [key, setKey] = useState<string>('');
 	const [primaryKeys, setPrimaryKeys] = useState<string[]>([]);
 	const [roles, setRoles] = useState<roleProps[]>([]);
@@ -34,10 +36,14 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			}
 		});
 	}, []);
-	const getData = (keyword: string = key) => {
-		getUserList({ keyword: keyword }).then((res) => {
+	const getData = () => {
+		getProjectMember({
+			projectId: project.projectId,
+			allocatable: true
+		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
+				setShowDataSource(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -47,7 +53,11 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 		setKey(value);
 	};
 	const handleSearch = (value: string) => {
-		getData(value);
+		// getData();
+		const list = dataSource.filter((item: userProps) =>
+			item.userName.includes(value)
+		);
+		setShowDataSource(list);
 	};
 	const onChange = (selectedRowKeys: any) => {
 		setPrimaryKeys(selectedRowKeys);
@@ -68,7 +78,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 				}
 			});
 		});
-		console.log(list);
+		// console.log(list);
 		if (list.some((item: userProps) => item.roleId === null)) {
 			Message.show(
 				messageConfig('error', '失败', '请选择成员的角色权限')
@@ -101,11 +111,13 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 				style={{ width: '100%' }}
 			>
 				{roles.map((item: roleProps) => {
-					return (
-						<Option key={item.id} value={item.id}>
-							{item.name}
-						</Option>
-					);
+					if (item.id !== 1) {
+						return (
+							<Option key={item.id} value={item.id}>
+								{item.name}
+							</Option>
+						);
+					}
 				})}
 			</Select>
 		);
@@ -120,7 +132,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			style={{ width: 840 }}
 		>
 			<MidTable
-				dataSource={dataSource}
+				dataSource={showDataSource}
 				exact
 				search={{
 					value: key,

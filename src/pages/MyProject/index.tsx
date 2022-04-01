@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { getProjects } from '@/services/project';
+import { getProjects, getProjectMiddleware } from '@/services/project';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
 import MiddlewareTable from './middlewareTable';
@@ -11,11 +11,8 @@ import { Message, Loading } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
 import './index.scss';
 import storage from '@/utils/storage';
+import { MiddlewareTableItem, MyProjectProps } from './myProject';
 
-interface MyProjectProps {
-	setProject: (project: any) => void;
-	setRefreshCluster: (flag: boolean) => void;
-}
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster } = props;
 	const history = useHistory();
@@ -23,9 +20,18 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [currentProject, setCurrentProject] = useState<ProjectItem>();
 	const [projectLoading, setProjectLoading] = useState<boolean>(false);
+	const [middlewareLoading, setMiddlewareLoading] = useState<boolean>(false);
+	const [tableDataSource, setTableDataSource] = useState<
+		MiddlewareTableItem[]
+	>([]);
 	useEffect(() => {
 		getData();
 	}, []);
+	useEffect(() => {
+		if (currentProject) {
+			getMiddlewareData(currentProject.projectId);
+		}
+	}, [currentProject]);
 	const getData = () => {
 		setProjectLoading(true);
 		getProjects()
@@ -46,6 +52,20 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			})
 			.finally(() => {
 				setProjectLoading(false);
+			});
+	};
+	const getMiddlewareData = (projectId: string) => {
+		setMiddlewareLoading(true);
+		getProjectMiddleware({ projectId })
+			.then((res) => {
+				if (res.success) {
+					setTableDataSource(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			})
+			.finally(() => {
+				setMiddlewareLoading(false);
 			});
 	};
 	return (
@@ -136,9 +156,24 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						})}
 					</div>
 				</Loading>
-				<div className="zeus-my-project-table-list-content">
-					<MiddlewareTable />
-				</div>
+				<Loading
+					visible={middlewareLoading}
+					tip="加载中，请稍后"
+					size="medium"
+					style={{ display: 'block' }}
+				>
+					<div className="zeus-my-project-table-list-content">
+						{tableDataSource &&
+							tableDataSource.map((item: MiddlewareTableItem) => {
+								return (
+									<MiddlewareTable
+										key={item.type}
+										data={item}
+									/>
+								);
+							})}
+					</div>
+				</Loading>
 			</Content>
 			{editVisible && (
 				<EditProjectForm

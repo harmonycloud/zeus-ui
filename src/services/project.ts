@@ -35,3 +35,12 @@ export const updateProjectMember = (param: paramProps) => {
 export const deleteProjectMember = (param: paramProps) => {
 	return Axios.delete(PROJECT.getProjectMember, param);
 };
+export const getProjectMiddleware = (param: paramProps) => {
+	return Axios.get(PROJECT.getProjectMiddleware, param);
+};
+export const switchProjectGetToken = (param: paramProps) => {
+	return Axios.get(PROJECT.switchProject, param);
+};
+export const getAllocatableNamespace = (param: paramProps) => {
+	return Axios.get(PROJECT.getAllocatableNamespace, param);
+};

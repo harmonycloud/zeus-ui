@@ -13,7 +13,7 @@ import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
 
 import { getClusters, createNamespace } from '@/services/common';
-import { bingNamespace } from '@/services/project';
+import { bingNamespace, getAllocatableNamespace } from '@/services/project';
 import { formItemLayout618 } from '@/utils/const';
 import { clusterType } from '@/types';
 import { AddNamespaceFieldValues, AddNamespaceProps } from './projectDetail';
@@ -43,27 +43,29 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 	);
 	const field = Field.useField();
 	useEffect(() => {
-		getClusters({ detail: true }).then((res) => {
-			if (res.success) {
-				setClusterList(res.data);
-				if (res.data.length > 0) {
-					setNamespaceList(res.data[0].namespaceList);
-					setCurrentCluster(res.data[0].id);
+		getAllocatableNamespace({ projectId: project.projectId }).then(
+			(res) => {
+				if (res.success) {
+					setClusterList(res.data);
+					if (res.data.length > 0) {
+						setNamespaceList(res.data[0].namespaceList || []);
+						setCurrentCluster(res.data[0].id);
+					} else {
+						setNamespaceList([]);
+						setCurrentCluster('');
+					}
 				} else {
+					setClusterList([]);
 					setNamespaceList([]);
-					setCurrentCluster('');
+					Message.show(messageConfig('error', '失败', res));
 				}
-			} else {
-				setClusterList([]);
-				setNamespaceList([]);
-				Message.show(messageConfig('error', '失败', res));
 			}
-		});
+		);
 	}, []);
 	useEffect(() => {
 		clusterList.map((item: clusterType) => {
 			if (item.id === currentCluster) {
-				setNamespaceList(item.namespaceList);
+				setNamespaceList(item.namespaceList || []);
 			}
 		});
 	}, [currentCluster]);
@@ -216,7 +218,7 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 						requiredMessage="请选择命名空间"
 					>
 						<Select name="namespace" style={{ width: '100%' }}>
-							{namespaceList.map((item: any) => {
+							{namespaceList?.map((item: any) => {
 								return (
 									<Option key={item.name} value={item.name}>
 										{item.aliasName || item.name}
