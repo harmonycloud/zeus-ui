@@ -9,6 +9,8 @@
 
 .zeus-my-project-card-list-content {
 	display: flex;
+	height: 205px;
+	width: 100%;
 	overflow-x: auto;
 	.zeus-my-project-card-item{
 		width: 286px;
@@ -30,6 +32,12 @@
 			font-weight: $font-weight-lg;
 			color: $text-color-title;
 			margin-bottom: $margin / 2;
+			.zeus-my-project-card-h2 {
+				max-width: 150px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
 			.zeus-my-project-card-action{
 				display: flex;
 				font-weight: $font-weight-sm;

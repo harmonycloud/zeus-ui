@@ -56,12 +56,7 @@ export default function BackupRecovery(
 		);
 	};
 	if (storage) {
-		if (
-			!storage.backup ||
-			!storage.backup.storage ||
-			!storage.support ||
-			!storage.support['CSI-LVM']
-		) {
+		if (!storage.backup || !storage.backup.storage) {
 			return (
 				<ComponentNull title="该功能所需要备份存储工具支持，您可前往“集群——>平台组件进行安装" />
 			);

@@ -15,7 +15,6 @@ import { getMenu } from '@/services/user';
 import { Message } from '@alicloud/console-components';
 import { History } from 'history';
 import messageConfig from '@/components/messageConfig';
-import { Icon } from '@alifd/next';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { StoreState, menuReduxProps } from '@/types/index';
 import './menu.scss';
@@ -32,7 +31,9 @@ const mapLocationToActiveKey = (location: Location) => {
 		return '/systemManagement/operationAudit';
 	else if (pathArray.includes('resourcePoolManagement'))
 		return '/systemManagement/resourcePoolManagement';
-	else if (pathArray.includes('my/projectDetail')) return '/myProject';
+	else if (pathArray.includes('projectManagement'))
+		return '/systemManagement/projectManagement';
+	else if (pathArray.includes('my')) return '/myProject';
 	else if (pathArray.includes('serviceList'))
 		return storage.getSession('menuPath');
 	return location.pathname;

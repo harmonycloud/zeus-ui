@@ -1,3 +1,4 @@
+import { ProjectItem } from '@/pages/ProjectManage/project';
 import { ConfigItem } from '@/pages/ServiceListDetail/detail';
 import {
 	monitorProps,
@@ -39,6 +40,7 @@ export interface namespaceType {
 export interface globalVarProps {
 	cluster: clusterType;
 	clusterList: clusterType[];
+	project: ProjectItem;
 	flag: boolean;
 	namespace: namespaceType;
 	namespaceList: namespaceType[];

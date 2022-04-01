@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog, Message } from '@alicloud/console-components';
 import { useHistory } from 'react-router';
+import { connect } from 'react-redux';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import MidTable from '@/components/MidTable';
 import EditProjectForm from './editProjectForm';
-
+import UpdateProjectFrom from '../MyProject/editProjectForm';
+import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import { getProjects, deleteProject } from '@/services/project';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
-import { ProjectItem } from './project';
+import { ProjectItem, ProjectManageProps } from './project';
+import storage from '@/utils/storage';
 
-export default function ProjectManage(): JSX.Element {
+function ProjectManage(props: ProjectManageProps): JSX.Element {
+	const { setProject, setRefreshCluster } = props;
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
+	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		getData();
@@ -46,6 +51,7 @@ export default function ProjectManage(): JSX.Element {
 			<span
 				className="text-overflow name-link"
 				onClick={() => {
+					storage.setLocal('project', JSON.stringify(record));
 					history.push(
 						`/systemManagement/projectManagement/projectDetail/${record.projectId}`
 					);
@@ -61,7 +67,16 @@ export default function ProjectManage(): JSX.Element {
 	const actionRender = (value: string, index: number, record: any) => {
 		return (
 			<Actions>
-				<LinkButton>编辑</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setEditVisible(true);
+						setProject(record);
+						storage.setLocal('project', JSON.stringify(record));
+						setRefreshCluster(true);
+					}}
+				>
+					编辑
+				</LinkButton>
 				<LinkButton
 					onClick={() => {
 						Dialog.show({
@@ -118,17 +133,19 @@ export default function ProjectManage(): JSX.Element {
 						title="项目名称"
 						dataIndex="aliasName"
 						cell={nameRender}
-						width={200}
+						width={250}
 						lock="left"
 					/>
 					<MidTable.Column
 						title="成员数"
 						dataIndex="memberCount"
+						width={100}
 						cell={nullToZeroRender}
 					/>
 					<MidTable.Column
 						title="命名空间数"
 						dataIndex="namespaceCount"
+						width={100}
 						cell={nullToZeroRender}
 					/>
 					<MidTable.Column
@@ -151,6 +168,18 @@ export default function ProjectManage(): JSX.Element {
 					onRefresh={getData}
 				/>
 			)}
+			{editVisible && (
+				<UpdateProjectFrom
+					visible={editVisible}
+					onCancel={() => setEditVisible(false)}
+					onRefresh={getData}
+				/>
+			)}
 		</Page>
 	);
 }
+const mapStateToProps = () => ({});
+export default connect(mapStateToProps, {
+	setProject,
+	setRefreshCluster
+})(ProjectManage);

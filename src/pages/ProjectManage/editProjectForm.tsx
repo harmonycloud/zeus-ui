@@ -146,9 +146,6 @@ export default function EditProjectForm(
 		>
 			<Form {...formItemLayout619} field={field}>
 				<FormItem
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
 					label="项目名称"
 					required
 					requiredMessage="请输入项目名称"
@@ -158,9 +155,6 @@ export default function EditProjectForm(
 					<Input name="aliasName" />
 				</FormItem>
 				<FormItem
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
 					label="英文简称"
 					required
 					requiredMessage="请输入英文名称"
@@ -172,7 +166,7 @@ export default function EditProjectForm(
 				<FormItem label="备注">
 					<Input name="description" />
 				</FormItem>
-				<FormItem label="绑定项目管理员">
+				<FormItem label="绑定项目管理员" required>
 					<Select
 						name="user"
 						style={{ width: '100%' }}

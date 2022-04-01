@@ -283,9 +283,9 @@ export const serviceListStatusRender: (
 					trigger={
 						<span style={{ cursor: 'pointer' }}>
 							<Icon
-								type="sync-alt"
+								type="warning1"
 								size="xs"
-								style={{ color: '#0091FF' }}
+								style={{ color: '#C80000' }}
 							/>{' '}
 							创建失败
 						</span>

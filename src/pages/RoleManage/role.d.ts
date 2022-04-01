@@ -6,6 +6,7 @@ export interface roleProps {
 	name?: string;
 	createTime: string | null | undefined;
 	menu: any[] | undefined;
+	power: any;
 	[propsName: string]: any;
 }
 export interface roleTree {
@@ -22,4 +23,8 @@ export interface updateProps extends resProps {
 }
 export interface deleteProps extends resProps {
 	data: boolean;
+}
+export interface AllotRoleItem {
+	name: string;
+	roles: string[];
 }

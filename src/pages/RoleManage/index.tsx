@@ -3,6 +3,7 @@ import { Page, Content, Header } from '@alicloud/console-components-page';
 import Table from '@/components/MidTable';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import moment from 'moment';
 import { roleProps } from './role';
 import { Actions, LinkButton } from '@alicloud/console-components-actions';
@@ -11,6 +12,7 @@ import RolePermissions from './RolePermissions';
 import { getRoleList, deleteRole } from '@/services/role';
 import messageConfig from '@/components/messageConfig';
 import { getUserInformation } from '@/services/user';
+import storage from '@/utils/storage';
 import './index.scss';
 
 function RoleManage(): JSX.Element {
@@ -22,6 +24,7 @@ function RoleManage(): JSX.Element {
 	const [permissionData, setPermissionData] = useState<roleProps>();
 	const [isEdit, setIsEdit] = useState<boolean>(true);
 	const [roleId, setRoleId] = useState<string>('');
+	const history = useHistory();
 
 	useEffect(() => {
 		let mounted = true;
@@ -99,9 +102,10 @@ function RoleManage(): JSX.Element {
 	};
 	const permissionEdit: (record: roleProps) => void = (record: roleProps) => {
 		if (record.id === 1 || Number(roleId) === record.id) return;
-
-		setPermissionData(record);
-		setPermissionVisible(true);
+		storage.setSession('rolePower', JSON.stringify(record.power));
+		history.push('/systemManagement/roleManagement/allotRole');
+		// setPermissionData(record);
+		// setPermissionVisible(true);
 	};
 	const actionRender = (value: string, index: number, record: roleProps) => {
 		return (
