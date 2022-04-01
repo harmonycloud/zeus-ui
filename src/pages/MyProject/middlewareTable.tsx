@@ -4,6 +4,7 @@ import { useHistory } from 'react-router';
 import Table from '@/components/MidTable';
 import { nullRender } from '@/utils/utils';
 import { MiddlewareResourceInfo, MiddlewareTableProps } from './myProject';
+import storage from '@/utils/storage';
 
 const RadioGroup = Radio.Group;
 export default function MiddlewareTable(
@@ -20,6 +21,10 @@ export default function MiddlewareTable(
 			<span
 				style={{ cursor: 'pointer' }}
 				onClick={() => {
+					storage.setSession(
+						'menuPath',
+						`/serviceList/${data.type}/${data.aliasName}`
+					);
 					history.push(`/serviceList/${data.type}/${data.aliasName}`);
 				}}
 			>
@@ -63,6 +68,10 @@ export default function MiddlewareTable(
 					title={record.name}
 					className="name-link text-overflow"
 					onClick={() => {
+						storage.setSession(
+							'menuPath',
+							`/serviceList/${data.type}/${data.aliasName}`
+						);
 						history.push(
 							`/serviceList/${data.type}/${data.aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
 						);

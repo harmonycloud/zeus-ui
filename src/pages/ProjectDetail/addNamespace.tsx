@@ -11,8 +11,9 @@ import {
 
 import messageConfig from '@/components/messageConfig';
 import storage from '@/utils/storage';
-
-import { getClusters, createNamespace } from '@/services/common';
+import { connect } from 'react-redux';
+import { setRefreshCluster } from '@/redux/globalVar/var';
+import { createNamespace } from '@/services/common';
 import { bingNamespace, getAllocatableNamespace } from '@/services/project';
 import { formItemLayout618 } from '@/utils/const';
 import { clusterType } from '@/types';
@@ -32,8 +33,8 @@ const list = [
 const FormItem = Form.Item;
 const { Group: RadioGroup } = Radio;
 const Option = Select.Option;
-export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
-	const { visible, onCancel, onRefresh } = props;
+function AddNamespace(props: AddNamespaceProps): JSX.Element {
+	const { visible, onCancel, onRefresh, setRefreshCluster } = props;
 	const [source, setSource] = useState<string>('create');
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [currentCluster, setCurrentCluster] = useState<string>('');
@@ -94,6 +95,7 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 									'命名空间接入成功'
 								)
 							);
+							setRefreshCluster(true);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -118,6 +120,7 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 									'命名空间新建成功'
 								)
 							);
+							setRefreshCluster(true);
 						} else {
 							Message.show(messageConfig('error', '失败', res));
 						}
@@ -232,3 +235,5 @@ export default function AddNamespace(props: AddNamespaceProps): JSX.Element {
 		</Dialog>
 	);
 }
+const mapStateToProps = () => ({});
+export default connect(mapStateToProps, { setRefreshCluster })(AddNamespace);

@@ -13,13 +13,14 @@ import imgNone from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
 import './index.scss';
+import { StoreState } from '@/types';
 
 function MyProject(props: MyProjectProps): JSX.Element {
-	const { setProject, setRefreshCluster } = props;
+	const { setProject, setRefreshCluster, project } = props;
 	const history = useHistory();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
-	const [currentProject, setCurrentProject] = useState<ProjectItem>();
+	const [currentProject, setCurrentProject] = useState<ProjectItem>(project);
 	const [projectLoading, setProjectLoading] = useState<boolean>(false);
 	const [middlewareLoading, setMiddlewareLoading] = useState<boolean>(false);
 	const [tableDataSource, setTableDataSource] = useState<
@@ -29,7 +30,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		getData();
 	}, []);
 	useEffect(() => {
-		if (currentProject) {
+		if (JSON.stringify(currentProject) !== '{}') {
 			getMiddlewareData(currentProject.projectId);
 		}
 	}, [currentProject]);
@@ -90,7 +91,15 @@ function MyProject(props: MyProjectProps): JSX.Element {
 											? 'my-project-active'
 											: ''
 									}`}
-									onClick={() => setCurrentProject(item)}
+									onClick={() => {
+										setCurrentProject(item);
+										setProject(item);
+										setRefreshCluster(true);
+										storage.setLocal(
+											'project',
+											JSON.stringify(item)
+										);
+									}}
 								>
 									<div className="zeus-my-project-card-title-content">
 										<div className="zeus-my-project-card-h2">
@@ -197,7 +206,9 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		</Page>
 	);
 }
-const mapStateToProps = () => ({});
+const mapStateToProps = (state: StoreState) => ({
+	project: state.globalVar.project
+});
 export default connect(mapStateToProps, {
 	setProject,
 	setRefreshCluster

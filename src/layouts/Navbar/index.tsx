@@ -250,7 +250,10 @@ function Navbar(props: NavbarProps): JSX.Element {
 			) {
 				setDisabled(true);
 				setProjectDisabled(true);
-			} else setDisabled(false);
+			} else {
+				setDisabled(false);
+				setProjectDisabled(false);
+			}
 			// 是否显示 - 集群/分区
 			if (
 				hideRoute.some((item) => {

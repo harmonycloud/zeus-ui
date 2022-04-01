@@ -23,6 +23,9 @@ export const getProjectNamespace = (param: paramProps) => {
 export const bingNamespace = (params: paramProps) => {
 	return Axios.json(PROJECT.getProjectNamespace, params, {}, 'POST');
 };
+export const unBindNamespace = (params: paramProps) => {
+	return Axios.delete(PROJECT.getProjectNamespace, params);
+};
 export const getProjectMember = (param: paramProps) => {
 	return Axios.get(PROJECT.getProjectMember, param);
 };
