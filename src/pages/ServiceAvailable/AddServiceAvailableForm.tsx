@@ -640,6 +640,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 										<Button
 											style={{ marginLeft: '8px' }}
 											onClick={() => copyHttpList(index)}
+											disabled={httpList.length >= 10}
 										>
 											<CustomIcon
 												type="icon-fuzhi1"

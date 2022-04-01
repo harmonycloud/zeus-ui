@@ -90,3 +90,26 @@ export const dilatationStorage = `${api}/clusters/{clusterId}/namespaces/{namesp
 export const getCanReleaseMiddleware = `${api}/middlewares/info/{type}`;
 // * 置顶/取消置顶参数
 export const topConfigParam = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/config/{configName}/top`;
+// * 创建数据库用户
+export const createUser = `${api}/clusters/{clusterId}/middlewares/mysql/createUser`;
+// * 查询数据库用户列表
+export const listUser = `${api}/clusters/{clusterId}/middlewares/mysql/listUser`;
+// * 创建数据库/更改用户备注
+export const createDb = `${api}/clusters/{clusterId}/middlewares/mysql/createDb`;
+// * 查询mysql字符集
+export const listCharset = `${api}/clusters/{clusterId}/middlewares/mysql/listCharset`;
+// * 查询数据库列表
+export const listDb = `${api}/clusters/{clusterId}/middlewares/mysql/listDb`;
+// * 删除数据库
+export const deleteDb = `${api}/clusters/{clusterId}/middlewares/mysql/deleteDb`;
+// * 更改数据库备注
+export const updateDb = `${api}/clusters/{clusterId}/middlewares/mysql/updateDb`;
+// * 修改用户
+export const grantUser = `${api}/clusters/{clusterId}/middlewares/mysql/grantUser`;
+// * 修改密码
+export const updatePassword = `${api}/clusters/{clusterId}/middlewares/mysql/updatePassword`;
+// * 删除用户
+export const deleteUser = `${api}/clusters/{clusterId}/middlewares/mysql/deleteUser`;
+// * sql审计
+export const queryAuditSql = `${api}/clusters/{clusterId}/middlewares/mysql/queryAuditSql`;
+

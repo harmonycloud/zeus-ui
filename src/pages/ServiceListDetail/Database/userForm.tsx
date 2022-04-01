@@ -7,14 +7,15 @@ import {
 	Message,
 	Icon,
 	Balloon,
-	Transfer,
 	Checkbox,
 	Radio
 } from '@alicloud/console-components';
-import { createUser, updateUser } from '@/services/user';
+import { createUser, grantUser, listDb } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
-import { getUsers } from '@/services/user';
+import { FormProps } from './database';
+
+import styles from '@/layouts/Navbar/User/./user.module.scss';
 
 const FormItem = Form.Item;
 const Password = Input.Password;
@@ -29,51 +30,58 @@ const formItemLayout = {
 		span: 21
 	}
 };
-interface userFormProps {
-	visible: boolean;
-	onCreate: () => void;
-	onCancel: () => void;
-	data: any | undefined | null;
-}
-export default function UserForm(props: userFormProps): JSX.Element {
-	const { visible, onCreate, onCancel, data } = props;
+export default function UserForm(props: FormProps): JSX.Element {
+	const {
+		visible,
+		onCreate,
+		onCancel,
+		data,
+		clusterId,
+		namespace,
+		middlewareName
+	} = props;
 	const field: Field = Field.useField();
 	const [users, setUsers] = useState<any[]>([]);
 	const [leftUsers, setLeftUsers] = useState<any[]>([]);
 	const [rightUsers, setRightUsers] = useState<any[]>([]);
-	const [insertUser, setInsertUser] = useState<any[]>([]);
 	const [selectUser, setSelectUser] = useState<any[]>([]);
 	const [leftSearch, setLeftSearch] = useState<string>('');
 	const [rightSearch, setRightSearch] = useState<string>('');
-	const [checks, setChecks] = useState<boolean[]>([
-		false,
-		false,
-		false,
-		false
-	]);
+	const [checks, setChecks] = useState<boolean[]>([false, false]);
 
 	useEffect(() => {
 		if (data) {
 			field.setValues({
-				userName: data.userName,
-				aliasName: data.aliasName,
-				phone: data.phone,
-				email: data.email
+				user: data.user,
+				password: data.password,
+				newPassword: data.newPassword,
+				description: data.description
 			});
 		}
 		getUserList();
 	}, [data]);
 	const onOk: () => void = () => {
-		console.log(selectUser);
-
-		field.validate((errors, values) => {
+		field.validate((errors, values: any) => {
 			if (errors) return;
-			const sendData = {
-				...(values as unknown as any)
-			};
+			if (!selectUser.length) {
+				Message.show(
+					messageConfig('error', '失败', '请选择授权数据库')
+				);
+				return;
+			}
+
 			if (data) {
+				const sendData = {
+					clusterId,
+					namespace,
+					middlewareName,
+					id: data.id,
+					user: values.user,
+					description: values.description,
+					privilegeList: selectUser
+				};
 				// * 修改用户
-				updateUser(sendData).then((res) => {
+				grantUser(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户修改成功')
@@ -85,6 +93,15 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				});
 			} else {
 				// * 创建用户
+				const sendData = {
+					clusterId,
+					namespace,
+					middlewareName,
+					user: values.user,
+					password: values.password,
+					description: values.description,
+					privilegeList: selectUser
+				};
 				createUser(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -100,62 +117,48 @@ export default function UserForm(props: userFormProps): JSX.Element {
 	};
 
 	const getUserList = (sendData?: any) => {
-		getUsers(sendData).then((res) => {
-			if (!res.data) return;
-			const user: any[] = [];
-			res.data.userBy &&
-				res.data.userBy.length &&
-				res.data.userBy.find((item: any) => item.email) &&
-				setSelectUser(
-					res.data.userBy
-						.filter((item: any) => item.email)
-						.map((item: any) => item.id)
-				);
-			setRightUsers(
-				res.data.userBy
-					.filter((item: any) => item.email)
-					.map((item: any) => item.id)
-			);
-			res.data.userBy &&
-				res.data.userBy.length &&
-				res.data.users.map((item: any) => {
-					res.data.userBy.map((arr: any) => {
-						arr.email && item.id === arr.id && user.push(item);
-					});
-				});
-			setInsertUser(user);
-			setUsers(
-				res.data.users.map((item: any) => {
-					return {
-						...item,
-						value: item.id,
-						key: item.id,
-						disabled: !item.email,
-						label:
-							item.email +
-							item.phone +
-							item.userName +
-							item.aliasName +
-							item.roleName
-					};
-				})
-			);
-			setLeftUsers(
-				res.data.users.map((item: any) => {
-					return {
-						...item,
-						value: item.id,
-						key: item.id,
-						disabled: !item.email,
-						label:
-							item.email +
-							item.phone +
-							item.userName +
-							item.aliasName +
-							item.roleName
-					};
-				})
-			);
+		listDb({ clusterId, namespace, middlewareName }).then((res) => {
+			if (res.success) {
+				if (data) {
+					res.data &&
+						setUsers(
+							res.data.map((item: any) => {
+								return {
+									id: item.id,
+									authority: '2',
+									db: item.db,
+									charset: item.charset
+								};
+							})
+						);
+					setSelectUser(
+						data.dbs.map((item: any) => {
+							return {
+								id: item.id,
+								authority: item.authority
+									? item.authority
+									: '2',
+								db: item.db,
+								charset: item.charset
+							};
+						})
+					);
+				} else {
+					res.data &&
+						setUsers(
+							res.data.map((item: any) => {
+								return {
+									id: item.id,
+									authority: '2',
+									db: item.db,
+									charset: item.charset
+								};
+							})
+						);
+				}
+			} else {
+				Message.show(messageConfig('error', '失败', res.errorMsg));
+			}
 		});
 	};
 
@@ -163,14 +166,14 @@ export default function UserForm(props: userFormProps): JSX.Element {
 		<FormItem
 			className="ne-required-ingress"
 			labelTextAlign="left"
-            labelCol={{span: 6.5}}
+			labelCol={{ span: 6.5 }}
 			asterisk={false}
 			label="数据库密码"
-			required
+			required={!data}
 			requiredMessage="请输入数据库密码"
 			pattern={pattern.aliasName}
 			patternMessage="用户名只允许中文、英文大小写+数字组合，长度不可超过18字符"
-            style={{width: 415}}
+			style={{ width: 415 }}
 		>
 			<Password
 				name="newPassword"
@@ -185,29 +188,19 @@ export default function UserForm(props: userFormProps): JSX.Element {
 	const handleChange = (value: string, type: string) => {
 		if (type === 'new') {
 			const temp = [...checks];
-			if (/[A-Za-z]/.test(value)) {
+			if (value.length >= 8 && value.length <= 32) {
 				temp[0] = true;
 			} else {
 				temp[0] = false;
 			}
-			if (/\d/.test(value)) {
+			if (
+				/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{3,32}$/.test(
+					value
+				)
+			) {
 				temp[1] = true;
 			} else {
 				temp[1] = false;
-			}
-			if (
-				value.includes('.') ||
-				value.includes('@') ||
-				value.includes('-')
-			) {
-				temp[2] = true;
-			} else {
-				temp[2] = false;
-			}
-			if (value.length >= 8 && value.length <= 16) {
-				temp[3] = true;
-			} else {
-				temp[3] = false;
 			}
 			setChecks(temp);
 		} else {
@@ -248,13 +241,13 @@ export default function UserForm(props: userFormProps): JSX.Element {
 							</Balloon>
 						</div>
 					}
-					required
+					required={!data}
 					requiredMessage="请输入数据库账号"
 					pattern={pattern.databaseUser}
 					patternMessage="名称在1-32个字符之间，由字母、数字、中划线或下划线组成，不能包含其他特殊字符"
 				>
 					<Input
-						name="userName"
+						name="user"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入"
@@ -263,118 +256,49 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				</FormItem>
 				<Tooltip trigger={defaultTrigger} align="r">
 					<ul>
-						<li className={'edit-form-icon-style'}>
+						<li className={styles['edit-form-icon-style']}>
 							{checks[0] ? (
 								<Icon
 									type="success-filling1"
-									style={{
-										color: '#68B642',
-										marginRight: 4
-									}}
+									style={{ color: '#68B642', marginRight: 4 }}
 									size="xs"
 								/>
 							) : (
 								<Icon
 									type="times-circle-fill"
-									style={{
-										color: '#Ef595C',
-										marginRight: 4
-									}}
+									style={{ color: '#Ef595C', marginRight: 4 }}
 									size="xs"
 								/>
 							)}
-							<span>英文大写或小写</span>
+							<span>(长度需要8-32之间)</span>
 						</li>
-						<li className={'edit-form-icon-style'}>
+						<li className={styles['edit-form-icon-style']}>
 							{checks[1] ? (
 								<Icon
 									type="success-filling1"
-									style={{
-										color: '#68B642',
-										marginRight: 4
-									}}
+									style={{ color: '#68B642', marginRight: 4 }}
 									size="xs"
 								/>
 							) : (
 								<Icon
 									type="times-circle-fill"
-									style={{
-										color: '#Ef595C',
-										marginRight: 4
-									}}
-									size="xs"
-								/>
-							)}
-							<span>数字</span>
-						</li>
-						<li className={'edit-form-icon-style'}>
-							{checks[2] ? (
-								<Icon
-									type="success-filling1"
-									style={{
-										color: '#68B642',
-										marginRight: 4
-									}}
-									size="xs"
-								/>
-							) : (
-								<Icon
-									type="times-circle-fill"
-									style={{
-										color: '#Ef595C',
-										marginRight: 4
-									}}
+									style={{ color: '#Ef595C', marginRight: 4 }}
 									size="xs"
 								/>
 							)}
 							<span>
-								&quot;.&quot;或&quot;@&quot;或&quot;-&quot;
-							</span>
-						</li>
-						<li className={'edit-form-icon-style'}>
-							{checks[3] ? (
-								<Icon
-									type="success-filling1"
-									style={{
-										color: '#68B642',
-										marginRight: 4
-									}}
-									size="xs"
-								/>
-							) : (
-								<Icon
-									type="times-circle-fill"
-									style={{
-										color: '#Ef595C',
-										marginRight: 4
-									}}
-									size="xs"
-								/>
-							)}
-							<span>
-								目前长度为
-								{
-									(
-										(field.getValue(
-											'newPassword'
-										) as string) || ''
-									).length
-								}
-								(长度需要8-16之间)
+								至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
 							</span>
 						</li>
 					</ul>
-					要求：密码需要满足以上四个条件
 				</Tooltip>
 				<FormItem
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
 					label="密码二次输入"
-					required
+					required={!data}
 					requiredMessage="请输入二次确认密码"
-					pattern={pattern.aliasName}
-					patternMessage="用户名只允许中文、英文大小写+数字组合，长度不可超过18字符"
 				>
 					<Password
 						name="password"
@@ -386,7 +310,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				</FormItem>
 				<FormItem labelTextAlign="left" asterisk={false} label="备注">
 					<TextArea
-						name="email"
+						name="description"
 						trim={true}
 						placeholder="限定200字符串"
 						style={{ width: 300 }}
@@ -447,17 +371,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 										return (
 											<li
 												key={item.id}
-												style={{
-													cursor: item.email
-														? 'pointer'
-														: 'not-allowed',
-													color: item.email
-														? '#000'
-														: '#ddd'
-												}}
 												onClick={() => {
-													if (!item.email) return;
-
 													setUsers(
 														users.filter(
 															(i) =>
@@ -491,7 +405,6 @@ export default function UserForm(props: userFormProps): JSX.Element {
 														width: 20,
 														marginRight: 10
 													}}
-													disabled={!item.email}
 													checked={false}
 												/>
 												<span
@@ -499,14 +412,14 @@ export default function UserForm(props: userFormProps): JSX.Element {
 														width: 100
 													}}
 												>
-													{item?.userName}
+													{item.db}
 												</span>
 												<span
 													style={{
 														width: 50
 													}}
 												>
-													utf-8
+													{item.charset}
 												</span>
 											</li>
 										);
@@ -515,26 +428,10 @@ export default function UserForm(props: userFormProps): JSX.Element {
 								<div className="transfer-footer">
 									<span
 										onClick={() => {
-											setUsers(
-												users.filter(
-													(item) => !item.email
-												)
-											);
-											setLeftUsers(
-												users.filter(
-													(item) => !item.email
-												)
-											);
-											setSelectUser(
-												users.filter(
-													(item) => item.email
-												)
-											);
-											setRightUsers(
-												users.filter(
-													(item) => item.email
-												)
-											);
+											setUsers([]);
+											setLeftUsers([]);
+											setSelectUser(users);
+											setRightUsers(users);
 										}}
 									>
 										移动全部
@@ -651,13 +548,15 @@ export default function UserForm(props: userFormProps): JSX.Element {
 														width: 100
 													}}
 												>
-													{item.userName}
+													{item.db}
 												</span>
 												<RadioGroup
 													style={{ width: 350 }}
-													value={String(item.roleId)}
+													value={String(
+														item.authority
+													)}
 													onChange={(value) => {
-														item.roleId =
+														item.authority =
 															Number(value);
 														const index =
 															selectUser.findIndex(

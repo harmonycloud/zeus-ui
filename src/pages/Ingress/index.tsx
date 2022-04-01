@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router';
 import Table from '@/components/MidTable';
 import {
 	Button,
@@ -40,6 +41,7 @@ function IngressList(props: ingressProps) {
 	const [lock, setLock] = useState<{ lock: string } | null>({
 		lock: 'right'
 	});
+	const history = useHistory();
 	useEffect(() => {
 		window.onresize = function () {
 			document.body.clientWidth >= 2300
@@ -77,6 +79,8 @@ function IngressList(props: ingressProps) {
 		getIngressMid(sendData).then((res) => {
 			if (res.success) {
 				setShowDataSource(res.data);
+				console.log(res.data);
+
 				setDataSource(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -86,8 +90,13 @@ function IngressList(props: ingressProps) {
 
 	const Operation = {
 		primary: (
-			<Button onClick={() => setActive(true)} type="primary">
-				服务暴露
+			<Button
+				onClick={() =>
+					history.push('/serviceAvailable/addServiceAvailable')
+				}
+				type="primary"
+			>
+				新增
 			</Button>
 		)
 	};
@@ -163,6 +172,13 @@ function IngressList(props: ingressProps) {
 	) => {
 		return (
 			<Actions>
+				<LinkButton
+					onClick={() =>
+						history.push('/serviceAvailable/addServiceAvailable')
+					}
+				>
+					编辑
+				</LinkButton>
 				<LinkButton onClick={() => handleDelete(record)}>
 					删除
 				</LinkButton>

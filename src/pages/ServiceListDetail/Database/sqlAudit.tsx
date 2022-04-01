@@ -1,51 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message, Radio } from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import moment from 'moment';
-import Table from '@/components/MidTable';
 import {
-	getUserList,
-	deleteUser,
-} from '@/services/user';
+	Button,
+	Message,
+	Table,
+	Search,
+	Icon,
+	Pagination
+} from '@alicloud/console-components';
+import moment from 'moment';
+import { queryAuditSql } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
-import DatabaseForm from './databaseForm';
+import { ManageProps } from './database';
+import styled from 'styled-components';
 
-function UserManage(): JSX.Element {
+function SqlAudit(props: ManageProps): JSX.Element {
+	const { clusterId, namespace, middlewareName } = props;
+
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 
-	useEffect(() => {}, []);
 	useEffect(() => {
-		let mounted = true;
-		getUserList({ keyword: keyword }).then((res) => {
+		queryAuditSql({
+			searchWord: keyword,
+			clusterId,
+			namespace,
+			middlewareName,
+			current: 1,
+			size: 10
+		}).then((res) => {
 			if (res.success) {
-				if (mounted) {
-					setDataSource(res.data);
-				}
+				res.data && setDataSource(res.data.data);
+				res.data && setTotal(res.data.count);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
-		return () => {
-			mounted = false;
-		};
-	}, []);
+	}, [keyword]);
+	const [current, setCurrent] = useState<number>(1); // * 页码
+	const [total, setTotal] = useState<number | undefined>(10); // * 总数
+
 	const onRefresh: () => void = () => {
-		getUserList({ keyword: keyword }).then((res) => {
+		queryAuditSql({ searchWord: keyword }).then((res) => {
 			if (res.success) {
-				setDataSource(res.data);
+				res.data && setDataSource(res.data.data);
+				res.data && setTotal(res.data.count);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
 	};
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
-	};
-	const handleSearch: (value: string) => void = (value: string) => {
-		onRefresh();
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'createTime') {
@@ -68,53 +74,88 @@ function UserManage(): JSX.Element {
 		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
+
+	const pageChange = (current: number) => {
+		setCurrent(current);
+		queryAuditSql({
+			searchWord: keyword,
+			clusterId,
+			namespace,
+			middlewareName,
+			current: current,
+			size: 10
+		}).then((res) => {
+			if (res.success) {
+				res.data && setDataSource(res.data.data);
+				res.data && setTotal(res.data.count);
+			} else {
+				Message.show(messageConfig('error', '失败', res.errorMsg));
+			}
+		});
+	};
 	return (
 		<>
+			<div className="audit-table-header-layout">
+				<Search
+					onSearch={handleChange}
+					onChange={handleChange}
+					placeholder="请输入"
+					style={{
+						width: '360px'
+					}}
+					hasClear={true}
+				/>
+				<div>
+					<Button onClick={onRefresh} style={{ padding: '0 9px' }}>
+						<Icon type="refresh" />
+					</Button>
+				</div>
+			</div>
+			<div id="filter-cas"></div>
 			<Table
 				dataSource={dataSource}
-				exact
-				fixedBarExpandWidth={[24]}
-				affixActionBar
-				showRefresh
-				showColumnSetting
-				onRefresh={onRefresh}
 				primaryKey="key"
-				search={{
-					placeholder: '请输入',
-					onSearch: handleSearch,
-					onChange: handleChange,
-					value: keyword
-				}}
-				searchStyle={{
-					width: '360px'
-				}}
+				hasBorder={false}
 				onSort={onSort}
 			>
-				<Table.Column title="操作ip" dataIndex="aliasName" />
+				<Table.Column title="操作ip" dataIndex="ip" width={100} />
 				<Table.Column
 					title="操作账户"
-					dataIndex="email"
+					dataIndex="user"
+					width={100}
 					cell={nullRender}
 				/>
-                <Table.Column
+				<Table.Column
 					title="数据库名称"
-					dataIndex="roleName"
+					dataIndex="db"
 					cell={nullRender}
+					width={100}
 				/>
 				<Table.Column
 					title="执行语句"
-					dataIndex="phone"
+					dataIndex="query"
 					cell={nullRender}
 				/>
 				<Table.Column
 					title="执行时间"
-					dataIndex="createTime"
+					dataIndex="queryDate"
 					cell={createTimeRender}
+					width={160}
 					sortable
 				/>
 			</Table>
+			<SPagination
+				onChange={pageChange}
+				total={total}
+				current={current}
+				pageSizeSelector={false}
+			/>
 		</>
 	);
 }
+const SPagination = styled(Pagination)`
+	margin-top: 10px;
+	float: right;
+`;
 
-export default UserManage;
+export default SqlAudit;

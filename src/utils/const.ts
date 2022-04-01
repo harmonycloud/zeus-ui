@@ -367,3 +367,21 @@ export const address = [
 		value: 'http'
 	}
 ];
+export const authorityList = [
+	{
+		authority: 1,
+		value: '只读'
+	},
+	{
+		authority: 2,
+		value: '读写(DDL+DML)'
+	},
+	{
+		authority: 1,
+		value: '仅DDL'
+	},
+	{
+		authority: 1,
+		value: '仅DML'
+	}
+]
