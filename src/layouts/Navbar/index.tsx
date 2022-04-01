@@ -106,16 +106,17 @@ function Navbar(props: NavbarProps): JSX.Element {
 					setCurrentProject(localProjectTemp);
 					setProject(localProjectTemp);
 				} else {
-					setCurrentProject(res.data[0].projectId);
+					setCurrentProject(res.data[0]);
 					setProject(res.data[0]);
+					switchProject(res.data[0].projectId);
 				}
 			}
 			setProjectList(res.data);
 		}
 	};
 
-	const getClusterList = async () => {
-		const res = await getClusters();
+	const getClusterList = async (projectId: string | undefined) => {
+		const res = await getClusters({ projectId });
 		if (res.success) {
 			if (res.data.length > 0) {
 				const jsonLocalCluster = storage.getLocal('cluster');
@@ -151,8 +152,15 @@ function Navbar(props: NavbarProps): JSX.Element {
 		}
 	};
 
-	const getNamespaceList = async (clusterId: string | undefined) => {
-		const res = await getNamespaces({ clusterId, withQuota: true });
+	const getNamespaceList = async (
+		clusterId: string | undefined,
+		projectId: string | undefined
+	) => {
+		const res = await getNamespaces({
+			clusterId,
+			projectId,
+			withQuota: true
+		});
 		if (res.success) {
 			const list = [{ name: '*', aliasName: '全部' }, ...res.data];
 			const jsonLocalNamespace = storage.getLocal('namespace');
@@ -207,22 +215,29 @@ function Navbar(props: NavbarProps): JSX.Element {
 	};
 
 	useEffect(() => {
-		getClusterList();
 		getProjectList();
 		getUserInfo();
 	}, []);
 
 	useEffect(() => {
 		if (flag) {
-			getClusterList();
 			getProjectList();
 			setRefreshCluster(false);
 		}
 	}, [flag]);
 
 	useEffect(() => {
-		if (JSON.stringify(currentCluster) !== '{}')
-			getNamespaceList(currentCluster.id);
+		if (JSON.stringify(currentProject) !== '{}') {
+			getClusterList(currentProject.projectId);
+		}
+	}, [currentProject]);
+
+	useEffect(() => {
+		if (
+			JSON.stringify(currentCluster) !== '{}' &&
+			JSON.stringify(currentProject) !== '{}'
+		)
+			getNamespaceList(currentCluster.id, currentProject.projectId);
 	}, [currentCluster]);
 
 	useEffect(() => {

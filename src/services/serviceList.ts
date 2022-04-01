@@ -2,6 +2,7 @@ import Axios from './request.js';
 import * as SERVICE from './serviceList.constants';
 
 interface listParamsProps {
+	projectId: string;
 	clusterId: string;
 	namespace: string;
 	keyword: string;

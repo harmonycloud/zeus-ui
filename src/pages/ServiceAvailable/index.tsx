@@ -38,7 +38,7 @@ interface serviceAvailableProps {
 	globalVar: globalVarProps;
 }
 function ServiceAvailable(props: serviceAvailableProps) {
-	const { cluster, namespace } = props.globalVar;
+	const { cluster, namespace, project } = props.globalVar;
 	const [selected, setSelected] = useState<string>(
 		storage.getSession('service-available-current') || '全部服务'
 	);
@@ -95,6 +95,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					}
 				});
 				getList({
+					projectId: project.projectId,
 					clusterId: cluster.id,
 					namespace: namespace.name,
 					keyword: ''
@@ -490,7 +491,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const actionRender = (value: string, index: number, record: any) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => history.push('/serviceAvailable/addServiceAvailable')}>
+				<LinkButton
+					onClick={() =>
+						history.push('/serviceAvailable/addServiceAvailable')
+					}
+				>
 					编辑
 				</LinkButton>
 				<LinkButton onClick={() => handleDelete(record)}>

@@ -67,6 +67,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const {
 		cluster,
 		namespace,
+		project,
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
@@ -96,6 +97,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (mounted) {
 				setLoadingVisible(true);
 				getList({
+					projectId: project.projectId,
 					clusterId: cluster.id,
 					namespace: namespace.name,
 					keyword: keyword,
@@ -152,6 +154,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const getData = () => {
 		setLoadingVisible(true);
 		getList({
+			projectId: project.projectId,
 			clusterId: cluster.id,
 			namespace: namespace.name,
 			keyword: keyword,

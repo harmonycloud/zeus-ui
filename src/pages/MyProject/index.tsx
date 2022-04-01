@@ -9,9 +9,10 @@ import MiddlewareTable from './middlewareTable';
 import { ProjectItem } from '../ProjectManage/project';
 import { Message, Loading } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
-import './index.scss';
+import imgNone from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
+import './index.scss';
 
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster } = props;
@@ -172,6 +173,17 @@ function MyProject(props: MyProjectProps): JSX.Element {
 									/>
 								);
 							})}
+						{tableDataSource.length === 0 && (
+							<div className="display-flex flex-column flex-center">
+								<img
+									width={140}
+									height={140}
+									src={imgNone}
+									alt=""
+								/>
+								<p>暂时没有数据</p>
+							</div>
+						)}
 					</div>
 				</Loading>
 			</Content>
