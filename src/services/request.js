@@ -67,7 +67,6 @@ NProgress.configure({
 // request 拦截
 axios.interceptors.request.use(
 	(config) => {
-		// console.log(JSON.parse(cache.getLocal('project')));
 		NProgress.start();
 		// console.log(config);
 		if (config.method === 'get') {
@@ -80,10 +79,9 @@ axios.interceptors.request.use(
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
 		config.headers.authType = cache.getLocal(TOKEN) ? 1 : 0;
-		// config.headers.projectId =
-		config.headers.projectId = JSON.parse(
-			cache.getLocal('project')
-		).projectId;
+		config.headers.projectId = cache.getLocal('project')
+			? JSON.parse(cache.getLocal('project')).projectId
+			: '';
 		return config;
 	},
 	(err) => {

@@ -67,6 +67,7 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 		clusterList.map((item: clusterType) => {
 			if (item.id === currentCluster) {
 				setNamespaceList(item.namespaceList || []);
+				field.setValues({ namespace: '' });
 			}
 		});
 	}, [currentCluster]);

@@ -34,7 +34,7 @@ import storage from '@/utils/storage';
 import './detail.scss';
 import { DetailParams, InstanceDetailsProps } from './detail';
 import { middlewareDetailProps, monitorProps } from '@/types/comment';
-import { StoreState } from '@/types';
+import { StoreState, User } from '@/types';
 
 /*
  * 自定义中间tab页显示判断 后端
@@ -53,7 +53,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	const { globalVar, setCluster, setNamespace, setRefreshCluster } = props;
 	const {
 		clusterList: globalClusterList,
-		namespaceList: globalNamespaceList
+		namespaceList: globalNamespaceList,
+		project
 	} = globalVar;
 	const history = useHistory();
 	const params: DetailParams = useParams();
@@ -66,6 +67,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		aliasName,
 		namespace
 	} = params;
+	console.log(JSON.parse(storage.getLocal('role')));
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [status, setStatus] = useState<string>('');
 	const [customMid, setCustomMid] = useState<boolean>(false); // * 判断是否是自定义中间件
@@ -75,6 +77,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	const [activeKey, setActiveKey] = useState<string>(
 		currentTab || 'basicInfo'
 	);
+	const [operateFlag, setOperateFlag] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (JSON.stringify(globalVar.cluster) !== '{}') {
@@ -84,6 +87,15 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 
 	useEffect(() => {
 		setActiveKey(currentTab);
+		const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		const operateFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[type][2] === '1'
+				? false
+				: true;
+		console.log(operateFlag);
+		setOperateFlag(operateFlag);
 	}, []);
 
 	const getData = (clusterId: string, namespace: string) => {
@@ -448,35 +460,48 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					<Tab.Item title="基本信息" key="basicInfo">
 						{childrenRender('basicInfo')}
 					</Tab.Item>
-					<Tab.Item title="实例详情" key="highAvailability">
-						{childrenRender('highAvailability')}
-					</Tab.Item>
-					{type === 'mysql' || type === 'elasticsearch' ? (
+					{!operateFlag && (
+						<Tab.Item title="实例详情" key="highAvailability">
+							{childrenRender('highAvailability')}
+						</Tab.Item>
+					)}
+					{!operateFlag &&
+					(type === 'mysql' || type === 'elasticsearch') ? (
 						<Tab.Item title="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</Tab.Item>
 					) : null}
-					<Tab.Item title="服务暴露" key="externalAccess">
-						{childrenRender('externalAccess')}
-					</Tab.Item>
-					<Tab.Item title="数据监控" key="monitor">
-						{childrenRender('monitor')}
-					</Tab.Item>
-					<Tab.Item title="日志详情" key="log">
-						{childrenRender('log')}
-					</Tab.Item>
-					<Tab.Item title="参数设置" key="paramterSetting">
-						{childrenRender('paramterSetting')}
-					</Tab.Item>
-					<Tab.Item title="服务告警" key="alarm">
-						{childrenRender('alarm')}
-					</Tab.Item>
-					{type === 'mysql' ? (
+					{!operateFlag && (
+						<Tab.Item title="服务暴露" key="externalAccess">
+							{childrenRender('externalAccess')}
+						</Tab.Item>
+					)}
+					{!operateFlag && (
+						<Tab.Item title="数据监控" key="monitor">
+							{childrenRender('monitor')}
+						</Tab.Item>
+					)}
+					{!operateFlag && (
+						<Tab.Item title="日志详情" key="log">
+							{childrenRender('log')}
+						</Tab.Item>
+					)}
+					{!operateFlag && (
+						<Tab.Item title="参数设置" key="paramterSetting">
+							{childrenRender('paramterSetting')}
+						</Tab.Item>
+					)}
+					{!operateFlag && (
+						<Tab.Item title="服务告警" key="alarm">
+							{childrenRender('alarm')}
+						</Tab.Item>
+					)}
+					{!operateFlag && type === 'mysql' ? (
 						<Tab.Item title="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</Tab.Item>
 					) : null}
-					{type === 'mysql' ? (
+					{!operateFlag && type === 'mysql' ? (
 						<Tab.Item title="数据库管理" key="database">
 							{childrenRender('database')}
 						</Tab.Item>
