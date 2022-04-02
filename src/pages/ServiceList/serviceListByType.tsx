@@ -190,7 +190,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			onOk: () => {
 				return deleteMiddleware({
 					clusterId: cluster.id,
-					namespace: namespace.name,
+					namespace: record.namespace,
 					middlewareName: record.name,
 					type: record.type
 				})
@@ -324,7 +324,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const recoveryService = (record: serviceProps) => {
 		const sendData: ParamsProps = {
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace: record.name,
 			chartName: record.type,
 			chartVersion: record.chartVersion || null,
 			middlewareName: record.name,
@@ -359,7 +359,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const deleteStorage = (record: serviceProps) => {
 		const sendData: ParamsProps = {
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace: record.namespace,
 			middlewareName: record.name,
 			type: record.type
 		};

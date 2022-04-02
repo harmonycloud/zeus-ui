@@ -7,7 +7,8 @@ import {
 	Field,
 	Button,
 	Message,
-	Input
+	Input,
+	Select
 } from '@alicloud/console-components';
 import FormBlock from '@/components/FormBlock';
 import { renderFormItem } from '@/components/renderFormItem';
@@ -28,6 +29,8 @@ import {
 	DynamicCreateValueParams
 } from '../catalog';
 import { StoreState } from '@/types';
+import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
+import { getProjectNamespace } from '@/services/project';
 const { Item: FormItem } = Form;
 
 const formItemLayout = {
@@ -40,8 +43,11 @@ const formItemLayout = {
 };
 
 function DynamicForm(props: CreateProps): JSX.Element {
-	const { cluster: globalCluster, namespace: globalNamespace } =
-		props.globalVar;
+	const {
+		cluster: globalCluster,
+		namespace: globalNamespace,
+		project
+	} = props.globalVar;
 	const {
 		params: { chartName, chartVersion, version, aliasName }
 	} = props.match;
@@ -56,6 +62,8 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<string>();
 	const [mirrorList, setMirrorList] = useState<any[]>([]);
+	// * 当导航栏的命名空间为全部时
+	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	const history = useHistory();
 	const field = Field.useField();
 	useEffect(() => {
@@ -78,7 +86,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 				}
 			});
 			getMirror({
-				clusterId: globalCluster.id,
+				clusterId: globalCluster.id
 			}).then((res) => {
 				if (res.success) {
 					setMirrorList(res.data.list);
@@ -86,6 +94,25 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			});
 		}
 	}, [props]);
+
+	useEffect(() => {
+		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
+			getProjectNamespace({ projectId: project.projectId }).then(
+				(res) => {
+					console.log(res);
+					if (res.success) {
+						const list = res.data.filter(
+							(item: NamespaceItem) =>
+								item.clusterId === globalCluster.id
+						);
+						setNamespaceList(list);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				}
+			);
+		}
+	}, [project, globalNamespace]);
 
 	const processData = (array: any) => {
 		const obj = {};
@@ -140,7 +167,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			const values: DynamicCreateValueParams = field.getValues();
 			const sendData: DynamicSendDataParams = {
 				clusterId: globalCluster.id,
-				namespace: globalNamespace.name,
+				namespace:
+					globalNamespace.name === '*'
+						? values.namespace
+						: globalNamespace.name,
 				type: chartName,
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -291,6 +321,51 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			/>
 			<Page.Content>
 				<Form {...formItemLayout} field={field}>
+					{globalNamespace.name === '*' && (
+						<FormBlock title="选择命名空间">
+							<div className="w-50">
+								<ul className="form-layout">
+									<li className="display-flex flex-column">
+										<label
+											className="dynamic-form-name"
+											style={{ paddingLeft: 8 }}
+										>
+											<span className="ne-required">
+												命名空间
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required>
+												<Select
+													name="namespace"
+													style={{ width: '100%' }}
+												>
+													{namespaceList.map(
+														(item) => {
+															return (
+																<Select.Option
+																	key={
+																		item.name
+																	}
+																	value={
+																		item.name
+																	}
+																>
+																	{
+																		item.aliasName
+																	}
+																</Select.Option>
+															);
+														}
+													)}
+												</Select>
+											</FormItem>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</FormBlock>
+					)}
 					<FormBlock title="基本信息">
 						<div className="w-50">
 							<ul className="form-layout">
