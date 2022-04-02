@@ -20,6 +20,7 @@ import ServerAlarm from './ServeAlarm';
 import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';
 import DataBase from './Database/index';
+import RedisDataBase from './RedisDatabase/index';
 
 import { getMiddlewareDetail } from '@/services/middleware';
 import { getNamespaces } from '@/services/common';
@@ -231,6 +232,19 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				case 'database':
 					return (
 						<DataBase
+							chartName={type}
+							chartVersion={chartVersion}
+							middlewareName={middlewareName}
+							clusterId={globalVar.cluster.id}
+							namespace={namespace}
+							data={data}
+							onRefresh={refresh}
+							toDetail={toDetail}
+						/>
+					);
+				case 'redisDatabase':
+					return (
+						<RedisDataBase
 							chartName={type}
 							chartVersion={chartVersion}
 							middlewareName={middlewareName}
@@ -479,6 +493,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					{type === 'mysql' ? (
 						<Tab.Item title="数据库管理" key="database">
 							{childrenRender('database')}
+						</Tab.Item>
+					) : null}
+					{type === 'redis' ? (
+						<Tab.Item title="数据库管理" key="redisDatabase">
+							{childrenRender('redisDatabase')}
 						</Tab.Item>
 					) : null}
 				</Tab>

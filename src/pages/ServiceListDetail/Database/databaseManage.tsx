@@ -49,8 +49,8 @@ function UserManage(props: any): JSX.Element {
 		);
 		listCharset({ clusterId, namespace, middlewareName }).then((res) => {
 			if (res.success) {
-				setCharsetList(res.data.map((item: any) => item.charset));
-				setCharsetFilter(
+				res.data && setCharsetList(res.data.map((item: any) => item.charset));
+				res.data && setCharsetFilter(
 					res.data.map((item: any) => {
 						return {
 							label: item.charset,
@@ -262,7 +262,7 @@ function UserManage(props: any): JSX.Element {
 				onRefresh={onRefresh}
 				primaryKey="key"
 				search={{
-					placeholder: '请输入',
+					placeholder: '请输入内容',
 					onSearch: handleSearch,
 					onChange: handleChange,
 					value: keyword

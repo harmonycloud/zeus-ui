@@ -99,7 +99,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 				<Search
 					onSearch={handleChange}
 					onChange={handleChange}
-					placeholder="请输入"
+					placeholder="请输入内容"
 					style={{
 						width: '360px'
 					}}
