@@ -67,6 +67,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const {
 		cluster,
 		namespace,
+		project,
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
@@ -96,6 +97,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (mounted) {
 				setLoadingVisible(true);
 				getList({
+					projectId: project.projectId,
 					clusterId: cluster.id,
 					namespace: namespace.name,
 					keyword: keyword,
@@ -152,6 +154,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const getData = () => {
 		setLoadingVisible(true);
 		getList({
+			projectId: project.projectId,
 			clusterId: cluster.id,
 			namespace: namespace.name,
 			keyword: keyword,
@@ -187,7 +190,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			onOk: () => {
 				return deleteMiddleware({
 					clusterId: cluster.id,
-					namespace: namespace.name,
+					namespace: record.namespace,
 					middlewareName: record.name,
 					type: record.type
 				})
@@ -321,7 +324,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const recoveryService = (record: serviceProps) => {
 		const sendData: ParamsProps = {
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace: record.name,
 			chartName: record.type,
 			chartVersion: record.chartVersion || null,
 			middlewareName: record.name,
@@ -356,7 +359,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const deleteStorage = (record: serviceProps) => {
 		const sendData: ParamsProps = {
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace: record.namespace,
 			middlewareName: record.name,
 			type: record.type
 		};

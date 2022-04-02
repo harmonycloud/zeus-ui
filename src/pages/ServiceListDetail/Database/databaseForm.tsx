@@ -47,7 +47,7 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
-			
+
 			if (data) {
 				// * 修改数据库
 				const sendData = {
@@ -74,7 +74,7 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 					namespace,
 					middlewareName,
 					...(values as unknown as any)
-				}
+				};
 				createDb(sendData).then((res) => {
 					if (res.success) {
 						Message.show(

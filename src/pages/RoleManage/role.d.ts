@@ -2,11 +2,11 @@ import { resProps } from '@/types/comment';
 export interface roleProps {
 	description?: string;
 	id: number;
-	roleId: number;
+	roleId?: number;
 	name?: string;
-	createTime: string | null | undefined;
-	menu: any[] | undefined;
-	power: any;
+	createTime?: string | null | undefined;
+	menu?: any[] | undefined;
+	power?: any;
 	[propsName: string]: any;
 }
 export interface roleTree {
@@ -26,5 +26,9 @@ export interface deleteProps extends resProps {
 }
 export interface AllotRoleItem {
 	name: string;
+	aliasName?: string;
 	roles: string[];
+}
+export interface Power {
+	[propName: string]: string;
 }

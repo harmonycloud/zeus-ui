@@ -50,7 +50,8 @@ import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import styles from './rocketmq.module.scss';
 import { NumberPicker } from '@alifd/next';
-import { log } from 'console';
+import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
+import { getProjectNamespace } from '@/services/project';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -65,8 +66,11 @@ const formItemLayout = {
 const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
 ) => {
-	const { cluster: globalCluster, namespace: globalNamespace } =
-		props.globalVar;
+	const {
+		cluster: globalCluster,
+		namespace: globalNamespace,
+		project
+	} = props.globalVar;
 	const params: CreateParams = useParams();
 	const { chartName, chartVersion, aliasName } = params;
 	const field = Field.useField();
@@ -104,6 +108,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [tolerationsLabels, setTolerationsLabels] = useState<
 		TolerationLabelItem[]
 	>([]);
+
+	// * 当导航栏的命名空间为全部时
+	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 
 	// 日志
 	const [fileLog, setFileLog] = useState<boolean>(false);
@@ -176,6 +183,24 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 	}, [props]);
+	useEffect(() => {
+		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
+			getProjectNamespace({ projectId: project.projectId }).then(
+				(res) => {
+					console.log(res);
+					if (res.success) {
+						const list = res.data.filter(
+							(item: NamespaceItem) =>
+								item.clusterId === globalCluster.id
+						);
+						setNamespaceList(list);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				}
+			);
+		}
+	}, [project, globalNamespace]);
 
 	const handleSubmit = () => {
 		field.validate((err) => {
@@ -185,7 +210,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					chartName: chartName,
 					chartVersion: chartVersion,
 					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
+					namespace:
+						globalNamespace.name === '*'
+							? values.namespace
+							: globalNamespace.name,
 					type: 'rocketmq',
 					name: values.name,
 					aliasName: values.aliasName,
@@ -427,6 +455,48 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<Page.Content>
 				<Form {...formItemLayout} field={field}>
+					{globalNamespace.name === '*' && (
+						<FormBlock title="选择命名空间">
+							<div className={styles['basic-info']}>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												命名空间
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required>
+												<Select
+													name="namespace"
+													style={{ width: '100%' }}
+												>
+													{namespaceList.map(
+														(item) => {
+															return (
+																<Select.Option
+																	key={
+																		item.name
+																	}
+																	value={
+																		item.name
+																	}
+																>
+																	{
+																		item.aliasName
+																	}
+																</Select.Option>
+															);
+														}
+													)}
+												</Select>
+											</FormItem>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</FormBlock>
+					)}
 					<FormBlock title="基础信息">
 						<div className={styles['basic-info']}>
 							<ul className="form-layout">

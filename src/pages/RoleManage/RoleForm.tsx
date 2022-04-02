@@ -67,7 +67,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				});
 			} else {
 				// * 创建用户
-				sendData.menu = initMenu;
+				// sendData.menu = initMenu;
 				createRole(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -93,7 +93,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 		>
 			<Form field={field} {...formItemLayout}>
 				<FormItem
-					label="输入角色名称"
+					label="角色名称"
 					required
 					requiredMessage="请输入角色名称"
 					pattern={pattern.roleName}
@@ -102,7 +102,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 					<Input placeholder="请输入角色名称" name="name" />
 				</FormItem>
 				<FormItem
-					label="输入角色描述"
+					label="角色描述"
 					required
 					requiredMessage="请输入角色描述"
 					maxLength={100}

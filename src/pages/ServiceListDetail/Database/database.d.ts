@@ -6,7 +6,7 @@ export interface FormProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
-    charsetList?: any
+	charsetList?: any;
 }
 export interface ManageProps {
 	clusterId: string;

@@ -47,7 +47,7 @@ interface stateProps {
 }
 function AddServiceAvailableForm(props: any): JSX.Element {
 	const { visible, onCancel } = props;
-	const { cluster, namespace } = props.globalVar;
+	const { cluster, namespace, project } = props.globalVar;
 
 	const [isProcessing, setIsProcessing] = useState(false); // 确认按钮 loading
 	const [exposedWay, setExposedWay] = useState('Ingress');
@@ -129,6 +129,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			cluster.ingress !== null
 		) {
 			getList({
+				projectId: project.projectId,
 				clusterId: cluster.id,
 				namespace: namespace.name,
 				keyword: ''

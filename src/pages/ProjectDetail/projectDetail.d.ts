@@ -7,6 +7,7 @@ export interface AddNamespaceProps {
 	visible: boolean;
 	onCancel: () => void;
 	onRefresh: () => void;
+	setRefreshCluster: (flag: boolean) => void;
 }
 export interface AddNamespaceFieldValues {
 	clusterId: string;
@@ -68,4 +69,5 @@ export interface ProjectDetailProps {
 }
 export interface NamespaceProps {
 	clusterList: clusterType[];
+	setRefreshCluster: (flag: boolean) => void;
 }

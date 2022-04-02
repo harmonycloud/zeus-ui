@@ -97,8 +97,7 @@ export const projectHideRoute = [
 	'/roleManagement',
 	'/dataOverview',
 	'/systemManagement',
-	'/terminal',
-	'/myProject'
+	'/terminal'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },
@@ -384,4 +383,4 @@ export const authorityList = [
 		authority: 1,
 		value: '仅DML'
 	}
-]
+];

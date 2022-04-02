@@ -10,7 +10,6 @@ import { Actions, LinkButton } from '@alicloud/console-components-actions';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import EditMember from './editMember';
-import storage from '@/utils/storage';
 
 export default function Member(): JSX.Element {
 	const [dataSource, setDataSource] = useState<UserItem[]>([]);
@@ -24,7 +23,7 @@ export default function Member(): JSX.Element {
 		getData();
 	}, []);
 	const getData = () => {
-		getProjectMember({ projectId: id }).then((res) => {
+		getProjectMember({ projectId: id, allocatable: false }).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
 				setShowDataSource(res.data);

@@ -38,7 +38,7 @@ interface serviceAvailableProps {
 	globalVar: globalVarProps;
 }
 function ServiceAvailable(props: serviceAvailableProps) {
-	const { cluster, namespace } = props.globalVar;
+	const { cluster, namespace, project } = props.globalVar;
 	const [selected, setSelected] = useState<string>(
 		storage.getSession('service-available-current') || '全部服务'
 	);
@@ -96,6 +96,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					}
 				});
 				getList({
+					projectId: project.projectId,
 					clusterId: cluster.id,
 					namespace: namespace.name,
 					keyword: ''

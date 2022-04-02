@@ -50,13 +50,18 @@ import pattern from '@/utils/pattern';
 import messageConfig from '@/components/messageConfig';
 
 import styles from './kafka.module.scss';
+import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
+import { getProjectNamespace } from '@/services/project';
 
 const { AutoComplete } = Select;
 const FormItem = Form.Item;
 
 function KafkaCreate(props: CreateProps): JSX.Element {
-	const { cluster: globalCluster, namespace: globalNamespace } =
-		props.globalVar;
+	const {
+		cluster: globalCluster,
+		namespace: globalNamespace,
+		project
+	} = props.globalVar;
 	const history = useHistory();
 	const params: CreateParams = useParams();
 	const field = Field.useField();
@@ -140,6 +145,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<string>();
+	// * 当导航栏的命名空间为全部时
+	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	// * 根据命名空间，来提示可编辑的最大最小值
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -157,6 +164,24 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			});
 		}
 	}, [props]);
+	useEffect(() => {
+		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
+			getProjectNamespace({ projectId: project.projectId }).then(
+				(res) => {
+					console.log(res);
+					if (res.success) {
+						const list = res.data.filter(
+							(item: NamespaceItem) =>
+								item.clusterId === globalCluster.id
+						);
+						setNamespaceList(list);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				}
+			);
+		}
+	}, [project, globalNamespace]);
 	// 全局集群、分区更新
 	useEffect(() => {
 		if (
@@ -213,7 +238,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				chartName,
 				chartVersion,
 				clusterId: globalCluster.id,
-				namespace: globalNamespace.name,
+				namespace:
+					globalNamespace.name === '*'
+						? values.namespace
+						: globalNamespace.name,
 				type: 'kafka',
 				name: values.name,
 				aliasName: values.aliasName,
@@ -398,6 +426,48 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			/>
 			<Content>
 				<Form field={field} {...formItemLayout614}>
+					{globalNamespace.name === '*' && (
+						<FormBlock title="选择命名空间">
+							<div className={styles['basic-info']}>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												命名空间
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required>
+												<Select
+													name="namespace"
+													style={{ width: '100%' }}
+												>
+													{namespaceList.map(
+														(item) => {
+															return (
+																<Select.Option
+																	key={
+																		item.name
+																	}
+																	value={
+																		item.name
+																	}
+																>
+																	{
+																		item.aliasName
+																	}
+																</Select.Option>
+															);
+														}
+													)}
+												</Select>
+											</FormItem>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</FormBlock>
+					)}
 					<FormBlock title="基础信息">
 						<div className={styles['basic-info']}>
 							<ul className="form-layout">

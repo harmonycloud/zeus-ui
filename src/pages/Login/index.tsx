@@ -114,7 +114,11 @@ export default function Login() {
 						setUserName(res.data.userName);
 						return;
 					}
-					history.push('/dataOverview');
+					if (res.isAdmin) {
+						history.push('/dataOverview');
+					} else {
+						history.push('/myProject');
+					}
 					window.location.reload();
 				} else {
 					setMessage(res.errorMsg || res.errorDetail);

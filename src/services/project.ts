@@ -23,6 +23,9 @@ export const getProjectNamespace = (param: paramProps) => {
 export const bingNamespace = (params: paramProps) => {
 	return Axios.json(PROJECT.getProjectNamespace, params, {}, 'POST');
 };
+export const unBindNamespace = (params: paramProps) => {
+	return Axios.delete(PROJECT.getProjectNamespace, params);
+};
 export const getProjectMember = (param: paramProps) => {
 	return Axios.get(PROJECT.getProjectMember, param);
 };
@@ -34,4 +37,16 @@ export const updateProjectMember = (param: paramProps) => {
 };
 export const deleteProjectMember = (param: paramProps) => {
 	return Axios.delete(PROJECT.getProjectMember, param);
+};
+export const getProjectMiddleware = (param: paramProps) => {
+	return Axios.get(PROJECT.getProjectMiddleware, param);
+};
+export const switchProjectGetToken = (param: paramProps) => {
+	return Axios.get(PROJECT.switchProject, param);
+};
+export const getAllocatableNamespace = (param: paramProps) => {
+	return Axios.get(PROJECT.getAllocatableNamespace, param);
+};
+export const getProjectMiddlewareCount = () => {
+	return Axios.get(PROJECT.getProjectMiddlewareCount);
 };

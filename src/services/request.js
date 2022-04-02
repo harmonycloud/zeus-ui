@@ -67,6 +67,7 @@ NProgress.configure({
 // request 拦截
 axios.interceptors.request.use(
 	(config) => {
+		// console.log(JSON.parse(cache.getLocal('project')));
 		NProgress.start();
 		// console.log(config);
 		if (config.method === 'get') {
@@ -79,6 +80,10 @@ axios.interceptors.request.use(
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
 		config.headers.authType = cache.getLocal(TOKEN) ? 1 : 0;
+		// config.headers.projectId =
+		config.headers.projectId = JSON.parse(
+			cache.getLocal('project')
+		).projectId;
 		return config;
 	},
 	(err) => {
@@ -238,7 +243,13 @@ function _delete(url, params = {}, option = {}) {
  * @param {Object} option [请求配置]
  * @param {String} method [请求方法]
  */
-function _post(url, params = {}, option = {}, method = 'POST', withParam = false) {
+function _post(
+	url,
+	params = {},
+	option = {},
+	method = 'POST',
+	withParam = false
+) {
 	return new Promise((resolve, reject) => {
 		const { restUrl, data } = restfulAPI(url, params);
 		let options = {
@@ -273,7 +284,13 @@ function _put(url, params = {}, option = {}, withParam = false) {
  * @param {Object} option [请求配置]
  * @param {String} method [请求方法]
  */
-function _json(url, params = {}, option = {}, method = 'POST', withParam = false) {
+function _json(
+	url,
+	params = {},
+	option = {},
+	method = 'POST',
+	withParam = false
+) {
 	return new Promise((resolve, reject) => {
 		const { restUrl, data } = restfulAPI(url, params);
 		let options = {

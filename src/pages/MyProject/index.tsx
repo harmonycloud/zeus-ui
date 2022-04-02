@@ -2,30 +2,52 @@ import React, { useState, useEffect } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { getProjects } from '@/services/project';
+import {
+	getProjects,
+	getProjectMiddleware,
+	getProjectMiddlewareCount
+} from '@/services/project';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
 import MiddlewareTable from './middlewareTable';
 import { ProjectItem } from '../ProjectManage/project';
 import { Message, Loading } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
-import './index.scss';
+import imgNone from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
+import { MiddlewareTableItem, MyProjectProps } from './myProject';
+import { StoreState } from '@/types';
+import './index.scss';
 
-interface MyProjectProps {
-	setProject: (project: any) => void;
-	setRefreshCluster: (flag: boolean) => void;
-}
 function MyProject(props: MyProjectProps): JSX.Element {
-	const { setProject, setRefreshCluster } = props;
+	const { setProject, setRefreshCluster, project } = props;
 	const history = useHistory();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
-	const [currentProject, setCurrentProject] = useState<ProjectItem>();
+	const [currentProject, setCurrentProject] = useState<ProjectItem>(project);
 	const [projectLoading, setProjectLoading] = useState<boolean>(false);
+	const [middlewareLoading, setMiddlewareLoading] = useState<boolean>(false);
+	const [tableDataSource, setTableDataSource] = useState<
+		MiddlewareTableItem[]
+	>([]);
+	const [projectMiddlewareCount, setProjectMiddleware] = useState<
+		ProjectItem[]
+	>([]);
 	useEffect(() => {
 		getData();
+		getProjectMiddlewareCount().then((res) => {
+			if (res.success) {
+				setProjectMiddleware(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	}, []);
+	useEffect(() => {
+		if (JSON.stringify(currentProject) !== '{}') {
+			getMiddlewareData(currentProject.projectId);
+		}
+	}, [currentProject]);
 	const getData = () => {
 		setProjectLoading(true);
 		getProjects()
@@ -46,6 +68,20 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			})
 			.finally(() => {
 				setProjectLoading(false);
+			});
+	};
+	const getMiddlewareData = (projectId: string) => {
+		setMiddlewareLoading(true);
+		getProjectMiddleware({ projectId })
+			.then((res) => {
+				if (res.success) {
+					setTableDataSource(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			})
+			.finally(() => {
+				setMiddlewareLoading(false);
 			});
 	};
 	return (
@@ -69,7 +105,15 @@ function MyProject(props: MyProjectProps): JSX.Element {
 											? 'my-project-active'
 											: ''
 									}`}
-									onClick={() => setCurrentProject(item)}
+									onClick={() => {
+										setCurrentProject(item);
+										setProject(item);
+										setRefreshCluster(true);
+										storage.setLocal(
+											'project',
+											JSON.stringify(item)
+										);
+									}}
 								>
 									<div className="zeus-my-project-card-title-content">
 										<div className="zeus-my-project-card-h2">
@@ -102,7 +146,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 												className="name-link"
 												onClick={() => {
 													history.push(
-														`/my/projectDetail/${item.projectId}`
+														`/myProject/projectDetail/${item.projectId}`
 													);
 													storage.setLocal(
 														'project',
@@ -128,6 +172,16 @@ function MyProject(props: MyProjectProps): JSX.Element {
 												{item.namespaceCount}
 											</li>
 											<li>成员数：{item.memberCount}</li>
+											<li>
+												服务数：
+												{
+													projectMiddlewareCount.find(
+														(mid: ProjectItem) =>
+															mid.projectId ===
+															item.projectId
+													)?.middlewareCount
+												}
+											</li>
 											<li>备注：{item.description}</li>
 										</ul>
 									</div>
@@ -136,9 +190,35 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						})}
 					</div>
 				</Loading>
-				<div className="zeus-my-project-table-list-content">
-					<MiddlewareTable />
-				</div>
+				<Loading
+					visible={middlewareLoading}
+					tip="加载中，请稍后"
+					size="medium"
+					style={{ display: 'block' }}
+				>
+					<div className="zeus-my-project-table-list-content">
+						{tableDataSource &&
+							tableDataSource.map((item: MiddlewareTableItem) => {
+								return (
+									<MiddlewareTable
+										key={item.type}
+										data={item}
+									/>
+								);
+							})}
+						{tableDataSource.length === 0 && (
+							<div className="display-flex flex-column flex-center">
+								<img
+									width={140}
+									height={140}
+									src={imgNone}
+									alt=""
+								/>
+								<p>暂时没有数据</p>
+							</div>
+						)}
+					</div>
+				</Loading>
 			</Content>
 			{editVisible && (
 				<EditProjectForm
@@ -150,7 +230,9 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		</Page>
 	);
 }
-const mapStateToProps = () => ({});
+const mapStateToProps = (state: StoreState) => ({
+	project: state.globalVar.project
+});
 export default connect(mapStateToProps, {
 	setProject,
 	setRefreshCluster

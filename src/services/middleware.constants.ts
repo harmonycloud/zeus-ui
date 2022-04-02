@@ -112,4 +112,3 @@ export const updatePassword = `${api}/clusters/{clusterId}/middlewares/mysql/upd
 export const deleteUser = `${api}/clusters/{clusterId}/middlewares/mysql/deleteUser`;
 // * sql审计
 export const queryAuditSql = `${api}/clusters/{clusterId}/middlewares/mysql/queryAuditSql`;
-

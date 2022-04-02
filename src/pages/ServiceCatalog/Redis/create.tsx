@@ -52,13 +52,18 @@ import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 import { formItemLayout614 } from '@/utils/const';
+import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
+import { getProjectNamespace } from '@/services/project';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
 ) => {
-	const { cluster: globalCluster, namespace: globalNamespace } =
-		props.globalVar;
+	const {
+		cluster: globalCluster,
+		namespace: globalNamespace,
+		project
+	} = props.globalVar;
 	const params: CreateParams = useParams();
 	const { chartName, chartVersion, aliasName } = params;
 	const field = Field.useField();
@@ -173,7 +178,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<string>();
-
+	// * 当导航栏的命名空间为全部时
+	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -190,6 +196,25 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 	}, [props]);
+
+	useEffect(() => {
+		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
+			getProjectNamespace({ projectId: project.projectId }).then(
+				(res) => {
+					console.log(res);
+					if (res.success) {
+						const list = res.data.filter(
+							(item: NamespaceItem) =>
+								item.clusterId === globalCluster.id
+						);
+						setNamespaceList(list);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				}
+			);
+		}
+	}, [project, globalNamespace]);
 
 	const formHandle = (obj: any, item: any) => {
 		if (
@@ -269,7 +294,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					chartName: chartName,
 					chartVersion: chartVersion,
 					clusterId: globalCluster.id,
-					namespace: globalNamespace.name,
+					namespace:
+						globalNamespace.name === '*'
+							? values.namespace
+							: globalNamespace.name,
 					type: 'redis',
 					name: values.name,
 					aliasName: values.aliasName,
@@ -533,6 +561,48 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					field={field}
 					onChange={formHandle}
 				>
+					{globalNamespace.name === '*' && (
+						<FormBlock title="选择命名空间">
+							<div className={styles['basic-info']}>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												命名空间
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required>
+												<Select
+													name="namespace"
+													style={{ width: '100%' }}
+												>
+													{namespaceList.map(
+														(item) => {
+															return (
+																<Select.Option
+																	key={
+																		item.name
+																	}
+																	value={
+																		item.name
+																	}
+																>
+																	{
+																		item.aliasName
+																	}
+																</Select.Option>
+															);
+														}
+													)}
+												</Select>
+											</FormItem>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</FormBlock>
+					)}
 					<FormBlock title="基础信息">
 						<div className={styles['basic-info']}>
 							<ul className="form-layout">

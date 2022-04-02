@@ -160,6 +160,7 @@ function UserManage(props: any): JSX.Element {
 				{value.map((item: any) => {
 					return (
 						<div
+							key={item.user}
 							style={{
 								display: 'flex',
 								justifyContent: 'space-between'

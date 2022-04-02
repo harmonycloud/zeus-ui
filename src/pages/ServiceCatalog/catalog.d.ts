@@ -56,6 +56,7 @@ export interface CreateValuesParams {
 	storageQuota: string;
 	cpu: number;
 	memory: number;
+	namespace: string;
 }
 export interface RelationMiddlewareParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
@@ -239,6 +240,7 @@ export interface EsSendDataParams extends CommonSendDataParams {
 }
 export interface EsCreateValuesParams extends CreateValuesParams {
 	pwd: string;
+	namespace: string;
 }
 export interface DynamicSendDataParams {
 	chartName: string;
@@ -267,4 +269,5 @@ export interface DynamicCreateValueParams {
 	nodeAffinityLabel: any[];
 	nodeAffinityForce: boolean;
 	version: string;
+	namespace: string;
 }

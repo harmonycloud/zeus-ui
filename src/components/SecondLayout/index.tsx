@@ -44,13 +44,14 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 		onChange,
 		children
 	} = props;
-	const { cluster, namespace } = props.globalVar;
+	const { cluster, namespace, project } = props.globalVar;
 	const [data, setData] = useState([]);
 	const [current, setCurrent] = useState<string>();
 	const location: Location<stateProps> = useLocation();
 	useEffect(() => {
 		if (JSON.stringify(namespace) !== '{}') {
 			getList({
+				projectId: project.projectId,
 				clusterId: cluster.id,
 				namespace: namespace.name,
 				keyword: ''

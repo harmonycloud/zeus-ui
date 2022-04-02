@@ -33,7 +33,7 @@ const mapLocationToActiveKey = (location: Location) => {
 		return '/systemManagement/resourcePoolManagement';
 	else if (pathArray.includes('projectManagement'))
 		return '/systemManagement/projectManagement';
-	else if (pathArray.includes('my')) return '/myProject';
+	else if (pathArray.includes('myProject')) return '/myProject';
 	else if (pathArray.includes('serviceList'))
 		return storage.getSession('menuPath');
 	return location.pathname;
@@ -54,7 +54,9 @@ function Menu(props: MenuProps): JSX.Element {
 	]);
 	const { clusterId, menu } = props;
 	useEffect(() => {
-		getMenus();
+		if (clusterId) {
+			getMenus();
+		}
 	}, [clusterId]);
 	useEffect(() => {
 		if (menu.flag) {

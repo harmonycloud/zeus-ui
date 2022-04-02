@@ -18,7 +18,7 @@ interface deleteParams {
 	chartName: string;
 	chartVersion: string;
 }
-export const getMiddlewareRepository = (params: listParamsProps) => {
+export const getMiddlewareRepository = (params?: listParamsProps) => {
 	return Axios.get(REPOSITORY.getMiddlewareRepository, params);
 };
 export const getTypeVersion = (params: typeListParamsProps) => {
