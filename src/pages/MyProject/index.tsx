@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { getProjects, getProjectMiddleware } from '@/services/project';
+import {
+	getProjects,
+	getProjectMiddleware,
+	getProjectMiddlewareCount
+} from '@/services/project';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
 import MiddlewareTable from './middlewareTable';
@@ -26,8 +30,18 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	const [tableDataSource, setTableDataSource] = useState<
 		MiddlewareTableItem[]
 	>([]);
+	const [projectMiddlewareCount, setProjectMiddleware] = useState<
+		ProjectItem[]
+	>([]);
 	useEffect(() => {
 		getData();
+		getProjectMiddlewareCount().then((res) => {
+			if (res.success) {
+				setProjectMiddleware(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 	}, []);
 	useEffect(() => {
 		if (JSON.stringify(currentProject) !== '{}') {
@@ -158,6 +172,16 @@ function MyProject(props: MyProjectProps): JSX.Element {
 												{item.namespaceCount}
 											</li>
 											<li>成员数：{item.memberCount}</li>
+											<li>
+												服务数：
+												{
+													projectMiddlewareCount.find(
+														(mid: ProjectItem) =>
+															mid.projectId ===
+															item.projectId
+													)?.middlewareCount
+												}
+											</li>
 											<li>备注：{item.description}</li>
 										</ul>
 									</div>

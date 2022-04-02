@@ -14,3 +14,5 @@ export const getProjectMiddleware = `${api}/project/{projectId}/middleware`;
 export const switchProject = `${api}/user/switchProject`;
 // * 获取项目下可分配的分区
 export const getAllocatableNamespace = `${api}/project/{projectId}/namespace/allocatable`;
+// * 获取项目下服务数量
+export const getProjectMiddlewareCount = `${api}/project/middleware/count`;
