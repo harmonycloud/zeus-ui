@@ -84,7 +84,8 @@ export const hideRoute = [
 	'/systemManagement',
 	'/terminal',
 	'/myProject',
-	'/projectDetail'
+	'/projectDetail',
+	'/middlewareRepository'
 ];
 // * 项目不显示路由名单
 export const projectHideRoute = [
@@ -97,7 +98,8 @@ export const projectHideRoute = [
 	'/roleManagement',
 	'/dataOverview',
 	'/systemManagement',
-	'/terminal'
+	'/terminal',
+	'/middlewareRepository'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },

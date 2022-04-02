@@ -101,16 +101,80 @@ function RoleManage(): JSX.Element {
 		});
 	};
 	const permissionEdit: (record: roleProps) => void = (record: roleProps) => {
-		if (record.id === 1 || Number(roleId) === record.id) return;
+		// if (record.id === 1 || Number(roleId) === record.id) return;
 		storage.setSession('rolePower', JSON.stringify(record));
 		history.push('/systemManagement/roleManagement/allotRole');
-		// setPermissionData(record);
-		// setPermissionVisible(true);
 	};
 	const actionRender = (value: string, index: number, record: roleProps) => {
 		return (
 			<Actions>
-				{record.id === 1 ? (
+				<LinkButton
+					disabled={
+						record.id === 1 ||
+						record.id === 2 ||
+						record.id === 3 ||
+						record.id === 4 ||
+						Number(roleId) === record.id
+					}
+					onClick={() => edit(record)}
+				>
+					<span
+						title={
+							record.id === 1
+								? '系统初始化最高权限角色，不可操作'
+								: Number(roleId) === record.id
+								? '不能操作自己的角色'
+								: '当前角色暂时不可进行操作'
+						}
+					>
+						编辑
+					</span>
+				</LinkButton>
+				<LinkButton
+					disabled={
+						record.id === 1 ||
+						record.id === 2 ||
+						record.id === 3 ||
+						record.id === 4 ||
+						Number(roleId) === record.id
+					}
+					onClick={() => deleteRoleHandle(record)}
+				>
+					<span
+						title={
+							record.id === 1
+								? '系统初始化最高权限角色，不可操作'
+								: Number(roleId) === record.id
+								? '不能操作自己的角色'
+								: '当前角色暂时不可进行操作'
+						}
+					>
+						删除
+					</span>
+				</LinkButton>
+				<LinkButton
+					disabled={
+						record.id === 1 ||
+						record.id === 2 ||
+						record.id === 3 ||
+						record.id === 4 ||
+						Number(roleId) === record.id
+					}
+					onClick={() => permissionEdit(record)}
+				>
+					<span
+						title={
+							record.id === 1
+								? '系统初始化最高权限角色，不可操作'
+								: Number(roleId) === record.id
+								? '不能操作自己的角色'
+								: '当前角色暂时不可进行操作'
+						}
+					>
+						分配角色权限
+					</span>
+				</LinkButton>
+				{/* {record.id === 1 ? (
 					<Balloon
 						trigger={
 							<LinkButton
@@ -231,7 +295,7 @@ function RoleManage(): JSX.Element {
 					>
 						分配角色权限
 					</LinkButton>
-				)}
+				)} */}
 			</Actions>
 		);
 	};
