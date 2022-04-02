@@ -97,8 +97,7 @@ export const projectHideRoute = [
 	'/roleManagement',
 	'/dataOverview',
 	'/systemManagement',
-	'/terminal',
-	'/myProject'
+	'/terminal'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },

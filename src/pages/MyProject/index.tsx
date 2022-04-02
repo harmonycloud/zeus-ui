@@ -16,8 +16,8 @@ import messageConfig from '@/components/messageConfig';
 import imgNone from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
-import './index.scss';
 import { StoreState } from '@/types';
+import './index.scss';
 
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster, project } = props;
@@ -146,7 +146,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 												className="name-link"
 												onClick={() => {
 													history.push(
-														`/my/projectDetail/${item.projectId}`
+														`/myProject/projectDetail/${item.projectId}`
 													);
 													storage.setLocal(
 														'project',

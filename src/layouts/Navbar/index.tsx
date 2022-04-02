@@ -8,7 +8,7 @@ import { Nav, Select, Message } from '@alicloud/console-components';
 import User from './User';
 
 import { getClusters, getNamespaces } from '@/services/common';
-import { getProjects, switchProjectGetToken } from '@/services/project';
+import { getProjects } from '@/services/project';
 import {
 	setCluster,
 	setNamespace,
@@ -108,7 +108,6 @@ function Navbar(props: NavbarProps): JSX.Element {
 				} else {
 					setCurrentProject(res.data[0]);
 					setProject(res.data[0]);
-					switchProject(res.data[0].projectId);
 				}
 			}
 			setProjectList(res.data);
@@ -142,13 +141,6 @@ function Navbar(props: NavbarProps): JSX.Element {
 			}
 			setClusterList(res.data);
 			setGlobalClusterList(res.data);
-		}
-	};
-
-	const switchProject = async (projectId: string) => {
-		const res = await switchProjectGetToken({ projectId });
-		if (!res.success) {
-			Message.show(messageConfig('error', '失败', '项目切换失败'));
 		}
 	};
 
@@ -205,11 +197,9 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const projectHandle = (projectId: string) => {
 		for (let i = 0; i < projectList.length; i++) {
 			if (projectList[i].projectId === projectId) {
-				switchProject(projectId).finally(() => {
-					setCurrentProject(projectList[i]);
-					setProject(projectList[i]);
-					storage.setLocal('project', JSON.stringify(projectList[i]));
-				});
+				setCurrentProject(projectList[i]);
+				setProject(projectList[i]);
+				storage.setLocal('project', JSON.stringify(projectList[i]));
 			}
 		}
 	};
@@ -268,7 +258,8 @@ function Navbar(props: NavbarProps): JSX.Element {
 			if (
 				projectHideRoute.some(
 					(item: string) => location.pathname.indexOf(item) > -1
-				)
+				) ||
+				location.pathname === '/myProject'
 			) {
 				setProjectHideFlag(true);
 			} else {

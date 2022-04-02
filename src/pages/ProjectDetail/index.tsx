@@ -18,7 +18,7 @@ function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 	};
 	useEffect(() => {
 		if (location.pathname.includes('my')) {
-			history.push(`/my/projectDetail/${project.projectId}`);
+			history.push(`/myProject/projectDetail/${project.projectId}`);
 		}
 	}, [project]);
 	return (
