@@ -75,7 +75,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	};
 	const getData = () => {
 		setProjectLoading(true);
-		getProjects()
+		getProjects({ key: '' })
 			.then((res) => {
 				console.log(res);
 				if (res.success) {

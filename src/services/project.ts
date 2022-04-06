@@ -5,8 +5,9 @@ interface paramProps {
 	projectId: string;
 	[propName: string]: any;
 }
-export const getProjects = () => {
-	return Axios.get(PROJECT.getProjects);
+
+export const getProjects = (params: { key: string }) => {
+	return Axios.get(PROJECT.getProjects, params);
 };
 export const createProject = (params: any) => {
 	return Axios.json(PROJECT.getProjects, params, {}, 'POST');

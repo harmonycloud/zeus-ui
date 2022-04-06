@@ -87,7 +87,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 	};
 
 	const getProjectList = async () => {
-		const res = await getProjects();
+		const res = await getProjects({ key: '' });
 		if (res.success) {
 			if (res.data.length > 0) {
 				const jsonLocalProject = storage.getLocal('project');

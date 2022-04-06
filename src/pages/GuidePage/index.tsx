@@ -62,7 +62,7 @@ const GuidePage = (props: GuideProps) => {
 					}
 				})
 				.finally(() => {
-					getProjects().then((res) => {
+					getProjects({ key: '' }).then((res) => {
 						console.log(res);
 						if (res.success) {
 							if (res.data.length > 0) {
