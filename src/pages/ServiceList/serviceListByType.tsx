@@ -580,18 +580,25 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps
 	) => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		const deleteFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[record.type][3] === '1'
-				? false
-				: true;
-		const operateFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[record.type][2] === '1'
-				? false
-				: true;
+		let deleteFlag = true;
+		let operateFlag = true;
+		if (jsonRole.userRoleList[0].roleId === 1) {
+			deleteFlag = false;
+			operateFlag = false;
+		} else {
+			deleteFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[record.type][3] === '1'
+					? false
+					: true;
+			operateFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[record.type][2] === '1'
+					? false
+					: true;
+		}
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>

@@ -39,6 +39,7 @@ interface serviceAvailableProps {
 }
 function ServiceAvailable(props: serviceAvailableProps) {
 	const { cluster, namespace, project } = props.globalVar;
+	const [role] = useState(JSON.parse(storage.getLocal('role')));
 	const [selected, setSelected] = useState<string>(
 		storage.getSession('service-available-current') || '全部服务'
 	);
@@ -416,7 +417,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						storage.setLocal('availableRecord',record);
+						storage.setLocal('availableRecord', record);
 						history.push('/serviceAvailable/addServiceAvailable');
 					}}
 				>

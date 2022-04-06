@@ -89,14 +89,17 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	useEffect(() => {
 		setActiveKey(currentTab);
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		const operateFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[type][2] === '1'
-				? false
-				: true;
-		console.log(operateFlag);
-		setOperateFlag(operateFlag);
+		if (jsonRole.userRoleList[0].roleId === 1) {
+			setOperateFlag(false);
+		} else {
+			const operateFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[type][2] === '1'
+					? false
+					: true;
+			setOperateFlag(operateFlag);
+		}
 	}, []);
 
 	const getData = (clusterId: string, namespace: string) => {
