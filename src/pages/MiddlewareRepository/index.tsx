@@ -187,6 +187,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							>
 								上架中间件
 							</Button>
+							<span style={{ marginLeft: 16 }}>集群：</span>
 							<Select
 								onChange={onChange}
 								autoWidth={false}
