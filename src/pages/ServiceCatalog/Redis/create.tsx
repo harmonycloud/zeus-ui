@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Page from '@alicloud/console-components-page';
+import Page, { Content, Header } from '@alicloud/console-components-page';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
@@ -494,54 +494,87 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
-				<LoadingPage
-					title="发布中"
-					btnHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
-					}}
-					btnText="返回列表"
-				/>
-			</div>
+			<Page>
+				<Header />
+				<Content>
+					<div
+						style={{
+							height: '100%',
+							textAlign: 'center',
+							marginTop: 46
+						}}
+					>
+						<LoadingPage
+							title="发布中"
+							btnHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
+							btnText="返回列表"
+						/>
+					</div>
+				</Content>
+			</Page>
 		);
 	}
 	if (successFlag) {
 		return (
-			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
-				<SuccessPage
-					title="发布成功"
-					leftText="返回列表"
-					rightText="查看详情"
-					leftHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
-					}}
-					rightHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
-						});
-					}}
-				/>
-			</div>
+			<Page>
+				<Header />
+				<Content>
+					<div
+						style={{
+							height: '100%',
+							textAlign: 'center',
+							marginTop: 46
+						}}
+					>
+						<SuccessPage
+							title="发布成功"
+							leftText="返回列表"
+							rightText="查看详情"
+							leftHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
+							rightHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+								});
+							}}
+						/>
+					</div>
+				</Content>
+			</Page>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
-				<ErrorPage
-					title="发布失败"
-					btnHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
-					}}
-					btnText="返回列表"
-				/>
-			</div>
+			<Page>
+				<Header />
+				<Content>
+					<div
+						style={{
+							height: '100%',
+							textAlign: 'center',
+							marginTop: 46
+						}}
+					>
+						<ErrorPage
+							title="发布失败"
+							btnHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
+							btnText="返回列表"
+						/>
+					</div>
+				</Content>
+			</Page>
 		);
 	}
 
@@ -1130,7 +1163,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												name="mirrorImageId"
 												placeholder="请选择"
 												hasClear={true}
-												defaultValue={mirrorList[0]?.address}
+												defaultValue={
+													mirrorList[0]?.address
+												}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}
@@ -1273,7 +1308,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		min={
 																			0.1
 																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max || ''}Core）`}
+																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${
+																			maxCpu?.max ||
+																			''
+																		}Core）`}
 																		required
 																		requiredMessage="请输入自定义CPU配额，单位为Core"
 																		{...maxCpu}
@@ -1304,7 +1342,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		min={
 																			0.1
 																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max || ''}Gi`}
+																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${
+																			maxMemory?.max ||
+																			''
+																		}Gi`}
 																		required
 																		requiredMessage="请输入自定义内存配额，单位为Gi"
 																		{...maxMemory}
