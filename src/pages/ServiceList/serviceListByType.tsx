@@ -40,7 +40,7 @@ import {
 	middlewareProps,
 	ListParamsProps
 } from './service.list';
-import { StoreState } from '@/types/index';
+import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
@@ -388,6 +388,64 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
+		const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		const getFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[name][0] === '1'
+				? false
+				: true;
+		const createFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[name][3] === '1'
+				? false
+				: true;
+		if (createFlag || getFlag) {
+			if (name === 'mysql') {
+				return {
+					primary: (
+						<Tooltip
+							trigger={
+								<Button
+									type="primary"
+									disabled={createFlag || getFlag}
+								>
+									发布服务
+								</Button>
+							}
+						>
+							当前用户无改操作的权限!
+						</Tooltip>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
+					)
+				};
+			} else {
+				return {
+					primary: (
+						<Tooltip
+							trigger={
+								<Button
+									type="primary"
+									disabled={createFlag || getFlag}
+								>
+									发布服务
+								</Button>
+							}
+						>
+							当前用户无改操作的权限!
+						</Tooltip>
+					)
+				};
+			}
+		}
 		if (cantRelease) {
 			if (name === 'mysql') {
 				return {
@@ -521,10 +579,26 @@ const ServiceListByType = (props: serviceListProps) => {
 		index: number,
 		record: serviceProps
 	) => {
+		const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		const deleteFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[record.type][3] === '1'
+				? false
+				: true;
+		const operateFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[record.type][2] === '1'
+				? false
+				: true;
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>
-					<LinkButton onClick={() => deleteFn(record)}>
+					<LinkButton
+						disabled={deleteFlag}
+						onClick={() => deleteFn(record)}
+					>
 						删除
 					</LinkButton>
 				</Actions>
@@ -533,10 +607,16 @@ const ServiceListByType = (props: serviceListProps) => {
 		if (record.status === 'Deleted') {
 			return (
 				<Actions>
-					<LinkButton onClick={() => recoveryService(record)}>
+					<LinkButton
+						disabled={operateFlag}
+						onClick={() => recoveryService(record)}
+					>
 						恢复服务
 					</LinkButton>
-					<LinkButton onClick={() => deleteStorage(record)}>
+					<LinkButton
+						disabled={deleteFlag}
+						onClick={() => deleteStorage(record)}
+					>
 						彻底删除
 					</LinkButton>
 				</Actions>
@@ -544,76 +624,8 @@ const ServiceListByType = (props: serviceListProps) => {
 		}
 		return (
 			<Actions>
-				{/* <LinkButton
-					disabled={tabJudge(record, 'high')}
-					onClick={() => {
-						storage.setSession(
-							'service-available-current',
-							record.type
-						);
-						history.push({
-							pathname: '/serviceAvailable',
-							state: {
-								middlewareName: record.name
-							}
-						});
-					}}
-				>
-					<span
-						title={
-							tabJudge(record, 'high')
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '服务暴露'
-						}
-					>
-						服务暴露
-					</span>
-				</LinkButton>
 				<LinkButton
-					disabled={tabJudge(record, 'monitoring')}
-					onClick={() => {
-						history.push({
-							pathname: '/monitorAlarm/dataMonitor',
-							state: {
-								middlewareName: record.name,
-								middlewareType: record.type
-							}
-						});
-					}}
-				>
-					<span
-						title={
-							tabJudge(record, 'monitoring')
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '数据监控'
-						}
-					>
-						数据监控
-					</span>
-				</LinkButton>
-				<LinkButton
-					disabled={tabJudge(record, 'log')}
-					onClick={() =>
-						history.push({
-							pathname: '/monitorAlarm/logDetail',
-							state: {
-								middlewareName: record.name,
-								middlewareType: record.type
-							}
-						})
-					}
-				>
-					<span
-						title={
-							tabJudge(record, 'log')
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '日志详情'
-						}
-					>
-						日志详情
-					</span>
-				</LinkButton> */}
-				<LinkButton
+					disabled={operateFlag}
 					onClick={() => {
 						const sendData = {
 							clusterId: cluster.id,
@@ -648,121 +660,30 @@ const ServiceListByType = (props: serviceListProps) => {
 						});
 					}}
 				>
-					<span
-						title={
-							record.managePlatform
-								? record.managePlatformAddress === ''
-									? `请先到服务暴露中，暴露${record.name}的${
-											record.name
-									  }${
-											record.type === 'elasticsearch'
-												? '-kibana'
-												: record.type === 'kafka'
-												? '-manager-svc'
-												: '-console-svc'
-									  }服务。`
-									: '服务控制台'
-								: '该中间件发布的服务组件暂不支持该功能'
-						}
-					>
+					<span title={operateFlag ? '当前用户无改操作的权限' : ''}>
 						服务控制台
 					</span>
 				</LinkButton>
-				{/* <LinkButton
-					disabled={record.type !== 'mysql'}
-					onClick={() => {
-						history.push({
-							pathname: '/disasterBackup/disasterCenter',
-							state: {
-								middlewareName: record.name,
-								middlewareType: record.type
-							}
-						});
-					}}
-				>
-					<span
-						title={
-							record.type !== 'mysql'
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '灾备服务'
-						}
-					>
-						灾备服务
-					</span>
-				</LinkButton>
 				<LinkButton
-					disabled={tabJudge(record, 'alert')}
-					onClick={() =>
-						history.push({
-							pathname: '/monitorAlarm/alarmCenter',
-							state: {
-								middlewareName: record.name,
-								middlewareType: record.type
-							}
-						})
-					}
-				>
-					<span
-						title={
-							tabJudge(record, 'alert')
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '告警规则'
-						}
-					>
-						告警规则
-					</span>
-				</LinkButton>
-				<LinkButton
-					disabled={tabJudge(record, 'backup')}
-					onClick={() => {
-						history.push({
-							pathname: '/disasterBackup/dataSecurity',
-							state: {
-								middlewareName: record.name,
-								middlewareType: record.type
-							}
-						});
-					}}
-				>
-					<span
-						title={
-							tabJudge(record, 'backup')
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '数据安全'
-						}
-					>
-						数据安全
-					</span>
-				</LinkButton>
-				<LinkButton
-					disabled={tabJudge(record, 'config')}
-					onClick={() => {
-						history.push(
-							`/serviceList/${name}/${aliasName}/paramterSetting/${record.name}/${record.type}/${record.chartVersion}`
-						);
-						storage.setLocal('backKey', 'paramterSetting');
-					}}
-				>
-					<span
-						title={
-							tabJudge(record, 'config')
-								? '该中间件发布的服务组件暂不支持该功能'
-								: '参数设置'
-						}
-					>
-						参数设置
-					</span>
-				</LinkButton> */}
-				<LinkButton
+					disabled={operateFlag}
 					onClick={() =>
 						history.push(
 							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}`
 						)
 					}
 				>
-					版本管理
+					<span title={operateFlag ? '当前用户无改操作的权限' : ''}>
+						版本管理
+					</span>
 				</LinkButton>
-				<LinkButton onClick={() => deleteFn(record)}>删除</LinkButton>
+				<LinkButton
+					disabled={deleteFlag}
+					onClick={() => deleteFn(record)}
+				>
+					<span title={deleteFlag ? '当前用户无改操作的权限' : ''}>
+						删除
+					</span>
+				</LinkButton>
 			</Actions>
 		);
 	};
@@ -928,14 +849,23 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const podRender = (value: string, index: number, record: serviceProps) => {
+		const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		const operateFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[record.type][2] === '1'
+				? false
+				: true;
 		return (
 			<span
-				className="name-link"
+				className={operateFlag ? '' : 'name-link'}
 				onClick={() => {
-					history.push(
-						`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
-					);
-					storage.setLocal('backKey', 'highAvailability');
+					if (!operateFlag) {
+						history.push(
+							`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
+						);
+						storage.setLocal('backKey', 'highAvailability');
+					}
 				}}
 			>
 				{value || '--'}

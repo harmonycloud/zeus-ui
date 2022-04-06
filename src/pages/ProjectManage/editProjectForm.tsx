@@ -20,6 +20,7 @@ import { userProps } from '../UserManage/user';
 import pattern from '@/utils/pattern';
 import { formItemLayout619 } from '@/utils/const';
 import { EditProjectFormProps, FieldValues } from './project';
+import { filtersProps } from '@/types/comment';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -34,7 +35,7 @@ export default function EditProjectForm(
 	const [clusters, setClusters] = useState<string[]>([]);
 	const [namespaceList, setNamespaceList] = useState({});
 	const [namespaces, setNamespaces] = useState<string[]>([]);
-	const [users, setUsers] = useState<userProps[]>([]);
+	const [users, setUsers] = useState<filtersProps[]>([]);
 	const field = Field.useField();
 	useEffect(() => {
 		getClusters({ detail: true }).then((res) => {
@@ -60,7 +61,13 @@ export default function EditProjectForm(
 		});
 		getUserList({ keyword: '' }).then((res) => {
 			if (res.success) {
-				setUsers(res.data);
+				const list = res.data.map((item) => {
+					return {
+						label: item.aliasName || item.userName,
+						value: item.userName
+					};
+				});
+				setUsers(list);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -166,19 +173,20 @@ export default function EditProjectForm(
 				<FormItem label="备注">
 					<Input name="description" />
 				</FormItem>
-				<FormItem label="绑定项目管理员" required>
+				<FormItem
+					label="绑定项目管理员"
+					required
+					requiredMessage="绑定项目管理员必选"
+				>
 					<Select
 						name="user"
+						hasClear={true}
 						style={{ width: '100%' }}
-						defaultValue={users[0]?.userName}
 					>
-						{users.map((item: userProps) => {
+						{users.map((item: filtersProps) => {
 							return (
-								<Option
-									value={item.userName}
-									key={item.userName}
-								>
-									{item.aliasName}
+								<Option value={item.value} key={item.value}>
+									{item.label}
 								</Option>
 							);
 						})}

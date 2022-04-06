@@ -54,9 +54,32 @@ export interface paramReduxProps {
 	customConfigList: ConfigItem[];
 }
 export interface StoreState {
-	user: any;
 	globalVar: globalVarProps;
 	log: any;
 	menu: menuReduxProps;
 	param: paramReduxProps;
+}
+
+export interface RoleItem {
+	power: {
+		[propsName: string]: string;
+	};
+	projectId: string;
+	roleId: number;
+	roleName: string;
+	userName: string;
+}
+export interface User {
+	aliasName: string;
+	createTime: string;
+	email: null | string;
+	id: number | string;
+	password: string;
+	passwordTime: string;
+	phone: string;
+	power: null;
+	roleId: null | number;
+	roleName: null | string;
+	userName: string;
+	userRoleList: RoleItem[];
 }

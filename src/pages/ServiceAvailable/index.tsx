@@ -158,12 +158,14 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			}
 		}
 	}, [selected]);
-	const getData = (keyword: string = searchText) => {
+	const getData = (type: string = selected, keyword: string = searchText) => {
 		const sendData = {
 			clusterId: cluster.id,
 			namespace: namespace.name,
-			keyword
+			keyword,
+			type
 		};
+		console.log(sendData);
 		getIngresses(sendData).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
@@ -490,7 +492,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						) {
 							setSearchText('');
 							location.state.middlewareName = '';
-							getData('');
+							getData(value, '');
 						}
 						storage.setSession('service-available-current', value);
 					}}

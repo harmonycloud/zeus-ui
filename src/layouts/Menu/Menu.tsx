@@ -54,9 +54,9 @@ function Menu(props: MenuProps): JSX.Element {
 	]);
 	const { clusterId, menu } = props;
 	useEffect(() => {
-		if (clusterId) {
-			getMenus();
-		}
+		// if (clusterId) {
+		// }
+		getMenus();
 	}, [clusterId]);
 	useEffect(() => {
 		if (menu.flag) {

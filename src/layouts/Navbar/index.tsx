@@ -80,6 +80,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		if (res.success) {
 			setNickName(res.data.aliasName);
 			setRole(res.data);
+			storage.setLocal('role', JSON.stringify(res.data));
 		} else {
 			Message.show(messageConfig('error', '失败', res));
 		}

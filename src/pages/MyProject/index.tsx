@@ -62,6 +62,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						)
 					)
 						setCurrentProject(res.data[0]);
+					storage.setLocal('project', JSON.stringify(res.data[0]));
 				} else {
 					Message.show(messageConfig('error', '失败', res));
 				}

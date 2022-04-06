@@ -30,6 +30,7 @@ function User(props: userProps): JSX.Element {
 				Storage.removeSession('service-list-current', true);
 				Storage.removeSession('service-available-current', true);
 				Storage.removeLocal('firstAlert', true);
+				// Storage.removeLocal('role', true);
 				history.push('/login');
 				window.location.reload();
 			} else {
