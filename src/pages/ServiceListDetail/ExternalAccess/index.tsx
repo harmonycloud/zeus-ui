@@ -6,7 +6,7 @@ import { ExternalAccessProps } from '../detail';
 export default function ExternalAccess(
 	props: ExternalAccessProps
 ): JSX.Element {
-	const { customMid, capabilities, middlewareName, type } = props;
+	const { customMid, capabilities, middlewareName, type, namespace } = props;
 	if (customMid && !capabilities.includes('ingress')) {
 		return <DefaultPicture />;
 	}
@@ -14,6 +14,7 @@ export default function ExternalAccess(
 		<IngressList
 			entry="detail"
 			type={type}
+			namespace={namespace}
 			middlewareName={middlewareName}
 		/>
 	);

@@ -126,7 +126,7 @@ export interface ingressProps {
 	middlewareName?: string;
 	name?: string;
 	middlewareNickName?: string;
-	namespace?: string;
+	namespace: string;
 	tcp?: {
 		enabled: boolean;
 		configMapName: string;

@@ -207,11 +207,6 @@ function UserManage(): JSX.Element {
 						删除
 					</LinkButton>
 				) : null}
-				{/* {record.userName !== 'admin' ? (
-					<LinkButton onClick={() => editRole(record)}>
-						关联角色
-					</LinkButton>
-				) : null} */}
 				<LinkButton
 					onClick={() => resetPasswordHandle(record)}
 					disabled={isLDAP}
@@ -230,6 +225,13 @@ function UserManage(): JSX.Element {
 	const createTimeRender = (value: string) => {
 		if (!value) return '--';
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
+	};
+	const roleNameRender = (
+		value: string,
+		index: number,
+		record: userProps
+	) => {
+		return '-';
 	};
 	const Operation = {
 		primary: (
@@ -295,7 +297,7 @@ function UserManage(): JSX.Element {
 					<Table.Column
 						title="关联角色"
 						dataIndex="roleName"
-						cell={nullRender}
+						cell={roleNameRender}
 					/>
 					<Table.Column
 						title="操作"

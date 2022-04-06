@@ -32,7 +32,13 @@ import './ingress.scss';
 import { timeRender } from '@/utils/utils';
 
 function IngressList(props: ingressProps) {
-	const { globalVar, entry = 'menu', type = '', middlewareName = '' } = props;
+	const {
+		globalVar,
+		entry = 'menu',
+		type = '',
+		middlewareName = '',
+		namespace
+	} = props;
 	const [dataSource, setDataSource] = useState<ingressProps[]>([]);
 	const [showDataSource, setShowDataSource] = useState<ingressProps[]>([]);
 	const [searchText, setSearchText] = useState<string>('');
@@ -58,7 +64,7 @@ function IngressList(props: ingressProps) {
 		) {
 			getIngressByMid(
 				globalVar.cluster.id,
-				globalVar.namespace.name,
+				namespace,
 				type,
 				middlewareName
 			);
@@ -80,8 +86,6 @@ function IngressList(props: ingressProps) {
 		getIngressMid(sendData).then((res) => {
 			if (res.success) {
 				setShowDataSource(res.data);
-				console.log(res.data);
-
 				setDataSource(res.data);
 			} else {
 				Message.show(messageConfig('error', '失败', res));

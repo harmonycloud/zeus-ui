@@ -176,6 +176,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<ExternalAccess
 							type={type}
 							middlewareName={middlewareName}
+							namespace={namespace}
 							customMid={customMid}
 							capabilities={(data && data.capabilities) || []}
 						/>
