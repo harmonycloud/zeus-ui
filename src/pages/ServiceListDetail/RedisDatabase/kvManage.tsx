@@ -18,7 +18,6 @@ import { authorityList } from '@/utils/const';
 import { nullRender } from '@/utils/utils';
 import { filtersProps } from '@/types/comment';
 import KvForm from './kvForm';
-import axios from 'axios';
 
 const Tooltip = Balloon.Tooltip;
 function KvManage(props: any): JSX.Element {
@@ -124,14 +123,36 @@ function KvManage(props: any): JSX.Element {
 	const actionRender = (value: string, index: number, record: any) => {
 		return (
 			<Actions>
-				<LinkButton
-					onClick={() => {
-						edit(record);
-						setIsEdit(true);
-					}}
-				>
-					新增
-				</LinkButton>
+				{record.type === 'List' && (
+					<LinkButton
+						onClick={() => {
+							edit(record);
+							setIsEdit(true);
+						}}
+					>
+						头部新增
+					</LinkButton>
+				)}
+				{record.type === 'List' && (
+					<LinkButton
+						onClick={() => {
+							edit(record);
+							setIsEdit(true);
+						}}
+					>
+						尾部新增
+					</LinkButton>
+				)}
+				{record.type !== 'List' && (
+					<LinkButton
+						onClick={() => {
+							edit(record);
+							setIsEdit(true);
+						}}
+					>
+						新增
+					</LinkButton>
+				)}
 				<LinkButton onClick={() => deleteUserHandle(record)}>
 					删除
 				</LinkButton>

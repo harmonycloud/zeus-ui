@@ -185,6 +185,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [createData, setCreateData] = useState<string>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	// * root密码
+	const [mysqlPwd, setMysqlPwd] = useState<string>('');
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -1556,12 +1558,21 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											patternMessage="由1-16位字母和数字以及特殊字符组成"
 										>
 											<Input
+												value={mysqlPwd}
 												htmlType="password"
 												name="mysqlPwd"
 												placeholder="请输入root密码，输入为空则由平台随机生成"
 												trim
+												onChange={(value) =>
+													setMysqlPwd(value)
+												}
 											/>
 										</FormItem>
+										{mysqlPwd.length <= 6 && /^[A-Za-z0-9]+$/.test(mysqlPwd) && (
+											<p>
+												提示：当前密码太简单，有安全风险，建议输入由英文大些、小写、数字组成的6位以上的密码
+											</p>
+										)}
 									</div>
 								</li>
 								<li className="display-flex">
@@ -1585,7 +1596,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												name="mirrorImageId"
 												placeholder="请选择"
 												hasClear={true}
-												defaultValue={mirrorList[0]}
+												defaultValue={mirrorList[0].address}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}
