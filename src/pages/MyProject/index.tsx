@@ -18,10 +18,12 @@ import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
 import { StoreState } from '@/types';
 import './index.scss';
+import { roleProps } from '../RoleManage/role';
 
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster, project } = props;
 	const history = useHistory();
+	const [role, setRole] = useState<roleProps>();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [currentProject, setCurrentProject] = useState<ProjectItem>(project);
@@ -34,20 +36,26 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		ProjectItem[]
 	>([]);
 	useEffect(() => {
-		if (
-			JSON.stringify(currentProject) !== '{}' &&
-			currentProject !== undefined
-		) {
-			getData();
-			getProjectMiddlewareCount().then((res) => {
-				if (res.success) {
-					setProjectMiddleware(res.data);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
+		if (storage.getLocal('role')) {
+			setRole(JSON.parse(storage.getLocal('role')));
 		}
-	}, []);
+	}, [storage.getLocal('role')]);
+	useEffect(() => {
+		if (role) {
+			if (role.userRoleList.some((i: any) => i.roleId) === 1) {
+				if (
+					JSON.stringify(currentProject) !== '{}' &&
+					currentProject !== undefined
+				) {
+					getData();
+					getCount();
+				}
+			} else {
+				getData();
+				getCount();
+			}
+		}
+	}, [role]);
 	useEffect(() => {
 		if (
 			JSON.stringify(currentProject) !== '{}' &&
@@ -56,11 +64,22 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			getMiddlewareData(currentProject.projectId);
 		}
 	}, [currentProject]);
+	const getCount = () => {
+		getProjectMiddlewareCount().then((res) => {
+			if (res.success) {
+				setProjectMiddleware(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
 	const getData = () => {
 		setProjectLoading(true);
 		getProjects()
 			.then((res) => {
+				console.log(res);
 				if (res.success) {
+					console.log(currentProject);
 					setDataSource(res.data);
 					if (!currentProject) setCurrentProject(res.data[0]);
 					if (
@@ -184,7 +203,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 											<li>
 												服务数：
 												{
-													projectMiddlewareCount.find(
+													projectMiddlewareCount?.find(
 														(mid: ProjectItem) =>
 															mid.projectId ===
 															item.projectId

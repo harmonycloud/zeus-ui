@@ -46,5 +46,6 @@ export interface briefInfoProps {
 	errServiceNum: number;
 	serviceNum: number;
 	name: string;
+	aliasName: string;
 	imagePath: string;
 }

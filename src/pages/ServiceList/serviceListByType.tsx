@@ -44,6 +44,7 @@ import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
+import GuidePage from '../GuidePage';
 // --- css样式
 
 const tabJudge: (record: serviceProps, tab: string) => boolean = (
@@ -71,6 +72,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
+	console.log(project, cluster);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
@@ -389,18 +391,26 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const operation = () => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		const getFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[name][0] === '1'
-				? false
-				: true;
-		const createFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[name][3] === '1'
-				? false
-				: true;
+		console.log(jsonRole);
+		let getFlag = false;
+		let createFlag = false;
+		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
+			getFlag = true;
+			createFlag = true;
+		} else {
+			getFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][0] === '1'
+					? true
+					: false;
+			createFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][2] === '1'
+					? true
+					: false;
+		}
 		if (!createFlag || !getFlag) {
 			if (name === 'mysql') {
 				return {
@@ -580,23 +590,31 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps
 	) => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		const deleteFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[record.type][3] === '1'
-				? false
-				: true;
-		const operateFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[record.type][2] === '1'
-				? false
-				: true;
+		console.log(jsonRole);
+		let deleteFlag = false;
+		let operateFlag = false;
+		if (jsonRole.userRoleList[0].roleId === 1) {
+			deleteFlag = true;
+			operateFlag = true;
+		} else {
+			deleteFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[record.type][3] === '1'
+					? true
+					: false;
+			operateFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[record.type][1] === '1'
+					? true
+					: false;
+		}
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={deleteFlag}
+						disabled={!deleteFlag}
 						onClick={() => deleteFn(record)}
 					>
 						删除
@@ -608,13 +626,13 @@ const ServiceListByType = (props: serviceListProps) => {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={operateFlag}
+						disabled={!operateFlag}
 						onClick={() => recoveryService(record)}
 					>
 						恢复服务
 					</LinkButton>
 					<LinkButton
-						disabled={deleteFlag}
+						disabled={!deleteFlag}
 						onClick={() => deleteStorage(record)}
 					>
 						彻底删除
@@ -625,7 +643,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={operateFlag}
+					disabled={!operateFlag}
 					onClick={() => {
 						const sendData = {
 							clusterId: cluster.id,
@@ -665,22 +683,22 @@ const ServiceListByType = (props: serviceListProps) => {
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={operateFlag}
+					disabled={!operateFlag}
 					onClick={() =>
 						history.push(
 							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}`
 						)
 					}
 				>
-					<span title={operateFlag ? '当前用户无改操作的权限' : ''}>
+					<span title={!operateFlag ? '当前用户无改操作的权限' : ''}>
 						版本管理
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={deleteFlag}
+					disabled={!deleteFlag}
 					onClick={() => deleteFn(record)}
 				>
-					<span title={deleteFlag ? '当前用户无改操作的权限' : ''}>
+					<span title={!deleteFlag ? '当前用户无改操作的权限' : ''}>
 						删除
 					</span>
 				</LinkButton>
@@ -872,6 +890,9 @@ const ServiceListByType = (props: serviceListProps) => {
 			</span>
 		);
 	};
+	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
+		return <GuidePage />;
+	}
 	return (
 		<Page>
 			<Header

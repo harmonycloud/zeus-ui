@@ -42,6 +42,7 @@ import { StoreState } from '@/types';
 import { poolListItem, evevtDataProps } from '@/types/comment';
 
 import './platformOverview.scss';
+import storage from '@/utils/storage';
 
 const Tooltip = Balloon.Tooltip;
 
@@ -237,7 +238,6 @@ function PlatformOverview(): JSX.Element {
 
 	return (
 		<Page>
-			{console.log(lineOption)}
 			<Page.Content style={{ paddingBottom: 0 }}>
 				<div className="platform_overview-content">
 					<div className="header">
@@ -426,19 +426,12 @@ function PlatformOverview(): JSX.Element {
 															<div
 																className="info-item"
 																onClick={() => {
+																	storage.setSession(
+																		'menuPath',
+																		`/serviceList/${item.name}/${item.aliasName}`
+																	);
 																	history.push(
-																		`/serviceList/${
-																			item.name
-																		}/${
-																			item.name
-																				.charAt(
-																					0
-																				)
-																				.toUpperCase() +
-																			item.name.slice(
-																				1
-																			)
-																		}`
+																		`/serviceList/${item.name}/${item.aliasName}`
 																	);
 																}}
 															>

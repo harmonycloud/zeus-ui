@@ -87,11 +87,13 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 				<FormItem label="选择角色" required>
 					<Select name="roleId" style={{ width: '100%' }}>
 						{roles.map((item: roleProps) => {
-							return (
-								<Option key={item.id} value={item.id}>
-									{item.name}
-								</Option>
-							);
+							if (item.id !== 1) {
+								return (
+									<Option key={item.id} value={item.id}>
+										{item.name}
+									</Option>
+								);
+							}
 						})}
 					</Select>
 				</FormItem>

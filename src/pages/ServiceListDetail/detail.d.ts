@@ -287,6 +287,7 @@ export interface ExternalAccessProps {
 	capabilities: string[];
 	middlewareName: string;
 	type: string;
+	namespace: string;
 }
 export interface LogProps {
 	type: string;

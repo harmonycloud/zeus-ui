@@ -89,15 +89,24 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	useEffect(() => {
 		setActiveKey(currentTab);
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		const operateFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[type][2] === '1'
-				? false
-				: true;
-		console.log(operateFlag);
-		setOperateFlag(operateFlag);
+		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
+			setOperateFlag(true);
+		}
 	}, []);
+	useEffect(() => {
+		const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		if (jsonRole.userRoleList.every((i: any) => i.roleId !== 1)) {
+			if (JSON.stringify(project) !== '{}') {
+				const operateFlag =
+					jsonRole.userRoleList.find(
+						(item) => item.projectId === project.projectId
+					)?.power[type][1] === '1'
+						? true
+						: false;
+				setOperateFlag(operateFlag);
+			}
+		}
+	}, [project]);
 
 	const getData = (clusterId: string, namespace: string) => {
 		const sendData = {
@@ -173,6 +182,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<ExternalAccess
 							type={type}
 							middlewareName={middlewareName}
+							namespace={namespace}
 							customMid={customMid}
 							capabilities={(data && data.capabilities) || []}
 						/>
@@ -474,48 +484,48 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					<Tab.Item title="基本信息" key="basicInfo">
 						{childrenRender('basicInfo')}
 					</Tab.Item>
-					{!operateFlag && (
+					{operateFlag && (
 						<Tab.Item title="实例详情" key="highAvailability">
 							{childrenRender('highAvailability')}
 						</Tab.Item>
 					)}
-					{!operateFlag &&
+					{operateFlag &&
 					(type === 'mysql' || type === 'elasticsearch') ? (
 						<Tab.Item title="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</Tab.Item>
 					) : null}
-					{!operateFlag && (
+					{operateFlag && (
 						<Tab.Item title="服务暴露" key="externalAccess">
 							{childrenRender('externalAccess')}
 						</Tab.Item>
 					)}
-					{!operateFlag && (
+					{operateFlag && (
 						<Tab.Item title="数据监控" key="monitor">
 							{childrenRender('monitor')}
 						</Tab.Item>
 					)}
-					{!operateFlag && (
+					{operateFlag && (
 						<Tab.Item title="日志详情" key="log">
 							{childrenRender('log')}
 						</Tab.Item>
 					)}
-					{!operateFlag && (
+					{operateFlag && (
 						<Tab.Item title="参数设置" key="paramterSetting">
 							{childrenRender('paramterSetting')}
 						</Tab.Item>
 					)}
-					{!operateFlag && (
+					{operateFlag && (
 						<Tab.Item title="服务告警" key="alarm">
 							{childrenRender('alarm')}
 						</Tab.Item>
 					)}
-					{!operateFlag && type === 'mysql' ? (
+					{operateFlag && type === 'mysql' ? (
 						<Tab.Item title="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</Tab.Item>
 					) : null}
-					{!operateFlag && type === 'mysql' ? (
+					{operateFlag && type === 'mysql' ? (
 						<Tab.Item title="数据库管理" key="database">
 							{childrenRender('database')}
 						</Tab.Item>

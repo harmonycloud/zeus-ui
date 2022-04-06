@@ -161,27 +161,6 @@ export default function ResourcePoolManagement(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				{/* <LinkButton
-					onClick={() => {
-						history.push(
-							`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
-						);
-						storage.setLocal(
-							'cluster-detail-current-tab',
-							'ingress'
-						);
-					}}
-				>
-					服务暴露
-				</LinkButton> */}
-				{/* <LinkButton
-					onClick={() => {
-						setNamespaceVisible(true);
-						setData(record);
-					}}
-				>
-					分区
-				</LinkButton> */}
 				<LinkButton
 					onClick={() => {
 						if (record.removable) {

@@ -39,9 +39,8 @@ interface serviceAvailableProps {
 }
 function ServiceAvailable(props: serviceAvailableProps) {
 	const { cluster, namespace, project } = props.globalVar;
-	const [selected, setSelected] = useState<string>(
-		storage.getSession('service-available-current') || '全部服务'
-	);
+	const [role] = useState(JSON.parse(storage.getLocal('role')));
+	const [selected, setSelected] = useState<string>('全部服务');
 	const [originData, setOriginData] = useState<serviceAvailablesProps[]>([]);
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
 		[]
@@ -73,6 +72,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					namespace: namespace.name,
 					keyword: searchText
 				}).then((res) => {
+					console.log(res);
 					if (res.success) {
 						setOriginData(res.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
@@ -101,6 +101,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					namespace: namespace.name,
 					keyword: ''
 				}).then((res) => {
+					console.log(res);
 					if (res.success) {
 						const flag = res.data.every(
 							(item: any) => item.serviceNum === 0
@@ -112,15 +113,17 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				});
 			}
 		}
+		return () => {
+			mounted = false;
+		};
+	}, [namespace]);
+	useEffect(() => {
 		window.onresize = function () {
 			document.body.clientWidth >= 2300
 				? setLock(null)
 				: setLock({ lock: 'right' });
 		};
-		return () => {
-			mounted = false;
-		};
-	}, [namespace]);
+	}, []);
 	useEffect(() => {
 		const allList: serviceAvailableItemProps[] = [];
 		originData.forEach((item) => {
@@ -158,18 +161,20 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			}
 		}
 	}, [selected]);
-	const getData = (type: string = selected, keyword: string = searchText) => {
+	const getData = (keyword: string = searchText) => {
 		const sendData = {
 			clusterId: cluster.id,
 			namespace: namespace.name,
-			keyword,
-			type
+			keyword
 		};
-		console.log(sendData);
 		getIngresses(sendData).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
-				const listTemp = [{ name: '全部服务', count: 0 }];
+				const listTemp = role.userRoleList.some(
+					(i: any) => i.roleId === 1
+				)
+					? [{ name: '全部服务', count: 0 }]
+					: [];
 				res.data.forEach((item: serviceAvailablesProps) => {
 					listTemp.push({
 						name: item.name,
@@ -416,7 +421,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						storage.setLocal('availableRecord',record);
+						storage.setLocal('availableRecord', record);
 						history.push('/serviceAvailable/addServiceAvailable');
 					}}
 				>
@@ -467,10 +472,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			setShowDataSource(dataSource);
 		}
 	};
-	if (
-		JSON.stringify(cluster) === '{}' &&
-		JSON.stringify(namespace) === '{}'
-	) {
+	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
 		return <GuidePage />;
 	}
 
@@ -492,7 +494,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						) {
 							setSearchText('');
 							location.state.middlewareName = '';
-							getData(value, '');
 						}
 						storage.setSession('service-available-current', value);
 					}}

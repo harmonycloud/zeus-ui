@@ -10,6 +10,7 @@ import { Actions, LinkButton } from '@alicloud/console-components-actions';
 import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import EditMember from './editMember';
+import storage from '@/utils/storage';
 
 export default function Member(): JSX.Element {
 	const [dataSource, setDataSource] = useState<UserItem[]>([]);
@@ -17,6 +18,7 @@ export default function Member(): JSX.Element {
 	const [addVisible, setAddVisible] = useState<boolean>(false);
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [editData, setEditData] = useState<UserItem>();
+	const [role] = useState(JSON.parse(storage.getLocal('role')));
 	const params: DetailParams = useParams();
 	const { id } = params;
 	useEffect(() => {
@@ -49,7 +51,7 @@ export default function Member(): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={record.userName === 'admin'}
+					disabled={record.id === role.id}
 					onClick={() => {
 						setEditVisible(true);
 						setEditData(record);
@@ -83,7 +85,7 @@ export default function Member(): JSX.Element {
 						});
 					}}
 				>
-					<LinkButton disabled={record.userName === 'admin'}>
+					<LinkButton disabled={record.id === role.id}>
 						删除
 					</LinkButton>
 				</Confirm>
