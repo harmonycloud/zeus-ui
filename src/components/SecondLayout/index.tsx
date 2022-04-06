@@ -56,6 +56,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 				namespace: namespace.name,
 				keyword: ''
 			}).then((res) => {
+				console.log(res);
 				if (res.success) {
 					const list = res.data.map((item: serviceListItemProps) => {
 						const result: filtersProps = {
@@ -66,6 +67,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 								return {
 									label: i.aliasName || i.name,
 									value: i.name,
+									namespace: i.namespace,
 									isLeaf: true
 								};
 							})
@@ -85,7 +87,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						onChange(
 							location.state.middlewareName,
 							location.state.middlewareType,
-							namespace.name,
+							temp[0].namespace,
 							cluster,
 							temp[0].aliasName
 						);
@@ -95,7 +97,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							onChange(
 								list[0].children[0].value,
 								list[0].value,
-								namespace.name,
+								list[0].children[0].namespace,
 								cluster
 							);
 						} else {
@@ -103,7 +105,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							onChange(
 								null,
 								list[0].value,
-								namespace.name,
+								list[0].children[0].namespace,
 								cluster,
 								list[0].aliasName
 							);

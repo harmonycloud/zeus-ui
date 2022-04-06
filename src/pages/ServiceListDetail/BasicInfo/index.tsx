@@ -243,7 +243,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	// * 配置信息
 	const [yamlConfig] = useState({
 		dataIndex: 'yaml',
-		label: 'yaml编辑',
+		label: '部署配置',
 		render: (val: any) => (
 			<span
 				className="name-link"
@@ -253,7 +253,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					);
 				}}
 			>
-				编辑yaml文件
+				编辑部署配置
 			</span>
 		)
 	});
@@ -720,7 +720,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	];
 	const configConfigTemp =
-		type === 'mysql' || type === 'redis' || type === 'elasticsearch'
+		type === 'redis' || type === 'elasticsearch'
 			? [
 					...configConfig,
 					{
