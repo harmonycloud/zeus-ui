@@ -18,11 +18,12 @@ import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
 import { StoreState } from '@/types';
 import './index.scss';
+import { roleProps } from '../RoleManage/role';
 
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster, project } = props;
 	const history = useHistory();
-	const [role] = useState(JSON.parse(storage.getLocal('role')));
+	const [role, setRole] = useState<roleProps>();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [currentProject, setCurrentProject] = useState<ProjectItem>(project);
@@ -35,19 +36,26 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		ProjectItem[]
 	>([]);
 	useEffect(() => {
-		if (role.userRoleList.some((i: any) => i.roleId) === 1) {
-			if (
-				JSON.stringify(currentProject) !== '{}' &&
-				currentProject !== undefined
-			) {
+		if (storage.getLocal('role')) {
+			setRole(JSON.parse(storage.getLocal('role')));
+		}
+	}, [storage.getLocal('role')]);
+	useEffect(() => {
+		if (role) {
+			if (role.userRoleList.some((i: any) => i.roleId) === 1) {
+				if (
+					JSON.stringify(currentProject) !== '{}' &&
+					currentProject !== undefined
+				) {
+					getData();
+					getCount();
+				}
+			} else {
 				getData();
 				getCount();
 			}
-		} else {
-			getData();
-			getCount();
 		}
-	}, []);
+	}, [role]);
 	useEffect(() => {
 		if (
 			JSON.stringify(currentProject) !== '{}' &&
