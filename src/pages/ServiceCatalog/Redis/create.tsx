@@ -1130,6 +1130,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												name="mirrorImageId"
 												placeholder="请选择"
 												hasClear={true}
+												defaultValue={mirrorList[0]}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}
@@ -1272,7 +1273,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		min={
 																			0.1
 																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`}
+																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max || ''}Core）`}
 																		required
 																		requiredMessage="请输入自定义CPU配额，单位为Core"
 																		{...maxCpu}
@@ -1303,7 +1304,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		min={
 																			0.1
 																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`}
+																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max || ''}Gi`}
 																		required
 																		requiredMessage="请输入自定义内存配额，单位为Gi"
 																		{...maxMemory}

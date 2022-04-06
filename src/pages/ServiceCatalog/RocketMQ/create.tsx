@@ -1051,6 +1051,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												name="mirrorImageId"
 												placeholder="请选择"
 												hasClear={true}
+												defaultValue={mirrorList[0]}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}

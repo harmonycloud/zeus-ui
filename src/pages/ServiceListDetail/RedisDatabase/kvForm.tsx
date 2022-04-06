@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Dialog,
 	Form,
@@ -12,7 +12,6 @@ import { createDb, updateDb } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { Select } from '@alifd/next';
-import { FormProps } from './database';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -26,7 +25,8 @@ const formItemLayout = {
 		span: 18
 	}
 };
-export default function DataBaseForm(props: FormProps): JSX.Element {
+const typeList = ['String', 'Hash', 'List', 'Zset', 'Set'];
+export default function KvForm(props: any): JSX.Element {
 	const {
 		visible,
 		onCreate,
@@ -34,14 +34,15 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 		data,
 		clusterId,
 		namespace,
-		middlewareName,
-		charsetList
+		middlewareName
 	} = props;
 	const field: Field = Field.useField();
+	const [type, setType] = useState('String');
 
 	useEffect(() => {
 		if (data) {
 			field.setValues(data);
+            setType(data.type);
 		}
 	}, [data]);
 	const onOk: () => void = () => {
@@ -104,50 +105,34 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
-					label={
-						<div>
-							<span style={{ marginRight: 4 }}>数据库名称</span>
-							<Tooltip
-								trigger={
-									<Icon
-										type="question-circle"
-										size="xs"
-										style={{ cursor: 'pointer' }}
-									/>
-								}
-							>
-								由字母、数字、下划线(_)、中划线(-)组成，以小写字母开头，以小写字母或数字结尾，最多64个字符
-							</Tooltip>
-						</div>
-					}
+					label="键名"
 					required={!data}
-					requiredMessage="请输入数据库名称"
-					pattern={pattern.databaseName}
-					patternMessage="数据库名称不合法"
+					requiredMessage="请输入键名"
 				>
 					<Input
 						name="db"
 						trim={true}
 						disabled={data ? true : false}
-						placeholder="请输入内容内容"
+						placeholder="请输入内容"
 					/>
 				</FormItem>
 				<FormItem
 					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
-					label="支持的字符集"
+					label="类型"
 					required={!data}
-					requiredMessage="请选择字符集"
+					requiredMessage="请选择类型"
 				>
 					<Select
-						name="charset"
+						name="type"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请选择"
 						style={{ width: '100%' }}
+						onChange={(value) => setType(value)}
 					>
-						{charsetList.map((item: string) => {
+						{typeList.map((item: string) => {
 							return (
 								<Option key={item} value={item}>
 									{item}
@@ -156,11 +141,63 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 						})}
 					</Select>
 				</FormItem>
-				<FormItem labelTextAlign="left" asterisk={false} label="备注">
+				<FormItem
+					labelTextAlign="left"
+					label="超出时间"
+					requiredMessage="请输入超出时间"
+				>
+					<Input
+						name="db"
+						trim={true}
+						disabled={data ? true : false}
+						placeholder="请输入内容"
+					/>
+				</FormItem>
+				{type === 'Hash' && (
+					<FormItem
+						className="ne-required-ingress"
+						labelTextAlign="left"
+						asterisk={false}
+						label="字段"
+						required={!data}
+						requiredMessage="请输入字段"
+					>
+						<Input
+							name="db"
+							trim={true}
+							disabled={data ? true : false}
+							placeholder="请输入内容"
+						/>
+					</FormItem>
+				)}
+				{type === 'Zset' && (
+					<FormItem
+						className="ne-required-ingress"
+						labelTextAlign="left"
+						asterisk={false}
+						label="分数"
+						required={!data}
+						requiredMessage="请输入分数"
+					>
+						<Input
+							name="db"
+							trim={true}
+							disabled={data ? true : false}
+							placeholder="请输入内容"
+						/>
+					</FormItem>
+				)}
+				<FormItem
+					className="ne-required-ingress"
+					labelTextAlign="left"
+					asterisk={false}
+					label="键值"
+					required={type === 'Hash' || type === 'Set'}
+				>
 					<TextArea
 						name="description"
 						trim={true}
-						placeholder="限定200字符串"
+						placeholder="请输入内容"
 					/>
 				</FormItem>
 			</Form>

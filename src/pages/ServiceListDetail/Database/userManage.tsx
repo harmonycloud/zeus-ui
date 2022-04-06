@@ -34,7 +34,7 @@ function UserManage(props: any): JSX.Element {
 			(res) => {
 				if (res.success) {
 					const data = res.data
-						.filter((item: any) => item.user === 'root')
+						?.filter((item: any) => item.user === 'root')
 						.concat(
 							res.data.filter((item: any) => item.user !== 'root')
 						)
@@ -53,7 +53,7 @@ function UserManage(props: any): JSX.Element {
 		listUser({ clusterId, namespace, middlewareName }).then((res) => {
 			if (res.success) {
 				const data = res.data
-					.filter((item: any) => item.user === 'root')
+					?.filter((item: any) => item.user === 'root')
 					.concat(
 						res.data.filter((item: any) => item.user !== 'root')
 					)
@@ -333,7 +333,7 @@ function UserManage(props: any): JSX.Element {
 		const keys = Object.keys(filterParams);
 		if (filterParams[keys[0]].selectedKeys.length > 0) {
 			const list = showDataSource
-				.filter(
+				?.filter(
 					(item) =>
 						String(item[keys[0]]) ===
 						filterParams[keys[0]].selectedKeys[0]

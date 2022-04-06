@@ -179,7 +179,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 				name="newPassword"
 				onChange={(value: string) => handleChange(value, 'new')}
 				disabled={data ? true : false}
-				placeholder="请输入"
+				placeholder="请输入内容"
 				style={{ width: 300 }}
 			/>
 		</FormItem>
@@ -250,7 +250,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 						name="user"
 						trim={true}
 						disabled={data ? true : false}
-						placeholder="请输入"
+						placeholder="请输入内容"
 						style={{ width: 300 }}
 					/>
 				</FormItem>
@@ -304,7 +304,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 						name="password"
 						trim={true}
 						disabled={data ? true : false}
-						placeholder="请输入"
+						placeholder="请输入内容"
 						style={{ width: 300 }}
 					/>
 				</FormItem>

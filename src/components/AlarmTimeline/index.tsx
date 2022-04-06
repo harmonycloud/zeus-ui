@@ -12,6 +12,7 @@ import {
 } from '@/redux/globalVar/var';
 
 import storage from '@/utils/storage';
+import noData from '@/assets/images/nodata.svg';
 import { alarmTimeLineProps } from './alarmTimeLine';
 
 import './index.scss';
@@ -118,6 +119,16 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 			}
 		}
 	};
+
+	if (!data || !data.length) {
+
+		return (
+			<div className="no-content">
+				<img width={70} height={70} src={noData} />
+				<p>当前无告警</p>
+			</div>
+		);
+	}
 
 	return (
 		<div style={style} id="time-line-content">

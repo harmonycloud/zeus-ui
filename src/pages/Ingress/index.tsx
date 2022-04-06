@@ -26,6 +26,7 @@ import CustomIcon from '@/components/CustomIcon';
 import { instanceType, exposedWay, protocolFilter } from '@/utils/const';
 import { StoreState } from '@/types';
 import { ingressProps, filtersProps } from '@/types/comment';
+import storage from '@/utils/storage';
 
 import './ingress.scss';
 import { timeRender } from '@/utils/utils';
@@ -173,9 +174,10 @@ function IngressList(props: ingressProps) {
 		return (
 			<Actions>
 				<LinkButton
-					onClick={() =>
-						history.push('/serviceAvailable/addServiceAvailable')
-					}
+					onClick={() => {
+						storage.setLocal('availableRecord', record);
+						history.push('/serviceAvailable/addServiceAvailable');
+					}}
 				>
 					编辑
 				</LinkButton>
@@ -207,87 +209,51 @@ function IngressList(props: ingressProps) {
 		}, 3000);
 	};
 	const addressRender = (value: string, index: number, record: any) => {
-		if (record.protocol === 'HTTP') {
-			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
+		if (record.exposeType === 'Ingress') {
+			let address = '';
+			record.protocol === 'TCP'
+				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
+				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
-				<>
-					<Balloon
-						trigger={
-							<CustomIcon
-								type="icon-fuzhi"
-								size="xs"
-								style={{ color: '#0070CC', cursor: 'pointer' }}
-								onClick={() => copyValue(address, record)}
-							/>
-						}
-						triggerType={'click'}
-						closable={false}
-						visible={iconVisible && adress === record.name}
-					>
-						<Icon
-							type={'success'}
-							style={{ color: '#00A700', marginRight: '5px' }}
-							size={'xs'}
-						/>
-						复制成功
-					</Balloon>
-					{address}
-				</>
-			);
-		} else {
-			return (
-				<div className="ingress-balloon-content">
-					<div className="ingress-balloon-list-content">
-						{record.serviceList &&
-							record.serviceList.map(
-								(item: any, index: number) => {
-									const address = `${record.exposeIP}:${item.exposePort}`;
-									if (index > 1) {
-										return null;
-									}
-									return (
-										<div key={index}>
-											<Balloon
-												trigger={
-													<CustomIcon
-														type="icon-fuzhi"
-														size="xs"
-														style={{
-															color: '#0070CC',
-															cursor: 'pointer'
-														}}
-														onClick={() =>
-															copyValue(
-																address,
-																record
-															)
-														}
-													/>
-												}
-												triggerType={'click'}
-												closable={false}
-												visible={
-													iconVisible &&
-													adress === record.name
-												}
-											>
-												<Icon
-													type={'success'}
-													style={{
-														color: '#00A700',
-														marginRight: '5px'
-													}}
-													size={'xs'}
-												/>
-												复制成功
-											</Balloon>
-											{address}
-										</div>
-									);
+				<div>
+					<div>
+						<div>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							{record.protocol + '-' + record.ingressClassName}
+						</div>
+						<div>
+							<Balloon
+								trigger={
+									<CustomIcon
+										type="icon-fuzhi"
+										size="xs"
+										style={{
+											color: '#0070CC',
+											cursor: 'pointer'
+										}}
+										onClick={() =>
+											copyValue(address, record)
+										}
+									/>
 								}
-							)}
+								triggerType={'click'}
+								closable={false}
+								visible={iconVisible && adress === record.name}
+							>
+								<Icon
+									type={'success'}
+									style={{
+										color: '#00A700',
+										marginRight: '5px'
+									}}
+									size={'xs'}
+								/>
+								复制成功
+							</Balloon>
+							{address}
+						</div>
 					</div>
-					{record.serviceList.length > 2 && (
+					{record.protocol === 'HTTP' && record.rules.length > 1 && (
 						<Balloon
 							trigger={
 								<span className="tips-more">
@@ -296,14 +262,17 @@ function IngressList(props: ingressProps) {
 							}
 							closable={false}
 						>
-							{record.serviceList.map(
-								(item: any, index: number) => {
-									const address = `${record.exposeIP}:${item.exposePort}`;
-									return (
-										<div
-											key={index}
-											className="balloon-tips"
-										>
+							{record.rules.map((item: any, index: number) => {
+								const address = `${item.domain}:${record.httpExposePort}${item.ingressHttpPaths[0].path}`;
+								return (
+									<div key={index} className="balloon-tips">
+										<div>
+											&nbsp;&nbsp;&nbsp;&nbsp;
+											{record.protocol +
+												'-' +
+												record.ingressClassName}
+										</div>
+										<div>
 											<Balloon
 												trigger={
 													<CustomIcon
@@ -328,6 +297,7 @@ function IngressList(props: ingressProps) {
 													adress === record.name
 												}
 											>
+												&nbsp;&nbsp;&nbsp;&nbsp;
 												<Icon
 													type={'success'}
 													style={{
@@ -340,11 +310,18 @@ function IngressList(props: ingressProps) {
 											</Balloon>
 											{address}
 										</div>
-									);
-								}
-							)}
+									</div>
+								);
+							})}
 						</Balloon>
 					)}
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					&nbsp;&nbsp;&nbsp;&nbsp;端口：
+					{record.serviceList[0].exposePort}
 				</div>
 			);
 		}
@@ -473,35 +450,27 @@ function IngressList(props: ingressProps) {
 					onFilter={onFilter}
 				>
 					<Table.Column
-						title="路由名称/映射名称"
+						title="被暴露服务名"
 						dataIndex="ingressName"
 						width={220}
 						cell={nameRender}
 					/>
 					<Table.Column
-						title="暴露方式"
-						dataIndex="exposeType"
-						width={200}
-						sortable={true}
-						cell={exposeTypeRender}
-					/>
-					<Table.Column
-						title="协议"
-						dataIndex="protocol"
-						filters={protocolFilter}
-						filterMode="single"
-						width={100}
-					/>
-					<Table.Column
-						title="访问地址"
-						cell={addressRender}
-						width={200}
-					/>
-					<Table.Column
-						title="服务端口"
+						title="被暴露服务端口"
 						dataIndex="httpExposePort"
 						cell={portRender}
+						width={120}
+					/>
+					<Table.Column
+						title="暴露方式"
+						dataIndex="exposeType"
 						width={100}
+						sortable={true}
+					/>
+					<Table.Column
+						title="暴露详情"
+						cell={addressRender}
+						width={200}
 					/>
 					<Table.Column
 						title="创建时间"
@@ -514,8 +483,7 @@ function IngressList(props: ingressProps) {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={150}
-						{...lock}
+						width={100}
 					/>
 				</Table>
 			</Content>

@@ -426,11 +426,6 @@ function PlatformOverview(): JSX.Element {
 															<div
 																className="info-item"
 																onClick={() => {
-																	if (
-																		type ===
-																		'all'
-																	)
-																		return;
 																	history.push(
 																		`/serviceList/${
 																			item.name

@@ -61,6 +61,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [adress, setAdress] = useState<string>('');
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
 	const [lock, setLock] = useState<any>({ lock: 'right' });
+	const [record, setRecord] = useState<any>();
 	const history = useHistory();
 
 	useEffect(() => {
@@ -224,61 +225,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			}
 		});
 	};
-	const onCreate = (values: any) => {
-		const sendData =
-			values.protocol === 'HTTP'
-				? {
-						clusterId: cluster.id,
-						namespace: namespace.name,
-						exposeType: values.exposeType,
-						middlewareName: values.selectedInstance.name,
-						middlewareType: values.selectedInstance.type,
-						ingressClassName: values.ingressClassName,
-						protocol: values.protocol,
-						rules: [
-							{
-								domain: values.domain,
-								ingressHttpPaths: [
-									{
-										path: values.path,
-										serviceName: values.serviceName,
-										servicePort: values.servicePort
-									}
-								]
-							}
-						]
-				  }
-				: {
-						clusterId: cluster.id,
-						namespace: namespace.name,
-						exposeType: values.exposeType,
-						middlewareName: values.selectedInstance.name,
-						middlewareType: values.selectedInstance.type,
-						ingressClassName: values.ingressClassName,
-						protocol: values.protocol,
-						serviceList: [
-							{
-								exposePort: values.exposePort,
-								serviceName: values.serviceName,
-								servicePort: values.servicePort,
-								targetPort:
-									values.selectedService.portDetailDtoList[0]
-										.targetPort
-							}
-						]
-				  };
-		addIngress(sendData).then((res) => {
-			if (res.success) {
-				Message.show(
-					messageConfig('success', '成功', '对外路由添加成功')
-				);
-				setVisible(false);
-				getData();
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	};
 	const Operation = {
 		primary: (
 			<Button
@@ -324,87 +270,51 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		// Message.show(messageConfig('success', '成功', '复制成功'));
 	};
 	const addressRender = (value: string, index: number, record: any) => {
-		if (record.protocol === 'HTTP') {
-			const address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`;
+		if (record.exposeType === 'Ingress') {
+			let address = '';
+			record.protocol === 'TCP'
+				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
+				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
-				<>
-					<Balloon
-						trigger={
-							<CustomIcon
-								type="icon-fuzhi"
-								size="xs"
-								style={{ color: '#0070CC', cursor: 'pointer' }}
-								onClick={() => copyValue(address, record)}
-							/>
-						}
-						triggerType={'click'}
-						closable={false}
-						visible={iconVisible && adress === record.name}
-					>
-						<Icon
-							type={'success'}
-							style={{ color: '#00A700', marginRight: '5px' }}
-							size={'xs'}
-						/>
-						复制成功
-					</Balloon>
-					{address}
-				</>
-			);
-		} else {
-			return (
-				<div className="ingress-balloon-content">
-					<div className="ingress-balloon-list-content">
-						{record.serviceList &&
-							record.serviceList.map(
-								(item: any, index: number) => {
-									const address = `${record.exposeIP}:${item.exposePort}`;
-									if (index > 1) {
-										return null;
-									}
-									return (
-										<div key={index}>
-											<Balloon
-												trigger={
-													<CustomIcon
-														type="icon-fuzhi"
-														size="xs"
-														style={{
-															color: '#0070CC',
-															cursor: 'pointer'
-														}}
-														onClick={() =>
-															copyValue(
-																address,
-																record
-															)
-														}
-													/>
-												}
-												triggerType={'click'}
-												closable={false}
-												visible={
-													iconVisible &&
-													adress === record.name
-												}
-											>
-												<Icon
-													type={'success'}
-													style={{
-														color: '#00A700',
-														marginRight: '5px'
-													}}
-													size={'xs'}
-												/>
-												复制成功
-											</Balloon>
-											{address}
-										</div>
-									);
+				<div>
+					<div>
+						<div>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							{`${record.protocol}-${record.ingressClassName}`}
+						</div>
+						<div>
+							<Balloon
+								trigger={
+									<CustomIcon
+										type="icon-fuzhi"
+										size="xs"
+										style={{
+											color: '#0070CC',
+											cursor: 'pointer'
+										}}
+										onClick={() =>
+											copyValue(address, record)
+										}
+									/>
 								}
-							)}
+								triggerType={'click'}
+								closable={false}
+								visible={iconVisible && adress === record.name}
+							>
+								<Icon
+									type={'success'}
+									style={{
+										color: '#00A700',
+										marginRight: '5px'
+									}}
+									size={'xs'}
+								/>
+								复制成功
+							</Balloon>
+							{address}
+						</div>
 					</div>
-					{record.serviceList.length > 2 && (
+					{record.protocol === 'HTTP' && record.rules.length > 1 && (
 						<Balloon
 							trigger={
 								<span className="tips-more">
@@ -413,14 +323,17 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							}
 							closable={false}
 						>
-							{record.serviceList.map(
-								(item: any, index: number) => {
-									const address = `${record.exposeIP}:${item.exposePort}`;
-									return (
-										<div
-											key={index}
-											className="balloon-tips"
-										>
+							{record.rules.map((item: any, index: number) => {
+								const address = `${item.domain}:${record.httpExposePort}${item.ingressHttpPaths[0].path}`;
+								return (
+									<div key={index} className="balloon-tips">
+										<div>
+											&nbsp;&nbsp;&nbsp;&nbsp;
+											{record.protocol +
+												'-' +
+												record.ingressClassName}
+										</div>
+										<div>
 											<Balloon
 												trigger={
 													<CustomIcon
@@ -445,6 +358,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 													adress === record.name
 												}
 											>
+												&nbsp;&nbsp;&nbsp;&nbsp;
 												<Icon
 													type={'success'}
 													style={{
@@ -457,11 +371,18 @@ function ServiceAvailable(props: serviceAvailableProps) {
 											</Balloon>
 											{address}
 										</div>
-									);
-								}
-							)}
+									</div>
+								);
+							})}
 						</Balloon>
 					)}
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					&nbsp;&nbsp;&nbsp;&nbsp;端口：
+					{record.serviceList[0].exposePort}
 				</div>
 			);
 		}
@@ -494,9 +415,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		return (
 			<Actions>
 				<LinkButton
-					onClick={() =>
-						history.push('/serviceAvailable/addServiceAvailable')
-					}
+					onClick={() => {
+						storage.setLocal('availableRecord',record);
+						history.push('/serviceAvailable/addServiceAvailable');
+					}}
 				>
 					编辑
 				</LinkButton>
@@ -532,14 +454,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			});
 			setShowDataSource([...tempDataSource]);
 		}
-	};
-	const exposeTypeRedner = (
-		value: string,
-		index: number,
-		record: serviceAvailableItemProps
-	) => {
-		if (record.exposeType === 'NodePort') return value;
-		return `${value}/${record.ingressClassName || '-'}`;
 	};
 	const onFilter = (filterParams: any) => {
 		const keys = Object.keys(filterParams);
@@ -610,7 +524,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<Table.Column
 						title="服务名称/中文别名"
 						dataIndex="middlewareName"
-						width={130}
+						width={140}
+						lock="left"
 						cell={middlewareNameRender}
 					/>
 					<Table.Column
@@ -620,35 +535,27 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						width={100}
 					/>
 					<Table.Column
-						title="暴露方式"
-						dataIndex="exposeType"
-						cell={exposeTypeRedner}
-						width={100}
-						sortable={true}
-					/>
-					<Table.Column
-						width={200}
-						title="暴露详情"
-						cell={addressRender}
-					/>
-					<Table.Column
 						title="被暴露服务名"
 						dataIndex="name"
-						width={150}
+						width={190}
 					/>
 					<Table.Column
 						title="被暴露服务端口"
-						width={120}
+						width={140}
 						dataIndex="httpExposePort"
 						cell={portRender}
 					/>
-					{/* <Table.Column
-						title="协议"
-						width={100}
-						dataIndex="protocol"
-						filters={protocolFilter}
-						filterMode="single"
-					/> */}
+					<Table.Column
+						title="暴露方式"
+						dataIndex="exposeType"
+						width={110}
+						sortable={true}
+					/>
+					<Table.Column
+						width={260}
+						title="暴露详情"
+						cell={addressRender}
+					/>
 					<Table.Column
 						title="创建时间"
 						width={160}
@@ -660,20 +567,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={100}
+						width={70}
+						{...lock}
 					/>
 				</Table>
 			</Content>
-			{visible && (
-				<AddServiceAvailableForm
-					visible={visible}
-					onCancel={() => setVisible(false)}
-					onCreate={onCreate}
-					cluster={cluster}
-					namespace={namespace.name}
-					middlewareName={location?.state?.middlewareName || ''}
-				/>
-			)}
 		</Page>
 	);
 }
