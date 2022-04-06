@@ -176,7 +176,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 			style={{ width: 415 }}
 		>
 			<Password
-				name="newPassword"
+				name="password"
 				onChange={(value: string) => handleChange(value, 'new')}
 				disabled={data ? true : false}
 				placeholder="请输入内容"
@@ -204,9 +204,9 @@ export default function UserForm(props: FormProps): JSX.Element {
 			}
 			setChecks(temp);
 		} else {
-			const newValue = field.getValue('newPassword');
+			const newValue = field.getValue('password');
 			if (value !== newValue) {
-				field.setError('reNewPassword', '密码二次校验错误');
+				field.setError('confirmPassword', '密码二次校验错误');
 			}
 		}
 	};
@@ -301,11 +301,12 @@ export default function UserForm(props: FormProps): JSX.Element {
 					requiredMessage="请输入二次确认密码"
 				>
 					<Password
-						name="password"
+						name="confirmPassword"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入内容"
 						style={{ width: 300 }}
+						onChange={(value: string) => handleChange(value, 'newPassword')}
 					/>
 				</FormItem>
 				<FormItem labelTextAlign="left" asterisk={false} label="备注">
