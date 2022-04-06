@@ -61,12 +61,20 @@ export default function EditProjectForm(
 		});
 		getUserList({ keyword: '' }).then((res) => {
 			if (res.success) {
-				const list = res.data.map((item) => {
-					return {
-						label: item.aliasName || item.userName,
-						value: item.userName
-					};
-				});
+				const list = res.data
+					.filter((item) => {
+						if (
+							item.userRoleList.every((i: any) => i.roleId !== 1)
+						) {
+							return item;
+						}
+					})
+					.map((item) => {
+						return {
+							label: item.aliasName || item.userName,
+							value: item.userName
+						};
+					});
 				setUsers(list);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -173,11 +181,7 @@ export default function EditProjectForm(
 				<FormItem label="备注">
 					<Input name="description" />
 				</FormItem>
-				<FormItem
-					label="绑定项目管理员"
-					required
-					requiredMessage="绑定项目管理员必选"
-				>
+				<FormItem label="绑定项目管理员">
 					<Select
 						name="user"
 						hasClear={true}

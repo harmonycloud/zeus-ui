@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message, Radio } from '@alicloud/console-components';
+import {
+	Balloon,
+	Button,
+	Dialog,
+	Icon,
+	Message,
+	Radio
+} from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import moment from 'moment';
@@ -139,7 +146,6 @@ function UserManage(): JSX.Element {
 			const dsTemp = dataSource.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				// console.log(result);
 				return order === 'asc'
 					? result > 0
 						? 1
@@ -150,13 +156,6 @@ function UserManage(): JSX.Element {
 			});
 			setDataSource([...dsTemp]);
 		}
-	};
-	const editRole = (record: userProps) => {
-		// console.log(record.roleName);
-		const role = roles.find((item) => item.label === record.roleName);
-		setRole(role ? role.value : 0);
-		setRecord(record);
-		setRoleVisible(true);
 	};
 	const roleChange = (value: any) => {
 		const obj = {
@@ -231,7 +230,47 @@ function UserManage(): JSX.Element {
 		index: number,
 		record: userProps
 	) => {
-		return '-';
+		if (record.userRoleList.some((i: any) => i.roleId === 1)) {
+			return <div className="red-tip">超级管理员</div>;
+		}
+		const list = record.userRoleList.filter((i: any) => i.roleId !== 1);
+		if (list.length === 1) {
+			return list.map((i: any) => {
+				return (
+					<div key={i.projectId} className="blue-tip">
+						{i.projectName}:{i.roleName}
+					</div>
+				);
+			});
+		} else {
+			return (
+				<>
+					<div className="blue-tip">
+						{list[0].projectName}:{list[0].roleName}
+					</div>
+					<Balloon
+						trigger={
+							<span className="role-tips-more">
+								<Icon size="xs" type="ellipsis-vertical" />
+							</span>
+						}
+						closable={false}
+					>
+						{list.map((i: any) => {
+							return (
+								<div
+									style={{ marginRight: 4 }}
+									key={i.projectId}
+									className="blue-tip"
+								>
+									{i.projectName}:{i.roleName}
+								</div>
+							);
+						})}
+					</Balloon>
+				</>
+			);
+		}
 	};
 	const Operation = {
 		primary: (
