@@ -389,19 +389,28 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const operation = () => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		const getFlag =
+			jsonRole.userRoleList.find(
+				(item) => item.projectId === project.projectId
+			)?.power[name][0] === '1'
+				? false
+				: true;
 		const createFlag =
 			jsonRole.userRoleList.find(
 				(item) => item.projectId === project.projectId
 			)?.power[name][3] === '1'
 				? false
 				: true;
-		if (createFlag) {
+		if (createFlag || getFlag) {
 			if (name === 'mysql') {
 				return {
 					primary: (
 						<Tooltip
 							trigger={
-								<Button type="primary" disabled={createFlag}>
+								<Button
+									type="primary"
+									disabled={createFlag || getFlag}
+								>
 									发布服务
 								</Button>
 							}
@@ -423,7 +432,10 @@ const ServiceListByType = (props: serviceListProps) => {
 					primary: (
 						<Tooltip
 							trigger={
-								<Button type="primary" disabled={createFlag}>
+								<Button
+									type="primary"
+									disabled={createFlag || getFlag}
+								>
 									发布服务
 								</Button>
 							}

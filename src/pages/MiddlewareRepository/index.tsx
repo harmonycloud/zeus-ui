@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Button, Radio, Message, Icon } from '@alicloud/console-components';
+import {
+	Button,
+	Radio,
+	Message,
+	Icon,
+	Select
+} from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
 import { useLocation } from 'react-router';
 import { getMiddlewareRepository } from '@/services/repository';
@@ -8,7 +14,7 @@ import messageConfig from '@/components/messageConfig';
 import MiddlewareItem from './MiddlewareItem';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import GuidePage from '../GuidePage';
-import { StoreState } from '@/types/index';
+import { clusterType, StoreState } from '@/types/index';
 import {
 	middlewareProps,
 	middlewareListProps,
@@ -17,24 +23,37 @@ import {
 import { changeObjectIndex } from '@/utils/utils';
 import timerClass from '@/utils/timerClass';
 import './index.scss';
+import { getClusters } from '@/services/common';
 
 const RadioGroup = Radio.Group;
-
+const Option = Select.Option;
 function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const {
-		globalVar: { cluster, namespace }
+		globalVar: { cluster, namespace, project }
 	} = props;
 	const [rule, setRule] = useState<string>('');
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareListProps>({});
+	const [clusterList, setClusterList] = useState<clusterType[]>([]);
+	const [currentCluster, setCurrentCluster] = useState<clusterType>();
 	const [visible, setVisible] = useState<boolean>(false);
 	const [timer, setTimer] = useState();
 	const location = useLocation();
 	useEffect(() => {
+		getClusters({ detail: true }).then((res) => {
+			if (res.success) {
+				setClusterList(res.data);
+				setCurrentCluster(res.data[0]);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	}, []);
+	useEffect(() => {
 		let mounted = true;
-		if (JSON.stringify(cluster) !== '{}') {
+		if (currentCluster && JSON.stringify(currentCluster) !== '{}') {
 			getMiddlewareRepository({
-				clusterId: cluster.id
+				clusterId: currentCluster.id
 			}).then((res) => {
 				if (res.success) {
 					if (mounted) {
@@ -50,7 +69,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			mounted = false;
 			clearInterval(timer);
 		};
-	}, [cluster, location.pathname]);
+	}, [currentCluster]);
 	useEffect(() => {
 		if (rule === 'type') {
 			const list = Array.from(
@@ -96,10 +115,9 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			setDataSource(obj);
 		}
 	}, [rule, originData]);
-	const getData = () => {
+	const getData = (clusterId: string) => {
 		getMiddlewareRepository({
-			clusterId: cluster.id,
-			namespace: namespace.name
+			clusterId: clusterId
 		}).then((res) => {
 			if (res.success) {
 				setOriginData(res.data);
@@ -110,16 +128,19 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	};
 	const onCreate = () => {
 		setVisible(false);
-		setTimer(
-			timerClass.countdownTimer(() => {
-				getData();
-			}, 5)
-		);
+		if (currentCluster) {
+			setTimer(
+				timerClass.countdownTimer(() => {
+					getData(currentCluster?.id);
+				}, 5)
+			);
+		}
 	};
-	if (
-		JSON.stringify(cluster) === '{}' &&
-		JSON.stringify(namespace) === '{}'
-	) {
+	const onChange = (value: string) => {
+		const ct = clusterList.find((item) => item.id === value);
+		setCurrentCluster(ct);
+	};
+	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
 		return <GuidePage />;
 	}
 	return (
@@ -158,9 +179,27 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 				) : null}
 				<div className="middleware-repository-action-layout">
 					{location.pathname === '/middlewareRepository' ? (
-						<Button type="primary" onClick={() => setVisible(true)}>
-							上架中间件
-						</Button>
+						<div>
+							<Button
+								type="primary"
+								onClick={() => setVisible(true)}
+							>
+								上架中间件
+							</Button>
+							<Select
+								onChange={onChange}
+								autoWidth={false}
+								value={currentCluster?.id}
+							>
+								{clusterList.map((item: clusterType) => {
+									return (
+										<Option value={item.id} key={item.id}>
+											{item.name}
+										</Option>
+									);
+								})}
+							</Select>
+						</div>
 					) : (
 						<div></div>
 					)}
@@ -176,7 +215,11 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 						/>
 						<div
 							className="middleware-repository-refresh-btn"
-							onClick={getData}
+							onClick={() => {
+								if (currentCluster) {
+									getData(currentCluster.id);
+								}
+							}}
 						>
 							<Icon type="refresh" size="xs" color="#333333" />
 						</div>
@@ -199,14 +242,18 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 													{...item}
 													clusterId={cluster.id}
 													onRefresh={() => {
-														setTimer(
-															timerClass.countdownTimer(
-																() => {
-																	getData();
-																},
-																5
-															)
-														);
+														if (currentCluster) {
+															setTimer(
+																timerClass.countdownTimer(
+																	() => {
+																		getData(
+																			currentCluster.id
+																		);
+																	},
+																	5
+																)
+															);
+														}
 													}}
 												/>
 											);
