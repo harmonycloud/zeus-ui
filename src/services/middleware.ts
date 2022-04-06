@@ -260,3 +260,19 @@ export const deleteUser = (param: any) => {
 export const queryAuditSql = (param: any) => {
 	return Axios.json(MIDDLEWARE.queryAuditSql, param, {}, 'POST', true);
 };
+// 查询kv集合
+export const getKv = (param: any) => {
+	return Axios.get(MIDDLEWARE.redis, param);
+};
+// 修改kv
+export const updateKv = (param: any) => {
+	return Axios.put(MIDDLEWARE.redis, param);
+};
+// 添加kv
+export const addKv = (param: any) => {
+	return Axios.post(MIDDLEWARE.redis, param);
+};
+// 删除kv
+export const deleteKv = (param: any) => {
+	return Axios.delete(MIDDLEWARE.redis, param);
+};
