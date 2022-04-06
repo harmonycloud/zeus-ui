@@ -48,6 +48,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 	const [leftSearch, setLeftSearch] = useState<string>('');
 	const [rightSearch, setRightSearch] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
+	const [error,setError] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (data) {
@@ -63,6 +64,11 @@ export default function UserForm(props: FormProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
+			if(error){
+				Message.show(
+					messageConfig('error', '失败', '二次密码不一致')
+				);
+			}
 			if (!selectUser.length) {
 				Message.show(
 					messageConfig('error', '失败', '请选择授权数据库')
@@ -88,7 +94,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 						);
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						Message.show(messageConfig('error', '失败', res.errorMsg));
 					}
 				});
 			} else {
@@ -110,7 +116,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 						);
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						Message.show(messageConfig('error', '失败', res.errorMsg));
 					}
 				});
 			}
@@ -208,6 +214,9 @@ export default function UserForm(props: FormProps): JSX.Element {
 			const newValue = field.getValue('password');
 			if (value !== newValue) {
 				field.setError('confirmPassword', '密码二次校验错误');
+				setError(true);
+			}else{
+				setError(false);
 			}
 		}
 	};

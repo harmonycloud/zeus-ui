@@ -192,7 +192,8 @@ export default function KvForm(props: any): JSX.Element {
 					<Input
 						name="timeOut"
 						trim={true}
-						disabled={data ? true : false}
+						htmlType="number"
+						min={0}
 						placeholder="请输入内容"
 					/>
 				</FormItem>
