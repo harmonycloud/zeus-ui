@@ -6,7 +6,7 @@ import { Message } from '@alicloud/console-components';
 import step1 from '@/assets/images/step1.svg';
 import step2 from '@/assets/images/step2.svg';
 import step3 from '@/assets/images/step3.svg';
-import { getComponents } from '@/services/common';
+import { getClusters, getComponents } from '@/services/common';
 import { getProjects } from '@/services/project';
 import { StoreState, globalVarProps } from '@/types/index';
 import messageConfig from '@/components/messageConfig';
@@ -21,11 +21,23 @@ const GuidePage = (props: GuideProps) => {
 	const { cluster, clusterList: globalClusterList } = props.globalVar;
 	const history = useHistory();
 	useEffect(() => {
+		getClusters({ detail: true }).then((res) => {
+			if (res.success) {
+				if (res.data.length > 0) {
+					setCurrent('2');
+				} else {
+					setCurrent('1');
+				}
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
 		if (globalClusterList.length === 0) {
 			setCurrent('1');
 		} else {
 			getComponents({ clusterId: cluster.id })
 				.then((res) => {
+					console.log(res);
 					if (res.success) {
 						const middlewareControllerStatus = res.data.find(
 							(item: ComponentProp) =>
@@ -43,6 +55,7 @@ const GuidePage = (props: GuideProps) => {
 				})
 				.finally(() => {
 					getProjects().then((res) => {
+						console.log(res);
 						if (res.success) {
 							if (res.data.length > 0) {
 								setCurrent('3');

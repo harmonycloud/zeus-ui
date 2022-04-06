@@ -401,7 +401,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			)?.power[name][3] === '1'
 				? false
 				: true;
-		if (createFlag || getFlag) {
+		if (!createFlag || !getFlag) {
 			if (name === 'mysql') {
 				return {
 					primary: (
@@ -409,7 +409,7 @@ const ServiceListByType = (props: serviceListProps) => {
 							trigger={
 								<Button
 									type="primary"
-									disabled={createFlag || getFlag}
+									disabled={!createFlag || !getFlag}
 								>
 									发布服务
 								</Button>

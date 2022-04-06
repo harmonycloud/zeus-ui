@@ -140,7 +140,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 		const ct = clusterList.find((item) => item.id === value);
 		setCurrentCluster(ct);
 	};
-	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
+	if (JSON.stringify(cluster) === '{}') {
 		return <GuidePage />;
 	}
 	return (
@@ -183,9 +183,11 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							<Button
 								type="primary"
 								onClick={() => setVisible(true)}
+								style={{ marginRight: 8 }}
 							>
 								上架中间件
 							</Button>
+							<span style={{ marginLeft: 16 }}>集群：</span>
 							<Select
 								onChange={onChange}
 								autoWidth={false}
@@ -194,7 +196,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								{clusterList.map((item: clusterType) => {
 									return (
 										<Option value={item.id} key={item.id}>
-											{item.name}
+											{item.nickname}
 										</Option>
 									);
 								})}

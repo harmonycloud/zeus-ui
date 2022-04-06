@@ -27,7 +27,6 @@ function User(props: userProps): JSX.Element {
 		postLogout().then((res) => {
 			if (res.success) {
 				Storage.removeLocal('token', true);
-				Storage.removeSession('service-list-current', true);
 				Storage.removeSession('service-available-current', true);
 				Storage.removeLocal('firstAlert', true);
 				// Storage.removeLocal('role', true);

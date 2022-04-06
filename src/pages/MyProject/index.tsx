@@ -34,17 +34,25 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		ProjectItem[]
 	>([]);
 	useEffect(() => {
-		getData();
-		getProjectMiddlewareCount().then((res) => {
-			if (res.success) {
-				setProjectMiddleware(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
+		if (
+			JSON.stringify(currentProject) !== '{}' &&
+			currentProject !== undefined
+		) {
+			getData();
+			getProjectMiddlewareCount().then((res) => {
+				if (res.success) {
+					setProjectMiddleware(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
+			});
+		}
 	}, []);
 	useEffect(() => {
-		if (JSON.stringify(currentProject) !== '{}') {
+		if (
+			JSON.stringify(currentProject) !== '{}' &&
+			currentProject !== undefined
+		) {
 			getMiddlewareData(currentProject.projectId);
 		}
 	}, [currentProject]);
