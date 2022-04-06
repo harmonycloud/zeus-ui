@@ -98,6 +98,7 @@ function IngressList(props: ingressProps) {
 			<Button
 				onClick={() => {
 					storage.setLocal('isDetail', true);
+					history.push('/serviceAvailable/addServiceAvailable');
 				}}
 				type="primary"
 			>
