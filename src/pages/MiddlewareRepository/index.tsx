@@ -196,7 +196,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								{clusterList.map((item: clusterType) => {
 									return (
 										<Option value={item.id} key={item.id}>
-											{item.name}
+											{item.nickname}
 										</Option>
 									);
 								})}
