@@ -451,7 +451,7 @@ function AlarmSet(props: any) {
 																addDingFormList
 															}
 														>
-															+
+															<Icon type='add' style={{color: '#fff', transform: 'scale(0.8)'}} />
 														</Button>
 														<Button
 															onClick={() =>
@@ -466,7 +466,7 @@ function AlarmSet(props: any) {
 																	: ''
 															}
 														>
-															-
+															<Icon type='minus' style={{color: '#fff', transform: 'scale(0.8)'}} />
 														</Button>
 													</div>
 													{dingConnect &&

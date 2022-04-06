@@ -370,32 +370,32 @@ export default function UserForm(props: FormProps): JSX.Element {
 									{users.map((item, index) => {
 										return (
 											<li
-												key={item.id}
+												key={item.db}
 												onClick={() => {
 													setUsers(
 														users.filter(
 															(i) =>
-																i.id !== item.id
+																i.db !== item.db
 														)
 													);
 													setLeftUsers(
 														users.filter(
 															(i) =>
-																i.id !== item.id
+																i.db !== item.db
 														)
 													);
 													setSelectUser([
 														...selectUser,
 														users.find(
 															(i) =>
-																i.id === item.id
+																i.db === item.db
 														)
 													]);
 													setRightUsers([
 														...selectUser,
 														users.find(
 															(i) =>
-																i.id === item.id
+																i.db === item.db
 														)
 													]);
 												}}
@@ -494,7 +494,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 								<ul className="transfer-content">
 									{selectUser.map((item) => {
 										return (
-											<li key={item.id}>
+											<li key={item.db}>
 												<span
 													style={{
 														width: 20,
@@ -505,31 +505,31 @@ export default function UserForm(props: FormProps): JSX.Element {
 														setSelectUser(
 															selectUser.filter(
 																(i) =>
-																	i.id !==
-																	item.id
+																	i.db !==
+																	item.db
 															)
 														);
 														setRightUsers(
 															selectUser.filter(
 																(i) =>
-																	i.id !==
-																	item.id
+																	i.db !==
+																	item.db
 															)
 														);
 														setUsers([
 															...users,
 															selectUser.find(
 																(i) =>
-																	i.id ===
-																	item.id
+																	i.db ===
+																	item.db
 															)
 														]);
 														setLeftUsers([
 															...users,
 															selectUser.find(
 																(i) =>
-																	i.id ===
-																	item.id
+																	i.db ===
+																	item.db
 															)
 														]);
 													}}
@@ -561,8 +561,8 @@ export default function UserForm(props: FormProps): JSX.Element {
 														const index =
 															selectUser.findIndex(
 																(i) =>
-																	i.id ===
-																	item.id
+																	i.db ===
+																	item.db
 															);
 														selectUser.splice(
 															index,

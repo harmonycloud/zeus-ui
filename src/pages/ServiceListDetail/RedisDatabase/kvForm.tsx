@@ -8,10 +8,11 @@ import {
 	Icon,
 	Balloon
 } from '@alicloud/console-components';
-import { createDb, updateDb } from '@/services/middleware';
+import { addKv, updateKv } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { Select } from '@alifd/next';
+import { time } from 'console';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -25,7 +26,7 @@ const formItemLayout = {
 		span: 18
 	}
 };
-const typeList = ['String', 'Hash', 'List', 'Zset', 'Set'];
+const typeList = ['string', 'hash', 'list', 'zset', 'set'];
 export default function KvForm(props: any): JSX.Element {
 	const {
 		visible,
@@ -34,7 +35,8 @@ export default function KvForm(props: any): JSX.Element {
 		data,
 		clusterId,
 		namespace,
-		middlewareName
+		middlewareName,
+		db
 	} = props;
 	const field: Field = Field.useField();
 	const [type, setType] = useState('String');
@@ -42,7 +44,7 @@ export default function KvForm(props: any): JSX.Element {
 	useEffect(() => {
 		if (data) {
 			field.setValues(data);
-            setType(data.type);
+			setType(data.type);
 		}
 	}, [data]);
 	const onOk: () => void = () => {
@@ -51,14 +53,34 @@ export default function KvForm(props: any): JSX.Element {
 
 			if (data) {
 				// * 修改数据库
-				const sendData = {
+				const sendData: any = {
 					clusterId,
 					namespace,
 					middlewareName,
-					id: values.id,
-					description: values.description
+					db: db[0],
+					type: values.type,
+					timeOut: values.timeOut,
+					key: values.key,
+					set: values.set
 				};
-				updateDb(sendData).then((res) => {
+				if (
+					values.type === 'hash' ||
+					values.type === 'list' ||
+					values.type === 'zset'
+				) {
+					if (values.type === 'list') {
+						sendData[values.type] = {
+							[data.listType]: values.newValue
+						};
+					} else {
+						sendData[values.type] = {
+							[values.newKey]: values.newValue
+						};
+					}
+				} else {
+					sendData.value = values.newValue;
+				}
+				updateKv(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户修改成功')
@@ -70,13 +92,34 @@ export default function KvForm(props: any): JSX.Element {
 				});
 			} else {
 				// * 创建数据库
-				const sendData = {
+				const sendData: any = {
 					clusterId,
 					namespace,
 					middlewareName,
-					...(values as unknown as any)
+					db: db[0],
+					type: values.type,
+					timeOut: values.timeOut,
+					key: values.key,
+					set: values.set
 				};
-				createDb(sendData).then((res) => {
+				if (
+					values.type === 'hash' ||
+					values.type === 'list' ||
+					values.type === 'zset'
+				) {
+					if (values.type === 'list') {
+						sendData[values.type] = {
+							back: values.value
+						};
+					} else {
+						sendData[values.type] = {
+							[String(values.newKey)]: values.value
+						};
+					}
+				} else {
+					sendData.value = values.value;
+				}
+				addKv(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
 							messageConfig('success', '成功', '用户创建成功')
@@ -110,7 +153,7 @@ export default function KvForm(props: any): JSX.Element {
 					requiredMessage="请输入键名"
 				>
 					<Input
-						name="db"
+						name="key"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入内容"
@@ -147,13 +190,13 @@ export default function KvForm(props: any): JSX.Element {
 					requiredMessage="请输入超出时间"
 				>
 					<Input
-						name="db"
+						name="timeOut"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入内容"
 					/>
 				</FormItem>
-				{type === 'Hash' && (
+				{type === 'hash' && (
 					<FormItem
 						className="ne-required-ingress"
 						labelTextAlign="left"
@@ -163,14 +206,13 @@ export default function KvForm(props: any): JSX.Element {
 						requiredMessage="请输入字段"
 					>
 						<Input
-							name="db"
+							name="newKey"
 							trim={true}
-							disabled={data ? true : false}
 							placeholder="请输入内容"
 						/>
 					</FormItem>
 				)}
-				{type === 'Zset' && (
+				{type === 'zset' && (
 					<FormItem
 						className="ne-required-ingress"
 						labelTextAlign="left"
@@ -180,9 +222,8 @@ export default function KvForm(props: any): JSX.Element {
 						requiredMessage="请输入分数"
 					>
 						<Input
-							name="db"
+							name="newKey"
 							trim={true}
-							disabled={data ? true : false}
 							placeholder="请输入内容"
 						/>
 					</FormItem>
@@ -195,7 +236,7 @@ export default function KvForm(props: any): JSX.Element {
 					required={type === 'Hash' || type === 'Set'}
 				>
 					<TextArea
-						name="description"
+						name={type !== 'set' ? data ? 'newValue' : 'value' : 'set'}
 						trim={true}
 						placeholder="请输入内容"
 					/>

@@ -266,13 +266,13 @@ export const getKv = (param: any) => {
 };
 // 修改kv
 export const updateKv = (param: any) => {
-	return Axios.put(MIDDLEWARE.redis, param);
+	return Axios.json(MIDDLEWARE.redis, param, {}, 'PUT');
 };
 // 添加kv
 export const addKv = (param: any) => {
-	return Axios.post(MIDDLEWARE.redis, param);
+	return Axios.json(MIDDLEWARE.redis, param, {}, 'POST');
 };
 // 删除kv
 export const deleteKv = (param: any) => {
-	return Axios.delete(MIDDLEWARE.redis, param);
+	return Axios.json(MIDDLEWARE.redis, param, {}, 'DELETE');
 };
