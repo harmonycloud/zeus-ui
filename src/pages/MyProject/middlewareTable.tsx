@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Radio } from '@alicloud/console-components';
+import { Radio, Search } from '@alicloud/console-components';
 import { useHistory } from 'react-router';
 import Table from '@/components/MidTable';
 import { nullRender } from '@/utils/utils';
 import { MiddlewareResourceInfo, MiddlewareTableProps } from './myProject';
 import storage from '@/utils/storage';
+import { api } from '@/api.json';
+import nodata from '@/assets/images/nodata.svg';
 
 const RadioGroup = Radio.Group;
 export default function MiddlewareTable(
@@ -16,46 +18,76 @@ export default function MiddlewareTable(
 		data.middlewareResourceInfoList
 	);
 	const [tableType, setTableType] = useState<string>('cpu');
-	const Operation = {
-		primary: (
-			<span
-				style={{ cursor: 'pointer' }}
-				onClick={() => {
-					storage.setSession(
-						'menuPath',
-						`/serviceList/${data.type}/${data.aliasName}`
-					);
-					history.push(`/serviceList/${data.type}/${data.aliasName}`);
-				}}
-			>
-				{data.aliasName}
-			</span>
-		),
-		secondary: (
-			<RadioGroup
-				shape="button"
-				value={tableType}
-				onChange={(value: string | number | boolean) =>
-					setTableType(value as string)
-				}
-			>
-				<Radio id="cpu" value="cpu">
-					CPU
-				</Radio>
-				<Radio id="memory" value="memory">
-					内存
-				</Radio>
-				<Radio id="storage" value="storage">
-					存储
-				</Radio>
-			</RadioGroup>
-		)
-	};
 	const handleSearch = (value: string) => {
 		const list = data.middlewareResourceInfoList.filter(
 			(item: MiddlewareResourceInfo) => item.name.includes(value)
 		);
 		setDataSource(list);
+	};
+	const Operation = {
+		primary: (
+			<div
+				style={{
+					cursor: 'pointer',
+					display: 'flex',
+					alignItems: 'center',
+					height: 40
+				}}
+			>
+				<div>
+					<img
+						width={16}
+						height={16}
+						src={
+							data.imagePath
+								? `${api}/images/middleware/${data.imagePath}`
+								: nodata
+						}
+						alt={data.aliasName}
+					/>
+				</div>
+				<div
+					style={{ marginLeft: 8 }}
+					onClick={() => {
+						storage.setSession(
+							'menuPath',
+							`/serviceList/${data.type}/${data.aliasName}`
+						);
+						history.push(
+							`/serviceList/${data.type}/${data.aliasName}`
+						);
+					}}
+				>
+					{data.aliasName}
+				</div>
+			</div>
+		),
+		secondary: (
+			<>
+				<Search
+					placeholder="请输入服务名称搜索"
+					onSearch={handleSearch}
+					style={{ width: '260px', marginRight: 8 }}
+				/>
+				<RadioGroup
+					shape="button"
+					value={tableType}
+					onChange={(value: string | number | boolean) =>
+						setTableType(value as string)
+					}
+				>
+					<Radio id="cpu" value="cpu">
+						CPU
+					</Radio>
+					<Radio id="memory" value="memory">
+						内存
+					</Radio>
+					<Radio id="storage" value="storage">
+						存储
+					</Radio>
+				</RadioGroup>
+			</>
+		)
 	};
 	const nameRender = (
 		value: string,
@@ -105,10 +137,10 @@ export default function MiddlewareTable(
 				exact
 				primaryKey="key"
 				operation={Operation}
-				search={{
-					onSearch: handleSearch,
-					placeholder: '请输入服务名称搜索'
-				}}
+				// search={{
+				// 	onSearch: handleSearch,
+				// 	placeholder: '请输入服务名称搜索'
+				// }}
 				onSort={onSort}
 			>
 				<Table.Column

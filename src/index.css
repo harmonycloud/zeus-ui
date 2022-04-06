@@ -651,3 +651,6 @@ table.table-list tbody tr td {
 	cursor: pointer;
 	margin-left: 4px;
 }
+.next-search.next-normal .next-after .next-btn-normal {
+	margin-left: 0px !important;
+}

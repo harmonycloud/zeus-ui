@@ -24,6 +24,7 @@ export interface MiddlewareResourceInfo {
 export interface MiddlewareTableItem {
 	aliasName: string;
 	type: string;
+	imagePath: string;
 	middlewareResourceInfoList: middlewareResourceInfo[];
 }
 export interface MiddlewareTableProps {
