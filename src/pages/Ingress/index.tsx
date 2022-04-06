@@ -97,7 +97,7 @@ function IngressList(props: ingressProps) {
 		primary: (
 			<Button
 				onClick={() => {
-					storage.setLocal('isDetail', true);
+					storage.setLocal('isDetail', { middlewareName, type });
 					history.push('/serviceAvailable/addServiceAvailable');
 				}}
 				type="primary"

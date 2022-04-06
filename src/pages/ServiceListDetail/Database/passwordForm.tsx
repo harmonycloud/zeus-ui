@@ -86,7 +86,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 			}
 			setChecks(temp);
 		} else {
-			const newValue = field.getValue('newPassword');
+			const newValue = field.getValue('reNewPassword');
 			if (value !== newValue) {
 				field.setError('reNewPassword', '密码二次校验错误');
 			}
@@ -166,7 +166,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 					className="ne-required-ingress"
 				>
 					<Input.Password
-						name="reNewPassword"
+						name="confirmPassword"
 						onChange={(value: string) =>
 							handleChange(value, 'reNew')
 						}

@@ -83,7 +83,22 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const history = useHistory();
 
 	useEffect(() => {
-		if (record) {
+		if (storage.getLocal('isDetail')) {
+			setCurrent(storage.getLocal('isDetail'));
+			JSON.stringify(namespace) !== '{}' &&
+				getIngresses({ clusterId: cluster.id }).then((res) => {
+					if (res.success) {
+						setIngresses(res.data);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			JSON.stringify(namespace) !== '{}' &&
+				getExposedService(
+					storage.getLocal('isDetail').middlewareName,
+					storage.getLocal('isDetail').type
+				);
+		} else if (record) {
 			setCurrent(record.middlewareName);
 			setExposedWay(record.exposeType);
 			setProtocol(record.protocol);
