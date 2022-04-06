@@ -24,8 +24,8 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	useEffect(() => {
 		getData();
 	}, []);
-	const getData = () => {
-		getProjects().then((res) => {
+	const getData = (key = keyword) => {
+		getProjects({ key }).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
@@ -45,6 +45,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	};
 	const handleSearch = (value: string) => {
 		console.log(value);
+		getData(value);
 	};
 	const nameRender = (value: string, index: number, record: ProjectItem) => {
 		return (
