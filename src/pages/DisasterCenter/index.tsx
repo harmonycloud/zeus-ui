@@ -138,7 +138,9 @@ function DisasterCenter(props: disasterCenterProps) {
 						}/${
 							(data as middlewareDetailProps).mysqlDTO.type ||
 							'mysql'
-						}/${(data as middlewareDetailProps).chartVersion}`,
+						}/${(data as middlewareDetailProps).chartVersion}/${
+							data?.namespace
+						}`,
 						state: {
 							flag: true
 						}
@@ -206,7 +208,7 @@ function DisasterCenter(props: disasterCenterProps) {
 					(data as middlewareDetailProps).name
 				}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 					(data as middlewareDetailProps).chartVersion
-				}`
+				}/${data?.namespace}`
 			});
 		}
 	};
@@ -222,7 +224,7 @@ function DisasterCenter(props: disasterCenterProps) {
 					(data as middlewareDetailProps).name
 				}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
 					(data as middlewareDetailProps).chartVersion
-				}`,
+				}/${data?.namespace}`,
 				state: {
 					flag: true
 				}
@@ -271,7 +273,7 @@ function DisasterCenter(props: disasterCenterProps) {
 										.type || 'mysql'
 								}/${
 									(data as middlewareDetailProps).chartVersion
-								}`,
+								}/${data?.namespace}`,
 								state: {
 									flag: true
 								}
