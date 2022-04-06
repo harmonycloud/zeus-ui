@@ -140,7 +140,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 		const ct = clusterList.find((item) => item.id === value);
 		setCurrentCluster(ct);
 	};
-	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
+	if (JSON.stringify(cluster) === '{}') {
 		return <GuidePage />;
 	}
 	return (
