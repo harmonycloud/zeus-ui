@@ -197,9 +197,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	}, [namespace, cluster]);
 
 	useEffect(() => {
-		return () =>
+		return () => {
 			storage.getLocal('availableRecord') &&
-			storage.removeLocal('availableRecord');
+				storage.removeLocal('availableRecord');
+			storage.getLocal('isDetail') && storage.removeLocal('isDetail');
+		};
 	}, []);
 	const onChange = (value: string) => {
 		setExposedWay(value);
@@ -421,7 +423,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							value={current}
 							dataSource={data}
 							onChange={handleChange}
-							disabled={cluster.ingress === null || !!record}
+							disabled={
+								cluster.ingress === null ||
+								!!record ||
+								storage.getLocal('isDetail')
+							}
 						/>
 					</FormItem>
 					<h2>选择暴露方式及对象</h2>

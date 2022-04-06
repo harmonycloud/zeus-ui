@@ -92,9 +92,9 @@ function IngressList(props: ingressProps) {
 	const Operation = {
 		primary: (
 			<Button
-				onClick={() =>
-					history.push('/serviceAvailable/addServiceAvailable')
-				}
+				onClick={() => {
+					storage.setLocal('isDetail', true);
+				}}
 				type="primary"
 			>
 				新增

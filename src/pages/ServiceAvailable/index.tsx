@@ -567,7 +567,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						title="操作"
 						dataIndex="action"
 						cell={actionRender}
-						width={70}
+						width={100}
 						{...lock}
 					/>
 				</Table>

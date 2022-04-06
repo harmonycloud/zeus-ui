@@ -1596,7 +1596,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												name="mirrorImageId"
 												placeholder="请选择"
 												hasClear={true}
-												defaultValue={mirrorList[0].address}
+												defaultValue={mirrorList[0]?.address}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}
