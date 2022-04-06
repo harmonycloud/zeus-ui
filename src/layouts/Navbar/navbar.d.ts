@@ -10,5 +10,5 @@ export interface NavbarProps {
 	setRefreshCluster: (flag: boolean) => void;
 	setGlobalClusterList: (clusterList: any) => void;
 	setGlobalNamespaceList: (namespaceList: any) => void;
-	getClusterId: (namespace: any) => void;
+	getClusterId: (namespace?: any) => void;
 }

@@ -95,9 +95,6 @@ export default function EditProjectForm(
 		}
 	}, [clusters]);
 	const onOk = () => {
-		console.log(field.getValues());
-		console.log(clusters);
-		console.log(namespaces);
 		field.validate((errors) => {
 			if (errors) return;
 			const values: FieldValues = field.getValues();
@@ -118,11 +115,10 @@ export default function EditProjectForm(
 						})
 				};
 			});
-			console.log(clusterListTemp);
 			const sendData: FieldValues = {
 				name: values.name,
 				aliasName: values.aliasName,
-				user: values.user || 'admin',
+				user: values.user || '',
 				description: values.description,
 				clusterList: clusterListTemp
 			};

@@ -28,9 +28,6 @@ import { getClusters } from '@/services/common';
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
-	const {
-		globalVar: { cluster, namespace, project }
-	} = props;
 	const [rule, setRule] = useState<string>('');
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareListProps>({});
@@ -140,7 +137,8 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 		const ct = clusterList.find((item) => item.id === value);
 		setCurrentCluster(ct);
 	};
-	if (JSON.stringify(cluster) === '{}') {
+	console.log(currentCluster);
+	if (JSON.stringify(currentCluster) === '{}') {
 		return <GuidePage />;
 	}
 	return (
@@ -229,6 +227,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 				</div>
 				<div className="middleware-repository-list-display">
 					{JSON.stringify(dataSource) !== '{}' &&
+						currentCluster &&
 						Object.keys(dataSource).map((key) => {
 							return (
 								<div
@@ -242,7 +241,9 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 												<MiddlewareItem
 													key={item.id}
 													{...item}
-													clusterId={cluster.id}
+													clusterId={
+														currentCluster.id
+													}
 													onRefresh={() => {
 														if (currentCluster) {
 															setTimer(

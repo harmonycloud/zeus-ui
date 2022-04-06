@@ -44,6 +44,7 @@ import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
+import GuidePage from '../GuidePage';
 // --- css样式
 
 const tabJudge: (record: serviceProps, tab: string) => boolean = (
@@ -71,6 +72,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
+	console.log(project, cluster);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
@@ -879,6 +881,9 @@ const ServiceListByType = (props: serviceListProps) => {
 			</span>
 		);
 	};
+	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
+		return <GuidePage />;
+	}
 	return (
 		<Page>
 			<Header

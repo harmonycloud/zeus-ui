@@ -22,6 +22,7 @@ import './index.scss';
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster, project } = props;
 	const history = useHistory();
+	const [role] = useState(JSON.parse(storage.getLocal('role')));
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [currentProject, setCurrentProject] = useState<ProjectItem>(project);
@@ -34,18 +35,17 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		ProjectItem[]
 	>([]);
 	useEffect(() => {
-		if (
-			JSON.stringify(currentProject) !== '{}' &&
-			currentProject !== undefined
-		) {
+		if (role.userRoleList.some((i: any) => i.roleId) === 1) {
+			if (
+				JSON.stringify(currentProject) !== '{}' &&
+				currentProject !== undefined
+			) {
+				getData();
+				getCount();
+			}
+		} else {
 			getData();
-			getProjectMiddlewareCount().then((res) => {
-				if (res.success) {
-					setProjectMiddleware(res.data);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
+			getCount();
 		}
 	}, []);
 	useEffect(() => {
@@ -56,10 +56,20 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			getMiddlewareData(currentProject.projectId);
 		}
 	}, [currentProject]);
+	const getCount = () => {
+		getProjectMiddlewareCount().then((res) => {
+			if (res.success) {
+				setProjectMiddleware(res.data);
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+	};
 	const getData = () => {
 		setProjectLoading(true);
 		getProjects()
 			.then((res) => {
+				console.log(res);
 				if (res.success) {
 					console.log(currentProject);
 					setDataSource(res.data);
@@ -185,7 +195,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 											<li>
 												服务数：
 												{
-													projectMiddlewareCount.find(
+													projectMiddlewareCount?.find(
 														(mid: ProjectItem) =>
 															mid.projectId ===
 															item.projectId

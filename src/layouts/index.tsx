@@ -32,8 +32,8 @@ export default function Layout(): JSX.Element {
 		return redirectToTerminal();
 	}
 
-	const getClusterId = (value: string) => {
-		setClusterId(value);
+	const getClusterId = (value?: string) => {
+		setClusterId(value || '');
 	};
 
 	return (

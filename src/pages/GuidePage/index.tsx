@@ -13,13 +13,22 @@ import messageConfig from '@/components/messageConfig';
 import { ComponentProp } from '@/pages/ResourcePoolManagement/resource.pool';
 
 import './index.scss';
+import storage from '@/utils/storage';
 interface GuideProps {
 	globalVar: globalVarProps;
 }
 const GuidePage = (props: GuideProps) => {
 	const [current, setCurrent] = useState<string>('1');
+	const [isAdmin, setIsAdmin] = useState<boolean>(false);
 	const { cluster, clusterList: globalClusterList } = props.globalVar;
 	const history = useHistory();
+	useEffect(() => {
+		setIsAdmin(
+			JSON.parse(storage.getLocal('role')).userRoleList.some(
+				(i: any) => i.roleId === 1
+			)
+		);
+	}, [JSON.parse(storage.getLocal('role'))]);
 	useEffect(() => {
 		getClusters({ detail: true }).then((res) => {
 			if (res.success) {
@@ -37,7 +46,6 @@ const GuidePage = (props: GuideProps) => {
 		} else {
 			getComponents({ clusterId: cluster.id })
 				.then((res) => {
-					console.log(res);
 					if (res.success) {
 						const middlewareControllerStatus = res.data.find(
 							(item: ComponentProp) =>
@@ -114,16 +122,18 @@ const GuidePage = (props: GuideProps) => {
 							</div>
 							<div>
 								添加集群用以发布中间件。
-								<span
-									className="name-link"
-									onClick={() => {
-										history.push(
-											'/systemManagement/resourcePoolManagement/addResourcePool/addOther'
-										);
-									}}
-								>
-									立即前往
-								</span>
+								{isAdmin && (
+									<span
+										className="name-link"
+										onClick={() => {
+											history.push(
+												'/systemManagement/resourcePoolManagement/addResourcePool/addOther'
+											);
+										}}
+									>
+										立即前往
+									</span>
+								)}
 							</div>
 						</div>
 						<div className="guide-page-img-item">
@@ -165,22 +175,24 @@ const GuidePage = (props: GuideProps) => {
 							</div>
 							<div className="guide-page-desc">
 								平台运行需要依赖各类组件，并且上架默认推荐版本中间件，便可以发布中间服务。
-								<span
-									className={
-										current === '2' || current === '3'
-											? 'name-link'
-											: 'name-disabled-link'
-									}
-									onClick={() => {
-										if (current !== '0') {
-											history.push(
-												`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
-											);
+								{isAdmin && (
+									<span
+										className={
+											current === '2' || current === '3'
+												? 'name-link'
+												: 'name-disabled-link'
 										}
-									}}
-								>
-									立即前往
-								</span>
+										onClick={() => {
+											if (current !== '0') {
+												history.push(
+													`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
+												);
+											}
+										}}
+									>
+										立即前往
+									</span>
+								)}
 							</div>
 						</div>
 						<div className="guide-page-img-item">
@@ -201,30 +213,32 @@ const GuidePage = (props: GuideProps) => {
 									3
 								</div>
 								<div className="guide-page-img-info">
-									创建项目
+									创建项目并绑定资源
 								</div>
 							</div>
 							<div>
 								业务范围以项目区分，通过项目管理中间件。
-								<span
-									className={
-										current === '2' || current === '3'
-											? 'name-link'
-											: 'name-disabled-link'
-									}
-									onClick={() => {
-										if (
-											current === '2' ||
-											current === '3'
-										) {
-											history.push(
-												'/systemManagement/projectManagement'
-											);
+								{isAdmin && (
+									<span
+										className={
+											current === '2' || current === '3'
+												? 'name-link'
+												: 'name-disabled-link'
 										}
-									}}
-								>
-									立即前往
-								</span>
+										onClick={() => {
+											if (
+												current === '2' ||
+												current === '3'
+											) {
+												history.push(
+													'/systemManagement/projectManagement'
+												);
+											}
+										}}
+									>
+										立即前往
+									</span>
+								)}
 							</div>
 						</div>
 					</div>

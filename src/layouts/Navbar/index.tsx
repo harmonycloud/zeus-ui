@@ -113,6 +113,9 @@ function Navbar(props: NavbarProps): JSX.Element {
 				}
 			} else {
 				getClusterList('');
+				setCurrentProject({});
+				setProject({});
+				storage.setLocal('project', '{}');
 			}
 			setProjectList(res.data);
 		}
@@ -142,6 +145,11 @@ function Navbar(props: NavbarProps): JSX.Element {
 					getClusterId(res.data[0].id);
 					storage.setLocal('cluster', JSON.stringify(res.data[0]));
 				}
+			} else {
+				setCurrentCluster({ id: '' });
+				setCluster({});
+				getClusterId();
+				storage.setLocal('cluster', '{}');
 			}
 			setClusterList(res.data);
 			setGlobalClusterList(res.data);

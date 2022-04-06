@@ -19,10 +19,8 @@ export default function AllotRole(): JSX.Element {
 	useEffect(() => {
 		const role = JSON.parse(storage.getSession('rolePower'));
 		getMiddlewareRepository().then((res) => {
-			console.log(res);
 			if (res.success) {
 				const keys = Object.keys(role.power);
-				// const list = [];
 				let list: AllotRoleItem[] = res.data.map((item: any) => {
 					return {
 						aliasName: item.name,

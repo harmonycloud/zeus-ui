@@ -94,6 +94,8 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 												'项目删除成功！'
 											)
 										);
+										setRefreshCluster(true);
+										getData();
 									} else {
 										Message.show(
 											messageConfig('error', '失败', res)

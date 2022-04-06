@@ -230,10 +230,12 @@ function UserManage(): JSX.Element {
 		index: number,
 		record: userProps
 	) => {
-		if (record.userRoleList.some((i: any) => i.roleId === 1)) {
+		console.log(record);
+		if (!record.userRoleList) return '/';
+		if (record.userRoleList?.some((i: any) => i.roleId === 1)) {
 			return <div className="red-tip">超级管理员</div>;
 		}
-		const list = record.userRoleList.filter((i: any) => i.roleId !== 1);
+		const list = record.userRoleList?.filter((i: any) => i.roleId !== 1);
 		if (list.length === 1) {
 			return list.map((i: any) => {
 				return (
