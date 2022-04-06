@@ -99,6 +99,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 					middlewareName,
 					user: values.user,
 					password: values.password,
+					confirmPassword: values.confirmPassword,
 					description: values.description,
 					privilegeList: selectUser
 				};
@@ -306,7 +307,9 @@ export default function UserForm(props: FormProps): JSX.Element {
 						disabled={data ? true : false}
 						placeholder="请输入内容"
 						style={{ width: 300 }}
-						onChange={(value: string) => handleChange(value, 'newPassword')}
+						onChange={(value: string) =>
+							handleChange(value, 'newPassword')
+						}
 					/>
 				</FormItem>
 				<FormItem labelTextAlign="left" asterisk={false} label="备注">

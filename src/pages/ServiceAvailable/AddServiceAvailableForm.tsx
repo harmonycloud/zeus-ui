@@ -84,7 +84,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 
 	useEffect(() => {
 		if (storage.getLocal('isDetail')) {
-			setCurrent(storage.getLocal('isDetail'));
+			setCurrent(storage.getLocal('isDetail').middlewareName);
 			JSON.stringify(namespace) !== '{}' &&
 				getIngresses({ clusterId: cluster.id }).then((res) => {
 					if (res.success) {

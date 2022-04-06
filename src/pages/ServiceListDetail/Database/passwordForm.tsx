@@ -53,7 +53,8 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 				middlewareName,
 				id: data.id,
 				user: data.user,
-				password: values.newPassword
+				password: values.newPassword,
+				confirmPassword: values.confirmPassword
 			};
 			updatePassword(sendData).then((res) => {
 				if (res.success) {
@@ -87,9 +88,9 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 			setChecks(temp);
 		} else {
 			const newValue = field.getValue('reNewPassword');
-			if (value !== newValue) {
-				field.setError('reNewPassword', '密码二次校验错误');
-			}
+			// if (value !== newValue) {
+			// 	field.setError('reNewPassword', '密码二次校验错误');
+			// }
 		}
 	};
 	const defaultTrigger = (
