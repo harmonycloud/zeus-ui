@@ -84,7 +84,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 							content: '删除将无法找回，是否继续？',
 							onOk: () => {
 								return deleteProject({
-									projectId: record.id
+									projectId: record.projectId
 								}).then((res) => {
 									if (res.success) {
 										Message.show(

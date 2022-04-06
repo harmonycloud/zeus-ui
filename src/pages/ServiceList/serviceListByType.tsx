@@ -409,7 +409,7 @@ const ServiceListByType = (props: serviceListProps) => {
 							trigger={
 								<Button
 									type="primary"
-									disabled={!createFlag || !getFlag}
+									disabled={createFlag || getFlag}
 								>
 									发布服务
 								</Button>

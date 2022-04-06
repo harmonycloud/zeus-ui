@@ -109,7 +109,10 @@ function Navbar(props: NavbarProps): JSX.Element {
 				} else {
 					setCurrentProject(res.data[0]);
 					setProject(res.data[0]);
+					storage.setLocal('project', JSON.stringify(res.data[0]));
 				}
+			} else {
+				getClusterList('');
 			}
 			setProjectList(res.data);
 		}
@@ -207,12 +210,15 @@ function Navbar(props: NavbarProps): JSX.Element {
 
 	useEffect(() => {
 		getUserInfo().then(() => {
-			getProjectList();
-			const jsonRole = JSON.parse(storage.getLocal('role'));
-			if (jsonRole.userRoleList[0].roleId === 1) {
-				console.log('in');
-				getClusterList('');
-			}
+			getProjectList().then(() => {
+				const jsonProject = storage.getLocal('project');
+				if (jsonProject === '' || jsonProject === undefined) {
+					const jsonRole = JSON.parse(storage.getLocal('role'));
+					if (jsonRole.userRoleList[0].roleId === 1) {
+						getClusterList('');
+					}
+				}
+			});
 		});
 	}, []);
 

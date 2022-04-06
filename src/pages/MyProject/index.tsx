@@ -61,6 +61,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		getProjects()
 			.then((res) => {
 				if (res.success) {
+					console.log(currentProject);
 					setDataSource(res.data);
 					if (!currentProject) setCurrentProject(res.data[0]);
 					if (

@@ -238,7 +238,6 @@ function PlatformOverview(): JSX.Element {
 
 	return (
 		<Page>
-			{console.log(lineOption)}
 			<Page.Content style={{ paddingBottom: 0 }}>
 				<div className="platform_overview-content">
 					<div className="header">
