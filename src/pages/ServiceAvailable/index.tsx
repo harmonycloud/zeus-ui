@@ -40,7 +40,7 @@ interface serviceAvailableProps {
 function ServiceAvailable(props: serviceAvailableProps) {
 	const { cluster, namespace, project } = props.globalVar;
 	const [role] = useState(JSON.parse(storage.getLocal('role')));
-	const [selected, setSelected] = useState<string>('');
+	const [selected, setSelected] = useState<string>('全部服务');
 	const [originData, setOriginData] = useState<serviceAvailablesProps[]>([]);
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
 		[]
@@ -49,7 +49,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		serviceAvailableItemProps[]
 	>([]);
 	const [visible, setVisible] = useState<boolean>(false);
-	const [list, setList] = useState<listProps[]>([]);
+	const [list, setList] = useState<listProps[]>([
+		{ name: '全部服务', count: 0 }
+	]);
 	const location: Location<stateProps> = useLocation();
 	const [searchText, setSearchText] = useState<string>(
 		location?.state?.middlewareName || ''
@@ -62,80 +64,37 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const history = useHistory();
 
 	useEffect(() => {
-		const list: listProps[] = [];
-		if (role.userRoleList.some((i: any) => i.roleId === 1)) {
-			list.push({ name: '全部服务', count: 0 });
-			const keys = Object.keys(
-				role.userRoleList.find((i: any) => i.roleId === 1)
-			);
-			keys.forEach((item: string) => {
-				list.push({
-					name: item,
-					count: 0
-				});
-			});
-			setList(list);
-			setSelected('全部服务');
-		}
-	}, []);
-	useEffect(() => {
-		if (JSON.stringify(project) !== '{}') {
-			if (role.userRoleList.every((i: any) => i.roleId !== 1)) {
-				const keys = Object.keys(
-					role.userRoleList.find(
-						(i: any) => i.projectId === project.projectId
-					).power
-				);
-				keys.forEach((item: string) => {
-					list.push({
-						name: item,
-						count: 0
-					});
-				});
-				setList(list);
-				setSelected(list[0].name);
-			}
-		}
-	}, [project]);
-
-	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
 			if (mounted) {
-				if (role.roleId === 1) {
-					getIngresses({
-						clusterId: cluster.id,
-						namespace: namespace.name,
-						keyword: searchText,
-						type: ''
-					}).then((res) => {
-						console.log(res);
-						if (res.success) {
-							setOriginData(res.data);
-							const listTemp = [{ name: '全部服务', count: 0 }];
-							res.data.forEach((item: serviceAvailablesProps) => {
-								listTemp.push({
-									name: item.name,
-									count: item.serviceNum
-								});
+				getIngresses({
+					clusterId: cluster.id,
+					namespace: namespace.name,
+					keyword: searchText
+				}).then((res) => {
+					console.log(res);
+					if (res.success) {
+						setOriginData(res.data);
+						const listTemp = [{ name: '全部服务', count: 0 }];
+						res.data.forEach((item: serviceAvailablesProps) => {
+							listTemp.push({
+								name: item.name,
+								count: item.serviceNum
 							});
-							listTemp[0].count = listTemp.reduce(
-								(pre, cur: listProps) => {
-									return pre + cur.count;
-								},
-								0
-							);
-							setList(listTemp);
-						} else {
-							Message.show(messageConfig('error', '失败', res));
-							setOriginData([]);
-							setList([{ name: '全部服务', count: 0 }]);
-						}
-					});
-				} else {
-					console.log(selected);
-					getData(selected, '');
-				}
+						});
+						listTemp[0].count = listTemp.reduce(
+							(pre, cur: listProps) => {
+								return pre + cur.count;
+							},
+							0
+						);
+						setList(listTemp);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+						setOriginData([]);
+						setList([{ name: '全部服务', count: 0 }]);
+					}
+				});
 				getList({
 					projectId: project.projectId,
 					clusterId: cluster.id,
@@ -202,12 +161,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			}
 		}
 	}, [selected]);
-	const getData = (type: string = selected, keyword: string = searchText) => {
+	const getData = (keyword: string = searchText) => {
 		const sendData = {
 			clusterId: cluster.id,
 			namespace: namespace.name,
-			keyword,
-			type
+			keyword
 		};
 		getIngresses(sendData).then((res) => {
 			if (res.success) {
@@ -536,7 +494,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						) {
 							setSearchText('');
 							location.state.middlewareName = '';
-							getData(value, '');
 						}
 						storage.setSession('service-available-current', value);
 					}}
