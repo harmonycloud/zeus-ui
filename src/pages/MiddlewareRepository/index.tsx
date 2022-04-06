@@ -183,6 +183,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							<Button
 								type="primary"
 								onClick={() => setVisible(true)}
+								style={{ marginRight: 8 }}
 							>
 								上架中间件
 							</Button>

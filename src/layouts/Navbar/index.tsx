@@ -92,7 +92,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 			if (res.data.length > 0) {
 				const jsonLocalProject = storage.getLocal('project');
 				if (
-					jsonLocalProject &&
+					jsonLocalProject !== '' &&
 					res.data.some(
 						(item: any) =>
 							item.projectId ===
@@ -206,8 +206,14 @@ function Navbar(props: NavbarProps): JSX.Element {
 	};
 
 	useEffect(() => {
-		getProjectList();
-		getUserInfo();
+		getUserInfo().then(() => {
+			getProjectList();
+			const jsonRole = JSON.parse(storage.getLocal('role'));
+			if (jsonRole.userRoleList[0].roleId === 1) {
+				console.log('in');
+				getClusterList('');
+			}
+		});
 	}, []);
 
 	useEffect(() => {
@@ -219,7 +225,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 
 	useEffect(() => {
 		if (JSON.stringify(currentProject) !== '{}') {
-			getClusterList(currentProject.projectId);
+			getClusterList(currentProject?.projectId);
 		}
 	}, [currentProject]);
 
