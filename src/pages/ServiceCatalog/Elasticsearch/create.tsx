@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Page from '@alicloud/console-components-page';
+import Page, { Content, Header } from '@alicloud/console-components-page';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import {
@@ -410,54 +410,87 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
-				<LoadingPage
-					title="发布中"
-					btnHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
-					}}
-					btnText="返回列表"
-				/>
-			</div>
+			<Page>
+				<Header />
+				<Content>
+					<div
+						style={{
+							height: '100%',
+							textAlign: 'center',
+							marginTop: 46
+						}}
+					>
+						<LoadingPage
+							title="发布中"
+							btnHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
+							btnText="返回列表"
+						/>
+					</div>
+				</Content>
+			</Page>
 		);
 	}
 	if (successFlag) {
 		return (
-			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
-				<SuccessPage
-					title="发布成功"
-					leftText="返回列表"
-					rightText="查看详情"
-					leftHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
-					}}
-					rightHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
-						});
-					}}
-				/>
-			</div>
+			<Page>
+				<Header />
+				<Content>
+					<div
+						style={{
+							height: '100%',
+							textAlign: 'center',
+							marginTop: 46
+						}}
+					>
+						<SuccessPage
+							title="发布成功"
+							leftText="返回列表"
+							rightText="查看详情"
+							leftHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
+							rightHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+								});
+							}}
+						/>
+					</div>
+				</Content>
+			</Page>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<div style={{ height: '100%', textAlign: 'center', marginTop: 46 }}>
-				<ErrorPage
-					title="发布失败"
-					btnHandle={() => {
-						history.push({
-							pathname: `/serviceList/${chartName}/${aliasName}`
-						});
-					}}
-					btnText="返回列表"
-				/>
-			</div>
+			<Page>
+				<Header />
+				<Content>
+					<div
+						style={{
+							height: '100%',
+							textAlign: 'center',
+							marginTop: 46
+						}}
+					>
+						<ErrorPage
+							title="发布失败"
+							btnHandle={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
+							btnText="返回列表"
+						/>
+					</div>
+				</Content>
+			</Page>
 		);
 	}
 
@@ -1032,7 +1065,9 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												name="mirrorImageId"
 												placeholder="请选择"
 												hasClear={true}
-												defaultValue={mirrorList[0]?.address}
+												defaultValue={
+													mirrorList[0]?.address
+												}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}
