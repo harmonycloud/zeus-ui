@@ -94,7 +94,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 			}
 			setChecks(temp);
 		} else {
-			const newValue = field.getValue('reNewPassword');
+			const newValue = field.getValue('newPassword');
 			if (value !== newValue) {
 				// field.setError('reNewPassword', '密码二次校验错误');
 				setErrors(true);

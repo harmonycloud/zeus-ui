@@ -155,7 +155,7 @@ function KvManage(props: any): JSX.Element {
 				{record.type === 'list' && (
 					<LinkButton
 						onClick={() => {
-							edit({...record,listType: 'front'});
+							edit({...record,listType: 'front', isAdd: true});
 							setIsEdit(true);
 						}}
 					>
@@ -165,7 +165,7 @@ function KvManage(props: any): JSX.Element {
 				{record.type === 'list' && (
 					<LinkButton
 						onClick={() => {
-							edit({...record, listType: 'back'});
+							edit({...record, listType: 'back', isAdd: true});
 							setIsEdit(true);
 						}}
 					>
@@ -175,7 +175,7 @@ function KvManage(props: any): JSX.Element {
 				{record.type !== 'list' && record.type !== 'string' && (
 					<LinkButton
 						onClick={() => {
-							edit(record);
+							edit({...record, isAdd: true});
 							setIsEdit(true);
 						}}
 					>
@@ -194,7 +194,7 @@ function KvManage(props: any): JSX.Element {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						edit(record);
+						edit({...record, isAdd: false});
 						setIsEdit(true);
 					}}
 				>

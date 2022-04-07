@@ -214,7 +214,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 		} else {
 			const newValue = field.getValue('password');
 			if (value !== newValue) {
-				field.setError('confirmPassword', '密码二次校验错误');
+				// field.setError('confirmPassword', '密码二次校验错误');
 				setError(true);
 			}else{
 				setError(false);
@@ -327,6 +327,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 						name="description"
 						trim={true}
 						placeholder="限定200字符串"
+						maxLength={200}
 						style={{ width: 300 }}
 					/>
 				</FormItem>

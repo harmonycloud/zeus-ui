@@ -161,6 +161,7 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 						name="description"
 						trim={true}
 						placeholder="限定200字符串"
+						maxLength={200}
 					/>
 				</FormItem>
 			</Form>

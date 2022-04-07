@@ -51,7 +51,7 @@ export default function KvForm(props: any): JSX.Element {
 		field.validate((errors, values: any) => {
 			if (errors) return;
 
-			if (data) {
+			if (data && !data.isAdd) {
 				// * 修改数据库
 				const sendData: any = {
 					clusterId,
@@ -60,8 +60,7 @@ export default function KvForm(props: any): JSX.Element {
 					db: db[0],
 					type: values.type,
 					timeOut: values.timeOut,
-					key: values.key,
-					// set: values.set
+					key: values.key
 				};
 				if (
 					values.type === 'hash' ||
@@ -69,16 +68,18 @@ export default function KvForm(props: any): JSX.Element {
 					values.type === 'zset'
 				) {
 					if (values.type === 'list') {
-						sendData[values.type] = {
-							[data.listType]: values.newValue
-						};
+						sendData.list = {
+							[String(data.lists.findIndex((i: String) => i === data.newValue))]: values.newValue
+						}
 					} else {
 						sendData[values.type] = {
 							[values.newKey]: values.newValue
 						};
 					}
-				} else {
+				} else if (values.type === 'string') {
 					sendData.value = values.newValue;
+				} else {
+					sendData.set = values.newValue;
 				}
 				updateKv(sendData).then((res) => {
 					if (res.success) {
@@ -99,8 +100,7 @@ export default function KvForm(props: any): JSX.Element {
 					db: db[0],
 					type: values.type,
 					timeOut: values.timeOut,
-					key: values.key,
-					set: values.set
+					key: values.key
 				};
 				if (
 					values.type === 'hash' ||
@@ -108,16 +108,24 @@ export default function KvForm(props: any): JSX.Element {
 					values.type === 'zset'
 				) {
 					if (values.type === 'list') {
-						sendData[values.type] = {
-							back: values.value
-						};
+						if (data) {
+							sendData[values.type] = {
+								[data.listType]: values.newValue
+							};
+						} else {
+							sendData[values.type] = {
+								back: values.newValue
+							};
+						}
 					} else {
 						sendData[values.type] = {
-							[String(values.newKey)]: values.value
+							[String(values.newKey)]: values.newValue
 						};
 					}
+				} else if (values.type === 'string') {
+					sendData.value = values.newValue;
 				} else {
-					sendData.value = values.value;
+					sendData.set = values.newValue;
 				}
 				addKv(sendData).then((res) => {
 					if (res.success) {
@@ -237,7 +245,7 @@ export default function KvForm(props: any): JSX.Element {
 					required={type === 'Hash' || type === 'Set'}
 				>
 					<TextArea
-						name={type !== 'set' ? data ? 'newValue' : 'value' : 'set'}
+						name="newValue"
 						trim={true}
 						placeholder="请输入内容"
 					/>
