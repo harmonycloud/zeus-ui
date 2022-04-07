@@ -42,7 +42,7 @@ import {
 	TolerationsProps
 } from '../catalog';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-import { StorageClassProps } from '@/types/comment';
+import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import { StoreState } from '@/types';
 import { formItemLayout614, instanceSpecList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
@@ -144,7 +144,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
-	const [createData, setCreateData] = useState<string>();
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	// * 根据命名空间，来提示可编辑的最大最小值
@@ -409,7 +409,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 							}}
 							rightHandle={() => {
 								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
 								});
 							}}
 						/>

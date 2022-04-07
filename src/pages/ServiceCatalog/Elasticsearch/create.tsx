@@ -48,6 +48,7 @@ import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import { formItemLayout614 } from '@/utils/const';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import { middlewareDetailProps } from '@/types/comment';
 
 const { Item: FormItem } = Form;
 
@@ -198,7 +199,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
-	const [createData, setCreateData] = useState<string>();
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
 
 	const handleSubmit = () => {
 		field.validate((err) => {
@@ -457,7 +458,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 							}}
 							rightHandle={() => {
 								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
 								});
 							}}
 						/>

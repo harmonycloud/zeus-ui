@@ -182,7 +182,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
-	const [createData, setCreateData] = useState<string>();
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	// * root密码
@@ -813,12 +813,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
+			<Page style={{ height: '250px' }}>
 				<Header />
 				<Content>
 					<div
 						style={{
-							height: '100%',
+							height: '70%',
 							textAlign: 'center',
 							marginTop: 46
 						}}
@@ -838,6 +838,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		);
 	}
 	if (successFlag) {
+		console.log(createData);
 		return (
 			<Page>
 				<Header />
@@ -860,7 +861,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							}}
 							rightHandle={() => {
 								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
 								});
 							}}
 						/>
@@ -871,6 +872,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}
 
 	if (errorFlag) {
+		console.log(window.document.body.scrollTop);
+		window.document.body.scrollTop = 0;
 		return (
 			<Page>
 				<Header />

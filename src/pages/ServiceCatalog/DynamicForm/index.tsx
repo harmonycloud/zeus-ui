@@ -31,6 +31,7 @@ import {
 import { StoreState } from '@/types';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import { middlewareDetailProps } from '@/types/comment';
 const { Item: FormItem } = Form;
 
 const formItemLayout = {
@@ -60,7 +61,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
-	const [createData, setCreateData] = useState<string>();
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
@@ -309,7 +310,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 							}}
 							rightHandle={() => {
 								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
 								});
 							}}
 						/>

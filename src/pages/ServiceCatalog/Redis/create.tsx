@@ -47,7 +47,7 @@ import {
 } from '../catalog';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-import { StorageClassProps } from '@/types/comment';
+import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
@@ -177,7 +177,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
-	const [createData, setCreateData] = useState<string>();
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	useEffect(() => {
@@ -541,7 +541,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							}}
 							rightHandle={() => {
 								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
 								});
 							}}
 						/>
