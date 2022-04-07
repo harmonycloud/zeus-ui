@@ -36,7 +36,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	const Operation = {
 		primary: (
 			<Button onClick={() => setVisible(true)} type="primary">
-				创建项目
+				新增项目
 			</Button>
 		)
 	};
@@ -44,7 +44,6 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 		setKeyword(value);
 	};
 	const handleSearch = (value: string) => {
-		console.log(value);
 		getData(value);
 	};
 	const nameRender = (value: string, index: number, record: ProjectItem) => {
@@ -122,14 +121,14 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					fixedBarExpandWidth={[24]}
 					affixActionBar
 					showRefresh
-					onRefresh={getData}
+					onRefresh={() => getData()}
 					primaryKey="name"
 					operation={Operation}
 					search={{
 						value: keyword,
 						onChange: handleChange,
 						onSearch: handleSearch,
-						placeholder: '请输入关键词搜索'
+						placeholder: '请输入关键字搜索'
 					}}
 				>
 					<MidTable.Column
