@@ -3,6 +3,7 @@ export interface EditProjectFormProps {
 	onCancel: () => void;
 	projectId?: string;
 	onRefresh: () => void;
+	setRefreshCluster: (flag: true) => void;
 }
 
 type namespace = { name: string };

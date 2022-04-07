@@ -15,7 +15,6 @@ import messageConfig from '@/components/messageConfig';
 import { getClusters } from '@/services/common';
 import { getUserList } from '@/services/user';
 import { createProject } from '@/services/project';
-import { userProps } from '../UserManage/user';
 
 import pattern from '@/utils/pattern';
 import { formItemLayout619 } from '@/utils/const';
@@ -28,7 +27,8 @@ const { Group: CheckboxGroup } = Checkbox;
 export default function EditProjectForm(
 	props: EditProjectFormProps
 ): JSX.Element {
-	const { projectId, onCancel, visible, onRefresh } = props;
+	const { projectId, onCancel, visible, onRefresh, setRefreshCluster } =
+		props;
 	const [loading, setLoading] = useState<boolean>(false);
 	const [originData, setOriginData] = useState([]);
 	const [clusterList, setClusterList] = useState([]);
@@ -65,7 +65,7 @@ export default function EditProjectForm(
 					.filter((item) => {
 						if (!item.userRoleList) return item;
 						if (
-							item.userRoleList.every((i: any) => i.roleId !== 1)
+							item.userRoleList?.every((i: any) => i.roleId !== 1)
 						) {
 							return item;
 						}
@@ -131,6 +131,7 @@ export default function EditProjectForm(
 						Message.show(
 							messageConfig('success', '成功', '项目创建成功')
 						);
+						setRefreshCluster(true);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}

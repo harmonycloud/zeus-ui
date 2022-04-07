@@ -169,6 +169,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					visible={visible}
 					onCancel={() => setVisible(false)}
 					onRefresh={getData}
+					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
 			{editVisible && (
