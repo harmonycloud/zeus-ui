@@ -37,6 +37,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 		data
 	} = props;
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
+	const [errors,setErrors] = useState<boolean>(false);
 	const field = Field.useField();
 
 	const onOk: () => void = () => {
@@ -46,6 +47,12 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 				Message.warning('密码格式不正确!');
 				return;
 			}
+			if(errors){
+				Message.show(
+					messageConfig('error', '失败', '二次密码不一致')
+				);
+				return;
+			}
 
 			const sendData = {
 				clusterId,
@@ -53,7 +60,8 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 				middlewareName,
 				id: data.id,
 				user: data.user,
-				password: values.newPassword
+				password: values.newPassword,
+				confirmPassword: values.confirmPassword
 			};
 			updatePassword(sendData).then((res) => {
 				if (res.success) {
@@ -62,7 +70,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 					);
 					onCreate();
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					Message.show(messageConfig('error', '失败', res.errorMsg));
 				}
 			});
 		});
@@ -88,7 +96,10 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 		} else {
 			const newValue = field.getValue('reNewPassword');
 			if (value !== newValue) {
-				field.setError('reNewPassword', '密码二次校验错误');
+				// field.setError('reNewPassword', '密码二次校验错误');
+				setErrors(true);
+			}else{
+				setErrors(false);
 			}
 		}
 	};

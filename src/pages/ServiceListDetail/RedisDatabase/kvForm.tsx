@@ -61,7 +61,7 @@ export default function KvForm(props: any): JSX.Element {
 					type: values.type,
 					timeOut: values.timeOut,
 					key: values.key,
-					set: values.set
+					// set: values.set
 				};
 				if (
 					values.type === 'hash' ||
@@ -192,7 +192,8 @@ export default function KvForm(props: any): JSX.Element {
 					<Input
 						name="timeOut"
 						trim={true}
-						disabled={data ? true : false}
+						htmlType="number"
+						min={0}
 						placeholder="请输入内容"
 					/>
 				</FormItem>

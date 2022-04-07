@@ -36,7 +36,7 @@ export default function DataBase(props: any): JSX.Element {
 			onItemClick={menuSelect}
 			style={{ height: '100%' }}
 		>
-			<Menu.Item key="kvManage">kv管理</Menu.Item>
+			<Menu.Item key="kvManage">K-V管理</Menu.Item>
 		</Menu>
 	);
 	const childrenRender = (selectedKey: string) => {
