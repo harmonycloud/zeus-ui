@@ -51,6 +51,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 				Message.show(
 					messageConfig('error', '失败', '二次密码不一致')
 				);
+				return;
 			}
 
 			const sendData = {

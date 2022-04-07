@@ -68,6 +68,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 				Message.show(
 					messageConfig('error', '失败', '二次密码不一致')
 				);
+				return;
 			}
 			if (!selectUser.length) {
 				Message.show(
