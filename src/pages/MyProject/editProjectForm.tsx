@@ -81,6 +81,8 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 					label="项目名称"
 					required
 					requiredMessage="请输入项目名称"
+					maxLength={80}
+					minmaxLengthMessage="输入名称，且最大长度不超过80个字符"
 					pattern={pattern.projectAliasName}
 					patternMessage="请输入名称，且最大长度不超过80个字符"
 				>

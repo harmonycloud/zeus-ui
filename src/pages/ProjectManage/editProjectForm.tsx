@@ -15,7 +15,6 @@ import messageConfig from '@/components/messageConfig';
 import { getClusters } from '@/services/common';
 import { getUserList } from '@/services/user';
 import { createProject } from '@/services/project';
-import { userProps } from '../UserManage/user';
 
 import pattern from '@/utils/pattern';
 import { formItemLayout619 } from '@/utils/const';
@@ -28,7 +27,8 @@ const { Group: CheckboxGroup } = Checkbox;
 export default function EditProjectForm(
 	props: EditProjectFormProps
 ): JSX.Element {
-	const { projectId, onCancel, visible, onRefresh } = props;
+	const { projectId, onCancel, visible, onRefresh, setRefreshCluster } =
+		props;
 	const [loading, setLoading] = useState<boolean>(false);
 	const [originData, setOriginData] = useState([]);
 	const [clusterList, setClusterList] = useState([]);
@@ -63,8 +63,9 @@ export default function EditProjectForm(
 			if (res.success) {
 				const list = res.data
 					.filter((item) => {
+						if (!item.userRoleList) return item;
 						if (
-							item.userRoleList.every((i: any) => i.roleId !== 1)
+							item.userRoleList?.every((i: any) => i.roleId !== 1)
 						) {
 							return item;
 						}
@@ -130,6 +131,7 @@ export default function EditProjectForm(
 						Message.show(
 							messageConfig('success', '成功', '项目创建成功')
 						);
+						setRefreshCluster(true);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
 					}
@@ -161,6 +163,8 @@ export default function EditProjectForm(
 					required
 					requiredMessage="请输入项目名称"
 					pattern={pattern.projectAliasName}
+					maxLength={80}
+					minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
 					patternMessage="请输入名称，且最大长度不超过80个字符"
 				>
 					<Input name="aliasName" />
@@ -170,6 +174,9 @@ export default function EditProjectForm(
 					required
 					requiredMessage="请输入英文名称"
 					pattern={pattern.projectName}
+					min={2}
+					maxLength={40}
+					minmaxLengthMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
 					patternMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
 				>
 					<Input name="name" disabled={projectId ? true : false} />

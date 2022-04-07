@@ -42,7 +42,7 @@ import {
 	RMQCreateValuesParams
 } from '../catalog';
 import { StoreState } from '@/types';
-import { StorageClassProps } from '@/types/comment';
+import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import pattern from '@/utils/pattern';
 import { instanceSpecList } from '@/utils/const';
 // * 外接动态表单相关
@@ -163,7 +163,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	// * 发布失败
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
-	const [createData, setCreateData] = useState<string>();
+	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * DLedger模式节点数量
 	const [replicaCount, setReplicaCount] = useState(1);
 
@@ -440,7 +440,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 							}}
 							rightHandle={() => {
 								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData}/${chartName}/${chartVersion}`
+									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
 								});
 							}}
 						/>
