@@ -64,6 +64,10 @@ export default function UserForm(props: FormProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
+			if (checks.includes(false)) {
+				Message.warning('密码格式不正确!');
+				return;
+			}
 			if (error) {
 				Message.show(messageConfig('error', '失败', '二次密码不一致'));
 				return;
