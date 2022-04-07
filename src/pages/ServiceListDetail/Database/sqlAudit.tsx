@@ -54,7 +54,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 		setKeyword(value);
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
+		if (dataIndex === 'queryDate') {
 			const dsTemp = dataSource.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
