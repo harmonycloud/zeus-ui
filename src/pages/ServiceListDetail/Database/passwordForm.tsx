@@ -37,7 +37,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 		data
 	} = props;
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
-	const [errors,setErrors] = useState<boolean>(false);
+	const [errors, setErrors] = useState<boolean>(false);
 	const field = Field.useField();
 
 	const onOk: () => void = () => {
@@ -47,10 +47,8 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 				Message.warning('密码格式不正确!');
 				return;
 			}
-			if(errors){
-				Message.show(
-					messageConfig('error', '失败', '二次密码不一致')
-				);
+			if (errors) {
+				Message.show(messageConfig('error', '失败', '二次密码不一致'));
 				return;
 			}
 
@@ -98,7 +96,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 			if (value !== newValue) {
 				// field.setError('reNewPassword', '密码二次校验错误');
 				setErrors(true);
-			}else{
+			} else {
 				setErrors(false);
 			}
 		}

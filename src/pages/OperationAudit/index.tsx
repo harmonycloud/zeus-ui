@@ -26,6 +26,7 @@ import './index.scss';
 import moment from 'moment';
 import { getXY } from './util';
 import { spawn } from 'child_process';
+import { defaultValueRender } from '@/utils/utils';
 
 export default function OperationAudit(): JSX.Element {
 	const [dataSource, setDataSource] = useState<auditProps[]>([]);
@@ -47,7 +48,6 @@ export default function OperationAudit(): JSX.Element {
 		boolean | null
 	>(); // * 排序
 	const [statusOrder, setStatusOrder] = useState<boolean | null>(false);
-	// const [showColumnDialog, setShowColumnDialog] = useState(false); // todo 展示column列表
 	const history = useHistory();
 	const breadcrumb = (
 		<Breadcrumb>
@@ -246,31 +246,35 @@ export default function OperationAudit(): JSX.Element {
 			setModules([value]);
 		} else {
 			setChildModules([value]);
+			setCurrent(1);
+			confirmModules(1, modules, [value]);
 		}
 	};
 	const resetModules = () => {
 		setCasVisible(false);
 		setModules([]);
 		setChildModules([]);
+		confirmModules(1, [], []);
 	};
-	const confirmModules = () => {
+	const confirmModules = (c = current, m = modules, cm = childModules) => {
 		const sendData = {
-			current,
+			current: c,
 			size: 10,
 			searchKeyWord: keyword,
 			roles: roles,
 			requestMethods: methods,
-			modules,
-			childModules,
+			modules: m,
+			childModules: cm,
 			beginTimeNormalOrder: beginTimeNormalOrder
 		};
 		getAuditLists(sendData);
 	};
-	useEffect(() => {
-		if (!casVisible) {
-			confirmModules();
-		}
-	}, [casVisible]);
+	// useEffect(() => {
+	// 	console.log(casVisible);
+	// 	if (!casVisible) {
+	// 		confirmModules(1);
+	// 	}
+	// }, [casVisible]);
 	const onSort = (dataIndex: string, order: string) => {
 		const sendData: sendDataAuditProps = {
 			current: 1,
@@ -351,12 +355,6 @@ export default function OperationAudit(): JSX.Element {
 						hasClear={true}
 					/>
 					<div>
-						{/* <Button
-							style={{ marginRight: 8 }}
-							onClick={() => setShowColumnDialog(true)}
-						>
-							<Icon type="set" />
-						</Button> */}
 						<Button
 							onClick={onRefresh}
 							style={{ padding: '0 9px' }}
@@ -425,18 +423,17 @@ export default function OperationAudit(): JSX.Element {
 									hasClear={false}
 									expandTriggerType="hover"
 									dataSource={modulesFilters}
+									value={childModules[0]}
 									onChange={onModuleChange}
 									placeholder=" "
 									displayRender={(labels) => <span></span>}
 									changeOnSelect={true}
 									popupContainer={'filter-cas'}
-									// followTrigger={true}
 									onVisibleChange={(visible, type) => {
 										const casCurrent =
 											document.getElementById(
 												'filter-cas'
 											);
-										// console.log(document.body.scrollTop);
 										const x1 =
 											(casCurrent as HTMLElement)
 												.offsetLeft - 30;
@@ -455,11 +452,7 @@ export default function OperationAudit(): JSX.Element {
 											(casCurrent as HTMLElement)
 												.offsetTop +
 											43;
-
-										// console.log(x1, x2, y1, y2);
 										const obj = getXY(window.event);
-										// console.log(obj);
-										// console.log(window.event.clientX);
 										if (
 											obj.x < x1 ||
 											obj.x > x2 ||
@@ -467,22 +460,11 @@ export default function OperationAudit(): JSX.Element {
 											obj.y > y2
 										) {
 											setCasVisible(visible);
-											confirmModules();
+											// confirmModules(1);
 										}
 									}}
 									footer={
 										<div style={{ padding: 12 }}>
-											{/* <Button
-												type="primary"
-												style={{
-													marginRight: 8
-												}}
-												onClick={() =>
-													setCasVisible(false)
-												}
-											>
-												确认
-											</Button> */}
 											<Button onClick={resetModules}>
 												重置
 											</Button>
@@ -500,7 +482,12 @@ export default function OperationAudit(): JSX.Element {
 						dataIndex="actionChDesc"
 						width={180}
 					/>
-					<Table.Column title="路径" dataIndex="url" width={300} />
+					<Table.Column
+						cell={defaultValueRender}
+						title="路径"
+						dataIndex="url"
+						width={300}
+					/>
 					<Table.Column
 						title="方法"
 						dataIndex="requestMethod"

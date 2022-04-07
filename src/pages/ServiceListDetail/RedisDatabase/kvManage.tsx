@@ -243,7 +243,7 @@ function KvManage(props: any): JSX.Element {
 		} else if (record.type === 'hash') {
 			const obj = record.hashs;
 			const data = [];
-			for (let i in obj) {
+			for (const i in obj) {
 				data.push({ newKey: i, newValue: obj[i], ...record });
 			}
 			return data;
