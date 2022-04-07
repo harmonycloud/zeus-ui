@@ -31,7 +31,7 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 		if(pathname.includes('alarm/createAlarm')) {
 			const arr = pathname.split('/');
 			arr.splice(5, 1);
-			arr.splice(8,2);
+			arr.splice(8,1);
 			const result = arr.join('/');
 			return result;
 		}
