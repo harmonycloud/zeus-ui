@@ -905,75 +905,74 @@ const ServiceListByType = (props: serviceListProps) => {
 				subTitle="已发布中间件服务管理列表"
 			/>
 			<Content>
-				<Loading visible={loadingVisible}>
-					<Table
-						dataSource={showDataSource}
-						exact
-						fixedBarExpandWidth={[24]}
-						affixActionBar
-						showColumnSetting
-						showRefresh
-						onRefresh={getData}
-						primaryKey="name"
-						operation={operation()}
-						search={{
-							value: keyword,
-							onChange: handleChange,
-							onSearch: handleSearch,
-							placeholder: '请输入搜索内容'
-						}}
-						onSort={onSort}
-						onFilter={onFilter}
-						rowProps={onRowProps}
-					>
-						<Table.Column
-							title="服务名称/中文别名"
-							dataIndex="name"
-							width={180}
-							cell={nameRender}
-							lock="left"
-						/>
-						<Table.Column
-							title="状态"
-							dataIndex="status"
-							width={150}
-							cell={serviceListStatusRender}
-							filters={states}
-							filterMode="single"
-						/>
-						<Table.Column
-							title="实例数"
-							dataIndex="podNum"
-							cell={podRender}
-							width={80}
-						/>
-						<Table.Column
-							title="备注"
-							dataIndex="description"
-							cell={nullRender}
-						/>
-						<Table.Column
-							title="关联服务名称/中文别名"
-							dataIndex="associated"
-							width={180}
-							cell={associatedRender}
-						/>
-						<Table.Column
-							title="创建时间"
-							dataIndex="createTime"
-							width={180}
-							sortable={true}
-							cell={timeRender}
-						/>
-						<Table.Column
-							title="操作"
-							dataIndex="action"
-							cell={actionRender}
-							width={300}
-							{...lock}
-						/>
-					</Table>
-				</Loading>
+				<Table
+					dataSource={showDataSource}
+					exact
+					fixedBarExpandWidth={[24]}
+					affixActionBar
+					showColumnSetting
+					showRefresh
+					onRefresh={getData}
+					primaryKey="name"
+					operation={operation()}
+					loading={loadingVisible}
+					search={{
+						value: keyword,
+						onChange: handleChange,
+						onSearch: handleSearch,
+						placeholder: '请输入搜索内容'
+					}}
+					onSort={onSort}
+					onFilter={onFilter}
+					rowProps={onRowProps}
+				>
+					<Table.Column
+						title="服务名称/中文别名"
+						dataIndex="name"
+						width={180}
+						cell={nameRender}
+						lock="left"
+					/>
+					<Table.Column
+						title="状态"
+						dataIndex="status"
+						width={150}
+						cell={serviceListStatusRender}
+						filters={states}
+						filterMode="single"
+					/>
+					<Table.Column
+						title="实例数"
+						dataIndex="podNum"
+						cell={podRender}
+						width={80}
+					/>
+					<Table.Column
+						title="备注"
+						dataIndex="description"
+						cell={nullRender}
+					/>
+					<Table.Column
+						title="关联服务名称/中文别名"
+						dataIndex="associated"
+						width={180}
+						cell={associatedRender}
+					/>
+					<Table.Column
+						title="创建时间"
+						dataIndex="createTime"
+						width={180}
+						sortable={true}
+						cell={timeRender}
+					/>
+					<Table.Column
+						title="操作"
+						dataIndex="action"
+						cell={actionRender}
+						width={300}
+						{...lock}
+					/>
+				</Table>
 			</Content>
 		</Page>
 	);
