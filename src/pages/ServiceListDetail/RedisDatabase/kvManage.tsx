@@ -94,14 +94,17 @@ function KvManage(props: any): JSX.Element {
 					middlewareName,
 					db: record.db,
 					...record
-				}
-				if(record.isDetail){
-					if(record.type === 'set'){
+				};
+				if (record.isDetail) {
+					if (record.type === 'set') {
 						sendData = {
 							...sendData,
 							set: sendData.newValue
-						}
-					}else if(record.type === 'hash' || record.type === 'zset'){
+						};
+					} else if (
+						record.type === 'hash' ||
+						record.type === 'zset'
+					) {
 						sendData = {
 							...sendData,
 							[record.type]: {
@@ -109,16 +112,20 @@ function KvManage(props: any): JSX.Element {
 							}
 						};
 						delete sendData.zsets;
-					}else if(record.type === 'list'){
+					} else if (record.type === 'list') {
 						sendData = {
 							...sendData,
 							list: {
-								[String(sendData.lists.findIndex((i: string) => i ===  sendData.newValue))]: sendData.newValue
+								[String(
+									sendData.lists.findIndex(
+										(i: string) => i === sendData.newValue
+									)
+								)]: sendData.newValue
 							}
-						}
+						};
 					}
 				}
-				
+
 				deleteKv(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
@@ -155,7 +162,7 @@ function KvManage(props: any): JSX.Element {
 				{record.type === 'list' && (
 					<LinkButton
 						onClick={() => {
-							edit({...record,listType: 'front'});
+							edit({ ...record, listType: 'front', isAdd: true });
 							setIsEdit(true);
 						}}
 					>
@@ -165,7 +172,7 @@ function KvManage(props: any): JSX.Element {
 				{record.type === 'list' && (
 					<LinkButton
 						onClick={() => {
-							edit({...record, listType: 'back'});
+							edit({ ...record, listType: 'back', isAdd: true });
 							setIsEdit(true);
 						}}
 					>
@@ -175,14 +182,18 @@ function KvManage(props: any): JSX.Element {
 				{record.type !== 'list' && record.type !== 'string' && (
 					<LinkButton
 						onClick={() => {
-							edit(record);
+							edit({ ...record, isAdd: true });
 							setIsEdit(true);
 						}}
 					>
 						新增
 					</LinkButton>
 				)}
-				<LinkButton onClick={() => deleteUserHandle({...record,isDetail: false})}>
+				<LinkButton
+					onClick={() =>
+						deleteUserHandle({ ...record, isDetail: false })
+					}
+				>
 					删除
 				</LinkButton>
 			</Actions>
@@ -194,13 +205,17 @@ function KvManage(props: any): JSX.Element {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						edit(record);
+						edit({ ...record, isAdd: false });
 						setIsEdit(true);
 					}}
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => deleteUserHandle({...record,isDetail: true})}>
+				<LinkButton
+					onClick={() =>
+						deleteUserHandle({ ...record, isDetail: true })
+					}
+				>
 					删除
 				</LinkButton>
 			</Actions>
@@ -224,7 +239,7 @@ function KvManage(props: any): JSX.Element {
 		} else if (record.type === 'hash') {
 			const obj = record.hashs;
 			const data = [];
-			for (let i in obj) {
+			for (const i in obj) {
 				data.push({ newKey: i, newValue: obj[i], ...record });
 			}
 			return data;

@@ -68,7 +68,9 @@ export const disabledRoute = [
 	'/monitor/',
 	'/log/',
 	'/alarm/',
-	'/disaster/'
+	'/disaster/',
+	'/database',
+	'/redisDatabase'
 ];
 
 // 集群、分区不显示路由名单

@@ -32,6 +32,7 @@ export default {
 	paramterSetting: '参数设置',
 	backupRecovery: '数据安全',
 	externalAccess: '服务暴露',
+	redisDatabase: '数据库管理',
 	monitor: '数据监控',
 	log: '日志详情',
 	alarm: '服务告警',

@@ -48,7 +48,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 	const [leftSearch, setLeftSearch] = useState<string>('');
 	const [rightSearch, setRightSearch] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
-	const [error,setError] = useState<boolean>(false);
+	const [error, setError] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (data) {
@@ -64,10 +64,8 @@ export default function UserForm(props: FormProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
-			if(error){
-				Message.show(
-					messageConfig('error', '失败', '二次密码不一致')
-				);
+			if (error) {
+				Message.show(messageConfig('error', '失败', '二次密码不一致'));
 				return;
 			}
 			if (!selectUser.length) {
@@ -95,7 +93,9 @@ export default function UserForm(props: FormProps): JSX.Element {
 						);
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res.errorMsg));
+						Message.show(
+							messageConfig('error', '失败', res.errorMsg)
+						);
 					}
 				});
 			} else {
@@ -117,7 +117,9 @@ export default function UserForm(props: FormProps): JSX.Element {
 						);
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res.errorMsg));
+						Message.show(
+							messageConfig('error', '失败', res.errorMsg)
+						);
 					}
 				});
 			}
@@ -214,9 +216,9 @@ export default function UserForm(props: FormProps): JSX.Element {
 		} else {
 			const newValue = field.getValue('password');
 			if (value !== newValue) {
-				field.setError('confirmPassword', '密码二次校验错误');
+				// field.setError('confirmPassword', '密码二次校验错误');
 				setError(true);
-			}else{
+			} else {
 				setError(false);
 			}
 		}
@@ -327,6 +329,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 						name="description"
 						trim={true}
 						placeholder="限定200字符串"
+						maxLength={200}
 						style={{ width: 300 }}
 					/>
 				</FormItem>
