@@ -774,6 +774,7 @@ function CreateAlarm(): JSX.Element {
 													borderLeft: 0
 												}}
 												value={item.threshold}
+												htmlType="number"
 												onChange={(value) => {
 													onChange(
 														value,
@@ -788,6 +789,7 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTime}
+												htmlType="number"
 												onChange={(value) => {
 													onChange(
 														value,
@@ -802,6 +804,7 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
+												htmlType="number"
 												onChange={(value) => {
 													onChange(
 														value,
@@ -918,7 +921,6 @@ function CreateAlarm(): JSX.Element {
 											)}
 										</Col>
 									</Row>
-									{!Number(item.alertTime)}
 									{(Number(item.alertTime) > 1440 ||
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||
