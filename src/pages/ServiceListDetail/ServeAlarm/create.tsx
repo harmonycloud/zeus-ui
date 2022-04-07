@@ -7,7 +7,8 @@ import {
 	Grid,
 	Icon,
 	Checkbox,
-	Balloon
+	Balloon,
+	Divider
 } from '@alicloud/console-components';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
@@ -917,6 +918,7 @@ function CreateAlarm(): JSX.Element {
 											)}
 										</Col>
 									</Row>
+									{!Number(item.alertTime)}
 									{(Number(item.alertTime) > 1440 ||
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||

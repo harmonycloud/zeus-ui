@@ -293,11 +293,13 @@ function UserManage(props: any): JSX.Element {
 					title="关联账户"
 					dataIndex="users"
 					cell={usersRender}
+					width={300}
 				/>
 				<Table.Column
 					title="备注"
 					dataIndex="description"
 					cell={nullRender}
+					width={300}
 				/>
 				<Table.Column
 					title="创建时间"

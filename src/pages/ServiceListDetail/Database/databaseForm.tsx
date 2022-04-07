@@ -55,6 +55,7 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 					namespace,
 					middlewareName,
 					id: values.id,
+					charset: values.charset,
 					description: values.description
 				};
 				updateDb(sendData).then((res) => {

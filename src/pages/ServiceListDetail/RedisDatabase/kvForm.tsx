@@ -62,24 +62,34 @@ export default function KvForm(props: any): JSX.Element {
 					timeOut: values.timeOut,
 					key: values.key
 				};
-				if (
-					values.type === 'hash' ||
-					values.type === 'list' ||
-					values.type === 'zset'
-				) {
-					if (values.type === 'list') {
-						sendData.list = {
-							[String(data.lists.findIndex((i: String) => i === data.newValue))]: values.newValue
-						}
-					} else {
-						sendData[values.type] = {
-							[values.newKey]: values.newValue
-						};
-					}
+
+				if (values.type === 'list') {
+					sendData.list = {
+						[String(
+							data.lists.findIndex(
+								(i: String) => i === data.newValue
+							)
+						)]: values.newValue
+					};
+				} else if (values.type === 'hash') {
+					sendData[values.type] = {
+						[values.newKey]: values.newValue
+					};
+					sendData.oldHash = {
+						[data.newKey]: data.newValue
+					};
+				} else if (values.type === 'zset') {
+					sendData[values.type] = {
+						[values.newKey]: values.newValue
+					};
+					sendData.oldZset = {
+						[data.newKey]: data.newValue
+					};
 				} else if (values.type === 'string') {
 					sendData.value = values.newValue;
 				} else {
 					sendData.set = values.newValue;
+					sendData.oldSet = data.newValue;
 				}
 				updateKv(sendData).then((res) => {
 					if (res.success) {
