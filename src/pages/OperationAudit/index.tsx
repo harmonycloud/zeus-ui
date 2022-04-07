@@ -26,6 +26,7 @@ import './index.scss';
 import moment from 'moment';
 import { getXY } from './util';
 import { spawn } from 'child_process';
+import { defaultValueRender } from '@/utils/utils';
 
 export default function OperationAudit(): JSX.Element {
 	const [dataSource, setDataSource] = useState<auditProps[]>([]);
@@ -481,7 +482,12 @@ export default function OperationAudit(): JSX.Element {
 						dataIndex="actionChDesc"
 						width={180}
 					/>
-					<Table.Column title="路径" dataIndex="url" width={300} />
+					<Table.Column
+						cell={defaultValueRender}
+						title="路径"
+						dataIndex="url"
+						width={300}
+					/>
 					<Table.Column
 						title="方法"
 						dataIndex="requestMethod"
