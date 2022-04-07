@@ -63,6 +63,7 @@ export default function EditProjectForm(
 			if (res.success) {
 				const list = res.data
 					.filter((item) => {
+						if (!item.userRoleList) return item;
 						if (
 							item.userRoleList.every((i: any) => i.roleId !== 1)
 						) {

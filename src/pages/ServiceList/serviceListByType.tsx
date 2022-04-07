@@ -868,17 +868,22 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const podRender = (value: string, index: number, record: serviceProps) => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		const operateFlag =
-			jsonRole.userRoleList.find(
-				(item) => item.projectId === project.projectId
-			)?.power[record.type][2] === '1'
-				? false
-				: true;
+		let operateFlag = false;
+		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
+			operateFlag = true;
+		} else {
+			operateFlag =
+				jsonRole.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[record.type][1] === '1'
+					? true
+					: false;
+		}
 		return (
 			<span
-				className={operateFlag ? '' : 'name-link'}
+				className={operateFlag ? 'name-link' : ''}
 				onClick={() => {
-					if (!operateFlag) {
+					if (operateFlag) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
 						);
