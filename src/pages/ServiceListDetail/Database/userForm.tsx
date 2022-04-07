@@ -363,12 +363,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span
-												style={{
-													width: 100,
-													marginLeft: '50px'
-												}}
-											>
+											<span className='db-name'>
 												数据库名称
 											</span>
 											<span
@@ -422,11 +417,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 													}}
 													checked={false}
 												/>
-												<span
-													style={{
-														width: 100
-													}}
-												>
+												<span className='db-name'>
 													{item.db}
 												</span>
 												<span
@@ -487,12 +478,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span
-												style={{
-													width: 100,
-													marginLeft: '50px'
-												}}
-											>
+											<span className='db-name'>
 												数据库名称
 											</span>
 											<span
@@ -558,11 +544,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 														}}
 													/>
 												</span>
-												<span
-													style={{
-														width: 100
-													}}
-												>
+												<span className='db-name'>
 													{item.db}
 												</span>
 												<RadioGroup

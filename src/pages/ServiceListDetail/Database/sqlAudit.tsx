@@ -36,7 +36,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
-	}, [keyword]);
+	}, []);
 	const [current, setCurrent] = useState<number>(1); // * 页码
 	const [total, setTotal] = useState<number | undefined>(10); // * 总数
 
@@ -52,6 +52,9 @@ function SqlAudit(props: ManageProps): JSX.Element {
 	};
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const handleSearch: (value: string) => void = (value: string) => {
+		onRefresh();
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'queryDate') {
@@ -97,7 +100,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 		<>
 			<div className="audit-table-header-layout">
 				<Search
-					onSearch={handleChange}
+					onSearch={handleSearch}
 					onChange={handleChange}
 					placeholder="请输入内容"
 					style={{

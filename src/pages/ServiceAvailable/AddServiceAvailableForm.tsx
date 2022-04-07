@@ -328,6 +328,9 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							}
 						]
 				  };
+		if(storage.getLocal('isDetail')){
+			sendData.middlewareName = storage.getLocal('isDetail').middlewareName;
+		}
 		addIngress(sendData).then((res) => {
 			if (res.success) {
 				Message.show(
