@@ -117,7 +117,12 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						maxLength={16}
 						minmaxLengthMessage="端口不能超过16位"
 					>
-						<Input id="name" name="port" placeholder="端口" />
+						<Input
+							htmlType="number"
+							id="name"
+							name="port"
+							placeholder="端口"
+						/>
 					</FormItem>
 				</div>
 				<FormItem

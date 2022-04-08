@@ -96,7 +96,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					}
 				});
 			JSON.stringify(namespace) !== '{}' &&
-				getExposedService(params.middlewareName, params.type, params.namespace);
+				getExposedService(
+					params.middlewareName,
+					params.type,
+					params.namespace
+				);
 		} else if (record) {
 			setCurrent(record.middlewareName);
 			setExposedWay(record.exposeType);
@@ -158,7 +162,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								return {
 									label: i.aliasName || i.name,
 									value: i.name,
-									isLeaf: true,
+									isLeaf: true
 								};
 							})
 						};
@@ -333,7 +337,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			sendData.middlewareType = params.type;
 			sendData.namespace = params.namespace;
 		}
-		if(record){
+		if (record) {
 			sendData.namespace = record.namespace;
 		}
 		addIngress(sendData).then((res) => {
@@ -362,10 +366,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			name: value as string,
 			type: extra.selectedPath[0].value
 		});
-		getExposedService(value as string, extra.selectedPath[0].value, );
+		getExposedService(value as string, extra.selectedPath[0].value);
 	};
 
-	const getExposedService = (midName: string, type: string, defaultNamespace?: string) => {
+	const getExposedService = (
+		midName: string,
+		type: string,
+		defaultNamespace?: string
+	) => {
 		const sendData = {
 			clusterId: cluster.id,
 			namespace: defaultNamespace ? defaultNamespace : namespace.name,
