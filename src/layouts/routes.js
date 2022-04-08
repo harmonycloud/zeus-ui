@@ -197,6 +197,11 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
+					path="/serviceAvailable/addServiceAvailable/:type/:middlewareName/:namespace"
+					component={AddServiceAvailableForm}
+					exact
+				/>
+				<Route
 					path="/monitorAlarm"
 					exact
 					render={() => <Redirect to="/monitorAlarm/dataMonitor" />}

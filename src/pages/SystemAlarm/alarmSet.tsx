@@ -324,7 +324,7 @@ function AlarmSet(props: any) {
 									/>
 								</Form.Item>
 								<Form.Item required label="密码">
-									<Input
+									<Input.Password
 										placeholder="请输入密码"
 										name="password"
 										onChange={checkBtn}

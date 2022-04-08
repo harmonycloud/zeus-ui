@@ -10,6 +10,7 @@ import {
 	Icon
 } from '@alicloud/console-components';
 import { Page, Content, Header } from '@alicloud/console-components-page';
+import { useParams } from 'react-router';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 
 import AddServiceAvailableForm from '../ServiceAvailable/AddServiceAvailableForm';
@@ -49,6 +50,7 @@ function IngressList(props: ingressProps) {
 		lock: 'right'
 	});
 	const history = useHistory();
+	const params: any = useParams();
 	useEffect(() => {
 		window.onresize = function () {
 			document.body.clientWidth >= 2300
@@ -79,7 +81,7 @@ function IngressList(props: ingressProps) {
 	) => {
 		const sendData = {
 			clusterId,
-			namespace,
+			namespace: params.namespace,
 			type,
 			middlewareName
 		};
@@ -96,10 +98,11 @@ function IngressList(props: ingressProps) {
 	const Operation = {
 		primary: (
 			<Button
-				onClick={() => {
-					history.push('/serviceAvailable/addServiceAvailable');
-					storage.setLocal('isDetail', { middlewareName, type });
-				}}
+				onClick={() =>
+					history.push(
+						`/serviceAvailable/addServiceAvailable/${type}/${middlewareName}/${namespace}`
+					)
+				}
 				type="primary"
 			>
 				新增
