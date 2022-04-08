@@ -42,7 +42,9 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						onCancel();
 						onRefresh();
 					} else {
-						field.setError('name', res.errorMsg);
+						Message.show(
+							messageConfig('error', '失败', res.errorMsg)
+						);
 					}
 				});
 			});
@@ -61,7 +63,9 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						onCancel();
 						onRefresh();
 					} else {
-						field.setError('name', res.errorMsg);
+						Message.show(
+							messageConfig('error', '失败', res.errorMsg)
+						);
 					}
 				});
 			});

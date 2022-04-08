@@ -31,7 +31,7 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					setDataSource(res.data.list);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
 		return () => {
@@ -46,7 +46,7 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 			if (res.success) {
 				setDataSource(res.data.list);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
 	};
@@ -98,7 +98,7 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 						);
 						getData();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						Message.show(messageConfig('error', '失败', res.errorMsg));
 					}
 				});
 			}

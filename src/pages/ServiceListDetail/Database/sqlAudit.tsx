@@ -39,6 +39,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 			}
 		});
 	}, []);
+	
 
 	const onRefresh: () => void = () => {
 		queryAuditSql({
