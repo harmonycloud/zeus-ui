@@ -134,17 +134,26 @@ export default function UserForm(props: FormProps): JSX.Element {
 		listDb({ clusterId, namespace, middlewareName }).then((res) => {
 			if (res.success) {
 				if (data) {
-					res.data &&
-						setUsers(
-							res.data.map((item: any) => {
-								return {
-									id: item.id,
-									authority: '2',
-									db: item.db,
-									charset: item.charset
-								};
-							})
-						);
+					setUsers(
+						res.data.map((item: any) => {
+							return {
+								id: item.id,
+								authority: '2',
+								db: item.db,
+								charset: item.charset
+							};
+						})
+					);
+					setLeftSearch(
+						res.data.map((item: any) => {
+							return {
+								id: item.id,
+								authority: '2',
+								db: item.db,
+								charset: item.charset
+							};
+						})
+					);
 					setSelectUser(
 						data.dbs.map((item: any) => {
 							return {
@@ -160,6 +169,17 @@ export default function UserForm(props: FormProps): JSX.Element {
 				} else {
 					res.data &&
 						setUsers(
+							res.data.map((item: any) => {
+								return {
+									id: item.id,
+									authority: '2',
+									db: item.db,
+									charset: item.charset
+								};
+							})
+						);
+					res.data &&
+						setLeftUsers(
 							res.data.map((item: any) => {
 								return {
 									id: item.id,
@@ -218,7 +238,6 @@ export default function UserForm(props: FormProps): JSX.Element {
 		} else {
 			const newValue = field.getValue('password');
 			if (value !== newValue) {
-				// field.setError('confirmPassword', '密码二次校验错误');
 				setError(true);
 			} else {
 				setError(false);
@@ -367,7 +386,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span style={{width: '100px'}}>
+											<span style={{ width: '100px' }}>
 												数据库名称
 											</span>
 											<span
@@ -393,7 +412,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 														)
 													);
 													setLeftUsers(
-														users.filter(
+														leftUsers.filter(
 															(i) =>
 																i.db !== item.db
 														)
@@ -407,7 +426,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 													]);
 													setRightUsers([
 														...selectUser,
-														users.find(
+														leftUsers.find(
 															(i) =>
 																i.db === item.db
 														)
@@ -421,7 +440,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 													}}
 													checked={false}
 												/>
-												<span className='db-name'>
+												<span className="db-name">
 													{item.db}
 												</span>
 												<span
@@ -440,8 +459,8 @@ export default function UserForm(props: FormProps): JSX.Element {
 										onClick={() => {
 											setUsers([]);
 											setLeftUsers([]);
-											setSelectUser(users);
-											setRightUsers(users);
+											setSelectUser(leftUsers);
+											setRightUsers(leftUsers);
 										}}
 									>
 										移动全部
@@ -482,7 +501,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span style={{width: '100px'}}>
+											<span style={{ width: '100px' }}>
 												数据库名称
 											</span>
 											<span
@@ -515,7 +534,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 															)
 														);
 														setRightUsers(
-															selectUser.filter(
+															rightUsers.filter(
 																(i) =>
 																	i.db !==
 																	item.db
@@ -531,7 +550,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 														]);
 														setLeftUsers([
 															...users,
-															selectUser.find(
+															rightUsers.find(
 																(i) =>
 																	i.db ===
 																	item.db
@@ -548,7 +567,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 														}}
 													/>
 												</span>
-												<span className='db-name'>
+												<span className="db-name">
 													{item.db}
 												</span>
 												<RadioGroup
@@ -615,10 +634,10 @@ export default function UserForm(props: FormProps): JSX.Element {
 								<div className="transfer-footer">
 									<span
 										onClick={() => {
-											setUsers([...users, ...selectUser]);
+											setUsers([...leftUsers, ...rightUsers]);
 											setLeftUsers([
-												...users,
-												...selectUser
+												...leftUsers,
+												...rightUsers
 											]);
 											setSelectUser([]);
 											setRightUsers([]);

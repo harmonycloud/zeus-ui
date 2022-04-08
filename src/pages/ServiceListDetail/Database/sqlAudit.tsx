@@ -24,7 +24,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 
 	useEffect(() => {
 		queryAuditSql({
-			searchWord: keyword,
+			keyword,
 			clusterId,
 			namespace,
 			middlewareName,
@@ -43,7 +43,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 
 	const onRefresh: () => void = () => {
 		queryAuditSql({
-			searchWord: keyword,
+			keyword,
 			clusterId,
 			namespace,
 			middlewareName,
@@ -89,7 +89,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 	const pageChange = (current: number) => {
 		setCurrent(current);
 		queryAuditSql({
-			searchWord: keyword,
+			keyword,
 			clusterId,
 			namespace,
 			middlewareName,
