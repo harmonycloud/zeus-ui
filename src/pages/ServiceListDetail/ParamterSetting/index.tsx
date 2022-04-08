@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Content, Menu } from '@alicloud/console-components-page';
-import { Dialog } from '@alicloud/console-components';
 import { useParams } from 'react-router';
 import ParamterList from './paramerListVersiontwo';
 import ParamterHistory from './paramterHistory';
@@ -21,7 +20,6 @@ export default function ParamterSetting(
 		customMid,
 		capabilities
 	} = props;
-	const [refreshFlag, setRefreshFlag] = useState(false);
 	const [selectedKey, setSelectedKey] = useState(
 		storage.getSession('paramsTab') || 'list'
 	);
@@ -58,7 +56,6 @@ export default function ParamterSetting(
 						middlewareName={middlewareName}
 						namespace={namespace}
 						type={type}
-						// onFreshChange={handleChange}
 					/>
 				);
 			case 'config':
@@ -88,9 +85,6 @@ export default function ParamterSetting(
 			default:
 				return null;
 		}
-	};
-	const handleChange = () => {
-		setRefreshFlag(!refreshFlag);
 	};
 	if (customMid && !(capabilities || []).includes('config')) {
 		return <DefaultPicture />;

@@ -326,7 +326,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							)
 						);
 						history.push(
-							`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}`
+							`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
 						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
