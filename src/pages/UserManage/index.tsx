@@ -261,11 +261,12 @@ function UserManage(): JSX.Element {
 						{list.map((i: any) => {
 							return (
 								<div
-									style={{ marginRight: 4 }}
+									style={{ marginBottom: 4 }}
 									key={i.projectId}
-									className="blue-tip"
 								>
-									{i.projectName}:{i.roleName}
+									<div className="blue-tip">
+										{i.projectName}:{i.roleName}
+									</div>
 								</div>
 							);
 						})}

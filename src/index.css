@@ -615,6 +615,8 @@ table.table-list tbody tr td {
 .blue-tip{
 	display: inline;
 	padding: 2px;
+	height: 20px;
+	line-height: 20px;
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
@@ -625,6 +627,8 @@ table.table-list tbody tr td {
 .orange-tip{
 	display: inline;
 	padding: 2px;
+	height: 20px;
+	line-height: 20px;
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
@@ -635,6 +639,8 @@ table.table-list tbody tr td {
 .red-tip{
 	display: inline;
 	padding: 2px;
+	height: 20px;
+	line-height: 20px;
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
