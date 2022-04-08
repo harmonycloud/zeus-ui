@@ -65,8 +65,6 @@ function AlarmRecord(props: alarmRecordProps) {
 	const getData = () => {
 		if (alarmType === 'system') {
 			const sendData = {
-				level: '',
-				clusterId,
 				lay: 'system',
 				keyword
 			};
@@ -194,7 +192,7 @@ function AlarmRecord(props: alarmRecordProps) {
 			<Table.Column
 				title="告警等级"
 				dataIndex="level"
-				width={100}
+				width={110}
 				filters={alarmWarn}
 				filterMode="single"
 				cell={levelRender}
