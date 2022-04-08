@@ -634,7 +634,10 @@ export default function UserForm(props: FormProps): JSX.Element {
 								<div className="transfer-footer">
 									<span
 										onClick={() => {
-											setUsers([...leftUsers, ...rightUsers]);
+											setUsers([
+												...leftUsers,
+												...rightUsers
+											]);
 											setLeftUsers([
 												...leftUsers,
 												...rightUsers
