@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
+import { useParams } from 'react-router';
 import SlidePanel from '@alicloud/console-components-slide-panel';
 import { connect } from 'react-redux';
 import {
@@ -64,6 +65,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		portDetailDtoList: []
 	});
 	const location: Location<stateProps> = useLocation();
+	const params: any = useParams();
 	const middlewareName = location?.state?.middlewareName || '';
 	const [ingressTcpFlag] = useState(cluster.ingressList || false);
 	const [data, setData] = useState([]);
@@ -83,8 +85,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const history = useHistory();
 
 	useEffect(() => {
-		if (storage.getLocal('isDetail')) {
-			setCurrent(storage.getLocal('isDetail').middlewareName);
+		if (params.middlewareName) {
+			setCurrent(params.middlewareName);
 			JSON.stringify(namespace) !== '{}' &&
 				getIngresses({ clusterId: cluster.id }).then((res) => {
 					if (res.success) {
@@ -95,8 +97,9 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				});
 			JSON.stringify(namespace) !== '{}' &&
 				getExposedService(
-					storage.getLocal('isDetail').middlewareName,
-					storage.getLocal('isDetail').type
+					params.middlewareName,
+					params.type,
+					params.namespace
 				);
 		} else if (record) {
 			setCurrent(record.middlewareName);
@@ -115,7 +118,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					record.middlewareNickName
 						? record.middlewareNickName
 						: record.middlewareName,
-					record.middlewareType
+					record.middlewareType,
+					record.namespace
 				);
 			if (record.protocol !== 'HTTP') {
 				field.setValues({
@@ -197,7 +201,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					setSelectedInstance(selectedInstanceTemp);
 					getExposedService(
 						selectedInstanceTemp.name,
-						selectedInstanceTemp.type
+						selectedInstanceTemp.type,
+						res.data[0].serviceList[0].namespace
 					);
 				}
 			});
@@ -215,7 +220,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		return () => {
 			storage.getLocal('availableRecord') &&
 				storage.removeLocal('availableRecord');
-			storage.getLocal('isDetail') && storage.removeLocal('isDetail');
 		};
 	}, []);
 	const onChange = (value: string) => {
@@ -328,9 +332,13 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							}
 						]
 				  };
-		if (storage.getLocal('isDetail')) {
-			sendData.middlewareName =
-				storage.getLocal('isDetail').middlewareName;
+		if (params.middlewareName) {
+			sendData.middlewareName = params.middlewareName;
+			sendData.middlewareType = params.type;
+			sendData.namespace = params.namespace;
+		}
+		if (record) {
+			sendData.namespace = record.namespace;
 		}
 		addIngress(sendData).then((res) => {
 			if (res.success) {
@@ -361,17 +369,21 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		getExposedService(value as string, extra.selectedPath[0].value);
 	};
 
-	const getExposedService = (midName: string, type: string) => {
+	const getExposedService = (
+		midName: string,
+		type: string,
+		defaultNamespace?: string
+	) => {
 		const sendData = {
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace: defaultNamespace ? defaultNamespace : namespace.name,
 			middlewareName: midName,
 			middlewareType: type
 		};
 		getServices(sendData).then((res) => {
 			if (res.success) {
 				setServices(res.data);
-				setSelectedService(res.data[0]);
+				res.data && setSelectedService(res.data[0]);
 				// setServicePorts(res.data[0].portDetailDtoList);
 			} else {
 				Message.show(messageConfig('error', '失败', res));
@@ -445,7 +457,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							disabled={
 								cluster.ingress === null ||
 								!!record ||
-								storage.getLocal('isDetail')
+								params.middlewareName
 							}
 						/>
 					</FormItem>

@@ -24,7 +24,7 @@ import {
 } from './service.available';
 import { iconTypeRender, timeRender } from '@/utils/utils';
 import CustomIcon from '@/components/CustomIcon';
-import { getIngresses, deleteIngress, addIngress } from '@/services/ingress';
+import { getIngresses, deleteIngress } from '@/services/ingress';
 import AddServiceAvailableForm from './AddServiceAvailableForm';
 import storage from '@/utils/storage';
 import { getList } from '@/services/serviceList';

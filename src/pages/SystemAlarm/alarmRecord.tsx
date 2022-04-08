@@ -200,7 +200,7 @@ function AlarmRecord(props: alarmRecordProps) {
 			<Table.Column
 				title="告警内容"
 				dataIndex="content"
-				width={200}
+				width={180}
 				cell={nullRender}
 			/>
 			<Table.Column
@@ -208,7 +208,7 @@ function AlarmRecord(props: alarmRecordProps) {
 				dataIndex="clusterId"
 				cell={nameRender}
 				filters={filters}
-				width={120}
+				width={160}
 				filterMode={filterMode}
 			/>
 			<Table.Column
