@@ -44,11 +44,14 @@ export default function DataSecurity(): JSX.Element {
 			setIsService(false);
 		}
 	};
-	const NotSupport = () => (
-		<h3 style={{ textAlign: 'center' }}>
-			该中间件类型不支持该功能，请选择mysql或者elasticsearch类型的中间件
-		</h3>
-	);
+	const NotSupport = () => {
+		setData(undefined);
+		return (
+			<h3 style={{ textAlign: 'center' }}>
+				该中间件类型不支持该功能，请选择mysql或者elasticsearch类型的中间件
+			</h3>
+		);
+	};
 
 	return (
 		<SecondLayout

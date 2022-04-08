@@ -50,21 +50,23 @@ function UserManage(props: any): JSX.Element {
 		);
 	}, []);
 	const onRefresh: () => void = () => {
-		listUser({ clusterId, namespace, middlewareName, keyword }).then((res) => {
-			if (res.success) {
-				const data = res.data
-					?.filter((item: any) => item.user === 'root')
-					.concat(
-						res.data.filter((item: any) => item.user !== 'root')
-					)
-					.map((item: any) => {
-						return { ...item, passwordVisible: false };
-					});
-				res.data ? setDataSource(data) : setDataSource([]);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
+		listUser({ clusterId, namespace, middlewareName, keyword }).then(
+			(res) => {
+				if (res.success) {
+					const data = res.data
+						?.filter((item: any) => item.user === 'root')
+						.concat(
+							res.data.filter((item: any) => item.user !== 'root')
+						)
+						.map((item: any) => {
+							return { ...item, passwordVisible: false };
+						});
+					res.data ? setDataSource(data) : setDataSource([]);
+				} else {
+					Message.show(messageConfig('error', '失败', res));
+				}
 			}
-		});
+		);
 	};
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
@@ -160,7 +162,7 @@ function UserManage(props: any): JSX.Element {
 							cursor: 'pointer'
 						}}
 					>
-						<span className='db-name'>{value[0].db}</span>[
+						<span className="db-name">{value[0].db}</span>[
 						{
 							authorityList.find(
 								(item) => item.authority === value[0].authority
@@ -180,7 +182,11 @@ function UserManage(props: any): JSX.Element {
 								justifyContent: 'space-between'
 							}}
 						>
-							<span title={item.db} style={{ marginRight: '8px' }} className='db-name'>
+							<span
+								title={item.db}
+								style={{ marginRight: '8px' }}
+								className="db-name"
+							>
 								{item.db}
 							</span>
 							[
@@ -223,7 +229,9 @@ function UserManage(props: any): JSX.Element {
 							cursor: 'pointer'
 						}}
 					>
-						<span className='db-name'>{value.length ? value[0].db : '/'}</span>
+						<span className="db-name">
+							{value.length ? value[0].db : '/'}
+						</span>
 						{value.length
 							? '[' +
 							  authorityList.find(
@@ -241,7 +249,12 @@ function UserManage(props: any): JSX.Element {
 						cursor: 'pointer'
 					}}
 				>
-					<span className='db-name' title={value.length ? value[0].db : '/'}>{value.length ? value[0].db : '/'}</span>
+					<span
+						className="db-name"
+						title={value.length ? value[0].db : '/'}
+					>
+						{value.length ? value[0].db : '/'}
+					</span>
 					{value.length
 						? '[' +
 						  authorityList.find(
@@ -299,10 +312,7 @@ function UserManage(props: any): JSX.Element {
 	};
 	const userRender = (value: string, index: number, record: any) => {
 		return (
-			<span
-				title={value}
-				className='db-name'
-			>
+			<span title={value} className="db-name">
 				{record.user === 'root' && (
 					<Tooltip
 						trigger={

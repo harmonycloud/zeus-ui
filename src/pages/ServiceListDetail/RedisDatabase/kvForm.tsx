@@ -67,7 +67,7 @@ export default function KvForm(props: any): JSX.Element {
 					sendData.list = {
 						[String(
 							data.lists.findIndex(
-								(i: String) => i === data.newValue
+								(i: string) => i === data.newValue
 							)
 						)]: values.newValue
 					};

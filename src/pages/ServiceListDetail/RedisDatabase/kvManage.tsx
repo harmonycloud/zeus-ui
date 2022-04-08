@@ -228,7 +228,7 @@ function KvManage(props: any): JSX.Element {
 	};
 	const keyRender = (value: any, index: number, record: any) => {
 		return (
-			<span className='key-render'>
+			<span className="key-render">
 				{record.type === 'string' ? record.values : '/'}
 			</span>
 		);

@@ -47,7 +47,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		});
 	};
 	useEffect(() => {
-			getData();
+		getData();
 	}, []);
 	const onCreate = () => {
 		getData();

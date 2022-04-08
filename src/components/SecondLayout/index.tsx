@@ -84,10 +84,15 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							(item: filtersProps) =>
 								item.value === location.state.middlewareType
 						);
+						console.log(temp);
+						const cur = temp[0].children.find(
+							(item: filtersProps) =>
+								item.value === location.state.middlewareName
+						);
 						onChange(
 							location.state.middlewareName,
 							location.state.middlewareType,
-							temp[0].namespace,
+							cur.namespace,
 							cluster,
 							temp[0].aliasName
 						);
@@ -122,7 +127,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 			onChange(
 				value as string,
 				extra.selectedPath[0].value,
-				namespace.name,
+				data.namespace,
 				cluster
 			);
 		} else {
@@ -132,7 +137,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 				onChange(
 					data.children[0].value as string,
 					extra.selectedPath[0].value,
-					namespace.name,
+					data.children[0].namespace,
 					cluster
 				);
 			} else {

@@ -121,7 +121,6 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 	};
 
 	if (!data || !data.length) {
-
 		return (
 			<div className="no-content">
 				<img width={70} height={70} src={noData} />

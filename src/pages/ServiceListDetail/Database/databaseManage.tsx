@@ -64,13 +64,15 @@ function UserManage(props: any): JSX.Element {
 		});
 	}, []);
 	const onRefresh: () => void = () => {
-		listDb({ clusterId, namespace, middlewareName, keyword }).then((res) => {
-			if (res.success) {
-				res.data && setDataSource(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+		listDb({ clusterId, namespace, middlewareName, keyword }).then(
+			(res) => {
+				if (res.success) {
+					res.data && setDataSource(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
 			}
-		});
+		);
 	};
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
@@ -168,7 +170,10 @@ function UserManage(props: any): JSX.Element {
 								justifyContent: 'space-between'
 							}}
 						>
-							<span className="db-name" title={item.user}>{item.user}</span>[
+							<span className="db-name" title={item.user}>
+								{item.user}
+							</span>
+							[
 							<span style={{ marginRight: '8px' }}>
 								{
 									authorityList.find(
@@ -189,7 +194,7 @@ function UserManage(props: any): JSX.Element {
 							cursor: 'pointer'
 						}}
 					>
-						<span className="db-name" >
+						<span className="db-name">
 							{value.length ? value[0].user : '/'}
 						</span>
 						<span>
@@ -212,7 +217,10 @@ function UserManage(props: any): JSX.Element {
 						cursor: 'pointer'
 					}}
 				>
-					<span className="db-name" title={value.length ? value[0].user : '/'}>
+					<span
+						className="db-name"
+						title={value.length ? value[0].user : '/'}
+					>
 						{value.length ? value[0].user : '/'}
 					</span>
 					<span>

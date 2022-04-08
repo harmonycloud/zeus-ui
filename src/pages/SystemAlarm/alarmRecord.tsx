@@ -217,7 +217,11 @@ function AlarmRecord(props: alarmRecordProps) {
 				width={160}
 				cell={nullRender}
 			/>
-			<Table.Column title="实际监测" dataIndex="summary" cell={nullRender} />
+			<Table.Column
+				title="实际监测"
+				dataIndex="summary"
+				cell={nullRender}
+			/>
 			<Table.Column
 				title="告警时间"
 				dataIndex="time"

@@ -7,6 +7,5 @@ export const backupList = `${api}/clusters/{clusterId}/namespaces/{namespace}/ba
 // 创建恢复
 export const useBackup = `${api}/clusters/{clusterId}/namespaces/{namespace}/backup/restore`;
 
-
 // // * 使用备份
 // export const useBackup = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/backups/restore`;

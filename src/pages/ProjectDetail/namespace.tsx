@@ -100,7 +100,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 					content="确认要删除该命名空间？"
 					onConfirm={() => {
 						deleteNamespace({
-							clusterId: id,
+							clusterId: record.clusterId,
 							name: record.name
 						}).then((res) => {
 							if (res.success) {
