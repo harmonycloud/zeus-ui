@@ -135,7 +135,7 @@ const YamlEdit = () => {
 							messageConfig('success', '成功', 'yaml编辑成功')
 						);
 						history.push(
-							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${chartVersion}`
+							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${chartVersion}/${namespace}`
 						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
