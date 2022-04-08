@@ -440,7 +440,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 													}}
 													checked={false}
 												/>
-												<span className="db-name">
+												<span className="db-name" title={item.db}>
 													{item.db}
 												</span>
 												<span
@@ -567,7 +567,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 														}}
 													/>
 												</span>
-												<span className="db-name">
+												<span className="db-name" title={item.db}>
 													{item.db}
 												</span>
 												<RadioGroup
