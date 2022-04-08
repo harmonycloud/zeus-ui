@@ -22,10 +22,10 @@ import { versionProps, paramsProps } from './service.list';
 
 function ServiceVersion(props: versionProps): JSX.Element {
 	const {
-		globalVar: { cluster, namespace }
+		globalVar: { cluster }
 	} = props;
 	const params: paramsProps = useParams();
-	const { name, middlewareName, type, aliasName } = params;
+	const { name, middlewareName, type, aliasName, namespace } = params;
 	const [originData, setOriginData] = useState<middlewareProps[]>([]);
 	const [dataSource, setDataSource] = useState<middlewareProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -35,7 +35,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		getVersions({
 			clusterId: cluster.id,
 			middlewareName,
-			namespace: namespace.name,
+			namespace,
 			type
 		}).then((res) => {
 			if (res.success) {
@@ -47,10 +47,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		});
 	};
 	useEffect(() => {
-		if (JSON.stringify(namespace) !== '{}') {
 			getData();
-		}
-	}, [namespace]);
+	}, []);
 	const onCreate = () => {
 		getData();
 	};
@@ -148,7 +146,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					className="name-link text-overflow"
 					onClick={() =>
 						history.push(
-							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${record.chartVersion}`
+							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${record.chartVersion}/${namespace}`
 						)
 					}
 				>
@@ -168,7 +166,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 		setDataSource([...originData]);
 		upgradeCheck({
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace,
 			middlewareName,
 			type,
 			chartName: record.chartName,
@@ -181,7 +179,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					onOk: () => {
 						return upgradeChart({
 							clusterId: cluster.id,
-							namespace: namespace.name,
+							namespace,
 							middlewareName,
 							type,
 							chartName: record.chartName,

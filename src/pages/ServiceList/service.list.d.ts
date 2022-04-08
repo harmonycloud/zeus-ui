@@ -93,4 +93,5 @@ export interface paramsProps {
 	type: string;
 	middlewareName: string;
 	aliasName: string;
+	namespace: string;
 }

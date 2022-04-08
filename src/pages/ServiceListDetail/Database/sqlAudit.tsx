@@ -19,6 +19,8 @@ function SqlAudit(props: ManageProps): JSX.Element {
 
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
+	const [current, setCurrent] = useState<number>(1); // * 页码
+	const [total, setTotal] = useState<number | undefined>(10); // * 总数
 
 	useEffect(() => {
 		queryAuditSql({
@@ -37,11 +39,16 @@ function SqlAudit(props: ManageProps): JSX.Element {
 			}
 		});
 	}, []);
-	const [current, setCurrent] = useState<number>(1); // * 页码
-	const [total, setTotal] = useState<number | undefined>(10); // * 总数
 
 	const onRefresh: () => void = () => {
-		queryAuditSql({ searchWord: keyword }).then((res) => {
+		queryAuditSql({
+			searchWord: keyword,
+			clusterId,
+			namespace,
+			middlewareName,
+			current,
+			size: 10
+		}).then((res) => {
 			if (res.success) {
 				res.data && setDataSource(res.data.data);
 				res.data && setTotal(res.data.count);

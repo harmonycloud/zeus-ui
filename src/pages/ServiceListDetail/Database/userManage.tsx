@@ -301,11 +301,7 @@ function UserManage(props: any): JSX.Element {
 		return (
 			<span
 				title={value}
-				style={{
-					overflow: 'hidden',
-					textOverflow: 'ellipsis',
-					wordBreak: 'break-all'
-				}}
+				className='db-name'
 			>
 				{record.user === 'root' && (
 					<Tooltip

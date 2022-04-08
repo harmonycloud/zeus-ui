@@ -147,7 +147,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 服务详情 - 版本管理*/}
 				<Route
-					path="/serviceList/:name/:aliasName/serverVersion/:middlewareName/:type"
+					path="/serviceList/:name/:aliasName/serverVersion/:middlewareName/:type/:namespace"
 					component={ServiceVersion}
 				/>
 				{/* 服务详情 - 实例详情*/}
