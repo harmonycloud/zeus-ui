@@ -39,16 +39,39 @@
 				}
 			}
 		}
-        .transfer-footer{
-            height: 39px;
+		.transfer-footer {
+			height: 39px;
 			border-top: 1px solid #c0c6cc;
-            color: #0070cc;
-            line-height: 23px;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-        &:nth-of-type(3){
-            width: 528px;
-        }
+			color: #0070cc;
+			line-height: 23px;
+			padding: 8px 16px;
+			cursor: pointer;
+		}
+		&:nth-of-type(3) {
+			width: 528px;
+		}
 	}
+	.db-name {
+		width: 100px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+}
+.db-name {
+	max-width: 50px;
+	vertical-align: middle;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.description{
+	max-width: 200px;
+	display: inline-block;
+	vertical-align: middle;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }

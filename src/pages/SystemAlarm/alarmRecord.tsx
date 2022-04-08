@@ -194,7 +194,7 @@ function AlarmRecord(props: alarmRecordProps) {
 			<Table.Column
 				title="告警等级"
 				dataIndex="level"
-				width={150}
+				width={100}
 				filters={alarmWarn}
 				filterMode="single"
 				cell={levelRender}
@@ -210,6 +210,7 @@ function AlarmRecord(props: alarmRecordProps) {
 				dataIndex="clusterId"
 				cell={nameRender}
 				filters={filters}
+				width={120}
 				filterMode={filterMode}
 			/>
 			<Table.Column
@@ -218,12 +219,17 @@ function AlarmRecord(props: alarmRecordProps) {
 				width={160}
 				cell={nullRender}
 			/>
-			<Table.Column title="实际监测" dataIndex="summary" />
+			<Table.Column
+				title="实际监测"
+				dataIndex="summary"
+				cell={nullRender}
+			/>
 			<Table.Column
 				title="告警时间"
 				dataIndex="time"
 				cell={createTimeRender}
 				sortable
+				width={160}
 			/>
 		</Table>
 	);

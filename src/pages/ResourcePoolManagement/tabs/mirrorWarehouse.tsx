@@ -31,7 +31,7 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					setDataSource(res.data.list);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
 		return () => {
@@ -46,16 +46,19 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 			if (res.success) {
 				setDataSource(res.data.list);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
 	};
 	const Operation = {
 		primary: (
-			<Button type="primary" onClick={() => {
-				setIsEdit(false);
-				setVisible(true);
-			}}>
+			<Button
+				type="primary"
+				onClick={() => {
+					setIsEdit(false);
+					setVisible(true);
+				}}
+			>
 				新增
 			</Button>
 		)
@@ -79,10 +82,10 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 	const editMirror = (record: any) => {
 		setIsEdit(true);
 		console.log(record);
-		
+
 		setFormData(record);
 		setVisible(true);
-	}
+	};
 	const deleteMirrors = (record: any) => {
 		Dialog.show({
 			title: '操作确认',
@@ -98,7 +101,9 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 						);
 						getData();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						Message.show(
+							messageConfig('error', '失败', res.errorMsg)
+						);
 					}
 				});
 			}
@@ -111,11 +116,7 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 	) => {
 		return (
 			<Actions>
-				<LinkButton
-					onClick={() => editMirror(record)}
-				>
-					编辑
-				</LinkButton>
+				<LinkButton onClick={() => editMirror(record)}>编辑</LinkButton>
 				<LinkButton onClick={() => deleteMirrors(record)}>
 					删除
 				</LinkButton>
@@ -137,8 +138,16 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					placeholder: '请输入关键字搜索'
 				}}
 			>
-				<Table.Column title="镜像仓库地址" dataIndex="address" width={150} />
-				<Table.Column title="镜像仓库项目" dataIndex="project" width={150} />
+				<Table.Column
+					title="镜像仓库地址"
+					dataIndex="address"
+					width={150}
+				/>
+				<Table.Column
+					title="镜像仓库项目"
+					dataIndex="project"
+					width={150}
+				/>
 				<Table.Column
 					title="描述"
 					dataIndex="description"

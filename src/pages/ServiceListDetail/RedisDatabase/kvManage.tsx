@@ -140,7 +140,7 @@ function KvManage(props: any): JSX.Element {
 		});
 	};
 	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
+		if (dataIndex === 'timeOut') {
 			const dsTemp = dataSource.sort((a, b) => {
 				const result =
 					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
@@ -227,7 +227,11 @@ function KvManage(props: any): JSX.Element {
 		return value;
 	};
 	const keyRender = (value: any, index: number, record: any) => {
-		return <span>{record.type === 'string' ? record.values : '/'}</span>;
+		return (
+			<span className="key-render">
+				{record.type === 'string' ? record.values : '/'}
+			</span>
+		);
 	};
 	const newDatasource: (record: any) => any[] = (record: any) => {
 		if (record.type === 'string') {

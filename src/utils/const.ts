@@ -380,11 +380,11 @@ export const authorityList = [
 		value: '读写(DDL+DML)'
 	},
 	{
-		authority: 1,
+		authority: 3,
 		value: '仅DDL'
 	},
 	{
-		authority: 1,
+		authority: 4,
 		value: '仅DML'
 	}
 ];

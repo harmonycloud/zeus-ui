@@ -49,26 +49,30 @@ function UserManage(props: any): JSX.Element {
 		);
 		listCharset({ clusterId, namespace, middlewareName }).then((res) => {
 			if (res.success) {
-				res.data && setCharsetList(res.data.map((item: any) => item.charset));
-				res.data && setCharsetFilter(
-					res.data.map((item: any) => {
-						return {
-							label: item.charset,
-							value: item.charset
-						};
-					})
-				);
+				res.data &&
+					setCharsetList(res.data.map((item: any) => item.charset));
+				res.data &&
+					setCharsetFilter(
+						res.data.map((item: any) => {
+							return {
+								label: item.charset,
+								value: item.charset
+							};
+						})
+					);
 			}
 		});
-	}, [keyword]);
+	}, []);
 	const onRefresh: () => void = () => {
-		listDb({ clusterId, namespace, middlewareName }).then((res) => {
-			if (res.success) {
-				res.data && setDataSource(res.data);
-			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+		listDb({ clusterId, namespace, middlewareName, keyword }).then(
+			(res) => {
+				if (res.success) {
+					res.data && setDataSource(res.data);
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
 			}
-		});
+		);
 	};
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
@@ -146,7 +150,7 @@ function UserManage(props: any): JSX.Element {
 							cursor: 'pointer'
 						}}
 					>
-						<span>{value[0].user}</span>[
+						<span className="db-name">{value[0].user}</span>[
 						{
 							authorityList.find(
 								(item) => item.authority === value[0].authority
@@ -166,14 +170,18 @@ function UserManage(props: any): JSX.Element {
 								justifyContent: 'space-between'
 							}}
 						>
+							<span className="db-name" title={item.user}>
+								{item.user}
+							</span>
+							[
 							<span style={{ marginRight: '8px' }}>
-								{item.user +
-									'[' +
+								{
 									authorityList.find(
 										(i) => i.authority === item.authority
-									)?.value +
-									']'}
+									)?.value
+								}
 							</span>
+							]
 						</div>
 					);
 				})}
@@ -186,17 +194,19 @@ function UserManage(props: any): JSX.Element {
 							cursor: 'pointer'
 						}}
 					>
+						<span className="db-name">
+							{value.length ? value[0].user : '/'}
+						</span>
 						<span>
 							{value.length
-								? value[0].user +
-								  '[' +
+								? '[' +
 								  authorityList.find(
 										(item) =>
 											item.authority ===
 											value[0].authority
 								  )?.value +
 								  ']'
-								: '/'}
+								: ''}
 						</span>
 					</div>
 				}
@@ -207,16 +217,21 @@ function UserManage(props: any): JSX.Element {
 						cursor: 'pointer'
 					}}
 				>
+					<span
+						className="db-name"
+						title={value.length ? value[0].user : '/'}
+					>
+						{value.length ? value[0].user : '/'}
+					</span>
 					<span>
 						{value.length
-							? value[0].user +
-							  '[' +
+							? '[' +
 							  authorityList.find(
 									(item) =>
 										item.authority === value[0].authority
 							  )?.value +
 							  ']'
-							: '/'}
+							: ''}
 					</span>
 				</div>
 			</Tooltip>
@@ -297,7 +312,9 @@ function UserManage(props: any): JSX.Element {
 				<Table.Column
 					title="备注"
 					dataIndex="description"
-					cell={nullRender}
+					cell={(value: string) => (
+						<span className="description">{value}</span>
+					)}
 				/>
 				<Table.Column
 					title="创建时间"

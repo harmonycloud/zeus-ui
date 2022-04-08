@@ -686,7 +686,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					disabled={!operateFlag}
 					onClick={() =>
 						history.push(
-							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}`
+							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
 						)
 					}
 				>

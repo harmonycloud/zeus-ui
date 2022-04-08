@@ -64,6 +64,10 @@ export default function UserForm(props: FormProps): JSX.Element {
 	const onOk: () => void = () => {
 		field.validate((errors, values: any) => {
 			if (errors) return;
+			if (checks.includes(false) && !data) {
+				Message.warning('密码格式不正确!');
+				return;
+			}
 			if (error) {
 				Message.show(messageConfig('error', '失败', '二次密码不一致'));
 				return;
@@ -181,8 +185,6 @@ export default function UserForm(props: FormProps): JSX.Element {
 			label="数据库密码"
 			required={!data}
 			requiredMessage="请输入数据库密码"
-			pattern={pattern.aliasName}
-			patternMessage="用户名只允许中文、英文大小写+数字组合，长度不可超过18字符"
 			style={{ width: 415 }}
 		>
 			<Password
@@ -355,7 +357,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 												? setUsers(
 														leftUsers.filter(
 															(item: any) =>
-																item.userName.indexOf(
+																item.db.indexOf(
 																	value
 																) !== -1
 														)
@@ -365,12 +367,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span
-												style={{
-													width: 100,
-													marginLeft: '50px'
-												}}
-											>
+											<span style={{ width: '100px' }}>
 												数据库名称
 											</span>
 											<span
@@ -424,11 +421,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 													}}
 													checked={false}
 												/>
-												<span
-													style={{
-														width: 100
-													}}
-												>
+												<span className="db-name">
 													{item.db}
 												</span>
 												<span
@@ -479,7 +472,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 												? setSelectUser(
 														rightUsers.filter(
 															(item: any) =>
-																item.userName.indexOf(
+																item.db.indexOf(
 																	value
 																) !== -1
 														)
@@ -489,12 +482,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span
-												style={{
-													width: 100,
-													marginLeft: '50px'
-												}}
-											>
+											<span style={{ width: '100px' }}>
 												数据库名称
 											</span>
 											<span
@@ -560,11 +548,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 														}}
 													/>
 												</span>
-												<span
-													style={{
-														width: 100
-													}}
-												>
+												<span className="db-name">
 													{item.db}
 												</span>
 												<RadioGroup

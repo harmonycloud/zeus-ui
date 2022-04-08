@@ -19,6 +19,8 @@ function SqlAudit(props: ManageProps): JSX.Element {
 
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
+	const [current, setCurrent] = useState<number>(1); // * 页码
+	const [total, setTotal] = useState<number | undefined>(10); // * 总数
 
 	useEffect(() => {
 		queryAuditSql({
@@ -36,12 +38,17 @@ function SqlAudit(props: ManageProps): JSX.Element {
 				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
-	}, [keyword]);
-	const [current, setCurrent] = useState<number>(1); // * 页码
-	const [total, setTotal] = useState<number | undefined>(10); // * 总数
+	}, []);
 
 	const onRefresh: () => void = () => {
-		queryAuditSql({ searchWord: keyword }).then((res) => {
+		queryAuditSql({
+			searchWord: keyword,
+			clusterId,
+			namespace,
+			middlewareName,
+			current,
+			size: 10
+		}).then((res) => {
 			if (res.success) {
 				res.data && setDataSource(res.data.data);
 				res.data && setTotal(res.data.count);
@@ -52,6 +59,9 @@ function SqlAudit(props: ManageProps): JSX.Element {
 	};
 	const handleChange: (value: string) => void = (value: string) => {
 		setKeyword(value);
+	};
+	const handleSearch: (value: string) => void = (value: string) => {
+		onRefresh();
 	};
 	const onSort = (dataIndex: string, order: string) => {
 		if (dataIndex === 'queryDate') {
@@ -97,7 +107,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 		<>
 			<div className="audit-table-header-layout">
 				<Search
-					onSearch={handleChange}
+					onSearch={handleSearch}
 					onChange={handleChange}
 					placeholder="请输入内容"
 					style={{

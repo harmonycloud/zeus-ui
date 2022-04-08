@@ -55,12 +55,13 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 					namespace,
 					middlewareName,
 					id: values.id,
+					charset: values.charset,
 					description: values.description
 				};
 				updateDb(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '用户修改成功')
+							messageConfig('success', '成功', '数据库修改成功')
 						);
 						onCreate();
 					} else {
@@ -78,7 +79,7 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 				createDb(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '用户创建成功')
+							messageConfig('success', '成功', '数据库创建成功')
 						);
 						onCreate();
 					} else {

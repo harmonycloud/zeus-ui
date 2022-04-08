@@ -7,7 +7,8 @@ import {
 	Grid,
 	Icon,
 	Checkbox,
-	Balloon
+	Balloon,
+	Divider
 } from '@alicloud/console-components';
 import { Message } from '@alicloud/console-components';
 import messageConfig from '@/components/messageConfig';
@@ -773,6 +774,7 @@ function CreateAlarm(): JSX.Element {
 													borderLeft: 0
 												}}
 												value={item.threshold}
+												htmlType="number"
 												onChange={(value) => {
 													onChange(
 														value,
@@ -787,6 +789,7 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTime}
+												htmlType="number"
 												onChange={(value) => {
 													onChange(
 														value,
@@ -801,6 +804,7 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
+												htmlType="number"
 												onChange={(value) => {
 													onChange(
 														value,

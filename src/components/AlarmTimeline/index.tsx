@@ -67,7 +67,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 							`/serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
-							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
+							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}/${item.namespace}`
 						});
 					}
 				});
@@ -92,7 +92,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 							`/serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
-							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}`
+							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}/${item.namespace}`
 						});
 					}
 				});
@@ -121,7 +121,6 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 	};
 
 	if (!data || !data.length) {
-
 		return (
 			<div className="no-content">
 				<img width={70} height={70} src={noData} />
