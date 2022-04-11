@@ -424,7 +424,7 @@ const ServiceListByType = (props: serviceListProps) => {
 								</Button>
 							}
 						>
-							当前用户无改操作的权限!
+							当前用户无该操作的权限!
 						</Tooltip>
 					),
 					secondary: (
@@ -443,13 +443,13 @@ const ServiceListByType = (props: serviceListProps) => {
 							trigger={
 								<Button
 									type="primary"
-									disabled={createFlag || getFlag}
+									disabled={!createFlag || !getFlag}
 								>
 									发布服务
 								</Button>
 							}
 						>
-							当前用户无改操作的权限!
+							当前用户无该操作的权限!
 						</Tooltip>
 					)
 				};
@@ -646,7 +646,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					onClick={() => {
 						const sendData = {
 							clusterId: cluster.id,
-							namespace: namespace.name,
+							namespace: record.namespace,
 							middlewareName: record.name,
 							type: record.type
 						};

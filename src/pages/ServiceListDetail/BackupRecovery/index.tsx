@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
 import { Tab } from '@alicloud/console-components';
 import { Page, Content, Menu } from '@alicloud/console-components-page';
-import { useLocation } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import List from './list';
 import Config from './config';
 import DefaultPicture from '@/components/DefaultPicture';
@@ -62,6 +61,7 @@ export default function BackupRecovery(
 			);
 		}
 	}
+
 	if (customMid && !capabilities.includes('backup')) {
 		return <DefaultPicture />;
 	}
