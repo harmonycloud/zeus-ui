@@ -45,8 +45,8 @@ export const getProjectMiddleware = (param: paramProps) => {
 export const switchProjectGetToken = (param: paramProps) => {
 	return Axios.get(PROJECT.switchProject, param);
 };
-export const getAllocatableNamespace = (param: paramProps) => {
-	return Axios.get(PROJECT.getAllocatableNamespace, param);
+export const getAllocatableNamespace = () => {
+	return Axios.get(PROJECT.getAllocatableNamespace);
 };
 export const getProjectMiddlewareCount = () => {
 	return Axios.get(PROJECT.getProjectMiddlewareCount);

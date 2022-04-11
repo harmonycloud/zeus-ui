@@ -14,7 +14,7 @@ import messageConfig from '@/components/messageConfig';
 
 import { getClusters } from '@/services/common';
 import { getUserList } from '@/services/user';
-import { createProject } from '@/services/project';
+import { createProject, getAllocatableNamespace } from '@/services/project';
 
 import pattern from '@/utils/pattern';
 import { formItemLayout619 } from '@/utils/const';
@@ -38,11 +38,12 @@ export default function EditProjectForm(
 	const [users, setUsers] = useState<filtersProps[]>([]);
 	const field = Field.useField();
 	useEffect(() => {
-		getClusters({ detail: true }).then((res) => {
+		getAllocatableNamespace().then((res) => {
 			if (res.success) {
 				setLoading(false);
-				if (res.data.length !== 0) {
-					setOriginData(res.data);
+				setOriginData(res.data);
+				setClusterList(res.data);
+				if (res.data.length > 0) {
 					const listTemp = res.data.map((item: any) => {
 						return {
 							value: `${item.id}/${item.name}`,
@@ -56,6 +57,8 @@ export default function EditProjectForm(
 					setNamespaceList({});
 				}
 			} else {
+				setClusterList([]);
+				setNamespaceList([]);
 				Message.show(messageConfig('error', '失败', res));
 			}
 		});
@@ -123,7 +126,7 @@ export default function EditProjectForm(
 				description: values.description,
 				clusterList: clusterListTemp
 			};
-			console.log(sendData);
+			// console.log(sendData);
 			onCancel();
 			createProject(sendData)
 				.then((res) => {

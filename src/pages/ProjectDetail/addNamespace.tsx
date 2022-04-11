@@ -44,24 +44,22 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 	);
 	const field = Field.useField();
 	useEffect(() => {
-		getAllocatableNamespace({ projectId: project.projectId }).then(
-			(res) => {
-				if (res.success) {
-					setClusterList(res.data);
-					if (res.data.length > 0) {
-						setNamespaceList(res.data[0].namespaceList || []);
-						setCurrentCluster(res.data[0].id);
-					} else {
-						setNamespaceList([]);
-						setCurrentCluster('');
-					}
+		getAllocatableNamespace().then((res) => {
+			if (res.success) {
+				setClusterList(res.data);
+				if (res.data.length > 0) {
+					setNamespaceList(res.data[0].namespaceList || []);
+					setCurrentCluster(res.data[0].id);
 				} else {
-					setClusterList([]);
 					setNamespaceList([]);
-					Message.show(messageConfig('error', '失败', res));
+					setCurrentCluster('');
 				}
+			} else {
+				setClusterList([]);
+				setNamespaceList([]);
+				Message.show(messageConfig('error', '失败', res));
 			}
-		);
+		});
 	}, []);
 	useEffect(() => {
 		clusterList.map((item: clusterType) => {

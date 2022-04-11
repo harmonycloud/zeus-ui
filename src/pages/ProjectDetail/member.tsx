@@ -42,8 +42,9 @@ export default function Member(): JSX.Element {
 		)
 	};
 	const handleSearch = (value: string) => {
-		const list = dataSource.filter((item: UserItem) =>
-			item.aliasName.includes(value)
+		const list = dataSource.filter(
+			(item: UserItem) =>
+				item.aliasName.includes(value) || item.userName.includes(value)
 		);
 		setShowDataSource(list);
 	};
