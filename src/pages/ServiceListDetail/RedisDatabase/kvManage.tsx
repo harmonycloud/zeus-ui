@@ -297,7 +297,6 @@ function KvManage(props: any): JSX.Element {
 					fixedBarExpandWidth={[24]}
 					affixActionBar
 					showRefresh
-					showColumnSetting
 					onRefresh={onRefresh}
 					search={{
 						placeholder: '请输入键名',
@@ -311,7 +310,6 @@ function KvManage(props: any): JSX.Element {
 					operation={Operation}
 					onSort={onSort}
 					expandedRowRender={(record: any) => {
-						console.log(record);
 						const list = newDatasource(record);
 						return (
 							<Table dataSource={list} primaryKey={record.key}>

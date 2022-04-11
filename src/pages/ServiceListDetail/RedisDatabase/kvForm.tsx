@@ -105,7 +105,8 @@ export default function KvForm(props: any): JSX.Element {
 					db: db[0],
 					type: values.type,
 					timeOut: values.timeOut,
-					key: values.key
+					key: values.key,
+					status: data?.isAdd ? 'inside' : 'out'
 				};
 				if (
 					values.type === 'hash' ||
@@ -243,15 +244,11 @@ export default function KvForm(props: any): JSX.Element {
 					</FormItem>
 				)}
 				<FormItem
-					className={
-						type !== 'hash' && type !== 'set'
-							? 'ne-required-ingress'
-							: ''
-					}
+					className="ne-required-ingress"
 					labelTextAlign="left"
 					asterisk={false}
 					label="键值"
-					required={type !== 'hash' && type !== 'set'}
+					required
 					requiredMessage="请输入键值"
 				>
 					<TextArea
