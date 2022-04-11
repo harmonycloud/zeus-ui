@@ -217,7 +217,7 @@ export default function KvForm(props: any): JSX.Element {
 						labelTextAlign="left"
 						asterisk={false}
 						label="字段"
-						required={!data || data?.isAdd}
+						required
 						requiredMessage="请输入字段"
 					>
 						<Input
@@ -233,7 +233,7 @@ export default function KvForm(props: any): JSX.Element {
 						labelTextAlign="left"
 						asterisk={false}
 						label="分数"
-						required={!data || data?.isAdd}
+						required
 						requiredMessage="请输入分数"
 					>
 						<Input
