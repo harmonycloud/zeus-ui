@@ -227,7 +227,7 @@ function PlatformOverview(): JSX.Element {
 			level: level
 		};
 
-		getPlatformOverview().then((res) => {
+		getPlatformOverview({ clusterId }).then((res) => {
 			res.data && setTotalData(res.data.clusterQuota);
 		});
 		getServers({ clusterId }).then((res) => {
