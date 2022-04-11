@@ -61,7 +61,7 @@ const AddNamespace = (props: AddNamespaceProps) => {
 					maxLength={64}
 					minmaxLengthMessage="请输入名称，且最大长度不超过64个字符"
 				>
-					<Input id="aliasName" name="aliasName" />
+					<Input trim={true} id="aliasName" name="aliasName" />
 				</FormItem>
 				<FormItem
 					label="英文简称:"

@@ -372,7 +372,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 											<FormItem required>
 												<Select
 													name="namespace"
-													style={{ width: '100%' }}
+													style={{ width: '390px' }}
 												>
 													{namespaceList.map(
 														(item) => {
