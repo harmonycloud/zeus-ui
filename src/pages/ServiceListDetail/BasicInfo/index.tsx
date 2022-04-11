@@ -640,7 +640,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							style={{ marginLeft: '8px' }}
 							onClick={() =>
 								history.push(
-									`/serviceList/${params.name}/${params.aliasName}/serverVersion/${params.middlewareName}/${params.type}`
+									`/serviceList/${params.name}/${params.aliasName}/serverVersion/${params.middlewareName}/${params.type}/${params.namespace}`
 								)
 							}
 						>
