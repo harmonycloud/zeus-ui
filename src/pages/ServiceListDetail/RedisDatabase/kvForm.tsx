@@ -5,18 +5,13 @@ import {
 	Field,
 	Input,
 	Message,
-	Icon,
-	Balloon
+	Select
 } from '@alicloud/console-components';
 import { addKv, updateKv } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import pattern from '@/utils/pattern';
-import { Select } from '@alifd/next';
-import { time } from 'console';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
-const Tooltip = Balloon.Tooltip;
 const Option = Select.Option;
 const formItemLayout = {
 	labelCol: {
@@ -94,7 +89,7 @@ export default function KvForm(props: any): JSX.Element {
 				updateKv(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '用户修改成功')
+							messageConfig('success', '成功', '数据库修改成功')
 						);
 						onCreate();
 					} else {
@@ -140,7 +135,7 @@ export default function KvForm(props: any): JSX.Element {
 				addKv(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '用户创建成功')
+							messageConfig('success', '成功', '数据库创建成功')
 						);
 						onCreate();
 					} else {
@@ -153,7 +148,7 @@ export default function KvForm(props: any): JSX.Element {
 
 	return (
 		<Dialog
-			title={!data ? '新增数据库' : '编辑数据库'}
+			title={!data || data?.isAdd ? '新增数据库' : '编辑数据库'}
 			visible={visible}
 			footerAlign="right"
 			onOk={onOk}
