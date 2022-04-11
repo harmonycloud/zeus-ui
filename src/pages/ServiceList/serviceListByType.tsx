@@ -646,7 +646,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					onClick={() => {
 						const sendData = {
 							clusterId: cluster.id,
-							namespace: namespace.name,
+							namespace: record.namespace,
 							middlewareName: record.name,
 							type: record.type
 						};
