@@ -19,6 +19,7 @@ const Tooltip = Balloon.Tooltip;
 
 function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
+	console.log(nickName, role);
 	const [visible, setVisible] = useState(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 	const history = useHistory();
@@ -50,12 +51,12 @@ function User(props: userProps): JSX.Element {
 	return (
 		<div className={`${styles['nav-user-container']} ${className}`}>
 			<Icon type="user-circle" />
-			<span style={{ marginLeft: '5px' }}>{role.roleName}</span>
+			{/* <span style={{ marginLeft: '5px' }}>{nickName}</span> */}
 			<ul className={styles['nav-user-operator']}>
 				<li className={styles['nav-user-container-item']}>
 					<p>{nickName}</p>
 					<span className={styles['nav-user-role-p']}>
-						{role.aliasName}
+						{role.userName}
 					</span>
 				</li>
 				{Storage.getLocal('userName') === 'admin' && (

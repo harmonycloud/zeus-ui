@@ -17,7 +17,7 @@ import Table from '@/components/MidTable';
 import RapidScreening from '@/components/RapidScreening';
 import messageConfig from '@/components/messageConfig';
 import { listProps } from '@/components/RapidScreening';
-import { StoreState, globalVarProps } from '@/types/index';
+import { StoreState, globalVarProps, User } from '@/types/index';
 import {
 	serviceAvailableItemProps,
 	serviceAvailablesProps
@@ -48,7 +48,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [showDataSource, setShowDataSource] = useState<
 		serviceAvailableItemProps[]
 	>([]);
-	const [visible, setVisible] = useState<boolean>(false);
 	const [list, setList] = useState<listProps[]>([
 		{ name: '全部服务', count: 0 }
 	]);
@@ -59,8 +58,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [iconVisible, setIconVisible] = useState<boolean>(false);
 	const [adress, setAdress] = useState<string>('');
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
+	const [operateFlag, setOperateFlag] = useState<boolean>(false);
 	const [lock, setLock] = useState<any>({ lock: 'right' });
-	const [record, setRecord] = useState<any>();
 	const history = useHistory();
 
 	useEffect(() => {
@@ -76,6 +75,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					if (res.success) {
 						setOriginData(res.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
+						if (res.data.length === 0) {
+							setOperateFlag(false);
+						} else {
+							setOperateFlag(true);
+						}
 						res.data.forEach((item: serviceAvailablesProps) => {
 							listTemp.push({
 								name: item.name,
@@ -247,6 +251,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					}
 				}}
 				type="primary"
+				disabled={!operateFlag}
 			>
 				新增
 			</Button>
