@@ -228,7 +228,10 @@ function KvManage(props: any): JSX.Element {
 	};
 	const keyRender = (value: any, index: number, record: any) => {
 		return (
-			<span className="key-render">
+			<span
+				className="key-render"
+				title={record.type === 'string' ? record.values : '/'}
+			>
 				{record.type === 'string' ? record.values : '/'}
 			</span>
 		);
@@ -347,6 +350,7 @@ function KvManage(props: any): JSX.Element {
 								<Table.Column
 									title="键值"
 									dataIndex="newValue"
+									cell={nullRender}
 									width={120}
 								/>
 								{record.type === 'zset' && (
