@@ -72,7 +72,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
-	console.log(project, cluster);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
