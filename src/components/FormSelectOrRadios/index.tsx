@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
 import SelectBlock from '../SelectBlock';
 import { renderFormItem } from '@/components/renderFormItem';
@@ -16,13 +16,20 @@ export default function FormSelectOrRadios(
 ): JSX.Element {
 	const keys = Object.keys(props);
 	const [value, setValue] = useState<string>(props.defaultValue);
-
+	useEffect(() => {
+		const filedValue = props.field.getValues();
+		const keys = Object.keys(filedValue);
+		if (props.defaultValue !== '' && !keys.includes(props.variable)) {
+			props.field.setValues({
+				[`${props.variable}`]: props.defaultValue
+			});
+		}
+	}, []);
 	const handleChange: (value: any) => void = (value) => {
 		props.field.setValues({
 			[`${props.variable}`]: value
 		});
 	};
-
 	const handleSelectBlock: (value: any) => void = (value: any) => {
 		setValue(value);
 		props.field.setValues({

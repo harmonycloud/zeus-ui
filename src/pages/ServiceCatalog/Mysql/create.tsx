@@ -77,7 +77,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		aliasName
 	} = params;
 	const { state } = props.location;
-	console.log(props);
 	const field = Field.useField();
 	const history = useHistory();
 	// 主机亲和
