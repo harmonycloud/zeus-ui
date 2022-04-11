@@ -248,11 +248,16 @@ export default function KvForm(props: any): JSX.Element {
 					</FormItem>
 				)}
 				<FormItem
-					className="ne-required-ingress"
+					className={
+						type === 'hash' || type === 'set'
+							? 'ne-required-ingress'
+							: ''
+					}
 					labelTextAlign="left"
 					asterisk={false}
 					label="键值"
-					required={type === 'Hash' || type === 'Set'}
+					required={type === 'hash' || type === 'set'}
+					requiredMessage="请输入键值"
 				>
 					<TextArea
 						name="newValue"
