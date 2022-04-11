@@ -1,36 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Button,
-	Dialog,
-	Message,
-	Radio,
-	Balloon,
-	Tree
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { Button, Dialog, Message, Tree } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import moment from 'moment';
 import Table from '@/components/MidTable';
 import { getKv, deleteKv } from '@/services/middleware';
-import { listDb, deleteDb, listCharset } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
-import { authorityList } from '@/utils/const';
 import { nullRender } from '@/utils/utils';
-import { filtersProps } from '@/types/comment';
 import KvForm from './kvForm';
-import { type } from 'os';
-import { ElementFlags } from 'typescript';
 
-const Tooltip = Balloon.Tooltip;
 function KvManage(props: any): JSX.Element {
 	const { clusterId, namespace, middlewareName } = props;
 	const [dataSource, setDataSource] = useState<any[]>([]);
-	const [showDataSource, setShowDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
-	const [charsetList, setCharsetList] = useState<string[]>([]);
-	const [charsetFilter, setCharsetFilter] = useState<filtersProps[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
-	const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<any>();
 	const [isEdit, setIsEdit] = useState(true);
 	const [db, setDb] = useState<string[]>(['0']);
@@ -129,7 +111,7 @@ function KvManage(props: any): JSX.Element {
 				deleteKv(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '该数据库删除成功')
+							messageConfig('success', '成功', '数据库删除成功')
 						);
 						onRefresh();
 					} else {
@@ -228,7 +210,10 @@ function KvManage(props: any): JSX.Element {
 	};
 	const keyRender = (value: any, index: number, record: any) => {
 		return (
-			<span className="key-render">
+			<span
+				className="key-render"
+				title={record.type === 'string' ? record.values : '/'}
+			>
 				{record.type === 'string' ? record.values : '/'}
 			</span>
 		);
@@ -312,7 +297,6 @@ function KvManage(props: any): JSX.Element {
 					fixedBarExpandWidth={[24]}
 					affixActionBar
 					showRefresh
-					showColumnSetting
 					onRefresh={onRefresh}
 					search={{
 						placeholder: '请输入键名',
@@ -326,16 +310,15 @@ function KvManage(props: any): JSX.Element {
 					operation={Operation}
 					onSort={onSort}
 					expandedRowRender={(record: any) => {
-						console.log(record);
 						const list = newDatasource(record);
 						return (
 							<Table dataSource={list} primaryKey={record.key}>
 								{/* <Table.Column
-								title="序号"
-								dataIndex="id"
-								width={120}
-								cell={nullRender}
-							/> */}
+									title="序号"
+									dataIndex="id"
+									width={120}
+									cell={nullRender}
+								/> */}
 								{record.type === 'hash' && (
 									<Table.Column
 										dataIndex="newKey"
@@ -347,6 +330,7 @@ function KvManage(props: any): JSX.Element {
 								<Table.Column
 									title="键值"
 									dataIndex="newValue"
+									cell={nullRender}
 									width={120}
 								/>
 								{record.type === 'zset' && (
@@ -410,7 +394,6 @@ function KvManage(props: any): JSX.Element {
 						onCancel={() => setVisible(false)}
 						data={isEdit ? updateData : null}
 						db={db}
-						charsetList={charsetList}
 					/>
 				)}
 			</div>
