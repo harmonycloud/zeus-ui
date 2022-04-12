@@ -661,11 +661,17 @@ const ServiceListByType = (props: serviceListProps) => {
 										'_blank'
 									);
 								} else {
+									const sn =
+										record.type === 'elasticsearch'
+											? `${record.name}-kibana`
+											: record.type === 'rocketmq'
+											? `${record.name}-console-svc`
+											: `${record.name}-manager-svc`;
 									Message.show(
 										messageConfig(
 											'error',
 											'失败',
-											'当前服务没有对应的服务暴露'
+											`请先前往“服务暴露”暴露该服务的${sn}服务`
 										)
 									);
 								}
