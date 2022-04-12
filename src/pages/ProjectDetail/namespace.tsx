@@ -138,7 +138,11 @@ function Namespace(props: NamespaceProps): JSX.Element {
 		index: number,
 		record: NamespaceItem
 	) => {
-		return value || record.name;
+		return (
+			<span className="text-overflow" title={value}>
+				{value || record.name}
+			</span>
+		);
 	};
 	const handleSearch = (value: string) => {
 		const list = dataSource

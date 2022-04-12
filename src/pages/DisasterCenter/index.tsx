@@ -9,7 +9,7 @@ import NoService from '@/components/NoService';
 import storage from '@/utils/storage';
 import { getNamespaces } from '@/services/common';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
-import { clusterType, StoreState, globalVarProps } from '@/types';
+import { clusterType, StoreState, globalVarProps, User } from '@/types';
 import {
 	setCluster,
 	setNamespace,
@@ -29,9 +29,12 @@ function DisasterCenter(props: disasterCenterProps) {
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
+	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+
 	const {
 		clusterList: globalClusterList,
-		namespaceList: globalNamespaceList
+		namespaceList: globalNamespaceList,
+		project
 	} = props.globalVar;
 	const history = useHistory();
 	const onChange = (
@@ -48,19 +51,37 @@ function DisasterCenter(props: disasterCenterProps) {
 				clusterId: cluster.id,
 				namespace
 			});
-			getMiddlewareDetail({
-				clusterId: cluster.id,
-				namespace,
-				type,
-				middlewareName: name
-			}).then((res) => {
-				if (res.success) {
-					setIsService(true);
-					setData(res.data);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
+			const jsonRole: User = JSON.parse(storage.getLocal('role'));
+			let operateFlagTemp = false;
+			if (jsonRole.userRoleList.some((item) => item.roleId === 1)) {
+				operateFlagTemp = true;
+			} else {
+				operateFlagTemp =
+					jsonRole.userRoleList.find(
+						(item) => item.projectId === project.projectId
+					)?.power[type][1] === '1'
+						? true
+						: false;
+			}
+			if (operateFlagTemp) {
+				setOperateFlag(true);
+				getMiddlewareDetail({
+					clusterId: cluster.id,
+					namespace,
+					type,
+					middlewareName: name
+				}).then((res) => {
+					if (res.success) {
+						setIsService(true);
+						setData(res.data);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			} else {
+				setIsService(false);
+				setOperateFlag(false);
+			}
 		} else {
 			setIsService(false);
 		}
@@ -289,6 +310,11 @@ function DisasterCenter(props: disasterCenterProps) {
 			该中间件类型不支持该功能，请选择mysql类型的中间件
 		</h3>
 	);
+	const NotAuth = () => {
+		setData(undefined);
+		setIsService(true);
+		return <h3 style={{ textAlign: 'center' }}>当前用户无该操作权限！</h3>;
+	};
 	return (
 		<SecondLayout
 			title="灾备中心"
@@ -296,9 +322,12 @@ function DisasterCenter(props: disasterCenterProps) {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{basicData?.type !== 'mysql' && isService && <NotSupport />}
+			{basicData?.type !== 'mysql' && isService && operateFlag && (
+				<NotSupport />
+			)}
 			{basicData?.type === 'mysql' &&
 				isService &&
+				operateFlag &&
 				JSON.stringify(data) !== '{}' && (
 					<Disaster
 						chartName={basicData?.type || ''}
@@ -312,7 +341,8 @@ function DisasterCenter(props: disasterCenterProps) {
 						toDetail={toDetail}
 					/>
 				)}
-			{!isService && <NoService />}
+			{!isService && operateFlag && <NoService />}
+			{!operateFlag && <NotAuth />}
 			<SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}

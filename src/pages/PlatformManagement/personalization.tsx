@@ -39,12 +39,12 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 	const [bgSelect, setBgSelect] = useState<boolean>(false);
 	const [loginSelect, setLoginSelect] = useState<boolean>(false);
 	const [homeSelect, setHomeSelect] = useState<boolean>(false);
-	const [browserSelect,setBrowserSelect] = useState<boolean>(false);
+	const [browserSelect, setBrowserSelect] = useState<boolean>(false);
 	const [imgRule, setImgRule] = useState<boolean>(false);
 	const [backgroundValue, setBackgroundValue] = useState<any>();
 	const [loginValue, setLoginValue] = useState<any>();
 	const [homeValue, setHomeValue] = useState<any>();
-	const [browserValue,setBrowserValue] = useState<any>();
+	const [browserValue, setBrowserValue] = useState<any>();
 
 	useEffect(() => {
 		getData();
@@ -91,7 +91,9 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				name: name,
 				state: 'done',
 				size: 1024,
-				downloadURL: data ? URL.createObjectURL(base64ToBlob(data)) : data,
+				downloadURL: data
+					? URL.createObjectURL(base64ToBlob(data))
+					: data,
 				fileURL: data,
 				imgURL: data
 			}
@@ -185,13 +187,13 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 					...storage.getLocal('personalization'),
 					homeLogo: url
 				});
-			} else if(type === 'login') {
+			} else if (type === 'login') {
 				setLoginValue(imageData('loginlogo.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
 					loginLogo: url
 				});
-			}else{
+			} else {
 				setBrowserValue(imageData('browser.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
@@ -204,9 +206,16 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 
 	const onSubmit = () => {
 		field.validate((errors, values: any) => {
-			if (errors || bgSelect || homeSelect || loginSelect || browserSelect || imgRule)
+			if (
+				errors ||
+				bgSelect ||
+				homeSelect ||
+				loginSelect ||
+				browserSelect ||
+				imgRule
+			)
 				return;
-				
+
 			values.backgroundImage =
 				storage.getLocal('personalization').backgroundImage;
 			values.loginLogo = storage.getLocal('personalization').loginLogo;
@@ -251,7 +260,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 	return (
 		<>
 			<Form field={field} {...formItemLayout}>
-				<h2>登陆页配置</h2>
+				<h2>登录页配置</h2>
 				<Form.Item label="背景" required labelTextAlign="left">
 					<Upload
 						style={{ display: 'inline' }}
@@ -283,7 +292,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 						<div style={{ color: '#D93026' }}>请上传图片</div>
 					)}
 				</Form.Item>
-				<Form.Item label="登陆页logo" required labelTextAlign="left">
+				<Form.Item label="登录页logo" required labelTextAlign="left">
 					<Upload
 						style={{ display: 'inline' }}
 						listType="image"
@@ -344,7 +353,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 						placeholder="我是版权声明，支持空格，限定在60字符内"
 					/>
 				</Form.Item>
-				<h2>登陆后系统页配置</h2>
+				<h2>登录后系统页配置</h2>
 				<Form.Item label="左上角logo" required labelTextAlign="left">
 					<Upload
 						style={{ display: 'inline' }}

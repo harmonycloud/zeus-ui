@@ -6,12 +6,20 @@ import { getMiddlewareDetail } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
-import { clusterType } from '@/types';
+import { clusterType, StoreState, User } from '@/types';
+import { connect } from 'react-redux';
+import { ProjectItem } from '../ProjectManage/project';
+import storage from '@/utils/storage';
 
-function DataMonitor(): JSX.Element {
+interface DataMonitorProps {
+	project: ProjectItem;
+}
+function DataMonitor(props: DataMonitorProps): JSX.Element {
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
+	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+	const { project } = props;
 	const onChange = (
 		name: string | null,
 		type: string,
@@ -19,7 +27,6 @@ function DataMonitor(): JSX.Element {
 		cluster: clusterType
 	) => {
 		setData(undefined);
-		// console.log(name, type, namespace, cluster);
 		if (name !== null) {
 			setBasicData({
 				name,
@@ -28,22 +35,45 @@ function DataMonitor(): JSX.Element {
 				namespace,
 				monitor: cluster.monitor
 			});
-			getMiddlewareDetail({
-				clusterId: cluster.id,
-				namespace,
-				type,
-				middlewareName: name
-			}).then((res) => {
-				if (res.success) {
-					setIsService(true);
-					setData(res.data);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
+			const jsonRole: User = JSON.parse(storage.getLocal('role'));
+			let operateFlagTemp = false;
+			if (jsonRole.userRoleList.some((item) => item.roleId === 1)) {
+				operateFlagTemp = true;
+			} else {
+				operateFlagTemp =
+					jsonRole.userRoleList.find(
+						(item) => item.projectId === project.projectId
+					)?.power[type][1] === '1'
+						? true
+						: false;
+			}
+			if (operateFlagTemp) {
+				setOperateFlag(true);
+				getMiddlewareDetail({
+					clusterId: cluster.id,
+					namespace,
+					type,
+					middlewareName: name
+				}).then((res) => {
+					if (res.success) {
+						setIsService(true);
+						setData(res.data);
+					} else {
+						Message.show(messageConfig('error', '失败', res));
+					}
+				});
+			} else {
+				setIsService(false);
+				setOperateFlag(false);
+			}
 		} else {
 			setIsService(false);
 		}
+	};
+	const NotAuth = () => {
+		setData(undefined);
+		setIsService(true);
+		return <h3 style={{ textAlign: 'center' }}>当前用户无该操作权限！</h3>;
 	};
 	return (
 		<SecondLayout
@@ -52,7 +82,7 @@ function DataMonitor(): JSX.Element {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{isService && JSON.stringify(data) !== '{}' && (
+			{isService && operateFlag && JSON.stringify(data) !== '{}' && (
 				<Monitor
 					type={basicData?.type}
 					middlewareName={basicData?.name}
@@ -64,8 +94,12 @@ function DataMonitor(): JSX.Element {
 					capabilities={(data && data.capabilities) || []}
 				/>
 			)}
-			{!isService && <NoService />}
+			{!isService && operateFlag && <NoService />}
+			{!operateFlag && <NotAuth />}
 		</SecondLayout>
 	);
 }
-export default DataMonitor;
+const mapStateToProps = (state: StoreState) => ({
+	project: state.globalVar.project
+});
+export default connect(mapStateToProps)(DataMonitor);

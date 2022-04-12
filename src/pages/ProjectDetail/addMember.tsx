@@ -146,7 +146,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 				}}
 				showJump={false}
 			>
-				<MidTable.Column title="登陆账户" dataIndex="userName" />
+				<MidTable.Column title="登录账户" dataIndex="userName" />
 				<MidTable.Column title="用户名" dataIndex="aliasName" />
 				<MidTable.Column
 					title="邮箱"

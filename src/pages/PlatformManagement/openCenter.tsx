@@ -186,7 +186,7 @@ function OpenCenter(props: { activeKey: string | number }) {
 										}
 										closable={false}
 									>
-										开启LDAP认证会自动禁用系统当前的用户系统，取而代之的是利用对接的LDAP服务器来做用户的登陆认证
+										开启LDAP认证会自动禁用系统当前的用户系统，取而代之的是利用对接的LDAP服务器来做用户的登录认证
 									</Balloon>
 								</label>
 								<Switch

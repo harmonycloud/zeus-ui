@@ -108,7 +108,7 @@ export default function Member(): JSX.Element {
 					placeholder: '请输入关键字搜索'
 				}}
 			>
-				<Table.Column title="登陆账户" dataIndex="userName" />
+				<Table.Column title="登录账户" dataIndex="userName" />
 				<Table.Column title="用户名" dataIndex="aliasName" />
 				<Table.Column
 					title="角色"
