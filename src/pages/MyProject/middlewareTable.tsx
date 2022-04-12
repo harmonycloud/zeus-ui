@@ -67,6 +67,7 @@ export default function MiddlewareTable(
 				<Search
 					placeholder="请输入服务名称搜索"
 					onSearch={handleSearch}
+					hasClear={true}
 					style={{ width: '260px', marginRight: 8 }}
 				/>
 				<RadioGroup
