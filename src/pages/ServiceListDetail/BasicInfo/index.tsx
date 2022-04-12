@@ -79,7 +79,12 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'label',
-		label: '标签'
+		label: '标签',
+		render: (val: string) => (
+			<div className="text-overflow-one" title={val}>
+				{val}
+			</div>
+		)
 	},
 	{
 		dataIndex: 'annotations',
