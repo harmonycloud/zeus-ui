@@ -290,7 +290,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					<div>
 						<div>
 							&nbsp;&nbsp;&nbsp;&nbsp;
-							{`${record.protocol}-${record.ingressClassName}`}
+							{`${record.protocol}-${
+								record.ingressClassName || ''
+							}`}
 						</div>
 						<div>
 							<Balloon

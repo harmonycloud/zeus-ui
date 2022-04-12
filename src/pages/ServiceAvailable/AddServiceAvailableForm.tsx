@@ -162,7 +162,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								return {
 									label: i.aliasName || i.name,
 									value: i.name,
-									isLeaf: true
+									isLeaf: true,
+									namespace: i.namespace
 								};
 							})
 						};
@@ -366,7 +367,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			name: value as string,
 			type: extra.selectedPath[0].value
 		});
-		getExposedService(value as string, extra.selectedPath[0].value);
+		getExposedService(
+			value as string,
+			extra.selectedPath[0].value,
+			data.namespace
+		);
 	};
 
 	const getExposedService = (
@@ -432,7 +437,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		// >
 		<Page className="add-service">
 			<Header
-				title={'新增服务暴露'}
+				title={record ? '编辑服务暴露' : '新增服务暴露'}
 				hasBackArrow
 				onBackArrowClick={() => history.goBack()}
 			/>
@@ -756,7 +761,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												}
 											/>
 										</FormItem>
-										{console.log(httpList)}
 									</FormItem>
 									<div className="http-btn">
 										<Button
