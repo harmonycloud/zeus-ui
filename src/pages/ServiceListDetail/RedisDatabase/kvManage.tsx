@@ -35,7 +35,7 @@ function KvManage(props: any): JSX.Element {
 				Message.show(messageConfig('error', '失败', res.errorMsg));
 			}
 		});
-	}, [keyword, ...db]);
+	}, [db]);
 	const onRefresh: () => void = () => {
 		getKv({
 			clusterId,
