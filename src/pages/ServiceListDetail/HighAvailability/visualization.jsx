@@ -699,6 +699,7 @@ function Visualization(props) {
 								stroke: '#C0C6CC',
 								cursor: 'pointer',
 								fill: '#fff',
+								// eslint-disable-next-line no-dupe-keys
 								cursor: 'pointer'
 							},
 							visible: false,
@@ -982,7 +983,7 @@ function Visualization(props) {
 			fitViewPadding: [20, 30, 20, 30],
 			plugins: [minimap, tooltip],
 			modes: {
-				default: ['drag-canvas', 'zoom-canvas']
+				default: ['drag-canvas']
 			},
 			nodeStateStyles: {
 				hover: {
