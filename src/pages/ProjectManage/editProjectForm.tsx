@@ -108,13 +108,15 @@ export default function EditProjectForm(
 					id: clusterId,
 					namespaceList: namespaces
 						.filter((i) => {
-							const [name, clusterNameTemp] = i.split('/');
+							const [name, aliasName, clusterNameTemp] =
+								i.split('/');
 							if (clusterNameTemp === clusterName) return i;
 						})
 						.map((i) => {
-							const [name] = i.split('/');
+							const [name, aliasName] = i.split('/');
 							return {
-								name: name
+								name: name,
+								aliasName: aliasName
 							};
 						})
 				};
@@ -254,7 +256,12 @@ export default function EditProjectForm(
 																			key={
 																				namespace.name
 																			}
-																			value={`${namespace.name}/${key}`}
+																			value={`${
+																				namespace.name
+																			}/${
+																				namespace.aliasName ||
+																				'null'
+																			}/${key}`}
 																		>
 																			{namespace.aliasName ||
 																				namespace.name}
