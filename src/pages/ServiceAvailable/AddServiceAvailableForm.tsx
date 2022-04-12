@@ -82,6 +82,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	]);
 	const field = Field.useField();
 	const record = storage.getLocal('availableRecord');
+	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
 
 	useEffect(() => {
@@ -200,6 +201,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								: listTemp[0].value
 					};
 					setSelectedInstance(selectedInstanceTemp);
+					setNewNamespace(res.data[0].serviceList[0].namespace);
 					getExposedService(
 						selectedInstanceTemp.name,
 						selectedInstanceTemp.type,
@@ -281,7 +283,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				? {
 						...edit,
 						clusterId: cluster.id,
-						namespace: namespace.name,
+						namespace: newNamespace,
 						exposeType: values.exposeType,
 						middlewareName: record
 							? record.middlewareNickName
@@ -309,7 +311,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				: {
 						...edit,
 						clusterId: cluster.id,
-						namespace: namespace.name,
+						namespace: newNamespace,
 						exposeType: values.exposeType,
 						middlewareName: record
 							? record.middlewareNickName
@@ -363,6 +365,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 
 	const handleChange = (value: string | string[], data: any, extra: any) => {
 		setCurrent(value as string);
+		setNewNamespace(data.namespace);
 		setSelectedInstance({
 			name: value as string,
 			type: extra.selectedPath[0].value
