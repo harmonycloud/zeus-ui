@@ -120,7 +120,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						<Input
 							htmlType="number"
 							id="name"
-							name="int"
+							name="port"
 							placeholder="端口"
 						/>
 					</FormItem>
