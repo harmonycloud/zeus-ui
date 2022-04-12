@@ -57,7 +57,7 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 				.then((res) => {
 					if (res.success) {
 						Message.show(
-							messageConfig('success', '成功', '用户修改成功')
+							messageConfig('success', '成功', '成员修改成功')
 						);
 					} else {
 						Message.show(messageConfig('error', '失败', res));
@@ -78,7 +78,7 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 			style={{ width: 550 }}
 		>
 			<Form {...formItemLayout618} field={field}>
-				<FormItem label="登陆账户">
+				<FormItem label="登录账户">
 					<Input disabled name="userName" />
 				</FormItem>
 				<FormItem label="用户名">
