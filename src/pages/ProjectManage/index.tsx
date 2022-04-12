@@ -50,6 +50,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 		return (
 			<span
 				className="text-overflow name-link"
+				title={value}
 				onClick={() => {
 					storage.setLocal('project', JSON.stringify(record));
 					history.push(

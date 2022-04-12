@@ -239,14 +239,18 @@ function UserManage(): JSX.Element {
 		if (list.length === 1) {
 			return list.map((i: any) => {
 				return (
-					<div key={i.projectId} className="blue-tip">
+					<div
+						key={i.projectId}
+						className="blue-tip"
+						title={`${i.projectName}:${i.roleName}`}
+					>
 						{i.projectName}:{i.roleName}
 					</div>
 				);
 			});
 		} else {
 			return (
-				<>
+				<div className="display-flex flex-align">
 					<div className="blue-tip">
 						{list[0].projectName}:{list[0].roleName}
 					</div>
@@ -263,6 +267,7 @@ function UserManage(): JSX.Element {
 								<div
 									style={{ marginBottom: 4 }}
 									key={i.projectId}
+									title={`${i.projectName}:${i.roleName}`}
 								>
 									<div className="blue-tip">
 										{i.projectName}:{i.roleName}
@@ -271,7 +276,7 @@ function UserManage(): JSX.Element {
 							);
 						})}
 					</Balloon>
-				</>
+				</div>
 			);
 		}
 	};

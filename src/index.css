@@ -613,16 +613,20 @@ table.table-list tbody tr td {
 
 /* 自定义标签样式 */
 .blue-tip{
-	display: inline;
+	display: inline-block;
 	padding: 2px;
 	height: 20px;
-	line-height: 20px;
+	max-width: 250px;
+	line-height: 15px;
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
 	background: #C7ECFF;
 	border: 1px solid #94DBFF;
 	color: #00A7FA;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
 }
 .orange-tip{
 	display: inline;
@@ -649,7 +653,7 @@ table.table-list tbody tr td {
 	color: #FF4D4F;
 }
 .role-tips-more {
-	width: 38px;
+	width: 12px;
 	height: 22px;
 	line-height: 22px;
 	text-align: center;
