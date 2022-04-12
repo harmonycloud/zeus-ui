@@ -69,6 +69,11 @@ function AlarmCenter(props: AlarmCenterProps): JSX.Element {
 			setIsService(false);
 		}
 	};
+	const NotAuth = () => {
+		setData(undefined);
+		setIsService(true);
+		return <h3 style={{ textAlign: 'center' }}>当前用户无该操作权限！</h3>;
+	};
 	return (
 		<SecondLayout
 			title="服务告警"
@@ -76,7 +81,7 @@ function AlarmCenter(props: AlarmCenterProps): JSX.Element {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{isService && JSON.stringify(data) !== '{}' && (
+			{isService && operateFlag && JSON.stringify(data) !== '{}' && (
 				<AlarmRecord
 					middlewareName={basicData?.name}
 					clusterId={basicData?.clusterId}
@@ -87,7 +92,8 @@ function AlarmCenter(props: AlarmCenterProps): JSX.Element {
 					monitor={basicData?.monitor}
 				/>
 			)}
-			{!isService && <NoService />}
+			{!isService && operateFlag && <NoService />}
+			{!operateFlag && <NotAuth />}
 		</SecondLayout>
 	);
 }
