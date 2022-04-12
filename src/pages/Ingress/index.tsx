@@ -100,7 +100,7 @@ function IngressList(props: ingressProps) {
 			<Button
 				onClick={() =>
 					history.push(
-						`/serviceAvailable/addServiceAvailable/${type}/${middlewareName}/${namespace}`
+						`/serviceList/${params.name}/${params.aliasName}/externalAccess/addExternalAccess/${middlewareName}/${type}/${params.chartVersion}/${namespace}`
 					)
 				}
 				type="primary"
@@ -114,12 +114,7 @@ function IngressList(props: ingressProps) {
 		return (
 			<>
 				<div>{record.name}</div>
-				<div
-					className="name-link"
-					onClick={() => console.log('todetail')}
-				>
-					{record.middlewareNickName}
-				</div>
+				<div>{record.middlewareNickName}</div>
 			</>
 		);
 	};
@@ -184,7 +179,9 @@ function IngressList(props: ingressProps) {
 				<LinkButton
 					onClick={() => {
 						storage.setLocal('availableRecord', record);
-						history.push('/serviceAvailable/addServiceAvailable');
+						history.push(
+							`/serviceList/${params.name}/${params.aliasName}/externalAccess/addExternalAccess/${middlewareName}/${type}/${params.chartVersion}/${namespace}`
+						);
 					}}
 				>
 					编辑

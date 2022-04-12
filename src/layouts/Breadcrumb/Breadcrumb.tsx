@@ -35,11 +35,24 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 			const result = arr.join('/');
 			return result;
 		}
+		if (pathname.includes('externalAccess/addExternalAccess')) {
+			const arr = pathname.split('/');
+			arr.splice(5, 1);
+			const result = arr.join('/');
+			return result;
+		}
+		if (pathname.includes('/addServiceAvailable')) {
+			const arr = pathname.split('/');
+			arr.splice(arr.length - 1, 1);
+			const result = arr.join('/');
+			return result;
+		}
 
 		if (route) {
 			const arr = pathname.split('/');
 			arr.length = i === 0 ? 3 : i + 2;
 			const result = arr.join('/');
+
 			return result;
 		}
 		return '/';
