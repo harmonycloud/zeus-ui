@@ -239,6 +239,7 @@ export default function KvForm(props: any): JSX.Element {
 						<Input
 							name="newKey"
 							trim={true}
+							htmlType="number"
 							placeholder="请输入内容"
 						/>
 					</FormItem>

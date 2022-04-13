@@ -10,6 +10,7 @@ export default {
 	serviceList: '服务列表',
 	serverVersion: '服务版本',
 	serviceAvailable: '服务暴露',
+	addExternalAccess: '新增',
 	addServiceAvailable: '新增',
 	monitorAlarm: '监控告警',
 	dataMonitor: '数据监控',

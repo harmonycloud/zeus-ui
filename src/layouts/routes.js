@@ -197,7 +197,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceAvailable/addServiceAvailable/:type/:middlewareName/:namespace"
+					path="/serviceList/:name/:aliasName/:currentTab/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
 					component={AddServiceAvailableForm}
 					exact
 				/>
