@@ -1591,7 +1591,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									>
 										<FormItem
 											pattern={pattern.mysqlPwd}
-											patternMessage="由1-16位字母和数字以及特殊字符组成"
+											patternMessage="由8-32位字母和数字以及特殊字符组成"
 										>
 											<Password
 												value={mysqlPwd}
@@ -1606,7 +1606,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										{mysqlPwd.length <= 6 &&
 											/^[A-Za-z0-9]+$/.test(mysqlPwd) && (
 												<p>
-													提示：当前密码太简单，有安全风险，建议输入由英文大些、小写、数字组成的6位以上的密码
+													提示：当前密码太简单，有安全风险，建议输入由英文大写、小写、数字组成的6位以上的密码
 												</p>
 											)}
 									</div>
