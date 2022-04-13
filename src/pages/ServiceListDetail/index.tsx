@@ -150,6 +150,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							customMid={customMid}
 							onRefresh={refresh}
 							toDetail={toDetail}
+							operateFlag={operateFlag}
 						/>
 					);
 				case 'highAvailability':
@@ -309,7 +310,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		history.push({
 			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
 				data?.mysqlDTO.relationName
-			}/${data?.mysqlDTO.type || 'mysql'}/${chartVersion}`,
+			}/${data?.mysqlDTO.type || 'mysql'}/${chartVersion}/${namespace}`,
 			state: {
 				flag: true
 			}
@@ -338,7 +339,9 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					history.push({
 						pathname: `/serviceList${name}/${aliasName}/basicInfo/${
 							data?.mysqlDTO.relationName
-						}/${data?.mysqlDTO.type || 'mysql'}/${chartVersion}`,
+						}/${
+							data?.mysqlDTO.type || 'mysql'
+						}/${chartVersion}/${namespace}`,
 						state: {
 							flag: true
 						}
