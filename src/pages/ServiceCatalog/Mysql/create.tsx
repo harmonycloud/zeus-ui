@@ -60,6 +60,7 @@ import styles from './mysql.module.scss';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 
 const { Item: FormItem } = Form;
+const Password = Input.Password;
 const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
 ) => {
@@ -1592,9 +1593,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											pattern={pattern.mysqlPwd}
 											patternMessage="由1-16位字母和数字以及特殊字符组成"
 										>
-											<Input
+											<Password
 												value={mysqlPwd}
-												htmlType="password"
 												name="mysqlPwd"
 												placeholder="请输入root密码，输入为空则由平台随机生成"
 												trim
