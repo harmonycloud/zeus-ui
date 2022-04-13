@@ -59,6 +59,7 @@ export default function ParamterHistory(
 	};
 
 	const onOk = (val: any[]) => {
+		console.log(val);
 		setStartTime(val[0]);
 		setEndTime(val[1]);
 		const start = moment(val[0]).format('YYYY-MM-DDTHH:mm:ss[Z]');

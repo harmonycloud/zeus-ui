@@ -69,12 +69,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
+	console.log(params);
 	const {
 		chartName,
 		chartVersion,
 		middlewareName,
 		backupFileName,
-		aliasName
+		aliasName,
+		namespace
 	} = params;
 	const { state } = props.location;
 	const field = Field.useField();
@@ -428,10 +430,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						chartName: chartName,
 						chartVersion: originData.chartVersion,
 						clusterId: globalCluster.id,
-						namespace:
-							globalNamespace.name === '*'
-								? values.namespace
-								: globalNamespace.name,
+						namespace: namespace as string,
 						type: 'mysql',
 						middlewareName: originData.name,
 						name: originData.name,
@@ -617,13 +616,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalCluster, globalNamespace]);
 
 	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		console.log(namespace);
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
-			namespace: globalNamespace.name,
+			namespace: namespace,
 			middlewareName: middlewareName,
 			type: 'mysql'
 		}).then((res) => {
-			console.log(res);
+			// console.log(res);
 			setOriginData(res.data);
 			setInstanceSpec('Customize');
 			if (res.data.nodeAffinity) {
@@ -837,7 +837,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		);
 	}
 	if (successFlag) {
-		console.log(createData);
 		return (
 			<Page>
 				<Header />
@@ -871,8 +870,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}
 
 	if (errorFlag) {
-		console.log(window.document.body.scrollTop);
-		window.document.body.scrollTop = 0;
 		return (
 			<Page>
 				<Header />
@@ -1013,7 +1010,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</FormBlock>
 						</>
 					) : null}
-					{globalNamespace.name === '*' && (
+					{globalNamespace.name === '*' && !state && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">
