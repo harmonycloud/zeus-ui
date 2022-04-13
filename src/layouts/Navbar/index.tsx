@@ -17,6 +17,7 @@ import {
 	setGlobalClusterList,
 	setGlobalNamespaceList
 } from '@/redux/globalVar/var';
+import { setMenuRefresh } from '@/redux/menu/menu';
 import { getUserInformation } from '@/services/user';
 import messageConfig from '@/components/messageConfig';
 import { disabledRoute, hideRoute, projectHideRoute } from '@/utils/const';
@@ -36,11 +37,11 @@ function Navbar(props: NavbarProps): JSX.Element {
 		setRefreshCluster,
 		setGlobalClusterList,
 		setGlobalNamespaceList,
-		getClusterId
+		getClusterId,
+		setMenuRefresh
 	} = props;
 	const { flag } = props.globalVar;
 	const location = useLocation();
-	const history = useHistory();
 	const [currentCluster, setCurrentCluster] = useState<{ id?: string }>({});
 	const [currentNamespace, setCurrentNamespace] = useState<{ name?: string }>(
 		{}
@@ -211,6 +212,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 			if (projectList[i].projectId === projectId) {
 				setCurrentProject(projectList[i]);
 				setProject(projectList[i]);
+				setMenuRefresh(true);
 				storage.setLocal('project', JSON.stringify(projectList[i]));
 			}
 		}
@@ -406,5 +408,6 @@ export default connect(mapStateToProps, {
 	setProject,
 	setRefreshCluster,
 	setGlobalClusterList,
-	setGlobalNamespaceList
+	setGlobalNamespaceList,
+	setMenuRefresh
 })(Navbar);

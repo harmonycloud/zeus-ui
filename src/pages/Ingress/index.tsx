@@ -115,7 +115,7 @@ function IngressList(props: ingressProps) {
 			<>
 				<div>{record.name}</div>
 				<div
-					className="name-link"
+					// className="name-link"
 					onClick={() => console.log('todetail')}
 				>
 					{record.middlewareNickName}

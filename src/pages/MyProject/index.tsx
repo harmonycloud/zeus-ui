@@ -7,6 +7,7 @@ import {
 	getProjectMiddleware,
 	getProjectMiddlewareCount
 } from '@/services/project';
+import { setMenuRefresh } from '@/redux/menu/menu';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
 import MiddlewareTable from './middlewareTable';
@@ -21,7 +22,7 @@ import './index.scss';
 import { roleProps } from '../RoleManage/role';
 
 function MyProject(props: MyProjectProps): JSX.Element {
-	const { setProject, setRefreshCluster, project } = props;
+	const { setProject, setRefreshCluster, project, setMenuRefresh } = props;
 	const history = useHistory();
 	const [role, setRole] = useState<roleProps>();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
@@ -77,9 +78,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		setProjectLoading(true);
 		getProjects({ key: '' })
 			.then((res) => {
-				console.log(res);
 				if (res.success) {
-					console.log(currentProject);
 					setDataSource(res.data);
 					if (!currentProject) setCurrentProject(res.data[0]);
 					if (
@@ -137,6 +136,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 										setCurrentProject(item);
 										setProject(item);
 										setRefreshCluster(true);
+										setMenuRefresh(true);
 										storage.setLocal(
 											'project',
 											JSON.stringify(item)
@@ -165,6 +165,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 													);
 													setEditVisible(true);
 													setProject(item);
+													setMenuRefresh(true);
 													setRefreshCluster(true);
 												}}
 											>
@@ -182,6 +183,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 													);
 													setRefreshCluster(true);
 													setProject(item);
+													setMenuRefresh(true);
 												}}
 											>
 												管理
@@ -263,5 +265,6 @@ const mapStateToProps = (state: StoreState) => ({
 });
 export default connect(mapStateToProps, {
 	setProject,
-	setRefreshCluster
+	setRefreshCluster,
+	setMenuRefresh
 })(MyProject);

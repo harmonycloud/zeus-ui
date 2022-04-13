@@ -1,6 +1,7 @@
 export interface MyProjectProps {
 	setProject: (project: any) => void;
 	setRefreshCluster: (flag: boolean) => void;
+	setMenuRefresh: (flag: boolean) => void;
 	project: ProjectItem;
 }
 export interface MiddlewareResourceInfo {
