@@ -74,9 +74,14 @@ export default function ParamterHistory(
 			end
 		);
 	};
+	const onChange = (val: any[]) => {
+		if (val.length === 0) {
+			getData(clusterId, namespace, middlewareName, type, searchText);
+		}
+	};
 
 	const Operation = {
-		primary: <RangePicker onOk={onOk} />
+		primary: <RangePicker onChange={onChange} onOk={onOk} />
 	};
 	const handleChange = (value: string) => {
 		setSearchText(value);
