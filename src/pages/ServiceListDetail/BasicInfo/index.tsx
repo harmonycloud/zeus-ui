@@ -211,7 +211,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		clusterId,
 		namespace,
 		onRefresh,
-		toDetail
+		toDetail,
+		operateFlag
 	} = props;
 	const history = useHistory();
 	const params: DetailParams = useParams();
@@ -751,9 +752,9 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							);
 						}
 					},
-					yamlConfig
+					operateFlag ? yamlConfig : {}
 			  ]
-			: [...configConfig, yamlConfig];
+			: [...configConfig, operateFlag ? yamlConfig : {}];
 	const onCancel = (value: boolean) => {
 		setVisible(false);
 		if (value) {

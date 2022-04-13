@@ -167,6 +167,7 @@ export interface BasicInfoProps {
 	customMid: boolean;
 	clusterId: string;
 	namespace: string;
+	operateFlag: boolean;
 	onRefresh: () => void;
 	toDetail: () => void;
 }
