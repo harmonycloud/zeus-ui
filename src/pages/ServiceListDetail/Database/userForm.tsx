@@ -130,42 +130,38 @@ export default function UserForm(props: FormProps): JSX.Element {
 		});
 	};
 
-	const getUserList = (sendData?: any) => {
+	const getUserList = () => {
 		listDb({ clusterId, namespace, middlewareName }).then((res) => {
 			if (res.success) {
 				if (data) {
-					setUsers(
-						res.data.map((item: any) => {
-							return {
-								id: item.id,
-								authority: '2',
-								db: item.db,
-								charset: item.charset
-							};
-						})
-					);
-					setLeftSearch(
-						res.data.map((item: any) => {
-							return {
-								id: item.id,
-								authority: '2',
-								db: item.db,
-								charset: item.charset
-							};
-						})
-					);
-					setSelectUser(
-						data.dbs.map((item: any) => {
-							return {
-								id: item.id,
-								authority: item.authority
-									? item.authority
-									: '2',
-								db: item.db,
-								charset: item.charset
-							};
-						})
-					);
+					const result = res.data.map((item: any) => {
+						return {
+							id: item.id,
+							authority: '2',
+							db: item.db,
+							charset: item.charset
+						};
+					});
+					const selectUsers = data.dbs.map((item: any) => {
+						return {
+							id: item.id,
+							authority: item.authority ? item.authority : '2',
+							db: item.db,
+							charset: item.charset
+						};
+					});
+					const user = result.map((item: any) => {
+						selectUsers.map((i: any) => {
+							if (item.db === i.db) {
+								item = { ...item, disabled: true };
+							}
+						});
+						return item;
+					});
+					setUsers(user.filter((item: any) => !item.disabled));
+					setLeftUsers(user.filter((item: any) => !item.disabled));
+					setSelectUser(selectUsers);
+					setRightUsers(selectUsers);
 				} else {
 					res.data &&
 						setUsers(
@@ -386,12 +382,18 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span style={{ width: '100px' }}>
+											<span
+												style={{
+													width: '120px',
+													textAlign: 'center'
+												}}
+											>
 												数据库名称
 											</span>
 											<span
 												style={{
-													width: 50
+													width: 50,
+													textAlign: 'center'
 												}}
 											>
 												字符集
@@ -504,12 +506,17 @@ export default function UserForm(props: FormProps): JSX.Element {
 									/>
 									<div>
 										<p>
-											<span style={{ width: '100px' }}>
+											<span
+												style={{
+													width: '120px',
+													textAlign: 'center'
+												}}
+											>
 												数据库名称
 											</span>
 											<span
 												style={{
-													width: 250,
+													width: 300,
 													textAlign: 'center'
 												}}
 											>
@@ -601,33 +608,25 @@ export default function UserForm(props: FormProps): JSX.Element {
 													}}
 												>
 													<Radio
-														id={String(
-															item.id + '1'
-														)}
+														id={Math.random() + ''}
 														value="1"
 													>
 														只读
 													</Radio>
 													<Radio
-														id={String(
-															item.id + '2'
-														)}
+														id={Math.random() + ''}
 														value="2"
 													>
 														读写（DDL+DML）
 													</Radio>
 													<Radio
-														id={String(
-															item.id + '3'
-														)}
+														id={Math.random() + ''}
 														value="3"
 													>
 														仅DDL
 													</Radio>
 													<Radio
-														id={String(
-															item.id + '4'
-														)}
+														id={Math.random() + ''}
 														value="4"
 													>
 														仅DML

@@ -27,7 +27,7 @@
 			overflow: auto;
 			height: 160px;
 			li {
-				padding: 0 16px;
+				padding-right: 16px;
 				display: flex;
 				align-items: center;
 				cursor: pointer;
@@ -52,14 +52,16 @@
 		}
 	}
 	.db-name {
-		width: 100px;
+		width: 70px;
+		margin-right: 16px;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 	}
 }
 .db-name {
-	max-width: 50px;
+	width: 50px;
+	margin-right: 8px;
 	vertical-align: middle;
 	display: inline-block;
 	text-overflow: ellipsis;
