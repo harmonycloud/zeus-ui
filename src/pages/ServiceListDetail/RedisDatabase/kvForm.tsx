@@ -9,6 +9,7 @@ import {
 } from '@alicloud/console-components';
 import { addKv, updateKv } from '@/services/middleware';
 import messageConfig from '@/components/messageConfig';
+import pattern from '@/utils/pattern';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -35,6 +36,7 @@ export default function KvForm(props: any): JSX.Element {
 	} = props;
 	const field: Field = Field.useField();
 	const [type, setType] = useState('String');
+	const [timeOut, setTimeOut] = useState('');
 
 	useEffect(() => {
 		if (data) {
@@ -201,13 +203,12 @@ export default function KvForm(props: any): JSX.Element {
 				<FormItem
 					labelTextAlign="left"
 					label="超出时间"
-					requiredMessage="请输入超出时间"
+					pattern={'^[0-9]*$'}
+					patternMessage="请输入数字"
 				>
 					<Input
 						name="timeOut"
 						trim={true}
-						htmlType="number"
-						min={0}
 						placeholder="请输入内容"
 					/>
 				</FormItem>
