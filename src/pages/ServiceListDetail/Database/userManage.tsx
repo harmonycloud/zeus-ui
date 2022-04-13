@@ -208,7 +208,7 @@ function UserManage(props: any): JSX.Element {
 							cursor: 'pointer'
 						}}
 					>
-						<span>所有</span>[最高权限]
+						<span className="db-name">所有</span>[最高权限]
 					</div>
 				}
 				align="t"
@@ -403,20 +403,18 @@ function UserManage(props: any): JSX.Element {
 					title="授权数据库"
 					dataIndex="dbs"
 					cell={absRender}
-					width={150}
+					width={200}
 				/>
 				<Table.Column
 					title="密码"
 					dataIndex="password"
 					cell={passwordRender}
-					width={120}
+					width={100}
 				/>
-				{console.log(dataSource)}
 				<Table.Column
 					title="备注"
 					dataIndex="description"
 					cell={nullRender}
-					width={150}
 				/>
 				<Table.Column
 					title="创建时间"
