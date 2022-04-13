@@ -23,7 +23,6 @@ import {
 	tooltipRender
 } from '@/utils/utils';
 import { setParamTemplateConfig } from '@/redux/param/param';
-import storage from '@/utils/storage';
 
 import { ConfigItem } from '../../detail';
 import { paramReduxProps, StoreState } from '@/types';
@@ -56,6 +55,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 	const [dataSource, setDataSource] = useState<ConfigItem[]>([]);
 	const [showDataSource, setShowDataSource] = useState<ConfigItem[]>([]);
 	const [editFlag, setEditFlag] = useState<boolean>(false);
+	const [disableFlag, setDisableFlag] = useState<boolean>(true);
 	useEffect(() => {
 		if (source === 'template') {
 			if (param.customConfigList.length === 0) {
@@ -227,6 +227,14 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		}
 		setDataSource([...dataSource]);
 		setShowDataSource([...showDataSource]);
+		const list = dataSource.filter(
+			(item) => item.value != item.modifiedValue
+		);
+		if (list.length === 0) {
+			setDisableFlag(true);
+		} else {
+			setDisableFlag(false);
+		}
 	};
 	const modifyValueRender = (
 		value: string,
@@ -416,6 +424,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									onClick={saveTemplate}
 									className="mr-8"
 									type="primary"
+									disabled={disableFlag}
 								>
 									保存
 								</Button>
@@ -436,6 +445,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 												);
 												setTimeout(() => {
 													setEditFlag(false);
+													setDisableFlag(true);
 													handleBtnClick &&
 														handleBtnClick(false);
 												}, 1000);

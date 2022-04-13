@@ -11,6 +11,7 @@ export interface CreateParams {
 	middlewareName: string;
 	backupFileName: string;
 	aliasName: string;
+	namespace?: string;
 }
 export interface AffinityItem {
 	label: string;
