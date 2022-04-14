@@ -639,7 +639,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											requiredMessage="请选择暴露对象"
 										>
 											<Select
-												name={'serviceName'}
+												name={'serviceName' + index}
 												onChange={(value) =>
 													onChangeHttp(
 														value,
@@ -684,7 +684,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											requiredMessage="请选择暴露端口！"
 										>
 											<Select
-												name={'servicePort'}
+												name={'servicePort' + index}
 												style={{ width: '120px' }}
 												placeholder="请选择端口"
 												disabled={
@@ -731,7 +731,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											patternMessage="请输入正确的域名格式！"
 										>
 											<Input
-												name={'domain'}
+												name={'domain' + 'index'}
 												placeholder="请输入域名"
 												disabled={
 													cluster.ingress === null
@@ -753,7 +753,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											patternMessage="请填写正确的URL映射格式，如：/path"
 										>
 											<Input
-												name={'path'}
+												name={'path' + index}
 												placeholder="请输入域名后的路径"
 												disabled={
 													cluster.ingress === null
