@@ -36,7 +36,6 @@ export default function KvForm(props: any): JSX.Element {
 	} = props;
 	const field: Field = Field.useField();
 	const [type, setType] = useState('String');
-	const [timeOut, setTimeOut] = useState('');
 
 	useEffect(() => {
 		if (data) {

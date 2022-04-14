@@ -311,7 +311,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 								}
 								triggerType={'click'}
 								closable={false}
-								visible={iconVisible && adress === record.name}
 							>
 								<Icon
 									type={'success'}
@@ -365,10 +364,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 												}
 												triggerType={'click'}
 												closable={false}
-												visible={
-													iconVisible &&
-													adress === record.name
-												}
 											>
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<Icon
