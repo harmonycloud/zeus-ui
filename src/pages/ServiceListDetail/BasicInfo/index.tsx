@@ -154,7 +154,7 @@ const modelMap = {
 	6: '三主三从',
 	10: '五主五从',
 	dledger: 'DLedger模式',
-	cluster: '资源池模式'
+	cluster: '集群模式'
 };
 const titleConfig = {
 	dataIndex: 'title',
