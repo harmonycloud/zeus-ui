@@ -23,9 +23,9 @@
 		display: flex;
 		.next-form-item-control {
 			display: flex;
-            .next-form-item-control{
-                display: block;
-            }
+			.next-form-item-control {
+				display: block;
+			}
 			.next-form-item {
 				&:first-of-type {
 					margin: 0;
@@ -46,4 +46,10 @@
 			padding: 0 5px;
 		}
 	}
+}
+.address {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

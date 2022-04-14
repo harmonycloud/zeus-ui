@@ -31,6 +31,8 @@ import { getList } from '@/services/serviceList';
 import GuidePage from '../GuidePage';
 import { protocolFilter } from '@/utils/const';
 
+import './index.scss';
+
 interface stateProps {
 	middlewareName: string;
 }
@@ -286,7 +288,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
 				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
-				<div>
+				<div style={{ display: 'flex', alignItems: 'center' }}>
 					<div>
 						<div>
 							&nbsp;&nbsp;&nbsp;&nbsp;
@@ -294,7 +296,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 								record.ingressClassName || ''
 							}`}
 						</div>
-						<div>
+						<div className="address">
 							<Balloon
 								trigger={
 									<CustomIcon
@@ -322,7 +324,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 								/>
 								复制成功
 							</Balloon>
-							{address}
+							<span title={address}>{address}</span>
 						</div>
 					</div>
 					{record.protocol === 'HTTP' && record.rules.length > 1 && (
@@ -344,7 +346,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 												'-' +
 												record.ingressClassName}
 										</div>
-										<div>
+										<div className="address">
 											<Balloon
 												trigger={
 													<CustomIcon
@@ -376,7 +378,9 @@ function ServiceAvailable(props: serviceAvailableProps) {
 												/>
 												复制成功
 											</Balloon>
-											{address}
+											<span title={address}>
+												{address}
+											</span>
 										</div>
 									</div>
 								);
@@ -401,9 +405,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	) => {
 		return (
 			<div className="display-flex flex-align">
-				{record?.isDisasterRecovery && (
-					<div className="gray-circle">备</div>
-				)}
 				<div>
 					<div>{record.middlewareName}</div>
 					<div>{record.middlewareNickName}</div>
@@ -516,7 +517,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						onSearch: handleSearch,
 						onChange: handleChange,
 						placeholder:
-							'请输入暴露路由名称、服务名称/中文别名、访问地址搜索'
+							'请输入被暴露服务名、服务名称/中文别名、访问地址搜索'
 					}}
 					searchStyle={{
 						width: '370px'
