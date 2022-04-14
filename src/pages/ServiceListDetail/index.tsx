@@ -55,7 +55,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	const {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList,
-		project
+		project,
+		namespace: globalNamespace
 	} = globalVar;
 	const history = useHistory();
 	const params: DetailParams = useParams();
@@ -68,7 +69,6 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		aliasName,
 		namespace
 	} = params;
-	console.log(JSON.parse(storage.getLocal('role')));
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [status, setStatus] = useState<string>('');
 	const [customMid, setCustomMid] = useState<boolean>(false); // * 判断是否是自定义中间件
@@ -304,13 +304,13 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		const ns = globalNamespaceList.filter(
 			(item) => item.name === data?.mysqlDTO.relationNamespace
 		);
-		setNamespace(ns[0]);
-		storage.setLocal('namespace', JSON.stringify(ns[0]));
+		if (globalNamespace.name !== '*') {
+			setNamespace(ns[0]);
+			storage.setLocal('namespace', JSON.stringify(ns[0]));
+		}
 		setRefreshCluster(true);
 		history.push({
-			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
-				data?.mysqlDTO.relationName
-			}/${data?.mysqlDTO.type || 'mysql'}/${chartVersion}/${namespace}`,
+			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
 			state: {
 				flag: true
 			}
@@ -333,15 +333,13 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						(item: any) =>
 							item.name === data?.mysqlDTO.relationNamespace
 					);
-					setNamespace(ns[0]);
-					storage.setLocal('namespace', JSON.stringify(ns[0]));
+					if (globalNamespace.name !== '*') {
+						setNamespace(ns[0]);
+						storage.setLocal('namespace', JSON.stringify(ns[0]));
+					}
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/serviceList${name}/${aliasName}/basicInfo/${
-							data?.mysqlDTO.relationName
-						}/${
-							data?.mysqlDTO.type || 'mysql'
-						}/${chartVersion}/${namespace}`,
+						pathname: `/serviceList${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
 						state: {
 							flag: true
 						}

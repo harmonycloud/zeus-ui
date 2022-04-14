@@ -80,40 +80,40 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		toDetail,
 		getData
 	} = props;
-	// console.log(props);
+	console.log(props);
 	const [originData, setOriginData] = useState<OriginProps>(originDataInit);
 	const [backupData, setBackupData] = useState<OriginProps>(backupDataInit);
 	const [runState, setRunState] = useState<runStateProps>(runStateInit);
 	const history = useHistory();
 	useEffect(() => {
-		if (clusterId) {
-			getMysqlExternal({
-				clusterId,
-				namespace,
-				mysqlName: middlewareName
-			}).then((res) => {
-				if (res.success) {
-					setOriginData({
-						cluster: res?.data?.source?.clusterId || '',
-						namespace: res?.data?.source?.namespace || '',
-						name: res?.data?.source?.middlewareName || '',
-						dbUser: res?.data?.source?.username || '',
-						dbPass: res?.data?.source?.password || '',
-						address: res?.data?.source?.address || ''
-					});
-					setBackupData({
-						cluster: res?.data?.disasterRecovery?.clusterId || '',
-						namespace: res?.data?.disasterRecovery?.namespace || '',
-						name: res?.data?.disasterRecovery?.middlewareName || '',
-						dbUser: res?.data?.disasterRecovery?.username || '',
-						dbPass: res?.data?.disasterRecovery?.password || '',
-						address: res?.data?.disasterRecovery?.address || ''
-					});
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
-		}
+		// if (clusterId && namespace && data) {
+		getMysqlExternal({
+			clusterId,
+			namespace,
+			mysqlName: middlewareName
+		}).then((res) => {
+			if (res.success) {
+				setOriginData({
+					cluster: res?.data?.source?.clusterId || '',
+					namespace: res?.data?.source?.namespace || '',
+					name: res?.data?.source?.middlewareName || '',
+					dbUser: res?.data?.source?.username || '',
+					dbPass: res?.data?.source?.password || '',
+					address: res?.data?.source?.address || ''
+				});
+				setBackupData({
+					cluster: res?.data?.disasterRecovery?.clusterId || '',
+					namespace: res?.data?.disasterRecovery?.namespace || '',
+					name: res?.data?.disasterRecovery?.middlewareName || '',
+					dbUser: res?.data?.disasterRecovery?.username || '',
+					dbPass: res?.data?.disasterRecovery?.password || '',
+					address: res?.data?.disasterRecovery?.address || ''
+				});
+			} else {
+				Message.show(messageConfig('error', '失败', res));
+			}
+		});
+		// }
 		setRunState({
 			title: '运行状态',
 			status: data?.mysqlDTO?.phase || '',
@@ -123,7 +123,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				  )
 				: '--'
 		});
-	}, [data, namespace]);
+	}, []);
 	const items: IDataFieldsProps['items'] = [
 		{
 			dataIndex: 'title',
