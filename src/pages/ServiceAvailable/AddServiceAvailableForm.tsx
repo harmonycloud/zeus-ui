@@ -86,7 +86,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const history = useHistory();
 
 	useEffect(() => {
-		if (params.middlewareName) {
+		if (params.middlewareName && !record) {
 			setCurrent(params.middlewareName);
 			JSON.stringify(namespace) !== '{}' &&
 				getIngresses({ clusterId: cluster.id }).then((res) => {
