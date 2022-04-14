@@ -200,7 +200,11 @@ function AlarmSet(props: any) {
 			password: data.password
 		};
 		connectMail(sendData).then((res) => {
-			res.data ? setConnect('good') : setConnect('bad');
+			if (!res.success) {
+				res.data ? setConnect('good') : setConnect('bad');
+			} else {
+				Message.show(messageConfig('error', '失败', res.errorMsg));
+			}
 		});
 	};
 
@@ -451,7 +455,14 @@ function AlarmSet(props: any) {
 																addDingFormList
 															}
 														>
-															<Icon type='add' style={{color: '#fff', transform: 'scale(0.8)'}} />
+															<Icon
+																type="add"
+																style={{
+																	color: '#fff',
+																	transform:
+																		'scale(0.8)'
+																}}
+															/>
 														</Button>
 														<Button
 															onClick={() =>
@@ -466,7 +477,14 @@ function AlarmSet(props: any) {
 																	: ''
 															}
 														>
-															<Icon type='minus' style={{color: '#fff', transform: 'scale(0.8)'}} />
+															<Icon
+																type="minus"
+																style={{
+																	color: '#fff',
+																	transform:
+																		'scale(0.8)'
+																}}
+															/>
 														</Button>
 													</div>
 													{dingConnect &&
