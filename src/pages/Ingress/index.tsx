@@ -220,13 +220,15 @@ function IngressList(props: ingressProps) {
 				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
 				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
-				<div>
+				<div style={{ display: 'flex', alignItems: 'center' }}>
 					<div>
 						<div>
 							&nbsp;&nbsp;&nbsp;&nbsp;
-							{record.protocol + '-' + record.ingressClassName}
+							{`${record.protocol}-${
+								record.ingressClassName || ''
+							}`}
 						</div>
-						<div>
+						<div className="address">
 							<Balloon
 								trigger={
 									<CustomIcon
@@ -243,7 +245,6 @@ function IngressList(props: ingressProps) {
 								}
 								triggerType={'click'}
 								closable={false}
-								visible={iconVisible && adress === record.name}
 							>
 								<Icon
 									type={'success'}
@@ -255,7 +256,7 @@ function IngressList(props: ingressProps) {
 								/>
 								复制成功
 							</Balloon>
-							{address}
+							<span title={address}>{address}</span>
 						</div>
 					</div>
 					{record.protocol === 'HTTP' && record.rules.length > 1 && (
@@ -277,7 +278,7 @@ function IngressList(props: ingressProps) {
 												'-' +
 												record.ingressClassName}
 										</div>
-										<div>
+										<div className="address">
 											<Balloon
 												trigger={
 													<CustomIcon
@@ -297,10 +298,6 @@ function IngressList(props: ingressProps) {
 												}
 												triggerType={'click'}
 												closable={false}
-												visible={
-													iconVisible &&
-													adress === record.name
-												}
 											>
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<Icon
@@ -313,7 +310,9 @@ function IngressList(props: ingressProps) {
 												/>
 												复制成功
 											</Balloon>
-											{address}
+											<span title={address}>
+												{address}
+											</span>
 										</div>
 									</div>
 								);
@@ -457,7 +456,7 @@ function IngressList(props: ingressProps) {
 					<Table.Column
 						title="被暴露服务名"
 						dataIndex="ingressName"
-						width={220}
+						width={200}
 						cell={nameRender}
 					/>
 					<Table.Column

@@ -189,6 +189,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	// * root密码
 	const [mysqlPwd, setMysqlPwd] = useState<string>('');
+	const [checks, setChecks] = useState<boolean[]>([false, false]);
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -869,6 +870,26 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			</Page>
 		);
 	}
+
+	const mysqlPwdChange = (value: string) => {
+		const temp = [...checks];
+		if (value.length >= 8 && value.length <= 32) {
+			temp[0] = true;
+		} else {
+			temp[0] = false;
+		}
+		if (
+			/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{3,32}$/.test(
+				value
+			)
+		) {
+			temp[1] = true;
+		} else {
+			temp[1] = false;
+		}
+		setChecks(temp);
+		setMysqlPwd(value);
+	};
 
 	if (errorFlag) {
 		return (
@@ -1586,26 +1607,89 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem
-											pattern={pattern.mysqlPwd}
-											patternMessage="由8-32位字母和数字以及特殊字符组成"
+										<Balloon
+											trigger={
+												<FormItem
+													pattern={pattern.mysqlPwd}
+													patternMessage="由8-32位字母和数字以及特殊字符组成"
+												>
+													<Password
+														value={mysqlPwd}
+														name="mysqlPwd"
+														placeholder="请输入root密码，输入为空则由平台随机生成"
+														trim
+														onChange={
+															mysqlPwdChange
+														}
+													/>
+												</FormItem>
+											}
+											closable={false}
+											align="r"
 										>
-											<Password
-												value={mysqlPwd}
-												name="mysqlPwd"
-												placeholder="请输入root密码，输入为空则由平台随机生成"
-												trim
-												onChange={(value) =>
-													setMysqlPwd(value)
-												}
-											/>
-										</FormItem>
-										{mysqlPwd.length <= 6 &&
-											/^[A-Za-z0-9]+$/.test(mysqlPwd) && (
-												<p>
-													提示：当前密码太简单，有安全风险，建议输入由英文大写、小写、数字组成的6位以上的密码
-												</p>
-											)}
+											<ul>
+												<li
+													className={
+														styles[
+															'edit-form-icon-style'
+														]
+													}
+												>
+													{checks[0] ? (
+														<Icon
+															type="success-filling1"
+															style={{
+																color: '#68B642',
+																marginRight: 4
+															}}
+															size="xs"
+														/>
+													) : (
+														<Icon
+															type="times-circle-fill"
+															style={{
+																color: '#Ef595C',
+																marginRight: 4
+															}}
+															size="xs"
+														/>
+													)}
+													<span>
+														(长度需要8-32之间)
+													</span>
+												</li>
+												<li
+													className={
+														styles[
+															'edit-form-icon-style'
+														]
+													}
+												>
+													{checks[1] ? (
+														<Icon
+															type="success-filling1"
+															style={{
+																color: '#68B642',
+																marginRight: 4
+															}}
+															size="xs"
+														/>
+													) : (
+														<Icon
+															type="times-circle-fill"
+															style={{
+																color: '#Ef595C',
+																marginRight: 4
+															}}
+															size="xs"
+														/>
+													)}
+													<span>
+														至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
+													</span>
+												</li>
+											</ul>
+										</Balloon>
 									</div>
 								</li>
 								<li className="display-flex">
