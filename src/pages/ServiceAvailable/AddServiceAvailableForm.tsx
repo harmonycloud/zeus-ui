@@ -446,7 +446,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			/>
 			<Content>
 				<Form field={field}>
-					<h2>资源池选择</h2>
+					<h2>集群选择</h2>
 					<FormItem
 						label="选择服务"
 						required

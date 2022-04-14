@@ -276,7 +276,7 @@ function AddForm(props: addFormProps): JSX.Element {
 										value={quickName}
 										trim={true}
 										state={inputState}
-										placeholder="请输入资源池名称生成资源池纳管脚本"
+										placeholder="请输入集群名称生成集群纳管脚本"
 										onChange={(value: string) => {
 											setQuickName(value);
 											setInputState(undefined);
