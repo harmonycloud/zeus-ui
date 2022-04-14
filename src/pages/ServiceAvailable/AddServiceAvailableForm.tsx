@@ -577,9 +577,10 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									value={selectedService.serviceName}
 									autoWidth={false}
 									placeholder="请选择Service"
-									disabled={
-										cluster.ingress === null || !!record
-									}
+									// disabled={
+									// 	cluster.ingress === null || !!record
+									// }
+									disabled={cluster.ingress === null}
 								>
 									{services &&
 										services.map((item: any) => {
@@ -649,9 +650,12 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												value={item.serviceName}
 												style={{ width: '200px' }}
 												placeholder="请选择Service"
+												// disabled={
+												// 	cluster.ingress === null ||
+												// 	!!record
+												// }
 												disabled={
-													cluster.ingress === null ||
-													!!record
+													cluster.ingress === null
 												}
 											>
 												{services &&
