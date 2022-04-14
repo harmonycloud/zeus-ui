@@ -517,10 +517,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						onSearch: handleSearch,
 						onChange: handleChange,
 						placeholder:
-							'请输入被暴露服务名、服务名称/中文别名、访问地址搜索'
+							'请输入被暴露服务名、服务名称/中文别名、访问地址或者端口搜索'
 					}}
 					searchStyle={{
-						width: '370px'
+						width: '420px'
 					}}
 					onSort={onSort}
 					onFilter={onFilter}
