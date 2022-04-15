@@ -378,7 +378,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		getServices(sendData).then((res) => {
 			if (res.success) {
 				setServices(res.data);
-				if (record && res.data) {
+				if (record?.exposeType === 'TCP' && res.data) {
 					res.data.find(
 						(item: any) =>
 							item.serviceName ===
@@ -479,6 +479,9 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									name="ingressClassName"
 									placeholder="请选择一个ingress"
 									style={{ width: '200px' }}
+									disabled={
+										record && record.protocol === 'TCP'
+									}
 								>
 									{ingresses.map(
 										(item: IngressItemProps, index) => {
