@@ -791,12 +791,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		setRelationNamespace(data.value);
 	};
 	const onLoadData = (data: any) => {
-		return getNamespaces({ clusterId: data.value }).then((res) => {
+		return getNamespaces({
+			clusterId: data.value,
+			projectId: project.projectId
+		}).then((res) => {
 			if (res.success) {
 				const list = res.data.map((item: namespaceType) => {
 					return {
 						parent: data.value,
-						label: item.name,
+						label: item.aliasName,
 						value: item.name,
 						isLeaf: true
 					};
@@ -964,9 +967,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														style={{
 															width: '378px'
 														}}
-														value={
-															globalNamespace.name
-														}
+														value={namespace}
 													/>
 												</FormItem>
 											</div>

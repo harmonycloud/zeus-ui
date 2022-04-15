@@ -34,6 +34,7 @@ function DisasterCenter(props: disasterCenterProps) {
 	const {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList,
+		namespace: globalNamespace,
 		project
 	} = props.globalVar;
 	const history = useHistory();
@@ -113,15 +114,17 @@ function DisasterCenter(props: disasterCenterProps) {
 				item.name ===
 				(data as middlewareDetailProps).mysqlDTO.relationNamespace
 		);
-		setNamespace(ns[0]);
-		storage.setLocal('namespace', JSON.stringify(ns[0]));
+		if (globalNamespace.name !== '*') {
+			setNamespace(ns[0]);
+			storage.setLocal('namespace', JSON.stringify(ns[0]));
+		}
 		setRefreshCluster(true);
 		storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 		history.push({
 			pathname: `/serviceList/mysql/MySQL/basicInfo/${
 				(data as middlewareDetailProps).mysqlDTO.relationName
-			}/${(data as middlewareDetailProps).mysqlDTO.type || 'mysql'}/${
-				(data as middlewareDetailProps).chartVersion
+			}/mysql/${(data as middlewareDetailProps).chartVersion}/${
+				(data as middlewareDetailProps).mysqlDTO.relationNamespace
 			}`,
 			state: {
 				flag: true
@@ -148,19 +151,21 @@ function DisasterCenter(props: disasterCenterProps) {
 							(data as middlewareDetailProps).mysqlDTO
 								.relationNamespace
 					);
-					setNamespace(ns[0]);
-					storage.setLocal('namespace', JSON.stringify(ns[0]));
+					if (globalNamespace.name !== '*') {
+						setNamespace(ns[0]);
+						storage.setLocal('namespace', JSON.stringify(ns[0]));
+					}
 					setRefreshCluster(true);
 					storage.setSession('menuPath', '/serviceList/mysql/MySQL');
 					history.push({
 						pathname: `/serviceList/mysql/MySQL/basicInfo/${
 							(data as middlewareDetailProps).mysqlDTO
 								.relationName
+						}/mysql/${
+							(data as middlewareDetailProps).chartVersion
 						}/${
-							(data as middlewareDetailProps).mysqlDTO.type ||
-							'mysql'
-						}/${(data as middlewareDetailProps).chartVersion}/${
-							data?.namespace
+							(data as middlewareDetailProps).mysqlDTO
+								.relationNamespace
 						}`,
 						state: {
 							flag: true
