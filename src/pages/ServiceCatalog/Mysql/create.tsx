@@ -799,7 +799,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				const list = res.data.map((item: namespaceType) => {
 					return {
 						parent: data.value,
-						label: item.aliasName,
+						label: item.aliasName || item.name,
 						value: item.name,
 						isLeaf: true
 					};
