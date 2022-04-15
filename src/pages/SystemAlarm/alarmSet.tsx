@@ -143,7 +143,6 @@ function AlarmSet(props: any) {
 		const obj: any = {
 			port: null,
 			password: null,
-			mailPath: null,
 			mailServer: null,
 			userName: null,
 			...field.getValues()

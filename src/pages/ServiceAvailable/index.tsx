@@ -153,6 +153,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			} else {
 				setShowDataSource(l);
 			}
+		} else {
+			setShowDataSource(l);
 		}
 	}, [originData]);
 	useEffect(() => {
@@ -279,7 +281,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		setTimeout(() => {
 			setIconVisible(false);
 		}, 3000);
-		// Message.show(messageConfig('success', '成功', '复制成功'));
 	};
 	const addressRender = (value: string, index: number, record: any) => {
 		if (record.exposeType === 'Ingress') {
