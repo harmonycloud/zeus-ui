@@ -378,8 +378,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		getServices(sendData).then((res) => {
 			if (res.success) {
 				setServices(res.data);
-				console.log(record.serviceList[0].serviceName);
-
 				if (record && res.data) {
 					res.data.find(
 						(item: any) =>

@@ -116,7 +116,8 @@ export default function EditProjectForm(
 							const [name, aliasName] = i.split('/');
 							return {
 								name: name,
-								aliasName: aliasName
+								aliasName:
+									aliasName === 'null' ? null : aliasName
 							};
 						})
 				};
