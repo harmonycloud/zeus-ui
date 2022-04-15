@@ -405,9 +405,13 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	) => {
 		return (
 			<div className="display-flex flex-align">
-				<div>
-					<div>{record.middlewareName}</div>
-					<div>{record.middlewareNickName}</div>
+				<div className="middleware-name">
+					<div title={record.middlewareName}>
+						{record.middlewareName}
+					</div>
+					<div title={record.middlewareNickName || ''}>
+						{record.middlewareNickName}
+					</div>
 				</div>
 			</div>
 		);

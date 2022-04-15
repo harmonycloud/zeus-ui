@@ -731,7 +731,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											patternMessage="请输入正确的域名格式！"
 										>
 											<Input
-												name={'domain' + 'index'}
+												name={'domain' + index}
 												placeholder="请输入域名"
 												disabled={
 													cluster.ingress === null

@@ -200,11 +200,7 @@ function AlarmSet(props: any) {
 			password: data.password
 		};
 		connectMail(sendData).then((res) => {
-			if (!res.success) {
-				res.data ? setConnect('good') : setConnect('bad');
-			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
-			}
+			res.data ? setConnect('good') : setConnect('bad');
 		});
 	};
 
@@ -234,7 +230,11 @@ function AlarmSet(props: any) {
 				};
 			});
 			connectDing(arrs).then((res) => {
-				setDingConnect(res.data.map((item: any) => item.success));
+				if (res.success) {
+					setDingConnect(res.data.map((item: any) => item.success));
+				} else {
+					Message.show(messageConfig('error', '失败', res.errorMsg));
+				}
 			});
 		});
 	};
@@ -284,6 +284,7 @@ function AlarmSet(props: any) {
 							>
 								<Form.Item
 									required
+									requiredMessage="请输入邮箱服务器"
 									label="邮箱服务器"
 									style={{ position: 'relative' }}
 								>
@@ -308,36 +309,36 @@ function AlarmSet(props: any) {
 										</div>
 									)}
 								</Form.Item>
-								<Form.Item required label="端口">
+								<Form.Item
+									required
+									requiredMessage="请输入端口"
+									label="端口"
+								>
 									<Input
 										placeholder="请输入端口"
 										name="port"
 										onChange={checkBtn}
 									/>
 								</Form.Item>
-								<Form.Item required label="用户">
+								<Form.Item
+									required
+									requiredMessage="请输入邮箱"
+									label="邮箱"
+								>
 									<Input
-										placeholder="请输入用户"
+										placeholder="请输入邮箱"
 										name="userName"
 										onChange={checkBtn}
-										onBlur={(e) =>
-											field.setValues({
-												mailPath: e.target.value
-											})
-										}
 									/>
 								</Form.Item>
-								<Form.Item required label="密码">
+								<Form.Item
+									required
+									requiredMessage="请输入密码"
+									label="密码"
+								>
 									<Input.Password
 										placeholder="请输入密码"
 										name="password"
-										onChange={checkBtn}
-									/>
-								</Form.Item>
-								<Form.Item required label="告警邮箱地址">
-									<Input
-										placeholder="所有的告警信息将由该地址发送到您的邮箱"
-										name="mailPath"
 										onChange={checkBtn}
 									/>
 								</Form.Item>
@@ -429,11 +430,7 @@ function AlarmSet(props: any) {
 											<div key={item.id}>
 												<Form.Item
 													required
-													requiredMessage={
-														'Webhook地址' +
-														(index + 1) +
-														'是必填字段'
-													}
+													requiredMessage="请输入Webhook地址"
 													label={
 														'Webhook地址' +
 														(index + 1)
