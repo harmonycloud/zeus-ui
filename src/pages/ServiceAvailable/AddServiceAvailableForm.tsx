@@ -19,8 +19,7 @@ import CustomIcon from '@/components/CustomIcon';
 import messageConfig from '@/components/messageConfig';
 import { getServices } from '@/services/ingress';
 import pattern from '@/utils/pattern';
-import { clusterType } from '@/types';
-import { StoreState, globalVarProps } from '@/types/index';
+import { StoreState } from '@/types/index';
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
 import { filtersProps } from '@/types/comment';
@@ -30,27 +29,16 @@ import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 
 import './index.scss';
 import { Button } from '@alifd/next';
-import { deleteAlarm } from '@/services/middleware';
 import storage from '@/utils/storage';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const formItemLayout = {
-	labelCol: {
-		span: 4
-	},
-	wrapperCol: {
-		span: 20
-	}
-};
 interface stateProps {
 	middlewareName: string;
 }
 function AddServiceAvailableForm(props: any): JSX.Element {
-	const { visible, onCancel } = props;
 	const { cluster, namespace, project } = props.globalVar;
 
-	const [isProcessing, setIsProcessing] = useState(false); // 确认按钮 loading
 	const [exposedWay, setExposedWay] = useState('Ingress');
 	const [protocol, setProtocol] = useState(
 		exposedWay === 'Ingress' ? 'HTTP' : 'TCP'
@@ -67,7 +55,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const location: Location<stateProps> = useLocation();
 	const params: any = useParams();
 	const middlewareName = location?.state?.middlewareName || '';
-	const [ingressTcpFlag] = useState(cluster.ingressList || false);
 	const [data, setData] = useState([]);
 	const [current, setCurrent] = useState<string>();
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
@@ -391,8 +378,25 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		getServices(sendData).then((res) => {
 			if (res.success) {
 				setServices(res.data);
-				res.data && setSelectedService(res.data[0]);
-				// setServicePorts(res.data[0].portDetailDtoList);
+				console.log(record.serviceList[0].serviceName);
+
+				if (record && res.data) {
+					res.data.find(
+						(item: any) =>
+							item.serviceName ===
+							record.serviceList[0].serviceName
+					)
+						? setSelectedService(
+								res.data.find(
+									(item: any) =>
+										item.serviceName ===
+										record.serviceList[0].serviceName
+								)
+						  )
+						: setSelectedService(res.data[0]);
+				} else {
+					res.data && setSelectedService(res.data[0]);
+				}
 			} else {
 				Message.show(messageConfig('error', '失败', res));
 			}
@@ -405,8 +409,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const onOk = () => {
 		field.validate((err, data) => {
 			if (!err) {
-				setIsProcessing(true);
-				setIsProcessing(false);
 				const value = {
 					...data,
 					selectedInstance,
@@ -419,25 +421,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	};
 
 	return (
-		// <SlidePanel
-		// 	top={48}
-		// 	title="暴露服务"
-		// 	okText="提交"
-		// 	isShowing={visible}
-		// 	width="medium"
-		// 	onMaskClick={() => {
-		// 		// * 点击蒙版关闭抽屉
-		// 		onCancel();
-		// 	}}
-		// 	onClose={() => {
-		// 		onCancel();
-		// 	}}
-		// 	onCancel={() => {
-		// 		onCancel();
-		// 	}}
-		// 	onOk={onOk}
-		// 	isProcessing={isProcessing}
-		// >
 		<Page className="add-service">
 			<Header
 				title={record ? '编辑服务暴露' : '新增服务暴露'}
@@ -650,10 +633,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												value={item.serviceName}
 												style={{ width: '200px' }}
 												placeholder="请选择Service"
-												// disabled={
-												// 	cluster.ingress === null ||
-												// 	!!record
-												// }
 												disabled={
 													cluster.ingress === null
 												}
@@ -825,7 +804,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					</Button>
 				</div>
 			</Content>
-			{/* </SlidePanel> */}
 		</Page>
 	);
 }

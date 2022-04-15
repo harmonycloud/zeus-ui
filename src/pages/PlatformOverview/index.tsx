@@ -347,10 +347,10 @@ function PlatformOverview(): JSX.Element {
 												)}
 											/>
 											<span>
-												{totalData.usedCpu.toFixed(0) +
+												{totalData.usedCpu.toFixed(1) +
 													'/' +
 													totalData.totalCpu.toFixed(
-														0
+														1
 													) +
 													'核'}
 											</span>
@@ -388,11 +388,11 @@ function PlatformOverview(): JSX.Element {
 											/>
 											<span>
 												{totalData.usedMemory.toFixed(
-													0
+													1
 												) +
 													'/' +
 													totalData.totalMemory.toFixed(
-														0
+														1
 													) +
 													'GB'}
 											</span>
