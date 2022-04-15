@@ -1609,10 +1609,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									>
 										<Balloon
 											trigger={
-												<FormItem
-													pattern={pattern.mysqlPwd}
-													patternMessage="由8-32位字母和数字以及特殊字符组成"
-												>
+												<FormItem>
 													<Password
 														value={mysqlPwd}
 														name="mysqlPwd"
