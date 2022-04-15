@@ -325,7 +325,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const recoveryService = (record: serviceProps) => {
 		const sendData: ParamsProps = {
 			clusterId: cluster.id,
-			namespace: record.name,
+			namespace: record.namespace,
 			chartName: record.type,
 			chartVersion: record.chartVersion || null,
 			middlewareName: record.name,
