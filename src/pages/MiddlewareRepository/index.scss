@@ -1,0 +1,62 @@
+$component-name: 'middleware-repository';
+
+.#{$component-name}-tips {
+	width: 100%;
+	height: 34px;
+	background: #F8F8F9;
+	border-radius: $border-radius;
+	color: $text-color-title;
+	padding: 8px 16px;
+}
+.#{$component-name}-action-layout {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 24px;
+	.#{$component-name}-right-layout{
+		display: flex;
+		.#{$component-name}-refresh-btn {
+			width: 32px;
+			height: 32px;
+			border-radius: $border-radius;
+			border: 1px solid #C0C6CC;
+			text-align: center;
+			line-height: $line-height-lg * 2;
+			margin-left: 8px;
+			cursor: pointer;
+		}
+	}
+}
+.#{$component-name}-list-display {
+	.#{$component-name}-list-item {
+		width: 100%;
+		height: auto;
+		padding: 16px 20px;
+		background-color: $white;
+		margin-top: 13px;
+		box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.09);
+		& > p {
+			font-size: $font-h2;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: $font-weight;
+			color: $text-color-title;
+			@include lineHeight(24px);
+		}
+		.#{$component-name}-list-content {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			margin-top: 16px;
+		}
+	}
+}
+.middleware-version-content{
+	margin-top: 16px;
+}
+.version-status-display{
+	height: 22px;
+	line-height: 19px;
+	text-align: center;
+	border: 1px solid;
+	display: inline-block;
+	padding: 1px 10px;
+}

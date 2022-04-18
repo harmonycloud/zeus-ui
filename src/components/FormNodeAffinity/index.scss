@@ -1,0 +1,29 @@
+.node-affinity {
+	.next-form-item-control {
+		width: 700px;
+		display: flex;
+		align-items: center;
+	}
+	.tags {
+		padding: 10px 24px;
+		background: #f1f1f2;
+		display: flex;
+		flex-wrap: wrap;
+		.tag {
+			font-size: $font-size;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: $font-weight;
+			color: $text-color-title;
+			padding: 6px;
+			line-height: $line-height-xl;
+			margin: 0 6px 6px 0;
+			border-radius: $border-radius-xxl;
+			border: 1px solid #c0c6cc;
+		}
+		.tag-close {
+			margin-left: 6px;
+			color: #666666;
+			cursor: pointer;
+		}
+	}
+}

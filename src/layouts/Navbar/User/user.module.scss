@@ -1,0 +1,50 @@
+.nav-user-container {
+	position: relative;
+}
+.nav-user-role {
+	display: inline;
+	margin-right: 4px;
+	padding: 0 2px;
+	border-radius: 50%;
+	border: 1px solid #49a9e1;
+	font-size: $font-size;
+	color: #49a9e1;
+}
+.nav-user-operator {
+	display: none;
+	position: absolute;
+    top: 50px;
+	right: 0;
+	z-index: 100;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 1px 0px 0px rgba(0, 0, 0, 0.02);
+}
+.nav-user-container:hover .nav-user-operator {
+	display: block;
+}
+.nav-user-container-item {
+	padding-left: 20px;
+	line-height: 36px;
+    background: $white;
+	width: 150px;
+	border-bottom: 1px solid #edf0f5;
+	text-align: left;
+}
+.nav-user-role-p {
+	padding: 2px 6px;
+    line-height: $line-height-xxl;
+    font-size: $font-size;
+    border: 1px solid #49a9e1;
+    color: #49a9e1;
+}
+.nav-user-container-item img {
+	margin-right: 6px;
+	vertical-align: middle;
+}
+.nav-user-container-item:hover {
+	background-color: #edf0f5;
+}
+.edit-form-icon-style{
+    line-height: $line-height * 2;
+	display: flex;
+	align-content: center;
+}

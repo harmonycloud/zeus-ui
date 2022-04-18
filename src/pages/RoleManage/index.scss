@@ -1,0 +1,70 @@
+.role-modal{
+	width: 540px;
+	height: 430px;
+	.next-dialog-body{
+		height: 320px;
+		overflow-y: auto;
+		padding: 0px 24px 16px 24px !important;
+		& > p {
+			line-height: $line-height-lg * 2;
+		}
+	}
+}
+.role-key-modal {
+	width: 223px;
+	.next-dialog-body {
+		max-height: 200px;
+		overflow-y: auto;
+		& > p {
+			line-height: $line-height-lg * 2;
+		}
+	}
+}
+.role-management-role-content {
+	border: 1px solid #dedede;
+	padding: 10px;
+}
+.role-management-content {
+	display: flex;
+	.role-management-namespace,
+	.role-management-cluster {
+		height: 200px;
+		width: 243px;
+		border: 1px solid #dedede;
+		border-right: none;
+		.role-management-title {
+			height: 32px;
+			line-height: $line-height-lg * 2;
+			padding-left: 8px;
+			border-bottom: 1px solid #dedede;
+		}
+		.role-management-check-content {
+			padding: 6px 8px;
+			overflow-y: auto;
+			max-height: 166px;
+			.role-management-label {
+				height: 16px;
+				line-height: 14px;
+			}
+			.role-management-checkout-content {
+				padding-left: 24px;
+				.next-checkbox-wrapper  {
+					display: block;
+					margin-right: 0;
+				}
+			}
+		}
+	}
+	.role-management-namespace {
+		border-right: 1px solid #dedede;
+	}
+}
+.zeus-allot-role-btn-content {
+	margin-top: $margin;
+	padding: 16px 16px 16px 0px;
+	background: $white;
+	border-top: 1px solid $border-color;
+	& > button {
+		margin-right: $margin;
+	}
+}

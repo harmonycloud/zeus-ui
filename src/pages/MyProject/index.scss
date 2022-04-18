@@ -1,0 +1,71 @@
+.my-project-active {
+	border: 1px solid $primary-color !important;
+	box-shadow: 0px 2px 4px 0px rgba(3, 130, 241, 0.2);
+	background-color: rgba(236, 241, 250, 0.5) !important;
+	.zeus-my-project-card-title-content {
+		color: $primary-color !important;
+	}
+}
+
+.zeus-my-project-card-list-content {
+	display: flex;
+	height: 225px;
+	width: 100%;
+	overflow-x: auto;
+	.zeus-my-project-card-item{
+		width: 286px;
+		height: 220px;
+		border: 1px solid #D1D5D9;
+		border-radius: $border-radius-lg;
+		background: $white;
+		padding: 16px;
+		margin-right: $margin;
+		// box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.09);
+		cursor: pointer;
+		&:nth-last-child(1){
+			margin-right: 0px;
+		}
+		.zeus-my-project-card-title-content{
+			display: flex;
+			justify-content: space-between;
+			font-size: $font-h2;
+			font-weight: $font-weight-lg;
+			color: $text-color-title;
+			margin-bottom: $margin / 2;
+			.zeus-my-project-card-h2 {
+				max-width: 150px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+			.zeus-my-project-card-action{
+				display: flex;
+				font-weight: $font-weight-sm;
+				.name-link {
+					margin-left: $margin;
+				}
+			}
+		}
+		.zeus-my-project-card-ul {
+			margin-top: $margin / 2;
+			& > ul > li {
+				height: 18px;
+				font-size: $font-size;
+				font-weight: $font-weight-sm;
+				color: $text-color-title;
+				line-height: $line-height-xl;
+				margin-bottom: $margin / 2;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		}
+	}
+}
+.zeus-my-project-table-list-content {
+	margin-top: $margin * 2;
+	min-height: 200px;
+}
+.zeus-my-project-middleware-table-title {
+
+}

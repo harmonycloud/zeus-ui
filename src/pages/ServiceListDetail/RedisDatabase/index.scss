@@ -1,0 +1,27 @@
+.kv-manage {
+	display: flex;
+	.next-tree {
+		margin-right: 24px;
+	}
+	.istio-table {
+		width: 100%;
+	}
+	td {
+		.next-row {
+			height: 0;
+			min-height: 0;
+		}
+	}
+	.next-table-expanded-row {
+		td {
+			background: #fff;
+		}
+	}
+	.key-render {
+		max-width: 150px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		display: inline-block;
+	}
+}

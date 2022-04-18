@@ -1,0 +1,133 @@
+$standard-name: 'standard';
+$realtime-name: 'realtime';
+$slowlog-name: 'slowlog';
+.filter-wrapper {
+	padding: 8px 0;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+@each $componentName in $standard-name,$realtime-name,$slowlog-name {
+	.filter-item-#{$componentName} {
+		margin: 8px 8px;
+		width: 48%;
+		label {
+			color: #1A1A1A;
+			line-height: $line-height-lg * 2;
+			font-weight: $font-weight;
+		}
+		&:nth-child(2n) {
+			margin: 8px 0px 8px 10px;
+			width: 49%;
+		}
+		&:nth-last-child(1) {
+			button {
+				float: right;
+			}
+		}
+	}
+}
+
+.filter-item-search{
+	margin-top: 8px;
+	width: 100%;
+	label {
+		color: #1A1A1A;
+		line-height: $line-height-lg * 2;
+		font-weight: $font-weight;
+	}
+	button {
+		float: right;
+	}
+}
+// @media (min-width: 1600px){
+// 	.filter-item {
+//         width: 33.33%
+// 	}
+// }
+
+.log-display {
+	background-color: #272822;
+	scrollbar-base-color: #aaa;
+	border-radius: $border-radius-lg;
+	overflow: hidden;
+	.title {
+		background: $text-color-title;
+		color: #BFBFBF;
+		padding: 6px 20px;
+		position: relative;
+		.tips {
+			position: absolute;
+			right: 20px;
+			.btn {
+				margin-right: 24px;
+				&:hover{
+					color: $primary-color;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+	.log-codeMirror {
+		width: 100%;
+		height: 650px;
+		overflow: auto;
+		.CodeMirror {
+			height: 650px;
+		}
+		.CodeMirror-scroll{
+			overflow: auto !important;
+			height: 650px;
+		}
+	}
+	.foot {
+		background: $text-color-title;
+		color: #BFBFBF;
+		padding: 6px 20px;
+		text-align: center;
+		.foot-text{
+			cursor: pointer;
+		}
+	}
+}
+.log-file-flex-wrapper{
+	display: flex;
+	flex-wrap: wrap;
+}
+.log-file-box{
+	width: 46%;
+	font-size: $font-size;
+	font-weight: $font-weight;
+	color: $text-color-title;
+	text-align: center;
+	margin-right: 32px;
+	margin-top: 8px;
+	cursor: pointer;
+	@include lineHeight(32px);
+	border: 1px solid #C0C6CC;
+	padding: 0 12px;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+.active{
+	background: #DEE9F6 !important;
+	border: 1px solid #B2D4EF !important;
+}
+@media (min-width: 1600px){
+	.log-file-box {
+        width: 31%
+	}
+}
+.zeus-log-content {
+	position: relative;
+	.zeus-log-block-disabled {
+		position: absolute;
+		top: 0;
+		background-color: #f7f7f7;
+		opacity: 0.7;
+		width: 100%;
+		height: 100%;
+		z-index: 1000;
+		cursor: not-allowed;
+	}
+}

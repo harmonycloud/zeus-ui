@@ -1,0 +1,17 @@
+.zeus-result-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	min-height: 150px;
+	.zeus-result-title {
+		@include lineHeight(50px);
+		font-size: $font-h1;
+		font-weight: $font-weight-lg;
+	}
+	.zeus-button-content {
+		& > button {
+			margin-left: $margin-sm;
+		}
+	}
+}

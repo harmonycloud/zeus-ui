@@ -1,0 +1,191 @@
+.system-alarm {
+    .tab-menu {
+        padding: 0 24px 15px;
+        .next-menu.dQENxL {
+            margin: 0;
+        }
+    }
+    .next-tabs-bar{
+        margin-bottom: 15px;
+    }
+    .alarm-set {
+        .box {
+            background: $white;
+            box-shadow: 0px 2px 4px 0px rgba(68, 71, 74, 0.07);
+            border-radius: $border-radius-lg;
+            border: 1px solid #ebebeb;
+            padding: 24px;
+            &:first-child {
+                margin-bottom: 16px;
+            }
+            .box-header {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                .header-img {
+                    width: 112px;
+                    height: 112px;
+                    background: #f7f8fc;
+                    border-radius: $border-radius-lg;
+                    line-height: 112px;
+                    text-align: center;
+                }
+                .show-box {
+                    flex: 1;
+                    text-align: right;
+                    .show-icon {
+                        cursor: pointer;
+                        display: inline-block;
+                        border-radius: 50%;
+                        width: 24px;
+                        height: 24px;
+                        text-align: center;
+                        line-height: 22px;
+                        border: 1px solid #c0c6cc;
+                    }
+                }
+                .header-info {
+                    margin-left: 24px;
+                    .type {
+                        font-size: $font-h1;
+                        font-family: PingFangSC-Medium, PingFang SC;
+                        font-weight: $font-weight;
+                        color: $text-color-title;
+                        line-height: $line-height * 2;
+                        vertical-align: middle;
+                        margin-right: 8px;
+                    }
+                    .status {
+                        display: inline-block;
+                        width: 60px;
+                        height: 20px;
+                        background: #F6FFED;
+                        border: 1px solid #b7eb8f;
+                        text-align: center;
+                        font-size: $font-size;
+                        font-family: PingFangSC-Regular, PingFang SC;
+                        font-weight: $font-weight-sm;
+                        color: #52c41a;
+                        line-height: $line-height-xl;
+                        padding-right: 10px;
+                        position: relative;
+                        border-right: none;
+                        &::before {
+                            display: inline-block;
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            z-index: 10;
+                            border-right: 9px solid #52c41a;
+                            border-top: 9px solid transparent;
+                            border-left: 9px solid transparent;
+                            border-bottom: 9px solid transparent;
+                        }
+                        &::after {
+                            display: inline-block;
+                            content: "";
+                            position: absolute;
+                            top: 1px;
+                            right: 0;
+                            z-index: 10;
+                            border-right: 8px solid $white;
+                            border-top: 8px solid transparent;
+                            border-left: 8px solid transparent;
+                            border-bottom: 8px solid transparent;
+                        }
+                        &.none {
+                            background: #FFF3DD;
+                            border-color: #ffdb94;
+                            color: #faa700;
+                            &::before {
+                                border-right-color: #ffdb94;
+                            }
+                        }
+                    }
+                    p {
+                        margin-top: 16px;
+                        font-size: $font-size;
+                        font-family: PingFangSC-Regular, PingFang SC;
+                        font-weight: $font-weight-sm;
+                        color: #666666;
+                        line-height: $line-height-xl;
+                    }
+                }
+            }
+            .box-content {
+                margin-top: 16px;
+                background: #f7f7f7;
+                border-radius: $border-radius;
+                .next-form {
+                    label {
+                        font-size: $font-size;
+                        font-family: PingFangSC-Medium, PingFang SC;
+                        font-weight: $font-weight;
+                        color: $text-color-title;
+                        line-height: $line-height-xl;
+                    }
+                }
+                .btns {
+                    text-align: right;
+                    button {
+                        &:not(:last-child) {
+                            margin-right: 8px;
+                        }
+                        &.test[disabled] {
+                            color: #ccc;
+                        }
+                        &.save[disabled] {
+                            background: #d1d5d9;
+                            color: $white;
+                        }
+                    }
+                }
+                .form-btn {
+                    position: absolute;
+                    top: 8px;
+                    right: -48px;
+                    display: flex;
+                    button {
+                        width: 14px;
+                        height: 14px;
+                        padding: 0;
+                        border: none;
+                        border-radius: 7px;
+                        color: $white;
+                        background: #c80000;
+                        min-width: auto !important;
+                        text-align: center;
+                        line-height: $line-height;
+                        &.disabled {
+                            background: #cccccc;
+                        }
+                        &:first-child {
+                            background: #0064c8;
+                            margin-right: 10px;
+                        }
+                    }
+                }
+                .concat {
+                    position: absolute;
+                    top: 8px;
+                    left: -48px;
+                    .good {
+                        color: skyblue;
+                    }
+                    .bad {
+                        color: red;
+                    }
+                }
+            }
+        }
+    }
+    .desc{
+        display: inline-block;
+        max-width: 100px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+}

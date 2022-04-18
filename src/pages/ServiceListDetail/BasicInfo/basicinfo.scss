@@ -1,0 +1,60 @@
+#basic-info-event > .next-timeline-item-content {
+	width: calc(100% - 55px);
+}
+#basic-info-event > .next-timeline-item-content > .next-timeline-item-body {
+	margin-top: 0 !important;
+}
+.rocketmq-acl-field-content{
+	.rocketmq-acl-field-title{
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 22px;
+		.rocketmq-acl-left{
+			display: flex;
+			align-items: center;
+			font-size: $font-h2;
+			.rocketmq-acl-blue-line{
+				width: 1px;
+				height: 14px;
+				border: 1px solid $primary-color;
+				margin-right: 8px;
+			}
+		}
+	}
+}
+.rocketmq-no-acl{
+	text-align: center;
+	color: #666666;
+}
+@media screen and (max-width: 1920px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 80%;
+	}
+}
+@media screen and (max-width: 1840px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 70%;
+	}
+}
+@media screen and (max-width: 1650px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 50%;
+	}
+}
+@media screen and (max-width: 1340px) {
+	.annotation-content{
+		overflow:hidden;
+		white-space:nowrap;
+		text-overflow:ellipsis;
+		width: 40%;
+	}
+}

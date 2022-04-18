@@ -1,0 +1,11 @@
+.column-list {
+	padding: 20px 0;
+	padding-right: 16px;
+	display: block;
+	&.next-checkbox-group {
+		.next-checkbox-wrapper {
+			margin: 0 16px 16px 0;
+			margin-left: 0px;
+		}
+	}
+}

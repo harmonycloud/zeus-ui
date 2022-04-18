@@ -1,0 +1,145 @@
+.middleware-item-content {
+	float: left;
+	width: 20%;
+	margin-bottom: 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	&:last-child:nth-child(5n - 4) {
+		margin-right: calc(80%);
+	}
+	&:last-child:nth-child(5n - 3) {
+		margin-right: calc(60%);
+	}
+	&:last-child:nth-child(5n - 2) {
+		margin-right: calc(40%);
+	}
+	&:last-child:nth-child(5n - 1) {
+		margin-right: calc(20%);
+	}
+	.middleware-item-icon{
+		width: 100px;
+		height: 100px;
+		background: $white;
+		box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.09);
+		border-radius: $border-radius-lg;
+		border: 1px solid #E7E9EB;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		position: relative;
+		.middleware-item-action-content{
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100px;
+			height: 100px;
+			// visibility: hidden;
+			background-color: rgba(0, 0, 0, 0.7);
+			display: flex;
+			flex-wrap: wrap;
+			opacity: 0;
+			border-radius: $border-radius-xl;
+		}
+		.middleware-item-type{
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 26px;
+			height: 26px;
+			border-radius: $border-radius-lg;
+			border-right: 13px solid #F6AE1B;
+			border-top: 13px solid #F6AE1B;
+			border-bottom: 13px solid transparent;
+			border-left: 13px solid transparent;
+			color: $white;
+			.middleware-item-type-text{
+				position: absolute;
+				top: -12px;
+				right: -12px;
+				line-height: 13px;
+			}
+		}
+		&:hover{
+			transform: scale(1.1);
+			transition: all .5s ease;
+			.middleware-item-type{
+				display: none;
+			}
+			.middleware-item-action-content{
+				opacity: 1;
+				color: $white;
+				transition: all .5s ease;
+				// visibility: initial;
+				.middleware-item-action-item-one{
+					width: 110px;
+					height: 110px;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+				}
+				.middleware-item-action-item-two{
+					width: 110px;
+					height: 50px;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					&:nth-of-type(1){
+						border-bottom: 1px solid $white;
+					}
+				}
+				.middleware-item-action-item{
+					width: 50px;
+					height: 50px;
+					border-left: 1px solid $white;
+					border-bottom: 1px solid $white;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					&:nth-child(3){
+						width: 110px;
+						border-bottom: none;
+					}
+				}
+			}
+		}
+	}
+	.middleware-item-title{
+		margin-top: 16px;
+		font-size: $font-h1;
+		font-family: PingFangSC-Semibold, PingFang SC;
+		font-weight: $font-weight-lg;
+		color: $text-color-title;
+		line-height: 22px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.middleware-item-status{
+		margin-top: 8px;
+		font-size: $font-size;
+		line-height: $line-height-xxl;
+		vertical-align: middle;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: $font-weight;
+		color: $text-color-title;
+	}
+	.middleware-item-description{
+		font-size: $font-size;
+		font-family: PingFangSC-Regular, PingFang SC;
+		font-weight: $font-weight-sm;
+		color: #666666;
+		line-height: 17px;
+		margin-top: 12px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+		-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
+		-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+	}
+}

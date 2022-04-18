@@ -1,0 +1,12 @@
+.balloon-form-confirm {
+	&.next-balloon {
+		max-width: 1000px;
+	}
+	.footer {
+		text-align: left;
+		margin-top: 8px;
+		.next-btn {
+			margin-right: 10px;
+		}
+	}
+}

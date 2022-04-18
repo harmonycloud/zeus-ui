@@ -1,0 +1,309 @@
+.resource-pool-content {
+	width: 361px;
+	height: 120px;
+	// border: 1px dashed #888888;
+	border: 1px solid $primary-color;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 16px 0 32px 0;
+	border-radius: $border-radius;
+	cursor: pointer;
+	margin-left: 2px;
+	img {
+		margin-left: 37px;
+	}
+	i {
+		align-self: flex-end;
+	}
+	div {
+		flex: 1;
+		width: 80px;
+		height: 24px;
+		font-size: $font-h1;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: $font-weight;
+		color: #40454a;
+		line-height: $line-height * 2;
+		margin-left: 40px;
+	}
+}
+.second-form-content {
+	background: #f1f1f2;
+	padding: 16px 24px;
+	margin-bottom: 16px;
+}
+.upload-parse-file {
+	width: 100px;
+	height: 32px;
+	background-color: $primary-color;
+	font-size: $font-size;
+	font-weight: $font-weight;
+	color: $white;
+	line-height: $line-height-lg * 2;
+	text-align: center;
+	position: absolute;
+	right: -120px;
+	bottom: 24px;
+}
+#my-upload-parse {
+	width: 100px;
+	height: 32px;
+	opacity: 0;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	cursor: pointer;
+}
+.upload-position {
+	position: relative;
+}
+.cpu-content {
+	display: flex;
+	position: relative;
+	.cpu-content-line {
+		width: 48px;
+		height: 16px;
+		margin-right: 12px;
+		background-color: #f4f6fb;
+	}
+	img {
+		position: absolute;
+		top: 0;
+	}
+}
+
+// * 集群详情
+.resource-pool-info {
+	margin-top: 16px;
+	margin-bottom: 0;
+	border: none;
+}
+// .resource-pool-info-content {
+// 	width: 100%;
+// 	height: 350px;
+// 	display: flex;
+// 	.resource-pool-gauge-content{
+// 		width: 342px;
+// 		height: 100%;
+// 		margin-right: 18px;
+// 		margin-top: 16px;
+// 		.resource-pool-gauge-item{
+// 			width: 100%;
+// 			height: 140px;
+// 			display: flex;
+// 			box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+// 			margin-bottom: 24px;
+// 			margin-left: 2px;
+// 			.resource-pool-gauge-info{
+// 				width: 120px;
+// 				// height: 54px;
+// 				padding-top: 40px;
+// 				font-size: $font-size;
+// 				font-family: PingFangSC-Regular, PingFang SC;
+// 				font-weight: $font-weight-sm;
+// 				color: $text-color-title;
+// 				line-height: $line-height-xl;
+// 			}
+// 		}
+// 	}
+// 	.resource-pool-table-content{
+// 		width: calc(100% - 326px - 16px - 20px);
+// 		height: 100%;
+// 		// padding-left: 16px;
+// 		margin-top: 16px;
+// 		.resource-pool-table-header{
+// 			display: flex;
+// 			justify-content: space-between;
+// 		}
+// 		.resource-pool-table-content{
+// 			margin-top: 8px;
+// 			width: 100%;
+// 		}
+// 	}
+// }
+.resource-pool-gauge-content {
+	width: 100%;
+	height: 100%;
+	margin-top: 16px;
+	display: flex;
+	.resource-pool-gauge-item {
+		width: 100%;
+		height: 140px;
+		display: flex;
+		align-items: center;
+		box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+		margin-left: 2px;
+		&:nth-child(1) {
+			margin-right: $margin;
+		}
+		.resource-pool-gauge-info {
+			width: 360px;
+			font-size: $font-size;
+			font-family: PingFangSC-Regular, PingFang SC;
+			font-weight: $font-weight-sm;
+			color: $text-color-title;
+			line-height: $line-height-xl;
+		}
+	}
+}
+.resource-pool-table-content {
+	width: 100%;
+	height: 100%;
+	margin: $margin * 2 0;
+	.resource-pool-table-header {
+		display: flex;
+		justify-content: space-between;
+	}
+	.resource-pool-table-content {
+		margin-top: 8px;
+		width: 100%;
+	}
+}
+.batch-install-title-content,
+.node-title-content {
+	display: flex !important;
+	align-items: center;
+	.batch-install-name,
+	.node-title-name {
+		font-size: $font-h2;
+		font-weight: $font-weight;
+		color: $text-color-title;
+		line-height: 22px;
+		border-left: 2px solid $primary-color;
+		padding: 0 8px;
+		margin: 8px 0;
+	}
+}
+.delete-disabled {
+	color: #cccccc;
+}
+.error-text {
+	color: #c80000;
+	font-size: $font-size;
+}
+.quick-model-content {
+	width: 100%;
+	min-height: 182px;
+	background: #f5f5f5;
+	padding: 16px;
+	.quick-model-title {
+		height: 22px;
+		font-size: $font-size;
+		font-family: PingFangSC-Regular, PingFang SC;
+		font-weight: $font-weight-sm;
+		color: $text-color-title;
+		line-height: 22px;
+	}
+	.quick-model-text {
+		width: calc(100% - 46px);
+		margin-top: 16px;
+		min-height: 113px;
+		background: #272822;
+		padding: 24px;
+		word-wrap: break-word;
+	}
+	.quick-model-copy {
+		margin-top: 16px;
+		width: 46px;
+		min-height: 113px;
+		background: #0064c8;
+	}
+}
+.component-plugging-content {
+	display: flex;
+	flex-wrap: wrap;
+}
+.batch-install-component-item {
+	width: 667px;
+	height: 72px;
+	border-bottom: 1px solid #ebebeb;
+	display: flex;
+	align-items: center;
+	margin-bottom: 1px;
+	padding: 16px 30px;
+	label {
+		margin-bottom: 8px;
+	}
+	.batch-install-component-title {
+		display: flex;
+		width: 250px;
+		.batch-install-component-title-icon {
+			width: 40px;
+			height: 40px;
+			border-radius: $border-radius-lg;
+			text-align: center;
+			padding-top: 4.5px;
+			&.operator {
+				border: 1px solid #e7e9de;
+			}
+		}
+		.batch-install-component-title-info {
+			margin-left: 8px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			.batch-install-component-title-name {
+				height: 22px;
+				font-size: $font-h2;
+				font-family: PingFangSC-Medium, PingFang SC;
+				font-weight: $font-weight;
+				color: $text-color-title;
+				line-height: 22px;
+			}
+			.batch-install-component-status-tag {
+				width: 52px;
+				height: 16px;
+				border-radius: $border-radius-xxl;
+				text-align: center;
+				font-size: 8px;
+				font-weight: $font-weight-sm;
+				line-height: $line-height-lg;
+			}
+		}
+	}
+}
+.ingresses-content {
+	display: flex;
+	flex-wrap: wrap;
+}
+.display-form {
+	display: flex;
+	width: 100%;
+	flex: 1 1;
+	.label {
+		width: 25%;
+		height: 32px;
+		line-height: 32px;
+		margin-right: 16px;
+		font-size: 12px;
+		color: #555555;
+		&::before {
+			margin-right: 4px;
+			content: '*';
+			color: #c80000;
+			color: var(--form-error-color, #c80000);
+		}
+		vertical-align: top;
+	}
+	.next-form-item {
+		margin-left: 8px;
+		&:first-of-type {
+			margin-left: 0;
+		}
+	}
+	&.user {
+		.label {
+			margin-right: 0;
+		}
+		.next-form-item {
+			width: calc((75% - 8px) / 2);
+		}
+	}
+}
+
+.ne-require {
+	label {
+		padding-left: 10px;
+	}
+}
