@@ -94,7 +94,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 					required
 					requiredMessage="请输入登录账户名称"
 					pattern={pattern.userName}
-					patternMessage="登录账户名只允许英文大小写+数字组合，长度不可超过10字符"
+					patternMessage="登录账户名只允许英文大小写+数字组合，长度不可超过25字符"
 				>
 					<Input
 						name="userName"
