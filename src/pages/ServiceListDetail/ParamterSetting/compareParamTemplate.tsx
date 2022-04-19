@@ -71,14 +71,16 @@ export default function CompareParamTemplate(): JSX.Element {
 				item[temp1.name] = item.value;
 				return item;
 			});
-			list && list.forEach((item) => {
-				temp2.customConfigList && temp2.customConfigList.map((i) => {
-					if (i.name === item.name) {
-						item[temp2.name] = i.value;
-						return item;
-					}
+			list &&
+				list.forEach((item) => {
+					temp2.customConfigList &&
+						temp2.customConfigList.map((i) => {
+							if (i.name === item.name) {
+								item[temp2.name] = i.value;
+								return item;
+							}
+						});
 				});
-			});
 			setDataSource(list || []);
 		}
 	}, [temp1, temp2]);
