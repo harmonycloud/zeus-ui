@@ -47,7 +47,7 @@ export default function BackupRecovery(
 			<Menu
 				selectedKeys={selectedKey}
 				onItemClick={menuSelect}
-				style={{ height: '100%', marginLeft: 0 }}
+				style={{ height: '100%' }}
 			>
 				<Menu.Item key="list">备份记录</Menu.Item>
 				<Menu.Item key="config">备份规则</Menu.Item>
@@ -67,24 +67,19 @@ export default function BackupRecovery(
 	}
 	if (pathname.includes('disasterBackup')) {
 		return (
-			<div>
-				<Tab defaultActiveKey={selectedKey === 'list' ? 0 : 1}>
-					<Tab.Item title="备份记录">
-						<List {...props} />
-					</Tab.Item>
-					<Tab.Item title="备份规则">
-						<Config {...props} />
-					</Tab.Item>
-				</Tab>
-			</div>
+			<Tab defaultActiveKey={selectedKey === 'list' ? 0 : 1}>
+				<Tab.Item title="备份记录">
+					<List {...props} />
+				</Tab.Item>
+				<Tab.Item title="备份规则">
+					<Config {...props} />
+				</Tab.Item>
+			</Tab>
 		);
 	} else {
 		return (
 			<Page>
-				<Content
-					menu={<ConsoleMenu />}
-					style={{ margin: 0, padding: 0 }}
-				>
+				<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
 					{childrenRender(selectedKey)}
 				</Content>
 			</Page>

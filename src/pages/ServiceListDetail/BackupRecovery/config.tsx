@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { Dialog, Message, Switch, Button } from '@alicloud/console-components';
 import Actions, { LinkButton } from '@alicloud/console-components-actions';
 import Table from '@/components/MidTable';
@@ -17,6 +17,7 @@ import { BackupDataParams, BackupRuleItem, ConfigProps } from '../detail';
 export default function Config(props: ConfigProps): JSX.Element {
 	const { clusterId, namespace, data: listData } = props;
 	const history = useHistory();
+	const { pathname } = useLocation();
 	const [backups, setBackups] = useState<BackupRuleItem[]>([]);
 	const [keyword, setKeyword] = useState<string>();
 	const [backupData, setBackupData] = useState<BackupDataParams>({
@@ -162,7 +163,9 @@ export default function Config(props: ConfigProps): JSX.Element {
 							return;
 						}
 					}
-					history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
+					history.push(
+						`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
+					);
 					storage.setSession('detail', props);
 				}}
 			>
@@ -261,7 +264,9 @@ export default function Config(props: ConfigProps): JSX.Element {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
+						history.push(
+							`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
+						);
 						storage.setSession('detail', {
 							...props,
 							record,
@@ -324,7 +329,9 @@ export default function Config(props: ConfigProps): JSX.Element {
 	};
 
 	return (
-		<div style={{ marginTop: 15 }}>
+		<div
+			style={{ marginTop: pathname.includes('disasterBackup') ? 15 : 0 }}
+		>
 			<Table
 				dataSource={backups}
 				exact
