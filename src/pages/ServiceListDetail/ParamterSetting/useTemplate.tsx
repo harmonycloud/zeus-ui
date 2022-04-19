@@ -92,12 +92,13 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		if (temp && configs) {
 			const list = configs;
 			list.forEach((item) => {
-				temp.customConfigList?.map((i) => {
-					if (i.name === item.name) {
-						item[temp.name] = i.value;
-						return item;
-					}
-				});
+				temp.customConfigList &&
+					temp.customConfigList.map((i) => {
+						if (i.name === item.name) {
+							item[temp.name] = i.value;
+							return item;
+						}
+					});
 			});
 			setDataSource(list);
 		}
