@@ -10,7 +10,11 @@ import {
 } from '@alicloud/console-components';
 
 import { getNodePort } from '@/services/middleware';
-import { FormNodeAffinityProps, NodeAffinityProps,NodeAffinityLabelItem } from './formNodeAffinity'
+import {
+	FormNodeAffinityProps,
+	NodeAffinityProps,
+	NodeAffinityLabelItem
+} from './formNodeAffinity';
 
 import './index.scss';
 
@@ -19,7 +23,9 @@ const { Item: FormItem } = Form;
 /*
 	FormNodeAffinity：动态表单中的主机亲和组件
 */
-export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Element {
+export default function FormNodeAffinity(
+	props: FormNodeAffinityProps
+): JSX.Element {
 	const { cluster } = props;
 	const keys = Object.keys(props);
 	// * 主机亲和
@@ -29,7 +35,9 @@ export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Elem
 		nodeAffinityForce: false
 	});
 	const [labelList, setLabelList] = useState<any[]>([]);
-	const [affinityLabels, setAffinityLabels] = useState<NodeAffinityLabelItem[]>([]);
+	const [affinityLabels, setAffinityLabels] = useState<
+		NodeAffinityLabelItem[]
+	>([]);
 
 	useEffect(() => {
 		if (JSON.stringify(cluster) !== '{}') {
@@ -71,9 +79,13 @@ export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Elem
 	};
 
 	const reduceAffinityLabels = (item: any) => {
-		setAffinityLabels(affinityLabels.filter((arr: any) => arr.id !== item.id));
+		setAffinityLabels(
+			affinityLabels.filter((arr: any) => arr.id !== item.id)
+		);
 		props.field.setValues({
-			affinityLabels: affinityLabels.filter((arr: any) => arr.id !== item.id)
+			affinityLabels: affinityLabels.filter(
+				(arr: any) => arr.id !== item.id
+			)
 		});
 	};
 
@@ -99,7 +111,6 @@ export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Elem
 				{keys.includes('description') ? (
 					<Balloon
 						offset={[0, 15]}
-						align="t"
 						trigger={
 							<Icon
 								type="question-circle"
@@ -109,7 +120,7 @@ export default function FormNodeAffinity(props: FormNodeAffinityProps): JSX.Elem
 						}
 						closable={false}
 					>
-						{props.description}
+						勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
 					</Balloon>
 				) : null}
 			</label>
