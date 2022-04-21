@@ -1,3 +1,5 @@
+/* 全局通用样式 */
+
 html,
 body,
 #root {
@@ -81,10 +83,9 @@ table {
   border-spacing: 0;
 }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -183,7 +184,7 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
   width: 100%;
 }
 .page-header .next-icon:hover {
-  color: #0070cc;
+  color: #226ee7;
 }
 
 /** 常用显示 */
@@ -242,7 +243,7 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 .dynamic-form-name {
   text-align: left;
   font-weight: 500 !important;
-  color: #333;
+  color: #252525;
   line-height: 32px;
   /* padding: 0 8px; */
 }
@@ -297,7 +298,7 @@ table.table-list thead tr td {
 }
 table.table-list thead tr th {
   background-color: #fbfcfd;
-  color: #333;
+  color: #252525;
   font-weight: 500;
 }
 table.table-list tbody tr th,
@@ -321,7 +322,7 @@ table.table-list tbody tr td {
   width: 0;
   height: 0;
   line-height: 0;
-  color: red;
+  color: #FF4D4F;
   font-size: 14px;
 }
 /** 星号前缀 - ingress*/
@@ -337,12 +338,12 @@ table.table-list tbody tr td {
   width: 0;
   height: 0;
   line-height: 0;
-  color: red;
+  color: #FF4D4F;
   font-size: 14px;
 }
 /** 名称连接 */
 .name-link {
-  color: #0070cc;
+  color: #226ee7;
   cursor: pointer;
 }
 .displayed-name {

@@ -16,7 +16,7 @@
 	}
 
 	h2 {
-		font-size: $font-h2;
+		font-size: $font-2;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: $font-weight;
 		color: $text-color-title;
@@ -35,20 +35,20 @@
 	}
 
 	.upload-info {
-		font-size: $font-size;
+		font-size: $font-1;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: $font-weight-sm;
 		color: #666666;
-		line-height: $line-height-xl;
+		line-height: $line-height-3;
 	}
 	.next-form-item {
 		align-items: center;
 		label {
-			font-size: $font-size;
+			font-size: $font-1;
 			font-family: PingFangSC-Medium, PingFang SC;
 			font-weight: $font-weight;
 			color: $text-color-title;
-			line-height: $line-height-xl;
+			line-height: $line-height-3;
 		}
 		.next-upload-card {
 			&:hover {
@@ -57,28 +57,28 @@
 			.next-icon {
 				color: #0064c8;
 				&::before {
-					font-size: $font-size;
+					font-size: $font-1;
 				}
 			}
 			.next-upload-text {
-				font-size: $font-size;
+				font-size: $font-1;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: $font-weight-sm;
 				color: $text-color-title;
-				line-height: $line-height-xl;
+				line-height: $line-height-3;
 			}
 		}
 		.next-btn {
 			width: 100px;
-			font-size: $font-size;
+			font-size: $font-1;
 			font-family: PingFangSC-Medium, PingFang SC;
 			font-weight: $font-weight;
 			color: $text-color-title;
-			line-height: $line-height-xl;
+			line-height: $line-height-3;
 			.next-icon {
 				color: #0064c8;
 				&::before {
-					font-size: $font-size;
+					font-size: $font-1;
 				}
 			}
 		}
@@ -127,11 +127,11 @@
 				.header-info {
 					margin-left: 24px;
 					.type {
-						font-size: $font-h1;
+						font-size: $font-3;
 						font-family: PingFangSC-Medium, PingFang SC;
 						font-weight: $font-weight;
 						color: $text-color-title;
-						line-height: $line-height * 2;
+						line-height: $line-height-1 * 2;
 						vertical-align: middle;
 						margin-right: 8px;
 					}
@@ -142,11 +142,11 @@
 						background: #f6ffed;
 						border: 1px solid #b7eb8f;
 						text-align: center;
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: $font-weight-sm;
 						color: #52c41a;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 						padding-right: 10px;
 						position: relative;
 						border-right: none;
@@ -185,11 +185,11 @@
 					}
 					p {
 						margin-top: 16px;
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: $font-weight-sm;
 						color: #666666;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 					}
 				}
 			}
@@ -199,11 +199,11 @@
 				border-radius: $border-radius;
 				.next-form {
 					label {
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Medium, PingFang SC;
 						font-weight: $font-weight;
 						color: $text-color-title;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 					}
 				}
 				.btns {
@@ -236,7 +236,7 @@
 						background: #c80000;
 						min-width: auto !important;
 						text-align: center;
-						line-height: $line-height;
+						line-height: $line-height-1;
 						&.disabled {
 							background: #cccccc;
 						}

@@ -3,10 +3,10 @@
 	padding: 16px;
 	background: #F8F8F9;
 	border-radius: $border-radius;
-	font-size: $font-size;
+	font-size: $font-1;
 	font-weight: $font-weight;
 	color: $text-color-title;
-	line-height: $line-height-xxl;
+	line-height: $line-height-4;
 	margin-bottom: 16px;
 }
 .ingress-balloon-content{
@@ -24,5 +24,5 @@
 	cursor: pointer;
 }
 .balloon-tips{
-	line-height: $line-height-xl;
+	line-height: $line-height-3;
 }

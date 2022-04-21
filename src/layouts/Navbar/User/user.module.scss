@@ -7,7 +7,7 @@
 	padding: 0 2px;
 	border-radius: 50%;
 	border: 1px solid #49a9e1;
-	font-size: $font-size;
+	font-size: $font-1;
 	color: #49a9e1;
 }
 .nav-user-operator {
@@ -31,8 +31,8 @@
 }
 .nav-user-role-p {
 	padding: 2px 6px;
-    line-height: $line-height-xxl;
-    font-size: $font-size;
+    line-height: $line-height-4;
+    font-size: $font-1;
     border: 1px solid #49a9e1;
     color: #49a9e1;
 }
@@ -44,7 +44,7 @@
 	background-color: #edf0f5;
 }
 .edit-form-icon-style{
-    line-height: $line-height * 2;
+    line-height: $line-height-1 * 2;
 	display: flex;
 	align-content: center;
 }

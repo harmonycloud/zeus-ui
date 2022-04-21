@@ -12,7 +12,7 @@ $slowlog-name: 'slowlog';
 		width: 48%;
 		label {
 			color: #1A1A1A;
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 			font-weight: $font-weight;
 		}
 		&:nth-child(2n) {
@@ -32,7 +32,7 @@ $slowlog-name: 'slowlog';
 	width: 100%;
 	label {
 		color: #1A1A1A;
-		line-height: $line-height-lg * 2;
+		line-height: $line-height-2 * 2;
 		font-weight: $font-weight;
 	}
 	button {
@@ -95,7 +95,7 @@ $slowlog-name: 'slowlog';
 }
 .log-file-box{
 	width: 46%;
-	font-size: $font-size;
+	font-size: $font-1;
 	font-weight: $font-weight;
 	color: $text-color-title;
 	text-align: center;

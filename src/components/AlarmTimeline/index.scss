@@ -3,7 +3,7 @@
 	height: 660px;
 	overflow-y: auto;
 	.time-line-title{
-		font-size: $font-size;
+		font-size: $font-1;
 		font-weight: $font-weight;
 		color: $text-color-title;
 		cursor: pointer;
@@ -12,10 +12,10 @@
 	.time-line-time{
 		// width: 118px;
 		height: 20px;
-		font-size: $font-size;
+		font-size: $font-1;
 		font-weight: $font-weight-sm;
 		color: rgba(0, 0, 0, 0.45);
-		line-height: $line-height-xxl;
+		line-height: $line-height-4;
 	}
 	.details-msg{
 		display: flex;

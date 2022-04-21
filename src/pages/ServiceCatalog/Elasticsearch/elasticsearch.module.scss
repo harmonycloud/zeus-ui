@@ -13,7 +13,7 @@
 	.host-affinity {
 		.switch {
 			width: 120px;
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 			.component {
 				margin-left: 16px;
 				vertical-align: middle;
@@ -24,7 +24,7 @@
 		}
 		.check {
 			width: 120px;
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 			padding-left: 16px;
 		}
 	}
@@ -95,7 +95,7 @@
 				height: 30px;
 				border-bottom: 1px solid #B2D4EF;
 				text-align: center;
-				line-height: $line-height-sm * 3;
+				line-height: 30px;
 				.circle {
 					padding: 0 4px;
 					background-color: #C3D6F0;
@@ -142,7 +142,7 @@
 		.file-log, .standard-log {
 			.switch {
 				width: 120px;
-				line-height: $line-height-lg * 2;
+				line-height: $line-height-2 * 2;
 			}
 		}
 	}
@@ -153,12 +153,12 @@
 	display: flex;
 	flex-wrap: wrap;
 	.tag{
-		font-size: $font-size;
+		font-size: $font-1;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: $font-weight;
 		color: $text-color-title;
 		padding: 6px;
-		line-height: $line-height-xl;
+		line-height: $line-height-3;
 		margin: 0 6px 6px 0;
 		border-radius: $border-radius-xxl;
 		border: 1px solid #C0C6CC;

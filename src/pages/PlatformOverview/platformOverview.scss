@@ -67,27 +67,27 @@
 						background: $white;
 						border-radius: 30px;
 						opacity: 0.96;
-						line-height: $line-height-sm * 6;
+						line-height: 60px;
 						text-align: center;
 					}
 					.value {
 						& > span {
 							width: 15px;
 							height: 20px;
-							font-size: $font-h2;
+							font-size: $font-2;
 							font-family: PingFangSC-Regular, PingFang SC;
 							font-weight: $font-weight-sm;
 							color: $white;
-							line-height: $line-height-xxl;
+							line-height: $line-height-4;
 						}
 						&.percent > span {
 							width: 26px;
 							height: 20px;
-							font-size: $font-size;
+							font-size: $font-1;
 							font-family: PingFangSC-Regular, PingFang SC;
 							font-weight: $font-weight-sm;
 							color: $white;
-							line-height: $line-height-xxl;
+							line-height: $line-height-4;
 						}
 						.next-progress-line {
 							display: block;
@@ -119,11 +119,11 @@
 				}
 				.type {
 					height: 20px;
-					font-size: $font-h2;
+					font-size: $font-2;
 					font-family: PingFangSC-Regular, PingFang SC;
 					font-weight: $font-weight-sm;
 					color: $white;
-					line-height: $line-height-xxl;
+					line-height: $line-height-4;
 				}
 			}
 		}
@@ -170,7 +170,7 @@
 							width: 18px;
 							height: 18px;
 							line-height: 14px;
-							font-size: $font-size;
+							font-size: $font-1;
 							font-family: PingFangSC-Medium, PingFang SC;
 							font-weight: $font-weight;
 							color:$white;
@@ -182,18 +182,18 @@
 					}
 					.info-name {
 						height: 18px;
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: $font-weight-sm;
 						color: #1a1a1a;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 					}
 					.info-count {
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: $font-weight-sm;
 						color: $text-color-title;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 						margin-top: 20px;
 					}
 				}
@@ -236,7 +236,7 @@
 					}
 				}
 				.next-pagination-total {
-					font-size: $font-size;
+					font-size: $font-1;
 				}
 			}
 		}

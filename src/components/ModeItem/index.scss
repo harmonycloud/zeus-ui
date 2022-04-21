@@ -11,7 +11,7 @@
 		width: 100%;
 		height: 30px;
 		border-bottom: 1px solid #B2D4EF;
-		line-height: $line-height-sm * 3;
+		line-height: 30px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -21,7 +21,7 @@
 		.mode-item-circle{
 			margin-left: 4px;
 			height: 16px;
-			line-height: $line-height-lg;
+			line-height: $line-height-2;
 			padding: 0 4px;
 			background-color: #C3D6F0;
 			border-radius: $border-radius-lg * 2;

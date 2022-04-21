@@ -1,0 +1,42 @@
+/* antd design 全局样式覆盖 */
+
+@import '~antd/lib/style/themes/default.less';
+@import '~antd/dist/antd.less'; // 引入官方提供的 less 样式入口文件
+@import './styles/_color.less';
+
+@primary-color: @blue-6; // 全局主色
+@link-color: @blue-6; // 链接色
+@success-color: @green-6; // 成功色
+@warning-color: @gold-6; // 警告色
+@error-color: @red-5; // 错误色
+@font-size-base: 12px; // 主字号
+@line-height-base: 20px; // 主字号行高
+@heading-color: @black-2; // 标题色
+@text-color: @black-3; // 主文本色
+@text-color-secondary: @black-4; // 次文本色
+@disabled-bg: @black-8; // 失效色
+@border-radius-base: 2px; // 组件/浮层圆角
+@border-color-base: @black-6; // 边框色
+@divider-color: @black-7; // 分割线
+// @body-background: @black-8; // 背景
+@table-header-bg: @black-9; // 表头
+@box-shadow-base: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+	0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+@shadow-2: @shadow-1-down;
+
+.ant-btn-default:hover,
+.ant-btn-default:focus,
+.ant-btn-default:active {
+	border-color: @black-6;
+}
+.ant-btn-dangerous:hover,
+.ant-btn-dangerous:focus,
+.ant-btn-dangerous:active {
+	border-color: @red-6;
+}
+.ant-btn-link[disabled],
+.ant-btn-link[disabled]:hover,
+.ant-btn-link[disabled]:focus,
+.ant-btn-link[disabled]:active {
+	color: @blue-4;
+}

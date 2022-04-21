@@ -16,7 +16,7 @@
     }
 
     h2 {
-        font-size: $font-h2;
+        font-size: $font-2;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: $font-weight;
         color: $text-color-title;
@@ -39,7 +39,7 @@
         align-items: center;
         &.table-header {
             background: #fbfcfd;
-            font-size: $font-size;
+            font-size: $font-1;
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: $font-weight;
             color: $text-color-title;
@@ -80,7 +80,7 @@
             color: #c1c1c1;
             height: 32px;
             padding: 0 8px;
-            line-height: $line-height-lg * 2;
+            line-height: $line-height-2 * 2;
         }
         .error-info {
             span {
@@ -181,11 +181,11 @@
                     span {
                         width: 100px;
                         display: inline-block;
-                        font-size: $font-size;
+                        font-size: $font-1;
                         font-family: PingFangSC-Medium, PingFang SC;
                         font-weight: $font-weight;
                         color: $text-color-title;
-                        line-height: $line-height-xl;
+                        line-height: $line-height-3;
                         &:nth-of-type(3) {
                             width: 160px;
                         }
@@ -202,11 +202,11 @@
                 }
                 .item-content {
                     display: inline-block;
-                    font-size: $font-size;
+                    font-size: $font-1;
                     font-family: PingFangSC-Regular, PingFang SC;
                     font-weight: $font-weight-sm;
                     color: $text-color-title;
-                    line-height: $line-height-xl;
+                    line-height: $line-height-3;
                     width: 100px;
                     word-break: break-all;
                     &:nth-of-type(3) {
@@ -230,7 +230,7 @@
         width: 40px;
         height: 22px;
         text-align: center;
-        line-height: $line-height-xxl;
+        line-height: $line-height-4;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: $font-weight-sm;
         border-radius: $border-radius;
