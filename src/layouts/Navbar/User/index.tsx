@@ -19,7 +19,6 @@ const Tooltip = Balloon.Tooltip;
 
 function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
-	console.log(nickName, role);
 	const [visible, setVisible] = useState(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 	const history = useHistory();
