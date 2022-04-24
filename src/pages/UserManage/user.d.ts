@@ -30,3 +30,10 @@ export interface deleteProps extends resProps {
 export interface rolesProps extends resProps {
 	data: roleProps[];
 }
+export interface sendDataParams {
+	userName: string;
+	aliasName: string;
+	phone: string;
+	email: null | string;
+	isAdmin: boolean;
+}

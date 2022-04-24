@@ -168,24 +168,24 @@ function UserManage(): JSX.Element {
 		setRecord(obj);
 		setRole(value);
 	};
-	const submitRole = () => {
-		if (!role) {
-			Message.show(messageConfig('warning', '提示', '请选择关联角色!'));
-			return;
-		}
-		const sendData = {
-			...(record as unknown as userProps)
-		};
-		updateUser(sendData).then((res) => {
-			if (res.success) {
-				Message.show(messageConfig('success', '成功', '用户修改成功'));
-				setRoleVisible(false);
-				onRefresh();
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	};
+	// const submitRole = () => {
+	// 	if (!role) {
+	// 		Message.show(messageConfig('warning', '提示', '请选择关联角色!'));
+	// 		return;
+	// 	}
+	// 	const sendData = {
+	// 		...(record as unknown as userProps)
+	// 	};
+	// 	updateUser(sendData).then((res) => {
+	// 		if (res.success) {
+	// 			Message.show(messageConfig('success', '成功', '用户修改成功'));
+	// 			setRoleVisible(false);
+	// 			onRefresh();
+	// 		} else {
+	// 			Message.show(messageConfig('error', '失败', res));
+	// 		}
+	// 	});
+	// };
 	const actionRender = (value: string, index: number, record: userProps) => {
 		return (
 			<Actions>
@@ -230,7 +230,6 @@ function UserManage(): JSX.Element {
 		index: number,
 		record: userProps
 	) => {
-		console.log(record);
 		if (!record.userRoleList) return '/';
 		if (record.userRoleList?.some((i: any) => i.roleId === 1)) {
 			return <div className="red-tip">超级管理员</div>;
@@ -364,7 +363,7 @@ function UserManage(): JSX.Element {
 					data={isEdit ? updateData : null}
 				/>
 			)}
-			{roleVisible && (
+			{/* {roleVisible && (
 				<Dialog
 					title="关联角色"
 					visible={roleVisible}
@@ -380,7 +379,7 @@ function UserManage(): JSX.Element {
 						onChange={roleChange}
 					/>
 				</Dialog>
-			)}
+			)} */}
 		</Page>
 	);
 }
