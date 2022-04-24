@@ -140,11 +140,11 @@ const Routes = withRouter((props) => {
 					component={ServiceListByType}
 					exact
 				/>
-				<Route
+				{/* <Route
 					path="/serviceList/createAlarm"
 					component={CreateAlarm}
 					exact
-				/>
+				/> */}
 				{/* 服务详情 - 版本管理*/}
 				<Route
 					path="/serviceList/:name/:aliasName/serverVersion/:middlewareName/:type/:namespace"
@@ -197,7 +197,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceList/:name/:aliasName/:currentTab/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
+					path="/serviceList/:name/:aliasName/externalAccess/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
 					component={AddServiceAvailableForm}
 					exact
 				/>
@@ -300,11 +300,11 @@ const Routes = withRouter((props) => {
 					component={AddForm}
 					exact
 				/>
-				<Route
+				{/* <Route
 					path="/systemManagement/resourcePoolManagement/addResourcePool/addOther/:clusterId"
 					component={AddForm}
 					exact
-				/>
+				/> */}
 				<Route
 					path="/systemManagement/resourcePoolManagement/editResourcePool/editOther/:clusterId"
 					component={AddForm}
@@ -330,12 +330,6 @@ const Routes = withRouter((props) => {
 					component={CreateAlarm}
 					exact
 				/>
-				{/* 项目管理 */}
-				<Route
-					path="/systemManagement/projectManagement"
-					component={ProjectManage}
-					exact
-				/>
 				<Route
 					path="/serviceList/:name/:aliasName/:currentTab/createAlarm/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
 					component={CreateAlarm}
@@ -344,6 +338,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:name/:aliasName/:currentTab/createAlarm/:middlewareName/:type/:chartVersion/:clusterId/:namespace/:ruleId"
 					component={CreateAlarm}
+					exact
+				/>
+				{/* 项目管理 */}
+				<Route
+					path="/systemManagement/projectManagement"
+					component={ProjectManage}
 					exact
 				/>
 				{/* 控制台 */}
