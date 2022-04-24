@@ -174,10 +174,12 @@ function Namespace(props: NamespaceProps): JSX.Element {
 			<Table
 				dataSource={showDataSource}
 				exact
-				primaryKey="key"
-				operation={Operation}
-				fixedHeader={true}
+				fixedBarExpandWidth={[24]}
+				affixActionBar
+				showColumnSetting
 				showRefresh
+				primaryKey="name"
+				operation={Operation}
 				onRefresh={getData}
 				search={{
 					onSearch: handleSearch,

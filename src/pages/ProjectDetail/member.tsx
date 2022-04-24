@@ -98,9 +98,8 @@ export default function Member(): JSX.Element {
 			<Table
 				dataSource={showDataSource}
 				exact
-				primaryKey="key"
+				primaryKey="userName"
 				operation={Operation}
-				fixedHeader={true}
 				showRefresh
 				onRefresh={getData}
 				search={{
