@@ -788,7 +788,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		} else {
 			setReClusterFlag(false);
 		}
-		setRelationNamespace(data.value);
+		const [c, n] = data.value.split('/');
+		setRelationNamespace(n);
 	};
 	const onLoadData = (data: any) => {
 		return getNamespaces({
@@ -800,7 +801,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					return {
 						parent: data.value,
 						label: item.aliasName || item.name,
-						value: item.name,
+						value: `${data.value}/${item.name}`,
 						isLeaf: true
 					};
 				});
