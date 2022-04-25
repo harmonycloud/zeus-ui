@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
-import { Nav, Select, Message } from '@alicloud/console-components';
+import { Select, message } from 'antd';
 
 import User from './User';
 
@@ -19,7 +18,6 @@ import {
 } from '@/redux/globalVar/var';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { getUserInformation } from '@/services/user';
-import messageConfig from '@/components/messageConfig';
 import { disabledRoute, hideRoute, projectHideRoute } from '@/utils/const';
 import { StoreState } from '@/types/index';
 import { NavbarProps } from './navbar';
@@ -42,7 +40,9 @@ function Navbar(props: NavbarProps): JSX.Element {
 	} = props;
 	const { flag } = props.globalVar;
 	const location = useLocation();
-	const [currentCluster, setCurrentCluster] = useState<{ id?: string }>({});
+	const [currentCluster, setCurrentCluster] = useState<{
+		id?: number | null;
+	}>({});
 	const [currentNamespace, setCurrentNamespace] = useState<{ name?: string }>(
 		{}
 	);
@@ -63,17 +63,6 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const [role, setRole] = useState({ aliasName: '系统管理员' });
 	// 设置logo
 	const personalization = storage.getLocal('personalization');
-	const footer = (nickName: string, role: { aliasName: string }) => (
-		<div className={styles['action-bar']}>
-			<div className={styles['action-bar-item']}>
-				<User
-					className={styles['module']}
-					nickName={nickName}
-					role={role}
-				/>
-			</div>
-		</div>
-	);
 
 	const getUserInfo = async () => {
 		const res: { aliasName?: string; [propsName: string]: any } =
@@ -83,7 +72,8 @@ function Navbar(props: NavbarProps): JSX.Element {
 			setRole(res.data);
 			storage.setLocal('role', JSON.stringify(res.data));
 		} else {
-			Message.show(messageConfig('error', '失败', res));
+			message.error(res);
+			// Message.show(messageConfig('error', '失败', res));
 		}
 	};
 
@@ -147,7 +137,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 					storage.setLocal('cluster', JSON.stringify(res.data[0]));
 				}
 			} else {
-				setCurrentCluster({ id: '' });
+				setCurrentCluster({ id: 0 });
 				setCluster({});
 				getClusterId();
 				storage.setLocal('cluster', '{}');
@@ -158,7 +148,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 	};
 
 	const getNamespaceList = async (
-		clusterId: string | undefined,
+		clusterId: number | undefined | null,
 		projectId: string | undefined
 	) => {
 		const res = await getNamespaces({
@@ -297,104 +287,99 @@ function Navbar(props: NavbarProps): JSX.Element {
 
 	return (
 		<div className={styles['middleware-navbar']} style={{ ...style }}>
-			<Nav
-				className={styles['custom-nav']}
-				direction="hoz"
-				type="normal"
-				header={
-					<div
-						className={styles['logo-box']}
-						style={{
-							lineHeight: '48px',
-							textAlign: 'center',
-							padding: '5px 0px'
-						}}
-					>
-						<img
-							className={styles['logo-png']}
-							src={personalization && personalization.homeLogo}
-							alt=""
-						/>
-					</div>
-				}
-				footer={footer(nickName, role)}
-				embeddable={true}
-				style={{
-					lineHeight: '48px',
-					zIndex: 999
-				}}
-			>
-				{projectHideFlag === false && (
-					<>
-						<span style={{ marginRight: 8 }}>项目</span>
-						<Select
-							className="no-shadow"
-							hasBorder={false}
-							disabled={projectDisAbled}
-							autoWidth={false}
-							value={currentProject.projectId}
-							onChange={projectHandle}
-						>
-							{projectList.map((project, index) => {
-								return (
-									<Select.Option
-										key={index}
-										value={project.projectId}
-									>
-										{project.aliasName}
-									</Select.Option>
-								);
-							})}
-						</Select>
-					</>
-				)}
-				{hideFlag === false && (
-					<>
-						<span style={{ marginLeft: 24 }}>集群</span>
-						<Select
-							style={{ marginLeft: 8 }}
-							className="no-shadow"
-							value={currentCluster.id}
-							hasBorder={false}
-							disabled={disabled}
-							onChange={clusterHandle}
-							autoWidth={false}
-						>
-							{clusterList.map((cluster, index) => {
-								return (
-									<Select.Option
-										key={index}
-										value={cluster.id}
-									>
-										{cluster.nickname}
-									</Select.Option>
-								);
-							})}
-						</Select>
-						<span style={{ marginLeft: 24 }}>命名空间</span>
-						<Select
-							style={{ marginLeft: 8 }}
-							className="no-shadow"
-							value={currentNamespace.name}
-							hasBorder={false}
-							disabled={disabled}
-							onChange={namespaceHandle}
-							autoWidth={false}
-						>
-							{namespaceList.map((namespace, index) => {
-								return (
-									<Select.Option
-										key={index}
-										value={namespace.name}
-									>
-										{namespace.aliasName}
-									</Select.Option>
-								);
-							})}
-						</Select>
-					</>
-				)}
-			</Nav>
+			<nav className={styles['nav']}>
+				<div
+					className={styles['logo-box']}
+					style={{
+						lineHeight: '48px',
+						textAlign: 'center',
+						padding: '5px 0px'
+					}}
+				>
+					<img
+						className={styles['logo-png']}
+						src={personalization && personalization.homeLogo}
+						alt=""
+					/>
+				</div>
+				<div className={styles['nav-content']}>
+					{projectHideFlag === false && (
+						<>
+							<span style={{ marginRight: 8 }}>项目</span>
+							<Select
+								className="no-shadow"
+								bordered={false}
+								disabled={projectDisAbled}
+								dropdownMatchSelectWidth={false}
+								value={currentProject.projectId}
+								onChange={projectHandle}
+							>
+								{projectList.map((project, index) => {
+									return (
+										<Select.Option
+											key={index}
+											value={project.projectId}
+										>
+											{project.aliasName}
+										</Select.Option>
+									);
+								})}
+							</Select>
+						</>
+					)}
+					{hideFlag === false && (
+						<>
+							<span style={{ marginLeft: 24 }}>集群</span>
+							<Select
+								style={{ marginLeft: 8 }}
+								className="no-shadow"
+								value={currentCluster.id}
+								bordered={false}
+								disabled={disabled}
+								onChange={clusterHandle}
+								dropdownMatchSelectWidth={false}
+							>
+								{clusterList.map((cluster, index) => {
+									return (
+										<Select.Option
+											key={index}
+											value={cluster.id}
+										>
+											{cluster.nickname}
+										</Select.Option>
+									);
+								})}
+							</Select>
+							<span style={{ marginLeft: 24 }}>命名空间</span>
+							<Select
+								style={{ marginLeft: 8 }}
+								className="no-shadow"
+								value={currentNamespace.name}
+								bordered={false}
+								disabled={disabled}
+								onChange={namespaceHandle}
+								dropdownMatchSelectWidth={false}
+							>
+								{namespaceList.map((namespace, index) => {
+									return (
+										<Select.Option
+											key={index}
+											value={namespace.name}
+										>
+											{namespace.aliasName}
+										</Select.Option>
+									);
+								})}
+							</Select>
+						</>
+					)}
+				</div>
+				<User
+					className={styles['module']}
+					nickName={nickName}
+					role={role}
+				/>
+			</nav>
 		</div>
 	);
 }
