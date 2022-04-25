@@ -108,13 +108,12 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 			label="新密码"
 			labelAlign="left"
 			name="newPassword"
-			// asterisk={false}
 			rules={[{ required: true, message: '请输新入密码' }]}
-			// requiredMessage="请输入新密码"
-			// className="ne-required-ingress"
 		>
 			<Input.Password
-				onChange={(e) => handleChange(e.target.value, 'new')}
+				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+					handleChange(e.target.value, 'new')
+				}
 			/>
 		</Form.Item>
 	);
@@ -256,7 +255,9 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 					// className="ne-required-ingress"
 				>
 					<Input.Password
-						onChange={(e) => handleChange(e.target.value, 'reNew')}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							handleChange(e.target.value, 'reNew')
+						}
 					/>
 				</Form.Item>
 			</Form>

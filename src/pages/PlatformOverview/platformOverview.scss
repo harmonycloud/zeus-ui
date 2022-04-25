@@ -53,7 +53,6 @@
 				}
 				&:nth-of-type(4) {
 					background: #ff9861;
-					// margin-right: 0;
 				}
 				.part-detail {
 					width: 100%;
@@ -67,10 +66,12 @@
 						background: $white;
 						border-radius: 30px;
 						opacity: 0.96;
-						line-height: 60px;
-						text-align: center;
+						display: flex;
+						justify-content: center;
+						align-items: center;
 					}
 					.value {
+						width: 140px;
 						& > span {
 							width: 15px;
 							height: 20px;
@@ -89,22 +90,14 @@
 							color: $white;
 							line-height: $line-height-4;
 						}
-						.next-progress-line {
-							display: block;
-							width: auto;
-							.next-progress-line-text {
-								display: none;
-							}
-						}
-						.next-progress-line-underlay {
+						.ant-progress-inner {
 							width: 140px;
 							height: 12px;
 							border-radius: $border-radius-xl;
 							background: rgba(255, 255, 255, 0.4);
 						}
-						.next-progress-line-overlay-normal {
-							margin-top: -6px;
-							height: 12px;
+						.ant-progress-bg {
+							height: 12px !important;
 							background: $white;
 						}
 						.num {
@@ -153,7 +146,7 @@
 						top: 0;
 						right: 0;
 						display: block;
-						content: "";
+						content: '';
 						width: 1px;
 						height: 46px;
 						background-color: #e3e4e6;
@@ -173,7 +166,7 @@
 							font-size: $font-1;
 							font-family: PingFangSC-Medium, PingFang SC;
 							font-weight: $font-weight;
-							color:$white;
+							color: $white;
 							text-align: center;
 							background: #c80000;
 							border-radius: 50%;
@@ -230,7 +223,7 @@
 						font-size: 20px;
 						font-family: PingFangSC-Medium, PingFang SC;
 						font-weight: $font-weight;
-						color:$primary-color ;
+						color: $primary-color;
 						line-height: 28px;
 						margin: 20px auto 10px;
 					}
