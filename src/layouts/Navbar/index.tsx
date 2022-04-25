@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
-import { Select, message } from 'antd';
+import { Select, notification } from 'antd';
 
 import User from './User';
 
@@ -72,7 +72,10 @@ function Navbar(props: NavbarProps): JSX.Element {
 			setRole(res.data);
 			storage.setLocal('role', JSON.stringify(res.data));
 		} else {
-			message.error(res);
+			notification.error({
+				message: '失败',
+				description: res
+			});
 			// Message.show(messageConfig('error', '失败', res));
 		}
 	};

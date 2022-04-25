@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { EditOutlined, createFromIconfontCN } from '@ant-design/icons';
-import { message } from 'antd';
+import { notification } from 'antd';
 
 import { postLogout } from '@/services/user';
 import EditPasswordForm from './EditPasswordForm';
@@ -15,7 +15,6 @@ import styles from './user.module.scss';
 
 function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
-	console.log(nickName, role);
 	const [visible, setVisible] = useState(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 	const history = useHistory();
@@ -33,7 +32,10 @@ function User(props: userProps): JSX.Element {
 				history.push('/login');
 				window.location.reload();
 			} else {
-				message.error(res);
+				notification.error({
+					message: '失败',
+					description: res
+				});
 			}
 		});
 	};
