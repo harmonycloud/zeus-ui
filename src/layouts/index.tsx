@@ -39,8 +39,33 @@ export default function Layout(): JSX.Element {
 	return (
 		<div className="flex-layout">
 			<Router>
-				{/* <Navbar getClusterId={getClusterId} /> */}
-
+				<Navbar getClusterId={getClusterId} />
+				<div className="flex-layout" style={{ paddingTop: 50 }}>
+					{/* <AntdLayout style={{ paddingTop: 50 }}> */}
+					<Sider
+						theme="light"
+						style={{
+							overflow: 'auto',
+							height: '100vh',
+							position: 'fixed',
+							left: 0,
+							top: 50,
+							bottom: 0
+						}}
+					>
+						<MyMenu clusterId={clusterId} />
+					</Sider>
+					<div
+						style={{
+							marginLeft: '200px',
+							width: 'calc(100% - 200px)',
+							height: '100%'
+						}}
+					>
+						<Routes />
+					</div>
+					{/* </AntdLayout> */}
+				</div>
 				{/* <AppLayout
 					nav={<Menu clusterId={clusterId} />}
 					navCollapsible={true}
@@ -72,7 +97,7 @@ export default function Layout(): JSX.Element {
 						</Content> */}
 				{/* </AntdLayout>
 				</AntdLayout> */}
-				<AntdLayout style={{ minHeight: '100vh' }}>
+				{/* <AntdLayout style={{ minHeight: '100vh' }}>
 					<Sider
 						theme="light"
 						collapsible
@@ -113,7 +138,7 @@ export default function Layout(): JSX.Element {
 							Ant Design ©2018 Created by Ant UED
 						</Footer>
 					</AntdLayout>
-				</AntdLayout>
+				</AntdLayout> */}
 			</Router>
 		</div>
 	);

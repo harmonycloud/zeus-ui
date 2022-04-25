@@ -2,13 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps } from 'antd';
 import { getMenu } from '@/services/user';
 import { menuReduxProps } from '@/types';
-import CustomIcon from '@/components/CustomIcon';
-import {
-	HashRouter as Router,
-	Route,
-	Link,
-	useHistory
-} from 'react-router-dom';
+import { IconFont } from '@/components/IconFont';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import './menu.scss';
 
 interface MyMenuProps {
 	clusterId: string;
@@ -29,7 +25,7 @@ function getItem(
 		label
 	} as MenuItem;
 }
-function MyMenu(props: MyMenuProps) {
+function MyMenu(props: MyMenuProps): JSX.Element {
 	const [items, setItems] = useState<MenuItem[]>([]);
 	useEffect(() => {
 		getMenus();
@@ -50,33 +46,34 @@ function MyMenu(props: MyMenuProps) {
 					);
 					return getItem(
 						item.aliasName,
-						item.id,
-						<CustomIcon size={14} type={item.iconName} />,
+						item.url,
+						<IconFont size={14} type={item.iconName} />,
 						childMenu
 					);
 				} else {
 					return getItem(
 						item.aliasName,
-						item.id,
-						<CustomIcon size={14} type={item.iconName} />
+						item.url,
+						<IconFont size={14} type={item.iconName} />
 					);
 				}
 			});
-			console.log(its);
 			setItems(its);
 		}
 	};
 	return (
-		// <Router>
-		// 	<Route>
 		<Menu
 			style={{ height: '100vh' }}
 			theme="light"
 			mode="inline"
 			items={items}
+			defaultOpenKeys={[
+				'monitorAlarm',
+				'disasterBackup',
+				'systemManagement',
+				'serviceList'
+			]}
 		/>
-		// 	</Route>
-		// </Router>
 	);
 }
 export default MyMenu;

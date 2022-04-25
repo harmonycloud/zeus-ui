@@ -183,9 +183,9 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 .timepicker-filter-item {
   width: 100%;
 }
-.page-header .next-icon:hover {
+/* .page-header .next-icon:hover {
   color: #226ee7;
-}
+} */
 
 /** 常用显示 */
 .display-flex {
@@ -515,7 +515,7 @@ table.table-list tbody tr td {
   margin-right: 4px;
 }
 /* 离线字体 */
-@font-face {
+/* @font-face {
   font-family: NextIcon;
   src: url("./assets/roboto-bold.woff2");
   src: url("./assets/roboto-medium.woff2");
@@ -529,7 +529,7 @@ table.table-list tbody tr td {
 	font-style: normal;
 	font-weight: normal;
 	text-transform: none;
-}
+} */
 
 .text-hidden {
   overflow: hidden;

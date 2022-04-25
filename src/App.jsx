@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import Layout from './layouts/index';
+import MyLayout from './layouts/indexV3';
 import Storage from '@/utils/storage';
 
 function App() {
 	useEffect(() => {
 		getLanguage();
-		return () => {};
 	}, []);
 
-	return <Layout />;
+	return <MyLayout />;
 }
 
 function getLanguage() {

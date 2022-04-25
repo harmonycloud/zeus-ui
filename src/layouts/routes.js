@@ -49,9 +49,6 @@ import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
 
-// ! 已弃用
-import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
-
 const Routes = withRouter((props) => {
 	return (
 		<>
