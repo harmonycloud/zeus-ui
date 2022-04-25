@@ -27,7 +27,7 @@ module.exports = {
 		// 使用less-loader对源码重的less的变量进行重新制定，设置antd自定义主题
 		addLessLoader({
 			lessOptions: {
-				javascriptEnabled: true,
+				javascriptEnabled: true
 				//   modifyVars: { '@primary-color': 'red' },
 			},
 			sourceMap: true
@@ -39,6 +39,7 @@ module.exports = {
 					options: {
 						resources: [
 							'./src/styles/_mixin.scss',
+							// './src/styles/_color.scss',
 							'./src/styles/_vars.scss'
 						]
 					}
