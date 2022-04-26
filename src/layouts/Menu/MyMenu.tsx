@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps } from 'antd';
-import { getMenu } from '@/services/user';
-import { menuReduxProps } from '@/types';
+import { useHistory, useLocation } from 'react-router';
+import { connect } from 'react-redux';
 import { IconFont } from '@/components/IconFont';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { getMenu } from '@/services/user';
+import { menuReduxProps, StoreState } from '@/types';
+import { setMenuRefresh } from '@/redux/menu/menu';
+import { ResMenuItem, MenuInfo, SelectInfo } from '@/types/comment';
 import './menu.scss';
 
 interface MyMenuProps {
 	clusterId: string;
-	// menu: menuReduxProps;
-	// setMenuRefresh: (flag: boolean) => void;
+	menu: menuReduxProps;
+	setMenuRefresh: (flag: boolean) => void;
 }
 type MenuItem = Required<MenuProps>['items'][number];
 function getItem(
@@ -26,23 +29,36 @@ function getItem(
 	} as MenuItem;
 }
 function MyMenu(props: MyMenuProps): JSX.Element {
+	const { clusterId, menu, setMenuRefresh } = props;
+	const history = useHistory();
+	const location = useLocation();
+	const { pathname } = location;
 	const [items, setItems] = useState<MenuItem[]>([]);
+	const [selectedKeys, setSelectedKeys] = useState<string[]>([
+		pathname.slice(1)
+	]);
 	useEffect(() => {
 		getMenus();
-	}, []);
+	}, [clusterId]);
+	useEffect(() => {
+		if (menu.flag) {
+			getMenus();
+			setMenuRefresh(false);
+		}
+	}, [menu]);
 	const getMenus = async () => {
 		const res = await getMenu(
-			props.clusterId !== ''
+			clusterId !== ''
 				? {
-						clusterId: props.clusterId
+						clusterId: clusterId
 				  }
 				: {}
 		);
 		if (res.success) {
-			const its = res.data.map((item: any) => {
+			const its = res.data.map((item: ResMenuItem) => {
 				if (item.subMenu) {
-					const childMenu = item.subMenu.map((item: any) =>
-						getItem(item.aliasName, item.id)
+					const childMenu = item.subMenu.map((item: ResMenuItem) =>
+						getItem(item.aliasName, item.url)
 					);
 					return getItem(
 						item.aliasName,
@@ -61,6 +77,12 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 			setItems(its);
 		}
 	};
+	const onMenuItemClick = (info: MenuInfo) => {
+		history.push(`/${info.key}`);
+	};
+	const onMenuItemSelect = (info: SelectInfo) => {
+		setSelectedKeys([info.key]);
+	};
 	return (
 		<Menu
 			style={{ height: '100vh' }}
@@ -73,7 +95,15 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 				'systemManagement',
 				'serviceList'
 			]}
+			onClick={onMenuItemClick}
+			selectedKeys={selectedKeys}
+			onSelect={onMenuItemSelect}
 		/>
 	);
 }
-export default MyMenu;
+const mapStateToProps = (state: StoreState) => ({
+	menu: state.menu
+});
+export default connect(mapStateToProps, {
+	setMenuRefresh
+})(MyMenu);

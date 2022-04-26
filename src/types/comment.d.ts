@@ -229,3 +229,25 @@ export interface evevtDataProps {
 	time: string;
 	type: string;
 }
+export interface ResMenuItem {
+	aliasName: string;
+	available: null;
+	iconName: string;
+	id: number;
+	module: null | string;
+	name: string;
+	own: boolean;
+	parentId: number;
+	subMenu: null | ResMenuItem[];
+	url: string;
+	weight: number;
+}
+export interface MenuInfo {
+	key: string;
+	keyPath: string[];
+	item: React.ReactInstance;
+	domEvent: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>;
+}
+export interface SelectInfo extends MenuInfo {
+	selectedKeys: string[];
+}

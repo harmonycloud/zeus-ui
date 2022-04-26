@@ -7,12 +7,16 @@
 // 重构后样式
 .zeus-mid-layout {
 	position: relative;
+	width: 100%;
+	height: 100%;
 	.zeus-mid-content {
 		display: flex;
 		padding-top: 50px;
 		position: absolute;
 		top: 50;
 		z-index: 800;
+		width: 100%;
+		height: 100%;
 		& > aside {
 			// min-width: 200px;
 			height: calc(100% - 50px);
@@ -33,7 +37,7 @@
 			}
 		}
 		.zeus-mid-left-content {
-			margin-left: 200px;
+			min-width: calc(100% - 200px);
 			height: calc(100% - 50px);
 			transition: all 0.1s ease 0s;
 			-moz-transition: all 0.1s ease 0s;
