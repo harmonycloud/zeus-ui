@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Breadcrumb } from '@alicloud/console-components';
+import { Breadcrumb } from 'antd';
+// import { Breadcrumb } from '@alicloud/console-components';
 import storage from '@/utils/storage';
 import './breadcrumb.scss';
 import breadcrumbMap from './breadcrumbMap';
@@ -27,13 +28,6 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 		}
 		if (route.includes('middlewareRepository')) {
 			return '/middlewareRepository';
-		}
-		if (pathname.includes('alarm/createAlarm')) {
-			const arr = pathname.split('/');
-			arr.splice(5, 1);
-			arr.splice(8, 1);
-			const result = arr.join('/');
-			return result;
 		}
 		if (pathname.includes('externalAccess/addExternalAccess')) {
 			const arr = pathname.split('/');
