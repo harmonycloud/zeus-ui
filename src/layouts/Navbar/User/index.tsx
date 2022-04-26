@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { EditOutlined } from '@ant-design/icons';
-import { message } from 'antd';
 import { IconFont } from '@/components/IconFont';
+import { notification } from 'antd';
 
 import { postLogout } from '@/services/user';
 import EditPasswordForm from './EditPasswordForm';
@@ -29,7 +29,10 @@ function User(props: userProps): JSX.Element {
 				history.push('/login');
 				window.location.reload();
 			} else {
-				message.error(res);
+				notification.error({
+					message: '失败',
+					description: res
+				});
 			}
 		});
 	};

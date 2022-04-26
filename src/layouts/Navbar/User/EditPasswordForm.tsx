@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Popover, Input, message, Modal, Form } from 'antd';
+import { Popover, Input, message, Modal, Form, notification } from 'antd';
 import { CloseCircleFilled, CheckCircleFilled } from '@ant-design/icons';
 
 import { encrypt } from '@/utils/utils';
@@ -21,10 +21,10 @@ interface editProps {
 }
 const formItemLayout = {
 	labelCol: {
-		span: 10
+		span: 8
 	},
 	wrapperCol: {
-		span: 14
+		span: 16
 	}
 };
 export default function EditPasswordForm(props: editProps): JSX.Element {
@@ -57,10 +57,16 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 			};
 			updatePassword(sendData).then((res) => {
 				if (res.success) {
-					message.success('密码修改成功');
+					notification.success({
+						message: '成功',
+						description: '密码修改成功'
+					});
 					onCancel();
 				} else {
-					message.error(res);
+					notification.error({
+						message: '失败',
+						description: res
+					});
 				}
 			});
 		});
@@ -99,17 +105,15 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 	};
 	const defaultTrigger = (
 		<Form.Item
-			// {...formItemLayout}
 			label="新密码"
 			labelAlign="left"
 			name="newPassword"
-			// asterisk={false}
 			rules={[{ required: true, message: '请输新入密码' }]}
-			// requiredMessage="请输入新密码"
-			// className="ne-required-ingress"
 		>
 			<Input.Password
-				onChange={(e) => handleChange(e.target.value, 'new')}
+				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+					handleChange(e.target.value, 'new')
+				}
 			/>
 		</Form.Item>
 	);
@@ -251,7 +255,9 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 					// className="ne-required-ingress"
 				>
 					<Input.Password
-						onChange={(e) => handleChange(e.target.value, 'reNew')}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							handleChange(e.target.value, 'reNew')
+						}
 					/>
 				</Form.Item>
 			</Form>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Page from '@alicloud/console-components-page';
 import { connect } from 'react-redux';
@@ -6,16 +6,21 @@ import { getClusters } from '@/services/common';
 import { api } from '@/api.json';
 import {
 	Radio,
+	RadioChangeEvent,
 	Pagination,
 	Button,
-	Icon,
 	Select,
 	Table,
-	Progress,
-	Loading,
-	Balloon
-} from '@alicloud/console-components';
-import CustomIcon from '@/components/CustomIcon';
+	Spin,
+	Popover,
+	Progress
+} from 'antd';
+import {
+	ReloadOutlined,
+	CheckCircleOutlined,
+	CloseCircleOutlined,
+	createFromIconfontCN
+} from '@ant-design/icons';
 import {
 	getPlatformOverview,
 	getEvent,
@@ -43,8 +48,7 @@ import { poolListItem, evevtDataProps } from '@/types/comment';
 
 import './platformOverview.scss';
 import storage from '@/utils/storage';
-
-const Tooltip = Balloon.Tooltip;
+import { Icon } from '@alicloud/console-components';
 
 function PlatformOverview(): JSX.Element {
 	let x = [];
@@ -77,6 +81,9 @@ function PlatformOverview(): JSX.Element {
 	const history = useHistory<unknown>();
 	const [lineOption, setLineOption] = useState<any>({});
 	const [alertSummary, setAlertSummary] = useState<alertSummaryProps>({});
+	const IconFont = createFromIconfontCN({
+		scriptUrl: '@/src/assets/iconfont.js'
+	});
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -171,13 +178,13 @@ function PlatformOverview(): JSX.Element {
 			});
 		});
 	};
-	const onNormalChange = (value: string | number | boolean) => {
-		setLevel(value);
+	const onNormalChange = (e: RadioChangeEvent) => {
+		setLevel(e.target.value);
 		const alertData = {
 			current: current,
-			level: value
+			level: e.target.value
 		};
-		switch (value) {
+		switch (e.target.value) {
 			case 'info':
 				setLineOption(
 					getLineOption({
@@ -265,20 +272,21 @@ function PlatformOverview(): JSX.Element {
 										})}
 								</Select>
 							</div>
-							<Button className="refresh-btn" onClick={onRefresh}>
-								<Icon type="refresh" />
-							</Button>
+							<Button
+								className="refresh-btn"
+								onClick={onRefresh}
+								icon={<ReloadOutlined />}
+							></Button>
 						</div>
 						<div className="header-list">
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon
+										<IconFont
 											type="icon-jiqun1"
-											size={36}
 											style={{
 												color: '#617BFF',
-												marginTop: '12px'
+												fontSize: '36px'
 											}}
 										/>
 									</div>
@@ -298,12 +306,11 @@ function PlatformOverview(): JSX.Element {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon
+										<IconFont
 											type="icon-mingmingkongjian"
-											size={36}
 											style={{
 												color: '#9661FF',
-												marginTop: '12px'
+												fontSize: '36px'
 											}}
 										/>
 									</div>
@@ -323,13 +330,11 @@ function PlatformOverview(): JSX.Element {
 							<div className="part part-border">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon
+										<IconFont
 											type="icon-CPU"
-											size={60}
 											style={{
 												color: '#00C1D4',
-												marginTop: '-10px',
-												marginLeft: '2px'
+												fontSize: '60px'
 											}}
 										/>
 									</div>
@@ -345,6 +350,7 @@ function PlatformOverview(): JSX.Element {
 														''
 													)
 												)}
+												showInfo={false}
 											/>
 											<span>
 												{totalData.usedCpu.toFixed(1) +
@@ -364,12 +370,11 @@ function PlatformOverview(): JSX.Element {
 							<div className="part">
 								<div className="part-detail">
 									<div className="part-circle">
-										<CustomIcon
+										<IconFont
 											type="icon-memory"
-											size={60}
 											style={{
 												color: '#FF9861',
-												marginTop: '-10px'
+												fontSize: '60px'
 											}}
 										/>
 									</div>
@@ -385,6 +390,7 @@ function PlatformOverview(): JSX.Element {
 														''
 													)
 												)}
+												showInfo={false}
 											/>
 											<span>
 												{totalData.usedMemory.toFixed(
@@ -420,81 +426,65 @@ function PlatformOverview(): JSX.Element {
 										briefInfoList.map(
 											(item: briefInfoProps) => {
 												return (
-													<Tooltip
+													<div
+														className="info-item"
 														key={item.name}
-														trigger={
-															<div
-																className="info-item"
-																onClick={() => {
-																	storage.setSession(
-																		'menuPath',
-																		`/serviceList/${item.name}/${item.aliasName}`
-																	);
-																	history.push(
-																		`/serviceList/${item.name}/${item.aliasName}`
-																	);
-																}}
-															>
-																<div className="info-img">
-																	<img
-																		height={
-																			40
-																		}
-																		width={
-																			40
-																		}
-																		src={`${api}/images/middleware/${item.imagePath}`}
-																	/>
-																	{item.errServiceNum !==
-																	0 ? (
-																		<Tooltip
-																			trigger={
-																				<span className="err-count">
-																					{
-																						item.errServiceNum
-																					}
-																				</span>
-																			}
-																			align="t"
-																		>
-																			异常服务数
-																		</Tooltip>
-																	) : null}
-																</div>
-																<p className="info-name">
-																	{item.name}
-																</p>
-																<p className="info-count">
-																	<span>
-																		服务数{' '}
-																	</span>
-																	<span
-																		className={
-																			'total-count'
-																		}
-																	>
-																		{
-																			item.serviceNum
-																		}
-																	</span>
-																</p>
-															</div>
-														}
-														align="t"
-														triggerType="click"
+														onClick={() => {
+															storage.setSession(
+																'menuPath',
+																`/serviceList/${item.name}/${item.aliasName}`
+															);
+															history.push(
+																`/serviceList/${item.name}/${item.aliasName}`
+															);
+														}}
 													>
-														请选择集群后跳转
-													</Tooltip>
+														<div className="info-img">
+															<img
+																height={40}
+																width={40}
+																src={`${api}/images/middleware/${item.imagePath}`}
+															/>
+															{item.errServiceNum !==
+															0 ? (
+																<Popover
+																	content={
+																		'异常服务数'
+																	}
+																>
+																	<span className="err-count">
+																		{
+																			item.errServiceNum
+																		}
+																	</span>
+																</Popover>
+															) : null}
+														</div>
+														<p className="info-name">
+															{item.name}
+														</p>
+														<p className="info-count">
+															<span>服务数 </span>
+															<span
+																className={
+																	'total-count'
+																}
+															>
+																{
+																	item.serviceNum
+																}
+															</span>
+														</p>
+													</div>
 												);
 											}
 										)
 									) : (
-										<Loading
-											tip="loading..."
-											size="medium"
+										<Spin
 											style={{
 												width: '100%',
-												height: '70px'
+												height: '70px',
+												lineHeight: '70px'
 											}}
 										/>
 									)}
@@ -534,10 +524,12 @@ function PlatformOverview(): JSX.Element {
 											<div className="dashed"></div>
 											<Table
 												dataSource={operatorList}
-												primaryKey="key"
-												hasBorder={false}
-												fixedHeader={true}
-												maxBodyHeight="180px"
+												rowKey={(record: any) =>
+													record.name
+												}
+												scroll={{ y: 180 }}
+												pagination={false}
+												size="small"
 												style={{
 													width: '55%'
 												}}
@@ -545,9 +537,8 @@ function PlatformOverview(): JSX.Element {
 												<Table.Column
 													title="类型"
 													dataIndex="name"
-													cell={(
+													render={(
 														value: string,
-														index: number,
 														record: operatorListProps
 													) => (
 														<span>
@@ -561,25 +552,25 @@ function PlatformOverview(): JSX.Element {
 												<Table.Column
 													title="状态"
 													dataIndex="status"
-													cell={(value: number) => (
+													render={(value: number) => (
 														<span>
-															<Icon
-																size="xs"
-																style={{
-																	color:
-																		value ===
-																		1
-																			? '#00A700'
-																			: '#C80000',
-																	marginRight:
-																		'5px'
-																}}
-																type={
-																	value === 1
-																		? 'success'
-																		: 'warning'
-																}
-															/>
+															{value === 1 ? (
+																<CheckCircleOutlined
+																	style={{
+																		color: '#389E0d',
+																		marginRight:
+																			'4px'
+																	}}
+																/>
+															) : (
+																<CloseCircleOutlined
+																	style={{
+																		color: '#f5222d',
+																		marginRight:
+																			'4px'
+																	}}
+																/>
+															)}
 															{value === 1
 																? '运行正常'
 																: '运行异常'}
@@ -619,10 +610,10 @@ function PlatformOverview(): JSX.Element {
 								>
 									<Table
 										dataSource={auditList}
-										primaryKey="key"
-										hasBorder={false}
-										fixedHeader={true}
-										maxBodyHeight="190px"
+										rowKey={(record: any) => record.id}
+										scroll={{ y: 190 }}
+										size="small"
+										pagination={false}
 										style={{ marginTop: '16px' }}
 									>
 										<Table.Column
@@ -631,9 +622,8 @@ function PlatformOverview(): JSX.Element {
 										/>
 										<Table.Column
 											title="模块"
-											cell={(
+											render={(
 												value: string,
-												index: number,
 												record: auditListProps
 											) => (
 												<span>
@@ -650,7 +640,7 @@ function PlatformOverview(): JSX.Element {
 										<Table.Column
 											title="操作时间"
 											dataIndex="beginTime"
-											cell={createTimeRender}
+											render={createTimeRender}
 										/>
 									</Table>
 								</HomeCard>
@@ -665,11 +655,11 @@ function PlatformOverview(): JSX.Element {
 									}}
 								>
 									<RadioGroup
-										dataSource={radioList}
-										shape="button"
-										size="medium"
-										value={level}
+										options={radioList}
 										onChange={onNormalChange}
+										value={level}
+										optionType="button"
+										size="middle"
 										style={{ marginTop: 16 }}
 									/>
 									<AlarmTimeLine
@@ -684,13 +674,9 @@ function PlatformOverview(): JSX.Element {
 										style={{ float: 'right' }}
 										current={current}
 										size="small"
-										type="simple"
-										shape="no-border"
 										onChange={paginationChange}
 										total={total}
-										totalRender={(total) =>
-											`总数：${total}`
-										}
+										showTotal={(total) => `总数：${total}`}
 									/>
 								</HomeCard>
 								<HomeCard
