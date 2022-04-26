@@ -17,6 +17,10 @@
 	right: 0;
 	z-index: 100;
 	box-shadow: $shadow-base;
+	transition: all 0.1s ease 0s;
+	-moz-transition: all 0.1s ease 0s;
+	-webkit-transition: all 0.1s ease 0s;
+	-o-transition: all 0.1s ease 0s;
 }
 .nav-user-container:hover .nav-user-operator {
 	display: block;

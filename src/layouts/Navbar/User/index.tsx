@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { EditOutlined, createFromIconfontCN } from '@ant-design/icons';
+import { EditOutlined } from '@ant-design/icons';
 import { message } from 'antd';
+import { IconFont } from '@/components/IconFont';
 
 import { postLogout } from '@/services/user';
 import EditPasswordForm from './EditPasswordForm';
@@ -15,13 +16,9 @@ import styles from './user.module.scss';
 
 function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
-	const [visible, setVisible] = useState(false);
+	const [visible, setVisible] = useState<boolean>(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 	const history = useHistory();
-
-	const IconFont = createFromIconfontCN({
-		scriptUrl: '@/src/assets/iconfont.js'
-	});
 
 	const logout = () => {
 		postLogout().then((res) => {
