@@ -1,4 +1,3 @@
-import { resProps } from '@/types/comment';
 export interface personalizationProps {
 	backgroundImage: string | null;
 	backgroundPath: string | null;
