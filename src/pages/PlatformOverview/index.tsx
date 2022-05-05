@@ -28,6 +28,7 @@ import {
 } from '@/services/platformOverview';
 
 import AlarmTimeLine from '@/components/AlarmTimeline';
+import { IconFont } from '@/components/IconFont';
 import HomeCard from '@/components/HomeCard';
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
@@ -48,7 +49,6 @@ import { poolListItem, evevtDataProps } from '@/types/comment';
 
 import './platformOverview.scss';
 import storage from '@/utils/storage';
-import { Icon } from '@alicloud/console-components';
 
 function PlatformOverview(): JSX.Element {
 	let x = [];
@@ -81,9 +81,6 @@ function PlatformOverview(): JSX.Element {
 	const history = useHistory<unknown>();
 	const [lineOption, setLineOption] = useState<any>({});
 	const [alertSummary, setAlertSummary] = useState<alertSummaryProps>({});
-	const IconFont = createFromIconfontCN({
-		scriptUrl: '@/src/assets/iconfont.js'
-	});
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -428,7 +425,7 @@ function PlatformOverview(): JSX.Element {
 												return (
 													<div
 														className="info-item"
-														key={item.name}
+														key={Math.random() + ''}
 														onClick={() => {
 															storage.setSession(
 																'menuPath',

@@ -1,0 +1,45 @@
+.page {
+	order: 1;
+	flex: 1 1 auto;
+	height: calc(100% + 50px);
+	overflow-y: auto;
+}
+.pro-page {
+	display: flex;
+	flex-flow: column nowrap;
+	-webkit-box-pack: start;
+	place-content: stretch flex-start;
+	-webkit-box-align: stretch;
+	align-items: stretch;
+	box-sizing: border-box;
+	min-height: 100%;
+	.page-container {
+		order: 0;
+		-webkit-box-flex: 0;
+		flex: 0 1 auto;
+		align-self: auto;
+		box-sizing: border-box;
+		width: 100%;
+		font-size: $font-1;
+		line-height: $line-height-1;
+		.ant-page-header-back {
+			font-size: $font-5;
+		}
+		.ant-page-header-heading-title {
+			font-size: $font-5;
+			line-height: $line-height-5;
+		}
+		.pro-content {
+			order: 0;
+			-webkit-box-flex: 1;
+			flex: 1 1 auto;
+			align-self: auto;
+			padding-bottom: 40px;
+			width: 100%;
+			min-width: 0px;
+			overflow: visible;
+			box-sizing: border-box;
+			padding: 0 24px 40px 24px;
+		}
+	}
+}

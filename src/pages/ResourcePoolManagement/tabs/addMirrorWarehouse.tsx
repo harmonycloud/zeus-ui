@@ -77,7 +77,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 
 	return (
 		<Dialog
-			title="新增镜像仓库"
+			title={data ? '编辑镜像仓库' : '新增镜像仓库'}
 			visible={visible}
 			onCancel={onCancel}
 			onOk={onOk}

@@ -21,6 +21,9 @@
 		font-weight: $font-weight;
 		color: $text-color-title;
 		line-height: 22px;
+		&:first-of-type {
+			margin-top: 0;
+		}
 		margin: 16px 0;
 		display: flex;
 		align-items: center;
@@ -39,250 +42,231 @@
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: $font-weight-sm;
 		color: #666666;
-		line-height: $line-height-3;
+		line-height: $line-height-1;
 	}
-	.next-form-item {
+	.upload-card {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		align-items: center;
-		label {
+		.next-upload-text {
 			font-size: $font-1;
-			font-family: PingFangSC-Medium, PingFang SC;
-			font-weight: $font-weight;
+			margin-top: 8px;
+			font-family: PingFangSC-Regular, PingFang SC;
+			font-weight: $font-weight-sm;
 			color: $text-color-title;
-			line-height: $line-height-3;
-		}
-		.next-upload-card {
-			&:hover {
-				border-color: #0064c8;
-			}
-			.next-icon {
-				color: #0064c8;
-				&::before {
-					font-size: $font-1;
-				}
-			}
-			.next-upload-text {
-				font-size: $font-1;
-				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: $font-weight-sm;
-				color: $text-color-title;
-				line-height: $line-height-3;
-			}
-		}
-		.next-btn {
-			width: 100px;
-			font-size: $font-1;
-			font-family: PingFangSC-Medium, PingFang SC;
-			font-weight: $font-weight;
-			color: $text-color-title;
-			line-height: $line-height-3;
-			.next-icon {
-				color: #0064c8;
-				&::before {
-					font-size: $font-1;
-				}
-			}
+			line-height: $line-height-1;
 		}
 	}
-
-	.alarm-set {
-		.box {
-			margin-top: 16px;
-			background: $white;
-			box-shadow: 0px 2px 4px 0px rgba(68, 71, 74, 0.07);
-			border-radius: $border-radius-lg;
-			border: 1px solid #ebebeb;
-			padding: 24px;
-			&:first-child {
-				margin-bottom: 16px;
-			}
-			.box-header {
-				width: 100%;
-				display: flex;
-				align-items: center;
-				cursor: pointer;
-				.header-img {
-					width: 112px;
-					height: 112px;
-					background: #f7f8fc;
-					border-radius: $border-radius-lg;
-					line-height: 112px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-				.show-box {
-					flex: 1;
-					text-align: right;
-					.show-icon {
-						cursor: pointer;
-						display: inline-block;
-						border-radius: 50%;
-						width: 24px;
-						height: 24px;
-						text-align: center;
-						line-height: 22px;
-						border: 1px solid #c0c6cc;
-					}
-				}
-				.header-info {
-					margin-left: 24px;
-					.type {
-						font-size: $font-3;
-						font-family: PingFangSC-Medium, PingFang SC;
-						font-weight: $font-weight;
-						color: $text-color-title;
-						line-height: $line-height-1 * 2;
-						vertical-align: middle;
-						margin-right: 8px;
-					}
-					.status {
-						display: inline-block;
-						width: 60px;
-						height: 20px;
-						background: #f6ffed;
-						border: 1px solid #b7eb8f;
-						text-align: center;
-						font-size: $font-1;
-						font-family: PingFangSC-Regular, PingFang SC;
-						font-weight: $font-weight-sm;
-						color: #52c41a;
-						line-height: $line-height-3;
-						padding-right: 10px;
-						position: relative;
-						border-right: none;
-						&::before {
-							display: inline-block;
-							content: '';
-							position: absolute;
-							top: 0;
-							right: 0;
-							z-index: 10;
-							border-right: 9px solid #52c41a;
-							border-top: 9px solid transparent;
-							border-left: 9px solid transparent;
-							border-bottom: 9px solid transparent;
-						}
-						&::after {
-							display: inline-block;
-							content: '';
-							position: absolute;
-							top: 1px;
-							right: 0;
-							z-index: 10;
-							border-right: 8px solid $white;
-							border-top: 8px solid transparent;
-							border-left: 8px solid transparent;
-							border-bottom: 8px solid transparent;
-						}
-						&.none {
-							background: #fff3dd;
-							border-color: #ffdb94;
-							color: #faa700;
-							&::before {
-								border-right-color: #ffdb94;
-							}
-						}
-					}
-					p {
-						margin-top: 16px;
-						font-size: $font-1;
-						font-family: PingFangSC-Regular, PingFang SC;
-						font-weight: $font-weight-sm;
-						color: #666666;
-						line-height: $line-height-3;
-					}
-				}
-			}
-			.box-content {
-				margin-top: 16px;
-				background: #f7f7f7;
-				border-radius: $border-radius;
-				.next-form {
-					label {
-						font-size: $font-1;
-						font-family: PingFangSC-Medium, PingFang SC;
-						font-weight: $font-weight;
-						color: $text-color-title;
-						line-height: $line-height-3;
-					}
-				}
-				.btns {
-					text-align: right;
-					button {
-						&:not(:last-child) {
-							margin-right: 8px;
-						}
-						&.test[disabled] {
-							color: #ccc;
-						}
-						&.save[disabled] {
-							background: #d1d5d9;
-							color: $white;
-						}
-					}
-				}
-				.form-btn {
-					position: absolute;
-					top: 8px;
-					right: -48px;
-					display: flex;
-					button {
-						width: 14px;
-						height: 14px;
-						padding: 0;
-						border: none;
-						border-radius: 7px;
-						color: $white;
-						background: #c80000;
-						min-width: auto !important;
-						text-align: center;
-						line-height: $line-height-1;
-						&.disabled {
-							background: #cccccc;
-						}
-						&:first-child {
-							background: #0064c8;
-							margin-right: 10px;
-						}
-					}
-				}
-				.concat {
-					position: absolute;
-					top: 8px;
-					left: -48px;
-					.good {
-						color: skyblue;
-					}
-					.bad {
-						color: red;
-					}
-				}
-			}
-		}
-		.form-display {
-			padding: 24px 24px 0 24px;
-			transform: translateY(16px);
-			display: flex;
-			align-items: center;
-			&.padding {
-				padding: 24px;
-				transform: translateY(0);
-			}
-			label {
-				width: 25%;
-				padding: 0 16px 0 0;
-				&::before {
-					margin-right: 4px;
-					content: '*';
-					color: #c80000;
-					color: var(--form-error-color, #c80000);
-				}
+	.next-btn {
+		width: 100px;
+		font-size: $font-1;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: $font-weight;
+		color: $text-color-title;
+		line-height: $line-height-1;
+		.next-icon {
+			color: #0064c8;
+			&::before {
+				font-size: $font-1;
 			}
 		}
 	}
 }
-.next-upload-list-item-thumbnail {
-	img {
-		background-color: #ebebeb;
+
+.alarm-set {
+	.box {
+		margin-top: 16px;
+		background: $white;
+		box-shadow: 0px 2px 4px 0px rgba(68, 71, 74, 0.07);
+		border-radius: $border-radius-lg;
+		border: 1px solid #ebebeb;
+		padding: 24px;
+		&:first-child {
+			margin-bottom: 16px;
+		}
+		.box-header {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+			.header-img {
+				width: 112px;
+				height: 112px;
+				background: #f7f8fc;
+				border-radius: $border-radius-lg;
+				line-height: 112px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.show-box {
+				flex: 1;
+				text-align: right;
+				.show-icon {
+					cursor: pointer;
+					display: inline-block;
+					border-radius: 50%;
+					width: 24px;
+					height: 24px;
+					text-align: center;
+					line-height: 22px;
+					border: 1px solid #c0c6cc;
+				}
+			}
+			.header-info {
+				margin-left: 24px;
+				.type {
+					font-size: $font-3;
+					font-family: PingFangSC-Medium, PingFang SC;
+					font-weight: $font-weight;
+					color: $text-color-title;
+					line-height: $line-height-3;
+					vertical-align: middle;
+					margin-right: 8px;
+				}
+				.status {
+					display: inline-block;
+					width: 60px;
+					height: 20px;
+					background: #f6ffed;
+					border: 1px solid #b7eb8f;
+					text-align: center;
+					font-size: $font-1;
+					font-family: PingFangSC-Regular, PingFang SC;
+					font-weight: $font-weight-sm;
+					color: #52c41a;
+					line-height: $line-height-1;
+					padding-right: 10px;
+					position: relative;
+					border-right: none;
+					&::before {
+						display: inline-block;
+						content: '';
+						position: absolute;
+						top: 0;
+						right: 0;
+						z-index: 10;
+						border-right: 9px solid #52c41a;
+						border-top: 9px solid transparent;
+						border-left: 9px solid transparent;
+						border-bottom: 9px solid transparent;
+					}
+					&::after {
+						display: inline-block;
+						content: '';
+						position: absolute;
+						top: 1px;
+						right: 0;
+						z-index: 10;
+						border-right: 8px solid $white;
+						border-top: 8px solid transparent;
+						border-left: 8px solid transparent;
+						border-bottom: 8px solid transparent;
+					}
+					&.none {
+						background: #fff3dd;
+						border-color: #ffdb94;
+						color: #faa700;
+						&::before {
+							border-right-color: #ffdb94;
+						}
+					}
+				}
+				p {
+					margin-top: 16px;
+					font-size: $font-1;
+					font-family: PingFangSC-Regular, PingFang SC;
+					font-weight: $font-weight-sm;
+					color: #666666;
+					line-height: $line-height-1;
+				}
+			}
+		}
+		.box-content {
+			margin-top: 16px;
+			background: #f7f7f7;
+			border-radius: $border-radius;
+			.next-form {
+				label {
+					font-size: $font-1;
+					font-family: PingFangSC-Medium, PingFang SC;
+					font-weight: $font-weight;
+					color: $text-color-title;
+					line-height: $line-height-1;
+				}
+			}
+			.btns {
+				text-align: right;
+				button {
+					&:not(:last-child) {
+						margin-right: 8px;
+					}
+					&.test[disabled] {
+						color: #ccc;
+					}
+					&.save[disabled] {
+						background: #d1d5d9;
+						color: $white;
+					}
+				}
+			}
+			.form-btn {
+				position: absolute;
+				top: 8px;
+				right: -48px;
+				display: flex;
+				button {
+					width: 14px;
+					height: 14px;
+					padding: 0;
+					border: none;
+					border-radius: 7px;
+					color: $white;
+					background: #c80000;
+					min-width: auto !important;
+					text-align: center;
+					line-height: 14px;
+					&.disabled {
+						background: #cccccc;
+					}
+					&:first-child {
+						background: #0064c8;
+						margin-right: 10px;
+					}
+				}
+			}
+			.concat {
+				position: absolute;
+				top: 8px;
+				left: -48px;
+				.good {
+					color: skyblue;
+				}
+				.bad {
+					color: red;
+				}
+			}
+		}
+	}
+	.form-display {
+		padding: 24px 24px 0 24px;
+		transform: translateY(16px);
+		display: flex;
+		align-items: center;
+		&.padding {
+			padding: 24px;
+			transform: translateY(0);
+		}
+		label {
+			width: 25%;
+			padding: 0 16px 0 0;
+			&::before {
+				margin-right: 4px;
+				content: '*';
+				color: #c80000;
+				color: var(--form-error-color, #c80000);
+			}
+		}
 	}
 }
