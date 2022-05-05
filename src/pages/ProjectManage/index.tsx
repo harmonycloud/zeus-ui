@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message } from '@alicloud/console-components';
+import { Dialog, Message } from '@alicloud/console-components';
+import { Button } from 'antd';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Page, Header, Content } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import MidTable from '@/components/MidTable';
+// import Actions, { LinkButton } from '@alicloud/console-components-actions';
+// import MidTable from '@/components/MidTable';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import EditProjectForm from './editProjectForm';
 import UpdateProjectFrom from '../MyProject/editProjectForm';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
@@ -14,6 +17,7 @@ import { nullRender } from '@/utils/utils';
 import { ProjectItem, ProjectManageProps } from './project';
 import storage from '@/utils/storage';
 
+const LinkButton = Actions.LinkButton;
 function ProjectManage(props: ProjectManageProps): JSX.Element {
 	const { setProject, setRefreshCluster } = props;
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
@@ -46,7 +50,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	const handleSearch = (value: string) => {
 		getData(value);
 	};
-	const nameRender = (value: string, index: number, record: ProjectItem) => {
+	const nameRender = (value: string, record: ProjectItem, index: number) => {
 		return (
 			<span
 				className="text-overflow name-link"
@@ -65,7 +69,11 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	const nullToZeroRender = (value: string) => {
 		return value || 0;
 	};
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (
+		value: string,
+		record: ProjectItem,
+		index: number
+	) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -116,53 +124,51 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 		<Page>
 			<Header title="项目管理" subTitle="管理所属用户的不同项目" />
 			<Content>
-				<MidTable
+				<ProTable
 					dataSource={dataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
 					showRefresh
 					onRefresh={() => getData()}
-					primaryKey="name"
+					// primaryKey="name"
 					operation={Operation}
+					showColumnSetting
 					search={{
-						value: keyword,
-						onChange: handleChange,
+						// value: keyword,
+						// onChange: handleChange,
 						onSearch: handleSearch,
 						placeholder: '请输入关键字搜索'
 					}}
 				>
-					<MidTable.Column
+					<ProTable.Column
 						title="项目名称"
 						dataIndex="aliasName"
-						cell={nameRender}
+						render={nameRender}
 						width={250}
-						lock="left"
+						fixed="left"
 					/>
-					<MidTable.Column
+					<ProTable.Column
 						title="成员数"
 						dataIndex="memberCount"
 						width={100}
-						cell={nullToZeroRender}
+						render={nullToZeroRender}
 					/>
-					<MidTable.Column
+					<ProTable.Column
 						title="命名空间数"
 						dataIndex="namespaceCount"
 						width={100}
-						cell={nullToZeroRender}
+						render={nullToZeroRender}
 					/>
-					<MidTable.Column
+					<ProTable.Column
 						title="备注"
 						dataIndex="description"
-						cell={nullRender}
+						render={nullRender}
 					/>
-					<MidTable.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 						width={180}
 					/>
-				</MidTable>
+				</ProTable>
 			</Content>
 			{visible && (
 				<EditProjectForm
