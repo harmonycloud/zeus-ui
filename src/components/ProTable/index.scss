@@ -1,3 +1,19 @@
 .zeus-pro-table {
-
+	.zeus-pro-table-operator-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		margin-bottom: $margin-sm;
+		.zeus-pro-table-operator-left {
+			display: flex;
+			& > button {
+				margin-right: $margin-sm;
+			}
+		}
+		.zeus-pro-table-operator-right{
+			& > button {
+				margin-left: $margin-sm;
+			}
+		}
+	}
 }

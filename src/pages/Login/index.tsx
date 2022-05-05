@@ -112,7 +112,7 @@ export default function Login() {
 						setUserName(res.data.userName);
 						return;
 					}
-					if (res.isAdmin) {
+					if (res.data.isAdmin) {
 						history.push('/dataOverview');
 					} else {
 						history.push('/myProject');

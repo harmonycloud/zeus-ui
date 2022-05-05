@@ -198,6 +198,15 @@ function UserManage(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
+				<LinkButton
+					onClick={() => {
+						edit(record);
+						setIsEdit(true);
+					}}
+					disabled={isLDAP}
+				>
+					编辑
+				</LinkButton>
 				{record.userName !== storage.getLocal('userName') ? (
 					<LinkButton
 						disabled={isLDAP}

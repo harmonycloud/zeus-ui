@@ -1,0 +1,32 @@
+.zeus-actions-content {
+	& > span {
+		position: relative;
+		&::after {
+			content: '';
+			position: absolute;
+			width: 1px;
+			height: 14px;
+			top: 1px;
+			right: -8px;
+			border-right: 1px solid $black-7;
+		}
+		&:nth-last-child(1)::after {
+			content: ' ';
+			position: absolute;
+			width: 1px;
+			height: 14px;
+			top: 1px;
+			right: -8px;
+			border-right: none;
+		}
+	}
+
+	// span:nth-last-child()::after {
+	// 	content: '';
+		// position: absolute;
+		// width: 1px;
+		// height: 14px;
+		// right: -8px;
+		// border-right: 1px solid $black-7;
+	// }
+}
