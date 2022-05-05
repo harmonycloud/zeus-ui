@@ -9,7 +9,8 @@ import {
 	Form,
 	Input
 } from '@alicloud/console-components';
-import DataFields from '@alicloud/console-components-data-fields';
+// import DataFields from '@alicloud/console-components-data-fields';
+import DataFields from '@/components/DataFields';
 import DefaultPicture from '@/components/DefaultPicture';
 import { useParams, useHistory } from 'react-router-dom';
 
