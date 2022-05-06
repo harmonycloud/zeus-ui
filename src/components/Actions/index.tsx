@@ -6,20 +6,30 @@ import './index.scss';
 
 const Actions = (props: ActionsProps) => {
 	const { children = [], threshold = 3 } = props;
-	if (children.length < threshold) {
+	if (children.length <= threshold) {
 		return (
 			<div className="zeus-actions-content">
-				{children?.map((item: React.ReactNode, index: number) => {
-					return (
-						<LinkButton
-							style={{ marginRight: 8, marginLeft: 8 }}
-							key={index}
-							onClick={(item as ReactElement).props.onClick}
-						>
-							{(item as ReactElement).props.children}
-						</LinkButton>
-					);
-				})}
+				{children?.map(
+					(item: React.ReactNode | boolean | null, index: number) => {
+						if (item !== null && typeof item !== 'boolean') {
+							return (
+								<LinkButton
+									style={{ marginRight: 8, marginLeft: 8 }}
+									key={index}
+									onClick={
+										(item as ReactElement).props?.onClick
+									}
+									disabled={
+										(item as ReactElement).props
+											?.disabled || false
+									}
+								>
+									{(item as ReactElement).props.children}
+								</LinkButton>
+							);
+						}
+					}
+				)}
 			</div>
 		);
 	} else {
@@ -67,7 +77,7 @@ const LinkButton = (props: LinkButtonProps) => {
 		<span
 			style={style}
 			className={disabled ? 'displayed-name' : 'name-link'}
-			onClick={onClick}
+			onClick={disabled ? undefined : onClick}
 		>
 			{children}
 		</span>
