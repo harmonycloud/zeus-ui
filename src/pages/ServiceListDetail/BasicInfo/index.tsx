@@ -720,6 +720,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					middlewareName={middlewareName}
 					eventType={eventType}
 					kind={kind}
+					namespace={params.namespace}
 				></EventsList>
 			),
 			span: 24
