@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Button, Message } from '@alicloud/console-components';
-import Confirm from '@alicloud/console-components-confirm';
-import Table from '@/components/MidTable';
+import { Button, notification, Modal } from 'antd';
+// import Confirm from '@alicloud/console-components-confirm';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
 import AddMember from './addMember';
 import { getProjectMember, deleteProjectMember } from '@/services/project';
 import { DetailParams, UserItem } from './projectDetail';
-import { Actions, LinkButton } from '@alicloud/console-components-actions';
-import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import EditMember from './editMember';
 import storage from '@/utils/storage';
 
+const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
 export default function Member(): JSX.Element {
 	const [dataSource, setDataSource] = useState<UserItem[]>([]);
 	const [showDataSource, setShowDataSource] = useState<UserItem[]>([]);
@@ -30,7 +31,10 @@ export default function Member(): JSX.Element {
 				setDataSource(res.data);
 				setShowDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -48,7 +52,7 @@ export default function Member(): JSX.Element {
 		);
 		setShowDataSource(list);
 	};
-	const actionRender = (value: string, index: number, record: UserItem) => {
+	const actionRender = (value: string, record: UserItem, index: number) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -60,7 +64,39 @@ export default function Member(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				<Confirm
+				<LinkButton
+					onClick={() =>
+						confirm({
+							title: '确认删除',
+							content: '确认要删除该项目成员？',
+							okText: '确定',
+							cancelText: '取消',
+							onOk() {
+								return deleteProjectMember({
+									projectId: id,
+									username: record.userName
+								}).then((res) => {
+									if (res.success) {
+										notification.success({
+											message: '成功',
+											description: '项目成员删除成功'
+										});
+										getData();
+									} else {
+										notification.error({
+											message: '失败',
+											description: res.errorMsg
+										});
+									}
+								});
+							}
+						})
+					}
+					disabled={record.id === role.id}
+				>
+					删除
+				</LinkButton>
+				{/* <Confirm
 					type="error"
 					title="确认删除"
 					content="确认要删除该项目成员？"
@@ -70,37 +106,31 @@ export default function Member(): JSX.Element {
 							username: record.userName
 						}).then((res) => {
 							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'项目成员删除成功'
-									)
-								);
+								notification.success({
+									message: '成功',
+									description: '项目成员删除成功'
+								});
 								getData();
 							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					}}
 				>
-					<LinkButton disabled={record.id === role.id}>
-						删除
-					</LinkButton>
-				</Confirm>
+
+				</Confirm> */}
 			</Actions>
 		);
 	};
 	return (
 		<div className="mt-8">
-			<Table
+			<ProTable
 				dataSource={showDataSource}
-				exact
-				primaryKey="key"
+				rowKey="key"
 				operation={Operation}
-				fixedHeader={true}
 				showRefresh
 				onRefresh={getData}
 				search={{
@@ -108,24 +138,24 @@ export default function Member(): JSX.Element {
 					placeholder: '请输入关键字搜索'
 				}}
 			>
-				<Table.Column title="登录账户" dataIndex="userName" />
-				<Table.Column title="用户名" dataIndex="aliasName" />
-				<Table.Column
+				<ProTable.Column title="登录账户" dataIndex="userName" />
+				<ProTable.Column title="用户名" dataIndex="aliasName" />
+				<ProTable.Column
 					title="角色"
 					dataIndex="roleName"
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="邮箱"
 					dataIndex="email"
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="操作"
 					dataIndex="action"
-					cell={actionRender}
+					render={actionRender}
 				/>
-			</Table>
+			</ProTable>
 			{addVisible && (
 				<AddMember
 					visible={addVisible}

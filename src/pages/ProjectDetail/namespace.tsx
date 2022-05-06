@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Message } from '@alicloud/console-components';
-import Confirm from '@alicloud/console-components-confirm';
+// import Confirm from '@alicloud/console-components-confirm';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router';
-import Table from '@/components/MidTable';
+import { Button, notification, Modal } from 'antd';
+import Table from '@/components/ProTable';
+import Actions from '@/components/Actions';
 import { getProjectNamespace, unBindNamespace } from '@/services/project';
 import { DetailParams, NamespaceItem, NamespaceProps } from './projectDetail';
 import AddNamespace from './addNamespace';
-import messageConfig from '@/components/messageConfig';
 import { setRefreshCluster } from '@/redux/globalVar/var';
-import { Actions, LinkButton } from '@alicloud/console-components-actions';
+// import { Actions, LinkButton } from '@alicloud/console-components-actions';
 import { deleteNamespace } from '@/services/common';
 import { clusterType, StoreState } from '@/types';
-import { filtersProps } from '@/types/comment';
+import {
+	ColumnFilterItem,
+	TablePaginationConfig
+} from 'antd/lib/table/interface';
 
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 function Namespace(props: NamespaceProps): JSX.Element {
 	const { clusterList, setRefreshCluster } = props;
 	const [dataSource, setDataSource] = useState<NamespaceItem[]>([]);
@@ -21,7 +26,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	const params: DetailParams = useParams();
 	const { id } = params;
 	const [visible, setVisible] = useState<boolean>(false);
-	const [filters, setFilters] = useState<filtersProps[]>([]);
+	const [filters, setFilters] = useState<ColumnFilterItem[]>([]);
 	useEffect(() => {
 		let mounted = true;
 		getProjectNamespace({ projectId: id }).then((res) => {
@@ -30,7 +35,10 @@ function Namespace(props: NamespaceProps): JSX.Element {
 					setDataSource(res.data);
 					setShowDataSource(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			}
 		});
@@ -41,7 +49,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	useEffect(() => {
 		const lt = clusterList.map((item: clusterType) => {
 			return {
-				label: item.name,
+				text: item.name,
 				value: item.id
 			};
 		});
@@ -53,18 +61,86 @@ function Namespace(props: NamespaceProps): JSX.Element {
 				setShowDataSource(res.data);
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: NamespaceItem
+		record: NamespaceItem,
+		index: number
 	) => {
 		return (
 			<Actions>
-				<Confirm
+				<LinkButton
+					onClick={() =>
+						confirm({
+							title: '确认取消接入',
+							content: '确认要取消接入该命名空间？',
+							okText: '确定',
+							cancelText: '取消',
+							onOk() {
+								return unBindNamespace({
+									clusterId: record.clusterId,
+									projectId: id,
+									namespace: record.name
+								}).then((res) => {
+									if (res.success) {
+										notification.success({
+											message: '成功',
+											description: '命名空间取消接入成功'
+										});
+										setRefreshCluster(true);
+										getData();
+									} else {
+										notification.error({
+											message: '失败',
+											description: res.errorMsg
+										});
+									}
+								});
+							}
+						})
+					}
+				>
+					取消接入
+				</LinkButton>
+				<LinkButton
+					onClick={() =>
+						confirm({
+							title: '确认删除',
+							content: '确认要删除该命名空间？',
+							okText: '确定',
+							cancelText: '取消',
+							onOk() {
+								return deleteNamespace({
+									clusterId: record.clusterId,
+									name: record.name
+								}).then((res) => {
+									if (res.success) {
+										notification.success({
+											message: '成功',
+											description: '命名空间删除成功'
+										});
+										setRefreshCluster(true);
+										getData();
+									} else {
+										notification.error({
+											message: '失败',
+											description: res.errorMsg
+										});
+									}
+								});
+							}
+						})
+					}
+				>
+					删除
+				</LinkButton>
+				{/* <Confirm
 					type="error"
 					title="确认取消接入"
 					content="确认要取消接入该命名空间？"
@@ -75,54 +151,33 @@ function Namespace(props: NamespaceProps): JSX.Element {
 							namespace: record.name
 						}).then((res) => {
 							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'命名空间取消接入成功'
-									)
-								);
+								notification.success({
+									message: '成功',
+									description: '命名空间取消接入成功'
+								});
 								setRefreshCluster(true);
 								getData();
 							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					}}
 				>
-					<LinkButton>取消接入</LinkButton>
-				</Confirm>
-				<Confirm
+
+				</Confirm> */}
+				{/* <Confirm
 					type="error"
 					title="确认删除"
 					content="确认要删除该命名空间？"
 					onConfirm={() => {
-						deleteNamespace({
-							clusterId: record.clusterId,
-							name: record.name
-						}).then((res) => {
-							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'命名空间删除成功'
-									)
-								);
-								setRefreshCluster(true);
-								getData();
-							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
-							}
-						});
+
 					}}
 				>
-					<LinkButton>删除</LinkButton>
-				</Confirm>
+
+				</Confirm> */}
 			</Actions>
 		);
 	};
@@ -135,8 +190,8 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	};
 	const aliasNameRender = (
 		value: string,
-		index: number,
-		record: NamespaceItem
+		record: NamespaceItem,
+		index: number
 	) => {
 		return (
 			<span className="text-overflow" title={value}>
@@ -153,53 +208,63 @@ function Namespace(props: NamespaceProps): JSX.Element {
 			.filter((item: NamespaceItem) => item.aliasName.includes(value));
 		setShowDataSource(list);
 	};
-	const onFilter = (filterParams: any) => {
-		let list: NamespaceItem[] = [];
-		Object.keys(filterParams).forEach((key) => {
-			const { selectedKeys } = filterParams[key];
-			if (selectedKeys.length) {
-				list = dataSource.filter((record) => {
-					return selectedKeys.some((value: any) => {
-						return record.clusterId === value;
-					});
-				});
-			} else {
-				list = dataSource;
-			}
-		});
-		setShowDataSource(list);
+	// const onFilter = (filterParams: any) => {
+	// 	let list: NamespaceItem[] = [];
+	// 	Object.keys(filterParams).forEach((key) => {
+	// 		const { selectedKeys } = filterParams[key];
+	// 		if (selectedKeys.length) {
+	// 			list = dataSource.filter((record) => {
+	// 				return selectedKeys.some((value: any) => {
+	// 					return record.clusterId === value;
+	// 				});
+	// 			});
+	// 		} else {
+	// 			list = dataSource;
+	// 		}
+	// 	});
+	// 	setShowDataSource(list);
+	// };
+	const onChange = (
+		pagination: TablePaginationConfig,
+		filters: any,
+		sorter: any,
+		extra: any
+	) => {
+		console.log('params', pagination, filters, sorter, extra);
 	};
 	return (
 		<div className="mt-8">
 			<Table
 				dataSource={showDataSource}
-				exact
-				primaryKey="key"
+				rowKey="name"
 				operation={Operation}
-				fixedHeader={true}
 				showRefresh
 				onRefresh={getData}
 				search={{
 					onSearch: handleSearch,
 					placeholder: '请输入关键字搜索'
 				}}
-				onFilter={onFilter}
+				onChange={onChange}
+				// onFilter={onFilter}
 			>
 				<Table.Column
 					title="命名空间名称"
 					dataIndex="aliasName"
-					cell={aliasNameRender}
+					render={aliasNameRender}
 				/>
 				<Table.Column
 					title="所属集群"
 					dataIndex="clusterAliasName"
-					filterMode="single"
+					filterMultiple={false}
 					filters={filters}
+					onFilter={(value, record: any) =>
+						record.clusterAliasName.includes(value)
+					}
 				/>
 				<Table.Column
 					title="操作"
 					dataIndex="action"
-					cell={actionRender}
+					render={actionRender}
 				/>
 			</Table>
 			{visible && (

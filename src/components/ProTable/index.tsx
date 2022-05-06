@@ -78,7 +78,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 				</div>
 			</div>
 			<div className="zeus-pro-table-content">
-				<Table {...tableProps} dataSource={dataSource}>
+				<Table size="middle" {...tableProps} dataSource={dataSource}>
 					{columnsRender()}
 				</Table>
 			</div>
