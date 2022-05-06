@@ -1,59 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Balloon,
-	Button,
-	Dialog,
-	Icon,
-	Message,
-	Radio
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import { Button, notification, Popover, Modal } from 'antd';
 import moment from 'moment';
-import Table from '@/components/MidTable';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import {
 	getUserList,
 	deleteUser,
 	resetPassword,
-	getRoles,
-	updateUser,
 	getLDAP
 } from '@/services/user';
-import messageConfig from '@/components/messageConfig';
-import { userProps, roleProps } from './user';
+import { userProps } from './user';
 import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
 import storage from '@/utils/storage';
 import '../RoleManage/index.scss';
+import { MoreOutlined } from '@ant-design/icons';
 
-const RadioGroup = Radio.Group;
-
+const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
 function UserManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<userProps>();
 	const [isEdit, setIsEdit] = useState(true);
-	const [roleVisible, setRoleVisible] = useState(false);
-	const [roles, setRoles] = useState<roleProps[]>([]);
-	const [role, setRole] = useState<any>();
-	const [record, setRecord] = useState<userProps>();
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 
 	useEffect(() => {
-		getRoles().then((res) => {
-			if (res.success) {
-				const obj: any = res.data.map((item) => {
-					return {
-						label: item.name,
-						value: item.id
-					};
-				});
-				setRoles(obj);
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
 		getLDAP().then((res) => {
 			res.success && setIsLDAP(res.data.isOn);
 		});
@@ -66,7 +40,10 @@ function UserManage(): JSX.Element {
 					setDataSource(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -78,7 +55,10 @@ function UserManage(): JSX.Element {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -95,24 +75,31 @@ function UserManage(): JSX.Element {
 	const deleteUserHandle: (record: userProps) => void = (
 		record: userProps
 	) => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
+			okText: '确定',
+			cancelText: '取消',
 			onOk: () => {
 				if (record.userName === 'admin') {
-					Message.show(
-						messageConfig('error', '失败', 'admin用户无法删除')
-					);
+					notification.error({
+						message: '失败',
+						description: 'admin用户无法删除'
+					});
 					return;
 				}
 				deleteUser({ userName: record.userName }).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '该用户删除成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '该用户删除成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -121,23 +108,27 @@ function UserManage(): JSX.Element {
 	const resetPasswordHandle: (record: userProps) => void = (
 		record: userProps
 	) => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '该账户的密码已重置为：zeus123.com',
+			okText: '确定',
+			cancelText: '取消',
 			onOk: () => {
-				resetPassword({ userName: record.userName }).then((res) => {
-					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								'该用户密码重置成功'
-							)
-						);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
+				return resetPassword({ userName: record.userName }).then(
+					(res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '该用户密码重置成功'
+							});
+						} else {
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
+						}
 					}
-				});
+				);
 			}
 		});
 	};
@@ -157,36 +148,7 @@ function UserManage(): JSX.Element {
 			setDataSource([...dsTemp]);
 		}
 	};
-	const roleChange = (value: any) => {
-		const obj = {
-			roleId: value,
-			userName: record ? record.userName : '',
-			aliasName: record ? record.aliasName : null,
-			phone: record ? record.phone : null,
-			email: record ? record.email : null
-		};
-		setRecord(obj);
-		setRole(value);
-	};
-	const submitRole = () => {
-		if (!role) {
-			Message.show(messageConfig('warning', '提示', '请选择关联角色!'));
-			return;
-		}
-		const sendData = {
-			...(record as unknown as userProps)
-		};
-		updateUser(sendData).then((res) => {
-			if (res.success) {
-				Message.show(messageConfig('success', '成功', '用户修改成功'));
-				setRoleVisible(false);
-				onRefresh();
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-	};
-	const actionRender = (value: string, index: number, record: userProps) => {
+	const actionRender = (value: string, record: userProps, index: number) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -198,23 +160,14 @@ function UserManage(): JSX.Element {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton
-					onClick={() => {
-						edit(record);
-						setIsEdit(true);
-					}}
-					disabled={isLDAP}
-				>
-					编辑
-				</LinkButton>
-				{record.userName !== storage.getLocal('userName') ? (
+				{record.userName !== storage.getLocal('userName') && (
 					<LinkButton
 						disabled={isLDAP}
 						onClick={() => deleteUserHandle(record)}
 					>
 						删除
 					</LinkButton>
-				) : null}
+				)}
 				<LinkButton
 					onClick={() => resetPasswordHandle(record)}
 					disabled={isLDAP}
@@ -236,10 +189,9 @@ function UserManage(): JSX.Element {
 	};
 	const roleNameRender = (
 		value: string,
-		index: number,
-		record: userProps
+		record: userProps,
+		index: number
 	) => {
-		console.log(record);
 		if (!record.userRoleList) return '/';
 		if (record.userRoleList?.some((i: any) => i.roleId === 1)) {
 			return <div className="red-tip">超级管理员</div>;
@@ -263,15 +215,8 @@ function UserManage(): JSX.Element {
 					<div className="blue-tip">
 						{list[0].projectName}:{list[0].roleName}
 					</div>
-					<Balloon
-						trigger={
-							<span className="role-tips-more">
-								<Icon size="xs" type="ellipsis-vertical" />
-							</span>
-						}
-						closable={false}
-					>
-						{list.map((i: any) => {
+					<Popover
+						content={list.map((i: any) => {
 							return (
 								<div
 									style={{ marginBottom: 4 }}
@@ -284,7 +229,11 @@ function UserManage(): JSX.Element {
 								</div>
 							);
 						})}
-					</Balloon>
+					>
+						<span className="role-tips-more">
+							<MoreOutlined />
+						</span>
+					</Popover>
 				</div>
 			);
 		}
@@ -304,64 +253,61 @@ function UserManage(): JSX.Element {
 		)
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="用户管理"
 				subTitle="创建用于登录平台的用户账号，并赋予角色平台权限"
 			/>
-			<Content>
-				<Table
+			<ProContent>
+				<ProTable
 					dataSource={dataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
 					showRefresh
 					showColumnSetting
 					onRefresh={onRefresh}
-					primaryKey="key"
+					rowKey="userName"
 					search={{
 						placeholder:
 							'请输入登录账户、用户名、手机号、角色进行搜索',
 						onSearch: handleSearch,
-						onChange: handleChange,
-						value: keyword
-					}}
-					searchStyle={{
-						width: '360px'
+						// onChange: handleChange,
+						// value: keyword
+						style: { width: '360px' }
 					}}
 					operation={Operation}
-					onSort={onSort}
 				>
-					<Table.Column title="登录账户" dataIndex="userName" />
-					<Table.Column title="用户名" dataIndex="aliasName" />
-					<Table.Column
+					<ProTable.Column title="登录账户" dataIndex="userName" />
+					<ProTable.Column title="用户名" dataIndex="aliasName" />
+					<ProTable.Column
 						title="邮箱"
 						dataIndex="email"
-						cell={nullRender}
+						render={nullRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="手机"
 						dataIndex="phone"
-						cell={nullRender}
+						render={nullRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
-						cell={createTimeRender}
-						sortable
+						render={createTimeRender}
+						sorter={(a: userProps, b: userProps) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="关联角色"
 						dataIndex="roleName"
-						cell={roleNameRender}
+						render={roleNameRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 					/>
-				</Table>
-			</Content>
+				</ProTable>
+			</ProContent>
 			{visible && (
 				<UserForm
 					visible={visible}
@@ -373,24 +319,7 @@ function UserManage(): JSX.Element {
 					data={isEdit ? updateData : null}
 				/>
 			)}
-			{roleVisible && (
-				<Dialog
-					title="关联角色"
-					visible={roleVisible}
-					onOk={submitRole}
-					onCancel={() => setRoleVisible(false)}
-					onClose={() => setRoleVisible(false)}
-					className="role-key-modal"
-				>
-					<RadioGroup
-						itemDirection={'ver'}
-						dataSource={roles}
-						value={role}
-						onChange={roleChange}
-					/>
-				</Dialog>
-			)}
-		</Page>
+		</ProPage>
 	);
 }
 
