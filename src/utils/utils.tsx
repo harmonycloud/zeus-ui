@@ -351,7 +351,7 @@ export const iconTypeRender = (value: string, index: number, record: any) => {
 		</div>
 	);
 };
-export const timeRender = (value: string, index: number, record: any) => {
+export const timeRender = (value: string) => {
 	return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '/';
 };
 // * 简单表格列为空
@@ -365,7 +365,7 @@ export const nullRender: (value: string | null) => JSX.Element = (
 	);
 };
 // * 蓝字显示
-export const nameRender = (value: string, index: number, record: any) => {
+export const nameRender = (value: string) => {
 	return <span className="name-link">{value}</span>;
 };
 // * 表格超出长度用气泡显示
