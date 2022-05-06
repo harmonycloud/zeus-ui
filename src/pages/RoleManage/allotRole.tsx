@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Page, Content, Header } from '@alicloud/console-components-page';
 import { useHistory } from 'react-router';
-import Table from '@alicloud/console-components-table';
+import { Checkbox, Button, notification } from 'antd';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import Table from '@/components/ProTable';
 import { getMiddlewareRepository } from '@/services/repository';
 import { updateRole } from '@/services/role';
-import { Checkbox, Message, Button } from '@alicloud/console-components';
 import storage from '@/utils/storage';
 import { AllotRoleItem, Power } from './role';
-import messageConfig from '@/components/messageConfig';
 import './index.scss';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 const { Group: CheckboxGroup } = Checkbox;
 export default function AllotRole(): JSX.Element {
@@ -48,7 +49,10 @@ export default function AllotRole(): JSX.Element {
 				setDataSource(list);
 			} else {
 				setDataSource([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -60,9 +64,9 @@ export default function AllotRole(): JSX.Element {
 		return (
 			<Checkbox
 				checked={allChecked}
-				onChange={(checked: boolean) => {
-					setAllChecked(checked);
-					if (checked) {
+				onChange={(e: CheckboxChangeEvent) => {
+					setAllChecked(e.target.value);
+					if (e.target.value) {
 						const list = dataSource.map((item: AllotRoleItem) => {
 							item.roles = [
 								'all',
@@ -82,12 +86,13 @@ export default function AllotRole(): JSX.Element {
 						setDataSource(list);
 					}
 				}}
-				label="权限名称"
-			/>
+			>
+				权限名称
+			</Checkbox>
 		);
 	};
-	const onChange = (value: string[], record: AllotRoleItem) => {
-		let list: string[] = value;
+	const onChange = (value: CheckboxValueType[], record: AllotRoleItem) => {
+		let list: string[] = value as string[];
 		if (value.includes('all')) {
 			list = ['all', 'get', 'operate', 'create', 'delete'];
 		}
@@ -132,15 +137,13 @@ export default function AllotRole(): JSX.Element {
 		}
 		setDataSource([...dataSource]);
 	};
-	const roleRender = (
-		value: string,
-		index: number,
-		record: AllotRoleItem
-	) => {
+	const roleRender = (value: any, record: AllotRoleItem, index: number) => {
 		return (
 			<CheckboxGroup
 				value={value}
-				onChange={(value: string[]) => onChange(value, record)}
+				onChange={(value: CheckboxValueType[]) =>
+					onChange(value, record)
+				}
 			>
 				<Checkbox id="all" value="all">
 					全选
@@ -209,29 +212,35 @@ export default function AllotRole(): JSX.Element {
 		};
 		updateRole(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig('success', '成功', '角色权限修改成功')
-				);
+				notification.success({
+					message: '成功',
+					description: '角色权限修改成功'
+				});
 				history.push('/systemManagement/roleManagement');
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="分配角色权限"
-				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
-				<Table dataSource={dataSource}>
+			<ProContent>
+				<Table
+					dataSource={dataSource}
+					pagination={{ hideOnSinglePage: true }}
+				>
 					<Table.Column title="中间件名称" dataIndex="aliasName" />
 					<Table.Column
 						title={roleNameRender}
 						dataIndex="roles"
-						cell={roleRender}
+						render={roleRender}
 					/>
 				</Table>
 				<div className="zeus-allot-role-btn-content">
@@ -246,7 +255,7 @@ export default function AllotRole(): JSX.Element {
 						取消
 					</Button>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
