@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, Message } from '@alicloud/console-components';
-import { Button } from 'antd';
+import { Button, Modal, notification } from 'antd';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Page, Header, Content } from '@alicloud/console-components-page';
-// import Actions, { LinkButton } from '@alicloud/console-components-actions';
-// import MidTable from '@/components/MidTable';
+import { ProHeader, ProContent, ProPage } from '@/components/ProPage';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import EditProjectForm from './editProjectForm';
 import UpdateProjectFrom from '../MyProject/editProjectForm';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import { getProjects, deleteProject } from '@/services/project';
-import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import { ProjectItem, ProjectManageProps } from './project';
 import storage from '@/utils/storage';
 
+const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 function ProjectManage(props: ProjectManageProps): JSX.Element {
 	const { setProject, setRefreshCluster } = props;
@@ -33,13 +30,22 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	const Operation = {
 		primary: (
-			<Button onClick={() => setVisible(true)} type="primary">
+			<Button
+				onClick={() => {
+					console.log('click');
+					setVisible(true);
+				}}
+				type="primary"
+			>
 				新增项目
 			</Button>
 		)
@@ -87,33 +93,56 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					编辑
 				</LinkButton>
 				<LinkButton
-					onClick={() => {
-						Dialog.show({
+					onClick={() =>
+						confirm({
 							title: '删除项目确认',
 							content: '删除将无法找回，是否继续？',
-							onOk: () => {
+							okText: '确定',
+							cancelText: '取消',
+							onOk() {
 								return deleteProject({
 									projectId: record.projectId
 								}).then((res) => {
 									if (res.success) {
-										Message.show(
-											messageConfig(
-												'success',
-												'成功',
-												'项目删除成功！'
-											)
-										);
+										notification.success({
+											message: '成功',
+											description: '项目删除成功！'
+										});
 										setRefreshCluster(true);
 										getData();
 									} else {
-										Message.show(
-											messageConfig('error', '失败', res)
-										);
+										notification.error({
+											message: '失败',
+											description: res.errorMsg
+										});
 									}
 								});
+							},
+							onCancel() {
+								console.log('cancel');
 							}
-						});
-					}}
+						})
+					}
+					// onClick={() => {
+					// 	Dialog.show({
+					// 		title: '删除项目确认',
+					// 		content: '删除将无法找回，是否继续？',
+					// 		onOk: () => {
+					// 			return deleteProject({
+					// 				projectId: record.projectId
+					// 			}).then((res) => {
+					// 				if (res.success) {
+					// 					setRefreshCluster(true);
+					// 					getData();
+					// 				} else {
+					// 					Message.show(
+					// 						messageConfig('error', '失败', res)
+					// 					);
+					// 				}
+					// 			});
+					// 		}
+					// 	});
+					// }}
 				>
 					删除
 				</LinkButton>
@@ -121,55 +150,58 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 		);
 	};
 	return (
-		<Page>
-			<Header title="项目管理" subTitle="管理所属用户的不同项目" />
-			<Content>
-				<ProTable
-					dataSource={dataSource}
-					showRefresh
-					onRefresh={() => getData()}
-					// primaryKey="name"
-					operation={Operation}
-					showColumnSetting
-					search={{
-						// value: keyword,
-						// onChange: handleChange,
-						onSearch: handleSearch,
-						placeholder: '请输入关键字搜索'
-					}}
-				>
-					<ProTable.Column
-						title="项目名称"
-						dataIndex="aliasName"
-						render={nameRender}
-						width={250}
-						fixed="left"
-					/>
-					<ProTable.Column
-						title="成员数"
-						dataIndex="memberCount"
-						width={100}
-						render={nullToZeroRender}
-					/>
-					<ProTable.Column
-						title="命名空间数"
-						dataIndex="namespaceCount"
-						width={100}
-						render={nullToZeroRender}
-					/>
-					<ProTable.Column
-						title="备注"
-						dataIndex="description"
-						render={nullRender}
-					/>
-					<ProTable.Column
-						title="操作"
-						dataIndex="action"
-						render={actionRender}
-						width={180}
-					/>
-				</ProTable>
-			</Content>
+		<>
+			<ProPage>
+				<ProHeader title="项目管理" subTitle="管理所属用户的不同项目" />
+				<ProContent>
+					<ProTable
+						dataSource={dataSource}
+						showRefresh
+						onRefresh={() => getData()}
+						rowKey="name"
+						// primaryKey="name"
+						operation={Operation}
+						showColumnSetting
+						search={{
+							// value: keyword,
+							// onChange: handleChange,
+							onSearch: handleSearch,
+							placeholder: '请输入关键字搜索'
+						}}
+					>
+						<ProTable.Column
+							title="项目名称"
+							dataIndex="aliasName"
+							render={nameRender}
+							width={250}
+							fixed="left"
+						/>
+						<ProTable.Column
+							title="成员数"
+							dataIndex="memberCount"
+							width={100}
+							render={nullToZeroRender}
+						/>
+						<ProTable.Column
+							title="命名空间数"
+							dataIndex="namespaceCount"
+							width={100}
+							render={nullToZeroRender}
+						/>
+						<ProTable.Column
+							title="备注"
+							dataIndex="description"
+							render={nullRender}
+						/>
+						<ProTable.Column
+							title="操作"
+							dataIndex="action"
+							render={actionRender}
+							width={180}
+						/>
+					</ProTable>
+				</ProContent>
+			</ProPage>
 			{visible && (
 				<EditProjectForm
 					visible={visible}
@@ -185,7 +217,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					onRefresh={getData}
 				/>
 			)}
-		</Page>
+		</>
 	);
 }
 const mapStateToProps = () => ({});

@@ -1,29 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Input,
-	Select,
-	Loading,
-	Checkbox,
-	Message
-} from '@alicloud/console-components';
-
-import messageConfig from '@/components/messageConfig';
-
-import { getClusters } from '@/services/common';
+import { Modal, Input, Select, Checkbox, Form, notification, Spin } from 'antd';
 import { getUserList } from '@/services/user';
 import { createProject, getAllocatableNamespace } from '@/services/project';
 
 import pattern from '@/utils/pattern';
-import { formItemLayout619 } from '@/utils/const';
+import { formItemLayout618 } from '@/utils/const';
 import { EditProjectFormProps, FieldValues } from './project';
 import { filtersProps } from '@/types/comment';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-const { Group: CheckboxGroup } = Checkbox;
+const CheckboxGroup = Checkbox.Group;
 export default function EditProjectForm(
 	props: EditProjectFormProps
 ): JSX.Element {
@@ -36,13 +24,14 @@ export default function EditProjectForm(
 	const [namespaceList, setNamespaceList] = useState({});
 	const [namespaces, setNamespaces] = useState<string[]>([]);
 	const [users, setUsers] = useState<filtersProps[]>([]);
-	const field = Field.useField();
+	const [form] = Form.useForm();
+	// const field = Field.useField();
 	useEffect(() => {
 		getAllocatableNamespace().then((res) => {
 			if (res.success) {
 				setLoading(false);
 				setOriginData(res.data);
-				setClusterList(res.data);
+				// setClusterList(res.data);
 				if (res.data.length > 0) {
 					const listTemp = res.data.map((item: any) => {
 						return {
@@ -59,7 +48,10 @@ export default function EditProjectForm(
 			} else {
 				setClusterList([]);
 				setNamespaceList([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		getUserList({ keyword: '' }).then((res) => {
@@ -81,7 +73,10 @@ export default function EditProjectForm(
 					});
 				setUsers(list);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
@@ -99,9 +94,7 @@ export default function EditProjectForm(
 		}
 	}, [clusters]);
 	const onOk = () => {
-		field.validate((errors) => {
-			if (errors) return;
-			const values: FieldValues = field.getValues();
+		form.validateFields().then((values) => {
 			const clusterListTemp = clusters.map((item) => {
 				const [clusterId, clusterName] = item.split('/');
 				return {
@@ -134,12 +127,16 @@ export default function EditProjectForm(
 			createProject(sendData)
 				.then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '项目创建成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '项目创建成功'
+						});
 						setRefreshCluster(true);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				})
 				.finally(() => {
@@ -147,55 +144,83 @@ export default function EditProjectForm(
 				});
 		});
 	};
-	const onChange = (selectedItems: string[], type: string) => {
+	const onChange = (selectedItems: CheckboxValueType[], type: string) => {
 		if (type === 'cluster') {
-			setClusters(selectedItems);
+			setClusters(selectedItems as string[]);
 		} else {
-			setNamespaces(selectedItems);
+			setNamespaces(selectedItems as string[]);
 		}
 	};
 	return (
-		<Dialog
+		<Modal
 			visible={visible}
 			title={projectId ? '编辑项目' : '创建项目'}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '670px' }}
+			width={670}
+			okText="确定"
+			cancelText="取消"
 		>
-			<Form {...formItemLayout619} field={field}>
+			<Form {...formItemLayout618} form={form} labelAlign="left">
 				<FormItem
 					label="项目名称"
 					required
-					requiredMessage="请输入项目名称"
-					pattern={pattern.projectAliasName}
-					maxLength={80}
-					minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
-					patternMessage="请输入名称，且最大长度不超过80个字符"
+					name="aliasName"
+					rules={[
+						{ required: true, message: '请输入项目名称' },
+						{
+							max: 80,
+							message: '输入名称，且最大长度不超过80个字符'
+						},
+						{
+							pattern: new RegExp(pattern.projectAliasName),
+							message: '请输入名称，且最大长度不超过80个字符'
+						}
+					]}
+					// requiredMessage="请输入项目名称"
+					// pattern={pattern.projectAliasName}
+					// maxLength={80}
+					// minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
+					// patternMessage="请输入名称，且最大长度不超过80个字符"
 				>
-					<Input name="aliasName" />
+					<Input />
 				</FormItem>
 				<FormItem
 					label="英文简称"
+					name="name"
+					rules={[
+						{ required: true, message: '请输入项目名称' },
+						{
+							min: 2,
+							message:
+								'由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符'
+						},
+						{
+							max: 40,
+							message:
+								'由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符'
+						},
+						{
+							pattern: new RegExp(pattern.projectName),
+							message:
+								'由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符'
+						}
+					]}
 					required
-					requiredMessage="请输入英文名称"
-					pattern={pattern.projectName}
-					min={2}
-					maxLength={40}
-					minmaxLengthMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
-					patternMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
+					// requiredMessage="请输入英文名称"
+					// pattern={pattern.projectName}
+					// min={2}
+					// maxLength={40}
+					// minmaxLengthMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
+					// patternMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
 				>
-					<Input name="name" disabled={projectId ? true : false} />
+					<Input disabled={projectId ? true : false} />
 				</FormItem>
-				<FormItem label="备注">
-					<Input name="description" />
+				<FormItem label="备注" name="description">
+					<Input />
 				</FormItem>
-				<FormItem label="绑定项目管理员">
-					<Select
-						name="user"
-						hasClear={true}
-						style={{ width: '100%' }}
-					>
+				<FormItem label="绑定项目管理员" name="user">
+					<Select allowClear={true} style={{ width: '100%' }}>
 						{users.map((item: filtersProps) => {
 							return (
 								<Option value={item.value} key={item.value}>
@@ -206,10 +231,10 @@ export default function EditProjectForm(
 					</Select>
 				</FormItem>
 				<FormItem label="绑定集群/命名分区">
-					<Loading
+					<Spin
 						tip="加载中，请稍后"
-						size="medium"
-						visible={loading}
+						size="default"
+						spinning={loading}
 					>
 						<div className="role-management-content">
 							<div className="role-management-cluster">
@@ -219,11 +244,10 @@ export default function EditProjectForm(
 								<div className="role-management-check-content">
 									<CheckboxGroup
 										value={clusters}
-										dataSource={clusterList}
+										options={clusterList}
 										onChange={(selectedItems) =>
 											onChange(selectedItems, 'cluster')
 										}
-										direction="ver"
 									/>
 								</div>
 							</div>
@@ -279,9 +303,9 @@ export default function EditProjectForm(
 								</div>
 							</div>
 						</div>
-					</Loading>
+					</Spin>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
