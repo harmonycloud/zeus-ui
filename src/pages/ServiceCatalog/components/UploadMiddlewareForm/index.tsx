@@ -1,17 +1,11 @@
-import React, { createRef } from 'react';
-import {
-	Field,
-	Form,
-	Dialog,
-	Upload,
-	Button,
-	Message
-} from '@alicloud/console-components';
-import messageConfig from '@/components/messageConfig';
+import React, { useState } from 'react';
+import { Form, Modal, Button, notification, Upload } from 'antd';
+
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
 import { StoreState } from '@/types/index';
+
 import { UploadMiddlewareFormProps } from './upload';
 
 const formItemLayout = {
@@ -26,91 +20,87 @@ const formItemLayout = {
 function UploadMiddlewareForm(props: UploadMiddlewareFormProps) {
 	const { visible, onCancel, onCreate } = props;
 	const { cluster: globalCluster } = props.globalVar;
-	const upload2 = createRef<any>();
-	const field = Field.useField();
+	const [fileList, setFileList] = useState<any[]>([]);
+	const [form] = Form.useForm();
 	const headers = {
 		userToken: storage.getLocal('token'),
-		authType: storage.getLocal('token') ? 1 : 0
+		authType: storage.getLocal('token') ? '1' : '0'
 	};
 
-	function beforeUpload(info: any) {
-		console.log('beforeUpload : ', info);
+	function beforeUpload(file: any) {
+		setFileList([file]);
+		return false;
 	}
 
-	function onChange(info: any) {
-		console.log('onChange : ', info);
-	}
+	const handleUpload = () => {
+		const formData = new FormData();
+		fileList.forEach((file) => {
+			formData.append('file', file);
+		});
+		fetch(`${api}/clusters/${globalCluster.id}/middlewares/upload`, {
+			method: 'POST',
+			body: formData,
+			headers
+		}).then((res) => {
+			if (res.ok) {
+				setFileList([]);
+				notification.success({
+					message: '成功',
+					description: 'chart包上传成功，3秒后刷新数据'
+				});
+				onCreate();
+			} else {
+				Modal.error({
+					title: '失败',
+					content: '上架失败，不可上传旧版本或者已有版本哦。',
+					okText: '我知道了'
+				});
+			}
+		});
+	};
 
-	function onSuccess(info: any) {
-		// console.log('onSuccess : ', info);
-		if (info) {
-			Message.show(
-				messageConfig(
-					'success',
-					'成功',
-					'chart包上传成功，3秒后刷新数据'
-				)
-			);
-			onCreate();
-		}
-	}
-
-	function onError(info: any) {
-		// console.log('error:', info);
-		if (info) {
-			const dialog = Dialog.show({
-				title: '失败',
-				content: '上架失败，不可上传旧版本或者已有版本哦。',
-				footer: (
-					<Button type="primary" onClick={() => dialog.hide()}>
-						我知道了
-					</Button>
-				)
-			});
-		}
-	}
+	const onRemove = () => {
+		setFileList([]);
+	};
 
 	const onOk = () => {
-		// console.log(upload2);
-		const uploaderRef = upload2.current.getInstance();
-		uploaderRef.startUpload();
+		handleUpload();
 	};
 
 	return (
-		<Dialog
+		<Modal
 			visible={visible}
 			onOk={onOk}
+			okText="确定"
+			cancelText="取消"
 			onCancel={onCancel}
-			onClose={onCancel}
-			footerAlign="right"
 			title="中间件上架"
 			style={{ width: 450 }}
 		>
-			<Form {...formItemLayout} field={field}>
+			<Form {...formItemLayout} form={form}>
 				<Form.Item
 					label="上传包"
-					required
-					requiredMessage="请上传chart包"
+					rules={[{ required: true, message: '请上传chart包' }]}
+					name="file"
 				>
 					<Upload
-						action={`${api}/clusters/${globalCluster.id}/middlewares/upload`}
-						autoUpload={false}
 						beforeUpload={beforeUpload}
-						onChange={onChange}
-						onSuccess={onSuccess}
-						onError={onError}
-						listType="text"
-						ref={upload2}
-						headers={headers}
-						limit={1}
+						onRemove={onRemove}
+						fileList={fileList}
+						maxCount={1}
 					>
-						<Button type="primary" style={{ margin: '0 0 10px' }}>
-							上传文件
-						</Button>
+						{!fileList.length ? (
+							<Button
+								type="primary"
+								style={{ margin: '0 0 10px' }}
+							>
+								上传文件
+							</Button>
+						) : null}
 					</Upload>
 				</Form.Item>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

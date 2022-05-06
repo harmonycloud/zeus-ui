@@ -334,7 +334,7 @@ export const serviceListStatusRender: (
 			);
 	}
 };
-export const iconTypeRender = (value: string, index: number, record: any) => {
+export const iconTypeRender = (value: string, record: any) => {
 	return (
 		<div className="icon-type-content">
 			<img

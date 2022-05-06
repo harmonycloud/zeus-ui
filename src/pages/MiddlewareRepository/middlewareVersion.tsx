@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Message, Button, Dialog } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { Modal, Button, notification, Alert } from 'antd';
+
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import moment from 'moment';
 
-import Table from '@/components/MidTable';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 
 import {
@@ -15,7 +16,6 @@ import {
 	updateMiddleware,
 	shelvesTypeVersion
 } from '@/services/repository';
-import messageConfig from '@/components/messageConfig';
 import { middlewareRepositoryProps, paramsProps } from './middleware';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { getMiddlewareRepository } from '@/services/repository';
@@ -24,8 +24,10 @@ import { middlewareProps } from './middleware';
 import { iconTypeRender } from '@/utils/utils';
 import { versionStatus } from '@/utils/enum';
 import { StoreState } from '@/types/index';
+
 import './index.scss';
 
+const LinkButton = Actions.LinkButton;
 function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	const {
 		globalVar: { cluster, namespace },
@@ -47,7 +49,10 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 						setOriginData(res.data);
 					}
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res
+					});
 				}
 			});
 		}
@@ -67,7 +72,10 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 			if (res.success) {
 				setOriginData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res
+				});
 			}
 		});
 	};
@@ -85,39 +93,35 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 			</Button>
 		)
 	};
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = originData.filter(
-				(item) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setDataSource(list);
-		} else {
-			setDataSource(originData);
-		}
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const dsTemp = originData.sort((a, b) => {
-				const result =
-					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		}
-	};
-	const versionStatusRender = (
-		value: string,
-		index: number,
-		record: middlewareProps
-	) => {
+	// const onFilter = (filterParams: any) => {
+	// 	const keys = Object.keys(filterParams);
+	// 	if (filterParams[keys[0]].selectedKeys.length > 0) {
+	// 		const list = originData.filter(
+	// 			(item) =>
+	// 				item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
+	// 		);
+	// 		setDataSource(list);
+	// 	} else {
+	// 		setDataSource(originData);
+	// 	}
+	// };
+	// const onSort = (dataIndex: string, order: string) => {
+	// 	if (dataIndex === 'createTime') {
+	// 		const dsTemp = originData.sort((a, b) => {
+	// 			const result =
+	// 				moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
+	// 			return order === 'asc'
+	// 				? result > 0
+	// 					? 1
+	// 					: -1
+	// 				: result > 0
+	// 				? -1
+	// 				: 1;
+	// 		});
+	// 		setDataSource([...dsTemp]);
+	// 	}
+	// };
+	const versionStatusRender = (value: string) => {
 		const color =
 			value === 'now'
 				? '#00A7FA'
@@ -145,8 +149,8 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: middlewareProps
+		record: middlewareProps,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -170,7 +174,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 		);
 	};
 	const installUpdate = (record: middlewareProps) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content: '是否确认升级到该版本？',
 			onOk: () => {
@@ -181,27 +185,17 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 				})
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'已升级到该版本'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '已升级到该版本'
+							});
 							setMenuRefresh && setMenuRefresh(true);
 						} else {
-							const dialog = Dialog.show({
+							Modal.error({
 								title: '失败',
 								content:
 									'升级失败，已维持升级前状态不变，可重试',
-								footer: (
-									<Button
-										type="primary"
-										onClick={() => dialog.hide()}
-									>
-										我知道了
-									</Button>
-								)
+								okText: '我知道了'
 							});
 						}
 					})
@@ -212,7 +206,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 		});
 	};
 	const shelves = (record: middlewareProps) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content: '是否确认下架该版本中间件？',
 			onOk: () => {
@@ -222,11 +216,15 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 				})
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '已下架该版本')
-							);
+							notification.success({
+								message: '成功',
+								description: '已下架该版本'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res
+							});
 						}
 					})
 					.finally(() => {
@@ -237,73 +235,80 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	};
 
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={`${params.type}版本管理`}
-				hasBackArrow={true}
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
-				<Message type="warning">
-					本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本
-				</Message>
+			<ProContent>
+				<Alert
+					message="本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本"
+					type="warning"
+				/>
 				<div className="middleware-version-content">
-					<Table
+					<ProTable
 						dataSource={dataSource}
-						exact
-						fixedBarExpandWidth={[24]}
-						affixActionBar
+						// exact
+						// fixedBarExpandWidth={[24]}
+						// affixActionBar
 						showRefresh
 						onRefresh={getData}
-						primaryKey="key"
+						// primaryKey="key"
+						rowKey="key"
 						operation={Operation}
-						onFilter={onFilter}
-						onSort={onSort}
+						// onFilter={onFilter}
+						// onSort={onSort}
 					>
-						<Table.Column
+						<ProTable.Column
 							title="类型"
 							dataIndex="chartName"
-							cell={iconTypeRender}
+							render={iconTypeRender}
 						/>
-						<Table.Column title="描述" dataIndex="description" />
-						<Table.Column
+						<ProTable.Column title="描述" dataIndex="description" />
+						<ProTable.Column
 							title="版本状态"
 							dataIndex="versionStatus"
-							cell={versionStatusRender}
+							render={versionStatusRender}
 							filters={[
-								{ label: '当前版本', value: 'now' },
-								{ label: '可安装升级版本', value: 'future' },
-								{ label: '历史版本', value: 'history' },
-								{ label: '升级中', value: 'updating' }
+								{ text: '当前版本', value: 'now' },
+								{ text: '可安装升级版本', value: 'future' },
+								{ text: '历史版本', value: 'history' },
+								{ text: '升级中', value: 'updating' }
 							]}
-							filterMode="single"
+							filterMultiple={false}
+							onFilter={(value, record: any) =>
+								record.versionStatus === value
+							}
 							width={200}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="版本"
 							dataIndex="chartVersion"
 							width={100}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="上架时间"
 							dataIndex="createTime"
-							cell={(text: string) => (
+							render={(text: string) => (
 								<span>
 									{moment(text).format('YYYY-MM-DD h:mm:ss')}
 								</span>
 							)}
 							width={200}
-							sortable
+							sorter={(a: any, b: any) =>
+								moment(a.createTime).unix() -
+								moment(b.createTime).unix()
+							}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="操作"
 							dataIndex="action"
 							width={150}
-							cell={actionRender}
+							render={actionRender}
 						/>
-					</Table>
+					</ProTable>
 				</div>
-			</Content>
+			</ProContent>
 			{visible && (
 				<UploadMiddlewareForm
 					visible={visible}
@@ -311,7 +316,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 					onCreate={onCreate}
 				/>
 			)}
-		</Page>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
