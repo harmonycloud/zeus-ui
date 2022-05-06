@@ -8,8 +8,7 @@ function ProPage(props: PageProps): JSX.Element {
 		<div className="page">
 			<div></div>
 			<div className={`pro-page${className ? ' ' + className : ''}`}>
-				<div className="page-container">{props.children[0]}</div>
-				<div className="page-container">{props.children[1]}</div>
+				<div className="page-container">{props.children}</div>
 			</div>
 		</div>
 	);
