@@ -351,7 +351,7 @@ export const iconTypeRender = (value: string, record: any) => {
 		</div>
 	);
 };
-export const timeRender = (value: string, index: number, record: any) => {
+export const timeRender = (value: string, record: any, index: number) => {
 	return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '/';
 };
 // * 简单表格列为空

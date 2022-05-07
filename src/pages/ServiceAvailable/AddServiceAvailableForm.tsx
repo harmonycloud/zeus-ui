@@ -255,10 +255,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 
 	const addHttpList = () => {
 		setHttpList([...httpList, { id: Math.random() }]);
+		console.log([...httpList]);
 	};
 	const copyHttpList = (index: number) => {
 		const addItem = httpList[index];
-		setHttpList([
+		const list = [
 			...httpList,
 			{
 				...addItem,
@@ -266,7 +267,24 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				servicePort: '',
 				path: ''
 			}
-		]);
+		];
+		setHttpList(list);
+		list.map((item: any, index: number) => {
+			item.serviceName &&
+				form.setFieldsValue({
+					['serviceName' + index]: item.serviceName
+				});
+			item.domain &&
+				form.setFieldsValue({
+					['domain' + index]: item.domain
+				});
+			item.serviceName &&
+				item.domain &&
+				form.setFieldsValue({
+					['serviceName' + index]: item.serviceName,
+					['domain' + index]: item.domain
+				});
+		});
 	};
 	const deleteHttpList = (i: number) => {
 		const list = httpList.filter((item) => item.id !== i);

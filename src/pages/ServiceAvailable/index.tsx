@@ -518,11 +518,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						onSearch: handleSearch,
 						// onChange: handleChange,
 						placeholder:
-							'请输入被暴露服务名、服务名称/中文别名、访问地址或者端口搜索'
+							'请输入被暴露服务名、服务名称/中文别名、访问地址或者端口搜索',
+						style: {
+							width: '430px'
+						}
 					}}
-					// searchStyle={{
-					// 	width: '420px'
-					// }}
 					// onSort={onSort}
 					// onFilter={onFilter}
 				>
