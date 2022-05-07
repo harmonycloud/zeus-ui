@@ -586,7 +586,11 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 			const mirror = {
 				dataIndex: 'mirror',
 				label: '镜像仓库',
-				render: (val: string) => <div title={val}>{val}</div>
+				render: (val: string) => (
+					<div className="text-overflow-one" title={val}>
+						{val}
+					</div>
+				)
 			};
 			infoConfigTemp.push(mirror);
 		}

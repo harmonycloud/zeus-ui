@@ -74,7 +74,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		} else {
 			notification.error({
 				message: '失败',
-				description: res
+				description: res.errorMsg
 			});
 			// Message.show(messageConfig('error', '失败', res));
 		}

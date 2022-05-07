@@ -152,7 +152,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: res
+					description: res.errorMsg
 				});
 			}
 		});
@@ -180,7 +180,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 					} else {
 						notification.error({
 							message: '失败',
-							description: res
+							description: res.errorMsg
 						});
 					}
 				});

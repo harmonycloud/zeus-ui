@@ -660,7 +660,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
-				description: res.data.description,
+				description: res.errorMsg.data.description,
 				mysqlPort: res.data.port,
 				mysqlPwd: res.data.password,
 				cpu: res.data.quota.mysql.cpu,

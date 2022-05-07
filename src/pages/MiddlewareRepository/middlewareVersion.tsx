@@ -51,7 +51,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res
+						description: res.errorMsg
 					});
 				}
 			});
@@ -74,7 +74,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: res
+					description: res.errorMsg
 				});
 			}
 		});
@@ -177,6 +177,8 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 		Modal.confirm({
 			title: '操作确认',
 			content: '是否确认升级到该版本？',
+			okText: '确认',
+			cancelText: '取消',
 			onOk: () => {
 				return updateMiddleware({
 					clusterId: cluster.id,
@@ -209,6 +211,8 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 		Modal.confirm({
 			title: '操作确认',
 			content: '是否确认下架该版本中间件？',
+			okText: '确认',
+			cancelText: '取消',
 			onOk: () => {
 				return shelvesTypeVersion({
 					chartName: record.chartName,
@@ -223,7 +227,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 						} else {
 							notification.error({
 								message: '失败',
-								description: res
+								description: res.errorMsg
 							});
 						}
 					})
