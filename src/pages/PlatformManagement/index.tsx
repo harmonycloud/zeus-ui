@@ -16,14 +16,7 @@ function PlatformManagement(): JSX.Element {
 	return (
 		<ProPage className="platformManagement">
 			<ProHeader
-				onBack={(elem) => (
-					<span
-						className="details-go-back"
-						onClick={() => window.history.back()}
-					>
-						{elem}
-					</span>
-				)}
+				onBack={() => window.history.back()}
 				title="平台管理"
 				subTitle="平台个性化以及能力拓展管理中心"
 			/>
