@@ -251,3 +251,7 @@ export interface MenuInfo {
 export interface SelectInfo extends MenuInfo {
 	selectedKeys: string[];
 }
+export interface FiltersProps {
+	text: string;
+	value: string;
+}

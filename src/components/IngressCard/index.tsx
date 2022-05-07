@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Dialog, Message } from '@alicloud/console-components';
+import { Modal, notification } from 'antd';
 import MidCard from '../MidCard';
 import InstallIngressForm from './InstallIngress';
 import AccessIngressForm from './AccessIngress';
 import { deleteIngress } from '@/services/common';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
-import messageConfig from '../messageConfig';
 
 interface IngressCardProps {
 	status: number;
@@ -16,6 +15,7 @@ interface IngressCardProps {
 	createTime: string | null;
 	seconds: number;
 }
+const { confirm } = Modal;
 const IngressCard = (props: IngressCardProps) => {
 	const { status, title, onRefresh, clusterId, data, createTime, seconds } =
 		props;
@@ -23,29 +23,31 @@ const IngressCard = (props: IngressCardProps) => {
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 
 	const uninstallComponent = (type = 'install') => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: `确认是否${
 				type === 'install' ? '卸载' : '取消接入'
 			}该服务暴露`,
+			okText: '确定',
+			cancelText: '取消',
 			onOk: () => {
 				deleteIngress({
 					clusterId,
 					ingressName: data?.ingressClassName
 				}).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								`该服务暴露${
-									type === 'install' ? '卸载' : '取消接入'
-								}成功`
-							)
-						);
+						notification.success({
+							message: '成功',
+							description: `该服务暴露${
+								type === 'install' ? '卸载' : '取消接入'
+							}成功`
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}

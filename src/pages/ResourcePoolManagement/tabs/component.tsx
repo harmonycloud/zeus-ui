@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Message, Icon } from '@alicloud/console-components';
-import { Page, Content } from '@alicloud/console-components-page';
+import { Button, notification } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router';
-import { paramsProps } from '../detail';
+import { connect } from 'react-redux';
 import { getComponents } from '@/services/common';
-import { ComponentProp } from '../resource.pool';
-import messageConfig from '@/components/messageConfig';
 import ComponentCard from '@/components/ComponentCard';
 import BatchInstall from './batchInstall';
-import { connect } from 'react-redux';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { setMenuRefresh } from '@/redux/menu/menu';
+import { ComponentProp } from '../resource.pool';
+import { paramsProps } from '../detail';
 
 interface ComponentProps {
 	setRefreshCluster: (flag: boolean) => void;
@@ -30,7 +29,10 @@ const Component = (props: ComponentProps) => {
 					setComponents(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -44,37 +46,40 @@ const Component = (props: ComponentProps) => {
 				setRefreshCluster(true);
 				setMenuRefresh(true);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	return (
-		<Page>
-			<Content>
-				<div className="flex-space-between">
-					<Button type="primary" onClick={() => setVisible(true)}>
-						批量安装
-					</Button>
-					<Button onClick={getData}>
-						<Icon type="refresh" />
-					</Button>
-				</div>
-				<div className="component-plugging-content">
-					{components.map((item) => {
-						return (
-							<ComponentCard
-								key={item.component}
-								title={item.component}
-								status={item.status}
-								createTime={item.createTime}
-								seconds={item.seconds}
-								clusterId={id}
-								onRefresh={getData}
-							/>
-						);
-					})}
-				</div>
-			</Content>
+		<>
+			<div className="flex-space-between">
+				<Button type="primary" onClick={() => setVisible(true)}>
+					批量安装
+				</Button>
+				<Button
+					type="default"
+					icon={<ReloadOutlined />}
+					onClick={getData}
+				/>
+			</div>
+			<div className="component-plugging-content">
+				{components.map((item) => {
+					return (
+						<ComponentCard
+							key={item.component}
+							title={item.component}
+							status={item.status}
+							createTime={item.createTime}
+							seconds={item.seconds}
+							clusterId={id}
+							onRefresh={getData}
+						/>
+					);
+				})}
+			</div>
 			{visible && (
 				<BatchInstall
 					visible={visible}
@@ -84,7 +89,7 @@ const Component = (props: ComponentProps) => {
 					onRefresh={getData}
 				/>
 			)}
-		</Page>
+		</>
 	);
 };
 export default connect(() => ({}), {

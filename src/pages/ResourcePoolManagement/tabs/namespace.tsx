@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import Table from '@/components/MidTable';
-import { Button, Message, Switch, Balloon } from '@alicloud/console-components';
-import Confirm from '@alicloud/console-components-confirm';
+import ProTable from '@/components/ProTable';
+import moment from 'moment';
+import { Button, notification, Switch, Tooltip, Modal } from 'antd';
 import { connect } from 'react-redux';
 import {
 	getNamespaces,
 	deleteNamespace,
 	regNamespace
 } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import { NamespaceResourceProps } from '../resource.pool';
 import { paramsProps } from '../detail';
 import { nullRender } from '@/utils/utils';
 import AddNamespace from './addNamespace';
 import { setRefreshCluster } from '@/redux/globalVar/var';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 interface NamespaceProps {
 	setRefreshCluster: (flag: boolean) => void;
 }
-const Tooltip = Balloon.Tooltip;
+const { confirm } = Modal;
 const Namespace = (props: NamespaceProps) => {
 	const { setRefreshCluster } = props;
 	const [dataSource, setDataSource] = useState<NamespaceResourceProps[]>([]);
@@ -51,7 +51,10 @@ const Namespace = (props: NamespaceProps) => {
 					setDataSource(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -79,7 +82,10 @@ const Namespace = (props: NamespaceProps) => {
 				});
 				setDataSource([...newTemp]);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -144,7 +150,10 @@ const Namespace = (props: NamespaceProps) => {
 		}).then((res) => {
 			if (res.success) {
 				const msg = value ? '命名空间注册成功' : '命名空间关闭成功';
-				Message.show(messageConfig('success', '成功', msg));
+				notification.success({
+					message: '成功',
+					description: msg
+				});
 				const list = dataSource.map((item) => {
 					if (item.name === record.name) {
 						item.registered = value;
@@ -154,18 +163,21 @@ const Namespace = (props: NamespaceProps) => {
 				setDataSource(list);
 				setRefreshCluster(true);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	const registeredRender = (
 		value: any,
-		index: number,
-		record: NamespaceResourceProps
+		record: NamespaceResourceProps,
+		index: number
 	) => {
 		return record.registered && record.middlewareReplicas ? (
-			<Tooltip trigger={<Switch checked={value} />} align="l">
-				本命名空间已发布中间件服务，使用中，不可关闭
+			<Tooltip title="本命名空间已发布中间件服务，使用中，不可关闭">
+				<Switch checked={value} />
 			</Tooltip>
 		) : (
 			<Switch
@@ -177,8 +189,8 @@ const Namespace = (props: NamespaceProps) => {
 	};
 	const actionRender = (
 		value: any,
-		index: number,
-		record: NamespaceResourceProps
+		record: NamespaceResourceProps,
+		index: number
 	) => {
 		if (
 			(record.registered && record.middlewareReplicas) ||
@@ -186,65 +198,72 @@ const Namespace = (props: NamespaceProps) => {
 		) {
 			return (
 				<Tooltip
-					trigger={<span className="delete-disabled">删除</span>}
-					align="l"
+					title={
+						record.phase === 'Active'
+							? '本命名空间已发布中间件服务，使用中，不可操作'
+							: '该分区正在删除中，无法操作'
+					}
 				>
-					{record.phase === 'Active'
-						? '本命名空间已发布中间件服务，使用中，不可操作'
-						: '该分区正在删除中，无法操作'}
+					<span className="delete-disabled">删除</span>
 				</Tooltip>
 			);
 		}
 		return (
-			<Confirm
-				type="error"
-				title="确认删除"
-				content="确认要删除该命名空间？"
-				onConfirm={() => {
-					deleteNamespace({ clusterId: id, name: record.name }).then(
-						(res) => {
-							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'命名空间删除成功'
-									)
-								);
-								getData();
-							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
-							}
+			<span
+				className="name-link"
+				onClick={() => {
+					confirm({
+						title: '确认删除',
+						content: '确认要删除该命名空间？',
+						icon: <ExclamationCircleOutlined />,
+						okText: '确定',
+						cancelText: '取消',
+						onOk() {
+							return deleteNamespace({
+								clusterId: id,
+								name: record.name
+							}).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '命名空间删除成功'
+									});
+									getData();
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
 						}
-					);
+					});
 				}}
 			>
-				<span className="name-link">删除</span>
-			</Confirm>
+				删除
+			</span>
 		);
 	};
 	const memoryRender = (
 		value: any,
-		index: number,
-		record: NamespaceResourceProps
+		record: NamespaceResourceProps,
+		index: number
 	) => {
 		const result = record.quotas?.memory[1] || '-';
 		return <span>{result}</span>;
 	};
 	const cpuRender = (
 		value: any,
-		index: number,
-		record: NamespaceResourceProps
+		record: NamespaceResourceProps,
+		index: number
 	) => {
 		const result = record.quotas?.cpu[1] || '-';
 		return <span>{result}</span>;
 	};
 	const nameRender = (
 		value: any,
-		index: number,
-		record: NamespaceResourceProps
+		record: NamespaceResourceProps,
+		index: number
 	) => {
 		return (
 			<span
@@ -255,60 +274,79 @@ const Namespace = (props: NamespaceProps) => {
 		);
 	};
 	return (
-		<div style={{ marginTop: 16 }}>
-			<Table
+		<div>
+			<ProTable
 				dataSource={dataSource}
-				exact
-				primaryKey="key"
+				// exact
+				rowKey="name"
 				operation={Operation}
 				showColumnSetting
 				showRefresh
 				onRefresh={getData}
-				onSort={onSort}
 				search={{
 					onSearch: handleSearch,
 					placeholder: '请输入命名空间名称搜索'
 				}}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="命名空间"
 					dataIndex="name"
-					cell={nameRender}
+					render={nameRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="CPU配额（核）"
 					dataIndex="cpu"
-					cell={cpuRender}
-					sortable
+					render={cpuRender}
+					sorter={(a, b) => {
+						return (
+							Number(a.quotas?.cpu[1] || null) -
+							Number(b.quotas?.cpu[1] || null)
+						);
+					}}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="内存配额（GB）"
 					dataIndex="memory"
-					cell={memoryRender}
-					sortable
+					render={memoryRender}
+					sorter={(a, b) => {
+						return (
+							Number(a.quotas?.memory[1] || null) -
+							Number(b.quotas?.memory[1] || null)
+						);
+					}}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="已发布服务"
 					dataIndex="middlewareReplicas"
-					cell={nullRender}
-					sortable
+					render={nullRender}
+					sorter={(
+						a: NamespaceResourceProps,
+						b: NamespaceResourceProps
+					) => a.middlewareReplicas || 0 - b.middlewareReplicas || 0}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
-					sortable
+					sorter={(
+						a: NamespaceResourceProps,
+						b: NamespaceResourceProps
+					) =>
+						moment(a.createTime).unix() -
+						moment(b.createTime).unix()
+					}
+					// sortable
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="启用"
 					dataIndex="registered"
-					cell={registeredRender}
+					render={registeredRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="操作"
 					dataIndex="action"
-					cell={actionRender}
+					render={actionRender}
 				/>
-			</Table>
+			</ProTable>
 			{visible && (
 				<AddNamespace
 					visible={visible}

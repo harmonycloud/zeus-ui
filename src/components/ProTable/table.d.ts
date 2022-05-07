@@ -11,7 +11,7 @@ export interface ProTableProps<RecordType> extends TableProps<RecordType> {
 		primary?: React.ReactNode;
 		secondary?: React.ReactNode;
 	};
-	search?: SearchProps;
+	search?: SearchProps | null;
 	children: React.ReactNode[];
 }
 

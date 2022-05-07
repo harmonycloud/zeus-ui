@@ -112,6 +112,7 @@ function AddForm(props: addFormProps): JSX.Element {
 							port: res.data.port
 						});
 						if (res.data.cert) {
+							console.log(res.data.cert);
 							form.setFieldsValue({
 								cert: res.data.cert.certificate
 							});

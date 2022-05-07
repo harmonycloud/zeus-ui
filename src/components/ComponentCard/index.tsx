@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Message } from '@alicloud/console-components';
-import { showConfirmDialog } from '@alicloud/console-components-confirm';
+import React, { useState } from 'react';
+// import { Message } from '@alicloud/console-components';
+import { notification, Modal } from 'antd';
+
+// import { showConfirmDialog } from '@alicloud/console-components-confirm';
 import { connect } from 'react-redux';
 import { postComponent, deleteComponent } from '@/services/common';
-import messageConfig from '../messageConfig';
 import './index.scss';
 import InstallForm from './installForm';
 import AccessForm from './accessForm';
@@ -12,6 +13,7 @@ import { setRefreshCluster } from '@/redux/globalVar/var';
 import MidCard from '../MidCard';
 import { name, icon, color } from '@/utils/enum';
 import moment from 'moment';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 interface ComponentCardProps {
 	title: string;
@@ -30,6 +32,8 @@ export interface SendDataProps {
 	size?: number;
 }
 
+const { confirm } = Modal;
+
 const ComponentCard = (props: ComponentCardProps) => {
 	const {
 		title,
@@ -46,10 +50,16 @@ const ComponentCard = (props: ComponentCardProps) => {
 	const installData = (data: SendDataProps) => {
 		postComponent(data).then((res) => {
 			if (res.success) {
-				Message.show(messageConfig('success', '成功', '组件安装成功'));
+				notification.success({
+					message: '成功',
+					description: '组件安装成功'
+				});
 				onRefresh();
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -61,11 +71,12 @@ const ComponentCard = (props: ComponentCardProps) => {
 				) : (
 					<p>是否确认安装负载均衡组件</p>
 				);
-			showConfirmDialog({
-				type: 'notice',
+			confirm({
 				title: '确认安装',
 				content: content,
-				onConfirm: () => {
+				okText: '确定',
+				cancelText: '取消',
+				onOk: () => {
 					const sendData = {
 						clusterId,
 						componentName: title,
@@ -73,8 +84,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 					};
 					installData(sendData);
 					setRefreshCluster(true);
-				},
-				onCancel: () => console.log('弹窗取消')
+				}
 			});
 		} else {
 			setVisible(true);
@@ -88,11 +98,11 @@ const ComponentCard = (props: ComponentCardProps) => {
 			) : (
 				<p>是否确认卸载该组件</p>
 			);
-		showConfirmDialog({
-			type: 'error',
+		confirm({
+			icon: <ExclamationCircleOutlined />,
 			title: `确认${msg}`,
 			content: content,
-			onConfirm: () => {
+			onOk: () => {
 				const sendData = {
 					clusterId,
 					componentName: title,
@@ -100,13 +110,17 @@ const ComponentCard = (props: ComponentCardProps) => {
 				};
 				deleteComponent(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', `组件${msg}成功`)
-						);
+						notification.success({
+							message: '成功',
+							description: `组件${msg}成功`
+						});
 						onRefresh();
 						setRefreshCluster(true);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			},
