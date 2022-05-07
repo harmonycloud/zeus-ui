@@ -471,6 +471,7 @@ export interface consoleProps {
 	onCancel: () => void;
 	containers: string[];
 	data: ConsoleDataProps;
+	middlewareName: string;
 }
 export interface LogFileItem {
 	logPath: string;

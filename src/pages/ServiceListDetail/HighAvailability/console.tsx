@@ -31,14 +31,17 @@ const list = [
 ];
 const mysqlDatabaseContainer: string[] = ['mysql'];
 const redisDatabaseContainer: string[] = ['redis-cluster'];
+const redisSentinelDBContainer: string[] = ['sentinel'];
 export default function Console(props: consoleProps): JSX.Element {
-	const { visible, onCancel, containers, data } = props;
+	const { visible, onCancel, containers, data, middlewareName } = props;
 	const [source, setSource] = useState<string>('container');
 	const [container, setContainer] = useState<string>(
 		data.type === 'mysql'
 			? mysqlDatabaseContainer[0]
 			: data.type === 'redis'
-			? redisDatabaseContainer[0]
+			? data.podName.includes(`${middlewareName}-sentinel`)
+				? redisSentinelDBContainer[0]
+				: redisDatabaseContainer[0]
 			: containers[0]
 	);
 	const field = Field.useField();
@@ -74,24 +77,45 @@ export default function Console(props: consoleProps): JSX.Element {
 					</Select>
 				);
 			} else if (data.type === 'redis') {
-				return (
-					<Select
-						name="container"
-						style={{ width: '100%' }}
-						value={redisDatabaseContainer[0]}
-						onChange={(value: any) => setContainer(value)}
-					>
-						{redisDatabaseContainer.map(
-							(item: string, index: number) => {
-								return (
-									<Option key={index} value={item}>
-										{item}
-									</Option>
-								);
-							}
-						)}
-					</Select>
-				);
+				if (data.podName.includes(`${middlewareName}-sentinel`)) {
+					return (
+						<Select
+							name="container"
+							style={{ width: '100%' }}
+							value={redisSentinelDBContainer[0]}
+							onChange={(value: any) => setContainer(value)}
+						>
+							{redisSentinelDBContainer.map(
+								(item: string, index: number) => {
+									return (
+										<Option key={index} value={item}>
+											{item}
+										</Option>
+									);
+								}
+							)}
+						</Select>
+					);
+				} else {
+					return (
+						<Select
+							name="container"
+							style={{ width: '100%' }}
+							value={redisDatabaseContainer[0]}
+							onChange={(value: any) => setContainer(value)}
+						>
+							{redisDatabaseContainer.map(
+								(item: string, index: number) => {
+									return (
+										<Option key={index} value={item}>
+											{item}
+										</Option>
+									);
+								}
+							)}
+						</Select>
+					);
+				}
 			}
 		} else {
 			return (
@@ -133,6 +157,10 @@ export default function Console(props: consoleProps): JSX.Element {
 								setSource(value as string);
 								data.type === 'mysql'
 									? setContainer(mysqlDatabaseContainer[0])
+									: data.podName.includes(
+											`${middlewareName}-sentinel`
+									  )
+									? setContainer(redisSentinelDBContainer[0])
 									: setContainer(redisDatabaseContainer[0]);
 							}}
 						/>
