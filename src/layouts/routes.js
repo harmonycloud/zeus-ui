@@ -6,7 +6,6 @@ import {
 	Redirect,
 	withRouter
 } from 'react-router-dom';
-import MdBreadcrumb from './Breadcrumb/Breadcrumb';
 import MysqlCreate from '@/pages/ServiceCatalog/Mysql/create';
 import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
@@ -49,12 +48,9 @@ import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
 
-const Routes = withRouter((props) => {
+const Routes = withRouter(() => {
 	return (
 		<>
-			{props.location.pathname !== '/systemManagement/operationAudit' ? (
-				<MdBreadcrumb pathname={props.location.pathname} />
-			) : null}
 			<Switch>
 				<Route
 					path="/"
