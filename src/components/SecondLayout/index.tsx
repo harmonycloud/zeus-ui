@@ -107,13 +107,7 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							);
 						} else {
 							setCurrent('无服务');
-							onChange(
-								null,
-								list[0].value,
-								list[0].children[0].namespace,
-								cluster,
-								list[0].aliasName
-							);
+							onChange(null, '', '', cluster, '');
 						}
 					}
 				}

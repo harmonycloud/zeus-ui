@@ -171,6 +171,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		}
 	};
 	const openSSL = (record: PodItem) => {
+		console.log(record);
 		const strArr = record.containers.map(
 			(item: ContainerItem) => item.name
 		);
@@ -686,6 +687,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					data={consoleData}
 					onCancel={() => setPodVisible(false)}
 					containers={containers}
+					middlewareName={data.name}
 				/>
 			)}
 			{yamlVisible && podData && (

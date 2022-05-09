@@ -39,7 +39,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 		let mounted = true;
 		if (JSON.stringify(cluster) !== '{}') {
 			getTypeVersion({
-				clusterId: cluster.id,
+				clusterId: params.clusterId,
 				type: params.type
 			}).then((res) => {
 				if (res.success) {
@@ -57,11 +57,11 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 	}, [props]);
 	const getData = () => {
 		getMiddlewareRepository({
-			clusterId: cluster.id,
+			clusterId: params.clusterId,
 			namespace: namespace.name
 		});
 		getTypeVersion({
-			clusterId: cluster.id,
+			clusterId: params.clusterId,
 			type: params.type
 		}).then((res) => {
 			if (res.success) {
@@ -175,7 +175,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 			content: '是否确认升级到该版本？',
 			onOk: () => {
 				return updateMiddleware({
-					clusterId: cluster.id,
+					clusterId: params.clusterId,
 					chartName: record.chartName,
 					chartVersion: record.chartVersion
 				})

@@ -12,6 +12,7 @@ import { StoreState } from '@/types/index';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import OperatorInstallForm from '@/components/OperatorInstallForm/index';
 import './index.scss';
+import { log } from 'console';
 
 const Tooltip = Balloon.Tooltip;
 const statusIconRender = (value: number) => {
@@ -113,7 +114,9 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 	} = props;
 	const history = useHistory();
 	const toVersion = () => {
-		history.push(`/middlewareRepository/versionManagement/${chartName}`);
+		history.push(
+			`/middlewareRepository/versionManagement/${chartName}/${clusterId}`
+		);
 	};
 	const [visible, setVisible] = useState(false);
 

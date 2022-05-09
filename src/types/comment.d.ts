@@ -209,6 +209,7 @@ export interface StorageClassProps {
 export interface poolListItem {
 	name?: string;
 	id: number;
+	nickname: string;
 }
 
 // * 告警记录

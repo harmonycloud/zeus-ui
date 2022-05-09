@@ -34,4 +34,5 @@ export interface middlewareRepositoryProps {
 }
 export interface paramsProps {
 	type: string;
+	clusterId: string;
 }

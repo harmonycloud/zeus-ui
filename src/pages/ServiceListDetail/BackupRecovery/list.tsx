@@ -5,7 +5,7 @@ import Table from '@/components/MidTable';
 import messageConfig from '@/components/messageConfig';
 import { getBackups, addBackupConfig, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import moment from 'moment';
 import { BackupRecordItem, ListProps } from '../detail';
 
@@ -14,6 +14,7 @@ const { Tooltip } = Balloon;
 export default function List(props: ListProps): JSX.Element {
 	const { clusterId, namespace, data: listData, storage } = props;
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
+	const { pathname } = useLocation();
 	const history = useHistory();
 	useEffect(() => {
 		if (
@@ -306,7 +307,9 @@ export default function List(props: ListProps): JSX.Element {
 	};
 
 	return (
-		<div style={{ marginTop: 15 }}>
+		<div
+			style={{ marginTop: pathname.includes('disasterBackup') ? 15 : 0 }}
+		>
 			<Table
 				dataSource={backups}
 				exact

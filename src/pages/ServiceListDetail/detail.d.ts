@@ -126,6 +126,7 @@ export interface EventsListProps {
 	eventType: string;
 	kind: string;
 	globalVar?: globalVarProps;
+	namespace: string;
 }
 export interface EventItem {
 	chartName: null;
@@ -470,6 +471,7 @@ export interface consoleProps {
 	onCancel: () => void;
 	containers: string[];
 	data: ConsoleDataProps;
+	middlewareName: string;
 }
 export interface LogFileItem {
 	logPath: string;

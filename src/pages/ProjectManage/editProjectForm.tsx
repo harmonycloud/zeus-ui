@@ -11,8 +11,6 @@ import {
 } from '@alicloud/console-components';
 
 import messageConfig from '@/components/messageConfig';
-
-import { getClusters } from '@/services/common';
 import { getUserList } from '@/services/user';
 import { createProject, getAllocatableNamespace } from '@/services/project';
 
@@ -46,8 +44,10 @@ export default function EditProjectForm(
 				if (res.data.length > 0) {
 					const listTemp = res.data.map((item: any) => {
 						return {
-							value: `${item.id}/${item.name}`,
-							label: item.name
+							value: `${item.id}/${item.name}/${
+								item.nickname || item.name
+							}`,
+							label: item.nickname
 						};
 					});
 					setClusterList(listTemp);
@@ -89,11 +89,13 @@ export default function EditProjectForm(
 		if (originData.length > 0) {
 			const obj = {};
 			clusters.map((item) => {
-				const [clusterId, clusterName] = item.split('/');
+				const [clusterId, clusterName, clusterNickname] =
+					item.split('/');
 				const current: any = originData.find(
 					(o: any) => clusterId === o.id
 				);
-				obj[current.name] = current.namespaceList;
+				obj[`${current.name}/${current.nickname}`] =
+					current.namespaceList;
 			});
 			setNamespaceList(obj);
 		}
@@ -103,7 +105,8 @@ export default function EditProjectForm(
 			if (errors) return;
 			const values: FieldValues = field.getValues();
 			const clusterListTemp = clusters.map((item) => {
-				const [clusterId, clusterName] = item.split('/');
+				const [clusterId, clusterName, clusterNickname] =
+					item.split('/');
 				return {
 					id: clusterId,
 					namespaceList: namespaces
@@ -240,10 +243,12 @@ export default function EditProjectForm(
 									>
 										{Object.keys(namespaceList).map(
 											(key) => {
+												const [name, nickname] =
+													key.split('/');
 												return (
 													<div key={key}>
 														<div className="role-management-label">
-															{key}:
+															{nickname}:
 														</div>
 														<div className="role-management-checkout-content">
 															{namespaceList[

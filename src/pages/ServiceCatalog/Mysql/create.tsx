@@ -788,7 +788,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		} else {
 			setReClusterFlag(false);
 		}
-		setRelationNamespace(data.value);
+		const [c, n] = data.value.split('/');
+		setRelationNamespace(n);
 	};
 	const onLoadData = (data: any) => {
 		return getNamespaces({
@@ -800,7 +801,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					return {
 						parent: data.value,
 						label: item.aliasName || item.name,
-						value: item.name,
+						value: `${data.value}/${item.name}`,
 						isLeaf: true
 					};
 				});
@@ -1044,7 +1045,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem
+												required
+												requiredMessage="请选择命名空间"
+											>
 												<Select
 													name="namespace"
 													style={{ width: '100%' }}
@@ -2033,11 +2037,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														required
 														requiredMessage="请输入服务名称"
 														pattern={pattern.name}
-														patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
+														patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
 													>
 														<Input
 															name="relationName"
-															placeholder="请输入由小写字母数字及“-”组成的2-40个字符"
+															placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
 															trim
 														/>
 													</FormItem>

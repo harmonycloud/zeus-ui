@@ -605,7 +605,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem
+												required
+												requiredMessage="请选择命名空间"
+											>
 												<Select
 													name="namespace"
 													style={{ width: '100%' }}

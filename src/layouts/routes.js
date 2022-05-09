@@ -90,7 +90,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 中间件市场-版本管理 */}
 				<Route
-					path="/middlewareRepository/versionManagement/:type"
+					path="/middlewareRepository/versionManagement/:type/:clusterId"
 					component={MiddlewareVersion}
 				/>
 				{/* 4款中间件发布 + 动态表单的发布*/}

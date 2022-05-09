@@ -5,7 +5,8 @@ import {
 	deleteProps,
 	userProps,
 	rolesProps,
-	updateProps
+	updateProps,
+	sendDataParams
 } from '@/pages/UserManage/user';
 
 export const postLogin = (params: any) => {
@@ -47,8 +48,8 @@ export const deleteUser: (params: {
 	return Axios.delete(USER.updateUser, params);
 };
 // * 编辑用户
-export const updateUser: (params: userProps) => Promise<updateProps> = (
-	params: userProps
+export const updateUser: (params: sendDataParams) => Promise<updateProps> = (
+	params: sendDataParams
 ) => {
 	return Axios.json(USER.updateUser, params, {}, 'PUT');
 };
@@ -63,8 +64,8 @@ export const getRoles: () => Promise<rolesProps> = () => {
 	return Axios.get(USER.getRoles);
 };
 // * 创建用户
-export const createUser: (params: userProps) => Promise<updateProps> = (
-	params: userProps
+export const createUser: (params: sendDataParams) => Promise<updateProps> = (
+	params: sendDataParams
 ) => {
 	return Axios.json(USER.createUser, params, {}, 'POST');
 };

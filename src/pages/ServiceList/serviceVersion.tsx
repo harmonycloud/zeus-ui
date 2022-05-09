@@ -248,7 +248,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 								onClick={() => {
 									dialog.hide();
 									history.push(
-										`/middlewareRepository/versionManagement/${type}`
+										`/middlewareRepository/versionManagement/${type}/${cluster.id}`
 									);
 								}}
 							>

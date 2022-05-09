@@ -37,7 +37,7 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 	const { visible, onCancel, onRefresh, setRefreshCluster } = props;
 	const [source, setSource] = useState<string>('create');
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
-	const [currentCluster, setCurrentCluster] = useState<string>('');
+	const [currentCluster, setCurrentCluster] = useState<clusterType>();
 	const [namespaceList, setNamespaceList] = useState([]);
 	const [project] = useState<ProjectItem>(
 		JSON.parse(storage.getLocal('project'))
@@ -49,10 +49,10 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 				setClusterList(res.data);
 				if (res.data.length > 0) {
 					setNamespaceList(res.data[0].namespaceList || []);
-					setCurrentCluster(res.data[0].id);
+					setCurrentCluster(res.data[0]);
 				} else {
 					setNamespaceList([]);
-					setCurrentCluster('');
+					setCurrentCluster(undefined);
 				}
 			} else {
 				setClusterList([]);
@@ -63,7 +63,7 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 	}, []);
 	useEffect(() => {
 		clusterList.map((item: clusterType) => {
-			if (item.id === currentCluster) {
+			if (item.id === currentCluster?.id) {
 				setNamespaceList(item.namespaceList || []);
 				field.setValues({ namespace: '' });
 			}
@@ -131,7 +131,9 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 		});
 	};
 	const handleChange = (value: string) => {
-		setCurrentCluster(value);
+		console.log(value);
+		const t = clusterList.find((item) => item.id === value);
+		setCurrentCluster(t);
 	};
 	return (
 		<Dialog
@@ -203,14 +205,14 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 				>
 					<Select
 						name="clusterId"
-						value={currentCluster}
+						value={currentCluster?.id}
 						onChange={handleChange}
 						style={{ width: '100%' }}
 					>
 						{clusterList.map((item: clusterType) => {
 							return (
 								<Option key={item.id} value={item.id}>
-									{item.name}
+									{item.nickname}
 								</Option>
 							);
 						})}
