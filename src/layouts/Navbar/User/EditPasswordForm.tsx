@@ -65,7 +65,7 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res
+						description: res.errorMsg
 					});
 				}
 			});

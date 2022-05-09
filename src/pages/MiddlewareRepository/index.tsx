@@ -42,7 +42,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: res
+					description: res.errorMsg
 				});
 			}
 		});
@@ -61,7 +61,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res
+						description: res.errorMsg
 					});
 				}
 			});
@@ -125,7 +125,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: res
+					description: res.errorMsg
 				});
 			}
 		});

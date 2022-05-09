@@ -74,7 +74,7 @@ const ParamterEdit = () => {
 					if (res.success) {
 						setTempData({
 							name: res.data.name,
-							description: res.data.description
+							description: res.errorMsg.data.description
 						});
 						const list = res.data.customConfigList.map(
 							(item: any) => {

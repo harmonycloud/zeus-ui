@@ -3,22 +3,23 @@ import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
 import { useParams } from 'react-router';
-import SlidePanel from '@alicloud/console-components-slide-panel';
 import { connect } from 'react-redux';
 import {
 	Form,
 	Select,
 	Input,
-	Field,
-	Message,
-	CascaderSelect,
-	Icon
-} from '@alicloud/console-components';
-import { Page, Header, Content } from '@alicloud/console-components-page';
-import CustomIcon from '@/components/CustomIcon';
-import messageConfig from '@/components/messageConfig';
+	Button,
+	Cascader,
+	InputNumber,
+	notification
+} from 'antd';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { IconFont } from '@/components/IconFont';
+
 import { getServices } from '@/services/ingress';
 import pattern from '@/utils/pattern';
+
 import { StoreState } from '@/types/index';
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
@@ -26,10 +27,9 @@ import { filtersProps } from '@/types/comment';
 import { getIngresses } from '@/services/common';
 import { addIngress } from '@/services/ingress';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
+import storage from '@/utils/storage';
 
 import './index.scss';
-import { Button } from '@alifd/next';
-import storage from '@/utils/storage';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -55,8 +55,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const location: Location<stateProps> = useLocation();
 	const params: any = useParams();
 	const middlewareName = location?.state?.middlewareName || '';
-	const [data, setData] = useState([]);
-	const [current, setCurrent] = useState<string>();
+	const [data, setData] = useState<any[]>([]);
+	const [current, setCurrent] = useState<any>();
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
 	const [httpList, setHttpList] = useState<any[]>([
 		{
@@ -67,7 +67,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			id: Math.random()
 		}
 	]);
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	const record = storage.getLocal('availableRecord');
 	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
@@ -80,7 +80,10 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					if (res.success) {
 						setIngresses(res.data);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			JSON.stringify(namespace) !== '{}' &&
@@ -89,16 +92,29 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					params.type,
 					params.namespace
 				);
+			form.setFieldsValue({
+				serve: params.middlewareName,
+				exposeType: 'Ingress',
+				protocol: 'HTTP'
+			});
 		} else if (record) {
 			setCurrent(record.middlewareName);
 			setExposedWay(record.exposeType);
 			setProtocol(record.protocol);
+			form.setFieldsValue({
+				serve: record.middlewareName,
+				exposeType: record.exposeType,
+				protocol: record.protocol
+			});
 			JSON.stringify(namespace) !== '{}' &&
 				getIngresses({ clusterId: cluster.id }).then((res) => {
 					if (res.success) {
 						setIngresses(res.data);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			JSON.stringify(namespace) !== '{}' &&
@@ -110,13 +126,13 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					record.namespace
 				);
 			if (record.protocol !== 'HTTP') {
-				field.setValues({
+				form.setFieldsValue({
 					servicePort: record.serviceList[0].servicePort,
-					exposePort: record.serviceList[0].exposePort,
+					exposePort: Number(record.serviceList[0].exposePort),
 					ingressClassName: record.ingressClassName
 				});
 			} else {
-				field.setValues({
+				form.setFieldsValue({
 					ingressClassName: record.ingressClassName
 				});
 				setHttpList(
@@ -130,6 +146,16 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 						};
 					})
 				);
+				record.rules.map((item: any, index: number) => {
+					form.setFieldsValue({
+						['domain' + index]: item.domain,
+						['serviceName' + index]:
+							item.ingressHttpPaths[0].serviceName,
+						['servicePort' + index]:
+							item.ingressHttpPaths[0].servicePort,
+						['path' + index]: item.ingressHttpPaths[0].path
+					});
+				});
 			}
 		} else if (
 			JSON.stringify(namespace) !== '{}' &&
@@ -163,6 +189,12 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							? list[0].children[0].value
 							: middlewareName
 					);
+					form.setFieldsValue({
+						serve:
+							middlewareName === ''
+								? list[0].children[0].value
+								: middlewareName
+					});
 					const listTemp = list.filter((item: filtersProps) => {
 						let flag = false;
 						item.children &&
@@ -200,9 +232,13 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				if (res.success) {
 					setIngresses(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
+			form.setFieldsValue({ exposeType: 'Ingress', protocol: 'HTTP' });
 		}
 	}, [namespace, cluster]);
 
@@ -219,10 +255,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 
 	const addHttpList = () => {
 		setHttpList([...httpList, { id: Math.random() }]);
+		console.log([...httpList]);
 	};
 	const copyHttpList = (index: number) => {
 		const addItem = httpList[index];
-		setHttpList([
+		const list = [
 			...httpList,
 			{
 				...addItem,
@@ -230,7 +267,24 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				servicePort: '',
 				path: ''
 			}
-		]);
+		];
+		setHttpList(list);
+		list.map((item: any, index: number) => {
+			item.serviceName &&
+				form.setFieldsValue({
+					['serviceName' + index]: item.serviceName
+				});
+			item.domain &&
+				form.setFieldsValue({
+					['domain' + index]: item.domain
+				});
+			item.serviceName &&
+				item.domain &&
+				form.setFieldsValue({
+					['serviceName' + index]: item.serviceName,
+					['domain' + index]: item.domain
+				});
+		});
 	};
 	const deleteHttpList = (i: number) => {
 		const list = httpList.filter((item) => item.id !== i);
@@ -332,16 +386,16 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		}
 		addIngress(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig(
-						'success',
-						'成功',
-						`对外路由${record ? '修改' : '添加'}成功`
-					)
-				);
+				notification.success({
+					message: '成功',
+					description: `对外路由${record ? '修改' : '添加'}成功`
+				});
 				window.history.back();
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -350,17 +404,19 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		setProtocol(value);
 	};
 
-	const handleChange = (value: string | string[], data: any, extra: any) => {
-		setCurrent(value as string);
-		setNewNamespace(data.namespace);
+	const handleChange = (value: any, selectOption: any) => {
+		setCurrent(value[1]);
+		setNewNamespace(
+			selectOption.find((item: any) => item.value === value[1]).namespace
+		);
 		setSelectedInstance({
-			name: value as string,
-			type: extra.selectedPath[0].value
+			name: value[1],
+			type: value[0]
 		});
 		getExposedService(
-			value as string,
-			extra.selectedPath[0].value,
-			data.namespace
+			value[1],
+			selectOption[0].value,
+			selectOption.find((item: any) => item.value === value[1]).namespace
 		);
 	};
 
@@ -379,24 +435,44 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			if (res.success) {
 				setServices(res.data);
 				if (record?.exposeType === 'TCP' && res.data) {
-					res.data.find(
-						(item: any) =>
-							item.serviceName ===
-							record.serviceList[0].serviceName
-					)
-						? setSelectedService(
-								res.data.find(
-									(item: any) =>
-										item.serviceName ===
-										record.serviceList[0].serviceName
-								)
-						  )
-						: setSelectedService(res.data[0]);
+					if (
+						res.data.find(
+							(item: any) =>
+								item.serviceName ===
+								record.serviceList[0].serviceName
+						)
+					) {
+						setSelectedService(
+							res.data.find(
+								(item: any) =>
+									item.serviceName ===
+									record.serviceList[0].serviceName
+							)
+						);
+						form.setFieldsValue({
+							serviceName: res.data.find(
+								(item: any) =>
+									item.serviceName ===
+									record.serviceList[0].serviceName
+							).serviceName
+						});
+					} else {
+						setSelectedService(res.data[0]);
+						form.setFieldsValue({
+							serviceName: res.data[0].serviceName
+						});
+					}
 				} else {
 					res.data && setSelectedService(res.data[0]);
+					form.setFieldsValue({
+						serviceName: res.data[0].serviceName
+					});
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -405,43 +481,41 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		setSelectedService(list[0]);
 	};
 	const onOk = () => {
-		field.validate((err, data) => {
-			if (!err) {
-				const value = {
-					...data,
-					selectedInstance,
-					selectedService
-				};
+		form.validateFields().then((data) => {
+			const value = {
+				...data,
+				selectedInstance,
+				selectedService
+			};
 
-				onCreate(value);
-			}
+			onCreate(value);
 		});
 	};
 
 	return (
-		<Page className="add-service">
-			<Header
+		<ProPage className="add-service">
+			<ProHeader
 				title={record ? '编辑服务暴露' : '新增服务暴露'}
-				hasBackArrow
-				onBackArrowClick={() => history.goBack()}
+				onBack={() => history.goBack()}
 			/>
-			<Content>
-				<Form field={field}>
+			<ProContent>
+				<Form form={form}>
 					<h2>集群选择</h2>
 					<FormItem
 						label="选择服务"
-						required
-						labelTextAlign="left"
-						requiredMessage="请选择服务名称！"
-						asterisk={false}
-						className="ne-required-ingress"
+						labelAlign="left"
+						rules={[
+							{ required: true, message: '请选择服务名称！' }
+						]}
 						style={{ margin: '8px 0  16px 16px' }}
+						name="serve"
 					>
-						<CascaderSelect
-							listStyle={{ width: '170px' }}
+						<Cascader
+							dropdownMenuColumnStyle={{ width: '170px' }}
+							allowClear={false}
 							style={{ width: '340px' }}
 							value={current}
-							dataSource={data}
+							options={data}
 							onChange={handleChange}
 							disabled={
 								cluster.ingress === null ||
@@ -453,30 +527,41 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					<h2>选择暴露方式及对象</h2>
 					<FormItem
 						label="暴露方式"
-						labelTextAlign="left"
-						asterisk={false}
-						className="ne-required-ingress"
+						labelAlign="left"
+						required
 						style={{ margin: '8px 0  16px 16px' }}
 					>
-						<FormItem>
+						<FormItem
+							name="exposeType"
+							rules={[
+								{ required: true, message: '请选择暴露方式！' }
+							]}
+						>
 							<Select
-								name="exposeType"
 								onChange={onChange}
 								style={{ width: '120px' }}
 								value={exposedWay}
 								disabled={cluster.ingress === null || !!record}
 							>
-								<Option value="Ingress">Ingress</Option>
-								<Option value="NodePort">NodePort</Option>
+								<Option value="Ingress" key="Ingress">
+									Ingress
+								</Option>
+								<Option value="NodePort" key="NodePort">
+									NodePort
+								</Option>
 							</Select>
 						</FormItem>
 						{exposedWay === 'Ingress' && (
 							<FormItem
-								required
-								requiredMessage="请选择Ingress！"
+								name="ingressClassName"
+								rules={[
+									{
+										required: true,
+										message: '请选择Ingress！'
+									}
+								]}
 							>
 								<Select
-									name="ingressClassName"
 									placeholder="请选择一个ingress"
 									style={{ width: '200px' }}
 									disabled={
@@ -501,9 +586,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							</FormItem>
 						)}
 						{exposedWay === 'Ingress' && (
-							<FormItem>
+							<FormItem name="protocol">
 								<Select
-									name="protocol"
 									onChange={onProtocolChange}
 									style={{ width: '120px' }}
 									value={protocol}
@@ -518,22 +602,32 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 						)}
 						{protocol === 'TCP' && (
 							<FormItem
-								required={
-									exposedWay === 'Ingress' ? true : false
-								}
-								labelTextAlign="left"
-								requiredMessage="对外端口不能为空！"
-								format="number"
-								formatMessage="请填写数字！"
-								min={30000}
-								max={exposedWay === 'Ingress' ? 65535 : 32000}
-								minmaxMessage={`对外端口不能小于30000，大于${
-									exposedWay === 'Ingress' ? 65535 : 32000
-								}`}
+								name="exposePort"
+								rules={[
+									{
+										required:
+											exposedWay === 'Ingress'
+												? true
+												: false,
+										message: '对外端口不能为空！'
+									},
+									{
+										type: 'number',
+										min: 30000,
+										max:
+											exposedWay === 'Ingress'
+												? 65535
+												: 32000,
+										message: `对外端口不能小于30000，大于${
+											exposedWay === 'Ingress'
+												? 65535
+												: 32000
+										}`
+									}
+								]}
+								labelAlign="left"
 							>
-								<Input
-									name="exposePort"
-									htmlType="number"
+								<InputNumber
 									placeholder={
 										exposedWay === 'Ingress'
 											? '端口范围：30000-65535'
@@ -549,21 +643,22 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 						<FormItem
 							label="选择暴露对象"
 							required
-							labelTextAlign="left"
-							asterisk={false}
-							className="ne-required-ingress"
+							labelAlign="left"
 						>
-							<FormItem required requiredMessage="请选择暴露对象">
+							<FormItem
+								name="serviceName"
+								rules={[
+									{
+										required: true,
+										message: '请选择暴露对象'
+									}
+								]}
+							>
 								<Select
-									name="serviceName"
 									onChange={onServiceChange}
 									style={{ width: '100%' }}
 									value={selectedService.serviceName}
-									autoWidth={false}
 									placeholder="请选择Service"
-									// disabled={
-									// 	cluster.ingress === null || !!record
-									// }
 									disabled={cluster.ingress === null}
 								>
 									{services &&
@@ -580,13 +675,16 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								</Select>
 							</FormItem>
 							<FormItem
-								required
-								requiredMessage="请选择暴露端口！"
+								name="servicePort"
+								rules={[
+									{
+										required: true,
+										message: '请选择暴露端口'
+									}
+								]}
 							>
 								<Select
-									name="servicePort"
 									style={{ width: '100%' }}
-									autoWidth={false}
 									placeholder="请选择端口"
 									disabled={cluster.ingress === null}
 								>
@@ -614,16 +712,18 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									<FormItem
 										label="选择暴露对象"
 										required
-										labelTextAlign="left"
-										asterisk={false}
-										className="ne-required-ingress"
+										labelAlign="left"
 									>
 										<FormItem
-											required
-											requiredMessage="请选择暴露对象"
+											name={'serviceName' + index}
+											rules={[
+												{
+													required: true,
+													message: '请选择暴露对象'
+												}
+											]}
 										>
 											<Select
-												name={'serviceName' + index}
 												onChange={(value) =>
 													onChangeHttp(
 														value,
@@ -660,11 +760,15 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											</Select>
 										</FormItem>
 										<FormItem
-											required
-											requiredMessage="请选择暴露端口！"
+											name={'servicePort' + index}
+											rules={[
+												{
+													required: true,
+													message: '请选择暴露端口'
+												}
+											]}
 										>
 											<Select
-												name={'servicePort' + index}
 												style={{ width: '120px' }}
 												placeholder="请选择端口"
 												disabled={
@@ -701,25 +805,35 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									</FormItem>
 									<FormItem
 										label="域名及路径"
-										className="ne-required-ingress"
-										labelTextAlign="left"
+										labelAlign="left"
+										required
 									>
 										<FormItem
-											required
-											requiredMessage="域名不能为空！"
-											pattern={pattern.domain}
-											patternMessage="请输入正确的域名格式！"
+											name={'domain' + index}
+											rules={[
+												{
+													required: true,
+													message: '请选择暴露对象'
+												},
+												{
+													pattern: new RegExp(
+														pattern.domain,
+														'i'
+													),
+													message:
+														'请输入正确的域名格式！'
+												}
+											]}
 										>
 											<Input
-												name={'domain' + index}
 												placeholder="请输入域名"
 												disabled={
 													cluster.ingress === null
 												}
 												value={item.domain}
-												onChange={(value) =>
+												onChange={(e) =>
 													onChangeHttp(
-														value,
+														e.target.value,
 														item,
 														'domain'
 													)
@@ -727,21 +841,31 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											/>
 										</FormItem>
 										<FormItem
-											required
-											requiredMessage="路径不能为空！"
-											pattern={pattern.path}
-											patternMessage="请填写正确的URL映射格式，如：/path"
+											name={'path' + index}
+											rules={[
+												{
+													required: true,
+													message: '路径不能为空！'
+												},
+												{
+													pattern: new RegExp(
+														pattern.path,
+														'i'
+													),
+													message:
+														'请填写正确的URL映射格式，如：/path'
+												}
+											]}
 										>
 											<Input
-												name={'path' + index}
 												placeholder="请输入域名后的路径"
 												disabled={
 													cluster.ingress === null
 												}
 												value={item.path}
-												onChange={(value) =>
+												onChange={(e) =>
 													onChangeHttp(
-														value,
+														e.target.value,
 														item,
 														'path'
 													)
@@ -754,35 +878,35 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											style={{ marginLeft: '8px' }}
 											onClick={() => copyHttpList(index)}
 											disabled={httpList.length >= 10}
-										>
-											<CustomIcon
-												type="icon-fuzhi1"
-												size={12}
-												style={{ color: '#0064C8' }}
-											/>
-										</Button>
+											icon={
+												<IconFont
+													type="icon-fuzhi1"
+													style={{ color: '#0064C8' }}
+												/>
+											}
+										></Button>
 										<Button
 											style={{ marginLeft: '8px' }}
 											onClick={() => addHttpList()}
 											disabled={httpList.length >= 10}
-										>
-											<Icon
-												type="plus"
-												style={{ color: '#0064C8' }}
-											/>
-										</Button>
+											icon={
+												<PlusOutlined
+													style={{ color: '#0064C8' }}
+												/>
+											}
+										></Button>
 										<Button
 											style={{ marginLeft: '8px' }}
 											onClick={() =>
 												deleteHttpList(item.id)
 											}
 											disabled={httpList.length === 1}
-										>
-											<Icon
-												type="wind-minus"
-												style={{ color: '#0064C8' }}
-											/>
-										</Button>
+											icon={
+												<MinusOutlined
+													style={{ color: '#0064C8' }}
+												/>
+											}
+										></Button>
 									</div>
 								</div>
 							);
@@ -804,8 +928,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 						取消
 					</Button>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 

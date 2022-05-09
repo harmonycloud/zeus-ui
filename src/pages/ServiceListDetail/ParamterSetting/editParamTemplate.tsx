@@ -91,7 +91,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				if (res.success) {
 					setParamTemplateBasic({
 						name: res.data.name,
-						description: res.data.description
+						description: res.errorMsg.data.description
 					});
 					setParamTemplateConfig(res.data.customConfigList);
 				} else {

@@ -29,7 +29,12 @@ function DataFields(props: DataFieldsProps): JSX.Element {
 							{item.render ? (
 								item.render(dataSource[item.dataIndex || ''])
 							) : (
-								<div>{dataSource[item.dataIndex || '']}</div>
+								<div
+									className="text-overflow-one"
+									title={dataSource[item.dataIndex || '']}
+								>
+									{dataSource[item.dataIndex || '']}
+								</div>
 							)}
 						</Descriptions.Item>
 					);

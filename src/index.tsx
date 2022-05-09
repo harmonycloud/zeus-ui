@@ -2,16 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import App from './App';
+import store from './redux';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/lib/locale/zh_CN';
 import '@alicloud/console-components/dist/wind.css';
 import './index.less';
 import './index.css';
-import store from './redux';
 import * as serviceWorker from './serviceWorker';
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
 	<Provider store={store}>
-		<App />
+		<ConfigProvider locale={zhCN}>
+			<App />
+		</ConfigProvider>
 	</Provider>,
 	document.getElementById('root')
 );

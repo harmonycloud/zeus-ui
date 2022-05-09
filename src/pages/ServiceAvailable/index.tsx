@@ -3,33 +3,28 @@ import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
-import {
-	Button,
-	Message,
-	Dialog,
-	Balloon,
-	Icon
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+
+import { Button, Modal, notification, Popover } from 'antd';
+import { CheckCircleOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+
 import moment from 'moment';
-import Table from '@/components/MidTable';
 import RapidScreening from '@/components/RapidScreening';
-import messageConfig from '@/components/messageConfig';
 import { listProps } from '@/components/RapidScreening';
-import { StoreState, globalVarProps, User } from '@/types/index';
+import { StoreState, globalVarProps } from '@/types/index';
 import {
 	serviceAvailableItemProps,
 	serviceAvailablesProps
 } from './service.available';
+
 import { iconTypeRender, timeRender } from '@/utils/utils';
 import CustomIcon from '@/components/CustomIcon';
 import { getIngresses, deleteIngress } from '@/services/ingress';
-import AddServiceAvailableForm from './AddServiceAvailableForm';
 import storage from '@/utils/storage';
 import { getList } from '@/services/serviceList';
 import GuidePage from '../GuidePage';
-import { protocolFilter } from '@/utils/const';
 
 import './index.scss';
 
@@ -39,6 +34,7 @@ interface stateProps {
 interface serviceAvailableProps {
 	globalVar: globalVarProps;
 }
+const { LinkButton } = Actions;
 function ServiceAvailable(props: serviceAvailableProps) {
 	const { cluster, namespace, project } = props.globalVar;
 	const [role] = useState(JSON.parse(storage.getLocal('role')));
@@ -57,8 +53,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const [searchText, setSearchText] = useState<string>(
 		location?.state?.middlewareName || ''
 	);
-	const [iconVisible, setIconVisible] = useState<boolean>(false);
-	const [adress, setAdress] = useState<string>('');
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
 	const [operateFlag, setOperateFlag] = useState<boolean>(false);
 	const [lock, setLock] = useState<any>({ lock: 'right' });
@@ -96,7 +90,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						);
 						setList(listTemp);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 						setOriginData([]);
 						setList([{ name: '全部服务', count: 0 }]);
 					}
@@ -114,7 +111,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						);
 						setVisibleFlag(flag);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -194,7 +194,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				}, 0);
 				setList(listTemp);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -206,10 +209,12 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		setSearchText(value);
 	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content:
 				'删除对外路由会影响当前正在通过对外地址访问中间件的服务，请确认执行',
+			okText: '确认',
+			cancelText: '取消',
 			onOk: () => {
 				const sendData = {
 					...record,
@@ -221,15 +226,15 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				return deleteIngress(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'对外路由删除成功'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '对外路由删除成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -243,13 +248,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			<Button
 				onClick={() => {
 					if (visibleFlag) {
-						Message.show(
-							messageConfig(
-								'error',
-								'失败',
-								'当前命名空间下无服务'
-							)
-						);
+						notification.error({
+							message: '失败',
+							description: '当前命名空间下无服务'
+						});
 					} else {
 						history.push('/serviceAvailable/addServiceAvailable');
 					}
@@ -264,8 +266,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	// * 浏览器复制到剪切板方法
 	const copyValue = (value: any, record: any) => {
 		const input = document.createElement('input');
-		setAdress(record.name);
-		setIconVisible(true);
 		document.body.appendChild(input);
 		input.style.position = 'absolute';
 		input.style.top = '0px';
@@ -278,11 +278,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		}
 		input.blur();
 		document.body.removeChild(input);
-		setTimeout(() => {
-			setIconVisible(false);
-		}, 3000);
 	};
-	const addressRender = (value: string, index: number, record: any) => {
+	const addressRender = (value: string, record: any, index: number) => {
 		if (record.exposeType === 'Ingress') {
 			let address = '';
 			record.protocol === 'TCP'
@@ -298,58 +295,66 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							}`}
 						</div>
 						<div className="address">
-							<Balloon
-								trigger={
-									<CustomIcon
-										type="icon-fuzhi"
-										size="xs"
-										style={{
-											color: '#0070CC',
-											cursor: 'pointer'
-										}}
-										onClick={() =>
-											copyValue(address, record)
-										}
-									/>
+							<Popover
+								content={
+									<div>
+										<CheckCircleOutlined
+											style={{
+												color: '#00A700',
+												marginRight: '5px'
+											}}
+										/>
+										复制成功
+									</div>
 								}
-								triggerType={'click'}
-								closable={false}
+								trigger={'click'}
 							>
-								<Icon
-									type={'success'}
+								<CustomIcon
+									type="icon-fuzhi"
+									size="xs"
 									style={{
-										color: '#00A700',
-										marginRight: '5px'
+										color: '#0070CC',
+										cursor: 'pointer'
 									}}
-									size={'xs'}
+									onClick={() => copyValue(address, record)}
 								/>
-								复制成功
-							</Balloon>
+							</Popover>
 							<span title={address}>{address}</span>
 						</div>
 					</div>
 					{record.protocol === 'HTTP' && record.rules.length > 1 && (
-						<Balloon
-							trigger={
-								<span className="tips-more">
-									<Icon size="xs" type="ellipsis" />
-								</span>
-							}
-							closable={false}
-						>
-							{record.rules.map((item: any, index: number) => {
-								const address = `${item.domain}:${record.httpExposePort}${item.ingressHttpPaths[0].path}`;
-								return (
-									<div key={index} className="balloon-tips">
-										<div>
-											&nbsp;&nbsp;&nbsp;&nbsp;
-											{record.protocol +
-												'-' +
-												record.ingressClassName}
-										</div>
-										<div className="address">
-											<Balloon
-												trigger={
+						<Popover
+							content={record.rules.map(
+								(item: any, index: number) => {
+									const address = `${item.domain}:${record.httpExposePort}${item.ingressHttpPaths[0].path}`;
+									return (
+										<div
+											key={index}
+											className="balloon-tips"
+										>
+											<div>
+												&nbsp;&nbsp;&nbsp;&nbsp;
+												{record.protocol +
+													'-' +
+													record.ingressClassName}
+											</div>
+											<div className="address">
+												<Popover
+													content={
+														<div>
+															&nbsp;&nbsp;&nbsp;&nbsp;
+															<CheckCircleOutlined
+																style={{
+																	color: '#00A700',
+																	marginRight:
+																		'5px'
+																}}
+															/>
+															复制成功
+														</div>
+													}
+													trigger={'click'}
+												>
 													<CustomIcon
 														type="icon-fuzhi"
 														size="xs"
@@ -364,29 +369,20 @@ function ServiceAvailable(props: serviceAvailableProps) {
 															)
 														}
 													/>
-												}
-												triggerType={'click'}
-												closable={false}
-											>
-												&nbsp;&nbsp;&nbsp;&nbsp;
-												<Icon
-													type={'success'}
-													style={{
-														color: '#00A700',
-														marginRight: '5px'
-													}}
-													size={'xs'}
-												/>
-												复制成功
-											</Balloon>
-											<span title={address}>
-												{address}
-											</span>
+												</Popover>
+												<span title={address}>
+													{address}
+												</span>
+											</div>
 										</div>
-									</div>
-								);
-							})}
-						</Balloon>
+									);
+								}
+							)}
+						>
+							<span className="tips-more">
+								<EllipsisOutlined />
+							</span>
+						</Popover>
 					)}
 				</div>
 			);
@@ -401,8 +397,8 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	};
 	const middlewareNameRender = (
 		value: string,
-		index: number,
-		record: serviceAvailableItemProps
+		record: serviceAvailableItemProps,
+		index: number
 	) => {
 		return (
 			<div className="display-flex flex-align">
@@ -417,14 +413,14 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			</div>
 		);
 	};
-	const portRender = (value: string, index: number, record: any) => {
+	const portRender = (value: string, record: any, index: number) => {
 		const port =
 			record.protocol === 'HTTP'
 				? record.rules[0].ingressHttpPaths[0].servicePort
 				: record.serviceList[0].servicePort;
 		return <span>{port}</span>;
 	};
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -485,12 +481,12 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	}
 
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="服务暴露"
 				subTitle="通过Nginx-Ingress/NodePort等多种方式对外暴露已发布的不同类型中间件服务"
 			/>
-			<Content>
+			<ProContent>
 				<RapidScreening
 					list={list}
 					selected={selected}
@@ -506,82 +502,88 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						storage.setSession('service-available-current', value);
 					}}
 				/>
-				<Table
+				<ProTable
 					dataSource={showDataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
+					// exact
+					// fixedBarExpandWidth={[24]}
+					// affixActionBar
 					showColumnSetting
 					showRefresh
 					onRefresh={() => getData(searchText)}
-					primaryKey="key"
+					rowKey="name"
 					operation={Operation}
 					search={{
 						defaultValue: searchText,
 						value: searchText,
 						onSearch: handleSearch,
-						onChange: handleChange,
+						// onChange: handleChange,
 						placeholder:
-							'请输入被暴露服务名、服务名称/中文别名、访问地址或者端口搜索'
+							'请输入被暴露服务名、服务名称/中文别名、访问地址或者端口搜索',
+						style: {
+							width: '430px'
+						}
 					}}
-					searchStyle={{
-						width: '420px'
-					}}
-					onSort={onSort}
-					onFilter={onFilter}
+					// onSort={onSort}
+					// onFilter={onFilter}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="服务名称/中文别名"
 						dataIndex="middlewareName"
 						width={140}
-						lock="left"
-						cell={middlewareNameRender}
+						fixed="left"
+						render={middlewareNameRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="服务类型"
 						dataIndex="middlewareType"
-						cell={iconTypeRender}
+						render={iconTypeRender}
 						width={100}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="被暴露服务名"
 						dataIndex="name"
 						width={190}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="被暴露服务端口"
 						width={140}
 						dataIndex="httpExposePort"
-						cell={portRender}
+						render={portRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="暴露方式"
 						dataIndex="exposeType"
 						width={110}
-						sortable={true}
+						sorter={(a: any, b: any) =>
+							a.exposeType.length - b.exposeType.length
+						}
 					/>
-					<Table.Column
+					<ProTable.Column
 						width={260}
 						title="暴露详情"
-						cell={addressRender}
+						render={addressRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						width={160}
 						dataIndex="createTime"
-						sortable={true}
-						cell={timeRender}
+						sorter={(a: any, b: any) =>
+							new Date(a.createTime).getTime() -
+							new Date(b.createTime).getTime()
+						}
+						render={timeRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 						width={100}
 						{...lock}
 					/>
-				</Table>
-			</Content>
-		</Page>
+				</ProTable>
+				{console.log(showDataSource)}
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

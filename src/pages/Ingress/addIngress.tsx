@@ -14,7 +14,12 @@ import messageConfig from '@/components/messageConfig';
 
 import pattern from '@/utils/pattern';
 import { StoreState } from '@/types';
-import { addIngressProps,selectedInstanceProps,instanceProps,servicesProps } from './ingress';
+import {
+	addIngressProps,
+	selectedInstanceProps,
+	instanceProps,
+	servicesProps
+} from './ingress';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -41,7 +46,8 @@ function AddIngress(props: addIngressProps) {
 		exposedWay === 'Ingress' ? 'HTTP' : 'TCP'
 	);
 	const [instances, setInstances] = useState<instanceProps[]>([]);
-	const [selectedInstance, setSelectedInstance] = useState<selectedInstanceProps>({ name: '' });
+	const [selectedInstance, setSelectedInstance] =
+		useState<selectedInstanceProps>({ name: '' });
 	const [services, setServices] = useState<servicesProps[]>([]);
 	const [selectedService, setSelectedService] = useState<servicesProps>({
 		serviceName: '',
@@ -51,7 +57,7 @@ function AddIngress(props: addIngressProps) {
 		(cluster.ingress &&
 			cluster.ingress.tcp &&
 			cluster.ingress.tcp.enabled) ||
-		false
+			false
 	);
 	const field = Field.useField();
 
@@ -117,8 +123,6 @@ function AddIngress(props: addIngressProps) {
 		const list = services.filter((item) => item.serviceName === value);
 		setSelectedService(list[0]);
 	};
-
-	const onPortChange = () => { };
 
 	const onOk = () => {
 		field.validate((err, data) => {
@@ -216,8 +220,8 @@ function AddIngress(props: addIngressProps) {
 						)}
 						{((exposedWay === 'Ingress' && ingressTcpFlag) ||
 							exposedWay === 'NodePort') && (
-								<Option value="TCP">TCP</Option>
-							)}
+							<Option value="TCP">TCP</Option>
+						)}
 					</Select>
 				</FormItem>
 				{protocol === 'HTTP' && (
@@ -247,8 +251,9 @@ function AddIngress(props: addIngressProps) {
 						formatMessage="请填写数字！"
 						min={30000}
 						max={exposedWay === 'Ingress' ? 65535 : 32000}
-						minmaxMessage={`对外端口不能小于30000，大于${exposedWay === 'Ingress' ? 65535 : 32000
-							}`}
+						minmaxMessage={`对外端口不能小于30000，大于${
+							exposedWay === 'Ingress' ? 65535 : 32000
+						}`}
 						asterisk={false}
 						className="ne-required-ingress"
 					>
@@ -314,7 +319,6 @@ function AddIngress(props: addIngressProps) {
 				>
 					<Select
 						name="servicePort"
-						onChange={onPortChange}
 						style={{ width: '100%' }}
 						autoWidth={false}
 					>
