@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, Checkbox, Radio, Message } from '@alicloud/console-components';
+import { Modal, Checkbox, Radio, notification, RadioChangeEvent } from 'antd';
 import { name, icon, color, labelSimple, labelHigh } from '@/utils/enum';
 import { ComponentProp } from '../resource.pool';
 import { getMiddlewareRepository } from '@/services/repository';
 import CustomIcon from '@/components/CustomIcon';
-import messageConfig from '@/components/messageConfig';
 import { mulInstallComponent } from '@/services/common';
 import { api } from '@/api.json';
 
@@ -29,7 +28,6 @@ const BatchInstall = (props: BatchInstallProps) => {
 		components.filter((item) => item.component !== 'lvm')
 	);
 	const [controllers, setControllers] = useState<ControllerItemProps[]>([]);
-	const [controllerCheck, setControllerCheck] = useState<boolean>(false);
 	const [selectController, setSelectController] = useState<
 		ControllerItemProps[]
 	>([]);
@@ -52,7 +50,10 @@ const BatchInstall = (props: BatchInstallProps) => {
 				}
 			} else {
 				setControllers([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
@@ -95,34 +96,20 @@ const BatchInstall = (props: BatchInstallProps) => {
 		};
 		mulInstallComponent(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig('success', '成功', '组件批量安装成功')
-				);
+				notification.success({
+					message: '成功',
+					description: '组件批量安装成功'
+				});
 				onRefresh();
 				onCancel();
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
-	// const onChange = (value: string[]) => {
-	// 	setSelectController(value);
-	// 	if (value.length === controllers.length) {
-	// 		setControllerCheck(true);
-	// 	} else {
-	// 		setControllerCheck(false);
-	// 	}
-	// };
-	// const allControllerSelect = (checked: boolean) => {
-	// 	setControllerCheck(checked);
-	// 	if (checked) {
-	// 		setSelectController(
-	// 			controllers.map((item: ControllerItemProps) => item.chartName)
-	// 		);
-	// 	} else {
-	// 		setSelectController([]);
-	// 	}
-	// };
 	const componentChange = (
 		value: string | number | boolean,
 		record: ComponentProp
@@ -148,12 +135,14 @@ const BatchInstall = (props: BatchInstallProps) => {
 		setSelectController(listTemp);
 	};
 	return (
-		<Dialog
+		<Modal
 			title="批量安装"
 			visible={visible}
-			onClose={onCancel}
+			width={715}
 			onCancel={onCancel}
 			onOk={onOk}
+			okText="确定"
+			cancelText="取消"
 		>
 			<div className="batch-install-title-content">
 				<div className="batch-install-name">平台组件</div>
@@ -214,25 +203,21 @@ const BatchInstall = (props: BatchInstallProps) => {
 								<RadioGroup
 									defaultValue={'simple'}
 									disabled={item.status !== 0}
-									onChange={(
-										value: string | number | boolean
-									) => componentChange(value, item)}
+									onChange={(e: RadioChangeEvent) =>
+										componentChange(e.target.value, item)
+									}
 								>
-									<Radio
-										id="simple"
-										value="simple"
-										label={`单实例版：${
+									<Radio id="simple" value="simple">
+										{`单实例版：${
 											labelSimple[item.component]
 										}`}
-									/>
+									</Radio>
 									<br />
-									<Radio
-										id="high"
-										value="high"
-										label={`高实例版：${
+									<Radio id="high" value="high">
+										{`高实例版：${
 											labelHigh[item.component]
 										}`}
-									/>
+									</Radio>
 								</RadioGroup>
 							</div>
 						) : (
@@ -240,21 +225,17 @@ const BatchInstall = (props: BatchInstallProps) => {
 								<RadioGroup
 									defaultValue={'true'}
 									disabled={item.status !== 0}
-									onChange={(
-										value: string | number | boolean
-									) => componentChange(value, item)}
+									onChange={(e: RadioChangeEvent) =>
+										componentChange(e.target.value, item)
+									}
 								>
-									<Radio
-										id="true"
-										value="true"
-										label="安装"
-									/>
+									<Radio id="true" value="true">
+										安装
+									</Radio>
 									<br />
-									<Radio
-										id="false"
-										value="false"
-										label="不安装"
-									/>
+									<Radio id="false" value="false">
+										不安装
+									</Radio>
 								</RadioGroup>
 							</div>
 						)}
@@ -266,48 +247,19 @@ const BatchInstall = (props: BatchInstallProps) => {
 				style={{ marginTop: 24 }}
 			>
 				<div className="batch-install-name">中间件控制器</div>
-				{/* <div>
-					<Checkbox
-						label="全选"
-						checked={controllerCheck}
-						onChange={allControllerSelect}
-					/>
-				</div> */}
 			</div>
 			{controllers.length === 0 && (
 				<p style={{ textAlign: 'center' }}>无可安装的中间件控制器</p>
 			)}
 			<div style={{ height: 'auto' }}>
-				{/* <CheckboxGroup
-					value={selectController}
-					onChange={onChange}
-					style={{ width: '100%' }}
-				> */}
 				{controllers.map((item: ControllerItemProps, index: number) => {
 					return (
-						// <Checkbox
-						// 	key={index}
-						// 	value={item.chartName}
-						// 	style={{
-						// 		display: 'inline-block',
-						// 		width: '31%'
-						// 	}}
-						// >
-						// 	{item.chartName}|{item.chartVersion}
-						// </Checkbox>
 						<div
 							className="batch-install-component-item"
 							key={item.chartName}
 						>
 							<div className="batch-install-component-title">
-								<div
-									className="batch-install-component-title-icon operator"
-									style={
-										{
-											// backgroundColor: color[item.component]
-										}
-									}
-								>
+								<div className="batch-install-component-title-icon operator">
 									<img
 										height={30}
 										width={30}
@@ -337,29 +289,24 @@ const BatchInstall = (props: BatchInstallProps) => {
 								<RadioGroup
 									defaultValue={item.type}
 									disabled={item.status !== 2}
-									onChange={(
-										value: string | number | boolean
-									) => operatorChange(value, item)}
+									onChange={(e: RadioChangeEvent) =>
+										operatorChange(e.target.value, item)
+									}
 								>
-									<Radio
-										id="simple"
-										value="simple"
-										label={`单实例版`}
-									/>
+									<Radio id="simple" value="simple">
+										单实例版
+									</Radio>
 									<br />
-									<Radio
-										id="high"
-										value="high"
-										label={`高实例版`}
-									/>
+									<Radio id="high" value="high">
+										高实例版
+									</Radio>
 								</RadioGroup>
 							</div>
 						</div>
 					);
 				})}
-				{/* </CheckboxGroup> */}
 			</div>
-		</Dialog>
+		</Modal>
 	);
 };
 export default BatchInstall;

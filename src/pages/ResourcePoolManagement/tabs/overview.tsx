@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Radio, Balloon, Message, Icon } from '@alicloud/console-components';
 import { useParams } from 'react-router';
-import Table from '@/components/MidTable';
+import { Radio, notification, Tooltip, RadioChangeEvent } from 'antd';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import ProTable from '@/components/ProTable';
 import FormBlock from '@/components/FormBlock';
-import CustomIcon from '@/components/CustomIcon';
+import { IconFont } from '@/components/IconFont';
 import { iconTypeRender, nullRender } from '@/utils/utils';
-import { paramsProps } from '../detail';
 import {
 	getMiddlewareResource,
 	getNodeResource,
 	getNamespaceResource,
 	getCluster
 } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import transBg from '@/assets/images/trans-bg.svg';
+import { paramsProps } from '../detail';
 import {
 	NodeResourceProps,
 	MiddlewareResourceProps,
 	ClusterQuotaDTO
 } from '../resource.pool';
-import { filtersProps } from '@/types/comment';
+import { FiltersProps } from '@/types/comment';
 // * E charts v5
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
@@ -40,8 +40,6 @@ echarts.use([
 	GaugeChart,
 	CanvasRenderer
 ]);
-const RadioGroup = Radio.Group;
-const Tooltip = Balloon.Tooltip;
 const Overview = () => {
 	const [viewType, setViewType] = useState<string>('service');
 	const [tableType, setTableType] = useState<string>('cpu');
@@ -56,8 +54,8 @@ const Overview = () => {
 	const [clusterQuota, setClusterQuota] = useState<ClusterQuotaDTO>();
 	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
 	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
-	const [namespaceFilter, setNamespaceFilter] = useState<filtersProps[]>([]);
-	const [typeFilter, setTypeFilter] = useState<filtersProps[]>([]);
+	const [namespaceFilter, setNamespaceFilter] = useState<FiltersProps[]>([]);
+	const [typeFilter, setTypeFilter] = useState<FiltersProps[]>([]);
 
 	const params: paramsProps = useParams();
 	const { id } = params;
@@ -71,7 +69,7 @@ const Overview = () => {
 					setNamespaceFilter(
 						res.data.map((item: MiddlewareResourceProps) => {
 							return {
-								label: item.namespace,
+								text: item.namespace,
 								value: item.namespace
 							};
 						})
@@ -79,14 +77,17 @@ const Overview = () => {
 					setTypeFilter(
 						res.data.map((item: MiddlewareResourceProps) => {
 							return {
-								label: item.type,
+								text: item.type,
 								value: item.type
 							};
 						})
 					);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		getNodeResource({ clusterId: id }).then((res) => {
@@ -96,7 +97,10 @@ const Overview = () => {
 					setNodeDataSource(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		getCluster({ clusterId: id, detail: true }).then((res) => {
@@ -115,7 +119,10 @@ const Overview = () => {
 				const option2Temp = getGaugeOption(memoryRate, '内存(GB)');
 				setOption2(option2Temp);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -137,7 +144,10 @@ const Overview = () => {
 				);
 			} else {
 				setDataSource([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -170,7 +180,10 @@ const Overview = () => {
 				setDataSource(list);
 			} else {
 				setDataSource([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -188,8 +201,8 @@ const Overview = () => {
 	};
 	const nameRender = (
 		value: string,
-		index: number,
-		record: MiddlewareResourceProps
+		record: MiddlewareResourceProps,
+		index: number
 	) => {
 		return (
 			<div style={{ maxWidth: '160px' }}>
@@ -202,39 +215,25 @@ const Overview = () => {
 			</div>
 		);
 	};
-	const statusRender = (
-		value: string,
-		index: number,
-		record: NodeResourceProps
-	) => {
+	const statusRender = (value: string) => {
 		if (value === 'True') {
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					成功
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 成功
 				</>
 			);
 		} else {
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					失败
+					<CloseCircleFilled style={{ color: '#C80000' }} /> 失败
 				</>
 			);
 		}
 	};
 	const cpuRender = (
 		value: string,
-		index: number,
-		record: NodeResourceProps
+		record: NodeResourceProps,
+		index: number
 	) => {
 		const percentage = record.cpuRate ? Number(record.cpuRate) : 0;
 		return (
@@ -264,8 +263,8 @@ const Overview = () => {
 	};
 	const memoryRender = (
 		value: string,
-		index: number,
-		record: NodeResourceProps
+		record: NodeResourceProps,
+		index: number
 	) => {
 		const percentage = record.memoryRate ? Number(record.memoryRate) : 0;
 		return (
@@ -300,56 +299,42 @@ const Overview = () => {
 	};
 	const Operation = {
 		primary: (
-			<RadioGroup
-				shape="button"
+			<Radio.Group
 				value={viewType}
-				onChange={(value: string | number | boolean) =>
-					onViewChange(value, 'view')
+				onChange={(e: RadioChangeEvent) =>
+					onViewChange(e.target.value, 'view')
 				}
+				style={{ width: '140px' }}
 			>
-				<Tooltip
-					trigger={
-						<Radio id="service" value="service">
-							<CustomIcon type="icon-shili1" size="small" />
-						</Radio>
-					}
-					align="t"
-				>
-					服务视角
-				</Tooltip>
-				<Tooltip
-					trigger={
-						<Radio id="namespace" value="namespace">
-							<CustomIcon
-								type="icon-mingmingkongjian"
-								size="small"
-							/>
-						</Radio>
-					}
-					align="t"
-				>
-					命名空间视角
-				</Tooltip>
-			</RadioGroup>
+				<Radio.Button id="service" value="service">
+					<Tooltip title="服务视角">
+						<IconFont type="icon-shili1" />
+					</Tooltip>
+				</Radio.Button>
+				<Radio.Button id="namespace" value="namespace">
+					<Tooltip title="命名空间视角">
+						<IconFont type="icon-mingmingkongjian" />
+					</Tooltip>
+				</Radio.Button>
+			</Radio.Group>
 		),
 		secondary: (
-			<RadioGroup
-				shape="button"
+			<Radio.Group
 				value={tableType}
-				onChange={(value: string | number | boolean) =>
-					onViewChange(value, 'table')
+				onChange={(e: RadioChangeEvent) =>
+					onViewChange(e.target.value, 'table')
 				}
 			>
-				<Radio id="cpu" value="cpu">
+				<Radio.Button id="cpu" value="cpu">
 					CPU
-				</Radio>
-				<Radio id="memory" value="memory">
+				</Radio.Button>
+				<Radio.Button id="memory" value="memory">
 					内存
-				</Radio>
-				<Radio id="storage" value="storage">
+				</Radio.Button>
+				<Radio.Button id="storage" value="storage">
 					存储
-				</Radio>
-			</RadioGroup>
+				</Radio.Button>
+			</Radio.Group>
 		)
 	};
 	const NodeOperation = {
@@ -477,13 +462,13 @@ const Overview = () => {
 					</div>
 				</div>
 				<div className="resource-pool-table-content">
-					<Table
+					<ProTable
 						dataSource={dataSource}
-						exact
-						primaryKey="key"
+						rowKey="namespace"
 						operation={Operation}
-						fixedHeader={true}
-						maxBodyHeight="280px"
+						scroll={{
+							y: '280px'
+						}}
 						search={
 							viewType === 'service'
 								? {
@@ -492,157 +477,158 @@ const Overview = () => {
 								  }
 								: null
 						}
-						onSort={onSort}
-						onFilter={onFilter}
+						pagination={{
+							hideOnSinglePage: true
+						}}
 					>
-						<Table.Column
+						<ProTable.Column
 							title="命名空间"
 							dataIndex="namespace"
 							filters={namespaceFilter}
-							filterMode="single"
+							// filterMode="single"
 							width={200}
-							lock="left"
+							fixed="left"
 						/>
 						{viewType === 'service' && (
-							<Table.Column
+							<ProTable.Column
 								title="类型"
 								dataIndex="type"
-								cell={iconTypeRender}
+								render={iconTypeRender}
 								filters={typeFilter}
-								filterMode="single"
+								// filterMode="single"
 								width={180}
 							/>
 						)}
 						{viewType === 'service' && (
-							<Table.Column
+							<ProTable.Column
 								title="服务名称/中文别名"
 								dataIndex="name"
-								cell={nameRender}
+								render={nameRender}
 								width={180}
 							/>
 						)}
 						{tableType === 'cpu' && (
-							<Table.Column
+							<ProTable.Column
 								title="CPU配额（核）"
 								dataIndex="requestCpu"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'cpu' && (
-							<Table.Column
+							<ProTable.Column
 								title="近5min平均使用额（核）"
 								dataIndex="per5MinCpu"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'cpu' && (
-							<Table.Column
+							<ProTable.Column
 								title="CPU使用率（%）"
 								dataIndex="cpuRate"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'memory' && (
-							<Table.Column
+							<ProTable.Column
 								title="内存配额（GB）"
 								dataIndex="requestMemory"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'memory' && (
-							<Table.Column
+							<ProTable.Column
 								title="近5min平均使用额（GB）"
 								dataIndex="per5MinMemory"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'memory' && (
-							<Table.Column
+							<ProTable.Column
 								title="内存使用率（%）"
 								dataIndex="memoryRate"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'storage' && (
-							<Table.Column
+							<ProTable.Column
 								title="存储配额（G）"
 								dataIndex="requestStorage"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'storage' && (
-							<Table.Column
+							<ProTable.Column
 								title="近5min平均使用额（%）"
 								dataIndex="per5MinStorage"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
 						{tableType === 'storage' && (
-							<Table.Column
+							<ProTable.Column
 								title="存储使用率（%）"
 								dataIndex="storageRate"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								// sortable
 							/>
 						)}
-					</Table>
+					</ProTable>
 				</div>
 			</FormBlock>
 			<div>
-				<Table
+				<ProTable
 					dataSource={nodeDataSource}
-					exact
-					primaryKey="key"
+					// exact
+					rowKey="ip"
 					operation={NodeOperation}
-					onSort={onNodeSort}
-					onFilter={onNodeFilter}
+					// onSort={onNodeSort}
+					// onFilter={onNodeFilter}
 				>
-					<Table.Column title="节点IP" dataIndex="ip" />
-					<Table.Column
+					<ProTable.Column title="节点IP" dataIndex="ip" />
+					<ProTable.Column
 						title="CPU(核)"
 						dataIndex="cpuRate"
-						cell={cpuRender}
-						sortable
+						render={cpuRender}
+						// sortable
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="内存(GB)"
 						dataIndex="memoryRate"
-						cell={memoryRender}
-						sortable
+						render={memoryRender}
+						// sortable
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="状态"
 						dataIndex="status"
-						cell={statusRender}
-						filterMode="single"
+						render={statusRender}
+						filterMultiple={false}
 						filters={[
-							{ label: '成功', value: 'True' },
-							{ label: '失败', value: 'False' }
+							{ text: '成功', value: 'True' },
+							{ text: '失败', value: 'False' }
 						]}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
-						sortable
+						// sortable
 					/>
-				</Table>
+				</ProTable>
 			</div>
 		</div>
 	);

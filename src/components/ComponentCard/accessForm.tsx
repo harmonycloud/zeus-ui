@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Dialog, Field, Form, Message } from '@alicloud/console-components';
+import React, { useEffect } from 'react';
+import { Modal, Form, notification } from 'antd';
 import { putComponent, cutInComponent, getCluster } from '@/services/common';
 import {
 	PrometheusRender,
@@ -11,8 +11,6 @@ import {
 	LvmRender,
 	LocalPathRender
 } from './componenstsForm';
-import messageConfig from '../messageConfig';
-import storage from '@/utils/storage';
 import './index.scss';
 
 interface AccessFormProps {
@@ -35,13 +33,13 @@ const AccessForm = (props: AccessFormProps) => {
 		setRefreshCluster,
 		status
 	} = props;
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	useEffect(() => {
 		getCluster({ clusterId: clusterId, detail: true }).then((res) => {
 			if (res.success) {
 				const cluster = res.data;
 				if (cluster.ingress) {
-					field.setValues({
+					form.setFieldsValue({
 						ingressAddress: cluster.ingress.address,
 						ingressClassName: cluster.ingress.ingressClassName,
 						namespace: cluster.ingress.tcp.namespace,
@@ -49,7 +47,7 @@ const AccessForm = (props: AccessFormProps) => {
 					});
 				}
 				if (cluster.logging && cluster.logging.elasticSearch) {
-					field.setValues({
+					form.setFieldsValue({
 						protocolEs: cluster.logging.elasticSearch.protocol,
 						hostEs: cluster.logging.elasticSearch.host,
 						portEs: cluster.logging.elasticSearch.port,
@@ -59,28 +57,28 @@ const AccessForm = (props: AccessFormProps) => {
 					});
 				}
 				if (cluster.monitor?.alertManager) {
-					field.setValues({
+					form.setFieldsValue({
 						protocolAlert: cluster.monitor.alertManager.protocol,
 						hostAlert: cluster.monitor.alertManager.host,
 						portAlert: cluster.monitor.alertManager.port
 					});
 				}
 				if (cluster.monitor?.grafana) {
-					field.setValues({
+					form.setFieldsValue({
 						protocolGrafana: cluster.monitor.grafana.protocol,
 						hostGrafana: cluster.monitor.grafana.host,
 						portGrafana: cluster.monitor.grafana.port
 					});
 				}
 				if (cluster.monitor?.prometheus) {
-					field.setValues({
+					form.setFieldsValue({
 						protocolPrometheus: cluster.monitor.prometheus.protocol,
 						hostPrometheus: cluster.monitor.prometheus.host,
 						portPrometheus: cluster.monitor.prometheus.port
 					});
 				}
 				if (cluster?.storage?.backup?.storage) {
-					field.setValues({
+					form.setFieldsValue({
 						accessKeyId:
 							cluster?.storage?.backup?.storage.accessKeyId,
 						bucketName:
@@ -97,7 +95,7 @@ const AccessForm = (props: AccessFormProps) => {
 							(item: any) => item.type === 'lvm'
 						)
 					) {
-						field.setValues({
+						form.setFieldsValue({
 							lvmName: cluster?.storage?.support.find(
 								(item: any) => item.type === 'lvm'
 							).name,
@@ -111,7 +109,7 @@ const AccessForm = (props: AccessFormProps) => {
 							(item: any) => item.type === 'local-path'
 						)
 					) {
-						field.setValues({
+						form.setFieldsValue({
 							localPathName: cluster?.storage?.support.find(
 								(item: any) => item.type === 'local-path'
 							).name,
@@ -122,13 +120,15 @@ const AccessForm = (props: AccessFormProps) => {
 					}
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
 	const onOk = () => {
-		field.validate((errors, values: any) => {
-			if (errors) return;
+		form.validateFields().then((values) => {
 			const sendData: any = {
 				clusterId,
 				componentName: title
@@ -215,31 +215,37 @@ const AccessForm = (props: AccessFormProps) => {
 			if (status === 0) {
 				cutInComponent(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '组件接入成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '组件接入成功'
+						});
 						onCancel();
 						setRefreshCluster(true);
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
 				putComponent(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								`组件${status === 1 ? '接入' : '编辑'}成功`
-							)
-						);
+						notification.success({
+							message: '成功',
+							description: `组件${
+								status === 1 ? '接入' : '编辑'
+							}成功`
+						});
 						onCancel();
 						setRefreshCluster(true);
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -249,7 +255,7 @@ const AccessForm = (props: AccessFormProps) => {
 	const childrenRender = () => {
 		switch (title) {
 			case 'minio':
-				return <MinioRender data={field.getValues()} field={field} />;
+				return <MinioRender data={form.getFieldValue} form={form} />;
 			case 'prometheus':
 				return <PrometheusRender />;
 			case 'alertmanager':
@@ -269,13 +275,14 @@ const AccessForm = (props: AccessFormProps) => {
 		}
 	};
 	return (
-		<Dialog
+		<Modal
 			title={`工具${status === 0 || status === 1 ? '接入' : '编辑'}`}
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '580px' }}
+			width={580}
+			okText="确定"
+			cancelText="取消"
 		>
 			<div className="access-title-content">
 				<div className="access-title-name">
@@ -288,9 +295,11 @@ const AccessForm = (props: AccessFormProps) => {
 				使用
 			</p>
 			<div className="access-form-content">
-				<Form field={field}>{childrenRender()}</Form>
+				<Form labelAlign="left" form={form}>
+					{childrenRender()}
+				</Form>
 			</div>
-		</Dialog>
+		</Modal>
 	);
 };
 export default AccessForm;

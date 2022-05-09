@@ -13,7 +13,7 @@
 	img {
 		margin-left: 37px;
 	}
-	i {
+	span {
 		align-self: flex-end;
 	}
 	div {
@@ -40,7 +40,7 @@
 	font-size: $font-1;
 	font-weight: $font-weight;
 	color: $white;
-	line-height: $line-height-2 * 2;
+	line-height: $line-height-5;
 	text-align: center;
 	position: absolute;
 	right: -120px;

@@ -6,6 +6,7 @@
 		margin-bottom: $margin-sm;
 		.zeus-pro-table-operator-left {
 			display: flex;
+			width: auto;
 			& > button {
 				margin-right: $margin-sm;
 			}

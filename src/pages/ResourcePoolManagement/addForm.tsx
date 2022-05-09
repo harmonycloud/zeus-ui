@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { useParams, useHistory } from 'react-router';
 import {
 	Form,
-	Field,
-	Grid,
+	Row,
+	Col,
 	Input,
 	Select,
 	Button,
-	Message,
-	Icon,
-	Tab
-} from '@alicloud/console-components';
+	notification,
+	Tabs
+} from 'antd';
+import { connect } from 'react-redux';
+import { IconFont } from '@/components/IconFont';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import FormBlock from '@/components/FormBlock';
-import { useParams, useHistory } from 'react-router';
 import {
 	postCluster,
 	getCluster,
 	putCluster,
 	getJoinCommand
 } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { clusterAddType } from '@/types';
-import { connect } from 'react-redux';
-import CustomIcon from '@/components/CustomIcon';
 import storage from '@/utils/storage';
+import { VerticalAlignTopOutlined } from '@ant-design/icons';
 
 const FormItem = Form.Item;
 const formItemLayout = {
@@ -36,7 +35,7 @@ const formItemLayout = {
 		span: 19
 	}
 };
-const { Row, Col } = Grid;
+const { TabPane } = Tabs;
 export interface valuesProps {
 	name: string;
 	nickname: string;
@@ -88,12 +87,16 @@ enum stateEnum {
 }
 function AddForm(props: addFormProps): JSX.Element {
 	const { setRefreshCluster } = props;
+	const params: paramsProps = useParams();
 	const [dcId, setDcId] = useState<string>('');
 	const [quickName, setQuickName] = useState<string>();
 	const [command, setCommand] = useState<string>('');
 	const [inputState, setInputState] = useState<stateEnum>();
-	const field = Field.useField();
-	const params: paramsProps = useParams();
+	const [tabKey, setTabKey] = useState<string>(
+		params.clusterId ? 'form' : 'quick'
+	);
+	const [form] = Form.useForm();
+
 	const history = useHistory();
 	useEffect(() => {
 		if (params.clusterId) {
@@ -101,7 +104,7 @@ function AddForm(props: addFormProps): JSX.Element {
 				(res) => {
 					if (res.success) {
 						setDcId(res.data.dcId);
-						field.setValues({
+						form.setFieldsValue({
 							name: res.data.name,
 							nickname: res.data.nickname,
 							host: res.data.host,
@@ -109,12 +112,13 @@ function AddForm(props: addFormProps): JSX.Element {
 							port: res.data.port
 						});
 						if (res.data.cert) {
-							field.setValues({
+							console.log(res.data.cert);
+							form.setFieldsValue({
 								cert: res.data.cert.certificate
 							});
 						}
 						if (res.data.registry) {
-							field.setValues({
+							form.setFieldsValue({
 								protocolHarbor: res.data.registry.protocol,
 								addressHarbor: res.data.registry.address,
 								portHarbor: res.data.registry.port,
@@ -131,14 +135,15 @@ function AddForm(props: addFormProps): JSX.Element {
 	const uploadConf = (e: any) => {
 		const reader = new window.FileReader();
 		reader.onload = function (e) {
-			field.setValue('cert', reader.result);
+			form.setFieldsValue({
+				cert: reader.result
+			});
+			// field.setValue('cert', reader.result);
 		};
 		reader.readAsText(e.target.files[0]);
 	};
 	const onOk = () => {
-		field.validate((errors) => {
-			if (errors) return;
-			const values: valuesProps = field.getValues();
+		form.validateFields().then((values) => {
 			const sendData: clusterAddType = {
 				cert: {
 					certificate: values.cert
@@ -163,27 +168,28 @@ function AddForm(props: addFormProps): JSX.Element {
 				sendData.dcId = dcId;
 				putCluster(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', {
-								data: '集群修改成功'
-							})
-						);
+						notification.success({
+							message: '成功',
+							description: '集群修改成功'
+						});
 						setRefreshCluster(true);
 						history.push(
 							'/systemManagement/resourcePoolManagement'
 						);
 					} else {
-						Message.show(messageConfig('error', '错误', res));
+						notification.error({
+							message: '错误',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
 				postCluster(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', {
-								data: '集群接入成功'
-							})
-						);
+						notification.success({
+							message: '成功',
+							description: '集群接入成功'
+						});
 						setRefreshCluster(true);
 						storage.setLocal(
 							'cluster-detail-current-tab',
@@ -193,14 +199,16 @@ function AddForm(props: addFormProps): JSX.Element {
 							`/systemManagement/resourcePoolManagement/resourcePoolDetail/default--${sendData.name}/${sendData.nickname}`
 						);
 					} else {
-						Message.show(messageConfig('error', '错误', res));
+						notification.error({
+							message: '错误',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
 		});
 	};
 	const onBlur = () => {
-		console.log(quickName);
 		// 构建到环境中使用
 		if (!quickName || quickName === '') {
 			setInputState(stateEnum.error);
@@ -219,7 +227,10 @@ function AddForm(props: addFormProps): JSX.Element {
 				setCommand(res.data);
 			} else {
 				setCommand('');
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '错误',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -238,23 +249,30 @@ function AddForm(props: addFormProps): JSX.Element {
 		}
 		input.blur();
 		document.body.removeChild(input);
-		Message.show(messageConfig('success', '成功', '复制成功'));
+		notification.success({
+			message: '错误',
+			description: '复制成功'
+		});
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={
 					params.clusterId
 						? '编辑集群（其他集群）'
 						: '添加集群（其他集群）'
 				}
-				hasBackArrow={true}
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
-				<Tab>
-					<Tab.Item
-						title="快捷模式"
+			<ProContent>
+				<Tabs
+					activeKey={tabKey}
+					defaultActiveKey="quick"
+					onChange={(key: string) => setTabKey(key)}
+				>
+					<TabPane
+						tab="快捷模式"
+						key="quick"
 						disabled={params.clusterId ? true : false}
 					>
 						<FormBlock title="基础信息">
@@ -262,23 +280,28 @@ function AddForm(props: addFormProps): JSX.Element {
 								style={{ width: '50%', marginLeft: 12 }}
 								{...formItemLayout}
 								label="英文简称"
-								pattern={pattern.name}
-								patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
+								rules={[
+									{
+										required: true,
+										message: '请输入英文简称'
+									},
+									{
+										pattern: new RegExp(pattern.name),
+										message:
+											'请输入由小写字母数字及“-”组成的2-40个字符'
+									}
+								]}
 								required
-								requiredMessage="请输入英文简称"
-								className="ne-required-ingress"
-								labelTextAlign="left"
-								asterisk={false}
+								labelAlign="left"
 							>
 								<div className="display-flex">
 									<Input
 										name="name"
 										value={quickName}
-										trim={true}
-										state={inputState}
+										// state={inputState}
 										placeholder="请输入集群名称生成集群纳管脚本"
-										onChange={(value: string) => {
-											setQuickName(value);
+										onChange={(e) => {
+											setQuickName(e.target.value);
 											setInputState(undefined);
 										}}
 										// onBlur={onBlur}
@@ -315,15 +338,15 @@ function AddForm(props: addFormProps): JSX.Element {
 										className="quick-model-copy"
 										onClick={copyValue}
 									>
-										<CustomIcon
+										<IconFont
 											type="icon-fuzhi1"
 											style={{
 												color: '#FFFFFF',
 												marginLeft: 7,
 												marginTop: 40,
-												cursor: 'pointer'
+												cursor: 'pointer',
+												fontSize: 32
 											}}
-											size="xl"
 										/>
 									</div>
 								</div>
@@ -347,27 +370,32 @@ function AddForm(props: addFormProps): JSX.Element {
 								退出
 							</Button>
 						</div>
-					</Tab.Item>
-					<Tab.Item title="表单模式">
+					</TabPane>
+					<TabPane tab="表单模式" key="form">
 						<FormBlock title="基础信息">
 							<Form
 								{...formItemLayout}
-								field={field}
+								form={form}
+								labelAlign="left"
 								style={{ width: '50%', paddingLeft: 12 }}
 							>
 								<FormItem
 									label="英文简称"
-									pattern={pattern.name}
-									patternMessage="请输入由小写字母数字及“-”组成的2-40个字符"
 									required
-									requiredMessage="请输入英文简称"
-									className="ne-required-ingress"
-									labelTextAlign="left"
-									asterisk={false}
+									rules={[
+										{
+											required: true,
+											message: '请输入英文简称'
+										},
+										{
+											pattern: new RegExp(pattern.name),
+											message:
+												'请输入由小写字母数字及“-”组成的2-40个字符'
+										}
+									]}
+									name="name"
 								>
 									<Input
-										name="name"
-										trim={true}
 										disabled={
 											params.clusterId ? true : false
 										}
@@ -377,31 +405,29 @@ function AddForm(props: addFormProps): JSX.Element {
 								<FormItem
 									label="显示名称"
 									required
-									requiredMessage="请输入显示名称"
-									maxLength={80}
-									minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
-									className="ne-required-ingress"
-									labelTextAlign="left"
-									asterisk={false}
+									rules={[
+										{
+											required: true,
+											message: '请输入显示名称'
+										},
+										{
+											max: 80,
+											message:
+												'请输入名称，且最大长度不超过80个字符'
+										}
+									]}
+									name="nickname"
 								>
-									<Input
-										name="nickname"
-										trim={true}
-										placeholder="请输入显示名称"
-									/>
+									<Input placeholder="请输入显示名称" />
 								</FormItem>
 								<FormItem
 									label="Apiserver地址"
 									style={{ marginBottom: 0 }}
-									className="ne-required-ingress"
-									labelTextAlign="left"
-									asterisk={false}
 								>
 									<Row gutter={4}>
 										<Col span={6}>
-											<FormItem>
+											<FormItem name="protocol">
 												<Input
-													name="protocol"
 													value="https"
 													disabled={true}
 												/>
@@ -409,20 +435,28 @@ function AddForm(props: addFormProps): JSX.Element {
 										</Col>
 										<Col span={12}>
 											<FormItem
-												pattern={pattern.ip}
-												patternMessage="请输入正确的ip地址！"
 												required
-												requiredMessage="请输入地址"
+												name="host"
+												rules={[
+													{
+														required: true,
+														message: '请输入地址'
+													},
+													{
+														pattern: new RegExp(
+															pattern.ip
+														),
+														message:
+															'请输入正确的ip地址！'
+													}
+												]}
 											>
 												<Input
-													htmlType="text"
-													name="host"
 													disabled={
 														params.clusterId
 															? true
 															: false
 													}
-													trim={true}
 													placeholder="请输入主机地址"
 												/>
 											</FormItem>
@@ -430,18 +464,22 @@ function AddForm(props: addFormProps): JSX.Element {
 										<Col span={6}>
 											<FormItem
 												required
-												requiredMessage="请输入端口"
+												name="port"
+												rules={[
+													{
+														required: true,
+														message: '请输入端口'
+													}
+												]}
 											>
 												<Input
-													htmlType="number"
-													name="port"
+													type="number"
 													disabled={
 														params.clusterId
 															? true
 															: false
 													}
-													value={6443}
-													trim={true}
+													defaultValue={6443}
 													placeholder="端口"
 												/>
 											</FormItem>
@@ -451,20 +489,20 @@ function AddForm(props: addFormProps): JSX.Element {
 								<FormItem
 									label="AdminConfig"
 									required
-									requiredMessage="请输入AdminConfig"
-									className="ne-required-ingress upload-position"
-									labelTextAlign="left"
-									asterisk={false}
+									name="cert"
+									rules={[
+										{
+											required: true,
+											message: '请输入AdminConfig'
+										}
+									]}
 								>
 									<Input.TextArea
-										name="cert"
 										rows={4}
 										placeholder="请输入AdminConfig"
 									/>
 									<div className="upload-parse-file">
-										<Icon
-											type="arrow-to-top"
-											size="xs"
+										<VerticalAlignTopOutlined
 											style={{ marginRight: 4 }}
 										/>
 										上传文件
@@ -479,14 +517,11 @@ function AddForm(props: addFormProps): JSX.Element {
 								<FormItem
 									label="Harbor地址"
 									style={{ marginBottom: 0 }}
-									labelTextAlign="left"
-									asterisk={false}
 								>
 									<Row>
 										<Col span={6}>
-											<FormItem>
+											<FormItem name="protocolHarbor">
 												<Select
-													name="protocolHarbor"
 													style={{ width: '100%' }}
 												>
 													<Select.Option value="https">
@@ -501,11 +536,10 @@ function AddForm(props: addFormProps): JSX.Element {
 										<Col span={12}>
 											<FormItem
 												style={{ marginLeft: -2 }}
+												name="addressHarbor"
 											>
 												<Input
-													htmlType="text"
-													name="addressHarbor"
-													trim={true}
+													type="text"
 													placeholder="请输入主机地址"
 												/>
 											</FormItem>
@@ -513,51 +547,32 @@ function AddForm(props: addFormProps): JSX.Element {
 										<Col span={6}>
 											<FormItem
 												style={{ marginLeft: -2 }}
+												name="portHarbor"
 											>
 												<Input
-													htmlType="number"
-													name="portHarbor"
-													trim={true}
+													type="number"
 													placeholder="端口"
 												/>
 											</FormItem>
 										</Col>
 									</Row>
 								</FormItem>
-								<FormItem
-									label="Harbor项目"
-									labelTextAlign="left"
-									asterisk={false}
-								>
-									<Input
-										name="chartRepo"
-										trim={true}
-										placeholder="请输入Harbor项目"
-									/>
+								<FormItem label="Harbor项目" name="chartRepo">
+									<Input placeholder="请输入Harbor项目" />
 								</FormItem>
 								<FormItem
 									label="Harbor鉴权"
 									style={{ marginBottom: 0 }}
-									labelTextAlign="left"
-									asterisk={false}
 								>
 									<Row gutter={4}>
 										<Col>
-											<FormItem>
-												<Input
-													name="user"
-													trim={true}
-													placeholder="请输入用户名"
-												/>
+											<FormItem name="user">
+												<Input placeholder="请输入用户名" />
 											</FormItem>
 										</Col>
 										<Col>
-											<FormItem>
-												<Input.Password
-													name="password"
-													trim={true}
-													placeholder="请输入密码"
-												/>
+											<FormItem name="password">
+												<Input.Password placeholder="请输入密码" />
 											</FormItem>
 										</Col>
 									</Row>
@@ -576,10 +591,10 @@ function AddForm(props: addFormProps): JSX.Element {
 								取消
 							</Button>
 						</div>
-					</Tab.Item>
-				</Tab>
-			</Content>
-		</Page>
+					</TabPane>
+				</Tabs>
+			</ProContent>
+		</ProPage>
 	);
 }
 export default connect(() => ({}), {

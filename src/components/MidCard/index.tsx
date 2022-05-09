@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Icon } from '@alicloud/console-components';
-import moment from 'moment';
-import CustomIcon from '../CustomIcon';
+import {
+	CheckCircleFilled,
+	CloseCircleFilled,
+	PlusOutlined
+} from '@ant-design/icons';
+import { IconFont } from '../IconFont';
 import cutin from '@/assets/images/cutin.svg';
 import './index.scss';
 
@@ -38,34 +41,19 @@ export const iconRender = (status: number | undefined) => {
 		case 3:
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					运行正常
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 运行正常
 				</>
 			);
 		case 4:
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					运行异常
+					<CloseCircleFilled style={{ color: '#C80000' }} /> 运行异常
 				</>
 			);
 		case 6:
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					安装异常
+					<CloseCircleFilled style={{ color: '#C80000' }} /> 安装异常
 				</>
 			);
 		default:
@@ -155,7 +143,7 @@ const MidCard = (props: MidCardProps) => {
 			<div className="mid-card-display">
 				{status === -1 && (
 					<div className="mid-card-add" style={{ color: titleColor }}>
-						<Icon type="add" />
+						<PlusOutlined style={{ marginRight: 4 }} />
 						{addTitle}
 					</div>
 				)}
@@ -165,8 +153,8 @@ const MidCard = (props: MidCardProps) => {
 							className="mid-card-icon"
 							style={{ backgroundColor: color }}
 						>
-							<CustomIcon
-								type={icon}
+							<IconFont
+								type={icon as string}
 								style={{
 									color: '#FFFFFF',
 									width: 40,

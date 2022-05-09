@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-	Dialog,
-	Message,
-	Form,
-	Field,
-	Input
-} from '@alicloud/console-components';
+import { Modal, notification, Form, Input } from 'antd';
 import { installIngress } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 
 interface InstallIngressProps {
@@ -27,47 +20,52 @@ const formItemLayout = {
 const FormItem = Form.Item;
 const InstallIngressForm = (props: InstallIngressProps) => {
 	const { visible, onCancel, onRefresh, clusterId } = props;
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	const onOk = () => {
-		field.validate((errors, values) => {
-			if (errors) return;
+		form.validateFields().then((values) => {
 			onCancel();
 			installIngress({ ...values, clusterId }).then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '服务暴露安装成功')
-					);
+					notification.success({
+						message: '成功',
+						description: '服务暴露安装成功'
+					});
 					onRefresh();
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		});
 	};
 	return (
-		<Dialog
+		<Modal
 			title="安装服务暴露"
-			style={{ width: 640 }}
+			width={640}
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
+			okText="确定"
+			cancelText="取消"
 		>
-			<Form {...formItemLayout} field={field}>
+			<Form {...formItemLayout} labelAlign="left" form={form}>
 				<FormItem
 					label="ingress名称"
 					required
-					requiredMessage="请输入Ingress名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					pattern={pattern.ingressName}
-					patternMessage="请输入由小写字母数字及“-”组成的1-40个字符"
+					rules={[
+						{ required: true, message: '请输入Ingress名称' },
+						{
+							pattern: new RegExp(pattern.ingressName),
+							message: '请输入由小写字母数字及“-”组成的1-40个字符'
+						}
+					]}
 				>
 					<Input
-						htmlType="text"
+						type="text"
 						name="ingressClassName"
-						trim={true}
+						// trim={true}
 						defaultValue="nginx-ingress-controller"
 						placeholder="请输入Ingress名称"
 					/>
@@ -75,19 +73,17 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				<FormItem
 					label="http端口"
 					required
-					requiredMessage="请输入Ingress名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					min={1}
-					max={65535}
-					minmaxMessage="端口范围为1-65535"
+					rules={[
+						{ required: true, message: '请输入http端口' },
+						{ min: 1, message: '端口范围为1' },
+						{ max: 65535, message: '端口范围为1-65535' }
+					]}
 				>
 					<Input
-						htmlType="number"
+						type="number"
 						name="httpPort"
 						defaultValue={80}
-						trim={true}
+						// trim={true}
 						min={1}
 						max={65535}
 						placeholder="请输入http端口"
@@ -96,18 +92,16 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				<FormItem
 					label="https端口"
 					required
-					requiredMessage="请输入Ingress名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					min={1}
-					max={65535}
-					minmaxMessage="端口范围为1-65535"
+					rules={[
+						{ required: true, message: '请输入https端口' },
+						{ min: 1, message: '端口范围为1' },
+						{ max: 65535, message: '端口范围为1-65535' }
+					]}
 				>
 					<Input
-						htmlType="number"
+						type="number"
 						name="httpsPort"
-						trim={true}
+						// trim={true}
 						defaultValue={443}
 						min={1}
 						max={65535}
@@ -117,18 +111,16 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				<FormItem
 					label="healthz端口"
 					required
-					requiredMessage="请输入Ingress名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					min={1}
-					max={65535}
-					minmaxMessage="端口范围为1-65535"
+					rules={[
+						{ required: true, message: '请输入healthz端口' },
+						{ min: 1, message: '端口范围为1' },
+						{ max: 65535, message: '端口范围为1-65535' }
+					]}
 				>
 					<Input
-						htmlType="number"
+						type="number"
 						name="healthzPort"
-						trim={true}
+						// trim={true}
 						defaultValue={10254}
 						min={1}
 						max={65535}
@@ -138,18 +130,16 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				<FormItem
 					label="默认服务端口"
 					required
-					requiredMessage="请输入Ingress名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					min={1}
-					max={65535}
-					minmaxMessage="端口范围为1-65535"
+					rules={[
+						{ required: true, message: '请输入默认服务端口' },
+						{ min: 1, message: '端口范围为1' },
+						{ max: 65535, message: '端口范围为1-65535' }
+					]}
 				>
 					<Input
-						htmlType="number"
+						type="number"
 						name="defaultServerPort"
-						trim={true}
+						// trim={true}
 						defaultValue={8181}
 						min={1}
 						max={65535}
@@ -157,7 +147,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 					/>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 };
 export default InstallIngressForm;

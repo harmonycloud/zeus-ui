@@ -28,7 +28,7 @@
 			height: 60px;
 			border-radius: $border-radius-lg;
 			text-align: center;
-			line-height: 57px;
+			line-height: 80px;
 		}
 		.mid-card-title {
 			width: calc(100% - 60px);
@@ -64,22 +64,18 @@
 		border-bottom: 1px solid #e9e9e9;
 		display: flex;
 		color: #878787;
-		.mid-card-left {
+		.mid-card-left, .mid-card-right {
 			width: 50%;
 			border-right: 1px solid #e8e8e8;
 			height: 16px;
-			line-height: $line-height-2;
+			line-height: 16px;
 			text-align: center;
 			margin-top: 8px;
 			cursor: pointer;
 		}
 		.mid-card-right {
 			width: 49%;
-			height: 16px;
-			line-height: $line-height-2;
-			text-align: center;
-			margin-top: 8px;
-			cursor: pointer;
+			border-right: none;
 		}
 	}
 	.mid-card-center {
@@ -89,7 +85,7 @@
 		border-radius: 0px 0px $border-radius $border-radius;
 		color: #878787;
 		text-align: center;
-		line-height: $line-height-2 * 2;
+		line-height: $line-height-5;
 		cursor: pointer;
 		border-top: 1px solid #e9e9e9;
 		border-right: 1px solid #e9e9e9;

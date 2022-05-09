@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import Table from '@/components/MidTable';
-import { Button, Message, Dialog, Balloon } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { StoreState, globalVarProps } from '@/types';
 import { connect } from 'react-redux';
+import moment from 'moment';
+import ProTable from '@/components/ProTable';
+import { Button, notification, Modal } from 'antd';
+import Actions from '@/components/Actions';
+import { StoreState, globalVarProps } from '@/types';
 import { getMirror, deleteMirror } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import { NamespaceResourceProps } from '../resource.pool';
 import { paramsProps } from '../detail';
 import { nullRender } from '@/utils/utils';
 import AddMirrorWarehouse from './addMirrorWarehouse';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 
+const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
 const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 	const [dataSource, setDataSource] = useState<NamespaceResourceProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
@@ -31,7 +33,10 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 					setDataSource(res.data.list);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -46,7 +51,10 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 			if (res.success) {
 				setDataSource(res.data.list);
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -63,47 +71,37 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 			</Button>
 		)
 	};
-	const onSort = (dataIndex: string, order: string) => {
-		const temp = dataSource.sort(function (a, b) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setDataSource([...temp]);
-	};
+
 	const handleSearch = (value: string) => {
 		setKeyword(value);
 	};
 	const editMirror = (record: any) => {
 		setIsEdit(true);
-		console.log(record);
-
 		setFormData(record);
 		setVisible(true);
 	};
 	const deleteMirrors = (record: any) => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
+			okText: '确定',
+			cancelText: '取消',
 			onOk: () => {
-				deleteMirror({
+				return deleteMirror({
 					clusterId: id,
 					id: record.id
 				}).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '镜像仓库删除成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '镜像仓库删除成功'
+						});
 						getData();
 					} else {
-						Message.show(
-							messageConfig('error', '失败', res.errorMsg)
-						);
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -111,8 +109,8 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 	};
 	const actionRender = (
 		value: any,
-		index: number,
-		record: NamespaceResourceProps
+		record: NamespaceResourceProps,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -124,48 +122,52 @@ const MirrorWarehouse = (props: { globalVar: globalVarProps }) => {
 		);
 	};
 	return (
-		<div style={{ marginTop: 16 }}>
-			<Table
+		<div>
+			<ProTable
 				dataSource={dataSource}
-				exact
-				primaryKey="key"
+				rowKey="address"
 				operation={Operation}
 				showRefresh
 				onRefresh={getData}
-				onSort={onSort}
 				search={{
 					onSearch: handleSearch,
 					placeholder: '请输入关键字搜索'
 				}}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="镜像仓库地址"
 					dataIndex="address"
 					width={150}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="镜像仓库项目"
 					dataIndex="project"
 					width={150}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="描述"
 					dataIndex="description"
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
-					sortable
+					sorter={(
+						a: NamespaceResourceProps,
+						b: NamespaceResourceProps
+					) =>
+						moment(a.createTime).unix() -
+						moment(b.createTime).unix()
+					}
 					width={180}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="操作"
 					dataIndex="action"
-					cell={actionRender}
+					render={actionRender}
 					width={150}
 				/>
-			</Table>
+			</ProTable>
 			{visible && (
 				<AddMirrorWarehouse
 					visible={visible}

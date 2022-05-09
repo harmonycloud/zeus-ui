@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message } from '@alicloud/console-components';
 import { useHistory } from 'react-router';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { Button, Modal, notification } from 'antd';
 import moment from 'moment';
-import { getClusters } from '@/services/common';
-import Table from '@/components/MidTable';
+import { connect } from 'react-redux';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import { deleteCluster, getClusters } from '@/services/common';
 import { clusterType } from '@/types';
-import messageConfig from '@/components/messageConfig';
-import { timeRender } from '@/utils/utils';
-import DeleteCard from './DeleteCard';
-import RegistryNamespace from './registryNamespace';
 import transBg from '@/assets/images/trans-bg.svg';
-import './index.scss';
 import storage from '@/utils/storage';
+import { setRefreshCluster } from '@/redux/globalVar/var';
+import './index.scss';
 
-export default function ResourcePoolManagement(): JSX.Element {
+const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
+interface ResourcePoolManagementProps {
+	setRefreshCluster: (flag: boolean) => void;
+}
+function ResourcePoolManagement(
+	props: ResourcePoolManagementProps
+): JSX.Element {
+	const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [dataSource, setDataSource] = useState<clusterType[]>([]);
-	const [visible, setVisible] = useState<boolean>(false);
-	const [namespaceVisible, setNamespaceVisible] = useState<boolean>(false);
-	const [data, setData] = useState<clusterType>();
+	// const [visible, setVisible] = useState<boolean>(false);
+	// const [data, setData] = useState<clusterType>();
 	const [key, setKey] = useState<string>('');
 	const history = useHistory();
 	useEffect(() => {
@@ -31,7 +36,10 @@ export default function ResourcePoolManagement(): JSX.Element {
 					setClusterList(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -147,8 +155,8 @@ export default function ResourcePoolManagement(): JSX.Element {
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: clusterType
+		record: clusterType,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -164,21 +172,38 @@ export default function ResourcePoolManagement(): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						if (record.removable) {
-							setVisible(true);
-							setData(record);
-						} else {
-							const dialog = Dialog.show({
-								title: '提示',
+							confirm({
+								title: '操作提醒',
 								content:
-									'该集群正在被中间件服务使用，请删除后再试',
-								footer: (
-									<Button
-										type="primary"
-										onClick={() => dialog.hide()}
-									>
-										我知道了
-									</Button>
-								)
+									'该集群所有的数据都将被清空，无法找回，是否继续?',
+								onOk() {
+									return deleteCluster({
+										clusterId: record.id
+									}).then((res) => {
+										if (res.success) {
+											notification.success({
+												message: '成功',
+												description: '删除成功'
+											});
+											setRefreshCluster(true);
+											getData(key);
+										} else {
+											notification.error({
+												message: '失败',
+												description: res.errorMsg
+											});
+										}
+									});
+								}
+							});
+							// setVisible(true);
+							// setData(record);
+						} else {
+							Modal.info({
+								title: '提示',
+								okText: '我知道了',
+								content:
+									'该集群正在被中间件服务使用，请删除后再试'
 							});
 						}
 					}}
@@ -188,7 +213,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 			</Actions>
 		);
 	};
-	const cpuRender = (value: string, index: number, record: clusterType) => {
+	const cpuRender = (value: string, record: clusterType, index: number) => {
 		const percentage = record.clusterQuotaDTO
 			? (Number(record.clusterQuotaDTO?.usedCpu) /
 					Number(record.clusterQuotaDTO?.totalCpu)) *
@@ -224,7 +249,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 			</div>
 		);
 	};
-	const clusterNameRender = (value: string, index: number, record: any) => {
+	const clusterNameRender = (value: string, record: any, index: number) => {
 		return (
 			<span
 				className="name-link"
@@ -238,7 +263,7 @@ export default function ResourcePoolManagement(): JSX.Element {
 			</span>
 		);
 	};
-	const nameRender = (value: string, index: number, record: any) => {
+	const nameRender = (value: string, record: any, index: number) => {
 		return (
 			<span
 				className="name-link"
@@ -249,14 +274,14 @@ export default function ResourcePoolManagement(): JSX.Element {
 					storage.setLocal('cluster-detail-current-tab', 'namespace');
 				}}
 			>
-				{value}
+				{record.attributes.nsCount}
 			</span>
 		);
 	};
 	const memoryRender = (
 		value: string,
-		index: number,
-		record: clusterType
+		record: clusterType,
+		index: number
 	) => {
 		const percentage = record.clusterQuotaDTO
 			? (Number(record.clusterQuotaDTO?.usedMemory) /
@@ -293,83 +318,93 @@ export default function ResourcePoolManagement(): JSX.Element {
 			</div>
 		);
 	};
+	const createTimeRender = (
+		value: string,
+		record: clusterType,
+		index: number
+	) => {
+		return record.attributes.createTime || '/';
+	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="集群管理"
 				subTitle="发布中间件需要消耗CPU、内存等资源"
 			/>
-			<Content>
-				<Table
+			<ProContent>
+				<ProTable
 					dataSource={dataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
 					showRefresh
 					onRefresh={() => getData(key)}
 					search={{
-						value: key,
 						onSearch: handleSearch,
-						onChange: handleChange,
 						placeholder: '请输入集群名称搜索'
 					}}
-					primaryKey="key"
+					rowKey="name"
 					operation={Operation}
-					onFilter={onFilter}
-					onSort={onSort}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="集群名称"
 						dataIndex="nickname"
-						cell={clusterNameRender}
+						render={clusterNameRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="命名空间"
-						dataIndex="attributes.nsCount"
-						cell={nameRender}
-						sortable
+						dataIndex="nsCount"
+						render={nameRender}
+						sorter={(a, b) =>
+							a.attributes.nsCount - b.attributes.nsCount
+						}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="CPU(核)"
 						dataIndex="cpu"
-						cell={cpuRender}
-						sortable
+						render={cpuRender}
+						sorter={(a, b) => {
+							const aPer =
+								Number(a.clusterQuotaDTO?.usedCpu) /
+								Number(a.clusterQuotaDTO?.totalCpu);
+							const bPer =
+								Number(b.clusterQuotaDTO?.usedCpu) /
+								Number(b.clusterQuotaDTO?.totalCpu);
+							return aPer - bPer;
+						}}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="内存(GB)"
 						dataIndex="memory"
-						cell={memoryRender}
-						sortable
+						render={memoryRender}
+						sorter={(a, b) => {
+							const aPer =
+								Number(a.clusterQuotaDTO?.usedMemory) /
+								Number(a.clusterQuotaDTO?.totalMemory);
+							const bPer =
+								Number(b.clusterQuotaDTO?.usedMemory) /
+								Number(b.clusterQuotaDTO?.totalMemory);
+							return aPer - bPer;
+						}}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
-						dataIndex="attributes.createTime"
-						cell={timeRender}
-						sortable
+						dataIndex="createTime"
+						render={createTimeRender}
+						sorter={(a, b) => {
+							return (
+								moment(a.attributes.createTime).unix() -
+								moment(b.attributes.createTime).unix()
+							);
+						}}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 					/>
-				</Table>
-			</Content>
-			{visible && data && (
-				<DeleteCard
-					id={data.id}
-					visible={visible}
-					onCancel={() => setVisible(false)}
-					updateFn={() => getData(key)}
-				/>
-			)}
-			{namespaceVisible && data && (
-				<RegistryNamespace
-					visible={namespaceVisible}
-					clusterId={data.id}
-					cancelHandle={() => setNamespaceVisible(false)}
-					updateFn={() => getData(key)}
-				/>
-			)}
-		</Page>
+				</ProTable>
+			</ProContent>
+		</ProPage>
 	);
 }
+export default connect(() => ({}), {
+	setRefreshCluster
+})(ResourcePoolManagement);

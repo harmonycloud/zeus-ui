@@ -365,7 +365,7 @@ export const nullRender: (value: string | null) => JSX.Element = (
 	);
 };
 // * 蓝字显示
-export const nameRender = (value: string, index: number, record: any) => {
+export const nameRender = (value: string) => {
 	return <span className="name-link">{value}</span>;
 };
 // * 表格超出长度用气泡显示
