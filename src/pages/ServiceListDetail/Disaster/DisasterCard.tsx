@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@alicloud/console-components';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import origin from '@/assets/images/o-instance.svg';
 import backup from '@/assets/images/backup-instance.svg';
 import PasswordDisplay from '@/components/PasswordDisplay';
@@ -64,7 +64,7 @@ export const DisasterBackupCardNone: (props: disasterCardProps) => JSX.Element =
 				</div>
 				<ul className="disaster-card-none">
 					<div className="disaster-card-add" onClick={toCreateBackup}>
-						<Icon type="add" size="small" />
+						<PlusOutlined />
 						<span>添加灾备服务</span>
 					</div>
 				</ul>
@@ -109,7 +109,7 @@ export const DisasterBackupCard: (props: disasterCardProps) => JSX.Element = (
 				</li>
 			</ul>
 			<div className="disaster-card-delete" onClick={deleteInstance}>
-				<Icon type="ashbin" size="small" />
+				<DeleteOutlined />
 				<span>删除</span>
 			</div>
 		</div>
