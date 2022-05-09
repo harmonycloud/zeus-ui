@@ -1,7 +1,7 @@
 .page {
 	order: 1;
 	flex: 1 1 auto;
-	height: calc(100% + 50px);
+	height: 100%;
 	overflow-y: auto;
 }
 .pro-page {
@@ -40,6 +40,36 @@
 			overflow: visible;
 			box-sizing: border-box;
 			padding: 0 24px 40px 24px;
+		}
+		.pro-menu-content {
+			display: flex;
+			height: 100%;
+			.ant-menu {
+				order: 0;
+				height: calc(100vh + 200px) !important;
+				-webkit-box-flex: 0;
+				flex: 0 0 auto;
+				align-self: auto;
+				position: relative;
+				min-width: 180px;
+				margin-right: 20px;
+				.ant-menu-item-selected::after {
+					transform: scaleY(1);
+					opacity: 1;
+					transition: transform 0.15s
+							cubic-bezier(0.645, 0.045, 0.355, 1),
+						opacity 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+				}
+			}
+			.content {
+				order: 0;
+				-webkit-box-flex: 1;
+				flex: 1 1 auto;
+				align-self: auto;
+				width: 100%;
+				min-width: 0px;
+				overflow: visible;
+			}
 		}
 	}
 }

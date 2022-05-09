@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Message } from '@alicloud/console-components';
+import { notification } from 'antd';
 import { getMiddlewareMonitorUrl } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import DefaultPicture from '@/components/DefaultPicture';
 import ComponentNull from '@/components/ComponentsNull';
 
-import styles from './monitor.module.scss';
 import svg from '@/assets/images/grafana_icon.svg';
 import { MonitorProps } from '../detail';
+import styles from './monitor.module.scss';
 
 const Monitor = (props: MonitorProps) => {
 	const {
@@ -36,7 +35,10 @@ const Monitor = (props: MonitorProps) => {
 						if (res.success) {
 							setUrl(res.data.url);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					});
 				}
