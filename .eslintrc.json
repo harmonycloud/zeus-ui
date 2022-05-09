@@ -27,7 +27,9 @@
     ],
     "rules": {
 		"react/display-name": "off",
-        "react/prop-types": "off"
+        "react/prop-types": "off",
+		"no-explicit-any": "off",
+		"no-unused-expressions": "off"
     },
 	"overrides": [
 		{
