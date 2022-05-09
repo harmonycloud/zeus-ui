@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-// import { Message } from '@alicloud/console-components';
 import { notification, Modal } from 'antd';
-
-// import { showConfirmDialog } from '@alicloud/console-components-confirm';
 import { connect } from 'react-redux';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { postComponent, deleteComponent } from '@/services/common';
-import './index.scss';
 import InstallForm from './installForm';
 import AccessForm from './accessForm';
 import LvmInstallForm from './lvmInstallForm';
-import { setRefreshCluster } from '@/redux/globalVar/var';
 import MidCard from '../MidCard';
+import { setRefreshCluster } from '@/redux/globalVar/var';
 import { name, icon, color } from '@/utils/enum';
-import moment from 'moment';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import './index.scss';
 
 interface ComponentCardProps {
 	title: string;
@@ -102,6 +98,8 @@ const ComponentCard = (props: ComponentCardProps) => {
 			icon: <ExclamationCircleOutlined />,
 			title: `确认${msg}`,
 			content: content,
+			okText: '确定',
+			cancelText: '取消',
 			onOk: () => {
 				const sendData = {
 					clusterId,
