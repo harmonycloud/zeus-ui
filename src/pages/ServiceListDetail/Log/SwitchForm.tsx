@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Dialog, Icon, Checkbox, Message } from '@alicloud/console-components';
+import { Modal, Checkbox, notification } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { uploadLogSwitch } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 interface SwitchFormProps {
 	visible: boolean;
 	source: string;
@@ -45,30 +46,30 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 		onCancel(true);
 		uploadLogSwitch(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig(
-						'success',
-						'成功',
-						`${source === 'standard' ? '标准日志' : '文件日志'}${
-							flag ? '开启' : '关闭'
-						}成功`
-					)
-				);
+				notification.success({
+					message: '成功',
+					description: `${
+						source === 'standard' ? '标准日志' : '文件日志'
+					}${flag ? '开启' : '关闭'}成功`
+				});
 			} else {
 				onCancel(false);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	return (
-		<Dialog
-			title="   "
-			visible={visible}
-			onCancel={() => onCancel(false)}
-			onClose={() => onCancel(false)}
-			onOk={onOk}
-		>
-			<Icon type="warning" style={{ color: '#0070cc' }} />{' '}
+		<Modal visible={visible} onCancel={() => onCancel(false)} onOk={onOk}>
+			<ExclamationCircleOutlined
+				style={{
+					color: '#faad14',
+					fontSize: '22px',
+					verticalAlign: 'middle'
+				}}
+			/>{' '}
 			{`${flag ? '开启' : '关闭'}将导致服务重启${
 				flag ? ',数据同步ES也需要等待一会' : ''
 			}，是否继续？`}
@@ -77,11 +78,14 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 			<Checkbox
 				style={{ marginLeft: 24 }}
 				checked={checked}
-				onChange={(checked: boolean) => setChecked(checked)}
-				label={`若${source === 'standard' ? '文件日志' : '标准日志'}${
+				onChange={(e: CheckboxChangeEvent) =>
+					setChecked(e.target.checked)
+				}
+			>
+				{`若${source === 'standard' ? '文件日志' : '标准日志'}${
 					flag ? '未启用' : '启用中'
 				}，您可以选择同步${flag ? '开启' : '关闭'}`}
-			/>
-		</Dialog>
+			</Checkbox>
+		</Modal>
 	);
 }

@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import {
 	Select,
-	Grid,
+	Row,
+	Col,
 	Input,
 	Button,
-	Message,
-	Balloon,
 	Switch,
-	Icon
-} from '@alicloud/console-components';
+	Popover,
+	notification
+} from 'antd';
+import {
+	ArrowsAltOutlined,
+	ShrinkOutlined,
+	DownloadOutlined,
+	QuestionCircleOutlined
+} from '@ant-design/icons';
 import { useParams } from 'react-router';
 import moment, { Moment } from 'moment';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import TimeSelect from '@/components/TimeSelect';
-import messageConfig from '@/components/messageConfig';
 import ComponentsNull from '@/components/ComponentsNull';
 import SwitchForm from './SwitchForm';
 import {
@@ -40,7 +45,6 @@ import {
 } from '../detail';
 import { Editor } from 'codemirror';
 
-const { Row, Col } = Grid;
 const { Option } = Select;
 
 export default function StandardLog(props: CommonLogProps): JSX.Element {
@@ -162,18 +166,18 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 					setLogFiles(res.data);
 					setCurrentLogFile(res.data[0]);
 				} else {
-					Message.show(
-						messageConfig(
-							'error',
-							'失败',
-							'根据当前查询条件未查询到任何日志文件。'
-						)
-					);
+					notification.error({
+						message: '失败',
+						description: '根据当前查询条件未查询到任何日志文件。'
+					});
 					setLogFiles([]);
 					setCurrentLogFile(undefined);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -183,13 +187,10 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 			if (res.success) {
 				if (sendData.scrollId) {
 					if (res.data.log.length === 0) {
-						Message.show(
-							messageConfig(
-								'error',
-								'失败',
-								'当前日志文件已经查询结束。'
-							)
-						);
+						notification.error({
+							message: '失败',
+							description: '当前日志文件已经查询结束。'
+						});
 					} else {
 						const logs = res.data.log.map(
 							(item: LogDetailItem) => item.msg
@@ -198,13 +199,10 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 					}
 				} else {
 					if (res.data.log.length === 0) {
-						Message.show(
-							messageConfig(
-								'error',
-								'失败',
-								'当前日志文件没有信息。'
-							)
-						);
+						notification.error({
+							message: '失败',
+							description: '当前日志文件没有信息。'
+						});
 						setLogList([]);
 					} else {
 						const log = res.data.log.map(
@@ -216,7 +214,10 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 					}
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -241,8 +242,8 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 		setSearchType(value);
 	};
 
-	const handleChange = (value: string) => {
-		setKeyword(value);
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setKeyword(e.target.value);
 	};
 
 	const logFilesClick = (value: LogFileItem) => {
@@ -358,18 +359,19 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 				<li className="display-flex form-li">
 					<label className="form-name">
 						<span style={{ marginRight: 8 }}>标准日志收集</span>
-						<Balloon
-							trigger={<Icon type="question-circle" size="xs" />}
-							closable={false}
+						<Popover
+							content={
+								<span
+									style={{
+										lineHeight: '18px'
+									}}
+								>
+									安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+								</span>
+							}
 						>
-							<span
-								style={{
-									lineHeight: '18px'
-								}}
-							>
-								安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-							</span>
-						</Balloon>
+							<QuestionCircleOutlined />
+						</Popover>
 					</label>
 					<div
 						className={`form-content display-flex flex-align ${styles['standard-log']}`}
@@ -537,21 +539,13 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 								className={`display-inline-block ${styles['btn']}`}
 								onClick={downloadLog}
 							>
-								日志导出 <Icon size="xs" type="download1" />
+								日志导出 <DownloadOutlined />
 							</div>
 							{!isFullscreen && (
-								<Icon
-									type="expand-alt"
-									size="xs"
-									onClick={screenExtend}
-								/>
+								<ArrowsAltOutlined onClick={screenExtend} />
 							)}
 							{isFullscreen && (
-								<Icon
-									type="compress-alt"
-									size="xs"
-									onClick={screenShrink}
-								/>
+								<ShrinkOutlined onClick={screenShrink} />
 							)}
 						</div>
 					</div>

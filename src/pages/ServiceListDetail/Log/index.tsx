@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router';
-import { Tab } from '@alicloud/console-components';
-// import { Page, Content, Menu } from '@alicloud/console-components-page';
+import { Tabs } from 'antd';
 import { ProPage, ProContent, ProMenu } from '@/components/ProPage';
 
 import DefaultPicture from '@/components/DefaultPicture';
@@ -70,34 +69,34 @@ export default function Log(props: LogProps): JSX.Element {
 	if (pathname.includes('monitorAlarm')) {
 		return (
 			<div>
-				<Tab>
-					<Tab.Item title="实时日志">
+				<Tabs>
+					<Tabs.TabPane tab="实时日志" key="1">
 						<RealtimeLog data={props} />
-					</Tab.Item>
+					</Tabs.TabPane>
 					{!customMid ? (
-						<Tab.Item title="标准日志">
+						<Tabs.TabPane tab="标准日志" key="2">
 							<StandardLog
 								data={props}
 								logging={logging}
 								onRefresh={onRefresh}
 							/>
-						</Tab.Item>
+						</Tabs.TabPane>
 					) : null}
 					{!customMid ? (
-						<Tab.Item title="日志文件">
+						<Tabs.TabPane tab="日志文件" key="3">
 							<LogFile
 								data={props}
 								logging={logging}
 								onRefresh={onRefresh}
 							/>
-						</Tab.Item>
+						</Tabs.TabPane>
 					) : null}
 					{type === 'mysql' && (
-						<Tab.Item title="慢日志查看">
+						<Tabs.TabPane tab="慢日志查看" key="4">
 							<SlowLog data={props} logging={logging} />
-						</Tab.Item>
+						</Tabs.TabPane>
 					)}
-				</Tab>
+				</Tabs>
 			</div>
 		);
 	} else {

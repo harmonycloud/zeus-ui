@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Table,
-	Button,
-	Icon,
-	Pagination,
-	Input,
-	Message,
-	Grid,
-	Select
-} from '@alicloud/console-components';
+import { Button, Input, Select, Row, Col, notification } from 'antd';
+import { VerticalAlignBottomOutlined } from '@ant-design/icons';
+import ProTable from '@/components/ProTable';
+
 import TimeSelect from '@/components/TimeSelect';
 import { getSlowLogs } from '@/services/middleware';
 import transTime from '@/utils/transTime';
-import styled from 'styled-components';
+// import styled from 'styled-components';
 import moment, { Moment } from 'moment';
-import messageConfig from '@/components/messageConfig';
 import NumberRange from '@/components/NumberRange';
+
 import { api } from '@/api.json';
 import styles from './log.module.scss';
 import ComponentsNull from '@/components/ComponentsNull';
@@ -23,7 +17,6 @@ import { searchTypes } from '@/utils/const';
 import { CommonLogProps } from '../detail';
 
 const { Option } = Select;
-const { Row, Col } = Grid;
 // * 慢日志表格后端分页
 
 export default function SlowLog(props: CommonLogProps): JSX.Element {
@@ -80,18 +73,18 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 					setDataSource(res.data);
 					setTotal(res.count);
 				} else {
-					Message.show(
-						messageConfig(
-							'error',
-							'失败',
-							'根据当前查询条件未查询到任何日志文件。'
-						)
-					);
+					notification.error({
+						message: '失败',
+						description: '根据当前查询条件未查询到任何日志文件。'
+					});
 					setDataSource([]);
 					setTotal(0);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -127,8 +120,8 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 		window.open(url);
 	};
 
-	const onSearchChange = (value: string) => {
-		setKeyword(value);
+	const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setKeyword(e.target.value);
 	};
 
 	const onFilterChange = (value: string) => {
@@ -151,9 +144,10 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 	const numberRange = (value: string[]) => {
 		if (value[0] !== '' && value[1] !== '') {
 			if (Number(value[0]) > Number(value[1])) {
-				Message.show(
-					messageConfig('error', '错误', '执行时长范围设置错误')
-				);
+				notification.error({
+					message: '失败',
+					description: '执行时长范围设置错误'
+				});
 				return;
 			}
 			setFromQueryTime(Number(value[0]));
@@ -225,61 +219,63 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 						</Button>
 						<Button
 							onClick={slowLogDownload}
-							type="normal"
 							style={{ marginRight: 12, padding: '0 9px' }}
-						>
-							<Icon type="arrow-to-bottom" />
-						</Button>
+							icon={<VerticalAlignBottomOutlined />}
+						></Button>
 					</>
 				</div>
 			</div>
-			<Table dataSource={dataSource} hasBorder={false}>
-				<Table.Column
+			<ProTable dataSource={dataSource}>
+				<ProTable.Column
 					title="慢日志采集时间"
 					dataIndex="timestampMysql"
-					cell={timeRender}
+					render={timeRender}
 					width={160}
-					lock
+					// lock
 				/>
-				<Table.Column title="SQL语句" dataIndex="query" width={450} />
-				<Table.Column
+				<ProTable.Column
+					title="SQL语句"
+					dataIndex="query"
+					width={450}
+				/>
+				<ProTable.Column
 					title="客户端IP"
 					dataIndex="clientip"
 					width={120}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="执行时长（秒）"
 					dataIndex="queryTime"
 					width={120}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="锁定时长（秒）"
 					dataIndex="lockTime"
 					width={120}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="解析行数"
 					dataIndex="rowsExamined"
 					width={90}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="返回行数"
 					dataIndex="rowsSent"
 					width={90}
 				/>
-			</Table>
-			<SPagination
+			</ProTable>
+			{/* <SPagination
 				defaultCurrent={1}
 				current={current}
 				onChange={onChange}
 				pageSize={10}
 				total={total}
-			/>
+			/> */}
 		</div>
 	);
 }
-const SPagination = styled(Pagination)`
-	margin-top: 10px;
-	display: flex;
-	justify-content: flex-end;
-`;
+// const SPagination = styled(Pagination)`
+// 	margin-top: 10px;
+// 	display: flex;
+// 	justify-content: flex-end;
+// `;

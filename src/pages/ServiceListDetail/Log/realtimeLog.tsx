@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Grid, Radio, Icon } from '@alicloud/console-components';
+import { Select, Row, Col, Radio, RadioChangeEvent } from 'antd';
+import { ArrowsAltOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { setRealLog, cleanRealLog } from '@/redux/log/log';
@@ -14,7 +15,6 @@ import styles from './log.module.scss';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/twilight.css';
 
-const { Row, Col } = Grid;
 const { Option } = Select;
 const { Group: RadioGroup } = Radio;
 
@@ -140,11 +140,9 @@ const RealtimeLog = (props: RealTimeProps) => {
 						<Col span={19}>
 							<RadioGroup
 								value={terminalType}
-								onChange={(
-									value: string | number | boolean
-								) => {
+								onChange={(e: RadioChangeEvent) => {
 									cleanRealLog();
-									setTerminalType(value as string);
+									setTerminalType(e.target.value);
 								}}
 							>
 								<Radio id="stdoutlog" value="stdoutlog">
@@ -216,18 +214,10 @@ const RealtimeLog = (props: RealTimeProps) => {
 					<div className="display-inline-block">日志详情</div>
 					<div className={`display-inline-block ${styles['tips']}`}>
 						{!isFullscreen && (
-							<Icon
-								type="expand-alt"
-								size="xs"
-								onClick={screenExtend}
-							/>
+							<ArrowsAltOutlined onClick={screenExtend} />
 						)}
 						{isFullscreen && (
-							<Icon
-								type="compress-alt"
-								size="xs"
-								onClick={screenShrink}
-							/>
+							<ShrinkOutlined onClick={screenShrink} />
 						)}
 					</div>
 				</div>
