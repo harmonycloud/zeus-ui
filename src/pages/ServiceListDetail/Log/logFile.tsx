@@ -397,7 +397,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 				></div>
 				<div className={`display-flex ${styles['filter-wrapper']}`}>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col span={5}>
 								<label>实例列表</label>
 							</Col>
@@ -422,7 +422,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col offset={2} span={3}>
 								<label>容器列表</label>
 							</Col>
@@ -444,7 +444,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col span={5}>
 								<label>搜索类型</label>
 							</Col>
@@ -468,7 +468,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col offset={2} span={3}>
 								<label>关键字</label>
 							</Col>
@@ -482,7 +482,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<TimeSelect
 								source="log"
 								timeSelect={onTimeChange}

@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
 
 import { Button, Modal, notification, Popover } from 'antd';
-import { CheckCircleOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, EllipsisOutlined } from '@ant-design/icons';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
@@ -298,7 +298,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							<Popover
 								content={
 									<div>
-										<CheckCircleOutlined
+										<CheckCircleFilled
 											style={{
 												color: '#00A700',
 												marginRight: '5px'
@@ -343,7 +343,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 													content={
 														<div>
 															&nbsp;&nbsp;&nbsp;&nbsp;
-															<CheckCircleOutlined
+															<CheckCircleFilled
 																style={{
 																	color: '#00A700',
 																	marginRight:

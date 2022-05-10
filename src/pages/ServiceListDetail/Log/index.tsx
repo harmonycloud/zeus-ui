@@ -16,27 +16,41 @@ export default function Log(props: LogProps): JSX.Element {
 	const { pathname } = location;
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
-	const [selectedKey, setSelectedKey] = useState(['realtime']);
+	const [selectedKey, setSelectedKey] = useState<any>('realtime');
 	const menuSelect = (item: any) => {
-		setSelectedKey(item.keyPath);
+		setSelectedKey(item.key);
 	};
 	useEffect(() => {
 		setSelectedKey(['realtime']);
 	}, [currentTab]);
-	const ConsoleMenu = () => (
-		<ProMenu
-			selectedKeys={selectedKey}
-			onClick={menuSelect}
-			style={{ height: '100%', marginLeft: 0 }}
-		>
-			<ProMenu.Item key="realtime">实时日志</ProMenu.Item>
-			{!customMid && <ProMenu.Item key="standard">标准日志</ProMenu.Item>}
-			{!customMid && <ProMenu.Item key="file">日志文件</ProMenu.Item>}
-			{type === 'mysql' && (
-				<ProMenu.Item key="slow">慢日志查看</ProMenu.Item>
-			)}
-		</ProMenu>
-	);
+	const ConsoleMenu = () => {
+		const items = [
+			{
+				label: '实时日志',
+				key: 'realtime'
+			}
+		];
+		!customMid && items.push({ label: '标准日志', key: 'standard' });
+		!customMid && items.push({ label: '日志文件', key: 'file' });
+		type === 'mysql' && items.push({ label: '慢日志查看', key: 'slow' });
+		return (
+			<ProMenu
+				selectedKeys={selectedKey}
+				onClick={menuSelect}
+				style={{ height: '100%', marginLeft: 0 }}
+				items={items}
+			>
+				{/* <ProMenu.Item key="realtime">实时日志</ProMenu.Item>
+				{!customMid && (
+					<ProMenu.Item key="standard">标准日志</ProMenu.Item>
+				)}
+				{!customMid && <ProMenu.Item key="file">日志文件</ProMenu.Item>}
+				{type === 'mysql' && (
+					<ProMenu.Item key="slow">慢日志查看</ProMenu.Item>
+				)} */}
+			</ProMenu>
+		);
+	};
 	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
 			case 'realtime':
@@ -106,7 +120,7 @@ export default function Log(props: LogProps): JSX.Element {
 					menu={<ConsoleMenu />}
 					style={{ margin: 0, padding: 0 }}
 				>
-					{childrenRender(selectedKey[0])}
+					{childrenRender(selectedKey)}
 				</ProContent>
 			</ProPage>
 		);

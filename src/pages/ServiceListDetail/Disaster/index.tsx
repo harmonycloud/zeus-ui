@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import { Modal, notification } from 'antd';
 import {
 	ReloadOutlined,
-	CheckCircleOutlined,
-	CloseCircleOutlined,
+	CheckCircleFilled,
+	CloseCircleFilled,
 	SyncOutlined
 } from '@ant-design/icons';
 import DataFields from '@/components/DataFields';
@@ -217,7 +217,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				if (val === 'Syncing') {
 					return (
 						<div>
-							<CheckCircleOutlined
+							<CheckCircleFilled
 								style={{
 									color: '#00A700'
 								}}
@@ -239,7 +239,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				} else {
 					return (
 						<div>
-							<CloseCircleOutlined
+							<CloseCircleFilled
 								style={{
 									color: '#C80000'
 								}}

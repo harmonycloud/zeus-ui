@@ -133,7 +133,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 		<>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
 				<div className={styles['filter-item-realtime']}>
-					<Row>
+					<Row align="middle">
 						<Col span={5}>
 							<label>日志类型</label>
 						</Col>
@@ -162,7 +162,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 			</div>
 			<div className={`display-flex ${styles['filter-wrapper']}`}>
 				<div className={styles['filter-item-realtime']}>
-					<Row>
+					<Row align="middle">
 						<Col span={5}>
 							<label>实例列表</label>
 						</Col>
@@ -183,7 +183,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 					</Row>
 				</div>
 				<div className={styles['filter-item-realtime']}>
-					<Row>
+					<Row align="middle">
 						<Col offset={2} span={3}>
 							<label>容器列表</label>
 						</Col>

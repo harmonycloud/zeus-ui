@@ -17,8 +17,8 @@ import {
 } from 'antd';
 import {
 	ReloadOutlined,
-	CheckCircleOutlined,
-	CloseCircleOutlined,
+	CheckCircleFilled,
+	CloseCircleFilled,
 	createFromIconfontCN
 } from '@ant-design/icons';
 import {
@@ -552,7 +552,7 @@ function PlatformOverview(): JSX.Element {
 													render={(value: number) => (
 														<span>
 															{value === 1 ? (
-																<CheckCircleOutlined
+																<CheckCircleFilled
 																	style={{
 																		color: '#389E0d',
 																		marginRight:
@@ -560,7 +560,7 @@ function PlatformOverview(): JSX.Element {
 																	}}
 																/>
 															) : (
-																<CloseCircleOutlined
+																<CloseCircleFilled
 																	style={{
 																		color: '#f5222d',
 																		marginRight:
