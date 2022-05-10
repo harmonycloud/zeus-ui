@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import { useHistory, useParams } from 'react-router-dom';
-// import {
-// 	Button,
-// 	Message,
-// 	Dialog,
-// 	Checkbox,
-// 	Balloon,
-// 	Loading
-// } from '@alicloud/console-components';
 import { Button, notification, Modal, Checkbox, Tooltip } from 'antd';
-// import { Page, Content, Header } from '@alicloud/console-components-page';
-// import Actions, { LinkButton } from '@alicloud/console-components-actions';
 // --- 自定义组件
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
-// import Table from '@/components/MidTable';
+import GuidePage from '../GuidePage';
 // --- 方法
 import {
 	getList,
@@ -29,7 +20,6 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { getComponents } from '@/services/common';
 import {
 	setCluster,
@@ -48,27 +38,11 @@ import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
-import GuidePage from '../GuidePage';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 // --- css样式
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
-const tabJudge: (record: serviceProps, tab: string) => boolean = (
-	record: serviceProps,
-	tab: string
-) => {
-	if (record.capabilities === null) {
-		return false;
-	} else {
-		if (record.capabilities.includes(tab)) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-};
-// const Tooltip = Balloon.Tooltip;
 
 const ServiceListByType = (props: serviceListProps) => {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
@@ -225,54 +199,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					});
 			}
 		});
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['createTimeNum'] - b['createTimeNum'];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		}
-	};
-	const onFilter = (filterParams: any) => {
-		const {
-			status: { selectedKeys }
-		} = filterParams;
-		setSelectKeys(selectedKeys);
-		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource?.serviceList || []);
-		} else {
-			let tempData: serviceProps[] | undefined = [];
-			if (selectedKeys[0] !== 'Other') {
-				tempData = dataSource?.serviceList.filter((item) => {
-					return item.status === selectedKeys[0];
-				});
-			} else if (selectedKeys[0] === 'Other') {
-				tempData = dataSource?.serviceList.filter((item) => {
-					return (
-						item.status !== 'Running' && item.status !== 'Creating'
-					);
-				});
-			}
-			if (backupCheck) {
-				tempData = tempData?.filter(
-					(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
-				);
-			}
-			setShowDataSource(tempData || []);
-		}
-	};
-	const onRowProps = (record: serviceProps) => {
-		if (record.status === 'deleted') {
-			return { style: { background: '#F8F8F9', color: '#CCCCCC' } };
-		}
 	};
 	const handleFilterBackup = (e: CheckboxChangeEvent) => {
 		setBackupCheck(e.target.value);
@@ -903,9 +829,6 @@ const ServiceListByType = (props: serviceListProps) => {
 			<ProContent>
 				<ProTable
 					dataSource={showDataSource}
-					// exact
-					// fixedBarExpandWidth={[24]}
-					// affixActionBar
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}
@@ -918,9 +841,13 @@ const ServiceListByType = (props: serviceListProps) => {
 						onSearch: handleSearch,
 						placeholder: '请输入搜索内容'
 					}}
-					// onSort={onSort}
-					// onFilter={onFilter}
-					// onRow={onRowProps}
+					rowClassName={(record) => {
+						console.log(record);
+						if (record.status === 'Deleted') {
+							return 'table-row-delete';
+						}
+						return '';
+					}}
 				>
 					<ProTable.Column
 						title="服务名称/中文别名"
@@ -958,7 +885,10 @@ const ServiceListByType = (props: serviceListProps) => {
 						title="创建时间"
 						dataIndex="createTime"
 						width={180}
-						// sortable={true}
+						sorter={(a, b) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
 						render={timeRender}
 					/>
 					<ProTable.Column
@@ -966,7 +896,6 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="action"
 						render={actionRender}
 						width={300}
-						// {...lock}
 					/>
 				</ProTable>
 			</ProContent>
