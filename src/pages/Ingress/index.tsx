@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router';
 import { Button, notification, Modal, Popover } from 'antd';
-import { CheckCircleOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, EllipsisOutlined } from '@ant-design/icons';
 import ProTable from '@/components/ProTable';
 import { ProPage, ProContent } from '@/components/ProPage';
 import { useParams } from 'react-router';
@@ -206,7 +206,7 @@ function IngressList(props: ingressProps) {
 							<Popover
 								content={
 									<div>
-										<CheckCircleOutlined
+										<CheckCircleFilled
 											style={{
 												color: '#00A700',
 												marginRight: '5px'
@@ -249,7 +249,7 @@ function IngressList(props: ingressProps) {
 												<Popover
 													content={
 														<div>
-															<CheckCircleOutlined
+															<CheckCircleFilled
 																style={{
 																	color: '#00A700',
 																	marginRight:

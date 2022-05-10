@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router';
-import { Tab } from '@alicloud/console-components';
-// import { Page, Content, Menu } from '@alicloud/console-components-page';
+import { Tabs } from 'antd';
 import { ProPage, ProContent, ProMenu } from '@/components/ProPage';
 
 import DefaultPicture from '@/components/DefaultPicture';
@@ -17,27 +16,41 @@ export default function Log(props: LogProps): JSX.Element {
 	const { pathname } = location;
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
-	const [selectedKey, setSelectedKey] = useState(['realtime']);
+	const [selectedKey, setSelectedKey] = useState<any>('realtime');
 	const menuSelect = (item: any) => {
-		setSelectedKey(item.keyPath);
+		setSelectedKey(item.key);
 	};
 	useEffect(() => {
 		setSelectedKey(['realtime']);
 	}, [currentTab]);
-	const ConsoleMenu = () => (
-		<ProMenu
-			selectedKeys={selectedKey}
-			onClick={menuSelect}
-			style={{ height: '100%', marginLeft: 0 }}
-		>
-			<ProMenu.Item key="realtime">实时日志</ProMenu.Item>
-			{!customMid && <ProMenu.Item key="standard">标准日志</ProMenu.Item>}
-			{!customMid && <ProMenu.Item key="file">日志文件</ProMenu.Item>}
-			{type === 'mysql' && (
-				<ProMenu.Item key="slow">慢日志查看</ProMenu.Item>
-			)}
-		</ProMenu>
-	);
+	const ConsoleMenu = () => {
+		const items = [
+			{
+				label: '实时日志',
+				key: 'realtime'
+			}
+		];
+		!customMid && items.push({ label: '标准日志', key: 'standard' });
+		!customMid && items.push({ label: '日志文件', key: 'file' });
+		type === 'mysql' && items.push({ label: '慢日志查看', key: 'slow' });
+		return (
+			<ProMenu
+				selectedKeys={selectedKey}
+				onClick={menuSelect}
+				style={{ height: '100%', marginLeft: 0 }}
+				items={items}
+			>
+				{/* <ProMenu.Item key="realtime">实时日志</ProMenu.Item>
+				{!customMid && (
+					<ProMenu.Item key="standard">标准日志</ProMenu.Item>
+				)}
+				{!customMid && <ProMenu.Item key="file">日志文件</ProMenu.Item>}
+				{type === 'mysql' && (
+					<ProMenu.Item key="slow">慢日志查看</ProMenu.Item>
+				)} */}
+			</ProMenu>
+		);
+	};
 	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
 			case 'realtime':
@@ -70,34 +83,34 @@ export default function Log(props: LogProps): JSX.Element {
 	if (pathname.includes('monitorAlarm')) {
 		return (
 			<div>
-				<Tab>
-					<Tab.Item title="实时日志">
+				<Tabs>
+					<Tabs.TabPane tab="实时日志" key="1">
 						<RealtimeLog data={props} />
-					</Tab.Item>
+					</Tabs.TabPane>
 					{!customMid ? (
-						<Tab.Item title="标准日志">
+						<Tabs.TabPane tab="标准日志" key="2">
 							<StandardLog
 								data={props}
 								logging={logging}
 								onRefresh={onRefresh}
 							/>
-						</Tab.Item>
+						</Tabs.TabPane>
 					) : null}
 					{!customMid ? (
-						<Tab.Item title="日志文件">
+						<Tabs.TabPane tab="日志文件" key="3">
 							<LogFile
 								data={props}
 								logging={logging}
 								onRefresh={onRefresh}
 							/>
-						</Tab.Item>
+						</Tabs.TabPane>
 					) : null}
 					{type === 'mysql' && (
-						<Tab.Item title="慢日志查看">
+						<Tabs.TabPane tab="慢日志查看" key="4">
 							<SlowLog data={props} logging={logging} />
-						</Tab.Item>
+						</Tabs.TabPane>
 					)}
-				</Tab>
+				</Tabs>
 			</div>
 		);
 	} else {
@@ -107,7 +120,7 @@ export default function Log(props: LogProps): JSX.Element {
 					menu={<ConsoleMenu />}
 					style={{ margin: 0, padding: 0 }}
 				>
-					{childrenRender(selectedKey[0])}
+					{childrenRender(selectedKey)}
 				</ProContent>
 			</ProPage>
 		);

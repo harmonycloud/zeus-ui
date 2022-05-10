@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Popover, Modal, notification } from 'antd';
 import {
 	LoadingOutlined,
-	CheckCircleOutlined,
-	MinusCircleOutlined,
+	CheckCircleFilled,
+	MinusCircleFilled,
 	ExclamationCircleOutlined
 } from '@ant-design/icons';
 import { IconFont } from '@/components/IconFont';
@@ -49,7 +49,7 @@ const statusIconRender = (value: number) => {
 						size="small"
 						style={{ color: '#1DC11D', marginLeft: '6px' }}
 					/> */}
-					<CheckCircleOutlined
+					<CheckCircleFilled
 						style={{
 							color: '#1DC11D',
 							marginLeft: '6px',
@@ -67,7 +67,7 @@ const statusIconRender = (value: number) => {
 						size="small"
 						style={{ color: '#FAC800', marginLeft: '6px' }}
 					/> */}
-					<MinusCircleOutlined
+					<MinusCircleFilled
 						style={{
 							color: '#FAC800',
 							marginLeft: '6px',
@@ -103,7 +103,7 @@ const statusIconRender = (value: number) => {
 						size="small"
 						style={{ color: '#1DC11D', marginLeft: '6px' }}
 					/> */}
-					<CheckCircleOutlined
+					<CheckCircleFilled
 						style={{
 							color: '#1DC11D',
 							marginLeft: '6px',

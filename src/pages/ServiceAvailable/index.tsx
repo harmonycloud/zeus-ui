@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { Location } from 'history';
 
 import { Button, Modal, notification, Popover } from 'antd';
-import { CheckCircleOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, EllipsisOutlined } from '@ant-design/icons';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
@@ -54,7 +54,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		location?.state?.middlewareName || ''
 	);
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
-	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+	// const [operateFlag, setOperateFlag] = useState<boolean>(false);
 	const [lock, setLock] = useState<any>({ lock: 'right' });
 	const history = useHistory();
 
@@ -71,11 +71,11 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					if (res.success) {
 						setOriginData(res.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
-						if (res.data.length === 0) {
-							setOperateFlag(false);
-						} else {
-							setOperateFlag(true);
-						}
+						// if (res.data.length === 0) {
+						// 	setOperateFlag(false);
+						// } else {
+						// 	setOperateFlag(true);
+						// }
 						res.data.forEach((item: serviceAvailablesProps) => {
 							listTemp.push({
 								name: item.name,
@@ -257,7 +257,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					}
 				}}
 				type="primary"
-				disabled={!operateFlag}
+				// disabled={!operateFlag}
 			>
 				新增
 			</Button>
@@ -298,7 +298,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 							<Popover
 								content={
 									<div>
-										<CheckCircleOutlined
+										<CheckCircleFilled
 											style={{
 												color: '#00A700',
 												marginRight: '5px'
@@ -343,7 +343,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 													content={
 														<div>
 															&nbsp;&nbsp;&nbsp;&nbsp;
-															<CheckCircleOutlined
+															<CheckCircleFilled
 																style={{
 																	color: '#00A700',
 																	marginRight:
