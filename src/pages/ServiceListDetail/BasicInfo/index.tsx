@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import {
 	Select,
-	Icon,
 	Switch,
-	Dialog,
-	Grid,
-	Message,
+	Modal,
+	Col,
+	Row,
+	notification,
 	Form,
-	Input
-} from '@alicloud/console-components';
-// import DataFields from '@alicloud/console-components-data-fields';
+	Input,
+	Popconfirm
+} from 'antd';
+import { EditOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import DataFields from '@/components/DataFields';
 import DefaultPicture from '@/components/DefaultPicture';
-import { useParams, useHistory } from 'react-router-dom';
 
 import RocketAclUserInfo from './rocketAclUserInfo';
 import RocketAclEditForm from './rocketAclEditForm';
 import EventsList from './eventsList';
-import BalloonForm from '@/components/BalloonForm';
+import { rocketMQAccount } from '@/components/RocketACLForm/acl';
 
 import { updateMiddleware, getMiddlewareEvents } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 
 import { statusRender } from '@/utils/utils';
 import transTime from '@/utils/transTime';
-import { BalloonFormFormItemLayout } from '@/utils/const';
 import {
 	BasicInfoProps,
 	configParams,
@@ -34,13 +33,12 @@ import {
 	InfoParams,
 	runParams
 } from '../detail';
-import { rocketMQAccount } from '@/components/RocketACLForm/acl';
 
 import './basicinfo.scss';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const { Row, Col } = Grid;
+const { confirm } = Modal;
 const info: InfoParams = {
 	title: '规格配置',
 	name: '',
@@ -215,6 +213,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		toDetail,
 		operateFlag
 	} = props;
+	const [form] = Form.useForm();
 	const history = useHistory();
 	const params: DetailParams = useParams();
 	// * 密码显影
@@ -291,7 +290,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					className="name-link"
 					onClick={() => {
 						if (clusterId !== data.mysqlDTO.relationClusterId) {
-							Dialog.show({
+							confirm({
 								title: '提醒',
 								content:
 									'该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮',
@@ -326,7 +325,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	};
 	const aclSwitchChange = (checked: boolean) => {
-		Dialog.show({
+		confirm({
 			title: '提示',
 			content: checked
 				? '请确定是否开启访问权限控制认证'
@@ -348,19 +347,20 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					};
 					const res = await updateMiddleware(sendData);
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
+						notification.success({
+							message: '成功',
+							description:
 								'访问权限控制认证关闭成功,3秒后刷新页面'
-							)
-						);
+						});
 						setACLCheck(checked);
 						setTimeout(() => {
 							onRefresh();
 						}, 3000);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				} else {
 					setACLCheck(checked);
@@ -369,6 +369,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		});
 	};
 	const editDescription = (value: any) => {
+		console.log(value);
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
@@ -380,18 +381,18 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		};
 		updateMiddleware(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig(
-						'success',
-						'成功',
-						'备注修改成功,5秒后刷新页面'
-					)
-				);
+				notification.success({
+					message: '成功',
+					description: '备注修改成功,5秒后刷新页面'
+				});
 				setTimeout(() => {
 					onRefresh();
 				}, 5000);
 			} else {
-				Message.show(messageConfig('success', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -600,39 +601,35 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				label: '备注',
 				render: (val: string) => {
 					return (
-						<div className="display-flex">
+						<div className="display-flex flex-align">
 							<div className="text-overflow-one" title={val}>
 								{val}
 							</div>
-							<BalloonForm
-								closable={false}
-								trigger={
-									<Icon
-										type="edit"
-										size="xs"
-										style={{
-											marginLeft: 8,
-											cursor: 'pointer'
-										}}
-									/>
+							<Popconfirm
+								title={
+									<Form form={form}>
+										<FormItem name="description">
+											<Input
+												placeholder="请输入"
+												defaultValue={val}
+											/>
+										</FormItem>
+									</Form>
 								}
-								style={{
-									width: '284px'
-								}}
-								onConfirm={editDescription}
-								formProps={BalloonFormFormItemLayout}
+								icon={null}
+								onConfirm={() =>
+									editDescription(form.getFieldsValue())
+								}
 							>
-								<FormItem
-									requiredMessage="请输入"
-									patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-								>
-									<Input
-										name="description"
-										placeholder="请输入"
-										defaultValue={val}
-									/>
-								</FormItem>
-							</BalloonForm>
+								<EditOutlined
+									style={{
+										marginLeft: 8,
+										cursor: 'pointer',
+										fontSize: 14,
+										verticalAlign: 'middle'
+									}}
+								/>
+							</Popconfirm>
 						</div>
 					);
 				}
@@ -694,6 +691,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					</div>
 					<div>
 						<Select
+							size="small"
 							style={{ marginRight: 16 }}
 							value={eventType}
 							onChange={(val) => setEventType(val)}
@@ -704,6 +702,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							<Option value={'Abnormal'}>异常</Option>
 						</Select>
 						<Select
+							size="small"
 							value={kind}
 							onChange={(val) => setKind(val)}
 							disabled={!eventList.length}
@@ -803,8 +802,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 												onClick={() => setVisible(true)}
 												style={{ lineHeight: '20px' }}
 											>
-												<Icon
-													type="edit"
+												<EditOutlined
 													style={{
 														marginRight: 8,
 														verticalAlign: 'middle'
@@ -832,9 +830,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 								{aclCheck && (
 									<div>
 										<Row>
-											<Col fixedSpan={8}>
-												全局IP白名单
-											</Col>
+											<Col span={8}>全局IP白名单</Col>
 											<Col
 												title={aclData.globalIps}
 												className="text-hidden"
@@ -858,9 +854,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 								)}
 							{!aclCheck && (
 								<div className="rocketmq-no-acl">
-									<Icon
-										type="exclamation-circle"
-										size="small"
+									<InfoCircleOutlined
 										style={{ marginRight: 8 }}
 									/>
 									访问权限控制认证已关闭

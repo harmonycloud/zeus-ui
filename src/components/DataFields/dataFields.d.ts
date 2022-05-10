@@ -2,7 +2,7 @@ export interface Item {
 	dataIndex?: string;
 	label?: string;
 	span?: number;
-	render?: (value: any) => JSX.Element | string;
+	render?: (value: any) => JSX.Element | string | null | undefined;
 }
 export interface dataSource {
 	[propsName: string]: any;

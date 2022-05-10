@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Radio, Search } from '@alicloud/console-components';
+import { Radio, Input, RadioChangeEvent } from 'antd';
 import { useHistory } from 'react-router';
-import Table from '@/components/MidTable';
+import ProTable from '@/components/ProTable';
 import { nullRender } from '@/utils/utils';
 import { MiddlewareResourceInfo, MiddlewareTableProps } from './myProject';
 import storage from '@/utils/storage';
 import { api } from '@/api.json';
 import nodata from '@/assets/images/nodata.svg';
 
+const Search = Input.Search;
 const RadioGroup = Radio.Group;
 export default function MiddlewareTable(
 	props: MiddlewareTableProps
@@ -67,33 +68,33 @@ export default function MiddlewareTable(
 				<Search
 					placeholder="请输入服务名称搜索"
 					onSearch={handleSearch}
-					hasClear={true}
+					allowClear={true}
 					style={{ width: '260px', marginRight: 8 }}
 				/>
 				<RadioGroup
-					shape="button"
+					// shape="button"
 					value={tableType}
-					onChange={(value: string | number | boolean) =>
-						setTableType(value as string)
+					onChange={(e: RadioChangeEvent) =>
+						setTableType(e.target.value)
 					}
 				>
-					<Radio id="cpu" value="cpu">
+					<Radio.Button id="cpu" value="cpu">
 						CPU
-					</Radio>
-					<Radio id="memory" value="memory">
+					</Radio.Button>
+					<Radio.Button id="memory" value="memory">
 						内存
-					</Radio>
-					<Radio id="storage" value="storage">
+					</Radio.Button>
+					<Radio.Button id="storage" value="storage">
 						存储
-					</Radio>
+					</Radio.Button>
 				</RadioGroup>
 			</>
 		)
 	};
 	const nameRender = (
 		value: string,
-		index: number,
-		record: MiddlewareResourceInfo
+		record: MiddlewareResourceInfo,
+		index: number
 	) => {
 		return (
 			<div style={{ maxWidth: '160px' }}>
@@ -118,120 +119,136 @@ export default function MiddlewareTable(
 			</div>
 		);
 	};
-	const onSort = (dataIndex: string, order: string) => {
-		const temp = dataSource.sort(function (a, b) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setDataSource([...temp]);
-	};
 	return (
 		<div style={{ marginTop: 32, borderBottom: '1px solid #D1D5D9' }}>
-			<Table
+			<ProTable
 				dataSource={dataSource}
-				exact
-				primaryKey="key"
+				// exact
+				rowKey="name"
 				operation={Operation}
 				// search={{
 				// 	onSearch: handleSearch,
 				// 	placeholder: '请输入服务名称搜索'
 				// }}
-				onSort={onSort}
+				// onSort={onSort}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="服务名称/中文别名"
 					dataIndex="name"
-					cell={nameRender}
+					render={nameRender}
 					width={180}
 				/>
 				{tableType === 'cpu' && (
-					<Table.Column
+					<ProTable.Column
 						title="CPU配额（核）"
 						dataIndex="requestCpu"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.requestCpu - b.requestCpu}
 					/>
 				)}
 				{tableType === 'cpu' && (
-					<Table.Column
+					<ProTable.Column
 						title="近5min平均使用额（核）"
 						dataIndex="per5MinCpu"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.per5MinCpu - b.per5MinCpu}
 					/>
 				)}
 				{tableType === 'cpu' && (
-					<Table.Column
+					<ProTable.Column
 						title="CPU使用率（%）"
 						dataIndex="cpuRate"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.cpuRate - b.cpuRate}
 					/>
 				)}
 				{tableType === 'memory' && (
-					<Table.Column
+					<ProTable.Column
 						title="内存配额（GB）"
 						dataIndex="requestMemory"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.requestMemory - b.requestMemory}
 					/>
 				)}
 				{tableType === 'memory' && (
-					<Table.Column
+					<ProTable.Column
 						title="近5min平均使用额（GB）"
 						dataIndex="per5MinMemory"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.per5MinMemory - b.per5MinMemory}
+						// sortable
 					/>
 				)}
 				{tableType === 'memory' && (
-					<Table.Column
+					<ProTable.Column
 						title="内存使用率（%）"
 						dataIndex="memoryRate"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => Number(a.memoryRate) - Number(b.memoryRate)}
 					/>
 				)}
 				{tableType === 'storage' && (
-					<Table.Column
+					<ProTable.Column
 						title="存储配额（G）"
 						dataIndex="requestStorage"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.requestStorage - b.requestStorage}
 					/>
 				)}
 				{tableType === 'storage' && (
-					<Table.Column
+					<ProTable.Column
 						title="近5min平均使用额（%）"
 						dataIndex="per5MinStorage"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.per5MinStorage - b.per5MinStorage}
 					/>
 				)}
 				{tableType === 'storage' && (
-					<Table.Column
+					<ProTable.Column
 						title="存储使用率（%）"
 						dataIndex="storageRate"
-						cell={nullRender}
+						render={nullRender}
 						width={200}
-						sortable
+						sorter={(
+							a: MiddlewareResourceInfo,
+							b: MiddlewareResourceInfo
+						) => a.storageRate - b.storageRate}
+						// sortable
 					/>
 				)}
-			</Table>
+			</ProTable>
 		</div>
 	);
 }

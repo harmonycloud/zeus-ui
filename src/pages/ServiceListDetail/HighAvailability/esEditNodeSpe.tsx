@@ -1,27 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Form,
-	Field,
-	Input,
-	Icon,
-	Select,
-	Button,
-	Dialog,
-	NumberPicker,
-	Message
-} from '@alicloud/console-components';
+import { Form, Input, Select, Button, Modal, InputNumber } from 'antd';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../../ServiceCatalog/components/TableRadio/index';
-import styles from './esEdit.module.scss';
-import pattern from '@/utils/pattern';
-import messageConfig from '@/components/messageConfig';
 import { EsNodeProps, EsSendDataProps } from '../detail';
+import styles from './esEdit.module.scss';
+import { ArrowUpOutlined } from '@ant-design/icons';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
 const formItemLayout = {
 	labelCol: {
-		fixedSpan: 6
+		span: 6
 	},
 	wrapperCol: {
 		span: 14
@@ -141,7 +130,8 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 		}
 	];
 
-	const field = Field.useField();
+	// const field = Field.useField();
+	const [form] = Form.useForm();
 
 	const formHandle = (obj: any, item: any) => {
 		if (
@@ -167,14 +157,14 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 		setSpecId(nodeObj[key].specId);
 		if (nodeObj[key].specId === '') {
 			setInstanceSpec('Customize');
-			field.setValues({
+			form.setFieldsValue({
 				cpu: nodeObj[key].cpu,
 				memory: nodeObj[key].memory
 			});
 		} else {
 			setInstanceSpec('General');
 		}
-		field.setValues({
+		form.setFieldsValue({
 			storageClassName: nodeObj[key].storageClassName,
 			storageClassQuota: nodeObj[key].storageClassQuota
 		});
@@ -230,38 +220,36 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 	};
 
 	const onOk = () => {
-		field.validate((err) => {
-			if (!err) {
-				const sendData: EsSendDataProps = {};
-				if (nodeObj) {
-					sendData.quota = {};
-					for (const key in nodeObj) {
-						if (!nodeObj[key].disabled) {
-							sendData.quota[key] = {
-								...nodeObj[key],
-								storageClassName: nodeObj[key].storageClass,
-								storageClassQuota: nodeObj[key].storageQuota
-							};
-						}
+		form.validateFields().then((values) => {
+			const sendData: EsSendDataProps = {};
+			if (nodeObj) {
+				sendData.quota = {};
+				for (const key in nodeObj) {
+					if (!nodeObj[key].disabled) {
+						sendData.quota[key] = {
+							...nodeObj[key],
+							storageClassName: nodeObj[key].storageClass,
+							storageClassQuota: nodeObj[key].storageQuota
+						};
 					}
 				}
-				onCreate(sendData);
 			}
+			onCreate(sendData);
 		});
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title="修改服务规格"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			onClose={onCancel}
-			isFullScreen={true}
-			footerAlign="right"
+			// onClose={onCancel}
+			// isFullScreen={true}
+			// footerAlign="right"
 			// footerActions={nodeModify.flag ? ['cancel'] : ['ok', 'cancel']}
 		>
-			<Form {...formItemLayout} field={field} onChange={formHandle}>
+			<Form {...formItemLayout} form={form} onFieldsChange={formHandle}>
 				<div className={styles['spec-config']}>
 					<ul className="form-layout">
 						<li className="display-flex form-li">
@@ -413,7 +401,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																	}
 																>
 																	收起
-																	<Icon type="arrow-up" />
+																	<ArrowUpOutlined />
 																</Button>
 															) : (
 																<Button
@@ -450,7 +438,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 									<div
 										className={`form-content display-flex ${styles['input-flex-length']}`}
 									>
-										<NumberPicker
+										<InputNumber
 											type="inline"
 											disabled
 											value={nodeNum}
@@ -503,13 +491,19 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 														</label>
 														<div className="form-content">
 															<FormItem
-																patternMessage="请输入正整数"
 																required
-																requiredMessage="请输入自定义CPU配额，单位为Core"
+																name="cpu"
+																rules={[
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义CPU配额，单位为Core'
+																	}
+																]}
 															>
 																<Input
-																	name="cpu"
-																	htmlType="number"
+																	type="number"
 																	min={0.1}
 																	step={0.1}
 																	value={
@@ -520,7 +514,6 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																		].cpu
 																	}
 																	placeholder="请输入自定义CPU配额，单位为Core"
-																	trim
 																/>
 															</FormItem>
 														</div>
@@ -533,13 +526,19 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 														</label>
 														<div className="form-content">
 															<FormItem
-																patternMessage="请输入正整数"
+																name="memory"
 																required
-																requiredMessage="请输入自定义内存配额，单位为GB"
+																rules={[
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义内存配额，单位为GB'
+																	}
+																]}
 															>
 																<Input
-																	name="memory"
-																	htmlType="number"
+																	type="number"
 																	min={0.1}
 																	step={0.1}
 																	value={
@@ -550,7 +549,6 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																		].memory
 																	}
 																	placeholder="请输入自定义内存配额，单位为GB"
-																	trim
 																/>
 															</FormItem>
 														</div>
@@ -570,10 +568,16 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 										>
 											<FormItem
 												required
-												requiredMessage="请选择存储类型"
+												name="storageClassName"
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择存储类型'
+													}
+												]}
 											>
 												<Select
-													name="storageClassName"
 													style={{
 														marginRight: 8
 													}}
@@ -583,7 +587,6 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 															nodeModify.nodeName
 														].storageClassName
 													}
-													autoWidth={false}
 												>
 													<Option
 														value={
@@ -641,6 +644,6 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 					</ul>
 				</div>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
