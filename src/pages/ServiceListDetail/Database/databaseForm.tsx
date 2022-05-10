@@ -44,7 +44,8 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 					clusterId,
 					namespace,
 					middlewareName,
-					id: values.id,
+					id: data.id,
+					db: values.db,
 					charset: values.charset,
 					description: values.description
 				};

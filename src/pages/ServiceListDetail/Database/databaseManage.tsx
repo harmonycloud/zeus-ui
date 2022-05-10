@@ -120,7 +120,7 @@ function UserManage(props: any): JSX.Element {
 		}
 	};
 
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -137,7 +137,7 @@ function UserManage(props: any): JSX.Element {
 			</Actions>
 		);
 	};
-	const usersRender = (value: any, index: number, record: any) => {
+	const usersRender = (value: any, record: any, index: number) => {
 		return value.length > 1 ? (
 			<Popover
 				content={value.map((item: any) => {
@@ -284,7 +284,7 @@ function UserManage(props: any): JSX.Element {
 				<ProTable.Column
 					title="授权数据库"
 					dataIndex="db"
-					width={120}
+					width={130}
 					render={nullRender}
 				/>
 				<ProTable.Column
@@ -305,9 +305,8 @@ function UserManage(props: any): JSX.Element {
 				<ProTable.Column
 					title="备注"
 					dataIndex="description"
-					render={(value: string) => (
-						<span className="description">{value}</span>
-					)}
+					width={200}
+					render={nullRender}
 				/>
 				<ProTable.Column
 					title="创建时间"
