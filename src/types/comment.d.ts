@@ -254,4 +254,5 @@ export interface SelectInfo extends MenuInfo {
 export interface FiltersProps {
 	text: string;
 	value: string;
+	children?: FiltersProps[];
 }

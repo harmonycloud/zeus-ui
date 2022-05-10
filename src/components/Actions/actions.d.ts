@@ -7,6 +7,6 @@ export interface LinkButtonProps {
 	style?: React.CSSProperties;
 }
 export interface ActionsProps {
-	children: React.ReactNode[];
+	children: React.ReactNode[] | React.ReactNode;
 	threshold?: number;
 }

@@ -1,20 +1,33 @@
+import React, { ReactElement, useEffect, useState } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
-import React, { ReactElement } from 'react';
 import { ActionsProps, LinkButtonProps } from './actions';
 import { Dropdown, Menu } from 'antd';
 import './index.scss';
 
 const Actions = (props: ActionsProps) => {
-	const { children = [], threshold = 3 } = props;
-	if (children.length <= threshold) {
+	const { children, threshold = 3 } = props;
+	const [list, setList] = useState<React.ReactNode[]>([]);
+	useEffect(() => {
+		if (children) {
+			if (children instanceof Array) {
+				setList(children);
+			} else {
+				setList([children]);
+			}
+		}
+	}, [children]);
+	if (list.length <= threshold) {
 		return (
 			<div className="zeus-actions-content">
-				{children?.map(
+				{list.map(
 					(item: React.ReactNode | boolean | null, index: number) => {
 						if (item !== null && typeof item !== 'boolean') {
 							return (
 								<LinkButton
-									style={{ marginRight: 8, marginLeft: 8 }}
+									style={{
+										marginRight: 8,
+										marginLeft: 8
+									}}
 									key={index}
 									onClick={
 										(item as ReactElement).props?.onClick
@@ -33,8 +46,8 @@ const Actions = (props: ActionsProps) => {
 			</div>
 		);
 	} else {
-		const l1 = children.slice(0, threshold);
-		const l2 = children.slice(threshold);
+		const l1 = list.slice(0, threshold);
+		const l2 = list.slice(threshold);
 		const menu = l2.map((item: React.ReactNode, index: number) => {
 			return {
 				label: (

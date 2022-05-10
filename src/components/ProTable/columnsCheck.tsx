@@ -10,7 +10,6 @@ function ColumnsCheck<T>(props: ColumnsCheckProps<T>): JSX.Element {
 		checked.map((item) => item.title as string)
 	);
 	const handleChange = (checkedValue: CheckboxValueType[]) => {
-		console.log(checkedValue);
 		let list: ColumnsType<T> = [];
 		list = columns.filter((item: ColumnType<T>) =>
 			checkedValue.includes(item.title as string)
