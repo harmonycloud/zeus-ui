@@ -444,6 +444,9 @@ function ServiceVersion(props: versionProps): JSX.Element {
 								{ text: '升级中', value: 'updating' }
 							]}
 							filterMultiple={false}
+							onFilter={(value: any, record: middlewareProps) =>
+								record.versionStatus === value
+							}
 							width={200}
 						/>
 						<ProTable.Column
@@ -464,7 +467,6 @@ function ServiceVersion(props: versionProps): JSX.Element {
 								moment(a.createTime).unix() -
 								moment(b.createTime).unix()
 							}
-							// sortable
 						/>
 						<ProTable.Column
 							title="操作"
