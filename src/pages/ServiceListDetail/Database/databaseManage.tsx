@@ -1,40 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Button,
-	Dialog,
-	Message,
-	Radio,
-	Balloon
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import { Button, Modal, Popover, notification } from 'antd';
+import Actions from '@/components/Actions';
 import moment from 'moment';
-import Table from '@/components/MidTable';
-import { getUserList, deleteUser } from '@/services/user';
+import ProTable from '@/components/ProTable';
+
 import { listDb, deleteDb, listCharset } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { authorityList } from '@/utils/const';
 import { nullRender } from '@/utils/utils';
 import { filtersProps } from '@/types/comment';
 import DatabaseForm from './databaseForm';
-import axios from 'axios';
 
-const Tooltip = Balloon.Tooltip;
+const LinkButton = Actions.LinkButton;
 function UserManage(props: any): JSX.Element {
 	const { clusterId, namespace, middlewareName } = props;
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [showDataSource, setShowDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [charsetList, setCharsetList] = useState<string[]>([]);
-	const [charsetFilter, setCharsetFilter] = useState<filtersProps[]>([]);
+	const [charsetFilter, setCharsetFilter] = useState<any[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
-	const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<any>();
 	const [isEdit, setIsEdit] = useState(true);
-	const [roleVisible, setRoleVisible] = useState(false);
-	const [role, setRole] = useState<any>();
-	const [record, setRecord] = useState<any>();
-	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 
 	useEffect(() => {
 		listDb({ clusterId, namespace, middlewareName, keyword }).then(
@@ -43,7 +29,10 @@ function UserManage(props: any): JSX.Element {
 					res.data ? setDataSource(res.data) : setDataSource([]);
 					setShowDataSource(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res.errorMsg));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			}
 		);
@@ -55,21 +44,24 @@ function UserManage(props: any): JSX.Element {
 					setCharsetFilter(
 						res.data.map((item: any) => {
 							return {
-								label: item.charset,
+								text: item.charset,
 								value: item.charset
 							};
 						})
 					);
 			}
 		});
-	}, []);
+	}, [keyword]);
 	const onRefresh: () => void = () => {
 		listDb({ clusterId, namespace, middlewareName, keyword }).then(
 			(res) => {
 				if (res.success) {
 					res.data && setDataSource(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res.errorMsg));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			}
 		);
@@ -85,7 +77,7 @@ function UserManage(props: any): JSX.Element {
 		setVisible(true);
 	};
 	const deleteUserHandle: (record: any) => void = (record: any) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
 			onOk: () => {
@@ -96,12 +88,16 @@ function UserManage(props: any): JSX.Element {
 					db: record.db
 				}).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '该数据库删除成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '该数据库删除成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -143,25 +139,8 @@ function UserManage(props: any): JSX.Element {
 	};
 	const usersRender = (value: any, index: number, record: any) => {
 		return value.length > 1 ? (
-			<Tooltip
-				trigger={
-					<div
-						style={{
-							cursor: 'pointer'
-						}}
-					>
-						<span className="db-name">{value[0].user}</span>[
-						{
-							authorityList.find(
-								(item) => item.authority === value[0].authority
-							)?.value
-						}
-						] ...
-					</div>
-				}
-				align="t"
-			>
-				{value.map((item: any) => {
+			<Popover
+				content={value.map((item: any) => {
 					return (
 						<div
 							key={item.user}
@@ -185,16 +164,33 @@ function UserManage(props: any): JSX.Element {
 						</div>
 					);
 				})}
-			</Tooltip>
+			>
+				<div
+					style={{
+						cursor: 'pointer'
+					}}
+				>
+					<span className="db-name">{value[0].user}</span>[
+					{
+						authorityList.find(
+							(item) => item.authority === value[0].authority
+						)?.value
+					}
+					] ...
+				</div>
+			</Popover>
 		) : (
-			<Tooltip
-				trigger={
+			<Popover
+				content={
 					<div
 						style={{
 							cursor: 'pointer'
 						}}
 					>
-						<span className="db-name">
+						<span
+							className="db-name"
+							title={value.length ? value[0].user : '/'}
+						>
 							{value.length ? value[0].user : '/'}
 						</span>
 						<span>
@@ -210,17 +206,13 @@ function UserManage(props: any): JSX.Element {
 						</span>
 					</div>
 				}
-				align="t"
 			>
 				<div
 					style={{
 						cursor: 'pointer'
 					}}
 				>
-					<span
-						className="db-name"
-						title={value.length ? value[0].user : '/'}
-					>
+					<span className="db-name">
 						{value.length ? value[0].user : '/'}
 					</span>
 					<span>
@@ -234,7 +226,7 @@ function UserManage(props: any): JSX.Element {
 							: ''}
 					</span>
 				</div>
-			</Tooltip>
+			</Popover>
 		);
 	};
 	const onFilter = (filterParams: any) => {
@@ -268,68 +260,73 @@ function UserManage(props: any): JSX.Element {
 	};
 	return (
 		<>
-			<Table
+			<ProTable
 				dataSource={dataSource}
-				exact
-				fixedBarExpandWidth={[24]}
-				affixActionBar
+				// exact
+				// fixedBarExpandWidth={[24]}
+				// affixActionBar
 				showRefresh
 				showColumnSetting
 				onRefresh={onRefresh}
-				primaryKey="key"
+				rowKey="id"
 				search={{
 					placeholder: '请输入内容',
-					onSearch: handleSearch,
-					onChange: handleChange,
-					value: keyword
-				}}
-				searchStyle={{
-					width: '360px'
+					onSearch: handleChange,
+					// onChange: handleChange,
+					style: {
+						width: '260px'
+					}
 				}}
 				operation={Operation}
-				onFilter={onFilter}
-				onSort={onSort}
+				// onFilter={onFilter}
+				// onSort={onSort}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="授权数据库"
 					dataIndex="db"
 					width={120}
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="字符集"
 					dataIndex="charset"
-					cell={nullRender}
+					render={nullRender}
 					filters={charsetFilter}
-					filterMode="single"
+					// filterMode="single"
+					onFilter={(value, record: any) => value === record.charset}
+					filterMultiple={false}
 					width={100}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="关联账户"
 					dataIndex="users"
-					cell={usersRender}
+					render={usersRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备注"
 					dataIndex="description"
-					cell={(value: string) => (
+					render={(value: string) => (
 						<span className="description">{value}</span>
 					)}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
-					cell={createTimeRender}
-					sortable
+					render={createTimeRender}
+					// sortable
+					sorter={(a: any, b: any) =>
+						new Date(a.createTime).getTime() -
+						new Date(b.createTime).getTime()
+					}
 					width={160}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="操作"
 					dataIndex="action"
-					cell={actionRender}
+					render={actionRender}
 					width={100}
 				/>
-			</Table>
+			</ProTable>
 			{visible && (
 				<DatabaseForm
 					visible={visible}

@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Button,
-	Message,
-	Table,
-	Search,
-	Icon,
-	Pagination
-} from '@alicloud/console-components';
+import { notification } from 'antd';
+import ProTable from '@/components/ProTable';
+
 import moment from 'moment';
 import { queryAuditSql } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import { ManageProps } from './database';
 import styled from 'styled-components';
@@ -20,6 +14,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [current, setCurrent] = useState<number>(1); // * 页码
+	const [pageSize, setPageSize] = useState<number>(); // * 每页条数
 	const [total, setTotal] = useState<number | undefined>(10); // * 总数
 
 	useEffect(() => {
@@ -29,16 +24,19 @@ function SqlAudit(props: ManageProps): JSX.Element {
 			namespace,
 			middlewareName,
 			current: 1,
-			size: 10
+			size: pageSize || 10
 		}).then((res) => {
 			if (res.success) {
 				res.data && setDataSource(res.data.data);
 				res.data && setTotal(res.data.count);
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
-	}, []);
+	}, [keyword]);
 
 	const onRefresh: () => void = () => {
 		queryAuditSql({
@@ -47,13 +45,16 @@ function SqlAudit(props: ManageProps): JSX.Element {
 			namespace,
 			middlewareName,
 			current,
-			size: 10
+			size: pageSize || 10
 		}).then((res) => {
 			if (res.success) {
 				res.data && setDataSource(res.data.data);
 				res.data && setTotal(res.data.count);
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -93,19 +94,22 @@ function SqlAudit(props: ManageProps): JSX.Element {
 			namespace,
 			middlewareName,
 			current: current,
-			size: 10
+			size: pageSize || 10
 		}).then((res) => {
 			if (res.success) {
 				res.data && setDataSource(res.data.data);
 				res.data && setTotal(res.data.count);
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	return (
 		<>
-			<div className="audit-table-header-layout">
+			{/* <div className="audit-table-header-layout">
 				<Search
 					onSearch={handleSearch}
 					onChange={handleChange}
@@ -121,51 +125,63 @@ function SqlAudit(props: ManageProps): JSX.Element {
 					</Button>
 				</div>
 			</div>
-			<div id="filter-cas"></div>
-			<Table
+			<div id="filter-cas"></div> */}
+			<ProTable
 				dataSource={dataSource}
-				primaryKey="key"
-				hasBorder={false}
-				onSort={onSort}
+				rowKey="key"
+				// bordered={false}
+				// pagination={{
+				// 	total: total,
+				// 	current: current,
+				// 	pageSize: pageSize
+				// }}
+				showRefresh
+				search={{
+					onSearch: handleChange,
+					placeholder: '请输入内容',
+					style: { width: '360px' }
+				}}
+				onRefresh={onRefresh}
+				// onSort={onSort}
 			>
-				<Table.Column title="操作ip" dataIndex="ip" width={100} />
-				<Table.Column
+				<ProTable.Column title="操作ip" dataIndex="ip" width={100} />
+				<ProTable.Column
 					title="操作账户"
 					dataIndex="user"
 					width={100}
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="数据库名称"
 					dataIndex="db"
-					cell={nullRender}
+					render={nullRender}
 					width={100}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="执行语句"
 					dataIndex="query"
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="执行时间"
 					dataIndex="queryDate"
-					cell={createTimeRender}
+					render={createTimeRender}
 					width={160}
-					sortable
+					// sortable
 				/>
-			</Table>
-			<SPagination
+			</ProTable>
+			{/* <SPagination
 				onChange={pageChange}
 				total={total}
 				current={current}
 				pageSizeSelector={false}
-			/>
+			/> */}
 		</>
 	);
 }
-const SPagination = styled(Pagination)`
-	margin-top: 10px;
-	float: right;
-`;
+// const SPagination = styled(Pagination)`
+// 	margin-top: 10px;
+// 	float: right;
+// `;
 
 export default SqlAudit;
