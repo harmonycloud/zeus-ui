@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import {
-	Dialog,
+	Modal,
 	Form,
-	Field,
-	NumberPicker,
+	InputNumber,
 	Checkbox,
+	notification,
 	TimePicker,
-	Message
-} from '@alicloud/console-components';
-import Visualization from '../HighAvailability/visualization';
+	Button
+} from 'antd';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import messageConfig from '@/components/messageConfig';
+import { useHistory } from 'react-router';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import Visualization from '../HighAvailability/visualization';
 import storage from '@/utils/storage';
 import {
 	addBackupConfig,
 	backupNow,
 	updateBackupConfig
 } from '@/services/backup';
-import { Page, Content, Header } from '@alicloud/console-components-page';
 import { getPods } from '@/services/middleware';
-import { useHistory } from 'react-router';
-import { Button } from '@alifd/next';
 import { list } from '@/utils/const';
 import { StoreState } from '@/types';
 import { BackupRuleSendData, PodSendData } from '../detail';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 const formItemLayout = {
 	labelCol: {
@@ -34,9 +34,11 @@ const formItemLayout = {
 		span: 14
 	}
 };
+const { confirm } = Modal;
 const { Group: CheckboxGroup } = Checkbox;
 function BackupSetting(): JSX.Element {
-	const field = Field.useField();
+	const [form] = Form.useForm();
+	// const field = Field.useField();
 	const {
 		clusterId,
 		namespace,
@@ -54,10 +56,8 @@ function BackupSetting(): JSX.Element {
 	const [allChecked, setAllChecked] = useState<boolean>();
 
 	const onOk = () => {
-		field.validate((error, values) => {
-			if (!error) {
-				onCreate(values);
-			}
+		form.validateFields().then((values) => {
+			onCreate(values);
 		});
 	};
 	useEffect(() => {
@@ -83,7 +83,7 @@ function BackupSetting(): JSX.Element {
 				.join(',') === '0,1,2,3,4,5,6' &&
 			setAllChecked(true);
 		record &&
-			field.setValues({
+			form.setFieldsValue({
 				count: record.limitRecord,
 				cycle: record.cron
 					.split(' ? ? ')[1]
@@ -113,14 +113,20 @@ function BackupSetting(): JSX.Element {
 			if (res.success) {
 				setTopoData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 
 	const onCreate = (values: any) => {
 		if (!backupObj) {
-			Message.show(messageConfig('warning', '提示', '请选择实例对象'));
+			notification.warning({
+				message: '提示',
+				description: '请选择实例对象'
+			});
 			return;
 		}
 		if (!isEdit) {
@@ -145,9 +151,10 @@ function BackupSetting(): JSX.Element {
 			if (backupObj !== 'serve') sendData.pod = backupObj;
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '备份设置成功')
-					);
+					notification.success({
+						message: '成功',
+						description: '备份设置成功'
+					});
 					if (dataSecurity) {
 						history.push({
 							pathname: '/disasterBackup/dataSecurity',
@@ -161,7 +168,10 @@ function BackupSetting(): JSX.Element {
 					}
 					localStorage.setItem('backupTab', 'config');
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		} else {
@@ -186,9 +196,10 @@ function BackupSetting(): JSX.Element {
 				};
 				updateBackupConfig(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '备份修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '备份修改成功'
+						});
 						if (dataSecurity) {
 							history.push({
 								pathname: '/disasterBackup/dataSecurity',
@@ -202,7 +213,10 @@ function BackupSetting(): JSX.Element {
 						}
 						localStorage.setItem('backupTab', 'config');
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
@@ -221,19 +235,16 @@ function BackupSetting(): JSX.Element {
 						(item: any) => item.podName
 					);
 				}
-				Dialog.show({
+				confirm({
 					title: '操作确认',
 					content: '请确认是否覆盖？',
 					onOk: () => {
 						backupNow(sendData).then((res) => {
 							if (res.success) {
-								Message.show(
-									messageConfig(
-										'success',
-										'成功',
-										'备份恢复成功，5秒之后跳转'
-									)
-								);
+								notification.success({
+									message: '成功',
+									description: '备份恢复成功，5秒之后跳转'
+								});
 								setTimeout(() => {
 									if (dataSecurity) {
 										history.push({
@@ -250,9 +261,10 @@ function BackupSetting(): JSX.Element {
 									localStorage.setItem('backupTab', 'list');
 								}, 5000);
 							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					}
@@ -262,36 +274,38 @@ function BackupSetting(): JSX.Element {
 	};
 
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={!isEdit ? '新建备份' : backup ? '恢复备份' : '修改备份'}
-				hasBackArrow
-				renderBackArrow={(elem) => (
-					<span
-						className="details-go-back"
-						onClick={() => {
-							if (dataSecurity) {
-								history.push({
-									pathname: '/disasterBackup/dataSecurity',
-									state: {
-										middlewareName: listData.name,
-										middlewareType: listData.type
-									}
-								});
-							} else {
-								window.history.back();
+				// hasBackArrow
+				onBack={() => {
+					if (dataSecurity) {
+						history.push({
+							pathname: '/disasterBackup/dataSecurity',
+							state: {
+								middlewareName: listData.name,
+								middlewareType: listData.type
 							}
-							localStorage.setItem(
-								'backupTab',
-								backup && isEdit ? 'list' : 'config'
-							);
-						}}
-					>
-						{elem}
-					</span>
-				)}
+						});
+					} else {
+						window.history.back();
+					}
+					localStorage.setItem(
+						'backupTab',
+						backup && isEdit ? 'list' : 'config'
+					);
+				}}
+				// renderBackArrow={(elem) => (
+				// 	<span
+				// 		className="details-go-back"
+				// 		onClick={() => {
+				// 		}}
+				// 	>
+				// 		{elem}
+				// 	</span>
+				// )}
 			/>
-			<Content>
+			<ProContent>
 				{topoData && (
 					<Visualization
 						serverData={listData}
@@ -307,46 +321,62 @@ function BackupSetting(): JSX.Element {
 				{!isEdit || record ? (
 					<Form
 						{...formItemLayout}
-						field={field}
+						form={form}
 						style={{ marginTop: '24px' }}
 					>
 						<Form.Item
 							label="备份保留个数"
 							required
-							requiredMessage="备份保留个数不能为空"
-							min={1}
-							minmaxLengthMessage="备份保留个数最小值为1"
+							name="count"
+							rules={[
+								{
+									required: true,
+									message: '备份保留个数不能为空'
+								},
+								{
+									min: 1,
+									message: '备份保留个数最小值为1'
+								}
+							]}
+							// requiredMessage="备份保留个数不能为空"
+							// min={1}
+							// minmaxLengthMessage="备份保留个数最小值为1"
 						>
-							<NumberPicker
+							<InputNumber
 								min={1}
 								defaultValue={1}
 								type="inline"
-								name="count"
 							/>
 						</Form.Item>
 						<Form.Item
 							label="备份周期"
 							required
-							requiredMessage="备份周期不能为空！"
+							name="cycle"
+							rules={[
+								{
+									required: true,
+									message: '备份周期不能为空！'
+								}
+							]}
 						>
 							<Checkbox
-								label="全选"
 								style={{ marginRight: '12px' }}
-								onChange={(value) => {
+								onChange={(value: CheckboxChangeEvent) => {
 									value
 										? setChecks([0, 1, 2, 3, 4, 5, 6])
 										: setChecks([]);
-									setAllChecked(value);
+									setAllChecked(value.target.value);
 								}}
 								checked={allChecked}
-							/>
+							>
+								全选
+							</Checkbox>
 							<CheckboxGroup
-								name="cycle"
-								dataSource={list}
+								options={list}
 								value={checks}
-								onChange={(value: any) => {
-									setChecks(value);
-									value
+								onChange={(value: CheckboxValueType[]) => {
+									setChecks(value as number[]);
+									(value as number[])
 										.sort((a: number, b: number) => a - b)
 										.join(',') === '0,1,2,3,4,5,6'
 										? setAllChecked(true)
@@ -357,13 +387,13 @@ function BackupSetting(): JSX.Element {
 						<Form.Item
 							label="备份时间"
 							required
-							requiredMessage="备份时间不能为空"
+							name="time"
+							rules={[
+								{ required: true, message: '备份时间不能为空' }
+							]}
+							// requiredMessage="备份时间不能为空"
 						>
-							<TimePicker
-								name="time"
-								minuteStep={30}
-								format="HH:mm"
-							/>
+							<TimePicker minuteStep={30} format="HH:mm" />
 						</Form.Item>
 					</Form>
 				) : null}
@@ -407,23 +437,18 @@ function BackupSetting(): JSX.Element {
 							<Button
 								onClick={() => {
 									if (!backupObj) {
-										Message.show(
-											messageConfig(
-												'warning',
-												'提示',
-												'请选择实例对象'
-											)
-										);
+										notification.warning({
+											message: '提示',
+											description: '请选择实例对象'
+										});
 										return;
 									} else {
 										if (backup.phrase !== 'Success') {
-											Message.show(
-												messageConfig(
-													'error',
-													'错误',
+											notification.error({
+												message: '错误',
+												description:
 													'该服务还没备份完成'
-												)
-											);
+											});
 										} else {
 											history.push(
 												`/serviceList/mysql/MySQL/mysqlCreate/${listData.chartVersion}/${listData.name}/${backup.backupFileName}`
@@ -465,8 +490,8 @@ function BackupSetting(): JSX.Element {
 						</Button>
 					</div>
 				)}
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

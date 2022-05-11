@@ -28,6 +28,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 		operation,
 		showColumnSetting,
 		showRefresh,
+		refreshDisabled = false,
 		onRefresh = () => {
 			console.log('');
 		},
@@ -72,6 +73,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 					)}
 					{showRefresh && (
 						<Button
+							disabled={refreshDisabled}
 							type="default"
 							icon={<ReloadOutlined />}
 							onClick={onRefresh}

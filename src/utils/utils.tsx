@@ -405,7 +405,7 @@ export const tooltipRender = (
 		);
 	}
 };
-export const questionTooltipRender = (value: string, index: number) => {
+export const questionTooltipRender = (value: string) => {
 	return (
 		<Tooltip trigger={<Icon size="xs" type="question-circle" />}>
 			{value}

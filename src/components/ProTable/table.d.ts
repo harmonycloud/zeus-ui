@@ -6,6 +6,7 @@ import { TableProps } from 'antd/lib/table/Table';
 export interface ProTableProps<RecordType> extends TableProps<RecordType> {
 	showColumnSetting?: boolean;
 	showRefresh?: boolean;
+	refreshDisabled?: boolean;
 	onRefresh?: () => void;
 	operation?: {
 		primary?: React.ReactNode;

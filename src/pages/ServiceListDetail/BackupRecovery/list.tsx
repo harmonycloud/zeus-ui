@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message, Balloon } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import Table from '@/components/MidTable';
-import messageConfig from '@/components/messageConfig';
+// import { Button, Dialog, Message, Balloon } from '@alicloud/console-components';
+// import Actions, { LinkButton } from '@alicloud/console-components-actions';
+// import Table from '@/components/MidTable';
+// import messageConfig from '@/components/messageConfig';
+import { Button, Modal, notification, Tooltip } from 'antd';
+import moment from 'moment';
+import { useHistory } from 'react-router';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import { getBackups, addBackupConfig, deleteBackups } from '@/services/backup';
 import { statusBackupRender } from '@/utils/utils';
-import { useHistory } from 'react-router';
-import moment from 'moment';
 import { BackupRecordItem, ListProps } from '../detail';
 
-const { Tooltip } = Balloon;
-
+const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
 export default function List(props: ListProps): JSX.Element {
 	const { clusterId, namespace, data: listData, storage } = props;
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
@@ -47,7 +50,10 @@ export default function List(props: ListProps): JSX.Element {
 					setBackups(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -58,16 +64,13 @@ export default function List(props: ListProps): JSX.Element {
 				listData?.type === 'elasticsearch') &&
 			!listData.isAllLvmStorage
 		) {
-			Message.show(
-				messageConfig(
-					'error',
-					'失败',
-					'存储不使用lvm时，不支持立即备份功能'
-				)
-			);
+			notification.error({
+				message: '失败',
+				description: '存储不使用lvm时，不支持立即备份功能'
+			});
 			return;
 		}
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '请确认是否立刻备份？',
 			onOk: () => {
@@ -80,11 +83,15 @@ export default function List(props: ListProps): JSX.Element {
 				addBackupConfig(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '备份成功')
-							);
+							notification.success({
+								message: '成功',
+								description: '备份成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -96,8 +103,8 @@ export default function List(props: ListProps): JSX.Element {
 
 	const actionRender = (
 		value: any,
-		index: number,
-		record: BackupRecordItem
+		record: BackupRecordItem,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -122,7 +129,7 @@ export default function List(props: ListProps): JSX.Element {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						Dialog.show({
+						confirm({
 							title: '操作确认',
 							content: '备份删除后将无法恢复，请确认执行',
 							onOk: () => {
@@ -137,21 +144,15 @@ export default function List(props: ListProps): JSX.Element {
 								deleteBackups(sendData)
 									.then((res) => {
 										if (res.success) {
-											Message.show(
-												messageConfig(
-													'success',
-													'成功',
-													'备份删除成功'
-												)
-											);
+											notification.error({
+												message: '成功',
+												description: '备份删除成功'
+											});
 										} else {
-											Message.show(
-												messageConfig(
-													'error',
-													'失败',
-													res
-												)
-											);
+											notification.error({
+												message: '失败',
+												description: res.errorMsg
+											});
 										}
 									})
 									.finally(() => {
@@ -178,25 +179,22 @@ export default function List(props: ListProps): JSX.Element {
 		if (value) {
 			return (
 				<Tooltip
-					trigger={
-						<div
-							style={{
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap',
-								width: '250px'
-							}}
-						>
-							{value.join(';')}
-						</div>
-					}
-					align="t"
-				>
-					{value.map((item, index) => (
+					title={value.map((item, index) => (
 						<p key={index} style={{ margin: '3px 0' }}>
 							{item}
 						</p>
 					))}
+				>
+					<div
+						style={{
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							width: '250px'
+						}}
+					>
+						{value.join(';')}
+					</div>
 				</Tooltip>
 			);
 		} else {
@@ -232,8 +230,8 @@ export default function List(props: ListProps): JSX.Element {
 
 	const roleRender = (
 		value: string,
-		index: number,
-		record: BackupRecordItem
+		record: BackupRecordItem,
+		index: number
 	) => {
 		if (value === 'Cluster') {
 			return '服务';
@@ -281,8 +279,8 @@ export default function List(props: ListProps): JSX.Element {
 
 	const sourceNameRender = (
 		value: string,
-		index: number,
-		record: BackupRecordItem
+		record: BackupRecordItem,
+		index: number
 	) => {
 		if (record.backupType !== 'Cluster') {
 			return value;
@@ -298,50 +296,64 @@ export default function List(props: ListProps): JSX.Element {
 
 	return (
 		<div style={{ marginTop: 15 }}>
-			<Table
+			<ProTable
 				dataSource={backups}
-				exact
-				fixedBarExpandWidth={[24]}
+				// exact
+				// fixedBarExpandWidth={[24]}
 				showRefresh
 				onRefresh={getData}
-				affixActionBar
-				primaryKey="key"
+				// affixActionBar
+				rowKey="key"
 				operation={Operation}
-				onSort={onSort}
+				// onSort={onSort}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="备份对象"
 					dataIndex="backupType"
 					width={100}
-					cell={roleRender}
+					render={roleRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份源名称"
 					dataIndex="sourceName"
 					width={150}
-					cell={sourceNameRender}
+					render={sourceNameRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份位置"
 					dataIndex="backupAddressList"
-					cell={addressListRender}
+					render={addressListRender}
 					width={250}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份状态"
 					dataIndex="phrase"
-					cell={statusBackupRender}
+					render={statusBackupRender}
 					width={120}
-					sortable
+					sorter={(a: BackupRecordItem) => {
+						if (a['phrase'] === 'Failed') return 2;
+						if (a['phrase'] === 'Running') return 1;
+						if (a['phrase'] === 'Success') return -1;
+						return 0;
+					}}
+					// sortable
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份时间"
 					dataIndex="backupTime"
-					sortable
+					// sortable
 					width={160}
+					sorter={(a: BackupRecordItem, b: BackupRecordItem) =>
+						moment(a.backupTime).unix() -
+						moment(b.backupTime).unix()
+					}
 				/>
-				<Table.Column title="操作" cell={actionRender} width={120} />
-			</Table>
+				<ProTable.Column
+					title="操作"
+					render={actionRender}
+					width={120}
+				/>
+			</ProTable>
 		</div>
 	);
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Tab } from '@alicloud/console-components';
-import { Page, Content, Menu } from '@alicloud/console-components-page';
+// import { Tab } from '@alicloud/console-components';
+// import { Page, Content, Menu } from '@alicloud/console-components-page';
+import { Tabs } from 'antd';
+import { ProPage, ProContent, ProMenu } from '@/components/ProPage';
 import { useLocation, useParams } from 'react-router';
 import List from './list';
 import Config from './config';
@@ -26,12 +28,15 @@ export default function BackupRecovery(
 		setCapabilities(props.capabilities || []);
 	}, [props]);
 	useEffect(() => {
-		currentTab && currentTab !== 'backupRecovery' && setSelectedKey('list');
+		const newLocal = 'list';
+		currentTab &&
+			currentTab !== 'backupRecovery' &&
+			setSelectedKey(newLocal);
 	}, [currentTab]);
 	useEffect(() => {
 		localStorage.removeItem('backupTab');
 	}, []);
-	const menuSelect = (selectedKey: string) => {
+	const menuSelect = (selectedKey: any) => {
 		setSelectedKey(selectedKey);
 		localStorage.setItem('backupTab', selectedKey);
 	};
@@ -44,14 +49,14 @@ export default function BackupRecovery(
 	};
 	const ConsoleMenu = () => {
 		return (
-			<Menu
-				selectedKeys={selectedKey}
-				onItemClick={menuSelect}
+			<ProMenu
+				selectedKeys={[selectedKey]}
+				onClick={menuSelect}
 				style={{ height: '100%', marginLeft: 0 }}
 			>
-				<Menu.Item key="list">备份记录</Menu.Item>
-				<Menu.Item key="config">备份规则</Menu.Item>
-			</Menu>
+				<ProMenu.Item key="list">备份记录</ProMenu.Item>
+				<ProMenu.Item key="config">备份规则</ProMenu.Item>
+			</ProMenu>
 		);
 	};
 	if (storage) {
@@ -68,26 +73,26 @@ export default function BackupRecovery(
 	if (pathname.includes('disasterBackup')) {
 		return (
 			<div>
-				<Tab defaultActiveKey={selectedKey === 'list' ? 0 : 1}>
-					<Tab.Item title="备份记录">
+				<Tabs>
+					<Tabs.TabPane tab="备份记录" key="1">
 						<List {...props} />
-					</Tab.Item>
-					<Tab.Item title="备份规则">
+					</Tabs.TabPane>
+					<Tabs.TabPane tab="备份规则" key="2">
 						<Config {...props} />
-					</Tab.Item>
-				</Tab>
+					</Tabs.TabPane>
+				</Tabs>
 			</div>
 		);
 	} else {
 		return (
-			<Page>
-				<Content
+			<ProPage>
+				<ProContent
 					menu={<ConsoleMenu />}
 					style={{ margin: 0, padding: 0 }}
 				>
 					{childrenRender(selectedKey)}
-				</Content>
-			</Page>
+				</ProContent>
+			</ProPage>
 		);
 	}
 }
