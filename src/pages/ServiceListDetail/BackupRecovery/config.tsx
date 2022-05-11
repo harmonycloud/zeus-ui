@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import { Dialog, Message, Switch, Button } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import Table from '@/components/MidTable';
-import messageConfig from '@/components/messageConfig';
+import { Modal, notification, Switch, Button } from 'antd';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import {
 	getBackupConfig,
 	deleteBackupConfig,
@@ -14,6 +13,8 @@ import storage from '@/utils/storage';
 import { weekMap } from '@/utils/const';
 import { BackupDataParams, BackupRuleItem, ConfigProps } from '../detail';
 
+const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
 export default function Config(props: ConfigProps): JSX.Element {
 	const { clusterId, namespace, data: listData } = props;
 	const history = useHistory();
@@ -61,13 +62,16 @@ export default function Config(props: ConfigProps): JSX.Element {
 					setBackups(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 
 	const backupStatusChange = (checked: boolean, record: BackupRuleItem) => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: checked
 				? '请确认是否打开备份设置？'
@@ -83,52 +87,37 @@ export default function Config(props: ConfigProps): JSX.Element {
 					cron: record.cron
 				};
 				if (!record.canPause) {
-					Message.show(
-						messageConfig('error', '失败', '当前中间件不支持此操作')
-					);
+					notification.error({
+						message: '失败',
+						description: '当前中间件不支持此操作'
+					});
 					getData();
 					return;
 				}
 				updateBackupConfig(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								`${
-									checked
-										? '备份设置开启成功'
-										: '备份设置关闭成功'
-								}`
-							)
-						);
+						notification.success({
+							message: '成功',
+							description: `${
+								checked
+									? '备份设置开启成功'
+									: '备份设置关闭成功'
+							}`
+						});
 						setBackupData({
 							...backupData,
 							pause: checked ? 'off' : 'on'
 						});
 						getData();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
 		});
-	};
-
-	const onSort = (dataIndex: string, order: string) => {
-		const tempDataSource = backups.sort((a, b) => {
-			const result =
-				moment(a['createTime']).valueOf() -
-				moment(b['createTime']).valueOf();
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setBackups([...tempDataSource]);
 	};
 
 	const Operation = {
@@ -138,13 +127,11 @@ export default function Config(props: ConfigProps): JSX.Element {
 				onClick={() => {
 					if (listData?.type === 'elasticsearch') {
 						if (!listData.isAllLvmStorage) {
-							Message.show(
-								messageConfig(
-									'error',
-									'失败',
+							notification.error({
+								message: '失败',
+								description:
 									'存储不使用lvm时，不支持立即备份功能'
-								)
-							);
+							});
 							return;
 						}
 					} else {
@@ -152,17 +139,17 @@ export default function Config(props: ConfigProps): JSX.Element {
 							listData?.type === 'mysql' &&
 							!listData.isAllLvmStorage
 						) {
-							Message.show(
-								messageConfig(
-									'error',
-									'失败',
+							notification.error({
+								message: '失败',
+								description:
 									'存储不使用lvm时，不支持立即备份功能'
-								)
-							);
+							});
 							return;
 						}
 					}
-					history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
+					history.push(
+						`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
+					);
 					storage.setSession('detail', props);
 				}}
 			>
@@ -173,8 +160,8 @@ export default function Config(props: ConfigProps): JSX.Element {
 
 	const statusRender = (
 		value: string,
-		index: number,
-		record: BackupRuleItem
+		record: BackupRuleItem,
+		index: number
 	) => {
 		return (
 			<Switch
@@ -188,8 +175,8 @@ export default function Config(props: ConfigProps): JSX.Element {
 
 	const roleRender = (
 		value: string,
-		index: number,
-		record: BackupRuleItem
+		record: BackupRuleItem,
+		index: number
 	) => {
 		if (value === 'Cluster') {
 			return '服务';
@@ -237,8 +224,8 @@ export default function Config(props: ConfigProps): JSX.Element {
 
 	const sourceNameRender = (
 		value: string,
-		index: number,
-		record: BackupRuleItem
+		record: BackupRuleItem,
+		index: number
 	) => {
 		if (record.backupType !== 'Cluster') {
 			return value;
@@ -254,14 +241,16 @@ export default function Config(props: ConfigProps): JSX.Element {
 
 	const actionRender = (
 		value: any,
-		index: number,
-		record: BackupRuleItem
+		record: BackupRuleItem,
+		index: number
 	) => {
 		return (
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
+						history.push(
+							`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
+						);
 						storage.setSession('detail', {
 							...props,
 							record,
@@ -274,7 +263,7 @@ export default function Config(props: ConfigProps): JSX.Element {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						Dialog.show({
+						confirm({
 							title: '操作确认',
 							content:
 								'删除后，本地数据将被清空，无法找回，是否继续？',
@@ -289,21 +278,15 @@ export default function Config(props: ConfigProps): JSX.Element {
 								deleteBackupConfig(sendData)
 									.then((res) => {
 										if (res.success) {
-											Message.show(
-												messageConfig(
-													'success',
-													'成功',
-													'备份删除成功'
-												)
-											);
+											notification.success({
+												message: '成功',
+												description: '备份删除成功'
+											});
 										} else {
-											Message.show(
-												messageConfig(
-													'error',
-													'失败',
-													res
-												)
-											);
+											notification.error({
+												message: '失败',
+												description: res.errorMsg
+											});
 										}
 									})
 									.finally(() => {
@@ -325,47 +308,45 @@ export default function Config(props: ConfigProps): JSX.Element {
 
 	return (
 		<div style={{ marginTop: 15 }}>
-			<Table
+			<ProTable
 				dataSource={backups}
-				exact
-				fixedBarExpandWidth={[24]}
+				// exact
+				// fixedBarExpandWidth={[24]}
 				showRefresh
 				onRefresh={onRefresh}
-				affixActionBar
-				primaryKey="key"
+				// affixActionBar
+				// primaryKey="key"
 				operation={Operation}
-				onSort={onSort}
+				// onSort={onSort}
 				search={{
 					placeholder: '请输入备份源名称检索',
 					onSearch: onRefresh,
-					onChange: (value: string) => setKeyword(value),
-					value: keyword
-				}}
-				searchStyle={{
-					width: '360px'
+					onChange: (e) => setKeyword(e.target.value),
+					value: keyword,
+					style: { width: '360px' }
 				}}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="备份对象"
 					dataIndex="backupType"
-					cell={roleRender}
+					render={roleRender}
 					width={100}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份源名称"
 					dataIndex="sourceName"
 					width={150}
-					cell={sourceNameRender}
+					render={sourceNameRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份保留个数"
 					dataIndex="limitRecord"
 					width={110}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备份周期"
 					dataIndex="cron"
-					cell={(value: string) =>
+					render={(value: string) =>
 						value
 							.split(' ? ? ')[1]
 							.split(',')
@@ -373,20 +354,28 @@ export default function Config(props: ConfigProps): JSX.Element {
 							.join('、')
 					}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="执行状态"
 					dataIndex="pause"
-					cell={statusRender}
+					render={statusRender}
 					width={100}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="最近一次执行"
 					dataIndex="createTime"
-					sortable
+					// sortable
 					width={160}
+					sorter={(a: BackupRuleItem, b: BackupRuleItem) =>
+						moment(a.createTime).unix() -
+						moment(b.createTime).unix()
+					}
 				/>
-				<Table.Column title="操作" cell={actionRender} width={100} />
-			</Table>
+				<ProTable.Column
+					title="操作"
+					render={actionRender}
+					width={100}
+				/>
+			</ProTable>
 		</div>
 	);
 }
