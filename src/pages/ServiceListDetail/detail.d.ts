@@ -406,7 +406,7 @@ export interface ServiceRuleItem {
 	middlewareName?: string;
 	name?: string;
 	namespace?: string;
-	silence?: null;
+	silence?: null | string;
 	status?: null | string;
 	symbol?: string;
 	threshold?: string;
@@ -431,7 +431,7 @@ export interface AlarmItem {
 
 export interface AlarmSendData {
 	url: {
-		clusterId: string;
+		clusterId: string | undefined;
 		middlewareName?: string;
 		namespace?: string;
 	};

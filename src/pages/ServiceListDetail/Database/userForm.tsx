@@ -609,7 +609,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 													{item.db}
 												</span>
 												<RadioGroup
-													style={{ width: 350 }}
+													style={{ width: 365 }}
 													value={String(
 														item.authority
 													)}

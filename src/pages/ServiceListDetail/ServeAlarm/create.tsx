@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Header, Content } from '@alicloud/console-components-page';
-import {
-	Select,
-	Input,
-	Button,
-	Grid,
-	Icon,
-	Checkbox,
-	Balloon,
-	Divider
-} from '@alicloud/console-components';
-import { Message } from '@alicloud/console-components';
-import messageConfig from '@/components/messageConfig';
-import { getClusters } from '@/services/common';
-import CustomIcon from '@/components/CustomIcon';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { Transfer } from '@alicloud/console-components';
+import {
+	Button,
+	Select,
+	Row,
+	Col,
+	Input,
+	Checkbox,
+	Popover,
+	notification
+} from 'antd';
+import {
+	DeleteOutlined,
+	QuestionCircleOutlined,
+	PlusOutlined,
+	MinusOutlined
+} from '@ant-design/icons';
+import { IconFont } from '@/components/IconFont';
+
+import { getClusters } from '@/services/common';
 import {
 	createAlarms,
 	getCanUseAlarms,
@@ -38,9 +43,7 @@ import {
 	ServiceRuleItem
 } from '../detail';
 
-const { Row, Col } = Grid;
 const { Option } = Select;
-const { Tooltip } = Balloon;
 
 function CreateAlarm(): JSX.Element {
 	const params: CreateServeAlarmProps = useParams();
@@ -54,7 +57,7 @@ function CreateAlarm(): JSX.Element {
 	]);
 	const [alarmRules, setAlarmRules] = useState<ServiceRuleItem[]>([]);
 	const [poolList, setPoolList] = useState([]);
-	const [systemId, setSystemId] = useState<string>('');
+	const [systemId, setSystemId] = useState<string | undefined>();
 	const [users, setUsers] = useState<any[]>([]);
 	const [insertUser, setInsertUser] = useState<any[]>([]);
 	const [selectUser, setSelectUser] = useState<any[]>([]);
@@ -101,13 +104,10 @@ function CreateAlarm(): JSX.Element {
 					setAlarmRules([{}]);
 				}
 				if (res.data.length < 0) {
-					Message.show(
-						messageConfig(
-							'error',
-							'错误',
-							'当前中间件没有可以设置规则的监控项！'
-						)
-					);
+					notification.error({
+						message: '错误',
+						description: '当前中间件没有可以设置规则的监控项！'
+					});
 				}
 			}
 		});
@@ -320,10 +320,8 @@ function CreateAlarm(): JSX.Element {
 					style={{ marginRight: '5px' }}
 					disabled={!item.email}
 				/>
-				<Icon
+				<DeleteOutlined
 					className="label"
-					type="ashbin1"
-					size="xs"
 					style={{ color: '#0070CC', marginRight: '10px' }}
 				/>
 				<span className="item-content">{item.userName}</span>
@@ -340,41 +338,34 @@ function CreateAlarm(): JSX.Element {
 				</span>
 			</span>
 		) : (
-			<Tooltip
-				trigger={
-					<span
-						key={item.id}
-						style={{ width: '100%', overflowX: 'auto' }}
-						className={item.email ? '' : 'disabled'}
-					>
-						<Checkbox
-							style={{ marginRight: '5px' }}
-							disabled={!item.email}
-						/>
-						<Icon
-							className="label"
-							type="ashbin1"
-							size="xs"
-							style={{ color: '#0070CC', marginRight: '10px' }}
-						/>
-						<span className="item-content">{item.userName}</span>
-						<span className="item-content">{item.aliasName}</span>
-						<span className="item-content">
-							{item.email ? item.email : '/'}
-						</span>
-						<span className="item-content">{item.phone}</span>
-						<span className="item-content">
-							{item.createTime ? item.createTime : '/'}
-						</span>
-						<span className="item-content">
-							{item.roleName ? item.roleName : '/'}
-						</span>
+			<Popover content={'用户邮箱为空，不可选择'}>
+				<span
+					key={item.id}
+					style={{ width: '100%', overflowX: 'auto' }}
+					className={item.email ? '' : 'disabled'}
+				>
+					<Checkbox
+						style={{ marginRight: '5px' }}
+						disabled={!item.email}
+					/>
+					<DeleteOutlined
+						className="label"
+						style={{ color: '#0070CC', marginRight: '10px' }}
+					/>
+					<span className="item-content">{item.userName}</span>
+					<span className="item-content">{item.aliasName}</span>
+					<span className="item-content">
+						{item.email ? item.email : '/'}
 					</span>
-				}
-				align="t"
-			>
-				用户邮箱为空，不可选择
-			</Tooltip>
+					<span className="item-content">{item.phone}</span>
+					<span className="item-content">
+						{item.createTime ? item.createTime : '/'}
+					</span>
+					<span className="item-content">
+						{item.roleName ? item.roleName : '/'}
+					</span>
+				</span>
+			</Popover>
 		);
 	};
 
@@ -405,25 +396,34 @@ function CreateAlarm(): JSX.Element {
 				};
 				updateAlarm(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '告警规则修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '告警规则修改成功'
+						});
+
 						window.history.back();
 						storage.setLocal('systemTab', 'alarm');
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
 				createAlarm(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '告警规则设置成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '告警规则设置成功'
+						});
 						window.history.back();
 						storage.setLocal('systemTab', 'alarm');
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -448,25 +448,33 @@ function CreateAlarm(): JSX.Element {
 				};
 				updateAlarms(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '告警规则修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '告警规则修改成功'
+						});
 						window.history.back();
 						storage.setLocal('systemTab', 'alarm');
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
 				createAlarms(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '告警规则设置成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '告警规则设置成功'
+						});
 						window.history.back();
 						storage.setLocal('systemTab', 'alarm');
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -486,7 +494,10 @@ function CreateAlarm(): JSX.Element {
 				item.content
 		);
 		if (isRule) {
-			Message.show(messageConfig('error', '失败', '监控项不符合规则'));
+			notification.error({
+				message: '失败',
+				description: '监控项不符合规则'
+			});
 			return;
 		}
 		if (alarmType === 'system') {
@@ -515,22 +526,25 @@ function CreateAlarm(): JSX.Element {
 						if (insertUser && insertUser.length) {
 							onCreate(data);
 						} else {
-							Message.show(
-								messageConfig(
-									'error',
-									'失败',
-									'请选择邮箱通知用户'
-								)
-							);
+							notification.error({
+								message: '失败',
+								description: '请选择邮箱通知用户'
+							});
 						}
 					} else {
 						onCreate(data);
 					}
 				} else {
-					Message.show(messageConfig('error', '失败', '缺少监控项'));
+					notification.error({
+						message: '失败',
+						description: '缺少监控项'
+					});
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', '请选择集群'));
+				notification.error({
+					message: '失败',
+					description: '请选择集群'
+				});
 			}
 		} else {
 			const list = alarmRules.map((item) => {
@@ -550,24 +564,26 @@ function CreateAlarm(): JSX.Element {
 					if (insertUser && insertUser.length) {
 						onCreate(list);
 					} else {
-						Message.show(
-							messageConfig('error', '失败', '请选择邮箱通知用户')
-						);
+						notification.error({
+							message: '失败',
+							description: '请选择邮箱通知用户'
+						});
 					}
 				} else {
 					onCreate(list);
 				}
 			} else {
-				Message.show(
-					messageConfig('error', '失败', '存在监控项缺少阈值')
-				);
+				notification.error({
+					message: '失败',
+					description: '存在监控项缺少阈值'
+				});
 			}
 		}
 	};
 
 	return (
-		<Page className="create-alarm">
-			<Header
+		<ProPage className="create-alarm">
+			<ProHeader
 				title={
 					ruleId
 						? '修改告警规则'
@@ -575,20 +591,12 @@ function CreateAlarm(): JSX.Element {
 								middlewareName ? '(' + middlewareName + ')' : ''
 						  }`
 				}
-				hasBackArrow
-				renderBackArrow={(elem) => (
-					<span
-						className="details-go-back"
-						onClick={() => {
-							window.history.back();
-							storage.setLocal('systemTab', 'alarm');
-						}}
-					>
-						{elem}
-					</span>
-				)}
+				onBack={() => {
+					window.history.back();
+					storage.setLocal('systemTab', 'alarm');
+				}}
 			/>
-			<Content>
+			<ProContent>
 				{alarmType === 'system' && (
 					<>
 						<h2>集群选择</h2>
@@ -599,13 +607,13 @@ function CreateAlarm(): JSX.Element {
 							选择集群
 						</span>
 						<Select
+							placeholder="请选择集群"
 							style={{
 								width: '380px',
 								marginLeft: '50px'
 							}}
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
-							placeholder="请选择集群"
 							disabled={ruleId as unknown as boolean}
 						>
 							{poolList.length &&
@@ -632,63 +640,52 @@ function CreateAlarm(): JSX.Element {
 					</Col>
 					<Col span={5}>
 						<span>触发规则</span>
-						<Tooltip
-							trigger={
-								<Icon
-									type="question-circle"
-									size="xs"
-									style={{
-										marginLeft: '5px',
-										color: '#33',
-										cursor: 'pointer'
-									}}
-								/>
-							}
-							align="t"
+						<Popover
+							content={'特定时间≥设定的触发次数，则预警一次'}
 						>
-							特定时间≥设定的触发次数，则预警一次
-						</Tooltip>
+							<QuestionCircleOutlined
+								style={{
+									marginLeft: '5px',
+									color: '#33',
+									cursor: 'pointer'
+								}}
+							/>
+						</Popover>
 					</Col>
 					<Col span={3}>
 						<span>告警等级</span>
 					</Col>
 					<Col span={3}>
 						<span>告警间隔</span>
-						<Tooltip
-							trigger={
-								<Icon
-									type="question-circle"
-									size="xs"
-									style={{
-										marginLeft: '5px',
-										color: '#333',
-										cursor: 'pointer'
-									}}
-								/>
+						<Popover
+							content={
+								'预警一次过后，间隔多久后再次执行预警监测，防止预警信息爆炸'
 							}
-							align="t"
 						>
-							预警一次过后，间隔多久后再次执行预警监测，防止预警信息爆炸
-						</Tooltip>
+							<QuestionCircleOutlined
+								style={{
+									marginLeft: '5px',
+									color: '#33',
+									cursor: 'pointer'
+								}}
+							/>
+						</Popover>
 					</Col>
 					<Col span={4}>
 						<span>告警内容描述</span>
-						<Tooltip
-							trigger={
-								<Icon
-									type="question-circle"
-									size="xs"
-									style={{
-										marginLeft: '5px',
-										color: '#333',
-										cursor: 'pointer'
-									}}
-								/>
+						<Popover
+							content={
+								'对已经设定的监控对象进行自定义描述，发生告警时可作为一种信息提醒'
 							}
-							align="t"
 						>
-							对已经设定的监控对象进行自定义描述，发生告警时可作为一种信息提醒
-						</Tooltip>
+							<QuestionCircleOutlined
+								style={{
+									marginLeft: '5px',
+									color: '#33',
+									cursor: 'pointer'
+								}}
+							/>
+						</Popover>
 					</Col>
 					<Col span={2}>
 						<span>告警操作</span>
@@ -703,6 +700,7 @@ function CreateAlarm(): JSX.Element {
 										<Col span={3}>
 											<span className="ne-required"></span>
 											<Select
+												placeholder="请选择"
 												onChange={(value) =>
 													onChange(
 														value,
@@ -714,7 +712,7 @@ function CreateAlarm(): JSX.Element {
 													marginRight: 8,
 													width: '100%'
 												}}
-												autoWidth={false}
+												// autoWidth={false}
 												value={
 													alarmType === 'system'
 														? item.alert?.split(
@@ -743,6 +741,7 @@ function CreateAlarm(): JSX.Element {
 										</Col>
 										<Col span={4}>
 											<Select
+												placeholder="请选择"
 												onChange={(value) =>
 													onChange(
 														value,
@@ -754,7 +753,7 @@ function CreateAlarm(): JSX.Element {
 													width: '60%',
 													minWidth: 'auto'
 												}}
-												autoWidth={true}
+												// autoWidth={true}
 												value={item.symbol}
 											>
 												{symbols.map((i) => {
@@ -774,10 +773,10 @@ function CreateAlarm(): JSX.Element {
 													borderLeft: 0
 												}}
 												value={item.threshold}
-												htmlType="number"
-												onChange={(value) => {
+												type="number"
+												onChange={(e) => {
 													onChange(
-														value,
+														e.target.value,
 														item,
 														'threshold'
 													);
@@ -789,10 +788,10 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTime}
-												htmlType="number"
-												onChange={(value) => {
+												type="number"
+												onChange={(e) => {
 													onChange(
-														value,
+														e.target.value,
 														item,
 														'alertTime'
 													);
@@ -804,10 +803,10 @@ function CreateAlarm(): JSX.Element {
 											<Input
 												style={{ width: '25%' }}
 												value={item.alertTimes}
-												htmlType="number"
-												onChange={(value) => {
+												type="number"
+												onChange={(e) => {
 													onChange(
-														value,
+														e.target.value,
 														item,
 														'alertTimes'
 													);
@@ -817,6 +816,7 @@ function CreateAlarm(): JSX.Element {
 										</Col>
 										<Col span={3}>
 											<Select
+												placeholder="请选择"
 												onChange={(value) =>
 													onChange(
 														value,
@@ -830,10 +830,10 @@ function CreateAlarm(): JSX.Element {
 												{alarmWarn.map((i) => {
 													return (
 														<Option
-															key={i.label}
+															key={i.text}
 															value={i.value}
 														>
-															{i.label}
+															{i.text}
 														</Option>
 													);
 												})}
@@ -841,6 +841,7 @@ function CreateAlarm(): JSX.Element {
 										</Col>
 										<Col span={3}>
 											<Select
+												placeholder="请选择"
 												onChange={(value) =>
 													onChange(
 														value,
@@ -857,7 +858,7 @@ function CreateAlarm(): JSX.Element {
 															key={i.value}
 															value={i.value}
 														>
-															{i.label}
+															{i.text}
 														</Option>
 													);
 												})}
@@ -866,9 +867,9 @@ function CreateAlarm(): JSX.Element {
 										<Col span={4}>
 											<Input
 												style={{ width: '100%' }}
-												onChange={(value) =>
+												onChange={(e) =>
 													onChange(
-														value,
+														e.target.value,
 														item,
 														'content'
 													)
@@ -884,25 +885,30 @@ function CreateAlarm(): JSX.Element {
 												}
 												style={{ marginRight: '8px' }}
 												onClick={() => copyAlarm(index)}
-											>
-												<CustomIcon
-													type="icon-fuzhi1"
-													size={12}
-													style={{ color: '#0064C8' }}
-												/>
-											</Button>
+												icon={
+													<IconFont
+														type="icon-fuzhi1"
+														size={12}
+														style={{
+															color: '#0064C8'
+														}}
+													/>
+												}
+											></Button>
 											<Button
 												disabled={
 													ruleId as unknown as boolean
 												}
 												onClick={() => addAlarm()}
 												style={{ marginRight: '8px' }}
-											>
-												<Icon
-													type="plus"
-													style={{ color: '#0064C8' }}
-												/>
-											</Button>
+												icon={
+													<PlusOutlined
+														style={{
+															color: '#0064C8'
+														}}
+													/>
+												}
+											></Button>
 											{index !== 0 && (
 												<Button
 													onClick={() =>
@@ -910,14 +916,14 @@ function CreateAlarm(): JSX.Element {
 															item.id as number
 														)
 													}
-												>
-													<Icon
-														type="wind-minus"
-														style={{
-															color: '#0064C8'
-														}}
-													/>
-												</Button>
+													icon={
+														<MinusOutlined
+															style={{
+																color: '#0064C8'
+															}}
+														/>
+													}
+												></Button>
 											)}
 										</Col>
 									</Row>
@@ -958,54 +964,48 @@ function CreateAlarm(): JSX.Element {
 				<div className="users">
 					<span style={{ marginLeft: '10px' }}>通知方式</span>
 					{mailDisabled ? (
-						<Tooltip
-							trigger={
-								<Checkbox
-									label="邮箱"
-									style={{ margin: '0 30px 0 20px' }}
-									checked={mailChecked}
-									onChange={(checked) =>
-										setMailChecked(checked)
-									}
-									disabled={mailDisabled}
-								/>
-							}
-							align="t"
-						>
-							请前往系统管理--系统告警设置
-						</Tooltip>
+						<Popover content={'请前往系统管理--系统告警设置'}>
+							<Checkbox
+								style={{ margin: '0 30px 0 20px' }}
+								checked={mailChecked}
+								onChange={(e) =>
+									setMailChecked(e.target.checked)
+								}
+								disabled={mailDisabled}
+							>
+								邮箱
+							</Checkbox>
+						</Popover>
 					) : (
 						<Checkbox
-							label="邮箱"
 							style={{ margin: '0 30px 0 20px' }}
 							checked={mailChecked}
-							onChange={(checked) => setMailChecked(checked)}
+							onChange={(e) => setMailChecked(e.target.checked)}
 							disabled={mailDisabled}
-						/>
+						>
+							邮箱
+						</Checkbox>
 					)}
 					{dingDisabled ? (
-						<Tooltip
-							trigger={
-								<Checkbox
-									label="钉钉"
-									checked={dingChecked}
-									onChange={(checked) =>
-										setDingChecked(checked)
-									}
-									disabled={dingDisabled}
-								/>
-							}
-							align="t"
-						>
-							请前往系统管理--系统告警设置
-						</Tooltip>
+						<Popover content={'请前往系统管理--系统告警设置'}>
+							<Checkbox
+								checked={dingChecked}
+								onChange={(e) =>
+									setDingChecked(e.target.checked)
+								}
+								disabled={dingDisabled}
+							>
+								钉钉
+							</Checkbox>
+						</Popover>
 					) : (
 						<Checkbox
-							label="钉钉"
 							checked={dingChecked}
-							onChange={(checked) => setDingChecked(checked)}
+							onChange={(e) => setDingChecked(e.target.checked)}
 							disabled={dingDisabled}
-						/>
+						>
+							钉钉
+						</Checkbox>
 					)}
 				</div>
 				{mailChecked && isReady && (
@@ -1063,8 +1063,8 @@ function CreateAlarm(): JSX.Element {
 						取消
 					</Button>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 
