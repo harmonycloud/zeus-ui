@@ -2,24 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { Message, Button, Dialog } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { StoreState } from '@/types/index';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { useHistory } from 'react-router';
+import { notification, Modal, Alert } from 'antd';
+import Actions from '@/components/Actions';
+import { ProHeader, ProPage, ProContent } from '@/components/ProPage';
+import ProTable from '@/components/ProTable';
+import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
+import { iconTypeRender } from '@/utils/utils';
 import {
 	getVersions,
 	upgradeChart,
 	upgradeCheck
 } from '@/services/serviceList';
-import messageConfig from '@/components/messageConfig';
-import { useHistory } from 'react-router';
 import { middlewareProps } from './service.list';
-import Table from '@/components/MidTable';
-import { iconTypeRender } from '@/utils/utils';
-import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import { serviceVersionStatus } from '@/utils/enum';
+import { StoreState } from '@/types/index';
 import { versionProps, paramsProps } from './service.list';
 
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 function ServiceVersion(props: versionProps): JSX.Element {
 	const {
 		globalVar: { cluster }
@@ -42,7 +43,10 @@ function ServiceVersion(props: versionProps): JSX.Element {
 				setOriginData(res.data);
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -80,11 +84,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			setDataSource([...dsTemp]);
 		}
 	};
-	const versionStatusRender = (
-		value: string,
-		index: number,
-		record: middlewareProps
-	) => {
+	const versionStatusRender = (value: string) => {
 		const color =
 			value === 'now'
 				? '#00A7FA'
@@ -112,8 +112,8 @@ function ServiceVersion(props: versionProps): JSX.Element {
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: middlewareProps
+		record: middlewareProps,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -139,7 +139,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			</Actions>
 		);
 	};
-	const nameRender = (value: string, index: number, record: any) => {
+	const nameRender = (value: string, record: any, index: number) => {
 		return (
 			<div style={{ maxWidth: '160px' }}>
 				<div
@@ -173,7 +173,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			upgradeChartVersion: record.chartVersion
 		}).then((res) => {
 			if (res.success) {
-				Dialog.show({
+				confirm({
 					title: '操作确认',
 					content: '是否确认升级新版本？',
 					onOk: () => {
@@ -195,9 +195,10 @@ function ServiceVersion(props: versionProps): JSX.Element {
 									return item;
 								});
 								setDataSource([...originData]);
-								Message.show(
-									messageConfig('error', '失败', res.errorMsg)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					},
@@ -209,54 +210,16 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							return item;
 						});
 						setDataSource([...originData]);
-					},
-					onClose: () => {
-						originData.forEach((item: any, i: number) => {
-							if (i === index) {
-								item.versionStatus = 'future';
-							}
-							return item;
-						});
-						setDataSource([...originData]);
 					}
 				});
 			} else if (res.code === 720004) {
-				const dialog = Dialog.show({
+				confirm({
 					title: '操作确认',
 					content:
 						'经系统检测，该版本的中间件还未安装，请到中间件市场进行升级安装',
-					footer: (
-						<>
-							<Button
-								type="primary"
-								onClick={() => {
-									originData.forEach(
-										(item: any, i: number) => {
-											if (i === index) {
-												item.versionStatus = 'future';
-											}
-											return item;
-										}
-									);
-									setDataSource([...originData]);
-									dialog.hide();
-								}}
-							>
-								我知道了
-							</Button>
-							<Button
-								onClick={() => {
-									dialog.hide();
-									history.push(
-										`/middlewareRepository/versionManagement/${type}`
-									);
-								}}
-							>
-								现在去升级
-							</Button>
-						</>
-					),
-					onClose: () => {
+					okText: '我知道了',
+					cancelText: '现在去升级',
+					onOk() {
 						originData.forEach((item: any, i: number) => {
 							if (i === index) {
 								item.versionStatus = 'future';
@@ -264,30 +227,67 @@ function ServiceVersion(props: versionProps): JSX.Element {
 							return item;
 						});
 						setDataSource([...originData]);
+					},
+					onCancel() {
+						history.push(
+							`/middlewareRepository/versionManagement/${type}`
+						);
 					}
+					// footer: (
+					// 	<>
+					// 		<Button
+					// 			type="primary"
+					// 			onClick={() => {
+					// 				originData.forEach(
+					// 					(item: any, i: number) => {
+					// 						if (i === index) {
+					// 							item.versionStatus = 'future';
+					// 						}
+					// 						return item;
+					// 					}
+					// 				);
+					// 				setDataSource([...originData]);
+					// 				dialog.hide();
+					// 			}}
+					// 		>
+					// 			我知道了
+					// 		</Button>
+					// 		<Button
+					// 			onClick={() => {
+					// 				dialog.hide();
+					// 				history.push(
+					// 					`/middlewareRepository/versionManagement/${type}`
+					// 				);
+					// 			}}
+					// 		>
+					// 			现在去升级
+					// 		</Button>
+					// 	</>
+					// ),
+					// onCancel: () => {
+					// 	originData.forEach((item: any, i: number) => {
+					// 		if (i === index) {
+					// 			item.versionStatus = 'future';
+					// 		}
+					// 		return item;
+					// 	});
+					// 	setDataSource([...originData]);
+					// }
 				});
 			} else if (res.code === 720003) {
-				const dialog = Dialog.show({
+				confirm({
 					title: '操作确认',
 					content: 'operator升级中,请稍后升级',
-					footer: (
-						<Button
-							type="primary"
-							onClick={() => {
-								originData.forEach((item: any, i: number) => {
-									if (i === index) {
-										item.versionStatus = 'future';
-									}
-									return item;
-								});
-								setDataSource([...originData]);
-								dialog.hide();
-							}}
-						>
-							我知道了
-						</Button>
-					),
-					onClose: () => {
+					onOk() {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
+					},
+					onCancel() {
 						originData.forEach((item: any, i: number) => {
 							if (i === index) {
 								item.versionStatus = 'future';
@@ -296,50 +296,47 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						});
 						setDataSource([...originData]);
 					}
+					// footer: (
+					// 	<Button
+					// 		type="primary"
+					// 		onClick={() => {
+					// 			originData.forEach((item: any, i: number) => {
+					// 				if (i === index) {
+					// 					item.versionStatus = 'future';
+					// 				}
+					// 				return item;
+					// 			});
+					// 			setDataSource([...originData]);
+					// 			dialog.hide();
+					// 		}}
+					// 	>
+					// 		我知道了
+					// 	</Button>
+					// ),
+					// onClose: () => {
+					// 	originData.forEach((item: any, i: number) => {
+					// 		if (i === index) {
+					// 			item.versionStatus = 'future';
+					// 		}
+					// 		return item;
+					// 	});
+					// 	setDataSource([...originData]);
+					// }
 				});
 			} else if (res.code === 720002) {
-				const dialog = Dialog.show({
+				confirm({
 					title: '操作确认',
 					content: res.errorDetail,
-					footer: (
-						<>
-							<Button
-								type="primary"
-								onClick={() => {
-									originData.forEach(
-										(item: any, i: number) => {
-											if (i === index) {
-												item.versionStatus = 'future';
-											}
-											return item;
-										}
-									);
-									setDataSource([...originData]);
-									dialog.hide();
-								}}
-							>
-								确认
-							</Button>
-							<Button
-								type="primary"
-								onClick={() => {
-									originData.forEach(
-										(item: any, i: number) => {
-											if (i === index) {
-												item.versionStatus = 'future';
-											}
-											return item;
-										}
-									);
-									setDataSource([...originData]);
-									dialog.hide();
-								}}
-							>
-								取消
-							</Button>
-						</>
-					),
-					onClose: () => {
+					onOk() {
+						originData.forEach((item: any, i: number) => {
+							if (i === index) {
+								item.versionStatus = 'future';
+							}
+							return item;
+						});
+						setDataSource([...originData]);
+					},
+					onCancel() {
 						originData.forEach((item: any, i: number) => {
 							if (i === index) {
 								item.versionStatus = 'future';
@@ -348,83 +345,138 @@ function ServiceVersion(props: versionProps): JSX.Element {
 						});
 						setDataSource([...originData]);
 					}
+					// footer: (
+					// 	<>
+					// 		<Button
+					// 			type="primary"
+					// 			onClick={() => {
+					// 				originData.forEach(
+					// 					(item: any, i: number) => {
+					// 						if (i === index) {
+					// 							item.versionStatus = 'future';
+					// 						}
+					// 						return item;
+					// 					}
+					// 				);
+					// 				setDataSource([...originData]);
+					// 				dialog.hide();
+					// 			}}
+					// 		>
+					// 			确认
+					// 		</Button>
+					// 		<Button
+					// 			type="primary"
+					// 			onClick={() => {
+					// 				originData.forEach(
+					// 					(item: any, i: number) => {
+					// 						if (i === index) {
+					// 							item.versionStatus = 'future';
+					// 						}
+					// 						return item;
+					// 					}
+					// 				);
+					// 				setDataSource([...originData]);
+					// 				dialog.hide();
+					// 			}}
+					// 		>
+					// 			取消
+					// 		</Button>
+					// 	</>
+					// ),
+					// onClose: () => {
+					// 	originData.forEach((item: any, i: number) => {
+					// 		if (i === index) {
+					// 			item.versionStatus = 'future';
+					// 		}
+					// 		return item;
+					// 	});
+					// 	setDataSource([...originData]);
+					// }
 				});
 			}
 		});
 	};
 
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={`服务版本管理`}
-				hasBackArrow={true}
-				onBackArrowClick={() => window.history.back()}
+				// hasBackArrow={true}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
-				<Message type="warning">
-					本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本
-				</Message>
+			<ProContent>
+				<Alert
+					type="warning"
+					showIcon={true}
+					message="本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本"
+				/>
 				<div className="middleware-version-content">
-					<Table
+					<ProTable
 						dataSource={dataSource}
-						exact
-						fixedBarExpandWidth={[24]}
-						affixActionBar
+						// exact
+						// fixedBarExpandWidth={[24]}
+						// affixActionBar
 						showRefresh
 						onRefresh={getData}
-						primaryKey="key"
-						onFilter={onFilter}
-						onSort={onSort}
+						rowKey="key"
+						// onFilter={onFilter}
+						// onSort={onSort}
 					>
-						<Table.Column
+						<ProTable.Column
 							title="服务名称/中文名称"
 							dataIndex="chartName"
-							cell={nameRender}
+							render={nameRender}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="类型"
 							dataIndex="chartName"
-							cell={iconTypeRender}
+							render={iconTypeRender}
 						/>
-						<Table.Column title="描述" dataIndex="description" />
-						<Table.Column
+						<ProTable.Column title="描述" dataIndex="description" />
+						<ProTable.Column
 							title="版本状态"
 							dataIndex="versionStatus"
-							cell={versionStatusRender}
+							render={versionStatusRender}
 							filters={[
-								{ label: '当前版本', value: 'now' },
-								{ label: '可升级版本', value: 'future' },
-								{ label: '历史版本', value: 'history' },
-								{ label: '升级中', value: 'updating' }
+								{ text: '当前版本', value: 'now' },
+								{ text: '可升级版本', value: 'future' },
+								{ text: '历史版本', value: 'history' },
+								{ text: '升级中', value: 'updating' }
 							]}
-							filterMode="single"
+							filterMultiple={false}
+							onFilter={(value: any, record: middlewareProps) =>
+								record.versionStatus === value
+							}
 							width={200}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="版本"
 							dataIndex="chartVersion"
 							width={100}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="上架时间"
 							dataIndex="createTime"
-							cell={(text: string) => (
+							render={(text: string) => (
 								<span>
 									{moment(text).format('YYYY-MM-DD h:mm:ss')}
 								</span>
 							)}
 							width={200}
-							sortable
+							sorter={(a: middlewareProps, b: middlewareProps) =>
+								moment(a.createTime).unix() -
+								moment(b.createTime).unix()
+							}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="操作"
 							dataIndex="action"
 							width={150}
-							cell={actionRender}
+							render={actionRender}
 						/>
-					</Table>
+					</ProTable>
 				</div>
-			</Content>
+			</ProContent>
 			{visible && (
 				<UploadMiddlewareForm
 					visible={visible}
@@ -432,7 +484,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					onCreate={onCreate}
 				/>
 			)}
-		</Page>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

@@ -188,9 +188,9 @@ export const alarmStatusRender: (value: string) => JSX.Element = (
 // * 服务列表中使用
 export const serviceListStatusRender: (
 	value: string,
-	index: number,
-	record: any
-) => JSX.Element = (value: string, index: number, record: any) => {
+	record: any,
+	index: number
+) => JSX.Element = (value: string, record: any, index: number) => {
 	switch (value) {
 		case 'Creating':
 			return (

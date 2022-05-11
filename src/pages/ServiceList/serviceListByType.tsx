@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import { useHistory, useParams } from 'react-router-dom';
-import {
-	Button,
-	Message,
-	Dialog,
-	Checkbox,
-	Balloon,
-	Loading
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import { Button, notification, Modal, Checkbox, Tooltip } from 'antd';
 // --- 自定义组件
-import Table from '@/components/MidTable';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+import GuidePage from '../GuidePage';
 // --- 方法
 import {
 	getList,
@@ -25,7 +20,6 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { getComponents } from '@/services/common';
 import {
 	setCluster,
@@ -44,24 +38,11 @@ import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
-import GuidePage from '../GuidePage';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 // --- css样式
 
-const tabJudge: (record: serviceProps, tab: string) => boolean = (
-	record: serviceProps,
-	tab: string
-) => {
-	if (record.capabilities === null) {
-		return false;
-	} else {
-		if (record.capabilities.includes(tab)) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-};
-const Tooltip = Balloon.Tooltip;
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 
 const ServiceListByType = (props: serviceListProps) => {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
@@ -81,17 +62,10 @@ const ServiceListByType = (props: serviceListProps) => {
 	const history = useHistory();
 	const params: ListParamsProps = useParams();
 	const { name, aliasName } = params;
-	const [lock, setLock] = useState<any>({ lock: 'right' });
+	// const [lock, setLock] = useState<any>({ lock: 'right' });
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
 
-	useEffect(() => {
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
-	}, []);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -114,7 +88,10 @@ const ServiceListByType = (props: serviceListProps) => {
 								setShowDataSource([]);
 							}
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -132,7 +109,10 @@ const ServiceListByType = (props: serviceListProps) => {
 							setCantRelease(true);
 						}
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 				getCanReleaseMiddleware({
@@ -142,7 +122,10 @@ const ServiceListByType = (props: serviceListProps) => {
 					if (res.success) {
 						setMiddlewareInfo(res.data);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -171,21 +154,24 @@ const ServiceListByType = (props: serviceListProps) => {
 						setShowDataSource([]);
 					}
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			})
 			.finally(() => {
 				setLoadingVisible(false);
 			});
 	};
-	const handleChange: (value: string) => void = (value: string) => {
-		setKeyword(value);
+	const handleChange: (e: any) => void = (e: any) => {
+		setKeyword(e.target.value);
 	};
 	const handleSearch = () => {
 		getData();
 	};
 	const deleteFn = (record: serviceProps) => {
-		Dialog.show({
+		confirm({
 			title: '提示',
 			content: '确定删除该服务？',
 			onOk: () => {
@@ -197,11 +183,15 @@ const ServiceListByType = (props: serviceListProps) => {
 				})
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '删除成功')
-							);
+							notification.success({
+								message: '成功',
+								description: '删除成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -210,56 +200,8 @@ const ServiceListByType = (props: serviceListProps) => {
 			}
 		});
 	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['createTimeNum'] - b['createTimeNum'];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		}
-	};
-	const onFilter = (filterParams: any) => {
-		const {
-			status: { selectedKeys }
-		} = filterParams;
-		setSelectKeys(selectedKeys);
-		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource?.serviceList || []);
-		} else {
-			let tempData: serviceProps[] | undefined = [];
-			if (selectedKeys[0] !== 'Other') {
-				tempData = dataSource?.serviceList.filter((item) => {
-					return item.status === selectedKeys[0];
-				});
-			} else if (selectedKeys[0] === 'Other') {
-				tempData = dataSource?.serviceList.filter((item) => {
-					return (
-						item.status !== 'Running' && item.status !== 'Creating'
-					);
-				});
-			}
-			if (backupCheck) {
-				tempData = tempData?.filter(
-					(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
-				);
-			}
-			setShowDataSource(tempData || []);
-		}
-	};
-	const onRowProps = (record: serviceProps) => {
-		if (record.status === 'deleted') {
-			return { style: { background: '#F8F8F9', color: '#CCCCCC' } };
-		}
-	};
-	const handleFilterBackup = (checked: boolean) => {
-		setBackupCheck(checked);
+	const handleFilterBackup = (e: CheckboxChangeEvent) => {
+		setBackupCheck(e.target.value);
 		let list = dataSource?.serviceList || [];
 		if (selectedKeys.length > 0) {
 			if (selectedKeys[0] !== 'Other') {
@@ -274,7 +216,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				});
 			}
 		}
-		if (checked) {
+		if (e.target.value) {
 			list = showDataSource.filter(
 				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
 			);
@@ -331,22 +273,22 @@ const ServiceListByType = (props: serviceListProps) => {
 			middlewareName: record.name,
 			type: record.type
 		};
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '请确认是否恢复该服务！',
 			onOk: () => {
 				return recoveryMiddleware(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'该服务已恢复,3秒后刷新'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '该服务已恢复,3秒后刷新'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -364,22 +306,22 @@ const ServiceListByType = (props: serviceListProps) => {
 			middlewareName: record.name,
 			type: record.type
 		};
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '删除后无法恢复该服务，请谨慎操作！',
 			onOk: () => {
 				return deleteMiddlewareStorage(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'该服务已彻底删除'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '该服务已彻底删除'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -414,17 +356,13 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (name === 'mysql') {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									type="primary"
-									disabled={!createFlag || !getFlag}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							当前用户无该操作的权限!
+						<Tooltip title="当前用户无该操作的权限!">
+							<Button
+								type="primary"
+								disabled={!createFlag || !getFlag}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					),
 					secondary: (
@@ -439,17 +377,13 @@ const ServiceListByType = (props: serviceListProps) => {
 			} else {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									type="primary"
-									disabled={!createFlag || !getFlag}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							当前用户无该操作的权限!
+						<Tooltip title="当前用户无该操作的权限!">
+							<Button
+								type="primary"
+								disabled={!createFlag || !getFlag}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					)
 				};
@@ -459,18 +393,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (name === 'mysql') {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={cantRelease}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							请前往平台组件界面安装中间件管理组件！
+						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={cantRelease}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					),
 					secondary: (
@@ -485,18 +415,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			} else {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={cantRelease}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							请前往平台组件界面安装中间件管理组件！
+						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={cantRelease}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					)
 				};
@@ -505,18 +431,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (name === 'mysql') {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={!middlewareInfo}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							数据加载中，请稍后...
+						<Tooltip title="数据加载中，请稍后...">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					),
 					secondary: (
@@ -531,18 +453,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			} else {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={!middlewareInfo}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							数据加载中，请稍后...
+						<Tooltip title="数据加载中，请稍后...">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					)
 				};
@@ -585,8 +503,8 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: serviceProps
+		record: serviceProps,
+		index: number
 	) => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
 		console.log(jsonRole);
@@ -667,18 +585,16 @@ const ServiceListByType = (props: serviceListProps) => {
 											: record.type === 'rocketmq'
 											? `${record.name}-console-svc`
 											: `${record.name}-manager-svc`;
-									Message.show(
-										messageConfig(
-											'error',
-											'失败',
-											`请先前往“服务暴露”暴露该服务的${sn}服务`
-										)
-									);
+									notification.error({
+										message: '失败',
+										description: `请先前往“服务暴露”暴露该服务的${sn}服务`
+									});
 								}
 							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					}}
@@ -712,9 +628,10 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const toDetail = (record: any) => {
 		if (!record.mysqlDTO.relationExist) {
-			Message.show(
-				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
-			);
+			notification.error({
+				message: '失败',
+				description: '该关联实例不存在，无法进行跳转'
+			});
 			return;
 		}
 		const cs = globalClusterList.filter(
@@ -741,8 +658,8 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const associatedRender = (
 		value: string,
-		index: number,
-		record: serviceProps
+		record: serviceProps,
+		index: number
 	) => {
 		return (
 			<div className="display-flex flex-align">
@@ -788,7 +705,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			</div>
 		);
 	};
-	const nameRender = (value: string, index: number, record: serviceProps) => {
+	const nameRender = (value: string, record: serviceProps, index: number) => {
 		if (record.status === 'Deleted') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
@@ -871,7 +788,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			</div>
 		);
 	};
-	const podRender = (value: string, index: number, record: serviceProps) => {
+	const podRender = (value: string, record: serviceProps, index: number) => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
 		let operateFlag = false;
 		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
@@ -904,21 +821,18 @@ const ServiceListByType = (props: serviceListProps) => {
 		return <GuidePage />;
 	}
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={`${aliasName || ''}服务列表`}
 				subTitle="已发布中间件服务管理列表"
 			/>
-			<Content>
-				<Table
+			<ProContent>
+				<ProTable
 					dataSource={showDataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}
-					primaryKey="name"
+					rowKey="name"
 					operation={operation()}
 					loading={loadingVisible}
 					search={{
@@ -927,59 +841,65 @@ const ServiceListByType = (props: serviceListProps) => {
 						onSearch: handleSearch,
 						placeholder: '请输入搜索内容'
 					}}
-					onSort={onSort}
-					onFilter={onFilter}
-					rowProps={onRowProps}
+					rowClassName={(record) => {
+						console.log(record);
+						if (record.status === 'Deleted') {
+							return 'table-row-delete';
+						}
+						return '';
+					}}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="服务名称/中文别名"
 						dataIndex="name"
 						width={180}
-						cell={nameRender}
-						lock="left"
+						render={nameRender}
+						fixed="left"
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="状态"
 						dataIndex="status"
 						width={150}
-						cell={serviceListStatusRender}
-						filters={states}
-						filterMode="single"
+						render={serviceListStatusRender}
+						// filters={states}
+						// filterMode="single"
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="实例数"
 						dataIndex="podNum"
-						cell={podRender}
+						render={podRender}
 						width={80}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="备注"
 						dataIndex="description"
-						cell={nullRender}
+						render={nullRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="关联服务名称/中文别名"
 						dataIndex="associated"
 						width={180}
-						cell={associatedRender}
+						render={associatedRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
 						width={180}
-						sortable={true}
-						cell={timeRender}
+						sorter={(a, b) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
+						render={timeRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 						width={300}
-						{...lock}
 					/>
-				</Table>
-			</Content>
-		</Page>
+				</ProTable>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

@@ -665,3 +665,10 @@ table.table-list tbody tr td {
 .next-search.next-normal .next-after .next-btn-normal {
 	margin-left: 0px !important;
 }
+.table-row-delete{
+	background: #F8F8F9;
+	color: #CCCCCC;
+}
+.table-row-delete > .ant-table-cell-fix-left, .ant-table-cell-fix-right {
+	background: #F8F8F9;
+}
