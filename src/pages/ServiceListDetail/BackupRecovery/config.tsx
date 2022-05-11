@@ -162,7 +162,9 @@ export default function Config(props: ConfigProps): JSX.Element {
 							return;
 						}
 					}
-					history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
+					history.push(
+						`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
+					);
 					storage.setSession('detail', props);
 				}}
 			>
@@ -261,7 +263,9 @@ export default function Config(props: ConfigProps): JSX.Element {
 			<Actions>
 				<LinkButton
 					onClick={() => {
-						history.push(`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`);
+						history.push(
+							`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
+						);
 						storage.setSession('detail', {
 							...props,
 							record,

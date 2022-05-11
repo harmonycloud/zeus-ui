@@ -53,28 +53,19 @@ export default function List(props: ListProps): JSX.Element {
 	};
 
 	const backupOnNow = () => {
-		if (listData?.type === 'elasticsearch') {
-			if (!listData.isAllLvmStorage) {
-				Message.show(
-					messageConfig(
-						'error',
-						'失败',
-						'存储不使用lvm时，不支持立即备份功能'
-					)
-				);
-				return;
-			}
-		} else {
-			if (listData?.type === 'mysql' && !listData.isAllLvmStorage) {
-				Message.show(
-					messageConfig(
-						'error',
-						'失败',
-						'存储不使用lvm时，不支持立即备份功能'
-					)
-				);
-				return;
-			}
+		if (
+			(listData?.type === 'mysql' ||
+				listData?.type === 'elasticsearch') &&
+			!listData.isAllLvmStorage
+		) {
+			Message.show(
+				messageConfig(
+					'error',
+					'失败',
+					'存储不使用lvm时，不支持立即备份功能'
+				)
+			);
+			return;
 		}
 		Dialog.show({
 			title: '操作确认',
