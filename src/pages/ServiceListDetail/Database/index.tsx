@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Content, Menu } from '@alicloud/console-components-page';
 import { ProPage, ProContent, ProMenu } from '@/components/ProPage';
 import { useParams } from 'react-router';
 import DefaultPicture from '@/components/DefaultPicture';

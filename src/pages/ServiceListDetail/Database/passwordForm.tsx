@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
-import {
-	Form,
-	Dialog,
-	Field,
-	Input,
-	Balloon,
-	Icon,
-	Message
-} from '@alicloud/console-components';
+import { Form, Modal, Input, Popover, notification, message } from 'antd';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 
 import { updatePassword } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 
-import Storage from '@/utils/storage';
 import { FormProps } from './database';
 
 import styles from '@/layouts/Navbar/User/./user.module.scss';
@@ -38,17 +29,19 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 	} = props;
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	const [errors, setErrors] = useState<boolean>(false);
-	const field = Field.useField();
+	const [form] = Form.useForm();
 
 	const onOk: () => void = () => {
-		field.validate((error, values: any) => {
-			if (error) return;
+		form.validateFields().then((values) => {
 			if (checks.includes(false)) {
-				Message.warning('密码格式不正确!');
+				message.warning('密码格式不正确!');
 				return;
 			}
 			if (errors) {
-				Message.show(messageConfig('error', '失败', '二次密码不一致'));
+				notification.error({
+					message: '失败',
+					description: '二次密码不一致'
+				});
 				return;
 			}
 
@@ -63,12 +56,16 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 			};
 			updatePassword(sendData).then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '密码修改成功')
-					);
+					notification.success({
+						message: '成功',
+						description: '密码修改成功'
+					});
 					onCreate();
 				} else {
-					Message.show(messageConfig('error', '失败', res.errorMsg));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		});
@@ -92,7 +89,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 			}
 			setChecks(temp);
 		} else {
-			const newValue = field.getValue('newPassword');
+			const newValue = form.getFieldValue('newPassword');
 			if (value !== newValue) {
 				// field.setError('reNewPassword', '密码二次校验错误');
 				setErrors(true);
@@ -105,83 +102,96 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 		<FormItem
 			{...formItemLayout}
 			label="新密码"
-			labelTextAlign="left"
-			asterisk={false}
-			required
-			requiredMessage="请输入新密码"
-			className="ne-required-ingress"
+			labelAlign="left"
+			// asterisk={false}
+			name="newPassword"
+			rules={[
+				{
+					required: true,
+					message: '请输入新密码'
+				}
+			]}
+			// className="ne-required-ingress"
 		>
 			<Input.Password
-				name="newPassword"
-				onChange={(value: string) => handleChange(value, 'new')}
+				onChange={(e) => handleChange(e.target.value, 'new')}
 			/>
 		</FormItem>
 	);
 
 	return (
-		<Dialog
+		<Modal
 			title="修改密码"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			onClose={onCancel}
-			footerAlign="right"
 		>
-			<Form field={field} {...formItemLayout}>
-				<Balloon trigger={defaultTrigger} closable={false} align="r">
-					<ul>
-						<li className={styles['edit-form-icon-style']}>
-							{checks[0] ? (
-								<Icon
-									type="success-filling1"
-									style={{ color: '#68B642', marginRight: 4 }}
-									size="xs"
-								/>
-							) : (
-								<Icon
-									type="times-circle-fill"
-									style={{ color: '#Ef595C', marginRight: 4 }}
-									size="xs"
-								/>
-							)}
-							<span>(长度需要8-32之间)</span>
-						</li>
-						<li className={styles['edit-form-icon-style']}>
-							{checks[1] ? (
-								<Icon
-									type="success-filling1"
-									style={{ color: '#68B642', marginRight: 4 }}
-									size="xs"
-								/>
-							) : (
-								<Icon
-									type="times-circle-fill"
-									style={{ color: '#Ef595C', marginRight: 4 }}
-									size="xs"
-								/>
-							)}
-							<span>
-								至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
-							</span>
-						</li>
-					</ul>
-				</Balloon>
+			<Form form={form} {...formItemLayout}>
+				<Popover
+					content={
+						<ul>
+							<li className={styles['edit-form-icon-style']}>
+								{checks[0] ? (
+									<CheckCircleFilled
+										style={{
+											color: '#68B642',
+											marginRight: 4
+										}}
+									/>
+								) : (
+									<CloseCircleFilled
+										style={{
+											color: '#Ef595C',
+											marginRight: 4
+										}}
+									/>
+								)}
+								<span>(长度需要8-32之间)</span>
+							</li>
+							<li className={styles['edit-form-icon-style']}>
+								{checks[1] ? (
+									<CheckCircleFilled
+										style={{
+											color: '#68B642',
+											marginRight: 4
+										}}
+									/>
+								) : (
+									<CloseCircleFilled
+										style={{
+											color: '#Ef595C',
+											marginRight: 4
+										}}
+									/>
+								)}
+								<span>
+									至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
+								</span>
+							</li>
+						</ul>
+					}
+					placement="right"
+				>
+					{defaultTrigger}
+				</Popover>
 				<FormItem
 					label="新密码二次确认"
-					labelTextAlign="left"
-					asterisk={false}
-					required
-					requiredMessage="请输入确认密码"
-					className="ne-required-ingress"
+					labelAlign="left"
+					// asterisk={false}]
+					rules={[
+						{
+							required: true,
+							message: '请输入确认密码'
+						}
+					]}
+					// className="ne-required-ingress"
 				>
 					<Input.Password
 						name="confirmPassword"
-						onChange={(value: string) =>
-							handleChange(value, 'reNew')
-						}
+						onChange={(e) => handleChange(e.target.value, 'reNew')}
 					/>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

@@ -513,8 +513,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					rowKey="name"
 					operation={Operation}
 					search={{
-						defaultValue: searchText,
-						value: searchText,
 						onSearch: handleSearch,
 						// onChange: handleChange,
 						placeholder:

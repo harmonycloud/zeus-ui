@@ -148,8 +148,10 @@ function AlarmSet(props: any) {
 			...field.getValues()
 		};
 		const arr = [];
+		console.log(obj);
+
 		for (const key in obj) {
-			key !== 'time' && arr.push(obj[key]);
+			key !== 'time' && key !== 'mailPath' && arr.push(obj[key]);
 		}
 		arr.every((item) => item) ? setBtnStatus(false) : setBtnStatus(true);
 	};

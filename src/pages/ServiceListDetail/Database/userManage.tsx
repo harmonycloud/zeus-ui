@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { Button, Modal, Popover, notification } from 'antd';
 import {
-	Button,
-	Dialog,
-	Message,
-	Icon,
-	Balloon
-} from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+	CheckOutlined,
+	CloseOutlined,
+	EyeInvisibleFilled,
+	EyeFilled,
+	UserOutlined
+} from '@ant-design/icons';
+import Actions from '@/components/Actions';
 import moment from 'moment';
-import Table from '@/components/MidTable';
+import ProTable from '@/components/ProTable';
+
 import { listUser, deleteUser } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import UserForm from './userForm';
 import PasswordForm from './passwordForm';
 import { authorityList } from '@/utils/const';
 
-const Tooltip = Balloon.Tooltip;
-
+const LinkButton = Actions.LinkButton;
 function UserManage(props: any): JSX.Element {
 	const { clusterId, namespace, middlewareName } = props;
 	const [dataSource, setDataSource] = useState<any[]>([]);
@@ -44,11 +44,14 @@ function UserManage(props: any): JSX.Element {
 					res.data ? setDataSource(data) : setDataSource([]);
 					setShowDataSource(data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.erroeMsg
+					});
 				}
 			}
 		);
-	}, []);
+	}, [keyword]);
 	const onRefresh: () => void = () => {
 		listUser({ clusterId, namespace, middlewareName, keyword }).then(
 			(res) => {
@@ -63,7 +66,10 @@ function UserManage(props: any): JSX.Element {
 						});
 					res.data ? setDataSource(data) : setDataSource([]);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.erroeMsg
+					});
 				}
 			}
 		);
@@ -72,14 +78,14 @@ function UserManage(props: any): JSX.Element {
 		setKeyword(value);
 	};
 	const handleSearch: (value: string) => void = (value: string) => {
-		onRefresh();
+		setKeyword(value);
 	};
 	const edit: (record: any) => void = (record: any) => {
 		setUpdateData(record);
 		setVisible(true);
 	};
 	const deleteUserHandle: (record: any) => void = (record: any) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
 			onOk: () => {
@@ -90,12 +96,16 @@ function UserManage(props: any): JSX.Element {
 					user: record.user
 				}).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '该用户删除成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '该用户删除成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.erroeMsg
+						});
 					}
 				});
 			}
@@ -123,7 +133,7 @@ function UserManage(props: any): JSX.Element {
 		}
 	};
 
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
 				{record.user !== 'root' && (
@@ -153,27 +163,10 @@ function UserManage(props: any): JSX.Element {
 			</Actions>
 		);
 	};
-	const absRender = (value: any, index: number, record: any) => {
+	const absRender = (value: any, record: any, index: number) => {
 		return value.length > 1 ? (
-			<Tooltip
-				trigger={
-					<div
-						style={{
-							cursor: 'pointer'
-						}}
-					>
-						<span className="db-name">{value[0].db}</span>[
-						{
-							authorityList.find(
-								(item) => item.authority === value[0].authority
-							)?.value
-						}
-						]...
-					</div>
-				}
-				align="t"
-			>
-				{value.map((item: any) => {
+			<Popover
+				content={value.map((item: any) => {
 					return (
 						<div
 							key={item.db}
@@ -199,37 +192,53 @@ function UserManage(props: any): JSX.Element {
 						</div>
 					);
 				})}
-			</Tooltip>
-		) : record.user === 'root' ? (
-			<Tooltip
-				trigger={
-					<div
-						style={{
-							cursor: 'pointer'
-						}}
-					>
-						<span className="db-name">所有</span>[最高权限]
-					</div>
-				}
-				align="t"
 			>
 				<div
 					style={{
 						cursor: 'pointer'
 					}}
 				>
-					<span>所有</span>[最高权限]
+					<span className="db-name">{value[0].db}</span>[
+					{
+						authorityList.find(
+							(item) => item.authority === value[0].authority
+						)?.value
+					}
+					]...
 				</div>
-			</Tooltip>
-		) : (
-			<Tooltip
-				trigger={
+			</Popover>
+		) : record.user === 'root' ? (
+			<Popover
+				content={
 					<div
 						style={{
 							cursor: 'pointer'
 						}}
 					>
-						<span className="db-name">
+						<span>所有</span>[最高权限]
+					</div>
+				}
+			>
+				<div
+					style={{
+						cursor: 'pointer'
+					}}
+				>
+					<span className="db-name">所有</span>[最高权限]
+				</div>
+			</Popover>
+		) : (
+			<Popover
+				content={
+					<div
+						style={{
+							cursor: 'pointer'
+						}}
+					>
+						<span
+							className="db-name"
+							title={value.length ? value[0].db : '/'}
+						>
 							{value.length ? value[0].db : '/'}
 						</span>
 						{value.length
@@ -242,17 +251,13 @@ function UserManage(props: any): JSX.Element {
 							: ''}
 					</div>
 				}
-				align="t"
 			>
 				<div
 					style={{
 						cursor: 'pointer'
 					}}
 				>
-					<span
-						className="db-name"
-						title={value.length ? value[0].db : '/'}
-					>
+					<span className="db-name">
 						{value.length ? value[0].db : '/'}
 					</span>
 					{value.length
@@ -263,73 +268,80 @@ function UserManage(props: any): JSX.Element {
 						  ']'
 						: ''}
 				</div>
-			</Tooltip>
+			</Popover>
 		);
 	};
-	const passwordRender = (value: string, index: number, record: any) => {
+	const passwordRender = (value: string, record: any, index: number) => {
 		return (
 			<div>
-				<Icon
-					type={record.passwordVisible ? 'eye' : 'eye-slash'}
-					style={{ cursor: 'pointer', marginRight: '8px' }}
-					onClick={() => {
-						const data = dataSource.map((item: any) => {
-							if (item.id === record.id) {
-								item.passwordVisible = !item.passwordVisible;
-							}
-							return item;
-						});
-						setDataSource([...data]);
-					}}
-				/>
+				{record.passwordVisible ? (
+					<EyeFilled
+						style={{ cursor: 'pointer', marginRight: '8px' }}
+						onClick={() => {
+							const data = dataSource.map((item: any) => {
+								if (item.id === record.id) {
+									item.passwordVisible =
+										!item.passwordVisible;
+								}
+								return item;
+							});
+							setDataSource([...data]);
+						}}
+					/>
+				) : (
+					<EyeInvisibleFilled
+						style={{ cursor: 'pointer', marginRight: '8px' }}
+						onClick={() => {
+							const data = dataSource.map((item: any) => {
+								if (item.id === record.id) {
+									item.passwordVisible =
+										!item.passwordVisible;
+								}
+								return item;
+							});
+							setDataSource([...data]);
+						}}
+					/>
+				)}
+
 				{record.passwordVisible && <span>{value}</span>}
 			</div>
 		);
 	};
 	const passwordCheckRender = (value: boolean) => {
 		return (
-			<Tooltip
-				trigger={
-					value ? (
-						<Icon
-							type="check"
-							style={{ cursor: 'pointer', color: '#0070cc' }}
-						/>
-					) : (
-						<Icon
-							type="close"
-							style={{ cursor: 'pointer', color: '#Ef595C' }}
-						/>
-					)
+			<Popover
+				content={
+					value
+						? '该账户经系统监测，平台数据库和mysql数据库密码一致，可正常登录数据库'
+						: '经系统监测，平台数据库和mysql数据库密码不一致，使用平台展示密码可能无法登录数据库'
 				}
-				align="t"
 			>
-				{value
-					? '该账户经系统监测，平台数据库和mysql数据库密码一致，可正常登录数据库'
-					: '经系统监测，平台数据库和mysql数据库密码不一致，使用平台展示密码可能无法登录数据库'}
-			</Tooltip>
+				{value ? (
+					<CheckOutlined
+						style={{ cursor: 'pointer', color: '#0070cc' }}
+					/>
+				) : (
+					<CloseOutlined
+						style={{ cursor: 'pointer', color: '#Ef595C' }}
+					/>
+				)}
+			</Popover>
 		);
 	};
-	const userRender = (value: string, index: number, record: any) => {
+	const userRender = (value: string, record: any, index: number) => {
 		return (
 			<span title={value} className="db-name">
 				{record.user === 'root' && (
-					<Tooltip
-						trigger={
-							<Icon
-								type="user-fill"
-								style={{
-									marginRight: '8px',
-									color: '#0070cc',
-									cursor: 'pointer'
-								}}
-								size="small"
-							/>
-						}
-						align="t"
-					>
-						初始化用户最高权限账户
-					</Tooltip>
+					<Popover content={'初始化用户最高权限账户'}>
+						<UserOutlined
+							style={{
+								marginRight: '8px',
+								color: '#0070cc',
+								cursor: 'pointer'
+							}}
+						/>
+					</Popover>
 				)}
 				{value}
 			</span>
@@ -371,76 +383,80 @@ function UserManage(props: any): JSX.Element {
 	};
 	return (
 		<>
-			<Table
+			<ProTable
 				dataSource={dataSource}
-				exact
-				fixedBarExpandWidth={[24]}
-				affixActionBar
+				// exact
+				// fixedBarExpandWidth={[24]}
+				// affixActionBar
 				showRefresh
 				showColumnSetting
 				onRefresh={onRefresh}
-				primaryKey="key"
+				rowKey="id"
 				search={{
 					placeholder: '请输入账户名称、已授权数据库名称检索',
 					onSearch: handleSearch,
-					onChange: handleChange,
-					value: keyword
-				}}
-				searchStyle={{
-					width: '360px'
+					style: { width: '360px' }
 				}}
 				operation={Operation}
-				onFilter={onFilter}
-				onSort={onSort}
+				// onFilter={onFilter}
+				// onSort={onSort}
 			>
-				<Table.Column
+				<ProTable.Column
 					title="账户"
 					dataIndex="user"
 					width={100}
-					cell={userRender}
+					render={userRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="授权数据库"
 					dataIndex="dbs"
-					cell={absRender}
+					render={absRender}
 					width={200}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="密码"
 					dataIndex="password"
-					cell={passwordRender}
-					width={100}
+					render={passwordRender}
+					width={120}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="备注"
 					dataIndex="description"
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
-					cell={createTimeRender}
-					width={160}
-					sortable
+					render={createTimeRender}
+					width={150}
+					sorter={(a: any, b: any) =>
+						new Date(a.createTime).getTime() -
+						new Date(b.createTime).getTime()
+					}
+					// sortable
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="密码校验"
 					dataIndex="passwordCheck"
-					cell={passwordCheckRender}
+					render={passwordCheckRender}
 					filters={[
-						{ label: '密码一致', value: true },
-						{ label: '密码不一致', value: false }
+						{ text: '密码一致', value: true },
+						{ text: '密码不一致', value: false }
 					]}
-					filterMode="single"
-					width={110}
+					onFilter={(value, record: any) =>
+						record.passwordCheck === value
+					}
+					// filterMode="single"
+					filterMultiple={false}
+					width={100}
 				/>
-				<Table.Column
+				<ProTable.Column
 					title="操作"
 					dataIndex="action"
-					cell={actionRender}
+					render={actionRender}
 					width={160}
 				/>
-			</Table>
+			</ProTable>
 			{visible && (
 				<UserForm
 					visible={visible}

@@ -178,28 +178,28 @@ export const symbols = [
 export const alarmWarn: any[] = [
 	{
 		value: 'info',
-		label: '一般'
+		text: '一般'
 	},
 	{
 		value: 'warning',
-		label: '重要'
+		text: '重要'
 	},
 	{
 		value: 'critical',
-		label: '严重'
+		text: '严重'
 	}
 ];
 export const silences = [
-	{ value: '5m', label: '5分钟' },
-	{ value: '10m', label: '10分钟' },
-	{ value: '15m', label: '15分钟' },
-	{ value: '30m', label: '30分钟' },
-	{ value: '1h', label: '1小时' },
-	{ value: '2h', label: '2小时' },
-	{ value: '3h', label: '3小时' },
-	{ value: '6h', label: '6小时' },
-	{ value: '12h', label: '12小时' },
-	{ value: '24h', label: '24小时' }
+	{ value: '5m', text: '5分钟' },
+	{ value: '10m', text: '10分钟' },
+	{ value: '15m', text: '15分钟' },
+	{ value: '30m', text: '30分钟' },
+	{ value: '1h', text: '1小时' },
+	{ value: '2h', text: '2小时' },
+	{ value: '3h', text: '3小时' },
+	{ value: '6h', text: '6小时' },
+	{ value: '12h', text: '12小时' },
+	{ value: '24h', text: '24小时' }
 ];
 export const initMenu = [
 	{

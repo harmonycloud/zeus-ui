@@ -1,22 +1,14 @@
 import React, { useEffect } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Input,
-	Message,
-	Icon,
-	Balloon
-} from '@alicloud/console-components';
+import { Modal, Form, Input, Popover, notification } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+
 import { createDb, updateDb } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { Select } from '@alifd/next';
 import { FormProps } from './database';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
-const Tooltip = Balloon.Tooltip;
 const Option = Select.Option;
 const formItemLayout = {
 	labelCol: {
@@ -37,35 +29,38 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 		middlewareName,
 		charsetList
 	} = props;
-	const field: Field = Field.useField();
+	const [form] = Form.useForm();
 
 	useEffect(() => {
 		if (data) {
-			field.setValues(data);
+			form.setFieldsValue(data);
 		}
 	}, [data]);
 	const onOk: () => void = () => {
-		field.validate((errors, values: any) => {
-			if (errors) return;
-
+		form.validateFields().then((values) => {
 			if (data) {
 				// * 修改数据库
 				const sendData = {
 					clusterId,
 					namespace,
 					middlewareName,
-					id: values.id,
+					id: data.id,
+					db: values.db,
 					charset: values.charset,
 					description: values.description
 				};
 				updateDb(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '数据库修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '数据库修改成功'
+						});
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
@@ -78,12 +73,16 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 				};
 				createDb(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '数据库创建成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '数据库创建成功'
+						});
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -91,58 +90,63 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title={!data ? '新增数据库' : '编辑数据库'}
 			visible={visible}
-			footerAlign="right"
 			onOk={onOk}
 			onCancel={onCancel}
-			onClose={onCancel}
-			style={{ width: 540 }}
+			width={540}
 		>
-			<Form field={field} {...formItemLayout} style={{ paddingLeft: 12 }}>
+			<Form form={form} {...formItemLayout} style={{ paddingLeft: 12 }}>
 				<FormItem
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					name="db"
+					// className="ne-required-ingress"
+					labelAlign="left"
+					// asterisk={false}
 					label={
 						<div>
 							<span style={{ marginRight: 4 }}>数据库名称</span>
-							<Tooltip
-								trigger={
-									<Icon
-										type="question-circle"
-										size="xs"
-										style={{ cursor: 'pointer' }}
-									/>
+							<Popover
+								content={
+									'由字母、数字、下划线(_)、中划线(-)组成，以小写字母开头，以小写字母或数字结尾，最多64个字符'
 								}
 							>
-								由字母、数字、下划线(_)、中划线(-)组成，以小写字母开头，以小写字母或数字结尾，最多64个字符
-							</Tooltip>
+								<QuestionCircleOutlined
+									style={{ cursor: 'pointer' }}
+								/>
+							</Popover>
 						</div>
 					}
-					required={!data}
-					requiredMessage="请输入数据库名称"
-					pattern={pattern.databaseName}
-					patternMessage="数据库名称不合法"
+					rules={[
+						{
+							required: !data,
+							message: '请输入数据库名称'
+						},
+						{
+							pattern: new RegExp(pattern.databaseName),
+							message: '数据库名称不合法'
+						}
+					]}
 				>
 					<Input
-						name="db"
-						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入内容内容"
 					/>
 				</FormItem>
 				<FormItem
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					// className="ne-required-ingress"
+					labelAlign="left"
+					name="charset"
+					// asterisk={false}
 					label="支持的字符集"
-					required={!data}
-					requiredMessage="请选择字符集"
+					rules={[
+						{
+							required: !data,
+							message: '请选择字符集'
+						}
+					]}
 				>
 					<Select
-						name="charset"
 						trim={true}
 						disabled={data ? true : false}
 						placeholder="请选择"
@@ -157,15 +161,10 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 						})}
 					</Select>
 				</FormItem>
-				<FormItem labelTextAlign="left" asterisk={false} label="备注">
-					<TextArea
-						name="description"
-						trim={true}
-						placeholder="限定200字符串"
-						maxLength={200}
-					/>
+				<FormItem labelAlign="left" name="description" label="备注">
+					<TextArea placeholder="限定200字符串" maxLength={200} />
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
