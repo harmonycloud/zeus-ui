@@ -16,9 +16,9 @@ export default function Log(props: LogProps): JSX.Element {
 	const { pathname } = location;
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
-	const [selectedKey, setSelectedKey] = useState<any>('realtime');
+	const [selectedKey, setSelectedKey] = useState<string[]>(['realtime']);
 	const menuSelect = (item: any) => {
-		setSelectedKey(item.key);
+		setSelectedKey(item.keyPath);
 	};
 	useEffect(() => {
 		setSelectedKey(['realtime']);
@@ -120,7 +120,7 @@ export default function Log(props: LogProps): JSX.Element {
 					menu={<ConsoleMenu />}
 					style={{ margin: 0, padding: 0 }}
 				>
-					{childrenRender(selectedKey)}
+					{childrenRender(selectedKey[0])}
 				</ProContent>
 			</ProPage>
 		);

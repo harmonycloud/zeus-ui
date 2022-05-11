@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
-import { Transfer } from '@alicloud/console-components';
 import {
 	Button,
 	Select,
@@ -15,7 +14,9 @@ import {
 	DeleteOutlined,
 	QuestionCircleOutlined,
 	PlusOutlined,
-	MinusOutlined
+	MinusOutlined,
+	SwapOutlined,
+	SearchOutlined
 } from '@ant-design/icons';
 import { IconFont } from '@/components/IconFont';
 
@@ -59,8 +60,11 @@ function CreateAlarm(): JSX.Element {
 	const [poolList, setPoolList] = useState([]);
 	const [systemId, setSystemId] = useState<string | undefined>();
 	const [users, setUsers] = useState<any[]>([]);
-	const [insertUser, setInsertUser] = useState<any[]>([]);
+	const [leftUsers, setLeftUsers] = useState<any[]>([]);
+	const [rightUsers, setRightUsers] = useState<any[]>([]);
 	const [selectUser, setSelectUser] = useState<any[]>([]);
+	const [leftSearch, setLeftSearch] = useState<string>('');
+	const [rightSearch, setRightSearch] = useState<string>('');
 	const [mailChecked, setMailChecked] = useState<boolean>(false);
 	const [dingChecked, setDingChecked] = useState<boolean>(false);
 	const [isRule, setIsRule] = useState<boolean>();
@@ -265,33 +269,64 @@ function CreateAlarm(): JSX.Element {
 		});
 	}, []);
 
-	const handleChange = (value: any, data: any, extra: any) => {
-		setInsertUser(data);
-	};
+	// const handleChange = (value: any, data: any, extra: any) => {
+	// 	setInsertUser(data);
+	// };
 
 	const getUserList = (sendData?: any) => {
 		getUsers(sendData).then((res) => {
 			if (!res.data) return;
-			const user: any[] = [];
-			res.data.userBy &&
-				res.data.userBy.length &&
-				res.data.userBy.find((item: any) => item.email) &&
-				setSelectUser(
-					res.data.userBy
-						.filter((item: any) => item.email)
-						.map((item: any) => item.id)
-				);
-			res.data.userBy &&
-				res.data.userBy.length &&
-				res.data.users.map((item: any) => {
-					res.data.userBy.map((arr: any) => {
-						arr.email && item.id === arr.id && user.push(item);
-					});
-				});
 			setIsReady(true);
-			setInsertUser(user);
 			setUsers(
 				res.data.users.map((item: any) => {
+					return {
+						...item,
+						value: item.id,
+						key: item.id,
+						disabled: !item.email,
+						label:
+							item.email +
+							item.phone +
+							item.userName +
+							item.aliasName +
+							item.roleName
+					};
+				})
+			);
+			setLeftUsers(
+				res.data.users.map((item: any) => {
+					return {
+						...item,
+						value: item.id,
+						key: item.id,
+						disabled: !item.email,
+						label:
+							item.email +
+							item.phone +
+							item.userName +
+							item.aliasName +
+							item.roleName
+					};
+				})
+			);
+			setSelectUser(
+				res.data.userBy.map((item: any) => {
+					return {
+						...item,
+						value: item.id,
+						key: item.id,
+						disabled: !item.email,
+						label:
+							item.email +
+							item.phone +
+							item.userName +
+							item.aliasName +
+							item.roleName
+					};
+				})
+			);
+			setRightUsers(
+				res.data.userBy.map((item: any) => {
 					return {
 						...item,
 						value: item.id,
@@ -309,21 +344,53 @@ function CreateAlarm(): JSX.Element {
 		});
 	};
 
-	const transferRender = (item: any) => {
+	const transferRender = (item: any, type: string) => {
 		return item.email ? (
-			<span
+			<li
 				key={item.id}
-				style={{ width: '100%', overflowX: 'auto' }}
 				className={item.email ? '' : 'disabled'}
+				onClick={() => {
+					if (type === 'left') {
+						setUsers(users.filter((i) => i.id !== item.id));
+						setLeftUsers(leftUsers.filter((i) => i.id !== item.id));
+						setSelectUser([
+							...selectUser,
+							users.find((i) => i.id === item.id)
+						]);
+						setRightUsers([
+							...selectUser,
+							leftUsers.find((i) => i.id === item.id)
+						]);
+					} else {
+						setSelectUser(
+							selectUser.filter((i) => i.id !== item.id)
+						);
+						setRightUsers(
+							rightUsers.filter((i) => i.id !== item.id)
+						);
+						setUsers([
+							...users,
+							selectUser.find((i) => i.id === item.id)
+						]);
+						setLeftUsers([
+							...users,
+							rightUsers.find((i) => i.id === item.id)
+						]);
+					}
+				}}
 			>
-				<Checkbox
-					style={{ marginRight: '5px' }}
-					disabled={!item.email}
-				/>
-				<DeleteOutlined
-					className="label"
-					style={{ color: '#0070CC', marginRight: '10px' }}
-				/>
+				{type === 'left' && (
+					<Checkbox
+						style={{ marginRight: '16px' }}
+						disabled={!item.email}
+					/>
+				)}
+				{type === 'right' && (
+					<DeleteOutlined
+						className="label"
+						style={{ color: '#0070CC', marginRight: '4px' }}
+					/>
+				)}
 				<span className="item-content">{item.userName}</span>
 				<span className="item-content">{item.aliasName}</span>
 				<span className="item-content">
@@ -336,22 +403,22 @@ function CreateAlarm(): JSX.Element {
 				<span className="item-content">
 					{item.roleName ? item.roleName : '/'}
 				</span>
-			</span>
+			</li>
 		) : (
 			<Popover content={'用户邮箱为空，不可选择'}>
-				<span
-					key={item.id}
-					style={{ width: '100%', overflowX: 'auto' }}
-					className={item.email ? '' : 'disabled'}
-				>
-					<Checkbox
-						style={{ marginRight: '5px' }}
-						disabled={!item.email}
-					/>
-					<DeleteOutlined
-						className="label"
-						style={{ color: '#0070CC', marginRight: '10px' }}
-					/>
+				<li key={item.id} className={item.email ? '' : 'disabled'}>
+					{type === 'left' && (
+						<Checkbox
+							style={{ marginRight: '16px' }}
+							disabled={!item.email}
+						/>
+					)}
+					{type === 'right' && (
+						<DeleteOutlined
+							className="label"
+							style={{ color: '#0070CC', marginRight: '4px' }}
+						/>
+					)}
 					<span className="item-content">{item.userName}</span>
 					<span className="item-content">{item.aliasName}</span>
 					<span className="item-content">
@@ -364,7 +431,7 @@ function CreateAlarm(): JSX.Element {
 					<span className="item-content">
 						{item.roleName ? item.roleName : '/'}
 					</span>
-				</span>
+				</li>
 			</Popover>
 		);
 	};
@@ -385,14 +452,16 @@ function CreateAlarm(): JSX.Element {
 				ding: dingChecked ? 'ding' : '',
 				data: {
 					middlewareAlertsDTOList: value,
-					users: insertUser
+					// users: insertUser
+					users: selectUser
 				}
 			};
 			if (ruleId) {
 				sendData.alertRuleId = ruleId;
 				sendData.data = {
 					middlewareAlertsDTO: value[0],
-					users: insertUser
+					// users: insertUser
+					users: selectUser
 				};
 				updateAlarm(sendData).then((res) => {
 					if (res.success) {
@@ -437,14 +506,16 @@ function CreateAlarm(): JSX.Element {
 				ding: dingChecked ? 'ding' : '',
 				data: {
 					middlewareAlertsDTOList: value,
-					users: insertUser
+					// users: insertUser
+					users: selectUser
 				}
 			};
 			if (ruleId) {
 				sendData.alertRuleId = ruleId;
 				sendData.data = {
 					middlewareAlertsDTO: value[0],
-					users: insertUser
+					// users: insertUser
+					users: selectUser
 				};
 				updateAlarms(sendData).then((res) => {
 					if (res.success) {
@@ -523,7 +594,8 @@ function CreateAlarm(): JSX.Element {
 			if (systemId) {
 				if (flag) {
 					if (mailChecked) {
-						if (insertUser && insertUser.length) {
+						// if (insertUser && insertUser.length) {
+						if (selectUser && selectUser.length) {
 							onCreate(data);
 						} else {
 							notification.error({
@@ -561,7 +633,8 @@ function CreateAlarm(): JSX.Element {
 			});
 			if (flag) {
 				if (mailChecked) {
-					if (insertUser && insertUser.length) {
+					// if (insertUser && insertUser.length) {
+					if (selectUser && selectUser.length) {
 						onCreate(list);
 					} else {
 						notification.error({
@@ -1009,40 +1082,355 @@ function CreateAlarm(): JSX.Element {
 					)}
 				</div>
 				{mailChecked && isReady && (
-					<div className="transfer">
+					// <div className="transfer">
+					// 	<div className="ne-required">邮箱通知</div>
+					// 	<div className="transfer-container">
+					// 		<div className="transfer-header">
+					// 			<p className="transfer-title left">用户通知</p>
+					// 			<p className="transfer-title">用户通知</p>
+					// 		</div>
+					// 		<Transfer
+					// 			showSearch
+					// 			searchPlaceholder="请输入登录账户、用户名、邮箱、手机号、关联角色搜索"
+					// 			defaultValue={selectUser}
+					// 			mode="simple"
+					// 			titles={[
+					// 				<div key="left">
+					// 					<span key="account">登录账户</span>
+					// 					<span key="username">用户名</span>
+					// 					<span key="email">邮箱</span>
+					// 					<span key="tel">手机号</span>
+					// 					<span key="time">创建时间</span>
+					// 					<span key="role">关联角色</span>
+					// 				</div>,
+					// 				<div key="right">
+					// 					<span key="account">登录账户</span>
+					// 					<span key="username">用户名</span>
+					// 					<span key="email">邮箱</span>
+					// 					<span key="tel">手机号</span>
+					// 					<span key="time">创建时间</span>
+					// 					<span key="role">关联角色</span>
+					// 				</div>
+					// 			]}
+					// 			dataSource={users}
+					// 			itemRender={transferRender}
+					// 			onChange={handleChange}
+					// 		/>
+					// 	</div>
+					// </div>
+					<div className="email">
 						<div className="ne-required">邮箱通知</div>
-						<div className="transfer-container">
-							<div className="transfer-header">
-								<p className="transfer-title left">用户通知</p>
-								<p className="transfer-title">用户通知</p>
-							</div>
-							<Transfer
-								showSearch
-								searchPlaceholder="请输入登录账户、用户名、邮箱、手机号、关联角色搜索"
-								defaultValue={selectUser}
-								mode="simple"
-								titles={[
-									<div key="left">
-										<span key="account">登录账户</span>
-										<span key="username">用户名</span>
-										<span key="email">邮箱</span>
-										<span key="tel">手机号</span>
-										<span key="time">创建时间</span>
-										<span key="role">关联角色</span>
-									</div>,
-									<div key="right">
-										<span key="account">登录账户</span>
-										<span key="username">用户名</span>
-										<span key="email">邮箱</span>
-										<span key="tel">手机号</span>
-										<span key="time">创建时间</span>
-										<span key="role">关联角色</span>
+						<div className="transfer">
+							<div className="transfer-box">
+								<div className="transfer-title">用户通知</div>
+								<div style={{ overflowX: 'auto' }}>
+									<div className="transfer-header">
+										<Input
+											style={{ width: '100%' }}
+											addonBefore={<SearchOutlined />}
+											placeholder="请输入登录账户、用户名、邮箱、手机号、关联角色搜索"
+											value={leftSearch}
+											onChange={(e) => {
+												setLeftSearch(e.target.value);
+												e.target.value
+													? setUsers(
+															leftUsers.filter(
+																(item: any) =>
+																	item.label.indexOf(
+																		e.target
+																			.value
+																	) !== -1
+															)
+													  )
+													: setUsers(leftUsers);
+											}}
+										/>
 									</div>
-								]}
-								dataSource={users}
-								itemRender={transferRender}
-								onChange={handleChange}
-							/>
+									<div className="transfer-content">
+										<div className="titles">
+											<p>
+												<span key="account">
+													登录账户
+												</span>
+												<span key="username">
+													用户名
+												</span>
+												<span key="email">邮箱</span>
+												<span key="tel">手机号</span>
+												<span key="time">创建时间</span>
+												<span key="role">关联角色</span>
+											</p>
+										</div>
+										<ul>
+											{users.map((item, index) => {
+												return transferRender(
+													item,
+													'left'
+												);
+												// <li
+												// 	key={item.db}
+												// 	onClick={() => {
+												// 		setUsers(
+												// 			users.filter(
+												// 				(i) =>
+												// 					i.db !== item.db
+												// 			)
+												// 		);
+												// 		setLeftUsers(
+												// 			leftUsers.filter(
+												// 				(i) =>
+												// 					i.db !== item.db
+												// 			)
+												// 		);
+												// 		setSelectUser([
+												// 			...selectUser,
+												// 			users.find(
+												// 				(i) =>
+												// 					i.db === item.db
+												// 			)
+												// 		]);
+												// 		setRightUsers([
+												// 			...selectUser,
+												// 			leftUsers.find(
+												// 				(i) =>
+												// 					i.db === item.db
+												// 			)
+												// 		]);
+												// 	}}
+												// >
+												// 	<Checkbox
+												// 		style={{
+												// 			width: 20,
+												// 			marginRight: 10
+												// 		}}
+												// 		checked={false}
+												// 	/>
+												// 	<span
+												// 		className="db-name"
+												// 		title={item.db}
+												// 	>
+												// 		{item.db}
+												// 	</span>
+												// 	<span
+												// 		style={{
+												// 			width: 50
+												// 		}}
+												// 	>
+												// 		{item.charset}
+												// 	</span>
+												// </li>
+											})}
+										</ul>
+									</div>
+
+									<div className="transfer-footer">
+										<span
+											onClick={() => {
+												setUsers(
+													leftUsers.filter(
+														(item) => !item.email
+													)
+												);
+												setLeftUsers(
+													leftUsers.filter(
+														(item) => !item.email
+													)
+												);
+												setSelectUser(
+													leftUsers.filter(
+														(item) => item.email
+													)
+												);
+												setRightUsers(
+													leftUsers.filter(
+														(item) => item.email
+													)
+												);
+											}}
+										>
+											移动全部
+										</span>
+									</div>
+								</div>
+							</div>
+							<div>
+								<SwapOutlined />
+							</div>
+							<div className="transfer-box">
+								<div className="transfer-title">用户通知</div>
+								<div style={{ overflowX: 'auto' }}>
+									<div className="transfer-header">
+										<Input
+											style={{ width: '100%' }}
+											addonBefore={<SearchOutlined />}
+											placeholder="请输入登录账户、用户名、邮箱、手机号、关联角色搜索"
+											value={rightSearch}
+											onChange={(e) => {
+												setRightSearch(e.target.value);
+												e.target.value
+													? setSelectUser(
+															rightUsers.filter(
+																(item: any) =>
+																	item.label.indexOf(
+																		e.target
+																			.value
+																	) !== -1
+															)
+													  )
+													: setSelectUser(rightUsers);
+											}}
+										/>
+									</div>
+									<div className="transfer-content">
+										<div className="titles">
+											<p>
+												<span key="account">
+													登录账户
+												</span>
+												<span key="username">
+													用户名
+												</span>
+												<span key="email">邮箱</span>
+												<span key="tel">手机号</span>
+												<span key="time">创建时间</span>
+												<span key="role">关联角色</span>
+											</p>
+										</div>
+										<ul>
+											{selectUser.map((item) => {
+												return transferRender(
+													item,
+													'right'
+												);
+												// <li key={item.db}>
+												// 	<span
+												// 		style={{
+												// 			width: 20,
+												// 			height: 28,
+												// 			marginRight: 10
+												// 		}}
+												// 		onClick={() => {
+												// 			setSelectUser(
+												// 				selectUser.filter(
+												// 					(i) =>
+												// 						i.db !==
+												// 						item.db
+												// 				)
+												// 			);
+												// 			setRightUsers(
+												// 				rightUsers.filter(
+												// 					(i) =>
+												// 						i.db !==
+												// 						item.db
+												// 				)
+												// 			);
+												// 			setUsers([
+												// 				...users,
+												// 				selectUser.find(
+												// 					(i) =>
+												// 						i.db ===
+												// 						item.db
+												// 				)
+												// 			]);
+												// 			setLeftUsers([
+												// 				...users,
+												// 				rightUsers.find(
+												// 					(i) =>
+												// 						i.db ===
+												// 						item.db
+												// 				)
+												// 			]);
+												// 		}}
+												// 	>
+												// 		<DeleteOutlined
+												// 			style={{
+												// 				color: 'rgb(1,112,204)',
+												// 				marginTop: 8
+												// 			}}
+												// 		/>
+												// 	</span>
+												// 	<span
+												// 		className="db-name"
+												// 		title={item.db}
+												// 	>
+												// 		{item.db}
+												// 	</span>
+												// 	<Radio.Group
+												// 		style={{
+												// 			width: 365
+												// 		}}
+												// 		value={String(
+												// 			item.authority
+												// 		)}
+												// 		onChange={(e) => {
+												// 			item.authority = Number(
+												// 				e.target.value
+												// 			);
+												// 			const index =
+												// 				selectUser.findIndex(
+												// 					(i) =>
+												// 						i.db ===
+												// 						item.db
+												// 				);
+												// 			selectUser.splice(
+												// 				index,
+												// 				1,
+												// 				item
+												// 			);
+												// 			setSelectUser([
+												// 				...selectUser
+												// 			]);
+												// 		}}
+												// 	>
+												// 		<Radio
+												// 			id={Math.random() + ''}
+												// 			value="1"
+												// 		>
+												// 			只读
+												// 		</Radio>
+												// 		<Radio
+												// 			id={Math.random() + ''}
+												// 			value="2"
+												// 		>
+												// 			读写（DDL+DML）
+												// 		</Radio>
+												// 		<Radio
+												// 			id={Math.random() + ''}
+												// 			value="3"
+												// 		>
+												// 			仅DDL
+												// 		</Radio>
+												// 		<Radio
+												// 			id={Math.random() + ''}
+												// 			value="4"
+												// 		>
+												// 			仅DML
+												// 		</Radio>
+												// 	</Radio.Group>
+												// </li>
+											})}
+										</ul>
+									</div>
+									<div className="transfer-footer">
+										<span
+											onClick={() => {
+												setUsers([
+													...leftUsers,
+													...rightUsers
+												]);
+												setLeftUsers([
+													...leftUsers,
+													...rightUsers
+												]);
+												setSelectUser([]);
+												setRightUsers([]);
+											}}
+										>
+											移动全部
+										</span>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				)}
