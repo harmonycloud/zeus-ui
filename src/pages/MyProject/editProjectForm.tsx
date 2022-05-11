@@ -1,11 +1,4 @@
-import React, { useEffect, useState } from 'react';
-// import {
-// 	Dialog,
-// 	Field,
-// 	Form,
-// 	Input,
-// 	Message
-// } from '@alicloud/console-components';
+import React, { useEffect } from 'react';
 import { Input, Modal, Form, notification } from 'antd';
 import { connect } from 'react-redux';
 import { formItemLayout618 } from '@/utils/const';
@@ -13,7 +6,6 @@ import pattern from '@/utils/pattern';
 import { StoreState } from '@/types';
 import { updateProject } from '@/services/project';
 import { ProjectItem } from '../ProjectManage/project';
-import messageConfig from '@/components/messageConfig';
 
 interface EditProjectFormProps {
 	visible: boolean;
@@ -29,24 +21,14 @@ interface UpdateProjectValuesFields {
 const FormItem = Form.Item;
 function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 	const { visible, onCancel, project, onRefresh } = props;
-	// const [initialValues, setInitialValues] =
-	// 	useState<UpdateProjectValuesFields>();
 	const [form] = Form.useForm();
-	// const field = Field.useField();
 	useEffect(() => {
 		if (project) {
-			// setInitialValues({
-			// });
 			form.setFieldsValue({
 				aliasName: project.aliasName,
 				name: project.name,
 				description: project.description
 			});
-			// field.setValues({
-			// 	aliasName: project.aliasName,
-			// 	name: project.name,
-			// 	description: project.description
-			// });
 		}
 	}, [project]);
 	const onOk = () => {
@@ -79,11 +61,6 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 					onRefresh();
 				});
 		});
-		// 	field.validate((errors) => {
-		// 		if (errors) return;
-		// 		const values: UpdateProjectValuesFields = field.getValues();
-		// 		onCancel();
-		// 	});
 	};
 	return (
 		<Modal
@@ -95,15 +72,8 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 			cancelText="取消"
 			width={470}
 		>
-			<Form
-				form={form}
-				{...formItemLayout618}
-				labelAlign="left"
-				// initialValues={initialValues}
-			>
+			<Form form={form} {...formItemLayout618} labelAlign="left">
 				<FormItem
-					// className="ne-required-ingress"
-					// asterisk={false}
 					label="项目名称"
 					rules={[
 						{ required: true, message: '请输入项目名称' },
@@ -118,22 +88,10 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 					]}
 					required
 					name="aliasName"
-					// requiredMessage="请输入项目名称"
-					// maxLength={80}
-					// minmaxLengthMessage="输入名称，且最大长度不超过80个字符"
-					// pattern={pattern.projectAliasName}
-					// patternMessage="请输入名称，且最大长度不超过80个字符"
 				>
 					<Input />
 				</FormItem>
-				<FormItem
-					label="英文简称"
-					required
-					name="name"
-					// className="ne-required-ingress"
-					// labelAlign="left"
-					// asterisk={false}
-				>
+				<FormItem label="英文简称" required name="name">
 					<Input disabled />
 				</FormItem>
 				<FormItem label="备注" name="description">

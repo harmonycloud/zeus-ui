@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Select,
-	Radio
-} from '@alicloud/console-components';
+import { Modal, Form, Select, Radio, RadioChangeEvent } from 'antd';
 import { valuesProps, consoleProps } from '../detail';
 
 const { Group: RadioGroup } = Radio;
@@ -32,6 +26,7 @@ const list = [
 const mysqlDatabaseContainer: string[] = ['mysql'];
 const redisDatabaseContainer: string[] = ['redis-cluster'];
 export default function Console(props: consoleProps): JSX.Element {
+	const [form] = Form.useForm();
 	const { visible, onCancel, containers, data } = props;
 	const [source, setSource] = useState<string>('container');
 	const [container, setContainer] = useState<string>(
@@ -41,9 +36,9 @@ export default function Console(props: consoleProps): JSX.Element {
 			? redisDatabaseContainer[0]
 			: containers[0]
 	);
-	const field = Field.useField();
+	// const field = Field.useField();
 	const onOk = () => {
-		const values: valuesProps = field.getValues();
+		const values: valuesProps = form.getFieldsValue();
 		const url = `middlewareName=${data.name}&middlewareType=${data.type}&source=${source}&terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
 		window.open(
 			`#/terminal/${url}`,
@@ -57,7 +52,6 @@ export default function Console(props: consoleProps): JSX.Element {
 			if (data.type === 'mysql') {
 				return (
 					<Select
-						name="container"
 						style={{ width: '100%' }}
 						value={mysqlDatabaseContainer[0]}
 						onChange={(value: any) => setContainer(value)}
@@ -76,7 +70,6 @@ export default function Console(props: consoleProps): JSX.Element {
 			} else if (data.type === 'redis') {
 				return (
 					<Select
-						name="container"
 						style={{ width: '100%' }}
 						value={redisDatabaseContainer[0]}
 						onChange={(value: any) => setContainer(value)}
@@ -96,7 +89,6 @@ export default function Console(props: consoleProps): JSX.Element {
 		} else {
 			return (
 				<Select
-					name="container"
 					style={{ width: '100%' }}
 					value={container}
 					onChange={(value: any) => setContainer(value)}
@@ -114,23 +106,23 @@ export default function Console(props: consoleProps): JSX.Element {
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title="实例控制台"
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
+			// onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '400px' }}
+			width={400}
+			// style={{ width: '400px' }}
 		>
-			<Form {...formItemLayout} field={field}>
+			<Form labelAlign="left" {...formItemLayout} form={form}>
 				{(data.type === 'mysql' || data.type === 'redis') && (
-					<FormItem>
+					<FormItem name="source">
 						<RadioGroup
-							name="source"
-							dataSource={list}
+							options={list}
 							value={source}
-							onChange={(value: string | number | boolean) => {
-								setSource(value as string);
+							onChange={(e: RadioChangeEvent) => {
+								setSource(e.target.value);
 								data.type === 'mysql'
 									? setContainer(mysqlDatabaseContainer[0])
 									: setContainer(redisDatabaseContainer[0]);
@@ -138,18 +130,16 @@ export default function Console(props: consoleProps): JSX.Element {
 						/>
 					</FormItem>
 				)}
-				<FormItem label="选择容器">{selectRender()}</FormItem>
-				<FormItem label="shell类型">
-					<Select
-						name="scriptType"
-						style={{ width: '100%' }}
-						defaultValue="sh"
-					>
+				<FormItem label="选择容器" name="container">
+					{selectRender()}
+				</FormItem>
+				<FormItem label="shell类型" name="scriptType">
+					<Select style={{ width: '100%' }} defaultValue="sh">
 						<Option value="sh">sh</Option>
 						<Option value="bash">bash</Option>
 					</Select>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

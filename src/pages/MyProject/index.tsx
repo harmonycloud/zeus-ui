@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
+import { Spin, notification } from 'antd';
 import {
 	getProjects,
 	getProjectMiddleware,
@@ -11,15 +12,13 @@ import { setMenuRefresh } from '@/redux/menu/menu';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
 import MiddlewareTable from './middlewareTable';
-import { ProjectItem } from '../ProjectManage/project';
-import { Message, Loading } from '@alicloud/console-components';
-import messageConfig from '@/components/messageConfig';
 import imgNone from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
 import { StoreState } from '@/types';
-import './index.scss';
+import { ProjectItem } from '../ProjectManage/project';
 import { roleProps } from '../RoleManage/role';
+import './index.scss';
 
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster, project, setMenuRefresh } = props;
@@ -70,7 +69,10 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			if (res.success) {
 				setProjectMiddleware(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -90,7 +92,10 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						setCurrentProject(res.data[0]);
 					storage.setLocal('project', JSON.stringify(res.data[0]));
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			})
 			.finally(() => {
@@ -104,7 +109,10 @@ function MyProject(props: MyProjectProps): JSX.Element {
 				if (res.success) {
 					setTableDataSource(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			})
 			.finally(() => {
@@ -112,14 +120,14 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			});
 	};
 	return (
-		<Page>
-			<Header title="我的项目" subTitle="管理用户自己的项目" />
-			<Content style={{ width: '100%' }}>
-				<Loading
-					visible={projectLoading}
+		<ProPage>
+			<ProHeader title="我的项目" subTitle="管理用户自己的项目" />
+			<ProContent style={{ width: '100%' }}>
+				<Spin
+					spinning={projectLoading}
 					tip="加载中，请稍后"
-					size="medium"
-					style={{ display: 'block' }}
+					// size="medium"
+					// style={{ display: 'block' }}
 				>
 					<div className="zeus-my-project-card-list-content">
 						{dataSource.map((item: ProjectItem) => {
@@ -219,12 +227,12 @@ function MyProject(props: MyProjectProps): JSX.Element {
 							);
 						})}
 					</div>
-				</Loading>
-				<Loading
-					visible={middlewareLoading}
+				</Spin>
+				<Spin
+					spinning={middlewareLoading}
 					tip="加载中，请稍后"
-					size="medium"
-					style={{ display: 'block' }}
+					// size="medium"
+					// style={{ display: 'block' }}
 				>
 					<div className="zeus-my-project-table-list-content">
 						{tableDataSource &&
@@ -248,8 +256,8 @@ function MyProject(props: MyProjectProps): JSX.Element {
 							</div>
 						)}
 					</div>
-				</Loading>
-			</Content>
+				</Spin>
+			</ProContent>
 			{editVisible && (
 				<EditProjectForm
 					visible={editVisible}
@@ -257,7 +265,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 					onRefresh={getData}
 				/>
 			)}
-		</Page>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Message, Dialog } from '@alicloud/console-components';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import { Button, notification, Modal } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import { getValueYaml, updateValueYaml } from '@/services/middleware';
 import CodeMirror from 'codemirror';
@@ -10,7 +10,6 @@ import 'codemirror/mode/yaml/yaml.js';
 import 'codemirror/mode/yaml-frontmatter/yaml-frontmatter.js';
 import 'codemirror/theme/twilight.css';
 import 'codemirror/addon/selection/active-line';
-import messageConfig from '@/components/messageConfig';
 import { verificationYaml } from '@/services/configmap';
 import yaml from 'js-yaml';
 
@@ -33,6 +32,7 @@ interface YamlMsgProp {
 	msg: string;
 	messageStatus: number;
 }
+const { confirm } = Modal;
 const YamlEdit = () => {
 	const codeEditor = useRef<any>(null);
 	const {
@@ -81,7 +81,10 @@ const YamlEdit = () => {
 				setNewValue(res.data);
 				setOriginValue(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
@@ -125,20 +128,24 @@ const YamlEdit = () => {
 			chartVersion,
 			values: originValue
 		};
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '请确认是否保存编辑后的yaml？',
 			onOk: () => {
 				updateValueYaml(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', 'yaml编辑成功')
-						);
+						notification.success({
+							message: '成功',
+							description: 'yaml编辑成功'
+						});
 						history.push(
 							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${chartVersion}/${namespace}`
 						);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 						setSaveFlag(true);
 						setReturnFlag(false);
 					}
@@ -192,13 +199,13 @@ const YamlEdit = () => {
 		setReturnFlag(true);
 	};
 	return (
-		<Page>
-			<Header
-				hasBackArrow
+		<ProPage>
+			<ProHeader
+				// hasBackArrow
 				title="yaml文件详情"
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
+			<ProContent>
 				<div className="yaml-edit-btn-content">
 					<Button
 						className="yaml-btn"
@@ -210,7 +217,7 @@ const YamlEdit = () => {
 					</Button>
 					<Button
 						className="yaml-btn"
-						type="secondary"
+						type="default"
 						onClick={restoreYaml}
 						disabled={returnFlag}
 					>
@@ -218,7 +225,7 @@ const YamlEdit = () => {
 					</Button>
 					<Button
 						className="yaml-btn"
-						type="normal"
+						type="default"
 						onClick={correctYaml}
 					>
 						校准
@@ -253,8 +260,8 @@ const YamlEdit = () => {
 						</ul>
 					</div>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 };
 export default YamlEdit;

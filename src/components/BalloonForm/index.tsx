@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Balloon, Field, Button, Form } from '@alicloud/console-components';
-
+// import { Balloon, Field, Button, Form } from '@alicloud/console-components';
+import { Popover, Form, Button } from 'antd';
 import { balloonFormProps } from './balloonForm';
 
 import './index.scss';
@@ -44,7 +44,8 @@ const BalloonForm = (props: balloonFormProps): JSX.Element => {
 	} = props;
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 	const [balloonVisible, setBalloonVisible] = useState<boolean>(false);
-	const field = Field.useField();
+	const [form] = Form.useForm();
+	// const field = Field.useField();
 	const hasVisible = visible !== undefined;
 
 	useEffect(() => {
@@ -60,23 +61,21 @@ const BalloonForm = (props: balloonFormProps): JSX.Element => {
 
 	const handleConfirm = () => {
 		let result;
-		field.validate((err, data) => {
-			if (!err) {
-				result = onConfirm(data);
-				// 如果onConfirm返回一个promise,则设置按钮状态为loading,异步函数执行完毕关闭弹窗
-				if (isPromise(result)) {
-					setSubmitLoading(true);
-					result.then(() => {
-						setSubmitLoading(false);
-						if (!hasVisible) {
-							// 如果没有手动设置visible属性，则关闭弹窗
-							setBalloonVisible(false);
-						}
-					});
-				} else {
+		form.validateFields().then((values) => {
+			result = onConfirm(values);
+			// 如果onConfirm返回一个promise,则设置按钮状态为loading,异步函数执行完毕关闭弹窗
+			if (isPromise(result)) {
+				setSubmitLoading(true);
+				result.then(() => {
+					setSubmitLoading(false);
 					if (!hasVisible) {
+						// 如果没有手动设置visible属性，则关闭弹窗
 						setBalloonVisible(false);
 					}
+				});
+			} else {
+				if (!hasVisible) {
+					setBalloonVisible(false);
 				}
 			}
 		});
@@ -98,14 +97,14 @@ const BalloonForm = (props: balloonFormProps): JSX.Element => {
 	};
 
 	return (
-		<Balloon
-			triggerType="click"
+		<Popover
+			trigger="click"
 			className="balloon-form-confirm"
 			{...restProps}
-			trigger={balloonTrigger}
+			// trigger={balloonTrigger}
 			visible={balloonVisible}
 		>
-			<Form className="balloon-content" {...ItemLayout} field={field}>
+			<Form className="balloon-content" {...ItemLayout} form={form}>
 				{children}
 				<div className="footer">
 					<Button
@@ -121,7 +120,7 @@ const BalloonForm = (props: balloonFormProps): JSX.Element => {
 					</Button>
 				</div>
 			</Form>
-		</Balloon>
+		</Popover>
 	);
 };
 export default BalloonForm;

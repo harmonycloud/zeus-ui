@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-	Form,
-	Dialog,
-	Field,
-	Message,
-	NumberPicker
-} from '@alicloud/console-components';
+import { Form, Modal, InputNumber, Alert } from 'antd';
 import { NodeSpeProps } from '../detail';
 
 const formItemLayout = {
 	labelCol: {
-		fixedSpan: 10
+		span: 10
 	},
 	wrapperCol: {
 		span: 14,
@@ -26,29 +20,31 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 		onCancel,
 		quota: { cpu, memory, storageClassQuota }
 	} = props;
-	const field = Field.useField();
+	// const field = Field.useField();
+	const [form] = Form.useForm();
 
 	const onOk = () => {
-		field.validate((err, value) => {
-			onCreate(value);
+		form.validateFields().then((values) => {
+			onCreate(values);
 		});
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title="修改节点规格"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			onClose={onCancel}
-			footerAlign="right"
+			// onClose={onCancel}
+			// footerAlign="right"
 		>
-			<Form field={field} {...formItemLayout}>
-				<Message style={{ marginBottom: 24 }} type="warning">
-					修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。
-				</Message>
+			<Form form={form} {...formItemLayout}>
+				<Alert
+					message="修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。"
+					type="warning"
+				/>
 				<FormItem label="CPU (Core)">
-					<NumberPicker
+					<InputNumber
 						type="inline"
 						step="0.1"
 						name="cpu"
@@ -57,7 +53,7 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 					/>
 				</FormItem>
 				<FormItem label="内存 (GB)">
-					<NumberPicker
+					<InputNumber
 						type="inline"
 						step="0.1"
 						name="memory"
@@ -68,7 +64,7 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 					/>
 				</FormItem>
 				<FormItem label="存储 (GB)">
-					<NumberPicker
+					<InputNumber
 						disabled
 						type="inline"
 						step="0.1"
@@ -82,6 +78,6 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 					/>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

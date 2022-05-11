@@ -1,10 +1,10 @@
 import React from 'react';
-import { Dialog, Form, Field, Message } from '@alicloud/console-components';
+import { Modal, Form, notification } from 'antd';
 import RocketACLForm from '@/components/RocketACLForm';
 import { updateMiddleware } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { aclEditProps } from '../detail';
 
+const { confirm } = Modal;
 export default function RocketAclEditForm(props: aclEditProps): JSX.Element {
 	const {
 		visible,
@@ -16,10 +16,10 @@ export default function RocketAclEditForm(props: aclEditProps): JSX.Element {
 		chartName,
 		chartVersion
 	} = props;
-	const field = Field.useField();
+	const [form] = Form.useForm();
+	// const field = Field.useField();
 	const onOk = () => {
-		field.validate((errors, values) => {
-			if (errors) return;
+		form.validateFields().then((values) => {
 			const sendData = {
 				clusterId,
 				namespace,
@@ -34,22 +34,23 @@ export default function RocketAclEditForm(props: aclEditProps): JSX.Element {
 					}
 				}
 			};
-			Dialog.show({
+			confirm({
 				title: '操作确认',
 				content: '生效已修改信息需要重启本组件服务，是否继续？',
 				onOk: () => {
 					updateMiddleware(sendData).then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
+							notification.success({
+								message: '成功',
+								description:
 									'访问权限控制认证修改成功，3秒后刷新页面'
-								)
-							);
+							});
 							onCancel(true);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					});
 				}
@@ -57,20 +58,20 @@ export default function RocketAclEditForm(props: aclEditProps): JSX.Element {
 		});
 	};
 	return (
-		<Dialog
+		<Modal
 			style={{ width: '1000px' }}
 			title="修改访问权限控制认证"
 			visible={visible}
-			footerAlign="right"
+			// footerAlign="right"
 			onOk={onOk}
 			onCancel={() => onCancel(false)}
-			onClose={() => onCancel(false)}
-			shouldUpdatePosition={true}
-			isFullScreen={true}
+			// onClose={() => onCancel(false)}
+			// shouldUpdatePosition={true}
+			// isFullScreen={true}
 		>
-			<Form field={field}>
-				<RocketACLForm field={field} data={data} />
+			<Form form={form}>
+				<RocketACLForm form={form} data={data} />
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

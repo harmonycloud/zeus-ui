@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Balloon } from '@alicloud/console-components';
-import DataFields from '@alicloud/console-components-data-fields';
+import DataFields from '@/components/DataFields';
+import { Tooltip } from 'antd';
 import PasswordDisplay from '@/components/PasswordDisplay';
 import { UserInfoProps } from '../detail';
+import { Item } from '@/components/DataFields/dataFields';
 
-const Tooltip = Balloon.Tooltip;
-const itemsConfig = [
+const itemsConfig: Item[] = [
 	{ dataIndex: 'accessKey', label: '账户' },
 	{
 		dataIndex: 'admin',
@@ -25,9 +25,7 @@ const itemsConfig = [
 			const list = val?.split(';');
 			if (list) {
 				return (
-					<Tooltip align="t" trigger={<span>{list[1]}</span>}>
-						{list[0]}
-					</Tooltip>
+					<Tooltip title={list[0]}>{<span>{list[1]}</span>}</Tooltip>
 				);
 			}
 		}
@@ -39,9 +37,7 @@ const itemsConfig = [
 			const list = val?.split(';');
 			if (list) {
 				return (
-					<Tooltip align="t" trigger={<span>{list[1]}</span>}>
-						{list[0]}
-					</Tooltip>
+					<Tooltip title={list[0]}>{<span>{list[1]}</span>}</Tooltip>
 				);
 			}
 		}
