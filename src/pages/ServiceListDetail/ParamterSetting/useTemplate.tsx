@@ -1,30 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { connect } from 'react-redux';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import ProTable from '@/components/ProTable';
 import {
-	Search,
-	Table,
-	Checkbox,
-	Message,
-	Form,
 	Input,
+	Checkbox,
+	notification,
+	Form,
 	Select,
 	Button,
-	Dialog
-} from '@alicloud/console-components';
-import HeaderLayout from '@/components/HeaderLayout';
+	Modal,
+	Alert
+} from 'antd';
 import { getParamsTemp } from '@/services/template';
 import { getConfigs, updateConfig } from '@/services/middleware';
 import { globalVarProps, StoreState } from '@/types';
-import { connect } from 'react-redux';
 import { ConfigItem, ParamterTemplateItem } from '../detail';
-import {
-	defaultValueRender,
-	questionTooltipRender,
-	tooltipRender
-} from '@/utils/utils';
-import messageConfig from '@/components/messageConfig';
+import { questionTooltipRender } from '@/utils/utils';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
+const { confirm } = Modal;
 interface UseTemplateParams {
 	middlewareName: string;
 	type: string;
@@ -67,7 +63,10 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				if (res.success) {
 					setTemp(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getConfigs({ clusterId, namespace, middlewareName, type }).then(
@@ -82,7 +81,10 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							})
 						);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
@@ -118,8 +120,8 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		setShowDataSource(list);
 		setSearchText(value);
 	};
-	const onChange = (value: boolean) => {
-		if (value) {
+	const onChange = (e: CheckboxChangeEvent) => {
+		if (e.target.checked) {
 			const list = dataSource.filter(
 				(item) => item[temp?.name || ''] !== item.value
 			);
@@ -128,7 +130,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 			setShowDataSource(dataSource);
 		}
 		setSearchText('');
-		setChecked(value);
+		setChecked(e.target.checked);
 	};
 	const onFilter = (filterParams: any) => {
 		const {
@@ -162,9 +164,10 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		}
 		const flag = typeof cValue === 'string' && cValue.trim();
 		if (flag === null || flag === undefined || flag === '') {
-			Message.show(
-				messageConfig('error', '失败', '不能将目标值设置为空!')
-			);
+			notification.error({
+				message: '失败',
+				description: '不能将目标值设置为空!'
+			});
 			return;
 		}
 		if (record.paramType === 'multiSelect') {
@@ -179,8 +182,8 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 	};
 	const modifyValueRender = (
 		value: string,
-		index: number,
-		record: ConfigItem
+		record: ConfigItem,
+		index: number
 	) => {
 		let selectList: string[] = [];
 		let defaultSelects: string[] = [];
@@ -203,25 +206,28 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 			case 'input':
 				return (
 					<FormItem
-						pattern={record.pattern}
-						patternMessage="输入的值不在参数范围中。"
+						name={record.name}
+						rules={[
+							{
+								pattern: new RegExp(record.pattern as string),
+								message: '输入的值不在参数范围中'
+							}
+						]}
 					>
 						<Input
-							name={record.name}
 							placeholder="请输入"
 							defaultValue={record[temp?.name || '']}
-							onChange={(value: string) => {
-								updateValue(value, record);
+							onChange={(e) => {
+								updateValue(e.target.value, record);
 							}}
 						/>
 					</FormItem>
 				);
 			case 'select':
 				return (
-					<FormItem>
+					<FormItem name={record.name}>
 						<Select
 							style={{ width: '100%' }}
-							name={record.name}
 							defaultValue={record[temp?.name || '']}
 							onChange={(value: any) => {
 								updateValue(value, record);
@@ -240,12 +246,11 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				);
 			case 'multiSelect':
 				return (
-					<FormItem>
+					<FormItem name={record.name}>
 						<Select
-							name={record.name}
 							defaultValue={defaultSelects}
 							mode="multiple"
-							onChange={(value: any, actionType: string) => {
+							onChange={(value: any) => {
 								updateValue(value, record);
 							}}
 						>
@@ -263,15 +268,19 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 			default:
 				return (
 					<FormItem
-						pattern={record.pattern}
-						patternMessage="输入的值不在参数范围中。"
+						name={record.name}
+						rules={[
+							{
+								pattern: new RegExp(record.pattern as string),
+								message: '输入的值不在参数范围中'
+							}
+						]}
 					>
 						<Input
-							name={record.name}
 							placeholder="请输入"
 							defaultValue={record.modifiedValue}
-							onChange={(value: string) => {
-								updateValue(value, record);
+							onChange={(e) => {
+								updateValue(e.target.value, record);
 							}}
 						/>
 					</FormItem>
@@ -283,16 +292,17 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 			(item) => item.value != item[temp?.name || '']
 		);
 		if (list.length === 0) {
-			Message.show(
-				messageConfig('error', '失败', '当前模版已启用，无差异值。')
-			);
+			notification.error({
+				message: '失败',
+				description: '当前模版已启用，无差异值。'
+			});
 			return;
 		}
 		const restartFlag = list.some((item) => {
 			if (item.restart === true) return true;
 			return false;
 		});
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: restartFlag
 				? '本次使用模版需要重启服务才能生效，可能导致业务中断，请谨慎操作'
@@ -319,117 +329,115 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				// console.log(sendData);
 				return updateConfig(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'修改成功',
-								`共修改了${sendData.data.customConfigList.length}个参数`
-							)
-						);
+						notification.success({
+							message: '修改成功',
+							description: `共修改了${sendData.data.customConfigList.length}个参数`
+						});
 						history.push(
 							`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
 						);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
 		});
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="使用参数模版"
-				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
+				// hasBackArrow
+				onBack={() => window.history.back()}
 			/>
-			<Content>
-				<Message type="warning">
-					使用前模板需要修改当前运行值，可直接修改应用当前模板，并确认应用后仅本次生效！
-				</Message>
+			<ProContent>
+				<Alert
+					message="使用前模板需要修改当前运行值，可直接修改应用当前模板，并确认应用后仅本次生效！"
+					type="warning"
+				/>
 				<div className="title-content" style={{ marginTop: 24 }}>
 					<div className="blue-line"></div>
 					<div className="detail-title">参数对比</div>
 				</div>
-				<HeaderLayout
-					style={{ marginBottom: 8 }}
-					left={
-						<Search
-							value={searchText}
-							onSearch={handleSearch}
-							onChange={(value: string) => setSearchText(value)}
-							hasClear
-							style={{ width: '200px' }}
-							placeholder="请输入关键字内容"
-						/>
-					}
-					right={
-						<Checkbox
-							onChange={onChange}
-							checked={checked}
-							label="只看差异值"
-						/>
-					}
-				/>
-				<Table
+				<ProTable
 					dataSource={showDataSource}
-					hasBorder={false}
-					primaryKey="name"
-					onFilter={onFilter}
+					rowKey="name"
+					search={{
+						value: searchText,
+						onSearch: handleSearch,
+						onChange: (e) => setSearchText(e.target.value),
+						style: { width: '200px' },
+						placeholder: '请输入关键字内容'
+					}}
+					pagination={false}
+					operation={{
+						secondary: (
+							<Checkbox onChange={onChange} checked={checked}>
+								只看差异值
+							</Checkbox>
+						)
+					}}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="参数名"
 						dataIndex="name"
 						width={210}
-						cell={(
-							value: string,
-							index: number,
-							record: ConfigItem
-						) => tooltipRender(value, index, record, 210)}
-						lock="left"
+						ellipsis={true}
+						// render={(
+						// 	value: string,
+						// 	index: number,
+						// 	record: ConfigItem
+						// ) => tooltipRender(value, index, record, 210)}
+						fixed="left"
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="当前运行值"
 						dataIndex="value"
-						cell={defaultValueRender}
+						ellipsis={true}
+						// cell={defaultValueRender}
 						width={180}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="模版值"
 						dataIndex={temp?.name}
-						cell={modifyValueRender}
+						render={modifyValueRender}
 						width={310}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="默认值"
 						dataIndex="defaultValue"
-						cell={defaultValueRender}
+						ellipsis={true}
+						// render={defaultValueRender}
 						width={180}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="是否重启"
 						dataIndex="restart"
-						cell={isRestartRender}
-						filterMode="single"
+						render={isRestartRender}
+						filterMultiple={false}
+						// filterMode="single"
 						filters={[
-							{ value: 'true', label: '是' },
-							{ value: 'false', label: '否' }
+							{ value: 'true', text: '是' },
+							{ value: 'false', text: '否' }
 						]}
 						width={120}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="参数值范围"
 						dataIndex="ranges"
-						cell={questionTooltipRender}
+						render={questionTooltipRender}
 						width={100}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="参数描述"
 						dataIndex="description"
-						cell={questionTooltipRender}
+						render={questionTooltipRender}
 						width={80}
 					/>
-				</Table>
+				</ProTable>
 				<div
 					className="zeus-edit-param-summit-btn zeus-edit-param-summit-btn-fix"
 					style={{ paddingTop: 16 }}
@@ -438,7 +446,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						确认使用
 					</Button>
 					<Button
-						type="normal"
+						type="default"
 						onClick={() => {
 							window.history.back();
 						}}
@@ -446,8 +454,8 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						取消
 					</Button>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

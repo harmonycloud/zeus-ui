@@ -332,7 +332,6 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const operation = () => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		console.log(jsonRole);
 		let getFlag = false;
 		let createFlag = false;
 		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {

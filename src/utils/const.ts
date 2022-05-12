@@ -277,7 +277,7 @@ export const BalloonFormFormItemLayout = {
 };
 export const formItemLayout614 = {
 	labelCol: {
-		fixedSpan: 6
+		span: 6
 	},
 	wrapperCol: {
 		span: 14

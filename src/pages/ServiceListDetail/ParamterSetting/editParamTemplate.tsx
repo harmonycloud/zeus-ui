@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { Page, Header, Content } from '@alicloud/console-components-page';
-import {
-	Step,
-	Button,
-	Form,
-	Input,
-	Field,
-	Message
-} from '@alicloud/console-components';
 import { connect } from 'react-redux';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { Button, Form, Input, notification, Steps } from 'antd';
+// import { Page, Header, Content } from '@alicloud/console-components-page';
+// import {
+// 	Step,
+// 	Button,
+// 	Form,
+// 	Input,
+// 	Field,
+// 	Message
+// } from '@alicloud/console-components';
 import FormBlock from '@/components/FormBlock';
 import ParamEditTable from './components/paramEditTable';
 import ErrorPage from '@/components/ResultPage/ErrorPage';
-
 import {
 	setParamTemplateBasic,
 	setParamTemplateConfig,
@@ -29,10 +30,11 @@ import {
 import pattern from '@/utils/pattern';
 import { formItemLayout614 } from '@/utils/const';
 import { StoreState } from '@/types';
-import { EditParamTemplateProps, ParamterTemplateItem } from '../detail';
-import messageConfig from '@/components/messageConfig';
+import { EditParamTemplateProps } from '../detail';
+// import messageConfig from '@/components/messageConfig';
 import SuccessPage from '@/components/ResultPage/SuccessPage';
 
+const { Step } = Steps;
 export interface ParamsProps {
 	type: string;
 	chartVersion: string;
@@ -71,7 +73,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	const [current, setCurrent] = useState<number>(0);
 	const [btnDisable, setBtnDisable] = useState<boolean>(false);
 	const [fixFlag, setFixFlag] = useState<boolean>(false);
-	const field = Field.useField();
+	const [form] = Form.useForm();
+	// const field = Field.useField();
 	const history = useHistory();
 	useEffect(() => {
 		return () => {
@@ -91,17 +94,23 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				if (res.success) {
 					setParamTemplateBasic({
 						name: res.data.name,
-						description: res.errorMsg.data.description
+						description: res.data.description
 					});
 					setParamTemplateConfig(res.data.customConfigList);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
 	}, [uid]);
 	useEffect(() => {
-		field.setValues({ name: param.name, description: param.description });
+		form.setFieldsValue({
+			name: param.name,
+			description: param.description
+		});
 	}, [props.param]);
 	useEffect(() => {
 		const content =
@@ -152,9 +161,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	]);
 	const goNext = () => {
 		if (current === 0) {
-			field.validate((error) => {
-				if (error) return;
-				setParamTemplateBasic(field.getValues());
+			form.validateFields().then((values) => {
+				setParamTemplateBasic(values);
 				setCurrent(current + 1);
 			});
 		}
@@ -213,40 +221,61 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					>
 						<Form
 							{...formItemLayout614}
-							field={field}
+							form={form}
+							labelAlign="left"
 							style={{ paddingLeft: 8, width: '50%' }}
 						>
 							<FormItem
 								label="模板名称"
 								required
-								labelTextAlign="left"
-								asterisk={false}
-								className="ne-required-ingress"
-								pattern={pattern.paramTemplateName}
-								maxLength={30}
-								minmaxLengthMessage="请输入由小写字母数字及“-”组成的2-30个字符"
-								min={2}
-								patternMessage="请输入由小写字母数字及“-”组成的2-30个字符"
-								requiredMessage="请输入模板名称"
+								name="name"
+								// labelTextAlign="left"
+								// asterisk={false}
+								// className="ne-required-ingress"
+								rules={[
+									{
+										pattern: new RegExp(
+											pattern.paramTemplateName
+										),
+										message:
+											'请输入由小写字母数字及“-”组成的2-30个字符'
+									},
+									{
+										max: 30,
+										message:
+											'请输入由小写字母数字及“-”组成的2-30个字符'
+									},
+									{
+										min: 2,
+										message:
+											'请输入由小写字母数字及“-”组成的2-30个字符'
+									},
+									{
+										required: true,
+										message: '请输入模板名称'
+									}
+								]}
 							>
 								<Input
 									minLength={2}
 									maxLength={30}
-									name="name"
 									placeholder="请输入由小写字母数字及“-”组成的2-30个字符"
 								/>
 							</FormItem>
 							<FormItem
 								label="模板描述"
-								labelTextAlign="left"
-								minmaxLengthMessage="模板描述长度不可超过100字符"
-								maxLength={100}
+								name="description"
+								rules={[
+									{
+										max: 100,
+										message: '模板描述长度不可超过100字符'
+									}
+								]}
 							>
 								<Input.TextArea
 									placeholder="请输入模板描述"
-									name="description"
 									maxLength={100}
-									showLimitHint
+									showCount
 								/>
 							</FormItem>
 						</Form>
@@ -337,27 +366,26 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		}
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={uid ? '修改参数模版' : '新建参数模版'}
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					window.history.back();
 					setParamTemplateBasicClear();
 					setParamTemplateConfigClear();
 				}}
 			/>
-			<Content className="param-content">
-				<Step
+			<ProContent className="param-content">
+				<Steps
 					style={{ marginBottom: 32 }}
 					current={current}
-					shape="circle"
-					labelPlacement="hoz"
+					// shape="circle"
+					labelPlacement="horizontal"
 				>
-					<Step.Item key={0} title="基础信息" />
-					<Step.Item key={1} title="自定义参数" />
-					<Step.Item key={2} title="完成" />
-				</Step>
+					<Step key={0} title="基础信息" />
+					<Step key={1} title="自定义参数" />
+					<Step key={2} title="完成" />
+				</Steps>
 				{childrenRender(current)}
 				{(current === 0 || current === 1) && (
 					<div
@@ -372,7 +400,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						{current === 1 && (
 							<Button
 								disabled={btnDisable}
-								type="normal"
+								type="default"
 								onClick={() => setCurrent(current - 1)}
 							>
 								上一步
@@ -387,7 +415,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						</Button>
 						<Button
 							disabled={btnDisable}
-							type="normal"
+							type="default"
 							onClick={() => {
 								window.history.back();
 								setParamTemplateBasicClear();
@@ -398,8 +426,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						</Button>
 					</div>
 				)}
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
