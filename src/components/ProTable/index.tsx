@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Input } from 'antd';
+import { Table, Button, Input, Space } from 'antd';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 
 import ColumnsModal from './columnsModal';
@@ -59,26 +59,30 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 		<div className="zeus-pro-table">
 			<div className="zeus-pro-table-operator-content">
 				<div className="zeus-pro-table-operator-left">
-					{operation?.primary}
-					{search && <Search allowClear {...search} />}
+					<Space>
+						{operation?.primary}
+						{search && <Search allowClear {...search} />}
+					</Space>
 				</div>
 				<div className="zeus-pro-table-operator-right">
-					{operation?.secondary}
-					{showColumnSetting && (
-						<Button
-							type="default"
-							icon={<SettingOutlined />}
-							onClick={() => setShowColumnDialog(true)}
-						/>
-					)}
-					{showRefresh && (
-						<Button
-							disabled={refreshDisabled}
-							type="default"
-							icon={<ReloadOutlined />}
-							onClick={onRefresh}
-						/>
-					)}
+					<Space>
+						{operation?.secondary}
+						{showColumnSetting && (
+							<Button
+								type="default"
+								icon={<SettingOutlined />}
+								onClick={() => setShowColumnDialog(true)}
+							/>
+						)}
+						{showRefresh && (
+							<Button
+								disabled={refreshDisabled}
+								type="default"
+								icon={<ReloadOutlined />}
+								onClick={onRefresh}
+							/>
+						)}
+					</Space>
 				</div>
 			</div>
 			<div className="zeus-pro-table-content">

@@ -170,19 +170,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		const list = dataSource.filter((item) => item.name.includes(value));
 		setShowDataSource(list);
 	};
-	const onFilter = (filterParams: any) => {
-		const {
-			restart: { selectedKeys }
-		} = filterParams;
-		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource);
-		} else {
-			const tempData = dataSource.filter(
-				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
-			);
-			setShowDataSource(tempData);
-		}
-	};
 	const isRestartRender = (value: boolean) => {
 		return value ? '是' : '否';
 	};
@@ -415,14 +402,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					<>
 						<Button
 							onClick={saveTemplate}
-							className="mr-8"
 							type="primary"
 							disabled={disableFlag}
 						>
 							保存
 						</Button>
 						<Button
-							className="mr-8"
 							onClick={() => {
 								confirm({
 									title: '操作确认',
@@ -454,7 +439,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			return {
 				primary: (
 					<Button
-						className="mr-8"
 						onClick={() => {
 							handleBtnClick && handleBtnClick(true);
 							setEditFlag(true);
@@ -481,11 +465,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			}}
 			showColumnSetting
 			showRefresh
-			refreshDisabled={true}
+			refreshDisabled={editFlag}
 			onRefresh={() => {
 				setEditFlag(false);
 				getData(clusterId, namespace, middlewareName, type, '');
 			}}
+			pagination={false}
 			scroll={{ x: 1500 }}
 			// onFilter={onFilter}
 			// rowProps={onRowProps}

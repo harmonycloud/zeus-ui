@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ProPage, ProContent } from '@/components/ProPage';
-// import { Page, Content } from '@alicloud/console-components-page';
-// import { DatePicker } from '@alicloud/console-components';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 import ProTable from '@/components/ProTable';
-// import Table from '@/components/MidTable';
 import { getConfigHistory } from '@/services/middleware';
 import transTime from '@/utils/transTime';
 import {
@@ -77,14 +74,27 @@ export default function ParamterHistory(
 		// );
 	};
 	const onChange = (val: any) => {
-		console.log(val);
-		if (val.length === 0) {
+		if (val) {
+			setStartTime(val[0]);
+			setEndTime(val[1]);
+			const start = moment(val[0]).format('YYYY-MM-DDTHH:mm:ss[Z]');
+			const end = moment(val[1]).format('YYYY-MM-DDTHH:mm:ss[Z]');
+			getData(
+				clusterId,
+				namespace,
+				middlewareName,
+				type,
+				searchText,
+				start,
+				end
+			);
+		} else {
 			getData(clusterId, namespace, middlewareName, type, searchText);
 		}
 	};
 
 	const Operation = {
-		primary: <RangePicker onChange={onChange} onOk={onOk} />
+		primary: <RangePicker onChange={onChange} />
 	};
 	const handleSearch = (value: string) => {
 		getData(

@@ -94,14 +94,8 @@ export interface ParamterHistorySendData {
 	startTime?: string;
 	endTime?: string;
 }
-export interface ParamterTemplateFormProps {
-	visible: boolean;
-	onCreate: (values: any) => void;
-	onCancel: () => void;
-	type: string;
-	chartVersion: string;
-}
 export interface ParamterTemplateItem {
+	createTime: string;
 	customConfigList: null | ConfigItem[];
 	description: string;
 	name: string;

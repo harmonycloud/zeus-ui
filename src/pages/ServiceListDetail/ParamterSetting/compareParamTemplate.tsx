@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import { Search, Table, Checkbox, Message } from '@alicloud/console-components';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { Checkbox, notification } from 'antd';
+import ProTable from '@/components/ProTable';
 import SelectBlock from '@/components/SelectBlock';
-import HeaderLayout from '@/components/HeaderLayout';
 import { getParamsTemp } from '@/services/template';
-import { defaultValueRender, questionTooltipRender } from '@/utils/utils';
+import { questionTooltipRender } from '@/utils/utils';
 import { ConfigItem, ParamterTemplateItem } from '../detail';
-import messageConfig from '@/components/messageConfig';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 interface CompareParamTemplateParams {
 	name: string;
 	aliasName: string;
@@ -36,7 +36,10 @@ export default function CompareParamTemplate(): JSX.Element {
 				if (res.success) {
 					setTemp1(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			const sendData2 = {
@@ -48,7 +51,10 @@ export default function CompareParamTemplate(): JSX.Element {
 				if (res.success) {
 					setTemp2(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
@@ -90,8 +96,9 @@ export default function CompareParamTemplate(): JSX.Element {
 		setShowDataSource(list);
 		setSearchText(value);
 	};
-	const onChange = (value: boolean) => {
-		if (value) {
+	const onChange = (e: CheckboxChangeEvent) => {
+		console.log(e);
+		if (e.target.checked) {
 			const list = dataSource.filter(
 				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
 			);
@@ -99,44 +106,19 @@ export default function CompareParamTemplate(): JSX.Element {
 		} else {
 			setShowDataSource(dataSource);
 		}
-		setChecked(value);
+		setChecked(e.target.checked);
 		setSearchText('');
 	};
 	const isRestartRender = (value: boolean) => {
 		return value ? '是' : '否';
 	};
-	const onFilter = (filterParams: any) => {
-		const {
-			restart: { selectedKeys }
-		} = filterParams;
-		let list = dataSource;
-		if (selectedKeys.length === 0) {
-			if (checked)
-				list = list.filter(
-					(item) =>
-						item[temp1?.name || ''] !== item[temp2?.name || '']
-				);
-			setShowDataSource(list);
-		} else {
-			let tempData = list.filter(
-				(item: any) => item.restart + '' === selectedKeys[0]
-			);
-			if (checked)
-				tempData = tempData.filter(
-					(item) =>
-						item[temp1?.name || ''] !== item[temp2?.name || '']
-				);
-			setShowDataSource(tempData);
-		}
-	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="参数模版对比"
-				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
+			<ProContent>
 				<div className="title-content">
 					<div className="blue-line"></div>
 					<div className="detail-title">对比模版信息</div>
@@ -152,79 +134,80 @@ export default function CompareParamTemplate(): JSX.Element {
 					<div className="blue-line"></div>
 					<div className="detail-title">参数对比</div>
 				</div>
-				<HeaderLayout
-					style={{ marginBottom: 8 }}
-					left={
-						<Search
-							onSearch={handleSearch}
-							onChange={(value: string) => setSearchText(value)}
-							hasClear
-							value={searchText}
-							style={{ width: '200px' }}
-							placeholder="请输入关键字内容"
-						/>
-					}
-					right={
-						<Checkbox
-							onChange={onChange}
-							checked={checked}
-							label="只看差异值"
-						/>
-					}
-				/>
-				<Table
+				<ProTable
 					dataSource={showDataSource}
-					hasBorder={false}
-					primaryKey="name"
-					onFilter={onFilter}
+					pagination={false}
+					search={{
+						onSearch: handleSearch,
+						onChange: (value) => setSearchText(value.target.value),
+						value: searchText,
+						style: { width: '200px' },
+						placeholder: '请输入关键字内容'
+					}}
+					operation={{
+						secondary: (
+							<Checkbox onChange={onChange} checked={checked}>
+								只看差异值
+							</Checkbox>
+						)
+					}}
+					rowKey="name"
 				>
-					<Table.Column
+					<ProTable.Column
 						title="参数名"
 						dataIndex="name"
 						width={210}
-						cell={defaultValueRender}
-						lock="left"
+						ellipsis={true}
+						// render={defaultValueRender}
+						fixed="left"
 					/>
-					<Table.Column
+					<ProTable.Column
 						title={temp1?.name}
 						dataIndex={temp1?.name}
-						cell={defaultValueRender}
+						ellipsis={true}
+						// render={defaultValueRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title={temp2?.name}
 						dataIndex={temp2?.name}
-						cell={defaultValueRender}
+						ellipsis={true}
+						// cell={defaultValueRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="默认值"
 						dataIndex="defaultValue"
-						cell={defaultValueRender}
+						ellipsis={true}
+						// cell={defaultValueRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="是否重启"
 						dataIndex="restart"
-						cell={isRestartRender}
-						filterMode="single"
+						render={isRestartRender}
+						filterMultiple={false}
+						onFilter={(value, record: ConfigItem) =>
+							record.restart === value
+						}
+						// filterMode="single"
 						filters={[
-							{ value: 'true', label: '是' },
-							{ value: 'false', label: '否' }
+							{ value: true, text: '是' },
+							{ value: false, text: '否' }
 						]}
 						width={140}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="参数值范围"
 						dataIndex="ranges"
-						cell={questionTooltipRender}
+						render={questionTooltipRender}
 						width={100}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="参数描述"
 						dataIndex="description"
-						cell={questionTooltipRender}
+						render={questionTooltipRender}
 						width={100}
 					/>
-				</Table>
-			</Content>
-		</Page>
+				</ProTable>
+			</ProContent>
+		</ProPage>
 	);
 }
