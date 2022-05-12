@@ -1,57 +1,48 @@
 import React from 'react';
-import { Icon, Balloon } from '@alicloud/console-components';
+// import { Icon, Balloon } from '@alicloud/console-components';
+import { Tooltip } from 'antd';
 import { api } from '@/api.json';
 import JSEncrypt from 'jsencrypt';
 import moment from 'moment';
 import { renderFormItem } from '@/components/renderFormItem';
 import FormBlock from '@/components/FormBlock';
 import nodata from '@/assets/images/nodata.svg';
+import {
+	CheckCircleFilled,
+	DeleteOutlined,
+	ExclamationCircleFilled,
+	MinusCircleFilled,
+	QuestionCircleOutlined,
+	SyncOutlined
+} from '@ant-design/icons';
 
-const Tooltip = Balloon.Tooltip;
+// const Tooltip = Balloon.Tooltip;
 // * 组件复用
 export const statusRender: (value: string) => JSX.Element = (value: string) => {
 	switch (value) {
 		case 'Creating':
 			return (
 				<>
-					<Icon
-						type="sync-alt"
-						size="xs"
-						style={{ color: '#0091FF' }}
-					/>{' '}
-					启动中
+					<SyncOutlined style={{ color: '#0091FF' }} /> 启动中
 				</>
 			);
 		case 'Running':
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					运行正常
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 运行正常
 				</>
 			);
 		case 'Failed':
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					运行异常
 				</>
 			);
 		case 'RunningError':
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					运行异常
 				</>
 			);
@@ -60,11 +51,7 @@ export const statusRender: (value: string) => JSX.Element = (value: string) => {
 		default:
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					运行异常
 				</>
 			);
@@ -79,45 +66,26 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 		case 'Running':
 			return (
 				<>
-					<Icon
-						type="sync-alt"
-						size="xs"
-						style={{ color: '#0091FF' }}
-					/>{' '}
-					进行中
+					<SyncOutlined style={{ color: '#0091FF' }} /> 进行中
 				</>
 			);
 		case 'Failed':
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					失败
 				</>
 			);
 		case 'Success':
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					成功
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 成功
 				</>
 			);
 		default:
 			return (
 				<>
-					<Icon
-						type="minus-circle-fill"
-						size="xs"
-						style={{ color: '#FAC800' }}
-					/>{' '}
-					未知
+					<MinusCircleFilled style={{ color: '#FAC800' }} /> 未知
 				</>
 			);
 	}
@@ -131,55 +99,33 @@ export const alarmStatusRender: (value: string) => JSX.Element = (
 		case 'ok':
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					正常
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 正常
 				</>
 			);
 		case 'unknown':
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					未知
 				</>
 			);
 		case 'creating':
 			return (
 				<>
-					<Icon
-						type="sync-alt"
-						size="xs"
-						style={{ color: '#0091FF' }}
-					/>{' '}
-					创建中
+					<SyncOutlined style={{ color: '#0091FF' }} /> 创建中
 				</>
 			);
 		case 'deleting':
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					删除中
 				</>
 			);
 		default:
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
 					未知
 				</>
 			);
@@ -195,117 +141,110 @@ export const serviceListStatusRender: (
 		case 'Creating':
 			return (
 				<>
-					<Icon
-						type="sync-alt"
-						size="xs"
-						style={{ color: '#0091FF' }}
-					/>{' '}
-					启动中
+					<SyncOutlined style={{ color: '#0091FF' }} /> 启动中
 				</>
 			);
 		case 'Running':
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					运行正常
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 运行正常
 				</>
 			);
 		case 'Failed':
 			return (
-				<Balloon
-					trigger={
-						<span style={{ cursor: 'pointer' }}>
-							<Icon
-								type="warning1"
-								size="xs"
-								style={{ color: '#C80000' }}
-							/>{' '}
-							运行异常
-						</span>
-					}
-					closable={false}
+				<Tooltip
+					title={() => {
+						return (
+							<>
+								中间件状态异常原因 <br />
+								<span
+									style={{
+										lineHeight: '18px',
+										color: '#FA6400'
+									}}
+								>
+									{record.reason}
+								</span>
+							</>
+						);
+					}}
 				>
-					中间件状态异常原因 <br />
-					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
-						{record.reason}
-					</span>
-				</Balloon>
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+					运行异常
+				</Tooltip>
 			);
 		case 'RunningError':
 			return (
-				<Balloon
-					trigger={
-						<span style={{ cursor: 'pointer' }}>
-							<Icon
-								type="warning1"
-								size="xs"
-								style={{ color: '#C80000' }}
-							/>{' '}
-							运行异常
-						</span>
-					}
-					closable={false}
+				<Tooltip
+					title={() => {
+						return (
+							<>
+								中间件状态异常原因 <br />
+								<span
+									style={{
+										lineHeight: '18px',
+										color: '#FA6400'
+									}}
+								>
+									{record.reason}
+								</span>
+							</>
+						);
+					}}
 				>
-					中间件状态异常原因 <br />
-					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
-						{record.reason}
-					</span>
-				</Balloon>
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+					运行异常
+				</Tooltip>
 			);
 		case 'Preparing':
 			return (
-				<Balloon
-					trigger={
-						<span style={{ cursor: 'pointer' }}>
-							<Icon
-								type="sync-alt"
-								size="xs"
-								style={{ color: '#0091FF' }}
-							/>{' '}
-							创建中
-						</span>
-					}
-					closable={false}
+				<Tooltip
+					title={() => {
+						return (
+							<>
+								中间件状态异常原因 <br />
+								<span
+									style={{
+										lineHeight: '18px',
+										color: '#FA6400'
+									}}
+								>
+									服务创建中，无法操作
+								</span>
+							</>
+						);
+					}}
 				>
-					中间件状态异常原因 <br />
-					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
-						服务创建中，无法操作
-					</span>
-				</Balloon>
+					<SyncOutlined style={{ color: '#0091FF' }} /> 创建中
+				</Tooltip>
 			);
 		case 'failed':
 			return (
-				<Balloon
-					trigger={
-						<span style={{ cursor: 'pointer' }}>
-							<Icon
-								type="warning1"
-								size="xs"
-								style={{ color: '#C80000' }}
-							/>{' '}
-							创建失败
-						</span>
-					}
-					closable={false}
+				<Tooltip
+					title={() => {
+						return (
+							<>
+								中间件状态异常原因 <br />
+								<span
+									style={{
+										lineHeight: '18px',
+										color: '#FA6400'
+									}}
+								>
+									服务创建失败，无法操作
+								</span>
+							</>
+						);
+					}}
 				>
-					中间件状态异常原因 <br />
-					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
-						服务创建失败，无法操作
-					</span>
-				</Balloon>
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+					创建失败
+				</Tooltip>
 			);
 		case 'Deleted':
 			return (
 				<>
-					<Icon
-						type="ashbin1"
-						size="xs"
-						style={{ color: '#888888' }}
-					/>{' '}
+					<DeleteOutlined style={{ color: '#888888' }} />
 					已删除
 				</>
 			);
@@ -313,24 +252,26 @@ export const serviceListStatusRender: (
 			return <></>;
 		default:
 			return (
-				<Balloon
-					trigger={
-						<span style={{ cursor: 'pointer' }}>
-							<Icon
-								type="warning1"
-								size="xs"
-								style={{ color: '#C80000' }}
-							/>{' '}
-							运行异常
-						</span>
-					}
-					closable={false}
+				<Tooltip
+					title={() => {
+						return (
+							<>
+								中间件状态异常原因 <br />
+								<span
+									style={{
+										lineHeight: '18px',
+										color: '#FA6400'
+									}}
+								>
+									{record.reason}
+								</span>
+							</>
+						);
+					}}
 				>
-					中间件状态异常原因 <br />
-					<span style={{ lineHeight: '18px', color: '#FA6400' }}>
-						{record.reason}
-					</span>
-				</Balloon>
+					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+					运行异常
+				</Tooltip>
 			);
 	}
 };
@@ -382,18 +323,13 @@ export const tooltipRender = (
 	if (e1.clientWidth > width) {
 		document.body.removeChild(e1);
 		return (
-			<Tooltip
-				trigger={
-					<div
-						className="mid-table-col"
-						style={{ width: `${width - 32}px` }}
-					>
-						{value}
-					</div>
-				}
-				align="t"
-			>
-				<span style={{ lineHeight: '16px' }}>{value}</span>
+			<Tooltip title={value}>
+				<div
+					className="mid-table-col"
+					style={{ width: `${width - 32}px` }}
+				>
+					{value}
+				</div>
 			</Tooltip>
 		);
 	} else {
@@ -407,8 +343,8 @@ export const tooltipRender = (
 };
 export const questionTooltipRender = (value: string) => {
 	return (
-		<Tooltip trigger={<Icon size="xs" type="question-circle" />}>
-			{value}
+		<Tooltip title={value}>
+			<QuestionCircleOutlined />
 		</Tooltip>
 	);
 };
