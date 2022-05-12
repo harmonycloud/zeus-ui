@@ -413,6 +413,7 @@ export interface ServiceRuleItem {
 	time?: string;
 	type?: string;
 	unit?: string;
+	level?: string;
 	severity?: string;
 }
 
