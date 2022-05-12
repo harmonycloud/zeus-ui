@@ -42,7 +42,7 @@ const Monitor = (props: MonitorProps) => {
 				}
 			}
 		}
-	}, [namespace]);
+	}, [props]);
 
 	useEffect(() => {
 		if (url) {
