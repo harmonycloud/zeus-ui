@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Message } from '@alicloud/console-components';
+import { notification } from 'antd';
 import SecondLayout from '@/components/SecondLayout';
 import Log from '@/pages/ServiceListDetail/Log';
-import { getMiddlewareDetail } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
+
+import { getMiddlewareDetail } from '@/services/middleware';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
 import { clusterType, StoreState, User } from '@/types';
 import { connect } from 'react-redux';
@@ -58,7 +58,10 @@ function LogDetail(props: LogDetailProps): JSX.Element {
 						setIsService(true);
 						setData(res.data);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
@@ -80,7 +83,10 @@ function LogDetail(props: LogDetailProps): JSX.Element {
 				setIsService(true);
 				setData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};

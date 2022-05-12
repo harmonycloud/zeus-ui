@@ -1,79 +1,81 @@
-.transfer {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	font-size: 12px;
-	width: 830px;
-	padding-right: 37px;
-	.transfer-box {
-		border: 1px solid #c0c6cc;
-		.transfer-title {
-			padding: 8px;
-			border-bottom: 1px solid #c0c6cc;
-		}
-		.transfer-header {
-			padding: 8px 8px 0 8px;
-			border-bottom: 1px solid #c0c6cc;
-			color: #000000;
-			font-weight: 500;
-			p {
-				span {
-					display: inline-block;
+.mysql-modal {
+	.transfer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 12px;
+		width: 830px;
+		padding-right: 37px;
+		.transfer-box {
+			border: 1px solid #c0c6cc;
+			.transfer-title {
+				padding: 8px;
+				border-bottom: 1px solid #c0c6cc;
+			}
+			.transfer-header {
+				padding: 8px 8px 0 8px;
+				border-bottom: 1px solid #c0c6cc;
+				color: #000000;
+				font-weight: 500;
+				p {
+					span {
+						display: inline-block;
+					}
 				}
 			}
-		}
-		ul {
-			padding: 8px;
-			overflow: auto;
-			height: 160px;
-			li {
-				padding-right: 16px;
-				display: flex;
-				align-items: center;
+			ul {
+				padding: 8px;
+				overflow: auto;
+				height: 160px;
+				li {
+					padding-right: 16px;
+					display: flex;
+					align-items: center;
+					cursor: pointer;
+					&:hover {
+						background-color: #f7f9fa;
+					}
+					& > span {
+						display: inline-block;
+					}
+				}
+			}
+			.transfer-footer {
+				height: 39px;
+				border-top: 1px solid #c0c6cc;
+				color: #0070cc;
+				line-height: 23px;
+				padding: 8px 16px;
 				cursor: pointer;
-				&:hover {
-					background-color: #f7f9fa;
-				}
-				& > span {
-					display: inline-block;
-				}
+			}
+			&:nth-of-type(3) {
+				width: 528px;
 			}
 		}
-		.transfer-footer {
-			height: 39px;
-			border-top: 1px solid #c0c6cc;
-			color: #0070cc;
-			line-height: 23px;
-			padding: 8px 16px;
-			cursor: pointer;
-		}
-		&:nth-of-type(3) {
-			width: 528px;
+		.db-name {
+			width: 70px;
+			margin-right: 16px;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
 		}
 	}
 	.db-name {
-		width: 70px;
-		margin-right: 16px;
+		width: 50px;
+		margin-right: 8px;
+		vertical-align: middle;
+		display: inline-block;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		white-space: nowrap;
 	}
-}
-.db-name {
-	width: 50px;
-	margin-right: 8px;
-	vertical-align: middle;
-	display: inline-block;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-}
-.description{
-	max-width: 200px;
-	display: inline-block;
-	vertical-align: middle;
-	display: inline-block;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
+	.description {
+		max-width: 200px;
+		display: inline-block;
+		vertical-align: middle;
+		display: inline-block;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
 }

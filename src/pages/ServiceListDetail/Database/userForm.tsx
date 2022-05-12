@@ -268,6 +268,7 @@ export default function UserForm(props: FormProps): JSX.Element {
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
+			className="mysql-modal"
 			width={1030}
 		>
 			<Form form={form} {...formItemLayout} style={{ paddingLeft: 12 }}>

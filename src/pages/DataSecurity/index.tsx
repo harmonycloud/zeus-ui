@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SecondLayout from '@/components/SecondLayout';
 import BackupRecovery from '@/pages/ServiceListDetail/BackupRecovery';
-import { getMiddlewareDetail } from '@/services/middleware';
-import { Message } from '@alicloud/console-components';
-import messageConfig from '@/components/messageConfig';
 import NoService from '@/components/NoService';
+import { notification } from 'antd';
+
+import { getMiddlewareDetail } from '@/services/middleware';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
 import storage from '@/utils/storage';
 import { clusterType, StoreState, User } from '@/types';
@@ -58,7 +58,10 @@ function DataSecurity(props: DataSecurityProps): JSX.Element {
 						setIsService(true);
 						setData(res.data);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
