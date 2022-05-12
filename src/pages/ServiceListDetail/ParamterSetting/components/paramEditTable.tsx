@@ -5,27 +5,9 @@ import moment from 'moment';
 import { Button, Input, Form, Select, notification, Modal } from 'antd';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
-// import {
-// 	Table,
-// 	Button,
-// 	Search,
-// 	Form,
-// 	Input,
-// 	Select,
-// 	Message,
-// 	Dialog,
-// 	Icon
-// } from '@alicloud/console-components';
-// import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import HeaderLayout from '@/components/HeaderLayout';
-// import messageConfig from '@/components/messageConfig';
 
 import { getConfigs, topParam, updateConfig } from '@/services/middleware';
-import {
-	nullRender,
-	questionTooltipRender,
-	tooltipRender
-} from '@/utils/utils';
+import { nullRender, questionTooltipRender } from '@/utils/utils';
 import { setParamTemplateConfig } from '@/redux/param/param';
 
 import { ConfigItem } from '../../detail';
@@ -486,181 +468,101 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		}
 	};
 	return (
-		<div className="zeus-param-edit-table-content">
-			{/* <HeaderLayout
-				style={{ marginBottom: 8 }}
-				left={
-					<>
-						{editFlag === true && (
-							<>
-								<Button
-									onClick={saveTemplate}
-									className="mr-8"
-									type="primary"
-									disabled={disableFlag}
-								>
-									保存
-								</Button>
-								<Button
-									className="mr-8"
-									type="normal"
-									onClick={() => {
-										Dialog.show({
-											title: '操作确认',
-											content:
-												'取消后，编辑后数据将会丢失，请谨慎操作',
-											onOk: () => {
-												getData(
-													clusterId,
-													namespace,
-													middlewareName,
-													type
-												);
-												setTimeout(() => {
-													setEditFlag(false);
-													setDisableFlag(true);
-													handleBtnClick &&
-														handleBtnClick(false);
-												}, 1000);
-											}
-										});
-									}}
-								>
-									取消
-								</Button>
-							</>
-						)}
-						{editFlag === false && (
-							<Button
-								className="mr-8"
-								onClick={() => {
-									handleBtnClick && handleBtnClick(true);
-									setEditFlag(true);
-								}}
-								type="primary"
-							>
-								编辑
-							</Button>
-						)}
-						<Search
-							onSearch={handleSearch}
-							hasClear
-							style={{ width: '200px' }}
-							placeholder="请输入关键词搜索"
-						/>
-					</>
+		// <div className="zeus-param-edit-table-content">
+		<ProTable
+			dataSource={showDataSource}
+			// hasBorder={false}
+			rowKey="name"
+			operation={operation()}
+			search={{
+				onSearch: handleSearch,
+				style: { width: '200px' },
+				placeholder: '请输入关键词搜索'
+			}}
+			showColumnSetting
+			showRefresh
+			refreshDisabled={true}
+			onRefresh={() => {
+				setEditFlag(false);
+				getData(clusterId, namespace, middlewareName, type, '');
+			}}
+			scroll={{ x: 1500 }}
+			// onFilter={onFilter}
+			// rowProps={onRowProps}
+			// onSort={onSort}
+		>
+			<ProTable.Column
+				title="参数名"
+				dataIndex="name"
+				width={210}
+				ellipsis={true}
+				fixed="left"
+				// render={(value: string, record: ConfigItem, index: number) =>
+				// 	tooltipRender(value, index, record, 210)
+				// }
+				// lock="left"
+			/>
+			<ProTable.Column
+				title="默认值"
+				dataIndex="defaultValue"
+				render={defaultValueRender}
+				width={310}
+			/>
+			<ProTable.Column
+				title="修改目标值"
+				dataIndex="modifiedValue"
+				render={modifyValueRender}
+				width={410}
+			/>
+			<ProTable.Column
+				title="是否重启"
+				dataIndex="restart"
+				render={isRestartRender}
+				filterMultiple={false}
+				filters={[
+					{ value: true, text: '是' },
+					{ value: false, text: '否' }
+				]}
+				onFilter={(value, record: ConfigItem) =>
+					record.restart === value
 				}
-				right={
-					source === 'list' ? (
-						<Button
-							disabled={editFlag}
-							onClick={() => {
-								setEditFlag(false);
-								getData(
-									clusterId,
-									namespace,
-									middlewareName,
-									type,
-									''
-								);
-							}}
-						>
-							<Icon type="refresh" />
-						</Button>
-					) : undefined
-				}
-			/> */}
-			<ProTable
-				dataSource={showDataSource}
-				// hasBorder={false}
-				rowKey="name"
-				operation={operation()}
-				search={{
-					onSearch: handleSearch,
-					style: { width: '200px' },
-					placeholder: '请输入关键词搜索'
-				}}
-				showColumnSetting
-				showRefresh
-				refreshDisabled={true}
-				onRefresh={() => {
-					setEditFlag(false);
-					getData(clusterId, namespace, middlewareName, type, '');
-				}}
-				// onFilter={onFilter}
-				// rowProps={onRowProps}
-				// onSort={onSort}
-			>
+				width={120}
+			/>
+			<ProTable.Column
+				title="参数值范围"
+				dataIndex="ranges"
+				render={questionTooltipRender}
+				width={100}
+			/>
+			<ProTable.Column
+				title="参数描述"
+				dataIndex="description"
+				render={questionTooltipRender}
+				width={100}
+			/>
+			{source === 'list' && (
 				<ProTable.Column
-					title="参数名"
-					dataIndex="name"
-					width={210}
-					ellipsis={true}
-					fixed="left"
-					// render={(value: string, record: ConfigItem, index: number) =>
-					// 	tooltipRender(value, index, record, 210)
-					// }
-					// lock="left"
+					title="修改时间"
+					dataIndex="updateTime"
+					render={nullRender}
+					sorter={(a: ConfigItem, b: ConfigItem) =>
+						moment(a.updateTime).unix() -
+						moment(b.updateTime).unix()
+					}
+					// sortable={true}
+					width={150}
 				/>
+			)}
+			{source === 'list' && (
 				<ProTable.Column
-					title="默认值"
-					dataIndex="defaultValue"
-					render={defaultValueRender}
-					width={310}
-				/>
-				<ProTable.Column
-					title="修改目标值"
-					dataIndex="modifiedValue"
-					render={modifyValueRender}
-					width={410}
-				/>
-				<ProTable.Column
-					title="是否重启"
-					dataIndex="restart"
-					render={isRestartRender}
-					filterMultiple={false}
-					// filterMode="single"
-					filters={[
-						{ value: 'true', text: '是' },
-						{ value: 'false', text: '否' }
-					]}
-					width={120}
-				/>
-				<ProTable.Column
-					title="参数值范围"
-					dataIndex="ranges"
-					render={questionTooltipRender}
+					title="操作"
+					dataIndex="action"
+					render={actionRender}
 					width={100}
 				/>
-				<ProTable.Column
-					title="参数描述"
-					dataIndex="description"
-					render={questionTooltipRender}
-					width={100}
-				/>
-				{source === 'list' && (
-					<ProTable.Column
-						title="修改时间"
-						dataIndex="updateTime"
-						render={nullRender}
-						sorter={(a: ConfigItem, b: ConfigItem) =>
-							moment(a.updateTime).unix() -
-							moment(b.updateTime).unix()
-						}
-						// sortable={true}
-						width={150}
-					/>
-				)}
-				{source === 'list' && (
-					<ProTable.Column
-						title="操作"
-						dataIndex="action"
-						render={actionRender}
-						width={100}
-					/>
-				)}
-			</ProTable>
-		</div>
+			)}
+		</ProTable>
+		// {/* </div> */}
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
