@@ -255,7 +255,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					}
 				}}
 				type="primary"
-				disabled={!operateFlag}
+				// disabled={!operateFlag}
 			>
 				新增
 			</Button>
