@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import SecondLayout from '@/components/SecondLayout';
 import Disaster from '@/pages/ServiceListDetail/Disaster';
-import { Message, Dialog, Button } from '@alicloud/console-components';
-import { getMiddlewareDetail } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
+import { Button, Modal, notification } from 'antd';
 import NoService from '@/components/NoService';
+
+import { getMiddlewareDetail } from '@/services/middleware';
 import storage from '@/utils/storage';
 import { getNamespaces } from '@/services/common';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
@@ -76,7 +76,10 @@ function DisasterCenter(props: disasterCenterProps) {
 						setIsService(true);
 						setData(res.data);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
@@ -97,7 +100,10 @@ function DisasterCenter(props: disasterCenterProps) {
 			if (res.success) {
 				setData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -190,24 +196,20 @@ function DisasterCenter(props: disasterCenterProps) {
 			acrossCluster();
 		};
 		return (
-			<Dialog
+			<Modal
 				title="操作确认"
 				visible={visible}
-				onClose={onCancel}
-				footerAlign="right"
 				footer={
 					<div>
 						<Button type="primary" onClick={onOk}>
 							好的，下次不在提醒
 						</Button>
-						<Button type="normal" onClick={onConfirm}>
-							确认
-						</Button>
+						<Button onClick={onConfirm}>确认</Button>
 					</div>
 				}
 			>
 				该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮
-			</Dialog>
+			</Modal>
 		);
 	};
 	const toDetail = () => {
