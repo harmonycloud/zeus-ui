@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Page, Header, Content } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { Tabs } from 'antd';
 import { Tab } from '@alicloud/console-components';
 
 import AlarmRecord from './alarmRecord';
@@ -36,30 +38,30 @@ function SystemAlarm(props: systemAlarmProps) {
 		return <GuidePage />;
 	}
 	return (
-		<Page className="system-alarm">
-			<Header title="系统告警" subTitle="系统相关告警展示及设置" />
-			<Content>
-				<Tab id="mid-menu" activeKey={activeKey} onChange={onChange}>
-					<Tab.Item title="系统告警记录" key="alarmRecord">
+		<ProPage className="system-alarm">
+			<ProHeader title="系统告警" subTitle="系统相关告警展示及设置" />
+			<ProContent>
+				<Tabs id="mid-menu" activeKey={activeKey} onChange={onChange}>
+					<Tabs.TabPane tab="系统告警记录" key="alarmRecord">
 						<AlarmRecord
 							alarmType={'system'}
 							clusterId={globalCluster.id}
 							monitor={globalCluster.monitor}
 						/>
-					</Tab.Item>
-					<Tab.Item title="规则中心" key="alarm">
+					</Tabs.TabPane>
+					<Tabs.TabPane tab="规则中心" key="alarm">
 						<ServerAlarm
 							alarmType={'system'}
 							clusterId={globalCluster.id}
 							monitor={globalCluster.monitor as monitorProps}
 						/>
-					</Tab.Item>
-					<Tab.Item title="告警设置" key="alarmSet">
+					</Tabs.TabPane>
+					<Tabs.TabPane tab="告警设置" key="alarmSet">
 						<AlarmSet activeKey={activeKey} />
-					</Tab.Item>
-				</Tab>
-			</Content>
-		</Page>
+					</Tabs.TabPane>
+				</Tabs>
+			</ProContent>
+		</ProPage>
 	);
 }
 
