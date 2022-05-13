@@ -1,43 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Content, Menu } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProMenu } from '@/components/ProPage';
+import KvManage from './kvManage';
+
 import { useParams } from 'react-router';
 import DefaultPicture from '@/components/DefaultPicture';
 import storage from '@/utils/storage';
 import { DetailParams } from '../detail';
-import KvManage from './kvManage';
 import './index.scss';
 
 export default function DataBase(props: any): JSX.Element {
-	const {
-		middlewareName,
-		clusterId,
-		namespace,
-		type,
-		customMid,
-		capabilities
-	} = props;
-	const [refreshFlag, setRefreshFlag] = useState(false);
-	const [selectedKey, setSelectedKey] = useState(
-		storage.getSession('paramsTab') || 'kvManage'
+	const { middlewareName, clusterId, namespace, customMid, capabilities } =
+		props;
+	const [selectedKey, setSelectedKey] = useState<string[]>(
+		[...storage.getSession('paramsTab')] || ['kvManage']
 	);
 	const params: DetailParams = useParams();
-	const { currentTab, chartVersion } = params;
-	const menuSelect = (selectedKey: string) => {
+	const { currentTab } = params;
+	const menuSelect = (selectedKey: any) => {
 		setSelectedKey(selectedKey);
 		storage.setSession('paramsTab', selectedKey);
 	};
 	useEffect(() => {
-		currentTab && currentTab !== 'kvManage' && setSelectedKey('kvManage');
+		currentTab && currentTab !== 'kvManage' && setSelectedKey(['kvManage']);
 	}, [currentTab]);
 
 	const ConsoleMenu = () => (
-		<Menu
+		<ProMenu
 			selectedKeys={selectedKey}
-			onItemClick={menuSelect}
+			onClick={menuSelect}
 			style={{ height: '100%' }}
-		>
-			<Menu.Item key="kvManage">K-V管理</Menu.Item>
-		</Menu>
+			items={[
+				{
+					key: 'kvManage',
+					label: 'K-V管理'
+				}
+			]}
+		></ProMenu>
 	);
 	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
@@ -57,10 +55,10 @@ export default function DataBase(props: any): JSX.Element {
 		return <DefaultPicture />;
 	}
 	return (
-		<Page>
-			<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
-				{childrenRender(selectedKey)}
-			</Content>
-		</Page>
+		<ProPage>
+			<ProContent menu={<ConsoleMenu />} style={{ margin: 0 }}>
+				{childrenRender(selectedKey[0])}
+			</ProContent>
+		</ProPage>
 	);
 }

@@ -51,7 +51,7 @@ const Actions = (props: ActionsProps) => {
 		const menu = l2.map((item: React.ReactNode, index: number) => {
 			return {
 				label: (
-					<span onClick={(item as ReactElement).props.onClick}>
+					<span onClick={(item as ReactElement).props?.onClick}>
 						{(item as ReactElement).props.children}
 					</span>
 				),
@@ -65,9 +65,9 @@ const Actions = (props: ActionsProps) => {
 						<LinkButton
 							style={{ marginRight: 8, marginLeft: 8 }}
 							key={index}
-							onClick={(item as ReactElement).props.onClick}
+							onClick={(item as ReactElement).props?.onClick}
 						>
-							{(item as ReactElement).props.children}
+							{(item as ReactElement).props?.children}
 						</LinkButton>
 					);
 				})}

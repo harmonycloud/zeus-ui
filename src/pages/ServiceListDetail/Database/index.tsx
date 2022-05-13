@@ -14,8 +14,8 @@ import './index.scss';
 export default function DataBase(props: any): JSX.Element {
 	const { middlewareName, clusterId, namespace, customMid, capabilities } =
 		props;
-	const [selectedKey, setSelectedKey] = useState(
-		storage.getSession('paramsTab') || 'userManage'
+	const [selectedKey, setSelectedKey] = useState<string[]>(
+		[...storage.getSession('paramsTab')] || ['userManage']
 	);
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
@@ -93,7 +93,7 @@ export default function DataBase(props: any): JSX.Element {
 				menu={<ConsoleMenu />}
 				style={{ margin: 0, padding: 0 }}
 			>
-				{childrenRender(selectedKey)}
+				{childrenRender(selectedKey[0])}
 			</ProContent>
 		</ProPage>
 	);

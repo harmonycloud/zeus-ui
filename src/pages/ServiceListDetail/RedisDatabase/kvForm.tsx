@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Input,
-	Message,
-	Select
-} from '@alicloud/console-components';
+import { Form, Input, InputNumber, Select, Modal, notification } from 'antd';
 import { addKv, updateKv } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
-import pattern from '@/utils/pattern';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -34,19 +25,17 @@ export default function KvForm(props: any): JSX.Element {
 		middlewareName,
 		db
 	} = props;
-	const field: Field = Field.useField();
+	const [form] = Form.useForm();
 	const [type, setType] = useState('String');
 
 	useEffect(() => {
 		if (data) {
-			field.setValues(data);
+			form.setFieldsValue(data);
 			setType(data.type);
 		}
 	}, [data]);
 	const onOk: () => void = () => {
-		field.validate((errors, values: any) => {
-			if (errors) return;
-
+		form.validateFields().then((values) => {
 			if (data && !data.isAdd) {
 				// * 修改数据库
 				const sendData: any = {
@@ -89,12 +78,16 @@ export default function KvForm(props: any): JSX.Element {
 				}
 				updateKv(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '数据库修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '数据库修改成功'
+						});
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
@@ -136,12 +129,16 @@ export default function KvForm(props: any): JSX.Element {
 				}
 				addKv(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '数据库创建成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '数据库创建成功'
+						});
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -149,42 +146,51 @@ export default function KvForm(props: any): JSX.Element {
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title={!data || data?.isAdd ? '新增数据库' : '编辑数据库'}
 			visible={visible}
-			footerAlign="right"
 			onOk={onOk}
 			onCancel={onCancel}
-			onClose={onCancel}
-			style={{ width: 540 }}
+			width={540}
 		>
-			<Form field={field} {...formItemLayout} style={{ paddingLeft: 12 }}>
+			<Form
+				form={form}
+				{...formItemLayout}
+				style={{ paddingLeft: 12 }}
+				requiredMark={false}
+			>
 				<FormItem
+					name="key"
 					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					labelAlign="left"
+					// asterisk={false}
 					label="键名"
-					required={!data}
-					requiredMessage="请输入键名"
+					rules={[
+						{
+							required: !data,
+							message: '请输入键名'
+						}
+					]}
 				>
 					<Input
-						name="key"
-						trim={true}
 						disabled={data ? true : false}
 						placeholder="请输入内容"
 					/>
 				</FormItem>
 				<FormItem
+					name="type"
 					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					labelAlign="left"
+					// asterisk={false}
 					label="类型"
-					required={!data}
-					requiredMessage="请选择类型"
+					rules={[
+						{
+							required: !data,
+							message: '请选择类型'
+						}
+					]}
 				>
 					<Select
-						name="type"
-						trim={true}
 						disabled={data ? true : false}
 						placeholder="请选择"
 						style={{ width: '100%' }}
@@ -200,65 +206,70 @@ export default function KvForm(props: any): JSX.Element {
 					</Select>
 				</FormItem>
 				<FormItem
-					labelTextAlign="left"
+					name="timeOut"
+					labelAlign="left"
 					label="超出时间"
-					pattern={'^[0-9]*$'}
-					patternMessage="请输入数字"
+					// pattern={'^[0-9]*$'}
+					// patternMessage="请输入数字"
 				>
-					<Input
-						name="timeOut"
-						trim={true}
-						placeholder="请输入内容"
-					/>
+					<Input placeholder="请输入内容" />
 				</FormItem>
 				{type === 'hash' && (
 					<FormItem
+						name="newKey"
 						className="ne-required-ingress"
-						labelTextAlign="left"
-						asterisk={false}
+						labelAlign="left"
+						// asterisk={false}
 						label="字段"
-						required
-						requiredMessage="请输入字段"
+						// required
+						// requiredMessage="请输入字段"
+						rules={[
+							{
+								required: true,
+								message: '请输入字段'
+							}
+						]}
 					>
-						<Input
-							name="newKey"
-							trim={true}
-							placeholder="请输入内容"
-						/>
+						<Input placeholder="请输入内容" />
 					</FormItem>
 				)}
 				{type === 'zset' && (
 					<FormItem
+						name="newKey"
 						className="ne-required-ingress"
-						labelTextAlign="left"
-						asterisk={false}
+						labelAlign="left"
+						// asterisk={false}
 						label="分数"
-						required
-						requiredMessage="请输入分数"
+						// required
+						// requiredMessage="请输入分数"
+						rules={[
+							{
+								required: true,
+								message: '请输入分数'
+							}
+						]}
 					>
-						<Input
-							name="newKey"
-							trim={true}
-							htmlType="number"
-							placeholder="请输入内容"
-						/>
+						<InputNumber placeholder="请输入内容" />
 					</FormItem>
 				)}
 				<FormItem
+					name="newValue"
 					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					labelAlign="left"
+					// asterisk={false}
 					label="键值"
-					required
-					requiredMessage="请输入键值"
+					// required
+					// requiredMessage="请输入键值"
+					rules={[
+						{
+							required: true,
+							message: '请输入内容'
+						}
+					]}
 				>
-					<TextArea
-						name="newValue"
-						trim={true}
-						placeholder="请输入内容"
-					/>
+					<TextArea placeholder="请输入内容" />
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
