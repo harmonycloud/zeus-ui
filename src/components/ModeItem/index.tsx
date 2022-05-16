@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input } from '@alicloud/console-components';
+import { Input } from 'antd';
 import EditQuotaForm from './EditQuotaForm';
 import './index.scss';
 
@@ -19,9 +19,8 @@ export interface modeItemProps {
 	type: string;
 	onChange: (value: modeItemProps['data']) => void;
 }
-const ModeItem = (props: modeItemProps) => {
+const ModeItem = (props: modeItemProps): JSX.Element => {
 	const { data, clusterId, namespace, type, onChange } = props;
-	console.log(data);
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -36,10 +35,10 @@ const ModeItem = (props: modeItemProps) => {
 	useEffect(() => {
 		onChange(modifyData);
 	}, [modifyData]);
-	const inputChange = (value: any) => {
+	const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setModifyData({
 			...modifyData,
-			num: Number(value)
+			num: Number(e.target.value)
 		});
 	};
 	if (data.disabled) {
@@ -60,8 +59,8 @@ const ModeItem = (props: modeItemProps) => {
 						<Input
 							size="small"
 							value={modifyData.num}
-							htmlType="number"
-							hasBorder={false}
+							type="number"
+							bordered={false}
 							onChange={inputChange}
 							onBlur={() => setIsEdit(false)}
 							autoFocus={true}

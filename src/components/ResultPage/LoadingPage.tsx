@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Icon } from '@alicloud/console-components';
+import { Button } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { LoadingPageProps } from './resultpage';
 import './index.scss';
 
@@ -7,10 +8,8 @@ export default function LoadingPage(props: LoadingPageProps): JSX.Element {
 	const { title, btnText, btnHandle } = props;
 	return (
 		<div className="zeus-result-content">
-			<Icon
-				size="xxxl"
-				type="warning"
-				style={{ color: '#0070cc', height: 64 }}
+			<ExclamationCircleFilled
+				style={{ color: '#0070cc', fontSize: 64 }}
 			/>
 			<p className="zeus-result-title">{title}</p>
 			<div>

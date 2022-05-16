@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Icon } from '@alicloud/console-components';
+import { Button } from 'antd';
+import { CheckCircleFilled } from '@ant-design/icons';
 import { SuccessPageProps } from './resultpage';
 import './index.scss';
 
@@ -40,11 +41,7 @@ export default function SuccessPage(props: SuccessPageProps): JSX.Element {
 	}, [time]);
 	return (
 		<div className="zeus-result-content">
-			<Icon
-				size="xxxl"
-				type="success-filling"
-				style={{ color: '#68B642', height: 64 }}
-			/>
+			<CheckCircleFilled style={{ color: '#68B642', fontSize: 64 }} />
 			<p className="zeus-result-title">{title}</p>
 			{children}
 			<div className="zeus-button-content">
@@ -54,11 +51,7 @@ export default function SuccessPage(props: SuccessPageProps): JSX.Element {
 						{countDown ? `(${time}s)` : ''}
 					</Button>
 				)}
-				{rightBtn && (
-					<Button type="normal" onClick={rightHandle}>
-						{rightText}
-					</Button>
-				)}
+				{rightBtn && <Button onClick={rightHandle}>{rightText}</Button>}
 			</div>
 		</div>
 	);
