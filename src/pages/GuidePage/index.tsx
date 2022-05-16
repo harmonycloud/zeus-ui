@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { notification } from 'antd';
+
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Message } from '@alicloud/console-components';
 import step1 from '@/assets/images/step1.svg';
 import step2 from '@/assets/images/step2.svg';
 import step3 from '@/assets/images/step3.svg';
 import { getClusters, getComponents } from '@/services/common';
 import { getProjects } from '@/services/project';
 import { StoreState, globalVarProps } from '@/types/index';
-import messageConfig from '@/components/messageConfig';
 import { ComponentProp } from '@/pages/ResourcePoolManagement/resource.pool';
 
 import './index.scss';
@@ -38,7 +38,10 @@ const GuidePage = (props: GuideProps) => {
 					setCurrent('1');
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		if (globalClusterList.length === 0) {
@@ -57,7 +60,10 @@ const GuidePage = (props: GuideProps) => {
 							setCurrent('1');
 						}
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 						setCurrent('2');
 					}
 				})
@@ -71,7 +77,10 @@ const GuidePage = (props: GuideProps) => {
 								setCurrent('2');
 							}
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 							setCurrent('2');
 						}
 					});
@@ -79,9 +88,9 @@ const GuidePage = (props: GuideProps) => {
 		}
 	}, [props]);
 	return (
-		<Page>
-			<Header title="初始化操作引导" />
-			<Content>
+		<ProPage>
+			<ProHeader title="初始化操作引导" />
+			<ProContent>
 				<div className="guide-page-content">
 					<div className="guide-page-img-content">
 						<div className="guide-page-img-item">
@@ -243,8 +252,8 @@ const GuidePage = (props: GuideProps) => {
 						</div>
 					</div>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

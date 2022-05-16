@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router';
 import noData from '@/assets/images/nodata.svg';
-import { Button } from '@alicloud/console-components';
+import { Button } from 'antd';
 import { StoreState, globalVarProps } from '@/types/index';
 import storage from '@/utils/storage';
 import './index.scss';
