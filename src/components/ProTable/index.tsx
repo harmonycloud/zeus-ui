@@ -39,6 +39,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 	const [tableColumns, setTableColumns] = useState<ColumnsType<T>>(columns);
 	const [visibleColumns, setVisibleColumns] =
 		useState<ColumnsType<T>>(columns);
+	const [operatorVisible, setOperatorVisible] = useState<boolean>(false);
 	useEffect(() => {
 		if (children) {
 			const list = translateChildrenToColumns(children);
@@ -46,6 +47,12 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 			setVisibleColumns(list);
 		}
 	}, [children]);
+	useEffect(() => {
+		if (operation) setOperatorVisible(true);
+		if (search) setOperatorVisible(true);
+		if (showRefresh) setOperatorVisible(true);
+		if (showColumnSetting) setOperatorVisible(true);
+	}, []);
 	const columnsSet = (columns: ColumnsType<T>) => {
 		setVisibleColumns(columns);
 		setShowColumnDialog(false);
@@ -57,34 +64,36 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 	};
 	return (
 		<div className="zeus-pro-table">
-			<div className="zeus-pro-table-operator-content">
-				<div className="zeus-pro-table-operator-left">
-					<Space>
-						{operation?.primary}
-						{search && <Search allowClear {...search} />}
-					</Space>
+			{operatorVisible && (
+				<div className="zeus-pro-table-operator-content">
+					<div className="zeus-pro-table-operator-left">
+						<Space>
+							{operation?.primary}
+							{search && <Search allowClear {...search} />}
+						</Space>
+					</div>
+					<div className="zeus-pro-table-operator-right">
+						<Space>
+							{operation?.secondary}
+							{showColumnSetting && (
+								<Button
+									type="default"
+									icon={<SettingOutlined />}
+									onClick={() => setShowColumnDialog(true)}
+								/>
+							)}
+							{showRefresh && (
+								<Button
+									disabled={refreshDisabled}
+									type="default"
+									icon={<ReloadOutlined />}
+									onClick={onRefresh}
+								/>
+							)}
+						</Space>
+					</div>
 				</div>
-				<div className="zeus-pro-table-operator-right">
-					<Space>
-						{operation?.secondary}
-						{showColumnSetting && (
-							<Button
-								type="default"
-								icon={<SettingOutlined />}
-								onClick={() => setShowColumnDialog(true)}
-							/>
-						)}
-						{showRefresh && (
-							<Button
-								disabled={refreshDisabled}
-								type="default"
-								icon={<ReloadOutlined />}
-								onClick={onRefresh}
-							/>
-						)}
-					</Space>
-				</div>
-			</div>
+			)}
 			<div className="zeus-pro-table-content">
 				<Table size="middle" {...tableProps} dataSource={dataSource}>
 					{columnsRender()}

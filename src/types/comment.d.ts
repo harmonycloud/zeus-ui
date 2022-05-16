@@ -256,3 +256,22 @@ export interface FiltersProps {
 	value: string;
 	children?: FiltersProps[];
 }
+export interface AutoCompleteOptionItem {
+	value: string;
+	label: string;
+}
+export interface MirrorItem {
+	address: string;
+	clusterId: string;
+	createTime: string;
+	description: null | string;
+	hostAddress: string;
+	id: number;
+	isDefault: number;
+	password: string;
+	port: number;
+	project: string;
+	protocol: string;
+	updateTime: null | string;
+	username: string;
+}
