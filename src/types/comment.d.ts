@@ -255,6 +255,7 @@ export interface FiltersProps {
 	text: string;
 	value: string;
 	children?: FiltersProps[];
+	[propsName: string]: any;
 }
 export interface AutoCompleteOptionItem {
 	value: string;

@@ -841,7 +841,6 @@ const ServiceListByType = (props: serviceListProps) => {
 						placeholder: '请输入搜索内容'
 					}}
 					rowClassName={(record) => {
-						console.log(record);
 						if (record.status === 'Deleted') {
 							return 'table-row-delete';
 						}
@@ -860,8 +859,14 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="status"
 						width={150}
 						render={serviceListStatusRender}
-						// filters={states}
-						// filterMode="single"
+						filters={states}
+						filterMultiple={false}
+						onFilter={(
+							value: string | number | boolean,
+							record: serviceProps
+						) => {
+							return record.status === value;
+						}}
 					/>
 					<ProTable.Column
 						title="实例数"
@@ -884,7 +889,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						title="创建时间"
 						dataIndex="createTime"
 						width={180}
-						sorter={(a, b) =>
+						sorter={(a: serviceProps, b: serviceProps) =>
 							moment(a.createTime).unix() -
 							moment(b.createTime).unix()
 						}
