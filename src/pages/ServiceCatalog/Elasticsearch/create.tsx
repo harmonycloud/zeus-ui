@@ -1127,6 +1127,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											content={
 												'主节点负责集群管理相关操作；数据节点负责数据存储；协调节点负责负载均衡，路由分发；冷节点负责低优先级数据存储'
 											}
+											placement="right"
 										>
 											<QuestionCircleOutlined />
 										</Popover>

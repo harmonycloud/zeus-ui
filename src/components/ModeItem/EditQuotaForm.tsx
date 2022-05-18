@@ -254,7 +254,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 									<Select
 										placeholder="请选择"
 										style={{
-											marginRight: 8
+											marginRight: 8,
+											width: 150
 										}}
 									>
 										{storageClassList.map((item, index) => {
