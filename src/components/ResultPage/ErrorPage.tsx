@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Icon, Button } from '@alicloud/console-components';
+import { Button } from 'antd';
+import { CloseCircleFilled } from '@ant-design/icons';
 import { ErrorPageProps } from './resultpage';
 import './index.scss';
 
@@ -26,11 +27,7 @@ export default function ErrorPage(props: ErrorPageProps): JSX.Element {
 	}, [time]);
 	return (
 		<div className="zeus-result-content">
-			<Icon
-				size="xxxl"
-				type="error"
-				style={{ color: '#Ef595C', height: 64 }}
-			/>
+			<CloseCircleFilled style={{ color: '#Ef595C', fontSize: 64 }} />
 			<p className="zeus-result-title">{title}</p>
 			<div>
 				<Button type="primary" onClick={btnHandle}>

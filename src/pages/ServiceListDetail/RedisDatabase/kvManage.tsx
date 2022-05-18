@@ -151,7 +151,7 @@ function KvManage(props: any): JSX.Element {
 
 	const actionRender = (value: string, record: any, index: number) => {
 		return (
-			<Actions>
+			<Actions threshold={4}>
 				{record.type === 'list' && (
 					<LinkButton
 						onClick={() => {

@@ -74,6 +74,8 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 					);
 				}
 			});
+			console.log(its, res.data);
+
 			setItems(its);
 		}
 	};

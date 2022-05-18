@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Page, Header, Content } from '@alicloud/console-components-page';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { Tabs } from 'antd';
-import { Tab } from '@alicloud/console-components';
 
 import AlarmRecord from './alarmRecord';
 import GuidePage from '../GuidePage';

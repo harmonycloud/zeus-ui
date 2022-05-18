@@ -41,7 +41,9 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 	const [operatorVisible, setOperatorVisible] = useState<boolean>(false);
 	useEffect(() => {
 		if (children) {
+			console.log(children);
 			const list = translateChildrenToColumns(children);
+			console.log(list);
 			setTableColumns(list);
 			setVisibleColumns(list);
 		}

@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Page, { Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import {
-	Form,
-	Field,
 	Input,
 	Switch,
-	Checkbox,
-	Balloon,
-	Icon,
 	Select,
+	AutoComplete,
 	Button,
-	Message
-} from '@alicloud/console-components';
+	Checkbox,
+	Popover,
+	Form,
+	notification
+} from 'antd';
+import {
+	QuestionCircleOutlined,
+	PlusOutlined,
+	CloseCircleFilled
+} from '@ant-design/icons';
 import pattern from '@/utils/pattern';
 import styles from './elasticsearch.module.scss';
 import {
@@ -24,7 +28,6 @@ import {
 	postMiddleware
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
 // * 结果页相关-start
 import LoadingPage from '@/components/ResultPage/LoadingPage';
@@ -45,7 +48,6 @@ import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
-import { formItemLayout614 } from '@/utils/const';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import { middlewareDetailProps } from '@/types/comment';
@@ -62,7 +64,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	} = props.globalVar;
 	const params: CreateParams = useParams();
 	const { chartName, chartVersion, aliasName } = params;
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	const history = useHistory();
 
 	// 主机亲和
@@ -202,116 +204,112 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
 
 	const handleSubmit = () => {
-		field.validate((err) => {
-			const values: EsCreateValuesParams = field.getValues();
-			if (!err) {
-				const sendData: EsSendDataParams = {
-					chartName: chartName,
-					chartVersion: chartVersion,
-					clusterId: globalCluster.id,
-					namespace:
-						globalNamespace.name === '*'
-							? values.namespace
-							: globalNamespace.name,
-					type: 'elasticsearch',
-					name: values.name,
-					aliasName: values.aliasName,
-					labels: values.labels,
-					annotations: values.annotations,
-					description: values.description,
-					version: version,
-					password: values.pwd,
-					filelogEnabled: fileLog,
-					stdoutEnabled: standardLog,
-					mode,
-					mirrorImageId: mirrorList.find(
-						(item) => item.address === values['mirrorImageId']
-					)
-						? mirrorList
-								.find(
-									(item) =>
-										item.address === values['mirrorImageId']
-								)
-								.id.toString()
-						: ''
-				};
-				// * 动态表单相关
-				if (customForm) {
-					const dynamicValues = {};
-					let keys: string[] = [];
-					for (const i in customForm) {
-						const list = getCustomFormKeys(customForm[i]);
-						keys = [...list, ...keys];
-					}
-					keys.forEach((item) => {
-						dynamicValues[item] = values[item];
-					});
-					sendData.dynamicValues = dynamicValues;
+		form.validateFields().then((values: EsCreateValuesParams) => {
+			const sendData: EsSendDataParams = {
+				chartName: chartName,
+				chartVersion: chartVersion,
+				clusterId: globalCluster.id,
+				namespace:
+					globalNamespace.name === '*'
+						? values.namespace
+						: globalNamespace.name,
+				type: 'elasticsearch',
+				name: values.name,
+				aliasName: values.aliasName,
+				labels: values.labels,
+				annotations: values.annotations,
+				description: values.description,
+				version: version,
+				password: values.pwd,
+				filelogEnabled: fileLog,
+				stdoutEnabled: standardLog,
+				mode,
+				mirrorImageId: mirrorList.find(
+					(item) => item.address === values['mirrorImageId']
+				)
+					? mirrorList
+							.find(
+								(item) =>
+									item.address === values['mirrorImageId']
+							)
+							.id.toString()
+					: ''
+			};
+			// * 动态表单相关
+			if (customForm) {
+				const dynamicValues = {};
+				let keys: string[] = [];
+				for (const i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
 				}
-				if (affinity.flag) {
-					if (!affinityLabels.length) {
-						Message.show(
-							messageConfig('error', '错误', '请选择主机亲和。')
-						);
-						return;
-					} else {
-						sendData.nodeAffinity = affinityLabels.map((item) => {
-							return {
-								label: item.label,
-								required: affinity.checked,
-								namespace: globalNamespace.name
-							};
-						});
-					}
-				}
-				if (tolerations.flag) {
-					if (!tolerationsLabels.length) {
-						Message.show(
-							messageConfig('error', '错误', '请选择主机容忍。')
-						);
-						return;
-					} else {
-						sendData.tolerations = tolerationsLabels.map(
-							(item) => item.label
-						);
-					}
-				}
-				if (nodeObj) {
-					sendData.quota = {};
-					for (const key in nodeObj) {
-						if (!nodeObj[key].disabled) {
-							if (nodeObj[key].storageClass === '') {
-								Message.show(
-									messageConfig(
-										'error',
-										'失败',
-										`请选择${key}节点存储类型`
-									)
-								);
-								return;
-							}
-							sendData.quota[key] = {
-								...nodeObj[key],
-								storageClassName: nodeObj[key].storageClass,
-								storageClassQuota: nodeObj[key].storageQuota
-							};
-						}
-					}
-				}
-				setCommitFlag(true);
-				postMiddleware(sendData).then((res) => {
-					if (res.success) {
-						setCreateData(res.data);
-						setSuccessFlag(true);
-						setErrorFlag(false);
-						setCommitFlag(false);
-					} else {
-						setSuccessFlag(false);
-						setErrorFlag(true);
-						setCommitFlag(false);
-					}
+				keys.forEach((item) => {
+					dynamicValues[item] = values[item];
 				});
+				sendData.dynamicValues = dynamicValues;
 			}
+			if (affinity.flag) {
+				if (!affinityLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机亲和。'
+					});
+					return;
+				} else {
+					sendData.nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: affinity.checked,
+							namespace: globalNamespace.name
+						};
+					});
+				}
+			}
+			if (tolerations.flag) {
+				if (!tolerationsLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机容忍。'
+					});
+					return;
+				} else {
+					sendData.tolerations = tolerationsLabels.map(
+						(item) => item.label
+					);
+				}
+			}
+			if (nodeObj) {
+				sendData.quota = {};
+				for (const key in nodeObj) {
+					if (!nodeObj[key].disabled) {
+						if (nodeObj[key].storageClass === '') {
+							notification.error({
+								message: '失败',
+								description: `请选择${key}节点存储类型`
+							});
+							return;
+						}
+						sendData.quota[key] = {
+							...nodeObj[key],
+							storageClassName: nodeObj[key].storageClass,
+							storageClassQuota: nodeObj[key].storageQuota
+						};
+					}
+				}
+			}
+			setCommitFlag(true);
+			postMiddleware(sendData).then((res) => {
+				if (res.success) {
+					setCreateData(res.data);
+					setSuccessFlag(true);
+					setErrorFlag(false);
+					setCommitFlag(false);
+				} else {
+					setSuccessFlag(false);
+					setErrorFlag(true);
+					setCommitFlag(false);
+				}
+			});
 		});
 	};
 
@@ -325,21 +323,30 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				if (res.success) {
 					setLabelList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setTolerationList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getAspectFrom().then((res) => {
 				if (res.success) {
 					setCustomForm(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getMirror({
@@ -363,7 +370,10 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						);
 						setNamespaceList(list);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
@@ -411,9 +421,9 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
 					<div
 						style={{
 							height: '100%',
@@ -431,15 +441,15 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 							btnText="返回列表"
 						/>
 					</div>
-				</Content>
-			</Page>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	if (successFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
 					<div
 						style={{
 							height: '100%',
@@ -463,16 +473,16 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 							}}
 						/>
 					</div>
-				</Content>
-			</Page>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
 					<div
 						style={{
 							height: '100%',
@@ -490,23 +500,22 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 							btnText="返回列表"
 						/>
 					</div>
-				</Content>
-			</Page>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	return (
-		<Page>
-			<Page.Header
+		<ProPage>
+			<ProHeader
 				title="发布Elasticsearch服务"
 				className="page-header"
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					window.history.back();
 				}}
 			/>
-			<Page.Content>
-				<Form {...formItemLayout614} field={field}>
+			<ProContent>
+				<Form form={form} style={{ paddingBottom: '21px' }}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
@@ -518,9 +527,17 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem
+												name="namespace"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入命名空间'
+													}
+												]}
+											>
 												<Select
-													name="namespace"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -560,16 +577,22 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											required
-											requiredMessage="请输入服务名称"
-											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											name="name"
+											rules={[
+												{
+													required: true,
+													message: '请输入服务名称'
+												},
+												{
+													pattern: new RegExp(
+														pattern.name
+													),
+													message:
+														'请输入由小写字母数字及“-”组成的2-24个字符'
+												}
+											]}
 										>
-											<Input
-												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
-												trim
-											/>
+											<Input placeholder="请输入由小写字母数字及“-”组成的2-24个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -579,16 +602,25 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											minLength={2}
-											maxLength={80}
-											minmaxLengthMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											pattern={pattern.nickname}
-											patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+											rules={[
+												{
+													type: 'string',
+													min: 2,
+													max: 80,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													pattern: new RegExp(
+														pattern.nickname
+													),
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												}
+											]}
+											name="aliasName"
 										>
-											<Input
-												name="aliasName"
-												placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											/>
+											<Input placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -598,13 +630,18 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的标签，多个标签以英文逗号分隔"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
+											name="labels"
 										>
-											<Input
-												name="labels"
-												placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -614,13 +651,18 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
+											name="annotations"
 										>
-											<Input
-												name="annotations"
-												placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -643,20 +685,16 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-center">
 									<label className="form-name">
 										<span className="mr-8">主机亲和</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
+										<Popover
+											content={
+												'勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败'
 											}
-											closable={false}
 										>
-											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
-										</Balloon>
+											<QuestionCircleOutlined />
+										</Popover>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['host-affinity']}`}
@@ -680,7 +718,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												<div
 													className={styles['input']}
 												>
-													<Select.AutoComplete
+													<AutoComplete
 														value={affinity.label}
 														onChange={(value) =>
 															changeAffinity(
@@ -688,7 +726,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -725,14 +763,14 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 																);
 															}
 														}}
-													>
-														<Icon
-															style={{
-																color: '#005AA5'
-															}}
-															type="add"
-														/>
-													</Button>
+														icon={
+															<PlusOutlined
+																style={{
+																	color: '#005AA5'
+																}}
+															/>
+														}
+													></Button>
 												</div>
 												<div
 													className={styles['check']}
@@ -741,14 +779,16 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 														checked={
 															affinity.checked
 														}
-														onChange={(value) =>
+														onChange={(e) =>
 															changeAffinity(
-																value,
+																e.target
+																	.checked,
 																'checked'
 															)
 														}
-														label="强制亲和"
-													/>
+													>
+														强制亲和
+													</Checkbox>
 												</div>
 											</>
 										) : null}
@@ -763,9 +803,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 													key={item.label}
 												>
 													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
+													<CloseCircleFilled
 														className={
 															styles['tag-close']
 														}
@@ -784,7 +822,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 										})}
 									</div>
 								) : null}
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-center">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
 									</label>
@@ -815,7 +853,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												<div
 													className={styles['input']}
 												>
-													<Select.AutoComplete
+													<AutoComplete
 														value={
 															tolerations.label
 														}
@@ -825,7 +863,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -864,14 +902,14 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 																);
 															}
 														}}
-													>
-														<Icon
-															style={{
-																color: '#005AA5'
-															}}
-															type="add"
-														/>
-													</Button>
+														icon={
+															<PlusOutlined
+																style={{
+																	color: '#005AA5'
+																}}
+															/>
+														}
+													></Button>
 												</div>
 											</>
 										) : null}
@@ -887,9 +925,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 													key={item.label}
 												>
 													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
+													<CloseCircleFilled
 														className={
 															styles['tag-close']
 														}
@@ -915,28 +951,24 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						<div className={styles['log-collection-content']}>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex form-li flex-center">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												文件日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
+											<Popover
+												content={
+													'安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。'
 												}
-												closable={false}
 											>
 												<span
 													style={{
 														lineHeight: '18px'
 													}}
 												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+													<QuestionCircleOutlined />
 												</span>
-											</Balloon>
+											</Popover>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['file-log']}`}
@@ -961,28 +993,24 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex form-li flex-center">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												标准日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
+											<Popover
+												content={
+													'安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。'
 												}
-												closable={false}
 											>
 												<span
 													style={{
 														lineHeight: '18px'
 													}}
 												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+													<QuestionCircleOutlined />
 												</span>
-											</Balloon>
+											</Popover>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['standard-log']}`}
@@ -1036,11 +1064,9 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 										className={`form-content ${styles['input-flex-length']}`}
 									>
 										<FormItem>
-											<Input
-												htmlType="password"
+											<Input.Password
 												name="pwd"
 												placeholder="请输入初始密码，输入为空则由平台随机生成"
-												trim
 											/>
 										</FormItem>
 									</div>
@@ -1059,13 +1085,17 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 										style={{ flex: '0 0 376px' }}
 									>
 										<FormItem
-											required
-											requiredMessage="请选择镜像仓库"
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
+												}
+											]}
+											name="mirrorImageId"
 										>
-											<Select.AutoComplete
-												name="mirrorImageId"
+											<AutoComplete
 												placeholder="请选择"
-												hasClear={true}
+												allowClear={true}
 												defaultValue={
 													mirrorList[0]?.address
 												}
@@ -1093,17 +1123,14 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 										>
 											模式
 										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
+										<Popover
+											content={
+												'主节点负责集群管理相关操作；数据节点负责数据存储；协调节点负责负载均衡，路由分发；冷节点负责低优先级数据存储'
 											}
-											closable={false}
+											placement="right"
 										>
-											主节点负责集群管理相关操作；数据节点负责数据存储；协调节点负责负载均衡，路由分发；冷节点负责低优先级数据存储
-										</Balloon>
+											<QuestionCircleOutlined />
+										</Popover>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['es-mode']}`}
@@ -1143,29 +1170,27 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					</FormBlock>
 					{childrenRender(
 						customForm,
-						field,
+						form,
 						globalCluster,
 						globalNamespace
 					)}
+					<div style={{ marginTop: '40px' }}></div>
 					<div className={styles['summit-box']}>
-						<Form.Submit
+						<Button
 							type="primary"
-							validate
+							htmlType="submit"
 							style={{ marginRight: 8 }}
 							onClick={handleSubmit}
 						>
 							提交
-						</Form.Submit>
-						<Button
-							type="normal"
-							onClick={() => window.history.back()}
-						>
+						</Button>
+						<Button onClick={() => window.history.back()}>
 							取消
 						</Button>
 					</div>
 				</Form>
-			</Page.Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({
