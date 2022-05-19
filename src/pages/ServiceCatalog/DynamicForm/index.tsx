@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Page, { Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Message } from '@alicloud/console-components';
-import { Input, Select, Button, Form } from 'antd';
+import { Input, Select, Button, Form, Result, notification } from 'antd';
 import FormBlock from '@/components/FormBlock';
 import { renderFormItem } from '@/components/renderFormItem';
-// * 结果页相关-start
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-// * 结果页相关-end
 import { getDynamicFormData } from '@/services/middleware';
 import { postMiddleware } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { getMirror } from '@/services/common';
 
@@ -77,7 +70,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					setDataSource(formatData);
 					setCapabilities(res.data.capabilities);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getMirror({
@@ -102,7 +98,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 						);
 						setNamespaceList(list);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
@@ -185,9 +184,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 						};
 					});
 				} else {
-					Message.show(
-						messageConfig('error', '失败', '请选择主机亲和。')
-					);
+					notification.error({
+						message: '失败',
+						description: '请选择主机亲和。'
+					});
 				}
 			}
 			// * 删除动态表单中多余的主机亲和相关的值
@@ -225,9 +225,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 						return item.label;
 					});
 				} else {
-					Message.show(
-						messageConfig('error', '失败', '请选择主机容忍。')
-					);
+					notification.error({
+						message: '失败',
+						description: '请选择主机容忍。'
+					});
 					return;
 				}
 			}
@@ -249,97 +250,97 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	if (successFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						status="error"
+						title="发布失败"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	return (
-		<Page>
-			<Page.Header
+		<ProPage>
+			<ProHeader
 				title={`发布${chartName}服务`}
-				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Page.Content>
+			<ProContent>
 				<Form {...formItemLayout} form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
@@ -516,8 +517,8 @@ function DynamicForm(props: CreateProps): JSX.Element {
 						</Button>
 					</div>
 				</Form>
-			</Page.Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

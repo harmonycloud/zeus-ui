@@ -13,7 +13,8 @@ import {
 	Checkbox,
 	Popover,
 	Form,
-	notification
+	notification,
+	Result
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -29,11 +30,6 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
-// * 结果页相关-start
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-// * 结果页相关-end
 import {
 	CreateProps,
 	CreateParams,
@@ -449,23 +445,21 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 			<ProPage>
 				<ProHeader />
 				<ProContent>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
 				</ProContent>
 			</ProPage>
 		);
@@ -475,29 +469,33 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 			<ProPage>
 				<ProHeader />
 				<ProContent>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
 				</ProContent>
 			</ProPage>
 		);
@@ -508,23 +506,22 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 			<ProPage>
 				<ProHeader />
 				<ProContent>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
+					<Result
+						status="error"
+						title="发布失败"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
 				</ProContent>
 			</ProPage>
 		);
