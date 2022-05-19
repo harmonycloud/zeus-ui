@@ -176,18 +176,14 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			};
 			// * 主机亲和特殊处理
 			if (values.nodeAffinity) {
-				if (values.nodeAffinityLabel) {
-					sendData.nodeAffinity = values.nodeAffinityLabel.map(
-						(item) => {
-							return {
-								label: item.label,
-								required: values.nodeAffinityForce
-									? values.nodeAffinityForce
-									: false,
-								namespace: globalNamespace.name
-							};
-						}
-					);
+				if (values.nodeAffinity.length) {
+					sendData.nodeAffinity = values.nodeAffinity.map((item) => {
+						return {
+							label: item.label,
+							required: item.required,
+							namespace: globalNamespace.name
+						};
+					});
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机亲和。')
@@ -224,12 +220,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			sendData.dynamicValues = dynamicValues;
 			// * 主机容忍特殊处理
 			if (values.tolerations) {
-				if (values.tolerationsLabels) {
-					sendData.tolerations = values.tolerationsLabels.map(
-						(item) => {
-							return item.label;
-						}
-					);
+				if (values.tolerations.length) {
+					sendData.tolerations = values.tolerations.map((item) => {
+						return item.label;
+					});
 				} else {
 					Message.show(
 						messageConfig('error', '失败', '请选择主机容忍。')

@@ -51,9 +51,6 @@ export default function FormNodeAffinity(
 			...affinity,
 			[key]: value
 		});
-		props.form.setFieldsValue({
-			[key]: value
-		});
 	};
 
 	const addAffinityLabels = () => {
@@ -64,12 +61,19 @@ export default function FormNodeAffinity(
 		) {
 			setAffinityLabels([
 				...affinityLabels,
-				{ label: affinity.nodeAffinityLabel, id: Math.random() }
+				{
+					label: affinity.nodeAffinityLabel,
+					id: Math.random(),
+					required: affinity.nodeAffinityForce
+				}
 			]);
 			props.form.setFieldsValue({
-				nodeAffinityLabel: [
+				nodeAffinity: [
 					...affinityLabels,
-					{ label: affinity.nodeAffinityLabel, id: Math.random() }
+					{
+						label: affinity.nodeAffinityLabel,
+						required: affinity.nodeAffinityForce
+					}
 				]
 			});
 		}
@@ -80,7 +84,7 @@ export default function FormNodeAffinity(
 			affinityLabels.filter((arr: any) => arr.id !== item.id)
 		);
 		props.form.setFieldsValue({
-			affinityLabels: affinityLabels.filter(
+			nodeAffinity: affinityLabels.filter(
 				(arr: any) => arr.id !== item.id
 			)
 		});

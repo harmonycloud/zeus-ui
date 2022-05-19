@@ -15,7 +15,7 @@ export interface CreateParams {
 }
 export interface AffinityItem {
 	label: string;
-	namespace: string;
+	namespace?: string;
 	required: boolean;
 }
 export interface AffinityProps {
@@ -266,11 +266,9 @@ export interface DynamicCreateValueParams {
 	aliasName: string;
 	labels: string;
 	description: string;
-	tolerations: boolean;
+	tolerations: any[];
 	tolerationsLabels: TolerationLabelItem[];
-	nodeAffinity: boolean;
-	nodeAffinityLabel: any[];
-	nodeAffinityForce: boolean;
+	nodeAffinity?: AffinityItem[];
 	version: string;
 	namespace: string;
 }

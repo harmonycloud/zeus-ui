@@ -45,9 +45,6 @@ export default function FormTolerations(
 			...tolerations,
 			[key]: value
 		});
-		props.form.setFieldsValue({
-			[key]: value
-		});
 	};
 
 	const addTolerationsLabels = () => {
@@ -61,11 +58,10 @@ export default function FormTolerations(
 				{ label: tolerations.nodeTolerationsLabel, id: Math.random() }
 			]);
 			props.form.setFieldsValue({
-				tolerationsLabels: [
+				tolerations: [
 					...tolerationsLabels,
 					{
-						label: tolerations.nodeTolerationsLabel,
-						id: Math.random()
+						label: tolerations.nodeTolerationsLabel
 					}
 				]
 			});
@@ -78,9 +74,7 @@ export default function FormTolerations(
 			tolerationsLabels.filter((arr) => arr.id !== item.id)
 		);
 		props.form.setFieldsValue({
-			tolerationsLabels: tolerationsLabels.filter(
-				(arr) => arr.id !== item.id
-			)
+			tolerations: tolerationsLabels.filter((arr) => arr.id !== item.id)
 		});
 	};
 
