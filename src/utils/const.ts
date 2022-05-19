@@ -1,11 +1,11 @@
-import { filtersProps } from '@/types/comment';
+import { filtersProps, FiltersProps } from '@/types/comment';
 
-export const states: filtersProps[] = [
-	{ value: 'Creating', label: '启动中', color: '#0091FF' },
-	{ value: 'Running', label: '运行正常', color: '#1E8E3E' },
-	{ value: 'Other', label: '运行异常', color: '#DA372E' },
-	{ value: 'Preparing', label: '创建中', color: '#0091FF' },
-	{ value: 'failed', label: '创建失败', color: '#DA372E' }
+export const states: FiltersProps[] = [
+	{ value: 'Creating', text: '启动中', color: '#0091FF' },
+	{ value: 'Running', text: '运行正常', color: '#1E8E3E' },
+	{ value: 'Other', text: '运行异常', color: '#DA372E' },
+	{ value: 'Preparing', text: '创建中', color: '#0091FF' },
+	{ value: 'failed', text: '创建失败', color: '#DA372E' }
 ];
 export const podStatus: filtersProps[] = [
 	{

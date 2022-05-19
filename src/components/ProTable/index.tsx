@@ -11,7 +11,7 @@ import './index.scss';
 const { Search } = Input;
 const translateChildrenToColumns = (value: React.ReactNode[]) => {
 	const list = value
-		.filter((item: any) => item?.type?.name === 'Column')
+		// .filter((item: any) => item?.type?.name === 'Column')
 		.map((item: any) => {
 			return item.props;
 		});
@@ -22,7 +22,7 @@ const translateChildrenToColumns = (value: React.ReactNode[]) => {
 // eslint-disable-next-line @typescript-eslint/ban-types
 function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 	const {
-		columns = [],
+		// columns = [],
 		children,
 		dataSource,
 		operation,
@@ -36,13 +36,14 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 		...tableProps
 	} = props;
 	const [showColumnDialog, setShowColumnDialog] = useState<boolean>(false); // 展示column列表
-	const [tableColumns, setTableColumns] = useState<ColumnsType<T>>(columns);
-	const [visibleColumns, setVisibleColumns] =
-		useState<ColumnsType<T>>(columns);
+	const [tableColumns, setTableColumns] = useState<ColumnsType<T>>([]);
+	const [visibleColumns, setVisibleColumns] = useState<ColumnsType<T>>([]);
 	const [operatorVisible, setOperatorVisible] = useState<boolean>(false);
 	useEffect(() => {
 		if (children) {
+			console.log(children);
 			const list = translateChildrenToColumns(children);
+			console.log(list);
 			setTableColumns(list);
 			setVisibleColumns(list);
 		}
