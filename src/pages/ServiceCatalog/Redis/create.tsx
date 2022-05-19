@@ -54,10 +54,8 @@ import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
-import { formItemLayout614 } from '@/utils/const';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
-import { values } from '@antv/util';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
@@ -603,7 +601,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}}
 			/>
 			<ProContent>
-				<Form {...formItemLayout614} form={form}>
+				<Form form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>

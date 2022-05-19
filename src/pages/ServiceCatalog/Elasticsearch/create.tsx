@@ -515,7 +515,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				}}
 			/>
 			<ProContent>
-				<Form form={form} style={{ paddingBottom: '21px' }}>
+				<Form form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>

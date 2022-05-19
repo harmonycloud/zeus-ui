@@ -17,8 +17,10 @@ export default function BackupRecovery(
 	const { pathname } = location;
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
-	const [selectedKey, setSelectedKey] = useState<string>(
-		localStorage.getItem('backupTab') || 'list'
+	const [selectedKey, setSelectedKey] = useState<any[]>(
+		localStorage.getItem('backupTab')
+			? [localStorage.getItem('backupTab')]
+			: ['list']
 	);
 	const [customMid, setCustomMid] = useState<boolean>(false);
 	const [capabilities, setCapabilities] = useState<string[]>([]);
@@ -31,14 +33,14 @@ export default function BackupRecovery(
 		const newLocal = 'list';
 		currentTab &&
 			currentTab !== 'backupRecovery' &&
-			setSelectedKey(newLocal);
+			setSelectedKey([newLocal]);
 	}, [currentTab]);
 	useEffect(() => {
 		localStorage.removeItem('backupTab');
 	}, []);
 	const menuSelect = (selectedKey: any) => {
-		setSelectedKey(selectedKey);
-		localStorage.setItem('backupTab', selectedKey);
+		setSelectedKey([selectedKey.key]);
+		localStorage.setItem('backupTab', selectedKey.key);
 	};
 	const childrenRender = (selected: string) => {
 		if (selected === 'list') {
@@ -50,7 +52,7 @@ export default function BackupRecovery(
 	const ConsoleMenu = () => {
 		return (
 			<ProMenu
-				selectedKeys={[selectedKey]}
+				selectedKeys={selectedKey}
 				onClick={menuSelect}
 				style={{ height: '100%', marginLeft: 0 }}
 			>
@@ -90,7 +92,7 @@ export default function BackupRecovery(
 					menu={<ConsoleMenu />}
 					style={{ margin: 0, padding: 0 }}
 				>
-					{childrenRender(selectedKey)}
+					{childrenRender(selectedKey[0])}
 				</ProContent>
 			</ProPage>
 		);

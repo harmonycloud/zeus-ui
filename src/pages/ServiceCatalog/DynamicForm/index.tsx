@@ -2,14 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Page, { Content, Header } from '@alicloud/console-components-page';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {
-	Form,
-	Field,
-	Button,
-	Message,
-	Input,
-	Select
-} from '@alicloud/console-components';
+import { Message } from '@alicloud/console-components';
+import { Input, Select, Button, Form } from 'antd';
 import FormBlock from '@/components/FormBlock';
 import { renderFormItem } from '@/components/renderFormItem';
 // * 结果页相关-start
@@ -36,7 +30,7 @@ const { Item: FormItem } = Form;
 
 const formItemLayout = {
 	labelCol: {
-		fixedSpan: 6
+		span: 6
 	},
 	wrapperCol: {
 		span: 14
@@ -66,7 +60,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	const history = useHistory();
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	useEffect(() => {
 		if (
 			JSON.stringify(props.globalVar.cluster) !== '{}' &&
@@ -145,7 +139,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 												>
 													{renderFormItem(
 														formItem,
-														field,
+														form,
 														globalCluster,
 														globalNamespace
 													)}
@@ -163,9 +157,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	};
 
 	const handleSubmit = () => {
-		field.validate((err) => {
-			if (err) return;
-			const values: DynamicCreateValueParams = field.getValues();
+		form.validateFields().then((values: DynamicCreateValueParams) => {
 			const sendData: DynamicSendDataParams = {
 				clusterId: globalCluster.id,
 				namespace:
@@ -354,7 +346,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 				onBackArrowClick={() => window.history.back()}
 			/>
 			<Page.Content>
-				<Form {...formItemLayout} field={field}>
+				<Form {...formItemLayout} form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className="w-50">
@@ -369,9 +361,17 @@ function DynamicForm(props: CreateProps): JSX.Element {
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入命名空间'
+													}
+												]}
+												name="namespace"
+											>
 												<Select
-													name="namespace"
 													style={{ width: '390px' }}
 												>
 													{namespaceList.map(
@@ -414,16 +414,24 @@ function DynamicForm(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											required
-											requiredMessage="请输入服务名称"
-											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											rules={[
+												{
+													required: true,
+													message: '请输入服务名称'
+												},
+												{
+													pattern: new RegExp(
+														pattern.name
+													),
+													message:
+														'请输入由小写字母数字及“-”组成的2-24个字符'
+												}
+											]}
+											name="name"
 										>
 											<Input
 												style={{ width: '390px' }}
-												name="name"
 												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
-												trim
 											/>
 										</FormItem>
 									</div>
@@ -434,15 +442,26 @@ function DynamicForm(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											minLength={2}
-											maxLength={80}
-											minmaxLengthMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											pattern={pattern.nickname}
-											patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+											rules={[
+												{
+													type: 'string',
+													min: 2,
+													max: 80,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													pattern: new RegExp(
+														pattern.nickname
+													),
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												}
+											]}
+											name="aliasName"
 										>
 											<Input
 												style={{ width: '390px' }}
-												name="aliasName"
 												placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
 											/>
 										</FormItem>
@@ -454,12 +473,19 @@ function DynamicForm(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的标签，多个标签以英文逗号分隔"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
+											name="labels"
 										>
 											<Input
 												style={{ width: '390px' }}
-												name="labels"
 												placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔"
 											/>
 										</FormItem>
@@ -484,18 +510,14 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					</FormBlock>
 					{childrenRender(dataSource)}
 					<div className="dynamic-summit-box">
-						<Form.Submit
+						<Button
 							type="primary"
-							validate
 							style={{ marginRight: 8 }}
 							onClick={handleSubmit}
 						>
 							提交
-						</Form.Submit>
-						<Button
-							type="normal"
-							onClick={() => window.history.back()}
-						>
+						</Button>
+						<Button onClick={() => window.history.back()}>
 							取消
 						</Button>
 					</div>
