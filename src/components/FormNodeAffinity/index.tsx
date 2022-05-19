@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Form, AutoComplete, Checkbox, Button, Switch, Popover } from 'antd';
 import {
-	Balloon,
-	Icon,
-	Form,
-	Select,
-	Checkbox,
-	Switch,
-	Button
-} from '@alicloud/console-components';
+	QuestionCircleOutlined,
+	PlusOutlined,
+	CloseCircleFilled
+} from '@ant-design/icons';
 
 import { getNodePort } from '@/services/middleware';
 import {
@@ -54,7 +51,7 @@ export default function FormNodeAffinity(
 			...affinity,
 			[key]: value
 		});
-		props.field.setValues({
+		props.form.setFieldsValue({
 			[key]: value
 		});
 	};
@@ -69,7 +66,7 @@ export default function FormNodeAffinity(
 				...affinityLabels,
 				{ label: affinity.nodeAffinityLabel, id: Math.random() }
 			]);
-			props.field.setValues({
+			props.form.setFieldsValue({
 				nodeAffinityLabel: [
 					...affinityLabels,
 					{ label: affinity.nodeAffinityLabel, id: Math.random() }
@@ -82,7 +79,7 @@ export default function FormNodeAffinity(
 		setAffinityLabels(
 			affinityLabels.filter((arr: any) => arr.id !== item.id)
 		);
-		props.field.setValues({
+		props.form.setFieldsValue({
 			affinityLabels: affinityLabels.filter(
 				(arr: any) => arr.id !== item.id
 			)
@@ -109,37 +106,34 @@ export default function FormNodeAffinity(
 					{props.label}
 				</span>
 				{keys.includes('description') ? (
-					<Balloon
-						offset={[0, 15]}
-						align="t"
-						trigger={
-							<Icon
-								type="question-circle"
-								size="xs"
-								style={{ marginLeft: 8 }}
-							/>
-						}
-						closable={false}
+					<Popover
+						// offset={[0, 15]}
+						content={props.description}
 					>
-						{props.description}
-					</Balloon>
+						<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+					</Popover>
 				) : null}
 			</label>
 			<div className="form-content">
 				<FormItem
-					required={keys.includes('required') && props.required}
-					requiredMessage={
-						keys.includes('required') && props.required
-							? `请输入${props.label}`
-							: ''
-					}
+					rules={[
+						{
+							required:
+								keys.includes('required') && props.required,
+							message:
+								keys.includes('required') && props.required
+									? `请输入${props.label}`
+									: ''
+						}
+					]}
+					name={props.variable}
+					initialValue={props.nodeAffinity}
 				>
 					<label className="dynamic-switch-label">
 						{affinity.nodeAffinity ? '已开启' : '已关闭 '}
 					</label>
 					<Switch
 						checked={affinity.nodeAffinity}
-						name={props.variable}
 						onChange={(value) =>
 							changeAffinity(value, 'nodeAffinity')
 						}
@@ -152,7 +146,7 @@ export default function FormNodeAffinity(
 					{affinity.nodeAffinity ? (
 						<>
 							<div className="dynamic-form-node-affinity-content">
-								<Select.AutoComplete
+								<AutoComplete
 									value={affinity.nodeAffinityLabel}
 									onChange={(value) =>
 										changeAffinity(
@@ -160,7 +154,7 @@ export default function FormNodeAffinity(
 											'nodeAffinityLabel'
 										)
 									}
-									hasClear={true}
+									allowClear={true}
 									dataSource={labelList}
 									style={{
 										width: '100%'
@@ -179,24 +173,25 @@ export default function FormNodeAffinity(
 											: true
 									}
 									onClick={addAffinityLabels}
-								>
-									<Icon
-										style={{ color: '#005AA5' }}
-										type="add"
-									/>
-								</Button>
+									icon={
+										<PlusOutlined
+											style={{ color: '#005AA5' }}
+										/>
+									}
+								></Button>
 							</div>
 							<div className="dynamic-form-node-affinity-check">
 								<Checkbox
 									checked={affinity.nodeAffinityForce}
-									onChange={(value) =>
+									onChange={(e) =>
 										changeAffinity(
-											value,
+											e.target.checked,
 											'nodeAffinityForce'
 										)
 									}
-									label="强制亲和"
-								/>
+								>
+									强制亲和
+								</Checkbox>
 							</div>
 						</>
 					) : null}
@@ -207,9 +202,7 @@ export default function FormNodeAffinity(
 							return (
 								<p className={'tag'} key={item.id}>
 									<span>{item.label}</span>
-									<Icon
-										type="error"
-										size="xs"
+									<CloseCircleFilled
 										className={'tag-close'}
 										onClick={() =>
 											reduceAffinityLabels(item)

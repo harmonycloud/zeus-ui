@@ -56,11 +56,7 @@ export default function FormNumber(props: CustomFormItemProps): JSX.Element {
 					name={props.variable}
 					initialValue={props.defaultValue}
 				>
-					<Input
-						style={{ width: '390px' }}
-						type="number"
-						defaultValue={props.defaultValue}
-					/>
+					<Input style={{ width: '390px' }} type="number" />
 				</FormItem>
 			</div>
 		</div>

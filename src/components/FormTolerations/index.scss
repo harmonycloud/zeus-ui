@@ -1,8 +1,12 @@
 .form-tolerations {
-	.next-form-item-control {
+	.ant-form-item-control-input{
+		display: block;
+	}
+	.ant-form-item-control-input-content {
 		display: flex;
 		width: 700px;
 		align-items: center;
+		max-width: auto !important;
 	}
 	.tags {
 		padding: 10px 24px;

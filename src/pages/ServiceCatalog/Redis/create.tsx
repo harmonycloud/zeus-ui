@@ -50,10 +50,16 @@ import {
 } from '../catalog';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
+import {
+	middlewareDetailProps,
+	StorageClassProps,
+	MirrorItem,
+	AutoCompleteOptionItem
+} from '@/types/comment';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
+
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 
@@ -77,8 +83,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
-	const [mirrorList, setMirrorList] = useState<any[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
+	const [mirrorList, setMirrorList] = useState<MirrorItem[]>([]);
 	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
@@ -93,7 +99,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const [tolerationList, setTolerationList] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
@@ -313,16 +321,23 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				quota: { redis: {} },
-				mirrorImageId: mirrorList.find(
-					(item) => item.address === values['mirrorImageId']
-				)
-					? mirrorList
-							.find(
-								(item) =>
-									item.address === values['mirrorImageId']
-							)
-							.id.toString()
-					: ''
+				mirrorImageId:
+					mirrorList
+						.find(
+							(item: MirrorItem) =>
+								item.address === values.mirrorImageId
+						)
+						?.id.toString() || ''
+				// mirrorImageId: mirrorList.find(
+				// 	(item) => item.address === values['mirrorImageId']
+				// )
+				// 	? mirrorList
+				// 			.find(
+				// 				(item) =>
+				// 					item.address === values['mirrorImageId']
+				// 			)
+				// 			.id.toString()
+				// 	: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -454,7 +469,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -464,7 +485,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setTolerationList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setTolerationList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -613,9 +640,17 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入命名空间'
+													}
+												]}
+												name="namespace"
+											>
 												<Select
-													// name="namespace"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -1180,15 +1215,20 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												}
 											]}
 											name="mirrorImageId"
+											initialValue={
+												mirrorList[0]?.address
+											}
 										>
 											<AutoComplete
 												placeholder="请选择"
 												allowClear={true}
-												defaultValue={
-													mirrorList[0]?.address
-												}
-												dataSource={mirrorList.map(
-													(item: any) => item.address
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
 												)}
 												style={{
 													width: '100%'
@@ -1470,10 +1510,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 															}
 														]}
 														name="storageQuota"
+														initialValue={5}
 													>
 														<Input
 															type="number"
-															defaultValue={5}
 															min={1}
 															placeholder="请输入存储配额大小"
 															addonAfter="GB"

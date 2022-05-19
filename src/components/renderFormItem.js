@@ -47,7 +47,7 @@ export const renderFormItem = (
 		case 'string':
 			return <FormInput {...formValue} />;
 		case 'enum':
-			return <FormSelectOrRadios {...formValue} field={field} />;
+			return <FormSelectOrRadios {...formValue} form={field} />;
 		case 'boolean':
 			return (
 				<FormSwitch
@@ -66,7 +66,7 @@ export const renderFormItem = (
 			return (
 				<FormNodeAffinity
 					{...formValue}
-					field={field}
+					form={field}
 					cluster={cluster}
 					namespace={namespace}
 				/>
@@ -75,7 +75,7 @@ export const renderFormItem = (
 			return (
 				<FormTolerations
 					{...formValue}
-					field={field}
+					form={field}
 					cluster={cluster}
 					namespace={namespace}
 				/>

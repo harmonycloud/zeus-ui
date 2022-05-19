@@ -142,6 +142,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
+	mirrorImageId?: any;
 }
 export interface KafkaDTO {
 	custom?: boolean;
@@ -242,6 +243,7 @@ export interface EsSendDataParams extends CommonSendDataParams {
 export interface EsCreateValuesParams extends CreateValuesParams {
 	pwd: string;
 	namespace: string;
+	mirrorImageId?: any;
 }
 export interface DynamicSendDataParams {
 	chartName: string;

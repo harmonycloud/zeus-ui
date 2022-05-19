@@ -50,7 +50,11 @@ import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
-import { middlewareDetailProps } from '@/types/comment';
+import {
+	middlewareDetailProps,
+	MirrorItem,
+	AutoCompleteOptionItem
+} from '@/types/comment';
 
 const { Item: FormItem } = Form;
 
@@ -73,7 +77,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
@@ -88,7 +92,9 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const [tolerationList, setTolerationList] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
@@ -140,7 +146,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 			value: 'cold-complex'
 		}
 	];
-	const [mirrorList, setMirrorList] = useState<any[]>([]);
+	const [mirrorList, setMirrorList] = useState<MirrorItem[]>([]);
 	const [nodeObj, setNodeObj] = useState({
 		master: {
 			disabled: false,
@@ -224,16 +230,23 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				mode,
-				mirrorImageId: mirrorList.find(
-					(item) => item.address === values['mirrorImageId']
-				)
-					? mirrorList
-							.find(
-								(item) =>
-									item.address === values['mirrorImageId']
-							)
-							.id.toString()
-					: ''
+				mirrorImageId:
+					mirrorList
+						.find(
+							(item: MirrorItem) =>
+								item.address === values.mirrorImageId
+						)
+						?.id.toString() || ''
+				// mirrorImageId: mirrorList.find(
+				// 	(item) => item.address === values['mirrorImageId']
+				// )
+				// 	? mirrorList
+				// 			.find(
+				// 				(item) =>
+				// 					item.address === values['mirrorImageId']
+				// 			)
+				// 			.id.toString()
+				// 	: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -321,7 +334,13 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -331,7 +350,13 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setTolerationList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setTolerationList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -727,7 +752,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 															)
 														}
 														allowClear={true}
-														dataSource={labelList}
+														options={labelList}
 														style={{
 															width: '100%'
 														}}
@@ -1099,8 +1124,13 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												defaultValue={
 													mirrorList[0]?.address
 												}
-												dataSource={mirrorList.map(
-													(item: any) => item.address
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
 												)}
 												style={{
 													width: '100%'

@@ -54,10 +54,7 @@ export default function FormPassword(props: CustomFormItemProps): JSX.Element {
 					name={props.variable}
 					initialValue={props.defaultValue}
 				>
-					<Input.Password
-						style={{ width: '390px' }}
-						defaultValue={props.defaultValue}
-					/>
+					<Input.Password style={{ width: '390px' }} />
 				</FormItem>
 			</div>
 		</div>
