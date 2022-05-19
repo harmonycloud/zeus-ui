@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 
 import { getNodePort } from '@/services/middleware';
+import { AutoCompleteOptionItem } from '@/types/comment';
 import {
 	FormNodeAffinityProps,
 	NodeAffinityProps,
@@ -31,7 +32,7 @@ export default function FormNodeAffinity(
 		nodeAffinityLabel: '',
 		nodeAffinityForce: false
 	});
-	const [labelList, setLabelList] = useState<any[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [affinityLabels, setAffinityLabels] = useState<
 		NodeAffinityLabelItem[]
 	>([]);
@@ -40,7 +41,13 @@ export default function FormNodeAffinity(
 		if (JSON.stringify(cluster) !== '{}') {
 			getNodePort({ clusterId: cluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				}
 			});
 		}
@@ -159,7 +166,7 @@ export default function FormNodeAffinity(
 										)
 									}
 									allowClear={true}
-									dataSource={labelList}
+									options={labelList}
 									style={{
 										width: '100%'
 									}}

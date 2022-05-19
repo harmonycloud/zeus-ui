@@ -7,6 +7,7 @@ import {
 	TolerationLabelItem,
 	TolerationsProps
 } from './formTolerations';
+import { AutoCompleteOptionItem } from '@/types/comment';
 import './index.scss';
 
 const { Item: FormItem } = Form;
@@ -25,7 +26,7 @@ export default function FormTolerations(
 		nodeTolerationsLabel: '',
 		nodeTolerationsForce: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [tolerationsLabels, setTolerationsLabels] = useState<
 		TolerationLabelItem[]
 	>([]);
@@ -34,7 +35,13 @@ export default function FormTolerations(
 		if (JSON.stringify(cluster) !== '{}') {
 			getNodeTaint({ clusterid: cluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				}
 			});
 		}
@@ -133,7 +140,7 @@ export default function FormTolerations(
 											'nodeTolerationsLabel'
 										)
 									}
-									dataSource={labelList}
+									options={labelList}
 									style={{
 										width: '100%'
 									}}
