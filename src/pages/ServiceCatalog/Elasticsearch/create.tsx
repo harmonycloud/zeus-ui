@@ -1105,39 +1105,42 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									<div
-										className="form-content"
-										style={{ flex: '0 0 376px' }}
-									>
-										<FormItem
-											rules={[
-												{
-													required: true,
-													message: '请选择镜像仓库'
-												}
-											]}
-											name="mirrorImageId"
+									{mirrorList.length && (
+										<div
+											className="form-content"
+											style={{ flex: '0 0 376px' }}
 										>
-											<AutoComplete
-												placeholder="请选择"
-												allowClear={true}
-												defaultValue={
-													mirrorList[0]?.address
-												}
-												options={mirrorList.map(
-													(item: any) => {
-														return {
-															label: item.address,
-															value: item.address
-														};
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择镜像仓库'
 													}
-												)}
-												style={{
-													width: '100%'
-												}}
-											/>
-										</FormItem>
-									</div>
+												]}
+												name="mirrorImageId"
+												initialValue={
+													mirrorList[0].address
+												}
+											>
+												<AutoComplete
+													placeholder="请选择"
+													allowClear={true}
+													options={mirrorList.map(
+														(item: any) => {
+															return {
+																label: item.address,
+																value: item.address
+															};
+														}
+													)}
+													style={{
+														width: '100%'
+													}}
+												/>
+											</FormItem>
+										</div>
+									)}
 								</li>
 							</ul>
 						</div>

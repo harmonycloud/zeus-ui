@@ -1699,35 +1699,38 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</span>
 									</label>
 									<div className="form-content">
-										<FormItem
-											name="mirrorImageId"
-											required
-											rules={[
-												{
-													required: true,
-													message: '请选择镜像仓库'
-												}
-											]}
-										>
-											<AutoComplete
-												placeholder="请选择"
-												allowClear={true}
-												defaultValue={
-													mirrorList[0]?.address
-												}
-												options={mirrorList.map(
-													(item) => {
-														return {
-															value: item.address,
-															label: item.address
-														};
+										{mirrorList.length && (
+											<FormItem
+												name="mirrorImageId"
+												required
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择镜像仓库'
 													}
-												)}
-												style={{
-													width: '100%'
-												}}
-											/>
-										</FormItem>
+												]}
+											>
+												<AutoComplete
+													placeholder="请选择"
+													allowClear={true}
+													defaultValue={
+														mirrorList[0]?.address
+													}
+													options={mirrorList.map(
+														(item) => {
+															return {
+																value: item.address,
+																label: item.address
+															};
+														}
+													)}
+													style={{
+														width: '100%'
+													}}
+												/>
+											</FormItem>
+										)}
 									</div>
 								</li>
 							</ul>
@@ -1949,12 +1952,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														'请输入存储配额大小（GB）'
 												}
 											]}
-											required
 											name="storageQuota"
+											initialValue={5}
 										>
 											<InputNumber
 												min={5}
-												defaultValue={5}
 												placeholder="请输入存储配额大小"
 												addonAfter="GB"
 											/>
