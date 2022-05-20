@@ -65,6 +65,17 @@ export default function List(props: ListProps): JSX.Element {
 				);
 				return;
 			}
+		} else if (listData?.type === 'postgresql') {
+			if (!listData.isAllLvmStorage) {
+				Message.show(
+					messageConfig(
+						'error',
+						'失败',
+						'存储不使用lvm时，不支持立即备份功能'
+					)
+				);
+				return;
+			}
 		} else {
 			if (listData?.type === 'mysql' && !listData.isAllLvmStorage) {
 				Message.show(

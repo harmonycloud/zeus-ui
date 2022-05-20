@@ -12,6 +12,7 @@ import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
 import KafkaCreate from '@/pages/ServiceCatalog/Kafka/create';
+import PostgreSQLCreate from '@/pages/ServiceCatalog/PostgreSQL/create';
 import InstanceDetails from '@/pages/ServiceListDetail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
@@ -128,6 +129,10 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:chartName/:aliasName/kafkaCreate/:chartVersion"
 					component={KafkaCreate}
+				/>
+				<Route
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion"
+					component={PostgreSQLCreate}
 				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/dynamicForm/:chartVersion/:version"

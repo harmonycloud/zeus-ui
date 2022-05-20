@@ -1,6 +1,7 @@
 import { globalVarProps } from '@/types/index';
 import { rocketMQAccount } from '@/components/RocketACLForm/acl';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
+import { CustomInspectFunction } from 'util';
 export interface CreateProps {
 	globalVar: globalVarProps;
 	[propsName: string]: any;
@@ -271,4 +272,36 @@ export interface DynamicCreateValueParams {
 	nodeAffinityForce: boolean;
 	version: string;
 	namespace: string;
+}
+export interface PostgresqlCreateValuesParams extends CreateValuesParams {
+	replicaCount: number;
+	pgsqlPwd: string;
+}
+export interface PostgresqlSendDataParams {
+	chartName: string;
+	chartVersion: string;
+	type: string;
+	labels: string;
+	annotations: string;
+	password: string;
+	description: string;
+	version: string;
+	clusterId: string;
+	namespace: string;
+	name: string;
+	aliasName: string;
+	nodeAffinity?: AffinityItem[];
+	tolerations?: string[];
+	dynamicValues?: any;
+	mode: string;
+	replicaCount: number;
+	quota: {
+		postgresql: {
+			cpu?: number;
+			memory?: string;
+			storageClassName?: string;
+			storageClassQuota?: string;
+		};
+	};
+	mirrorImageId?: any;
 }
