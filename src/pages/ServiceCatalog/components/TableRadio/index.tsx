@@ -1,8 +1,7 @@
 import React from 'react';
-import { Radio } from '@alicloud/console-components';
+import { Radio, RadioChangeEvent, Space } from 'antd';
 import { TableRadioProps } from './tableRadio';
 
-const { Group: RadioGroup } = Radio;
 /**
  *
  * @param { id, isMysql, onCallBack } props
@@ -59,46 +58,90 @@ export default function TableRadio(props: TableRadioProps): JSX.Element {
 
 	return (
 		<div style={{ width: '100%' }}>
-			<RadioGroup
-				value={id}
-				onChange={(value) => onCallBack(value)}
-				style={{ width: '100%' }}
-			>
-				<table className="table-list">
-					<thead>
-						<tr>
+			<table className="table-list">
+				<thead>
+					<tr>
+						<th>
 							{columns.map((column, index) => {
-								return <th key={index}>{column.title}</th>;
+								if (column.dataIndex !== 'id') {
+									return (
+										<span
+											style={{
+												width: isMysql
+													? '22.6%'
+													: '30%',
+												marginLeft: index === 1 ? 35 : 0
+											}}
+											key={index}
+										>
+											{column.title}
+										</span>
+									);
+								}
 							})}
-						</tr>
-					</thead>
-					<tbody>
-						{dataList.map((data, indexData) => {
-							return (
-								<tr key={indexData}>
-									{columns.map((column, indexColumn) => {
-										if (column.dataIndex === 'id') {
-											return (
-												<td key={indexColumn}>
-													<Radio
-														id={data.id}
-														value={data.id}
-													/>
-												</td>
-											);
-										} else
-											return (
-												<td key={indexColumn}>
-													{data[column.dataIndex]}
-												</td>
-											);
-									})}
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</RadioGroup>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<Radio.Group
+						value={id}
+						onChange={(e: RadioChangeEvent) => {
+							onCallBack(e.target.id as unknown as string);
+						}}
+						style={{ width: '100%' }}
+					>
+						<Space
+							direction="vertical"
+							style={{ width: '100%', gap: '0px' }}
+						>
+							{dataList.map((data, indexData) => {
+								return (
+									<Radio
+										key={indexData}
+										id={data.id}
+										value={data.id}
+									>
+										<tr>
+											{columns.map(
+												(column, indexColumn) => {
+													if (
+														column.dataIndex !==
+														'id'
+													) {
+														return (
+															<span
+																key={
+																	indexColumn
+																}
+																style={
+																	!isMysql
+																		? {
+																				width: '33% !important'
+																		  }
+																		: {}
+																}
+															>
+																{
+																	data[
+																		column
+																			.dataIndex
+																	]
+																}
+															</span>
+														);
+													} else {
+														return <span></span>;
+													}
+												}
+											)}
+										</tr>
+									</Radio>
+								);
+							})}
+						</Space>
+					</Radio.Group>
+				</tbody>
+			</table>
 		</div>
 	);
 }

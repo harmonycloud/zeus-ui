@@ -598,7 +598,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						});
 					}}
 				>
-					<span title={operateFlag ? '当前用户无改操作的权限' : ''}>
+					<span title={!operateFlag ? '当前用户无改操作的权限' : ''}>
 						服务控制台
 					</span>
 				</LinkButton>

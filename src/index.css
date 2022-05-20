@@ -296,6 +296,14 @@ table.table-list thead tr td {
   padding: 12px;
   border-bottom: 1px solid #c0c6cc;
 }
+table.table-list thead tr th span,
+table.table-list thead tr td span {
+	display: inline-block;
+	width: 22.6%;
+}
+table.table-list thead tr th span:nth-child(1) {
+	width: 6%;
+}
 table.table-list thead tr th {
   background-color: #fbfcfd;
   color: #252525;
@@ -307,6 +315,37 @@ table.table-list tbody tr td {
   border: none;
   line-height: 150%;
   border-bottom: 1px solid #e3e4e6;
+  display: inline-block;
+  width: 33%;
+}
+table.table-list tbody .ant-space-item{
+	padding: 12px;
+	border: none;
+	line-height: 150%;
+	border-bottom: 1px solid #e3e4e6;
+	border-bottom: 1px solid #e3e4e6 !important;
+}
+table.table-list tbody .ant-space-item label {
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+table.table-list tbody .ant-space-item label span:nth-child(1) {
+	width: 2.6%;
+}
+table.table-list tbody .ant-space-item label span:nth-child(2) {
+	width: 97.4%;
+}
+table.table-list tbody .ant-space-item label span tr {
+	display: flex;
+	width: 100%;
+}
+table.table-list tbody .ant-space-item label span tr span {
+	display: inline-block;
+	width: 33% !important;
+}
+table.table-list tbody .ant-space-item label span tr span:nth-child(1) {
+	width: 0% !important;
 }
 
 /** 星号前缀 */
@@ -671,4 +710,8 @@ table.table-list tbody tr td {
 }
 .table-row-delete > .ant-table-cell-fix-left, .ant-table-cell-fix-right {
 	background: #F8F8F9;
+}
+.ant-menu-item {
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
 }

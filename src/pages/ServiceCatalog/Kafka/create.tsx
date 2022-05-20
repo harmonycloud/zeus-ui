@@ -2,23 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
 	Form,
-	Field,
 	Input,
-	Icon,
-	Balloon,
+	Tooltip,
 	Switch,
 	Select,
 	Button,
 	Checkbox,
-	NumberPicker,
-	Message
-} from '@alicloud/console-components';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+	InputNumber,
+	notification,
+	AutoComplete,
+	Result
+} from 'antd';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { useHistory, useParams } from 'react-router';
 import FormBlock from '@/components/FormBlock';
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio';
 
@@ -30,6 +27,7 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { getAspectFrom } from '@/services/common';
+import { getProjectNamespace } from '@/services/project';
 
 import {
 	AffinityLabelsItem,
@@ -47,13 +45,14 @@ import { StoreState } from '@/types';
 import { formItemLayout614, instanceSpecList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
-import messageConfig from '@/components/messageConfig';
-
-import styles from './kafka.module.scss';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
-import { getProjectNamespace } from '@/services/project';
+import {
+	CloseCircleFilled,
+	PlusOutlined,
+	QuestionCircleOutlined
+} from '@ant-design/icons';
+import styles from './kafka.module.scss';
 
-const { AutoComplete } = Select;
 const FormItem = Form.Item;
 
 function KafkaCreate(props: CreateProps): JSX.Element {
@@ -64,7 +63,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	} = props.globalVar;
 	const history = useHistory();
 	const params: CreateParams = useParams();
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	const { chartName, aliasName, chartVersion } = params;
 	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	// * 主机亲和-start
@@ -176,7 +175,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 						);
 						setNamespaceList(list);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
@@ -192,21 +194,30 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				if (res.success) {
 					setLabelList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setTolerationList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getAspectFrom().then((res) => {
 				if (res.success) {
 					setCustomForm(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getMirror({
@@ -214,6 +225,11 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					setMirrorList(res.data.list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getStorageClass({
@@ -223,17 +239,17 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				if (res.success) {
 					setStorageClassList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
 	}, [globalCluster, globalNamespace]);
 	// * 表单提交
 	const handleSubmit = () => {
-		console.log('submit');
-		field.validate((err) => {
-			const values: KafkaCreateValuesParams = field.getValues();
-			if (err) return;
+		form.validateFields().then((values) => {
 			const sendData: KafkaSendDataParams = {
 				chartName,
 				chartVersion,
@@ -271,7 +287,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 							.id.toString()
 					: ''
 			};
-			// * 动态表单相关
 			if (customForm) {
 				const dynamicValues = {};
 				let keys: string[] = [];
@@ -287,9 +302,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			// * 主机亲和
 			if (affinity.flag) {
 				if (!affinityLabels.length) {
-					Message.show(
-						messageConfig('error', '错误', '请选择主机亲和。')
-					);
+					notification.error({
+						message: '错误',
+						description: '请选择主机亲和。'
+					});
 					return;
 				} else {
 					sendData.nodeAffinity = affinityLabels.map((item) => {
@@ -304,9 +320,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			// * 主机容忍
 			if (tolerations.flag) {
 				if (!tolerationsLabels.length) {
-					Message.show(
-						messageConfig('error', '错误', '请选择主机容忍。')
-					);
+					notification.error({
+						message: '错误',
+						description: '请选择主机容忍。'
+					});
 					return;
 				} else {
 					sendData.tolerations = tolerationsLabels.map(
@@ -362,103 +379,99 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProContent>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	if (successFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProContent>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProContent>
+					<Result
+						status="error"
+						title="发布失败"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="创建Kafka服务"
-				className="page-header"
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					history.push({
 						pathname: `/serviceList/${chartName}/${aliasName}`
 					});
 				}}
 			/>
-			<Content>
-				<Form field={field} {...formItemLayout614}>
+			<ProContent>
+				<Form form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
@@ -470,9 +483,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem required name="namespace">
 												<Select
-													name="namespace"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -512,16 +524,23 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
+											name="name"
 											required
-											requiredMessage="请输入服务名称"
-											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											rules={[
+												{
+													required: true,
+													message: '请输入服务名称'
+												},
+												{
+													pattern: new RegExp(
+														pattern.name
+													),
+													message:
+														'请输入由小写字母数字及“-”组成的2-24个字符'
+												}
+											]}
 										>
-											<Input
-												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
-												trim
-											/>
+											<Input placeholder="请输入由小写字母数字及“-”组成的2-24个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -531,16 +550,28 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											minLength={2}
-											maxLength={80}
-											minmaxLengthMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											pattern={pattern.nickname}
-											patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+											name="aliasName"
+											rules={[
+												{
+													min: 2,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													max: 80,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													pattern: new RegExp(
+														pattern.nickname
+													),
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												}
+											]}
 										>
-											<Input
-												name="aliasName"
-												placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											/>
+											<Input placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -550,13 +581,18 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的标签，多个标签以英文逗号分隔"
+											name="labels"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
 										>
-											<Input
-												name="labels"
-												placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -566,13 +602,18 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
+											name="annotations"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的注解，多个注解以英文逗号分隔'
+												}
+											]}
 										>
-											<Input
-												name="annotations"
-												placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -581,11 +622,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										<span>备注</span>
 									</label>
 									<div className="form-content">
-										<FormItem>
-											<Input.TextArea
-												name="description"
-												placeholder="请输入备注信息"
-											/>
+										<FormItem name="description">
+											<Input.TextArea placeholder="请输入备注信息" />
 										</FormItem>
 									</div>
 								</li>
@@ -595,22 +633,14 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											主机亲和
 										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
-											}
-											closable={false}
-										>
-											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
-										</Balloon>
+										<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
+											<QuestionCircleOutlined />
+										</Tooltip>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['host-affinity']}`}
@@ -645,7 +675,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -683,11 +713,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 															}
 														}}
 													>
-														<Icon
+														<PlusOutlined
 															style={{
 																color: '#005AA5'
 															}}
-															type="add"
 														/>
 													</Button>
 												</div>
@@ -704,8 +733,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																'checked'
 															)
 														}
-														label="强制亲和"
-													/>
+													>
+														强制亲和
+													</Checkbox>
 												</div>
 											</>
 										) : null}
@@ -720,9 +750,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													key={item.label}
 												>
 													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
+													<CloseCircleFilled
 														className={
 															styles['tag-close']
 														}
@@ -755,7 +783,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										})}
 									</div>
 								) : null}
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
 									</label>
@@ -786,7 +814,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												<div
 													className={styles['input']}
 												>
-													<Select.AutoComplete
+													<AutoComplete
 														value={
 															tolerations.label
 														}
@@ -796,7 +824,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -836,11 +864,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 															}
 														}}
 													>
-														<Icon
+														<PlusOutlined
 															style={{
 																color: '#005AA5'
 															}}
-															type="add"
 														/>
 													</Button>
 												</div>
@@ -858,9 +885,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													key={item.label}
 												>
 													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
+													<CloseCircleFilled
 														className={
 															styles['tag-close']
 														}
@@ -886,28 +911,14 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 						<div className={styles['log-collection-content']}>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex form-li flex-align">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												文件日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
-												}
-												closable={false}
-											>
-												<span
-													style={{
-														lineHeight: '18px'
-													}}
-												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-												</span>
-											</Balloon>
+											<Tooltip title="安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。">
+												<QuestionCircleOutlined />
+											</Tooltip>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['file-log']}`}
@@ -932,28 +943,14 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 							</div>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex form-li flex-align">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												标准日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
-												}
-												closable={false}
-											>
-												<span
-													style={{
-														lineHeight: '18px'
-													}}
-												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-												</span>
-											</Balloon>
+											<Tooltip title="安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。">
+												<QuestionCircleOutlined />
+											</Tooltip>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['standard-log']}`}
@@ -1014,16 +1011,16 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											}
 											placeholder="请输入服务地址"
 											value={kfkDTO.zkAddress}
-											onChange={(value: string) =>
+											onChange={(e) =>
 												setKfkDTO({
 													...kfkDTO,
-													zkAddress: value
+													zkAddress: e.target.value
 												})
 											}
 										/>
-										<NumberPicker
+										<InputNumber
 											className={styles['zeus-zk-port']}
-											style={{ width: '135px' }}
+											style={{ width: '95px' }}
 											value={kfkDTO.zkPort}
 											placeholder="请输入服务端口"
 											onChange={(value: number) =>
@@ -1037,10 +1034,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											className={styles['zeus-zk-path']}
 											value={kfkDTO.path}
 											placeholder="请输入服务路径"
-											onChange={(value: string) =>
+											onChange={(e) =>
 												setKfkDTO({
 													...kfkDTO,
-													path: value
+													path: e.target.value
 												})
 											}
 										/>
@@ -1055,21 +1052,23 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											镜像仓库
 										</span>
 									</label>
-									<div
-										className="form-content"
-										style={{ flex: '0 0 376px' }}
-									>
+									<div className="form-content">
 										<FormItem
+											name="mirrorImageId"
 											required
-											requiredMessage="请选择镜像仓库"
-										>
-											<Select.AutoComplete
-												name="mirrorImageId"
-												placeholder="请选择"
-												hasClear={true}
-												defaultValue={
-													mirrorList[0]?.address
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
+											]}
+											initialValue={
+												mirrorList[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
 												dataSource={mirrorList.map(
 													(item: any) => item.address
 												)}
@@ -1086,22 +1085,14 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					<FormBlock title="规格配置">
 						<div className={styles['spec-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											模式
 										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
-											}
-											closable={false}
-										>
-											集群模式中，具备自动选举leader能力，保证高可用
-										</Balloon>
+										<Tooltip title="集群模式中，具备自动选举leader能力，保证高可用">
+											<QuestionCircleOutlined />
+										</Tooltip>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['custom-cluster-number']}`}
@@ -1122,7 +1113,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										>
 											自定义集群实例数量
 										</label>
-										<NumberPicker
+										<InputNumber
 											min={3}
 											value={customCluster}
 											onChange={(value: number) =>
@@ -1176,19 +1167,33 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 														</label>
 														<div className="form-content">
 															<FormItem
-																min={0.1}
-																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`}
+																rules={[
+																	{
+																		min: 0.1,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
+																	},
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义CPU配额，单位为Core'
+																	},
+																	{
+																		max: maxCpu?.max,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
+																	}
+																]}
 																required
-																requiredMessage="请输入自定义CPU配额，单位为Core"
-																{...maxCpu}
+																name="cpu"
 															>
 																<Input
-																	name="cpu"
-																	htmlType="number"
+																	type="number"
+																	style={{
+																		width: '100%'
+																	}}
 																	min={0.1}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
-																	trim
 																/>
 															</FormItem>
 														</div>
@@ -1201,19 +1206,33 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 														</label>
 														<div className="form-content">
 															<FormItem
-																min={0.1}
-																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`}
+																name="memory"
+																rules={[
+																	{
+																		min: 0.1,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
+																	},
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义内存配额，单位为Gi'
+																	},
+																	{
+																		max: maxMemory?.max,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
+																	}
+																]}
 																required
-																requiredMessage="请输入自定义内存配额，单位为Gi"
-																{...maxMemory}
 															>
-																<Input
-																	name="memory"
-																	htmlType="number"
+																<InputNumber
+																	type="number"
+																	style={{
+																		width: '100%'
+																	}}
 																	min={0.1}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
-																	trim
 																/>
 															</FormItem>
 														</div>
@@ -1233,13 +1252,20 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										className={`form-content display-flex`}
 									>
 										<FormItem
+											name="storageClass"
 											required
-											requiredMessage="请选择存储类型"
+											rules={[
+												{
+													required: true,
+													message: '请选择存储类型'
+												}
+											]}
 										>
 											<Select
-												name="storageClass"
-												style={{ marginRight: 8 }}
-												autoWidth={false}
+												style={{
+													marginRight: 8,
+													width: 150
+												}}
 											>
 												{storageClassList.map(
 													(item, index) => {
@@ -1258,17 +1284,27 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											</Select>
 										</FormItem>
 										<FormItem
-											pattern={pattern.posInt}
-											patternMessage="请输入小于21位的正整数"
+											name="storageQuota"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.posInt
+													),
+													message:
+														'请输入小于21位的正整数'
+												},
+												{
+													required: true,
+													message:
+														'请输入存储配额大小（GB）'
+												}
+											]}
 											required
-											requiredMessage="请输入存储配额大小（GB）"
+											initialValue={5}
 										>
-											<Input
-												name="storageQuota"
-												defaultValue={5}
-												htmlType="number"
+											<InputNumber
 												placeholder="请输入存储配额大小"
-												addonTextAfter="GB"
+												addonAfter="GB"
 											/>
 										</FormItem>
 									</div>
@@ -1278,29 +1314,29 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					</FormBlock>
 					{childrenRender(
 						customForm,
-						field,
+						form,
 						globalCluster,
 						globalNamespace
 					)}
 					<div className={styles['summit-box']}>
-						<Form.Submit
+						<Button
 							type="primary"
-							validate
+							htmlType="submit"
 							style={{ marginRight: 8 }}
 							onClick={handleSubmit}
 						>
 							提交
-						</Form.Submit>
+						</Button>
 						<Button
-							type="normal"
+							type="default"
 							onClick={() => window.history.back()}
 						>
 							取消
 						</Button>
 					</div>
 				</Form>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

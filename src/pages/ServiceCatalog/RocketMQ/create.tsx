@@ -1,19 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Page, { Content, Header } from '@alicloud/console-components-page';
+// import Page, { Content, Header } from '@alicloud/console-components-page';
+// import {
+// 	Form,
+// 	Field,
+// 	Input,
+// 	Switch,
+// 	Checkbox,
+// 	Balloon,
+// 	Icon,
+// 	Select,
+// 	Button,
+// 	Message
+// } from '@alicloud/console-components';
 import {
 	Form,
-	Field,
 	Input,
 	Switch,
 	Checkbox,
-	Balloon,
-	Icon,
+	Tooltip,
 	Select,
 	Button,
-	Message
-} from '@alicloud/console-components';
+	notification,
+	Result,
+	AutoComplete,
+	InputNumber
+} from 'antd';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
@@ -52,16 +66,13 @@ import styles from './rocketmq.module.scss';
 import { NumberPicker } from '@alifd/next';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import {
+	CloseCircleFilled,
+	PlusOutlined,
+	QuestionCircleOutlined
+} from '@ant-design/icons';
 
 const { Item: FormItem } = Form;
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
 
 const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
@@ -73,7 +84,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	} = props.globalVar;
 	const params: CreateParams = useParams();
 	const { chartName, chartVersion, aliasName } = params;
-	const field = Field.useField();
+	const [form] = Form.useForm();
+	// const field = Field.useField();
 	const history = useHistory();
 
 	// 主机亲和
@@ -195,7 +207,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 						);
 						setNamespaceList(list);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
@@ -203,143 +218,142 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	}, [project, globalNamespace]);
 
 	const handleSubmit = () => {
-		field.validate((err) => {
-			const values: RMQCreateValuesParams = field.getValues();
-			if (!err) {
-				const sendData: RMQSendDataParams = {
-					chartName: chartName,
-					chartVersion: chartVersion,
-					clusterId: globalCluster.id,
-					namespace:
-						globalNamespace.name === '*'
-							? values.namespace
-							: globalNamespace.name,
-					type: 'rocketmq',
-					name: values.name,
-					aliasName: values.aliasName,
-					labels: values.labels,
-					annotations: values.annotations,
-					description: values.description,
-					version: version,
-					mode: mode,
-					filelogEnabled: fileLog,
-					stdoutEnabled: standardLog,
-					hostNetwork: hostNetwork,
-					quota: {
-						rocketmq: {
-							storageClassName: values.storageClass,
-							storageClassQuota: values.storageQuota
-						}
-					},
-					rocketMQParam: {
-						acl: {
-							enable: aclCheck
-						}
-					},
-					mirrorImageId: mirrorList.find(
-						(item) => item.address === values['mirrorImageId']
-					)
-						? mirrorList
-								.find(
-									(item) =>
-										item.address === values['mirrorImageId']
-								)
-								.id.toString()
-						: ''
-				};
-				if (mode === 'dledger') {
-					sendData.rocketMQParam.replicas = replicaCount;
-				}
-				// * 动态表单相关
-				if (customForm) {
-					const dynamicValues = {};
-					let keys: string[] = [];
-					for (const i in customForm) {
-						const list = getCustomFormKeys(customForm[i]);
-						keys = [...list, ...keys];
+		form.validateFields().then((values) => {
+			const sendData: RMQSendDataParams = {
+				chartName: chartName,
+				chartVersion: chartVersion,
+				clusterId: globalCluster.id,
+				namespace:
+					globalNamespace.name === '*'
+						? values.namespace
+						: globalNamespace.name,
+				type: 'rocketmq',
+				name: values.name,
+				aliasName: values.aliasName,
+				labels: values.labels,
+				annotations: values.annotations,
+				description: values.description,
+				version: version,
+				mode: mode,
+				filelogEnabled: fileLog,
+				stdoutEnabled: standardLog,
+				hostNetwork: hostNetwork,
+				quota: {
+					rocketmq: {
+						storageClassName: values.storageClass,
+						storageClassQuota: values.storageQuota
 					}
-					keys.forEach((item) => {
-						dynamicValues[item] = values[item];
-					});
-					sendData.dynamicValues = dynamicValues;
-				}
-				if (affinity.flag) {
-					if (!affinityLabels.length) {
-						Message.show(
-							messageConfig('error', '错误', '请选择主机亲和。')
-						);
-						return;
-					} else {
-						sendData.nodeAffinity = affinityLabels.map((item) => {
-							return {
-								label: item.label,
-								required: affinity.checked,
-								namespace: globalNamespace.name
-							};
-						});
+				},
+				rocketMQParam: {
+					acl: {
+						enable: aclCheck
 					}
-				}
-				if (tolerations.flag) {
-					if (!tolerationsLabels.length) {
-						Message.show(
-							messageConfig('error', '错误', '请选择主机容忍。')
-						);
-						return;
-					} else {
-						sendData.tolerations = tolerationsLabels.map(
-							(item) => item.label
-						);
-					}
-				}
-				if (instanceSpec === 'General') {
-					switch (specId) {
-						case '1':
-							sendData.quota.rocketmq.cpu = 1;
-							sendData.quota.rocketmq.memory = '2Gi';
-							break;
-						case '2':
-							sendData.quota.rocketmq.cpu = 2;
-							sendData.quota.rocketmq.memory = '4Gi';
-							break;
-						case '3':
-							sendData.quota.rocketmq.cpu = 4;
-							sendData.quota.rocketmq.memory = '16Gi';
-							break;
-						case '4':
-							sendData.quota.rocketmq.cpu = 8;
-							sendData.quota.rocketmq.memory = '32Gi';
-							break;
-						case '5':
-							sendData.quota.rocketmq.cpu = 16;
-							sendData.quota.rocketmq.memory = '64Gi';
-							break;
-						default:
-							break;
-					}
-				} else if (instanceSpec === 'Customize') {
-					sendData.quota.rocketmq.cpu = values.cpu;
-					sendData.quota.rocketmq.memory = values.memory + 'Gi';
-				}
-				if (aclCheck) {
-					sendData.rocketMQParam.acl.globalWhiteRemoteAddresses =
-						values.globalWhiteRemoteAddresses;
-					sendData.rocketMQParam.acl.rocketMQAccountList =
-						values.rocketMQAccountList;
-				}
-				setCommitFlag(true);
-				postMiddleware(sendData).then((res) => {
-					if (res.success) {
-						setCreateData(res.data);
-						setSuccessFlag(true);
-						setErrorFlag(false);
-						setCommitFlag(false);
-					} else {
-						setSuccessFlag(false);
-						setErrorFlag(true);
-						setCommitFlag(false);
-					}
-				});
+				},
+				mirrorImageId: mirrorList.find(
+					(item) => item.address === values['mirrorImageId']
+				)
+					? mirrorList
+							.find(
+								(item) =>
+									item.address === values['mirrorImageId']
+							)
+							.id.toString()
+					: ''
+			};
+			if (mode === 'dledger') {
+				sendData.rocketMQParam.replicas = replicaCount;
 			}
+			// * 动态表单相关
+			if (customForm) {
+				const dynamicValues = {};
+				let keys: string[] = [];
+				for (const i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					dynamicValues[item] = values[item];
+				});
+				sendData.dynamicValues = dynamicValues;
+			}
+			if (affinity.flag) {
+				if (!affinityLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机亲和。'
+					});
+					return;
+				} else {
+					sendData.nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: affinity.checked,
+							namespace: globalNamespace.name
+						};
+					});
+				}
+			}
+			if (tolerations.flag) {
+				if (!tolerationsLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机容忍。'
+					});
+					return;
+				} else {
+					sendData.tolerations = tolerationsLabels.map(
+						(item) => item.label
+					);
+				}
+			}
+			if (instanceSpec === 'General') {
+				switch (specId) {
+					case '1':
+						sendData.quota.rocketmq.cpu = 1;
+						sendData.quota.rocketmq.memory = '2Gi';
+						break;
+					case '2':
+						sendData.quota.rocketmq.cpu = 2;
+						sendData.quota.rocketmq.memory = '4Gi';
+						break;
+					case '3':
+						sendData.quota.rocketmq.cpu = 4;
+						sendData.quota.rocketmq.memory = '16Gi';
+						break;
+					case '4':
+						sendData.quota.rocketmq.cpu = 8;
+						sendData.quota.rocketmq.memory = '32Gi';
+						break;
+					case '5':
+						sendData.quota.rocketmq.cpu = 16;
+						sendData.quota.rocketmq.memory = '64Gi';
+						break;
+					default:
+						break;
+				}
+			} else if (instanceSpec === 'Customize') {
+				sendData.quota.rocketmq.cpu = values.cpu;
+				sendData.quota.rocketmq.memory = values.memory + 'Gi';
+			}
+			if (aclCheck) {
+				sendData.rocketMQParam.acl.globalWhiteRemoteAddresses =
+					values.globalWhiteRemoteAddresses;
+				sendData.rocketMQParam.acl.rocketMQAccountList =
+					values.rocketMQAccountList;
+			}
+			setCommitFlag(true);
+			postMiddleware(sendData).then((res) => {
+				if (res.success) {
+					setCreateData(res.data);
+					setSuccessFlag(true);
+					setErrorFlag(false);
+					setCommitFlag(false);
+				} else {
+					setSuccessFlag(false);
+					setErrorFlag(true);
+					setCommitFlag(false);
+				}
+			});
 		});
 	};
 
@@ -353,21 +367,30 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				if (res.success) {
 					setLabelList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
 					setTolerationList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getAspectFrom().then((res) => {
 				if (res.success) {
 					setCustomForm(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getMirror({
@@ -384,7 +407,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				if (res.success) {
 					setStorageClassList(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
@@ -393,101 +419,97 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProContent>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	if (successFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProContent>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProContent>
+					<Result
+						status="error"
+						title="发布失败"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	return (
-		<Page>
-			<Page.Header
+		<ProPage>
+			<ProHeader
 				title="发布RocketMQ服务"
-				className="page-header"
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					window.history.back();
 				}}
 			/>
-			<Page.Content>
-				<Form {...formItemLayout} field={field}>
+			<ProContent>
+				<Form form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
@@ -499,9 +521,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem required name="namespace">
 												<Select
-													name="namespace"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -541,16 +562,23 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
+											name="name"
 											required
-											requiredMessage="请输入服务名称"
-											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											rules={[
+												{
+													required: true,
+													message: '请输入服务名称'
+												},
+												{
+													pattern: new RegExp(
+														pattern.name
+													),
+													message:
+														'请输入由小写字母数字及“-”组成的2-24个字符'
+												}
+											]}
 										>
-											<Input
-												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
-												trim
-											/>
+											<Input placeholder="请输入由小写字母数字及“-”组成的2-24个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -560,16 +588,28 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											minLength={2}
-											maxLength={80}
-											minmaxLengthMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											pattern={pattern.nickname}
-											patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+											name="aliasName"
+											rules={[
+												{
+													min: 2,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													max: 80,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													pattern: new RegExp(
+														pattern.nickname
+													),
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												}
+											]}
 										>
-											<Input
-												name="aliasName"
-												placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											/>
+											<Input placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -579,13 +619,18 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的标签，多个标签以英文逗号分隔"
+											name="labels"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
 										>
-											<Input
-												name="labels"
-												placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -595,13 +640,18 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
+											name="annotations"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的注解，多个注解以英文逗号分隔'
+												}
+											]}
 										>
-											<Input
-												name="annotations"
-												placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -610,11 +660,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										<span>备注</span>
 									</label>
 									<div className="form-content">
-										<FormItem>
-											<Input.TextArea
-												name="description"
-												placeholder="请输入备注信息"
-											/>
+										<FormItem name="description">
+											<Input.TextArea placeholder="请输入备注信息" />
 										</FormItem>
 									</div>
 								</li>
@@ -644,29 +691,21 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					>
 						{aclCheck ? (
 							<div className={styles['acl-config']}>
-								<RocketACLForm field={field} />
+								<RocketACLForm form={form} />
 							</div>
 						) : null}
 					</FormBlock>
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											主机亲和
 										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
-											}
-											closable={false}
-										>
-											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
-										</Balloon>
+										<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
+											<QuestionCircleOutlined />
+										</Tooltip>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['host-affinity']}`}
@@ -693,7 +732,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												<div
 													className={styles['input']}
 												>
-													<Select.AutoComplete
+													<AutoComplete
 														value={affinity.label}
 														onChange={(value) =>
 															changeAffinity(
@@ -701,7 +740,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={labelList}
 														style={{
 															width: '100%'
@@ -736,18 +775,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		}
 																	]
 																);
-																// changeAffinity(
-																// 	'',
-																// 	'label'
-																// );
 															}
 														}}
 													>
-														<Icon
+														<PlusOutlined
 															style={{
 																color: '#005AA5'
 															}}
-															type="add"
 														/>
 													</Button>
 												</div>
@@ -764,8 +798,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																'checked'
 															)
 														}
-														label="强制亲和"
-													/>
+													>
+														强制亲和
+													</Checkbox>
 												</div>
 											</>
 										) : null}
@@ -780,7 +815,35 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													key={item.label}
 												>
 													<span>{item.label}</span>
-													<Icon
+													<CloseCircleFilled
+														className={
+															styles['tag-close']
+														}
+														onClick={() => {
+															if (
+																!affinityLabels.find(
+																	(item) =>
+																		item.label ===
+																		affinity.label
+																)
+															) {
+																setAffinityLabels(
+																	[
+																		...affinityLabels,
+																		{
+																			label: affinity.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+																changeAffinity(
+																	'',
+																	'label'
+																);
+															}
+														}}
+													/>
+													{/* <Icon
 														type="error"
 														size="xs"
 														className={
@@ -809,7 +872,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																);
 															}
 														}}
-													/>
+													/> */}
 												</p>
 											);
 										})}
@@ -846,7 +909,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												<div
 													className={styles['input']}
 												>
-													<Select.AutoComplete
+													<AutoComplete
 														value={
 															tolerations.label
 														}
@@ -856,7 +919,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -893,18 +956,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		}
 																	]
 																);
-																// changeTolerations(
-																// 	'',
-																// 	'label'
-																// );
 															}
 														}}
 													>
-														<Icon
+														<PlusOutlined
 															style={{
 																color: '#005AA5'
 															}}
-															type="add"
 														/>
 													</Button>
 												</div>
@@ -922,9 +980,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													key={item.label}
 												>
 													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
+													<CloseCircleFilled
 														className={
 															styles['tag-close']
 														}
@@ -955,23 +1011,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											<span style={{ marginRight: 8 }}>
 												文件日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
-												}
-												closable={false}
-											>
-												<span
-													style={{
-														lineHeight: '18px'
-													}}
-												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-												</span>
-											</Balloon>
+											<Tooltip title="安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。">
+												<QuestionCircleOutlined />
+											</Tooltip>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['file-log']}`}
@@ -1001,23 +1043,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											<span style={{ marginRight: 8 }}>
 												标准日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
-												}
-												closable={false}
-											>
-												<span
-													style={{
-														lineHeight: '18px'
-													}}
-												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-												</span>
-											</Balloon>
+											<Tooltip title="安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。">
+												<QuestionCircleOutlined />
+											</Tooltip>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['standard-log']}`}
@@ -1078,12 +1106,17 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									>
 										<FormItem
 											required
-											requiredMessage="请选择镜像仓库"
+											name="mirrorImageId"
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
+												}
+											]}
 										>
-											<Select.AutoComplete
-												name="mirrorImageId"
+											<AutoComplete
 												placeholder="请选择"
-												hasClear={true}
+												allowClear={true}
 												defaultValue={
 													mirrorList[0]?.address
 												}
@@ -1108,28 +1141,26 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										<span style={{ marginRight: 8 }}>
 											模式
 										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
+										<Tooltip
+											title={
+												<>
+													<p>
+														双主：主实例宕机期间，未被消费的信息在机器未恢复之前不可消费
+													</p>
+													<p>
+														两主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
+													</p>
+													<p>
+														三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
+													</p>
+													<p>
+														多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费
+													</p>
+												</>
 											}
-											closable={false}
 										>
-											<p>
-												双主：主实例宕机期间，未被消费的信息在机器未恢复之前不可消费
-											</p>
-											<p>
-												两主两丛：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
-											</p>
-											<p>
-												三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
-											</p>
-											<p>
-												多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费
-											</p>
-										</Balloon>
+											<QuestionCircleOutlined />
+										</Tooltip>
 									</label>
 									<div
 										className={`form-content display-flex`}
@@ -1208,19 +1239,30 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														</label>
 														<div className="form-content">
 															<FormItem
-																min={0.1}
-																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`}
+																name="cpu"
+																rules={[
+																	{
+																		min: 0.1,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
+																	},
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义CPU配额，单位为Core'
+																	},
+																	{
+																		max: maxCpu?.max,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
+																	}
+																]}
 																required
-																requiredMessage="请输入自定义CPU配额，单位为Core"
-																{...maxCpu}
 															>
 																<Input
-																	name="cpu"
-																	htmlType="number"
+																	type="number"
 																	min={0.1}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
-																	trim
 																/>
 															</FormItem>
 														</div>
@@ -1233,19 +1275,30 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														</label>
 														<div className="form-content">
 															<FormItem
-																min={0.1}
-																minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`}
+																name="memory"
+																rules={[
+																	{
+																		min: 0.1,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
+																	},
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义内存配额，单位为Gi'
+																	},
+																	{
+																		max: maxMemory?.max,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
+																	}
+																]}
 																required
-																requiredMessage="请输入自定义内存配额，单位为Gi"
-																{...maxMemory}
 															>
 																<Input
-																	name="memory"
-																	htmlType="number"
+																	type="number"
 																	min={0.1}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
-																	trim
 																/>
 															</FormItem>
 														</div>
@@ -1265,14 +1318,16 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										className={`form-content display-flex`}
 									>
 										<FormItem
+											name="storageClass"
 											required
-											requiredMessage="请选择存储类型"
+											rules={[
+												{
+													required: true,
+													message: '请选择存储类型'
+												}
+											]}
 										>
-											<Select
-												name="storageClass"
-												style={{ marginRight: 8 }}
-												autoWidth={false}
-											>
+											<Select style={{ marginRight: 8 }}>
 												{storageClassList.map(
 													(item, index) => {
 														return (
@@ -1290,17 +1345,27 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											</Select>
 										</FormItem>
 										<FormItem
-											pattern={pattern.posInt}
-											patternMessage="请输入小于21位的正整数"
+											name="storageQuota"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.posInt
+													),
+													message:
+														'请输入小于21位的正整数'
+												},
+												{
+													required: true,
+													message:
+														'请输入存储配额大小（GB）'
+												}
+											]}
 											required
-											requiredMessage="请输入存储配额大小（GB）"
+											initialValue={5}
 										>
-											<Input
-												name="storageQuota"
-												defaultValue={5}
-												htmlType="number"
+											<InputNumber
 												placeholder="请输入存储配额大小"
-												addonTextAfter="GB"
+												addonAfter="GB"
 											/>
 										</FormItem>
 									</div>
@@ -1338,29 +1403,29 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					</FormBlock>
 					{childrenRender(
 						customForm,
-						field,
+						form,
 						globalCluster,
 						globalNamespace
 					)}
 					<div className={styles['summit-box']}>
-						<Form.Submit
+						<Button
 							type="primary"
-							validate
+							htmlType="submit"
 							style={{ marginRight: 8 }}
 							onClick={handleSubmit}
 						>
 							提交
-						</Form.Submit>
+						</Button>
 						<Button
-							type="normal"
+							type="default"
 							onClick={() => window.history.back()}
 						>
 							取消
 						</Button>
 					</div>
 				</Form>
-			</Page.Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

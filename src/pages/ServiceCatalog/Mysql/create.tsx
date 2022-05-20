@@ -870,7 +870,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	if (successFlag) {
 		return (
 			<ProPage>
-				<ProHeader />
 				<ProContent>
 					<Result
 						status="success"
@@ -927,7 +926,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	if (errorFlag) {
 		return (
 			<ProPage>
-				<ProHeader />
 				<ProContent>
 					<Result
 						status="error"
