@@ -51,10 +51,7 @@ export default function FormTextArea(props: CustomFormItemProps): JSX.Element {
 					name={props.variable}
 					initialValue={props.defaultValue}
 				>
-					<Input.TextArea
-						style={{ width: '390px' }}
-						defaultValue={props.defaultValue}
-					/>
+					<Input.TextArea style={{ width: '390px' }} />
 				</FormItem>
 			</div>
 		</div>

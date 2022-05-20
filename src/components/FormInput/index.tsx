@@ -60,7 +60,6 @@ export default function FormInput(props: CustomFormItemProps): JSX.Element {
 				>
 					<Input
 						style={{ width: '390px' }}
-						defaultValue={props.defaultValue}
 						placeholder={props.message}
 					/>
 				</FormItem>

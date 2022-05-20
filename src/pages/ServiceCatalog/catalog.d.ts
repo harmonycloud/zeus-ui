@@ -15,7 +15,7 @@ export interface CreateParams {
 }
 export interface AffinityItem {
 	label: string;
-	namespace: string;
+	namespace?: string;
 	required: boolean;
 }
 export interface AffinityProps {
@@ -142,6 +142,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
+	mirrorImageId?: any;
 }
 export interface KafkaDTO {
 	custom?: boolean;
@@ -242,6 +243,7 @@ export interface EsSendDataParams extends CommonSendDataParams {
 export interface EsCreateValuesParams extends CreateValuesParams {
 	pwd: string;
 	namespace: string;
+	mirrorImageId?: any;
 }
 export interface DynamicSendDataParams {
 	chartName: string;
@@ -264,11 +266,9 @@ export interface DynamicCreateValueParams {
 	aliasName: string;
 	labels: string;
 	description: string;
-	tolerations: boolean;
+	tolerations: any[];
 	tolerationsLabels: TolerationLabelItem[];
-	nodeAffinity: boolean;
-	nodeAffinityLabel: any[];
-	nodeAffinityForce: boolean;
+	nodeAffinity?: AffinityItem[];
 	version: string;
 	namespace: string;
 }

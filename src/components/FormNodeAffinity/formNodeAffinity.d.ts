@@ -9,6 +9,7 @@ export interface FormNodeAffinityProps extends CustomFormItemProps {
 export interface NodeAffinityLabelItem {
 	label: string;
 	id: number;
+	required: boolean;
 }
 
 export interface NodeAffinityProps {

@@ -18,22 +18,22 @@ export default function FormSelectOrRadios(
 	const keys = Object.keys(props);
 	const [value, setValue] = useState<string>(props.defaultValue);
 	useEffect(() => {
-		const filedValue = props.field.getValues();
+		const filedValue = props.form.getFieldsValue();
 		const keys = Object.keys(filedValue);
 		if (props.defaultValue !== '' && !keys.includes(props.variable)) {
-			props.field.setValues({
+			props.form.setFieldsValue({
 				[`${props.variable}`]: props.defaultValue
 			});
 		}
 	}, []);
 	const handleChange: (value: any) => void = (value) => {
-		props.field.setValues({
+		props.form.setFieldsValue({
 			[`${props.variable}`]: value
 		});
 	};
 	const handleSelectBlock: (value: any) => void = (value: any) => {
 		setValue(value);
-		props.field.setValues({
+		props.form.setFieldsValue({
 			[`${props.variable}`]: value
 		});
 	};
@@ -82,10 +82,7 @@ export default function FormSelectOrRadios(
 						name={props.variable}
 						initialValue={props.defaultValue}
 					>
-						<Select
-							onChange={handleChange}
-							defaultValue={props.defaultValue}
-						>
+						<Select onChange={handleChange}>
 							{props.options?.map((item) => (
 								<Option key={item} value={item}>
 									{item}

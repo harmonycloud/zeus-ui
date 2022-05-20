@@ -14,7 +14,8 @@ import {
 	Button,
 	Popover,
 	Form,
-	notification
+	notification,
+	Result
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -31,11 +32,6 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
-// * 结果页相关-start
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-// * 结果页相关-end
 import { instanceSpecList } from '@/utils/const';
 import {
 	CreateProps,
@@ -50,10 +46,16 @@ import {
 } from '../catalog';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
+import {
+	middlewareDetailProps,
+	StorageClassProps,
+	MirrorItem,
+	AutoCompleteOptionItem
+} from '@/types/comment';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
+
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 
@@ -77,8 +79,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
-	const [mirrorList, setMirrorList] = useState<any[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
+	const [mirrorList, setMirrorList] = useState<MirrorItem[]>([]);
 	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
@@ -93,7 +95,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const [tolerationList, setTolerationList] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
@@ -313,16 +317,23 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				quota: { redis: {} },
-				mirrorImageId: mirrorList.find(
-					(item) => item.address === values['mirrorImageId']
-				)
-					? mirrorList
-							.find(
-								(item) =>
-									item.address === values['mirrorImageId']
-							)
-							.id.toString()
-					: ''
+				mirrorImageId:
+					mirrorList
+						.find(
+							(item: MirrorItem) =>
+								item.address === values.mirrorImageId
+						)
+						?.id.toString() || ''
+				// mirrorImageId: mirrorList.find(
+				// 	(item) => item.address === values['mirrorImageId']
+				// )
+				// 	? mirrorList
+				// 			.find(
+				// 				(item) =>
+				// 					item.address === values['mirrorImageId']
+				// 			)
+				// 			.id.toString()
+				// 	: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -454,7 +465,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -464,7 +481,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setTolerationList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setTolerationList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -510,23 +533,21 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			<ProPage>
 				<ProHeader />
 				<ProContent>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
 				</ProContent>
 			</ProPage>
 		);
@@ -536,29 +557,33 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			<ProPage>
 				<ProHeader />
 				<ProContent>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
 				</ProContent>
 			</ProPage>
 		);
@@ -569,23 +594,22 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			<ProPage>
 				<ProHeader />
 				<ProContent>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
+					<Result
+						status="error"
+						title="发布失败"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
 				</ProContent>
 			</ProPage>
 		);
@@ -613,9 +637,17 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											</span>
 										</label>
 										<div className="form-content">
-											<FormItem required>
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入命名空间'
+													}
+												]}
+												name="namespace"
+											>
 												<Select
-													// name="namespace"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -1168,34 +1200,42 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									<div
-										className="form-content"
-										style={{ flex: '0 0 376px' }}
-									>
-										<FormItem
-											rules={[
-												{
-													required: true,
-													message: '请选择镜像仓库'
-												}
-											]}
-											name="mirrorImageId"
+									{mirrorList.length && (
+										<div
+											className="form-content"
+											style={{ flex: '0 0 376px' }}
 										>
-											<AutoComplete
-												placeholder="请选择"
-												allowClear={true}
-												defaultValue={
-													mirrorList[0]?.address
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择镜像仓库'
+													}
+												]}
+												name="mirrorImageId"
+												initialValue={
+													mirrorList[0].address
 												}
-												dataSource={mirrorList.map(
-													(item: any) => item.address
-												)}
-												style={{
-													width: '100%'
-												}}
-											/>
-										</FormItem>
-									</div>
+											>
+												<AutoComplete
+													placeholder="请选择"
+													allowClear={true}
+													options={mirrorList.map(
+														(item: any) => {
+															return {
+																label: item.address,
+																value: item.address
+															};
+														}
+													)}
+													style={{
+														width: '100%'
+													}}
+												/>
+											</FormItem>
+										</div>
+									)}
 								</li>
 							</ul>
 						</div>
@@ -1470,10 +1510,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 															}
 														]}
 														name="storageQuota"
+														initialValue={5}
 													>
 														<Input
 															type="number"
-															defaultValue={5}
 															min={1}
 															placeholder="请输入存储配额大小"
 															addonAfter="GB"

@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Icon,
-	Form,
-	Select,
-	Switch,
-	Button
-} from '@alicloud/console-components';
+import { Form, AutoComplete, Button, Switch } from 'antd';
+import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { getNodeTaint } from '@/services/middleware';
 import {
 	FormTolerationsProps,
 	TolerationLabelItem,
 	TolerationsProps
 } from './formTolerations';
+import { AutoCompleteOptionItem } from '@/types/comment';
 import './index.scss';
 
 const { Item: FormItem } = Form;
@@ -30,7 +26,7 @@ export default function FormTolerations(
 		nodeTolerationsLabel: '',
 		nodeTolerationsForce: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [tolerationsLabels, setTolerationsLabels] = useState<
 		TolerationLabelItem[]
 	>([]);
@@ -39,7 +35,13 @@ export default function FormTolerations(
 		if (JSON.stringify(cluster) !== '{}') {
 			getNodeTaint({ clusterid: cluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				}
 			});
 		}
@@ -48,9 +50,6 @@ export default function FormTolerations(
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
-			[key]: value
-		});
-		props.field.setValues({
 			[key]: value
 		});
 	};
@@ -65,12 +64,11 @@ export default function FormTolerations(
 				...tolerationsLabels,
 				{ label: tolerations.nodeTolerationsLabel, id: Math.random() }
 			]);
-			props.field.setValues({
-				tolerationsLabels: [
+			props.form.setFieldsValue({
+				tolerations: [
 					...tolerationsLabels,
 					{
-						label: tolerations.nodeTolerationsLabel,
-						id: Math.random()
+						label: tolerations.nodeTolerationsLabel
 					}
 				]
 			});
@@ -82,10 +80,8 @@ export default function FormTolerations(
 		setTolerationsLabels(
 			tolerationsLabels.filter((arr) => arr.id !== item.id)
 		);
-		props.field.setValues({
-			tolerationsLabels: tolerationsLabels.filter(
-				(arr) => arr.id !== item.id
-			)
+		props.form.setFieldsValue({
+			tolerations: tolerationsLabels.filter((arr) => arr.id !== item.id)
 		});
 	};
 
@@ -103,17 +99,24 @@ export default function FormTolerations(
 			</label>
 			<div className="form-content">
 				<FormItem
-					required={keys.includes('required')}
-					requiredMessage={
-						keys.includes('required') ? `请输入${props.label}` : ''
-					}
+					rules={[
+						{
+							required:
+								keys.includes('required') && props.required,
+							message:
+								keys.includes('required') && props.required
+									? `请输入${props.label}`
+									: ''
+						}
+					]}
+					name={props.variable}
+					initialValue={props.nodeTolerations}
 				>
 					<label className="dynamic-switch-label">
 						{tolerations.nodeTolerations ? '已开启' : '已关闭 '}
 					</label>
 					<Switch
 						checked={tolerations.nodeTolerations}
-						name={props.variable}
 						onChange={(value) =>
 							changeTolerations(value, 'nodeTolerations')
 						}
@@ -129,7 +132,7 @@ export default function FormTolerations(
 								className="dynamic-form-node-tolerations-content"
 								style={{ marginLeft: 24 }}
 							>
-								<Select.AutoComplete
+								<AutoComplete
 									value={tolerations.nodeTolerationsLabel}
 									onChange={(value) =>
 										changeTolerations(
@@ -137,7 +140,7 @@ export default function FormTolerations(
 											'nodeTolerationsLabel'
 										)
 									}
-									dataSource={labelList}
+									options={labelList}
 									style={{
 										width: '100%'
 									}}
@@ -155,12 +158,12 @@ export default function FormTolerations(
 											: true
 									}
 									onClick={addTolerationsLabels}
-								>
-									<Icon
-										style={{ color: '#005AA5' }}
-										type="add"
-									/>
-								</Button>
+									icon={
+										<PlusOutlined
+											style={{ color: '#005AA5' }}
+										/>
+									}
+								></Button>
 							</div>
 						</>
 					) : null}
@@ -171,9 +174,7 @@ export default function FormTolerations(
 							return (
 								<p className={'tag'} key={item.id}>
 									<span>{item.label}</span>
-									<Icon
-										type="error"
-										size="xs"
+									<CloseCircleFilled
 										className={'tag-close'}
 										onClick={() =>
 											reduceTolerationsLabels(item)

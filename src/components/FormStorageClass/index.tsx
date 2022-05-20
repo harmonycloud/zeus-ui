@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
+import { Form, Select, Popover } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getStorageClass } from '@/services/middleware';
 import { FormStorageClassProps } from './formStorageClass';
 import { StorageClassProps } from '@/types/comment';
@@ -59,37 +60,32 @@ export default function FormStorageClass(
 					{props.label}
 				</span>
 				{keys.includes('description') ? (
-					<Balloon
-						offset={[0, 15]}
-						align="t"
-						trigger={
-							<Icon
-								type="question-circle"
-								size="xs"
-								style={{ marginLeft: 8 }}
-							/>
-						}
-						closable={false}
+					<Popover
+						// offset={[0, 15]}
+						content={props.description}
 					>
-						{props.description}
-					</Balloon>
+						<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+					</Popover>
 				) : null}
 			</label>
 			<div className="form-content">
 				<FormItem
-					required={keys.includes('required') && props.required}
-					requiredMessage={
-						keys.includes('required') && props.required
-							? `请选择${props.label}`
-							: ''
-					}
+					rules={[
+						{
+							required:
+								keys.includes('required') && props.required,
+							message:
+								keys.includes('required') && props.required
+									? `请输入${props.label}`
+									: ''
+						}
+					]}
+					name={props.variable}
 				>
 					<Select
 						style={{ width: '390px' }}
 						onChange={handleChange}
-						name={props.variable}
 						value={value}
-						autoWidth={false}
 					>
 						{storageClassList.map(
 							(item: StorageClassProps, index) => (

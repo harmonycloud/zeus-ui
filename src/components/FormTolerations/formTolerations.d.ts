@@ -8,7 +8,8 @@ export interface FormTolerationsProps extends CustomFormItemProps {
 }
 export interface TolerationLabelItem {
 	label: string;
-	id: number;
+	value?: string;
+	id?: number;
 }
 
 export interface TolerationsProps {
