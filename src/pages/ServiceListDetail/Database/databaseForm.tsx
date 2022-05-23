@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Popover, notification } from 'antd';
+import { Modal, Form, Input, Popover, notification, Select } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { createDb, updateDb } from '@/services/middleware';
 import pattern from '@/utils/pattern';
-import { Select } from '@alifd/next';
 import { FormProps } from './database';
 
 const FormItem = Form.Item;
@@ -147,7 +146,6 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 					]}
 				>
 					<Select
-						trim={true}
 						disabled={data ? true : false}
 						placeholder="请选择"
 						style={{ width: '100%' }}
