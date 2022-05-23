@@ -102,7 +102,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* mysql备份跳转使用 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/:backupFileName"
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
 					component={MysqlCreate}
 					exact
 				/>
