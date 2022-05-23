@@ -80,7 +80,7 @@ const Monitor = (props: MonitorProps) => {
 				<>
 					<div
 						style={{
-							height: '100%',
+							height: 'calc(100vh - 83px)',
 							visibility: menuHide ? 'visible' : 'hidden'
 						}}
 					>
