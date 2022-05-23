@@ -350,7 +350,7 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text: serviceStatus
-										? '(' + serviceStatus.label + ')'
+										? '(' + serviceStatus.text + ')'
 										: '(运行异常)',
 									x: typeWidth + nameWidth + 32,
 									y: 15,
