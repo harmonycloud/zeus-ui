@@ -15,7 +15,8 @@ import {
 	Popover,
 	Form,
 	notification,
-	Result
+	Result,
+	InputNumber
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -1385,14 +1386,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		]}
 																		name="cpu"
 																	>
-																		<Input
-																			type="number"
-																			min={
-																				0.1
-																			}
+																		<InputNumber
 																			step={
 																				0.1
 																			}
+																			style={{
+																				width: '100%'
+																			}}
 																			placeholder="请输入自定义CPU配额，单位为Core"
 																		/>
 																	</FormItem>
@@ -1423,16 +1423,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																				}Gi`
 																			}
 																		]}
+																		name="memory"
 																	>
-																		<Input
-																			name="memory"
-																			type="number"
-																			min={
-																				0.1
-																			}
+																		<InputNumber
 																			step={
 																				0.1
 																			}
+																			style={{
+																				width: '100%'
+																			}}
 																			placeholder="请输入自定义内存配额，单位为Gi"
 																		/>
 																	</FormItem>
@@ -1512,9 +1511,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														name="storageQuota"
 														initialValue={5}
 													>
-														<Input
-															type="number"
-															min={1}
+														<InputNumber
+															style={{
+																width: '100%'
+															}}
 															placeholder="请输入存储配额大小"
 															addonAfter="GB"
 														/>

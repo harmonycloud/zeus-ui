@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input, Select, Form, notification } from 'antd';
+import { Modal, Input, Select, Form, notification, InputNumber } from 'antd';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
 
@@ -119,22 +119,26 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 					rules={[
 						{
 							type: 'number',
-							min: 3,
+							min:
+								data.title === '主节点' ||
+								data.title === '数据节点'
+									? 3
+									: 1,
 							message: '数据节点数量最小值为3'
 						}
 					]}
 					name="num"
 					className="ant-form-name"
+					initialValue={data.num}
 				>
-					<Input
-						min={
-							data.title === '主节点' || data.title === '数据节点'
-								? 3
-								: 1
-						}
+					<InputNumber
+						// min={
+						// 	data.title === '主节点' || data.title === '数据节点'
+						// 		? 3
+						// 		: 1
+						// }
 						value={data.num}
 						style={{ width: '100px' }}
-						type="number"
 						onChange={inputChange}
 					/>
 				</FormItem>
@@ -191,10 +195,11 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 													]}
 													name="cpu"
 												>
-													<Input
-														type="number"
-														min={0.1}
+													<InputNumber
 														step={0.1}
+														style={{
+															width: '100%'
+														}}
 														placeholder="请输入自定义CPU配额，单位为Core"
 													/>
 												</FormItem>
@@ -222,10 +227,11 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 													]}
 													name="memory"
 												>
-													<Input
-														type="number"
-														min={0.1}
+													<InputNumber
 														step={0.1}
+														style={{
+															width: '100%'
+														}}
 														placeholder="请输入自定义内存配额，单位为Gi"
 													/>
 												</FormItem>

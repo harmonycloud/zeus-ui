@@ -1186,12 +1186,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																required
 																name="cpu"
 															>
-																<Input
-																	type="number"
+																<InputNumber
 																	style={{
 																		width: '100%'
 																	}}
-																	min={0.1}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
@@ -1226,11 +1224,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																required
 															>
 																<InputNumber
-																	type="number"
 																	style={{
 																		width: '100%'
 																	}}
-																	min={0.1}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																/>

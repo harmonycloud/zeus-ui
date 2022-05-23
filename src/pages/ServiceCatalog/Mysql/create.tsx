@@ -1607,10 +1607,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												}
 											]}
 										>
-											<Input
-												type="number"
-												placeholder="请输入mysql的服务端口号，默认为3306"
-											/>
+											<InputNumber placeholder="请输入mysql的服务端口号，默认为3306" />
 										</FormItem>
 									</div>
 								</li>
@@ -1844,9 +1841,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																]}
 																required
 															>
-																<Input
-																	type="number"
-																	min={0.1}
+																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
@@ -1880,9 +1878,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																required
 																name="memory"
 															>
-																<Input
-																	type="number"
-																	min={0.1}
+																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																/>
