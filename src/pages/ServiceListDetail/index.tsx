@@ -437,20 +437,23 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						</div>
 					) : null
 				}
-			>
-				<Button
-					onClick={() => refresh(activeKey)}
-					style={{ padding: '0 9px', marginRight: '8px' }}
-				>
-					<Icon type="refresh" />
-				</Button>
-				{data?.mysqlDTO?.openDisasterRecoveryMode &&
-				data?.mysqlDTO?.isSource === false ? (
-					<Button type="primary" onClick={toDetail}>
-						返回源服务
-					</Button>
-				) : null}
-			</ProHeader>
+				extra={
+					<>
+						<Button
+							onClick={() => refresh(activeKey)}
+							style={{ padding: '0 9px', marginRight: '8px' }}
+						>
+							<Icon type="refresh" />
+						</Button>
+						{data?.mysqlDTO?.openDisasterRecoveryMode &&
+						data?.mysqlDTO?.isSource === false ? (
+							<Button type="primary" onClick={toDetail}>
+								返回源服务
+							</Button>
+						) : null}
+					</>
+				}
+			></ProHeader>
 			{waringVisible && reason && status !== 'Running' && (
 				<div className="warning-info">
 					<Icon
