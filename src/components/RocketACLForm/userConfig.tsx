@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from 'react';
+// import {
+// 	Icon,
+// 	Form,
+// 	Input,
+// 	Grid,
+// 	Radio,
+// 	Select,
+// 	Switch
+// } from '@alicloud/console-components';
+import { Form, Input, Col, Row, Radio, Select, Switch } from 'antd';
+import { PlusCircleFilled } from '@ant-design/icons';
+import { ValidateStatus } from 'antd/lib/form/FormItem';
 import {
-	Icon,
-	Form,
-	Input,
-	Grid,
-	Radio,
-	Select,
-	Switch
-} from '@alicloud/console-components';
+	RightOutlined,
+	CloseOutlined,
+	MinusCircleFilled
+} from '@ant-design/icons';
 // import { findDOMNode } from 'react-dom';
 import { userConfigProps, authProps, visibleProps } from './acl';
 import { judgeObjArrayHeavyByAttr } from '@/utils/utils';
-import { stateProps } from '@/utils/enum';
+// import { stateProps } from '@/utils/enum';
 // todo 优化点
 // todo 方法一、对于topicPerm 和 groupPerm 的处理 可以更为简洁 可以尝试 Object.entries() 将对象转成一个二维数组 在通过Object.fromEntries 将二位数组重新转换成对象
 // todo 方法二、可以使用Map对象，通过setMap等函数来处理数据，最后通过Object.fromEntries(map) 可以转换成对象
 const { Item: FormItem } = Form;
-const { Group: RadioGroup } = Radio;
-const { Row, Col } = Grid;
+// const { Group: RadioGroup } = Radio;
+// const { Row, Col } = Grid;
 const { Option } = Select;
 
 export default function UserConfig(props: userConfigProps): JSX.Element {
@@ -36,8 +44,8 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 	});
 	const [topics, setTopics] = useState<authProps[]>([]);
 	const [groups, setGroups] = useState<authProps[]>([]);
-	const [nameState, setNameState] = useState<stateProps>();
-	const [passwordState, setPasswordState] = useState<stateProps>();
+	const [nameState, setNameState] = useState<ValidateStatus>();
+	const [passwordState, setPasswordState] = useState<ValidateStatus>();
 	const [errorVisible, setErrorVisible] = useState<visibleProps>({
 		topicsVisible: false,
 		groupsVisible: false
@@ -116,16 +124,16 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 		});
 		if (key === 'accessKey') {
 			if (value.length > 6 && value.length <= 20) {
-				setNameState(stateProps.success);
+				setNameState('success');
 			} else {
-				setNameState(stateProps.error);
+				setNameState('error');
 			}
 		}
 		if (key === 'secretKey') {
 			if (value.length > 6 && value.length <= 20) {
-				setPasswordState(stateProps.success);
+				setPasswordState('success');
 			} else {
-				setPasswordState(stateProps.error);
+				setPasswordState('error');
 			}
 		}
 	};
@@ -210,9 +218,17 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 		<div>
 			<div className="acl-user-config" onClick={handleClick}>
 				<div className="acl-user-title">
-					<Icon
+					{/* <Icon
 						type="arrow-right"
 						size="small"
+						style={{
+							marginRight: 6,
+							color: '#575757',
+							transition: 'transform .05s linear',
+							transform: visible ? 'rotate(450deg)' : ''
+						}}
+					/> */}
+					<RightOutlined
 						style={{
 							marginRight: 6,
 							color: '#575757',
@@ -223,11 +239,12 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 					账户信息
 				</div>
 				<div className="acl-user-close">
-					<Icon
+					<CloseOutlined onClick={(e) => deleteUserConfig(e)} />
+					{/* <Icon
 						type="close"
 						size="small"
 						onClick={(e) => deleteUserConfig(e)}
-					/>
+					/> */}
 				</div>
 			</div>
 			{visible && (
@@ -237,12 +254,12 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 							<span style={{ marginRight: 8 }}>账户密码</span>
 						</label>
 						<div className="form-content">
-							<Row gutter="4">
+							<Row gutter={4}>
 								<Col>
 									<FormItem
-										requiredMessage="长度在7个字符-20字符"
-										minmaxLengthMessage="长度在7个字符-20字符"
-										validateState={nameState}
+										// requiredMessage="长度在7个字符-20字符"
+										// minmaxLengthMessage="长度在7个字符-20字符"
+										validateStatus={nameState}
 										help={
 											nameState === 'error'
 												? '长度在7个字符-20字符'
@@ -262,9 +279,9 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								</Col>
 								<Col>
 									<FormItem
-										requiredMessage="长度在7个字符-20字符"
-										minmaxLengthMessage="长度在7个字符-20字符"
-										validateState={passwordState}
+										// requiredMessage="长度在7个字符-20字符"
+										// minmaxLengthMessage="长度在7个字符-20字符"
+										validateStatus={passwordState}
 										help={
 											passwordState === 'error'
 												? '长度在7个字符-20字符'
@@ -294,7 +311,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 						</label>
 						<div className="form-content">
 							<Row>
-								<RadioGroup
+								<Radio.Group
 									name="admin"
 									value={data.admin}
 									onChange={(value) =>
@@ -303,7 +320,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								>
 									<Radio value={false}>否</Radio>
 									<Radio value={true}>是</Radio>
-								</RadioGroup>
+								</Radio.Group>
 							</Row>
 						</div>
 					</li>
@@ -395,9 +412,9 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														width: '22%'
 													}}
 													value={item.key}
-													onChange={(value) =>
+													onChange={(e) =>
 														handleAuthChange(
-															value,
+															e.target.value,
 															'topicKey',
 															index
 														)
@@ -434,7 +451,16 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														PUB|SUB
 													</Option>
 												</Select>
-												<Icon
+												<PlusCircleFilled
+													style={{
+														marginLeft: 16,
+														color: '#0070cc'
+													}}
+													onClick={() =>
+														addAuth('topic')
+													}
+												/>
+												{/* <Icon
 													type="plus-circle-fill"
 													size="small"
 													style={{
@@ -444,8 +470,29 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													onClick={() =>
 														addAuth('topic')
 													}
+												/> */}
+												<MinusCircleFilled
+													style={{
+														marginLeft: 10,
+														color:
+															topics.length ===
+																2 && index === 1
+																? '#CCCCCC'
+																: '#C80000',
+														cursor:
+															topics.length ===
+																2 && index === 1
+																? 'not-allowed'
+																: 'pointer'
+													}}
+													onClick={() =>
+														deleteAuth(
+															index,
+															'topic'
+														)
+													}
 												/>
-												<Icon
+												{/* <Icon
 													type="minus-circle-fill"
 													size="small"
 													style={{
@@ -467,7 +514,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 															'topic'
 														)
 													}
-												/>
+												/> */}
 											</div>
 										</li>
 									);
@@ -544,9 +591,9 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														width: '22%'
 													}}
 													value={item.key}
-													onChange={(value) =>
+													onChange={(e) =>
 														handleAuthChange(
-															value,
+															e.target.value,
 															'groupKey',
 															index
 														)
@@ -583,7 +630,16 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														PUB|SUB
 													</Option>
 												</Select>
-												<Icon
+												<PlusCircleFilled
+													style={{
+														marginLeft: 16,
+														color: '#0070cc'
+													}}
+													onClick={() =>
+														addAuth('groups')
+													}
+												/>
+												{/* <Icon
 													type="plus-circle-fill"
 													size="small"
 													style={{
@@ -593,8 +649,29 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													onClick={() =>
 														addAuth('groups')
 													}
+												/> */}
+												<MinusCircleFilled
+													style={{
+														marginLeft: 10,
+														color:
+															groups.length ===
+																2 && index === 1
+																? '#CCCCCC'
+																: '#C80000',
+														cursor:
+															groups.length ===
+																2 && index === 1
+																? 'not-allowed'
+																: 'pointer'
+													}}
+													onClick={() =>
+														deleteAuth(
+															index,
+															'groups'
+														)
+													}
 												/>
-												<Icon
+												{/* <Icon
 													type="minus-circle-fill"
 													size="small"
 													style={{
@@ -616,7 +693,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 															'groups'
 														)
 													}
-												/>
+												/> */}
 											</div>
 										</li>
 									);
