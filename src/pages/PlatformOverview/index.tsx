@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import Page from '@alicloud/console-components-page';
+import { ProPage, ProContent } from '@/components/ProPage';
 import { connect } from 'react-redux';
 import { getClusters } from '@/services/common';
 import { api } from '@/api.json';
@@ -241,8 +241,8 @@ function PlatformOverview(): JSX.Element {
 	};
 
 	return (
-		<Page>
-			<Page.Content style={{ paddingBottom: 0 }}>
+		<ProPage>
+			<ProContent style={{ paddingBottom: 0 }}>
 				<div className="platform_overview-content">
 					<div className="header">
 						<div className="header-btn">
@@ -692,8 +692,8 @@ function PlatformOverview(): JSX.Element {
 						</div>
 					</div>
 				</div>
-			</Page.Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

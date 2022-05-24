@@ -502,9 +502,10 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																	}
 																]}
 															>
-																<Input
-																	type="number"
-																	min={0.1}
+																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	value={
 																		dataes
@@ -537,9 +538,10 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																	}
 																]}
 															>
-																<Input
-																	type="number"
-																	min={0.1}
+																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	value={
 																		dataes

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import {
 	Button,
 	Dialog,
@@ -419,25 +419,16 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	}, []);
 
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={
 					<h1>{`${type}:${middlewareName}(${
 						statusRender(status) || ''
 					})`}</h1>
 				}
-				hasBackArrow
-				renderBackArrow={(elem: any) => (
-					<span
-						className="details-go-back"
-						onClick={() =>
-							history.push(`/serviceList/${name}/${aliasName}`)
-						}
-					>
-						{elem}
-					</span>
-				)}
-				childrenAlign="right"
+				onBack={(elem: any) =>
+					history.push(`/serviceList/${name}/${aliasName}`)
+				}
 				subTitle={
 					data?.mysqlDTO?.openDisasterRecoveryMode &&
 					data?.mysqlDTO?.isSource === false ? (
@@ -446,20 +437,23 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						</div>
 					) : null
 				}
-			>
-				<Button
-					onClick={() => refresh(activeKey)}
-					style={{ padding: '0 9px', marginRight: '8px' }}
-				>
-					<Icon type="refresh" />
-				</Button>
-				{data?.mysqlDTO?.openDisasterRecoveryMode &&
-				data?.mysqlDTO?.isSource === false ? (
-					<Button type="primary" onClick={toDetail}>
-						返回源服务
-					</Button>
-				) : null}
-			</Header>
+				extra={
+					<>
+						<Button
+							onClick={() => refresh(activeKey)}
+							style={{ padding: '0 9px', marginRight: '8px' }}
+						>
+							<Icon type="refresh" />
+						</Button>
+						{data?.mysqlDTO?.openDisasterRecoveryMode &&
+						data?.mysqlDTO?.isSource === false ? (
+							<Button type="primary" onClick={toDetail}>
+								返回源服务
+							</Button>
+						) : null}
+					</>
+				}
+			></ProHeader>
 			{waringVisible && reason && status !== 'Running' && (
 				<div className="warning-info">
 					<Icon
@@ -476,7 +470,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					/>
 				</div>
 			)}
-			<Content>
+			<ProContent>
 				<Tab
 					navStyle={{ marginBottom: '15px' }}
 					activeKey={activeKey}
@@ -537,12 +531,12 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						</Tab.Item>
 					) : null}
 				</Tab>
-			</Content>
+			</ProContent>
 			<SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}
 			/>
-		</Page>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

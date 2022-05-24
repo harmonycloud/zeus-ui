@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import { CascaderSelect, Select, Grid } from '@alicloud/console-components';
-import { DatePicker } from '@alicloud/console-components';
-import moment, { Moment } from 'moment';
+import { Cascader, Select, Row, Col, DatePicker } from 'antd';
+import moment from 'moment';
 import { timeSelectDataSource } from '@/utils/const';
 import { TimeSelectProps } from './timeSelect';
 import './index.scss';
 
 const { Option } = Select;
-const { Row, Col } = Grid;
 
 export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 	const { RangePicker } = DatePicker;
 	const { timeSelect, source = 'default', style = {} } = props;
 	const [isSelect, setIsSelect] = useState<boolean>(false);
-	const [startTime, setStartTime] = useState<Moment>(
+	const [startTime, setStartTime] = useState<any>(
 		moment().subtract(1, 'hours')
 	);
-	const [endTime, setEndTime] = useState<Moment>(moment());
-	const [timeQuantum, setTimeQuantum] = useState<string>('');
+	const [endTime, setEndTime] = useState<any>(moment());
+	const [timeQuantum, setTimeQuantum] = useState<any>();
 
 	const onChange = (value: any) => {
 		setStartTime(value[0]);
@@ -31,8 +29,8 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 
 	const handleChange = (value: any) => {
 		setTimeQuantum(value);
-		const number = value.split('-')[0];
-		const unit = value.split('-')[1];
+		const number = value[1].split('-')[0];
+		const unit = value[1].split('-')[1];
 		setStartTime(moment().subtract(number, unit));
 		setEndTime(moment());
 		timeSelect([moment().subtract(number, unit), moment()]);
@@ -51,15 +49,14 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 						<Select
 							onChange={onTypeChange}
 							defaultValue={isSelect}
-							hasBorder={false}
+							bordered={false}
 						>
 							<Option value={false}>日期选择</Option>
 							<Option value={true}>时间段</Option>
 						</Select>
-						<CascaderSelect
-							listStyle={{ width: '50%' }}
+						<Cascader
 							style={{ width: '100%' }}
-							dataSource={timeSelectDataSource}
+							options={timeSelectDataSource}
 							onChange={handleChange}
 							value={timeQuantum}
 						/>
@@ -69,7 +66,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 						<Select
 							onChange={onTypeChange}
 							defaultValue={isSelect}
-							hasBorder={false}
+							bordered={false}
 						>
 							<Option value={false}>日期选择</Option>
 							<Option value={true}>时间段</Option>
@@ -77,7 +74,6 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 						<RangePicker
 							showTime
 							onChange={onChange}
-							onOk={onRangeOk}
 							style={{ width: '100%' }}
 							value={[startTime, endTime]}
 						/>
@@ -95,16 +91,16 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 								<Select
 									onChange={onTypeChange}
 									defaultValue={isSelect}
-									hasBorder={false}
+									bordered={false}
 								>
 									<Option value={false}>日期选择</Option>
 									<Option value={true}>时间段</Option>
 								</Select>
 							</Col>
 							<Col span={19} style={{ marginLeft: 13 }}>
-								<CascaderSelect
+								<Cascader
 									style={{ width: '100%' }}
-									dataSource={timeSelectDataSource}
+									options={timeSelectDataSource}
 									onChange={handleChange}
 									value={timeQuantum}
 								/>
@@ -118,7 +114,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 								<Select
 									onChange={onTypeChange}
 									defaultValue={isSelect}
-									hasBorder={false}
+									bordered={false}
 								>
 									<Option value={false}>日期选择</Option>
 									<Option value={true}>时间段</Option>
@@ -128,7 +124,6 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 								<RangePicker
 									showTime
 									onChange={onChange}
-									onOk={onRangeOk}
 									style={{ width: '100%' }}
 									value={[startTime, endTime]}
 								/>

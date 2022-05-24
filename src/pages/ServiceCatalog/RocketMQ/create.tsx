@@ -1258,9 +1258,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																]}
 																required
 															>
-																<Input
-																	type="number"
-																	min={0.1}
+																<InputNumber
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
@@ -1294,9 +1292,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																]}
 																required
 															>
-																<Input
-																	type="number"
-																	min={0.1}
+																<InputNumber
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																/>

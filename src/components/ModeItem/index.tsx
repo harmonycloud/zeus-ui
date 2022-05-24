@@ -35,10 +35,10 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 	useEffect(() => {
 		onChange(modifyData);
 	}, [modifyData]);
-	const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const inputChange = (value: any) => {
 		setModifyData({
 			...modifyData,
-			num: Number(e.target.value)
+			num: value
 		});
 	};
 	if (data.disabled) {
