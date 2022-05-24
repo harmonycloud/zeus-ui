@@ -1093,11 +1093,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											patternMessage="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 										>
 											<Input
 												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
+												placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 												trim
 											/>
 										</FormItem>
@@ -2037,11 +2037,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														required
 														requiredMessage="请输入服务名称"
 														pattern={pattern.name}
-														patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+														patternMessage="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 													>
 														<Input
 															name="relationName"
-															placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
+															placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 															trim
 														/>
 													</FormItem>
