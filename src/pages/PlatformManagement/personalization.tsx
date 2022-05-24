@@ -197,7 +197,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				setBrowserValue(imageData('browser.svg', url));
 				storage.setLocal('personalization', {
 					...storage.getLocal('personalization'),
-					browserLogo: url
+					tabLogo: url
 				});
 			}
 			setImgRule(false);
@@ -220,7 +220,7 @@ function Personlization(props: { activeKey: string | number }): JSX.Element {
 				storage.getLocal('personalization').backgroundImage;
 			values.loginLogo = storage.getLocal('personalization').loginLogo;
 			values.homeLogo = storage.getLocal('personalization').homeLogo;
-			values.tabLogo = storage.getLocal('personalization').browserLogo;
+			values.tabLogo = storage.getLocal('personalization').tabLogo;
 
 			if (values.status === '1') {
 				values.status = 'init';
