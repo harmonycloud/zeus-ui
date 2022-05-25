@@ -390,6 +390,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		}
 	}, [globalCluster, globalNamespace]);
 
+	const childrenPostRender = (mode: string) => {
+		return <div></div>;
+	};
+
 	// * 结果页相关
 	if (commitFlag) {
 		return (
@@ -1130,7 +1134,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												三主三从：主实例宕机期间，从实例仍可以对外提供消息的消费，但不支持写入，从实例无法自动切换为主实例
 											</p>
 											<p>
-												多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费
+												多副本模式：即DLedger模式，主实例宕机期间，自动进行选主，不影响消息的写入和消费,不支持集群外访问
 											</p>
 										</Balloon>
 									</label>
@@ -1308,34 +1312,47 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										</FormItem>
 									</div>
 								</li>
-								<li
-									className="display-flex form-li"
-									style={{ alignItems: 'center' }}
-								>
-									<label className="form-name">
-										<span className="ne-required">
-											主机网络
-										</span>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['standard-log']}`}
-									>
-										<div className={styles['switch']}>
-											{hostNetwork ? '已开启' : '关闭'}
-											<Switch
-												checked={hostNetwork}
-												onChange={(value) =>
-													setHostNetwork(value)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-									</div>
-								</li>
+								{mode !== 'dledger' && (
+									<>
+										<li
+											className="display-flex form-li"
+											style={{ alignItems: 'center' }}
+										>
+											<label className="form-name">
+												<span className="ne-required">
+													集群外访问
+												</span>
+											</label>
+											<div
+												className={`form-content display-flex ${styles['standard-log']}`}
+											>
+												<div
+													className={styles['switch']}
+												>
+													{hostNetwork
+														? '已开启'
+														: '关闭'}
+													<Switch
+														checked={hostNetwork}
+														onChange={(value) =>
+															setHostNetwork(
+																value
+															)
+														}
+														size="small"
+														style={{
+															marginLeft: 16,
+															verticalAlign:
+																'middle'
+														}}
+													/>
+												</div>
+											</div>
+										</li>
+										{hostNetwork &&
+											childrenPostRender(mode)}
+									</>
+								)}
 							</ul>
 						</div>
 					</FormBlock>
