@@ -27,7 +27,7 @@ export default function ParamterSetting(
 	const params: DetailParams = useParams();
 	const { currentTab, chartVersion } = params;
 	const menuSelect = (info: MenuInfo) => {
-		setSelectedKey([info.key]);
+		setSelectedKey(info.keyPath);
 		storage.setSession('paramsTab', info.key);
 	};
 	useEffect(() => {

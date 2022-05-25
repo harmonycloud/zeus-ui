@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog } from '@alicloud/console-components';
+import { Modal } from 'antd';
 import { IconFont } from '../IconFont';
 
 export interface SendDataProps {
@@ -31,13 +31,12 @@ const OperatorInstallForm = (props: installFormProps) => {
 		onCancel();
 	};
 	return (
-		<Dialog
+		<Modal
 			title="中间件安装"
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '474px' }}
+			width={500}
 		>
 			<div className="install-title-content">
 				<div className="install-title-name">选择安装规格</div>
@@ -101,7 +100,7 @@ const OperatorInstallForm = (props: installFormProps) => {
 					/>
 				</div>
 			</div>
-		</Dialog>
+		</Modal>
 	);
 };
 export default OperatorInstallForm;
