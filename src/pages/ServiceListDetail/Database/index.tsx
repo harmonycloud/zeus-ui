@@ -15,13 +15,15 @@ export default function DataBase(props: any): JSX.Element {
 	const { middlewareName, clusterId, namespace, customMid, capabilities } =
 		props;
 	const [selectedKey, setSelectedKey] = useState<string[]>(
-		[...storage.getSession('paramsTab')] || ['userManage']
+		storage.getSession('paramsTab')
+			? [storage.getSession('paramsTab')]
+			: ['userManage']
 	);
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
 	const menuSelect = (item: any) => {
-		setSelectedKey(item.key);
-		storage.setSession('paramsTab', selectedKey);
+		setSelectedKey(item.keyPath);
+		storage.setSession('paramsTab', item.key);
 	};
 	useEffect(() => {
 		currentTab &&
