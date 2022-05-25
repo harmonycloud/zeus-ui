@@ -20,7 +20,7 @@ import {
 } from './service.available';
 
 import { iconTypeRender, timeRender } from '@/utils/utils';
-import CustomIcon from '@/components/CustomIcon';
+import { IconFont } from '@/components/IconFont';
 import { getIngresses, deleteIngress } from '@/services/ingress';
 import storage from '@/utils/storage';
 import { getList } from '@/services/serviceList';
@@ -309,12 +309,12 @@ function ServiceAvailable(props: serviceAvailableProps) {
 								}
 								trigger={'click'}
 							>
-								<CustomIcon
+								<IconFont
 									type="icon-fuzhi"
-									size="xs"
 									style={{
 										color: '#0070CC',
-										cursor: 'pointer'
+										cursor: 'pointer',
+										verticalAlign: 'middle'
 									}}
 									onClick={() => copyValue(address, record)}
 								/>
@@ -355,12 +355,13 @@ function ServiceAvailable(props: serviceAvailableProps) {
 													}
 													trigger={'click'}
 												>
-													<CustomIcon
+													<IconFont
 														type="icon-fuzhi"
-														size="xs"
 														style={{
 															color: '#0070CC',
-															cursor: 'pointer'
+															cursor: 'pointer',
+															verticalAlign:
+																'middle'
 														}}
 														onClick={() =>
 															copyValue(
