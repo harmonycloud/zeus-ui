@@ -33,12 +33,6 @@ import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
 import RocketACLForm from '@/components/RocketACLForm';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-// * 结果页相关-start
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-// * 结果页相关-end
-import messageConfig from '@/components/messageConfig';
 import {
 	getNodePort,
 	getNodeTaint,

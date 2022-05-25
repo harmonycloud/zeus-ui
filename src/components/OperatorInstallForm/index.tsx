@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog } from '@alicloud/console-components';
 import { IconFont } from '../IconFont';
-// import CustomIcon from '../CustomIcon';
-// import './index.scss';
 
 export interface SendDataProps {
 	clusterId: string;
