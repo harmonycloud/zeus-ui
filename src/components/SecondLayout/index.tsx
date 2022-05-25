@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
 import { Location } from 'history';
-// import { Page, Content, Header } from '@alicloud/console-components-page';
-// import { CascaderSelect } from '@alicloud/console-components';
 import { ProPage, ProContent, ProHeader } from '../ProPage';
 import { Cascader } from 'antd';
 

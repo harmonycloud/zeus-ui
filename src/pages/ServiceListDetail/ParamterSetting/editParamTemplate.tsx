@@ -21,9 +21,6 @@ import pattern from '@/utils/pattern';
 import { formItemLayout614 } from '@/utils/const';
 import { StoreState } from '@/types';
 import { EditParamTemplateProps } from '../detail';
-// import messageConfig from '@/components/messageConfig';
-// import ErrorPage from '@/components/ResultPage/ErrorPage';
-// import SuccessPage from '@/components/ResultPage/SuccessPage';
 
 const { Step } = Steps;
 export interface ParamsProps {
@@ -323,50 +320,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							</ul>
 						</div>
 					</Result>
-					// <div
-					// 	style={{
-					// 		height: '100%',
-					// 		textAlign: 'center',
-					// 		marginTop: 54
-					// 	}}
-					// >
-					// 	<SuccessPage
-					// 		title={
-					// 			uid
-					// 				? '恭喜，模版修改完成!'
-					// 				: '恭喜，模版创建完成!'
-					// 		}
-					// 		leftText={`返回列表`}
-					// 		countDown={5}
-					// 		leftHandle={() => {
-					// 			history.push(
-					// 				`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-					// 			);
-					// 			setParamTemplateBasicClear();
-					// 			setParamTemplateConfigClear();
-					// 		}}
-					// 		rightBtn={false}
-					// 	>
-					// 		<div className="zeus-param-display-area-content">
-					// 			<div className="title-content">
-					// 				<div className="blue-line"></div>
-					// 				<div className="detail-title">基础信息</div>
-					// 			</div>
-					// 			<ul className="zeus-param-display-info">
-					// 				<li>
-					// 					<label>模版名称</label>
-					// 					<span>{param.name}</span>
-					// 				</li>
-					// 				<li>
-					// 					<label>描述</label>
-					// 					<span title={param.description}>
-					// 						{param.description}
-					// 					</span>
-					// 				</li>
-					// 			</ul>
-					// 		</div>
-					// 	</SuccessPage>
-					// </div>
 				);
 			case 3:
 				return (
@@ -388,26 +341,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							</Button>
 						}
 					/>
-					// <div
-					// 	style={{
-					// 		height: '100%',
-					// 		textAlign: 'center',
-					// 		marginTop: 54
-					// 	}}
-					// >
-					// 	<ErrorPage
-					// 		title={uid ? '模版修改失败' : '模版创建失败'}
-					// 		btnText={`返回创建列表`}
-					// 		countDown={5}
-					// 		btnHandle={() => {
-					// 			history.push(
-					// 				`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-					// 			);
-					// 			setParamTemplateBasicClear();
-					// 			setParamTemplateConfigClear();
-					// 		}}
-					// 	/>
-					// </div>
 				);
 			default:
 				break;

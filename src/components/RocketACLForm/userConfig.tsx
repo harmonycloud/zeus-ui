@@ -1,13 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import {
-// 	Icon,
-// 	Form,
-// 	Input,
-// 	Grid,
-// 	Radio,
-// 	Select,
-// 	Switch
-// } from '@alicloud/console-components';
 import { Form, Input, Col, Row, Radio, Select, Switch } from 'antd';
 import { PlusCircleFilled } from '@ant-design/icons';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -16,16 +7,12 @@ import {
 	CloseOutlined,
 	MinusCircleFilled
 } from '@ant-design/icons';
-// import { findDOMNode } from 'react-dom';
 import { userConfigProps, authProps, visibleProps } from './acl';
 import { judgeObjArrayHeavyByAttr } from '@/utils/utils';
-// import { stateProps } from '@/utils/enum';
 // todo 优化点
 // todo 方法一、对于topicPerm 和 groupPerm 的处理 可以更为简洁 可以尝试 Object.entries() 将对象转成一个二维数组 在通过Object.fromEntries 将二位数组重新转换成对象
 // todo 方法二、可以使用Map对象，通过setMap等函数来处理数据，最后通过Object.fromEntries(map) 可以转换成对象
 const { Item: FormItem } = Form;
-// const { Group: RadioGroup } = Radio;
-// const { Row, Col } = Grid;
 const { Option } = Select;
 
 export default function UserConfig(props: userConfigProps): JSX.Element {
@@ -218,16 +205,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 		<div>
 			<div className="acl-user-config" onClick={handleClick}>
 				<div className="acl-user-title">
-					{/* <Icon
-						type="arrow-right"
-						size="small"
-						style={{
-							marginRight: 6,
-							color: '#575757',
-							transition: 'transform .05s linear',
-							transform: visible ? 'rotate(450deg)' : ''
-						}}
-					/> */}
 					<RightOutlined
 						style={{
 							marginRight: 6,
@@ -257,8 +234,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 							<Row gutter={4}>
 								<Col>
 									<FormItem
-										// requiredMessage="长度在7个字符-20字符"
-										// minmaxLengthMessage="长度在7个字符-20字符"
 										validateStatus={nameState}
 										help={
 											nameState === 'error'
@@ -279,8 +254,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								</Col>
 								<Col>
 									<FormItem
-										// requiredMessage="长度在7个字符-20字符"
-										// minmaxLengthMessage="长度在7个字符-20字符"
 										validateStatus={passwordState}
 										help={
 											passwordState === 'error'
@@ -460,17 +433,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														addAuth('topic')
 													}
 												/>
-												{/* <Icon
-													type="plus-circle-fill"
-													size="small"
-													style={{
-														marginLeft: 16,
-														color: '#0070cc'
-													}}
-													onClick={() =>
-														addAuth('topic')
-													}
-												/> */}
 												<MinusCircleFilled
 													style={{
 														marginLeft: 10,
@@ -492,29 +454,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														)
 													}
 												/>
-												{/* <Icon
-													type="minus-circle-fill"
-													size="small"
-													style={{
-														marginLeft: 10,
-														color:
-															topics.length ===
-																2 && index === 1
-																? '#CCCCCC'
-																: '#C80000',
-														cursor:
-															topics.length ===
-																2 && index === 1
-																? 'not-allowed'
-																: 'pointer'
-													}}
-													onClick={() =>
-														deleteAuth(
-															index,
-															'topic'
-														)
-													}
-												/> */}
 											</div>
 										</li>
 									);
@@ -639,17 +578,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														addAuth('groups')
 													}
 												/>
-												{/* <Icon
-													type="plus-circle-fill"
-													size="small"
-													style={{
-														marginLeft: 16,
-														color: '#0070cc'
-													}}
-													onClick={() =>
-														addAuth('groups')
-													}
-												/> */}
 												<MinusCircleFilled
 													style={{
 														marginLeft: 10,
@@ -671,29 +599,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														)
 													}
 												/>
-												{/* <Icon
-													type="minus-circle-fill"
-													size="small"
-													style={{
-														marginLeft: 10,
-														color:
-															groups.length ===
-																2 && index === 1
-																? '#CCCCCC'
-																: '#C80000',
-														cursor:
-															groups.length ===
-																2 && index === 1
-																? 'not-allowed'
-																: 'pointer'
-													}}
-													onClick={() =>
-														deleteAuth(
-															index,
-															'groups'
-														)
-													}
-												/> */}
 											</div>
 										</li>
 									);

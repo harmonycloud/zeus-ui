@@ -3,7 +3,7 @@ import { Modal, Checkbox, Radio, notification, RadioChangeEvent } from 'antd';
 import { name, icon, color, labelSimple, labelHigh } from '@/utils/enum';
 import { ComponentProp } from '../resource.pool';
 import { getMiddlewareRepository } from '@/services/repository';
-import CustomIcon from '@/components/CustomIcon';
+import { IconFont } from '@/components/IconFont';
 import { mulInstallComponent } from '@/services/common';
 import { api } from '@/api.json';
 
@@ -160,7 +160,7 @@ const BatchInstall = (props: BatchInstallProps) => {
 									backgroundColor: color[item.component]
 								}}
 							>
-								<CustomIcon
+								<IconFont
 									type={icon[item.component]}
 									style={{
 										color: '#FFFFFF',

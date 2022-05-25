@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timeline, Popover } from 'antd';
+import { Timeline } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 

@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import { Icon } from '@alicloud/console-components';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import Tag from './tag';
 import './index.scss';
