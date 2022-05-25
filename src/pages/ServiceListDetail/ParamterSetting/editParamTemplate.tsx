@@ -2,19 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
-import { Button, Form, Input, notification, Steps } from 'antd';
-// import { Page, Header, Content } from '@alicloud/console-components-page';
-// import {
-// 	Step,
-// 	Button,
-// 	Form,
-// 	Input,
-// 	Field,
-// 	Message
-// } from '@alicloud/console-components';
+import { Button, Form, Input, notification, Steps, Result } from 'antd';
 import FormBlock from '@/components/FormBlock';
 import ParamEditTable from './components/paramEditTable';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
 import {
 	setParamTemplateBasic,
 	setParamTemplateConfig,
@@ -32,7 +22,8 @@ import { formItemLayout614 } from '@/utils/const';
 import { StoreState } from '@/types';
 import { EditParamTemplateProps } from '../detail';
 // import messageConfig from '@/components/messageConfig';
-import SuccessPage from '@/components/ResultPage/SuccessPage';
+// import ErrorPage from '@/components/ResultPage/ErrorPage';
+// import SuccessPage from '@/components/ResultPage/SuccessPage';
 
 const { Step } = Steps;
 export interface ParamsProps {
@@ -293,73 +284,130 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				);
 			case 2:
 				return (
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 54
-						}}
+					<Result
+						status="success"
+						title={
+							uid ? '恭喜，模版修改完成!' : '恭喜，模版创建完成!'
+						}
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push(
+										`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+									);
+									setParamTemplateBasicClear();
+									setParamTemplateConfigClear();
+								}}
+							>
+								返回列表
+							</Button>
+						}
 					>
-						<SuccessPage
-							title={
-								uid
-									? '恭喜，模版修改完成!'
-									: '恭喜，模版创建完成!'
-							}
-							leftText={`返回列表`}
-							countDown={5}
-							leftHandle={() => {
-								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-								);
-								setParamTemplateBasicClear();
-								setParamTemplateConfigClear();
-							}}
-							rightBtn={false}
-						>
-							<div className="zeus-param-display-area-content">
-								<div className="title-content">
-									<div className="blue-line"></div>
-									<div className="detail-title">基础信息</div>
-								</div>
-								<ul className="zeus-param-display-info">
-									<li>
-										<label>模版名称</label>
-										<span>{param.name}</span>
-									</li>
-									<li>
-										<label>描述</label>
-										<span title={param.description}>
-											{param.description}
-										</span>
-									</li>
-								</ul>
+						<div className="zeus-param-display-area-content">
+							<div className="title-content">
+								<div className="blue-line"></div>
+								<div className="detail-title">基础信息</div>
 							</div>
-						</SuccessPage>
-					</div>
+							<ul className="zeus-param-display-info">
+								<li>
+									<label>模版名称</label>
+									<span>{param.name}</span>
+								</li>
+								<li>
+									<label>描述</label>
+									<span title={param.description}>
+										{param.description}
+									</span>
+								</li>
+							</ul>
+						</div>
+					</Result>
+					// <div
+					// 	style={{
+					// 		height: '100%',
+					// 		textAlign: 'center',
+					// 		marginTop: 54
+					// 	}}
+					// >
+					// 	<SuccessPage
+					// 		title={
+					// 			uid
+					// 				? '恭喜，模版修改完成!'
+					// 				: '恭喜，模版创建完成!'
+					// 		}
+					// 		leftText={`返回列表`}
+					// 		countDown={5}
+					// 		leftHandle={() => {
+					// 			history.push(
+					// 				`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+					// 			);
+					// 			setParamTemplateBasicClear();
+					// 			setParamTemplateConfigClear();
+					// 		}}
+					// 		rightBtn={false}
+					// 	>
+					// 		<div className="zeus-param-display-area-content">
+					// 			<div className="title-content">
+					// 				<div className="blue-line"></div>
+					// 				<div className="detail-title">基础信息</div>
+					// 			</div>
+					// 			<ul className="zeus-param-display-info">
+					// 				<li>
+					// 					<label>模版名称</label>
+					// 					<span>{param.name}</span>
+					// 				</li>
+					// 				<li>
+					// 					<label>描述</label>
+					// 					<span title={param.description}>
+					// 						{param.description}
+					// 					</span>
+					// 				</li>
+					// 			</ul>
+					// 		</div>
+					// 	</SuccessPage>
+					// </div>
 				);
 			case 3:
 				return (
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 54
-						}}
-					>
-						<ErrorPage
-							title={uid ? '模版修改失败' : '模版创建失败'}
-							btnText={`返回创建列表`}
-							countDown={5}
-							btnHandle={() => {
-								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-								);
-								setParamTemplateBasicClear();
-								setParamTemplateConfigClear();
-							}}
-						/>
-					</div>
+					<Result
+						status="error"
+						title={uid ? '模版修改失败' : '模版创建失败'}
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push(
+										`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+									);
+									setParamTemplateBasicClear();
+									setParamTemplateConfigClear();
+								}}
+							>
+								返回创建列表
+							</Button>
+						}
+					/>
+					// <div
+					// 	style={{
+					// 		height: '100%',
+					// 		textAlign: 'center',
+					// 		marginTop: 54
+					// 	}}
+					// >
+					// 	<ErrorPage
+					// 		title={uid ? '模版修改失败' : '模版创建失败'}
+					// 		btnText={`返回创建列表`}
+					// 		countDown={5}
+					// 		btnHandle={() => {
+					// 			history.push(
+					// 				`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+					// 			);
+					// 			setParamTemplateBasicClear();
+					// 			setParamTemplateConfigClear();
+					// 		}}
+					// 	/>
+					// </div>
 				);
 			default:
 				break;

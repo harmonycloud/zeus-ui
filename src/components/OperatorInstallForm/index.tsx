@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog } from '@alicloud/console-components';
-import CustomIcon from '../CustomIcon';
-// import './index.scss';
+import { IconFont } from '../IconFont';
 
 export interface SendDataProps {
 	clusterId: string;
@@ -52,7 +51,7 @@ const OperatorInstallForm = (props: installFormProps) => {
 				onClick={() => setType('simple')}
 			>
 				<div>
-					<CustomIcon
+					<IconFont
 						type="icon-renwushili"
 						style={
 							type === 'simple'
@@ -64,7 +63,7 @@ const OperatorInstallForm = (props: installFormProps) => {
 				<div className="install-item-info">
 					<h2>单实例版</h2>
 					<p>资源占用少，保证安装后，该中间件可用，但是不稳定</p>
-					<CustomIcon
+					<IconFont
 						type="icon-xuanzhong"
 						style={
 							type === 'simple'
@@ -80,7 +79,7 @@ const OperatorInstallForm = (props: installFormProps) => {
 				onClick={() => setType('high')}
 			>
 				<div>
-					<CustomIcon
+					<IconFont
 						type="icon-gaokeyong"
 						style={
 							type === 'high'
@@ -92,7 +91,7 @@ const OperatorInstallForm = (props: installFormProps) => {
 				<div className="install-item-info">
 					<h2>高可用版（推荐）</h2>
 					<p>资源占用相对多，保证安装后，该中间件可用，且稳定</p>
-					<CustomIcon
+					<IconFont
 						type="icon-xuanzhong"
 						style={
 							type === 'high'

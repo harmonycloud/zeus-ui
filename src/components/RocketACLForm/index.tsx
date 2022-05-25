@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Balloon, Icon, Form, Input } from '@alicloud/console-components';
-import './index.scss';
+import { Tooltip, Form, Input } from 'antd';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
+// import { Balloon, Icon, Form, Input } from '@alicloud/console-components';
 import UserConfig from './userConfig';
 import { rocketMQAccount } from './acl';
+import './index.scss';
 
 const { Item: FormItem } = Form;
 function RocketACLForm(props: any): JSX.Element {
@@ -91,32 +93,40 @@ function RocketACLForm(props: any): JSX.Element {
 			<li className="display-flex">
 				<label className="form-name">
 					<span style={{ marginRight: 8 }}>全局IP白名单</span>
-					<Balloon
-						trigger={<Icon type="question-circle" size="xs" />}
-						closable={false}
+					<Tooltip
+						title={
+							<span
+								style={{
+									lineHeight: '18px'
+								}}
+							>
+								•
+								可为空，表示不设置白名单，该条规则默认返回false。
+								<br />
+								•支持使用“*”，表示全部匹配，该条规则直接返回true，将会阻断其他规则的判断，请慎重使用。
+								<br />
+								•
+								支持使用“;”，表式分隔多个IP，如，192.168.1.100;192.168.2.100
+								<br />
+								• 支持使用 &quot;&quot;
+								或&quot;-&quot;表示范围，如192.168.*.1或者192.168.100-200.10-202种表达都可
+								<br />
+							</span>
+						}
+						// trigger={<Icon type="question-circle" size="xs" />}
+						// closable={false}
 					>
-						<span
-							style={{
-								lineHeight: '18px'
-							}}
-						>
-							• 可为空，表示不设置白名单，该条规则默认返回false。
-							<br />
-							•支持使用“*”，表示全部匹配，该条规则直接返回true，将会阻断其他规则的判断，请慎重使用。
-							<br />
-							•
-							支持使用“;”，表式分隔多个IP，如，192.168.1.100;192.168.2.100
-							<br />
-							• 支持使用 &quot;&quot;
-							或&quot;-&quot;表示范围，如192.168.*.1或者192.168.100-200.10-202种表达都可
-							<br />
-						</span>
-					</Balloon>
+						<QuestionCircleOutlined />
+					</Tooltip>
 				</label>
 				<div className="form-content">
 					<FormItem
-						maxLength={200}
-						minmaxLengthMessage="可以输入多个IP，输入字符不能超过200个"
+						rules={[
+							{
+								max: 200,
+								message: '可以输入多个IP，输入字符不能超过200个'
+							}
+						]}
 					>
 						<Input
 							name="globalWhiteRemoteAddresses"
@@ -150,7 +160,7 @@ function RocketACLForm(props: any): JSX.Element {
 						className="acl-add-user-config"
 						onClick={addUserConfig}
 					>
-						<Icon type="add1" size="small" />
+						<PlusOutlined />
 						<span>添加账户信息配置</span>
 					</div>
 				</div>
