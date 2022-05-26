@@ -52,6 +52,7 @@ import styles from './rocketmq.module.scss';
 import { NumberPicker } from '@alifd/next';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import ModePost from './modePost';
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
@@ -205,6 +206,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const handleSubmit = () => {
 		field.validate((err) => {
 			const values: RMQCreateValuesParams = field.getValues();
+			console.log(values);
 			if (!err) {
 				const sendData: RMQSendDataParams = {
 					chartName: chartName,
@@ -326,6 +328,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					sendData.rocketMQParam.acl.rocketMQAccountList =
 						values.rocketMQAccountList;
 				}
+				if (hostNetwork) {
+					sendData.ingresses = values.ingresses;
+				}
+				console.log(sendData);
 				setCommitFlag(true);
 				postMiddleware(sendData).then((res) => {
 					if (res.success) {
@@ -391,7 +397,15 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalCluster, globalNamespace]);
 
 	const childrenPostRender = (mode: string) => {
-		return <div></div>;
+		return (
+			<ModePost
+				mode={mode}
+				clusterId={globalCluster.id}
+				middlewareName={field.getValue('name')}
+				field={field}
+				middlewareType={chartName}
+			/>
+		);
 	};
 
 	// * 结果页相关

@@ -526,9 +526,9 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								format="number"
 								formatMessage="请填写数字！"
 								min={30000}
-								max={exposedWay === 'Ingress' ? 65535 : 32000}
+								max={exposedWay === 'Ingress' ? 65535 : 32767}
 								minmaxMessage={`对外端口不能小于30000，大于${
-									exposedWay === 'Ingress' ? 65535 : 32000
+									exposedWay === 'Ingress' ? 65535 : 32767
 								}`}
 							>
 								<Input
@@ -537,7 +537,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									placeholder={
 										exposedWay === 'Ingress'
 											? '端口范围：30000-65535'
-											: '端口范围：30000-32000'
+											: '端口范围：30000-32767'
 									}
 									style={{ width: '200px' }}
 									disabled={cluster.ingress === null}

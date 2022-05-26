@@ -217,7 +217,7 @@ function IngressList(props: ingressProps) {
 		if (record.exposeType === 'Ingress') {
 			let address = '';
 			record.protocol === 'TCP'
-				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
+				? (address = `${record.exposeIP}:${record.serviceList[0].exposePort}`)
 				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
 				<div style={{ display: 'flex', alignItems: 'center' }}>

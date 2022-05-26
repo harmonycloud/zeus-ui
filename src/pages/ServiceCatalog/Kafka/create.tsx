@@ -49,9 +49,10 @@ import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
 import messageConfig from '@/components/messageConfig';
 
-import styles from './kafka.module.scss';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import styles from './kafka.module.scss';
+import ModePost from './modePost';
 
 const { AutoComplete } = Select;
 const FormItem = Form.Item;
@@ -147,6 +148,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	// * 集群外访问
+	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 根据命名空间，来提示可编辑的最大最小值
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -233,6 +236,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 		console.log('submit');
 		field.validate((err) => {
 			const values: KafkaCreateValuesParams = field.getValues();
+			console.log(values);
 			if (err) return;
 			const sendData: KafkaSendDataParams = {
 				chartName,
@@ -253,6 +257,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				kafkaDTO: kfkDTO,
+				hostNetwork: hostNetwork,
 				quota: {
 					kafka: {
 						num: customCluster,
@@ -344,6 +349,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				sendData.quota.kafka.cpu = values.cpu;
 				sendData.quota.kafka.memory = values.memory + 'Gi';
 			}
+			if (hostNetwork) {
+				sendData.ingresses = values.ingresses;
+			}
+			console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -358,6 +367,18 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				}
 			});
 		});
+	};
+	const childrenPostRender = (mode: string) => {
+		return (
+			<ModePost
+				mode={mode}
+				clusterId={globalCluster.id}
+				middlewareName={field.getValue('name')}
+				field={field}
+				middlewareType={chartName}
+				customCluster={customCluster}
+			/>
+		);
 	};
 	// * 结果页相关
 	if (commitFlag) {
@@ -1039,7 +1060,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													styles['zeus-zk-port']
 												}
 												name="zkPort"
-												style={{ width: '135px' }}
+												style={{
+													width: '135px',
+													marginLeft: 8
+												}}
 												value={kfkDTO.zkPort}
 												placeholder="请输入服务端口"
 												onChange={(value: number) =>
@@ -1298,6 +1322,35 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										</FormItem>
 									</div>
 								</li>
+								<li
+									className="display-flex form-li"
+									style={{ alignItems: 'center' }}
+								>
+									<label className="form-name">
+										<span className="ne-required">
+											集群外访问
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['standard-log']}`}
+									>
+										<div className={styles['switch']}>
+											{hostNetwork ? '已开启' : '关闭'}
+											<Switch
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+											/>
+										</div>
+									</div>
+								</li>
+								{hostNetwork && childrenPostRender(mode)}
 							</ul>
 						</div>
 					</FormBlock>

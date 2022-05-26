@@ -12,16 +12,24 @@ interface ModePostProps {
 	middlewareName: string;
 	field: any;
 	middlewareType: string;
+	customCluster: number;
 }
 interface AnyParams {
 	[propsName: string]: any;
 }
 
 export default function ModePost(props: ModePostProps): JSX.Element {
-	const { mode, clusterId, field, middlewareName, middlewareType } = props;
+	const {
+		mode,
+		clusterId,
+		field,
+		middlewareName,
+		middlewareType,
+		customCluster
+	} = props;
 	console.log(middlewareName);
 	const [exposedWay, setExposedWay] = useState<string>('Ingress');
-	const [protocol, setProtocol] = useState<string>('TCP');
+	const [protocol] = useState<string>('TCP');
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
 	const [posts, setPosts] = useState<AnyParams>({});
 	const [data, setData] = useState<AnyParams>({
@@ -32,36 +40,18 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 		serviceList: []
 	});
 	useEffect(() => {
-		if (mode) {
-			if (mode === '2m-noslave') {
-				const pt = {
-					主节点0: null,
-					主节点1: null
-				};
-				setPosts(pt);
+		if (customCluster) {
+			const at = [];
+			for (let i = 0; i < customCluster; i++) {
+				at.push(i);
 			}
-			if (mode === '2m-2s') {
-				const pt = {
-					主节点0: null,
-					从节点0: null,
-					主节点1: null,
-					从节点1: null
-				};
-				setPosts(pt);
-			}
-			if (mode === '3m-3s') {
-				const pt = {
-					主节点0: null,
-					从节点0: null,
-					主节点1: null,
-					从节点1: null,
-					主节点2: null,
-					从节点2: null
-				};
-				setPosts(pt);
-			}
+			const pt = {};
+			at.map((item: number) => {
+				pt[`节点${item}`] = null;
+			});
+			setPosts(pt);
 		}
-	}, [mode]);
+	}, [customCluster]);
 	useEffect(() => {
 		getIngresses({ clusterId: clusterId }).then((res) => {
 			if (res.success) {
@@ -75,18 +65,10 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 		if (posts) {
 			const at: any[] = [];
 			Object.keys(posts).map((item: string, index: number) => {
-				if (item.includes('主')) {
-					at.push({
-						serviceName: `${middlewareName}-${index}-master`,
-						exposePort: posts[item]
-					});
-				}
-				if (item.includes('从')) {
-					at.push({
-						serviceName: `${middlewareName}-${index}-slave`,
-						exposePort: posts[item]
-					});
-				}
+				at.push({
+					serviceName: `${middlewareName}-kafka-external-svc-${index}`,
+					exposePort: posts[item]
+				});
 			});
 			setData({
 				...data,
