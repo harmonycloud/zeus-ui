@@ -403,7 +403,8 @@ function BackupSetting(): JSX.Element {
 					</div>
 				) : (
 					<div style={{ padding: '16px 9px' }}>
-						{listData.type === 'mysql' && (
+						{(listData.type === 'mysql' ||
+							listData.type === 'postgresql') && (
 							<Button
 								onClick={() => {
 									if (!backupObj) {
