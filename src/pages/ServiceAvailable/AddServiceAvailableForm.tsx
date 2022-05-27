@@ -70,6 +70,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	]);
 	const field = Field.useField();
 	const record = storage.getLocal('availableRecord');
+	console.log(record);
 	const [initService, setInitService] = useState<string[]>([]);
 	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
@@ -410,19 +411,33 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			if (res.success) {
 				setServices(res.data);
 				if (record?.protocol === 'TCP' && res.data) {
-					res.data.find(
-						(item: any) =>
-							item.serviceName ===
-							record.serviceList[0].serviceName
-					)
-						? setSelectedService(
-								res.data.find(
-									(item: any) =>
-										item.serviceName ===
-										record.serviceList[0].serviceName
-								)
-						  )
-						: setSelectedService(res.data[0]);
+					if (exposedWay === 'Ingress') {
+						res.data.find(
+							(item: any) =>
+								item.serviceName ===
+								record.serviceList[0].serviceName
+						)
+							? setSelectedService(
+									res.data.find(
+										(item: any) =>
+											item.serviceName ===
+											record.serviceList[0].serviceName
+									)
+							  )
+							: setSelectedService(res.data[0]);
+					} else {
+						res.data.find((item: any) =>
+							record.serviceList[0].serviceName.includes(item)
+						)
+							? setSelectedService(
+									res.data.find((item: any) =>
+										record.serviceList[0].serviceName.includes(
+											item
+										)
+									)
+							  )
+							: setSelectedService(res.data[0]);
+					}
 				} else {
 					res.data && setSelectedService(res.data[0]);
 				}
@@ -597,13 +612,21 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									// }
 									disabled={
 										cluster.ingress === null ||
-										selectedService.serviceName.includes(
+										selectedService.serviceName?.includes(
 											`${selectedInstance.name}-kafka-external-svc`
 										) ||
-										(record &&
+										(exposedWay === 'Ingress' &&
+											record &&
 											initService.includes(
 												record.serviceList[0]
 													.serviceName
+											)) ||
+										(exposedWay === 'NodePort' &&
+											record &&
+											initService.some((item) =>
+												record.serviceList[0].serviceName.includes(
+													item
+												)
 											))
 									}
 								>
@@ -642,10 +665,18 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 										selectedService.serviceName.includes(
 											`${selectedInstance.name}-kafka-external-svc`
 										) ||
-										(record &&
+										(exposedWay === 'Ingress' &&
+											record &&
 											initService.includes(
 												record.serviceList[0]
 													.serviceName
+											)) ||
+										(exposedWay === 'NodePort' &&
+											record &&
+											initService.some((item) =>
+												record.serviceList[0].serviceName.includes(
+													item
+												)
 											))
 									}
 								>

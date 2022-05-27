@@ -169,6 +169,36 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.serviceName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+	};
 	const actionRender = (
 		value: string,
 		index: number,
@@ -186,7 +216,10 @@ function IngressList(props: ingressProps) {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => handleDelete(record)}>
+				<LinkButton
+					disabled={judgeInit(record)}
+					onClick={() => handleDelete(record)}
+				>
 					删除
 				</LinkButton>
 			</Actions>
