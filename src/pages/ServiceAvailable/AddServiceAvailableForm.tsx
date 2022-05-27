@@ -70,7 +70,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	]);
 	const field = Field.useField();
 	const record = storage.getLocal('availableRecord');
-	console.log(record);
 	const [initService, setInitService] = useState<string[]>([]);
 	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
@@ -411,7 +410,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			if (res.success) {
 				setServices(res.data);
 				if (record?.protocol === 'TCP' && res.data) {
-					if (exposedWay === 'Ingress') {
+					if (record.exposeType === 'Ingress') {
 						res.data.find(
 							(item: any) =>
 								item.serviceName ===
@@ -427,13 +426,11 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							: setSelectedService(res.data[0]);
 					} else {
 						res.data.find((item: any) =>
-							record.serviceList[0].serviceName.includes(item)
+							record.name.includes(item.serviceName)
 						)
 							? setSelectedService(
 									res.data.find((item: any) =>
-										record.serviceList[0].serviceName.includes(
-											item
-										)
+										record.name.includes(item.serviceName)
 									)
 							  )
 							: setSelectedService(res.data[0]);
