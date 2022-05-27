@@ -19,7 +19,6 @@ interface AnyParams {
 
 export default function ModePost(props: ModePostProps): JSX.Element {
 	const { mode, clusterId, field, middlewareName, middlewareType } = props;
-	console.log(middlewareName);
 	const [exposedWay, setExposedWay] = useState<string>('Ingress');
 	const [protocol, setProtocol] = useState<string>('TCP');
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
@@ -77,13 +76,17 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 			Object.keys(posts).map((item: string, index: number) => {
 				if (item.includes('主')) {
 					at.push({
-						serviceName: `${middlewareName}-${index}-master`,
+						serviceName: `${middlewareName}-${item.slice(
+							-1
+						)}-master`,
 						exposePort: posts[item]
 					});
 				}
 				if (item.includes('从')) {
 					at.push({
-						serviceName: `${middlewareName}-${index}-slave`,
+						serviceName: `${middlewareName}-${item.slice(
+							-1
+						)}-slave`,
 						exposePort: posts[item]
 					});
 				}

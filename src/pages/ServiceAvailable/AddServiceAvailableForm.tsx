@@ -36,6 +36,7 @@ const { Option } = Select;
 interface stateProps {
 	middlewareName: string;
 }
+
 function AddServiceAvailableForm(props: any): JSX.Element {
 	const { cluster, namespace, project } = props.globalVar;
 
@@ -69,6 +70,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	]);
 	const field = Field.useField();
 	const record = storage.getLocal('availableRecord');
+	const [initService, setInitService] = useState<string[]>([]);
 	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
 
@@ -212,6 +214,27 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				storage.removeLocal('availableRecord');
 		};
 	}, []);
+	useEffect(() => {
+		if (record) {
+			setInitService([
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`
+			]);
+		} else {
+			setInitService([
+				`${selectedInstance.name}-0-master`,
+				`${selectedInstance.name}-0-slave`,
+				`${selectedInstance.name}-1-master`,
+				`${selectedInstance.name}-1-slave`,
+				`${selectedInstance.name}-2-master`,
+				`${selectedInstance.name}-2-slave`
+			]);
+		}
+	}, [selectedInstance]);
 	const onChange = (value: string) => {
 		setExposedWay(value);
 		value === 'NodePort' ? setProtocol('TCP') : setProtocol('HTTP');
@@ -357,6 +380,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			name: value as string,
 			type: extra.selectedPath[0].value
 		});
+		// setInitService([
+		// 	`${value}-0-master`,
+		// 	`${value}-0-slave`,
+		// 	`${value}-1-master`,
+		// 	`${value}-1-slave`,
+		// 	`${value}-2-master`,
+		// 	`${value}-2-slave`
+		// ]);
 		getExposedService(
 			value as string,
 			extra.selectedPath[0].value,
@@ -378,7 +409,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		getServices(sendData).then((res) => {
 			if (res.success) {
 				setServices(res.data);
-				if (record?.exposeType === 'TCP' && res.data) {
+				if (record?.protocol === 'TCP' && res.data) {
 					res.data.find(
 						(item: any) =>
 							item.serviceName ===
@@ -564,7 +595,17 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									// disabled={
 									// 	cluster.ingress === null || !!record
 									// }
-									disabled={cluster.ingress === null}
+									disabled={
+										cluster.ingress === null ||
+										selectedService.serviceName.includes(
+											`${selectedInstance.name}-kafka-external-svc`
+										) ||
+										(record &&
+											initService.includes(
+												record.serviceList[0]
+													.serviceName
+											))
+									}
 								>
 									{services &&
 										services.map((item: any) => {
@@ -572,6 +613,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												<Option
 													key={item.serviceName}
 													value={item.serviceName}
+													disabled={
+														item.serviceName.includes(
+															`${selectedInstance.name}-kafka-external-svc`
+														) ||
+														initService.includes(
+															item.serviceName
+														)
+													}
 												>
 													{item.serviceName}
 												</Option>
@@ -588,7 +637,17 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									style={{ width: '100%' }}
 									autoWidth={false}
 									placeholder="请选择端口"
-									disabled={cluster.ingress === null}
+									disabled={
+										cluster.ingress === null ||
+										selectedService.serviceName.includes(
+											`${selectedInstance.name}-kafka-external-svc`
+										) ||
+										(record &&
+											initService.includes(
+												record.serviceList[0]
+													.serviceName
+											))
+									}
 								>
 									{selectedService.portDetailDtoList &&
 										selectedService.portDetailDtoList.map(
@@ -648,6 +707,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 																	}
 																	value={
 																		item.serviceName
+																	}
+																	disabled={
+																		item.serviceName.includes(
+																			`${selectedInstance.name}-kafka-external-svc`
+																		) ||
+																		initService.includes(
+																			item.serviceName
+																		)
 																	}
 																>
 																	{
