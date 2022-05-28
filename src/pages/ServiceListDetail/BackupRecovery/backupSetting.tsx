@@ -402,9 +402,9 @@ function BackupSetting(): JSX.Element {
 						</Button>
 					</div>
 				) : (
+					// postgresql 只有克隆备份，没有覆盖备份，mysql克隆覆盖皆有，其他只有覆盖备份
 					<div style={{ padding: '16px 9px' }}>
-						{(listData.type === 'mysql' ||
-							listData.type === 'postgresql') && (
+						{listData.type === 'mysql' && (
 							<Button
 								onClick={() => {
 									if (!backupObj) {
@@ -438,13 +438,49 @@ function BackupSetting(): JSX.Element {
 								克隆
 							</Button>
 						)}
-						<Button
-							onClick={onOk}
-							type="primary"
-							style={{ marginRight: '9px' }}
-						>
-							覆盖
-						</Button>
+						{listData.type === 'postgresql' && (
+							<Button
+								onClick={() => {
+									if (!backupObj) {
+										Message.show(
+											messageConfig(
+												'warning',
+												'提示',
+												'请选择实例对象'
+											)
+										);
+										return;
+									} else {
+										if (backup.phrase !== 'Success') {
+											Message.show(
+												messageConfig(
+													'error',
+													'错误',
+													'该服务还没备份完成'
+												)
+											);
+										} else {
+											history.push(
+												`/serviceList/postgresql/Postgresql/postgresqlCreate/${listData.chartVersion}/${listData.name}/${backup.backupFileName}/${namespace}`
+											);
+										}
+									}
+								}}
+								type="primary"
+								style={{ marginRight: '9px' }}
+							>
+								克隆
+							</Button>
+						)}
+						{listData.type !== 'postgresql' && (
+							<Button
+								onClick={onOk}
+								type="primary"
+								style={{ marginRight: '9px' }}
+							>
+								覆盖
+							</Button>
+						)}
 						<Button
 							onClick={() => {
 								if (dataSecurity) {

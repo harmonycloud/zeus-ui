@@ -70,7 +70,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	console.log(params);
 	const {
 		chartName,
 		chartVersion,
@@ -768,6 +767,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			});
 			if (JSON.stringify(globalNamespace) !== '{}') {
 				// 克隆服务
+				console.log(
+					'克隆服务',
+					globalNamespace,
+					backupFileName,
+					middlewareName
+				);
 				if (backupFileName) {
 					getMiddlewareDetailAndSetForm(middlewareName);
 				}
