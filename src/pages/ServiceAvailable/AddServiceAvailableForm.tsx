@@ -222,7 +222,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				`${record.middlewareName}-1-master`,
 				`${record.middlewareName}-1-slave`,
 				`${record.middlewareName}-2-master`,
-				`${record.middlewareName}-2-slave`
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
 			]);
 		} else {
 			setInitService([
@@ -231,7 +232,8 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				`${selectedInstance.name}-1-master`,
 				`${selectedInstance.name}-1-slave`,
 				`${selectedInstance.name}-2-master`,
-				`${selectedInstance.name}-2-slave`
+				`${selectedInstance.name}-2-slave`,
+				`${selectedInstance.name}-nameserver-proxy-svc`
 			]);
 		}
 	}, [selectedInstance]);

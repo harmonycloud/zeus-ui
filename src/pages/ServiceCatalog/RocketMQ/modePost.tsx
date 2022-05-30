@@ -35,7 +35,8 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 			if (mode === '2m-noslave') {
 				const pt = {
 					主节点0: null,
-					主节点1: null
+					主节点1: null,
+					代理节点: null
 				};
 				setPosts(pt);
 			}
@@ -44,7 +45,8 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 					主节点0: null,
 					从节点0: null,
 					主节点1: null,
-					从节点1: null
+					从节点1: null,
+					代理节点: null
 				};
 				setPosts(pt);
 			}
@@ -55,7 +57,8 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 					主节点1: null,
 					从节点1: null,
 					主节点2: null,
-					从节点2: null
+					从节点2: null,
+					代理节点: null
 				};
 				setPosts(pt);
 			}
@@ -87,6 +90,12 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 						serviceName: `${middlewareName}-${item.slice(
 							-1
 						)}-slave`,
+						exposePort: posts[item]
+					});
+				}
+				if (item.includes('代理')) {
+					at.push({
+						serviceName: `${middlewareName}-nameserver-proxy-svc`,
 						exposePort: posts[item]
 					});
 				}
