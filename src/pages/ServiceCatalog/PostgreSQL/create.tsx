@@ -1361,7 +1361,11 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 						</Form.Submit>
 						<Button
 							type="normal"
-							onClick={() => window.history.back()}
+							onClick={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
 						>
 							取消
 						</Button>
