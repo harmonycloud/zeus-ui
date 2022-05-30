@@ -12,7 +12,8 @@ import {
 	Field,
 	Message,
 	CascaderSelect,
-	Icon
+	Icon,
+	Balloon
 } from '@alicloud/console-components';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import CustomIcon from '@/components/CustomIcon';
@@ -592,7 +593,41 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					</FormItem>
 					{protocol !== 'HTTP' && (
 						<FormItem
-							label="选择暴露对象"
+							label={
+								record.middlewareType === 'rocketmq' ? (
+									<span>
+										选择暴露对象{' '}
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											修改集群外访问端口将导致服务连接中断，请谨慎操作！
+										</Balloon>
+									</span>
+								) : record.middlewareType === 'kafka' ? (
+									<span>
+										选择暴露对象{' '}
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											修改集群外访问端口将导致服务重启，请谨慎操作！
+										</Balloon>
+									</span>
+								) : (
+									<span>选择暴露对象</span>
+								)
+							}
 							required
 							labelTextAlign="left"
 							asterisk={false}

@@ -188,7 +188,7 @@ function IngressList(props: ingressProps) {
 			} else {
 				if (
 					record.name.includes(
-						`${record.serviceName}-kafka-external-svc`
+						`${record.middlewareName}-kafka-external-svc`
 					)
 				) {
 					return true;
