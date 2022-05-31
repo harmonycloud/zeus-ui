@@ -111,6 +111,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 			onCancel={onCancel}
 			onOk={onOk}
 			width={820}
+			centered
 		>
 			<Form form={form}>
 				<FormItem
@@ -124,7 +125,11 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 								data.title === '数据节点'
 									? 3
 									: 1,
-							message: '数据节点数量最小值为3'
+							message:
+								data.title === '主节点' ||
+								data.title === '数据节点'
+									? '数据节点数量最小值为3'
+									: '数据节点数量最小值为1'
 						}
 					]}
 					name="num"
@@ -132,13 +137,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 					initialValue={data.num}
 				>
 					<InputNumber
-						// min={
-						// 	data.title === '主节点' || data.title === '数据节点'
-						// 		? 3
-						// 		: 1
-						// }
 						value={data.num}
-						style={{ width: '100px' }}
+						style={{ width: '150px' }}
 						onChange={inputChange}
 					/>
 				</FormItem>
