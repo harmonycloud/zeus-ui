@@ -1317,7 +1317,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												}
 											]}
 										>
-											<Select style={{ marginRight: 8 }}>
+											<Select
+												placeholder="请选择存储类型"
+												style={{ marginRight: 8 }}
+											>
 												{storageClassList.map(
 													(item, index) => {
 														return (

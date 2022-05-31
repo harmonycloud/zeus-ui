@@ -1597,17 +1597,22 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											rules={[
 												{
 													min: 1,
+													type: 'number',
 													message:
 														'端口范围为1至65535的正整数,默认为3306'
 												},
 												{
 													max: 65535,
+													type: 'number',
 													message:
 														'端口范围为1至65535的正整数,默认为3306'
 												}
 											]}
 										>
-											<InputNumber placeholder="请输入mysql的服务端口号，默认为3306" />
+											<InputNumber
+												style={{ width: '100%' }}
+												placeholder="请输入mysql的服务端口号，默认为3306"
+											/>
 										</FormItem>
 									</div>
 								</li>
@@ -1913,6 +1918,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											]}
 										>
 											<Select
+												placeholder="请选择存储类型"
 												style={{
 													marginRight: 8,
 													width: 150
@@ -1951,9 +1957,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											]}
 											name="storageQuota"
 											initialValue={5}
+											style={{ width: '320px' }}
 										>
 											<InputNumber
-												min={5}
 												placeholder="请输入存储配额大小"
 												addonAfter="GB"
 											/>
