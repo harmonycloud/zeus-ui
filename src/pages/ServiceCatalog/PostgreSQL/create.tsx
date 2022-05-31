@@ -346,7 +346,7 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 				password: values.pgsqlPwd,
 				version: version,
 				mode,
-				replicaCount: replicaCount,
+				replicaCount: mode === '1m-1s' ? 1 : replicaCount,
 				quota: {
 					postgresql: {
 						storageClassName: values.storageClass,
