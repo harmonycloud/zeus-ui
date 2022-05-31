@@ -282,7 +282,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						}
 					},
 					mysqlDTO: {
-						replicaCount: replicaCount,
+						replicaCount:
+							mode !== '1m-ns'
+								? mode === '1m-3s'
+									? 3
+									: 1
+								: replicaCount,
 						openDisasterRecoveryMode: backupFlag,
 						type:
 							mode === '1m-1s' ? 'master-master' : 'master-slave'
@@ -458,7 +463,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							}
 						},
 						mysqlDTO: {
-							replicaCount: replicaCount,
+							replicaCount:
+								mode !== '1m-ns'
+									? mode === '1m-3s'
+										? 3
+										: 1
+									: replicaCount,
 							openDisasterRecoveryMode: true,
 							relationName: values.name,
 							relationAliasName: values.aliasName,
