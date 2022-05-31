@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-// import Page, { Content, Header } from '@alicloud/console-components-page';
-// import {
-// 	Form,
-// 	Field,
-// 	Input,
-// 	Switch,
-// 	Checkbox,
-// 	Balloon,
-// 	Icon,
-// 	Select,
-// 	Button,
-// 	Message
-// } from '@alicloud/console-components';
 import {
 	Form,
 	Input,
@@ -57,7 +44,6 @@ import { instanceSpecList } from '@/utils/const';
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import styles from './rocketmq.module.scss';
-import { NumberPicker } from '@alifd/next';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import {
@@ -1177,7 +1163,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											<label style={{ margin: '0 16px' }}>
 												自定义集群实例数量
 											</label>
-											<NumberPicker
+											<InputNumber
 												name="节点数量"
 												defaultValue={3}
 												onChange={(value) =>

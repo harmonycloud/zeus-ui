@@ -6,7 +6,6 @@ import ProTable from '@/components/ProTable';
 import TimeSelect from '@/components/TimeSelect';
 import { getSlowLogs } from '@/services/middleware';
 import transTime from '@/utils/transTime';
-// import styled from 'styled-components';
 import moment, { Moment } from 'moment';
 import NumberRange from '@/components/NumberRange';
 
@@ -264,18 +263,6 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 					width={90}
 				/>
 			</ProTable>
-			{/* <SPagination
-				defaultCurrent={1}
-				current={current}
-				onChange={onChange}
-				pageSize={10}
-				total={total}
-			/> */}
 		</div>
 	);
 }
-// const SPagination = styled(Pagination)`
-// 	margin-top: 10px;
-// 	display: flex;
-// 	justify-content: flex-end;
-// `;

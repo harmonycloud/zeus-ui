@@ -18,7 +18,7 @@ function ColumnsCheck<T>(props: ColumnsCheckProps<T>): JSX.Element {
 	};
 	return (
 		<Checkbox.Group defaultValue={defaultValue} onChange={handleChange}>
-			{columns.map((item: ColumnType<T>, index: number) => {
+			{columns.map((item: any, index: number) => {
 				return (
 					<Checkbox value={item.title} key={index}>
 						{item.title}

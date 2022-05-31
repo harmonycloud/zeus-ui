@@ -1,11 +1,9 @@
 import axios from 'axios';
 import { notification } from 'antd';
-// import { Message } from '@alicloud/console-components';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import errorCode from './errorCode';
 import cache from '@/utils/storage';
-import messageConfig from '@/components/messageConfig';
 
 const baseURL = 'http://localhost:3000/api/';
 const TOKEN = 'token';

@@ -6,7 +6,6 @@ import moment from 'moment';
 import { queryAuditSql } from '@/services/middleware';
 import { nullRender } from '@/utils/utils';
 import { ManageProps } from './database';
-import styled from 'styled-components';
 
 function SqlAudit(props: ManageProps): JSX.Element {
 	const { clusterId, namespace, middlewareName } = props;
@@ -170,18 +169,8 @@ function SqlAudit(props: ManageProps): JSX.Element {
 					// sortable
 				/>
 			</ProTable>
-			{/* <SPagination
-				onChange={pageChange}
-				total={total}
-				current={current}
-				pageSizeSelector={false}
-			/> */}
 		</>
 	);
 }
-// const SPagination = styled(Pagination)`
-// 	margin-top: 10px;
-// 	float: right;
-// `;
 
 export default SqlAudit;

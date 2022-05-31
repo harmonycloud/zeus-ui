@@ -6,7 +6,7 @@ import { TimeSelectProps } from './timeSelect';
 import './index.scss';
 
 const { Option } = Select;
-
+// const RangePicker: any = DatePicker.RangePicker;
 export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 	const { RangePicker } = DatePicker;
 	const { timeSelect, source = 'default', style = {} } = props;

@@ -5,7 +5,6 @@ import App from './App';
 import store from './redux';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
-import '@alicloud/console-components/dist/wind.css';
 import './index.less';
 import './index.css';
 import * as serviceWorker from './serviceWorker';

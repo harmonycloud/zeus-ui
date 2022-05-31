@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-import {
-	Button,
-	Dialog,
-	Message,
-	Icon,
-	Tab
-} from '@alicloud/console-components';
+// import {
+// 	Button,
+// 	Dialog,
+// 	Message,
+// 	Icon,
+// 	Tab
+// } from '@alicloud/console-components';
+import { Button, Modal, Tabs, notification, Alert } from 'antd';
 
 import BasicInfo from './BasicInfo/index';
 import HighAvailability from './HighAvailability/index';
@@ -24,7 +25,6 @@ import RedisDataBase from './RedisDatabase/index';
 
 import { getMiddlewareDetail } from '@/services/middleware';
 import { getNamespaces } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import {
 	setCluster,
 	setNamespace,
@@ -36,6 +36,7 @@ import './detail.scss';
 import { DetailParams, InstanceDetailsProps } from './detail';
 import { middlewareDetailProps, monitorProps } from '@/types/comment';
 import { StoreState, User } from '@/types';
+import { ExclamationCircleFilled, RedoOutlined } from '@ant-design/icons';
 
 /*
  * 自定义中间tab页显示判断 后端
@@ -50,6 +51,7 @@ import { StoreState, User } from '@/types';
  * 灾备服务  disaster(目前mysql中间件特有)
  */
 
+const { TabPane } = Tabs;
 const InstanceDetails = (props: InstanceDetailsProps) => {
 	const { globalVar, setCluster, setNamespace, setRefreshCluster } = props;
 	const {
@@ -126,7 +128,10 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					setCustomMid(false);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -348,45 +353,12 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 			}
 		});
 	};
-	const SecondConfirm = (props: {
-		visible: boolean;
-		onCancel: () => void;
-	}) => {
-		const { visible, onCancel } = props;
-		const onOk = () => {
-			storage.setLocal('firstAlert', 1);
-			onCancel();
-			acrossCluster();
-		};
-		const onConfirm = () => {
-			onCancel();
-			acrossCluster();
-		};
-		return (
-			<Dialog
-				title="操作确认"
-				visible={visible}
-				footerAlign="right"
-				footer={
-					<div>
-						<Button type="primary" onClick={onOk}>
-							好的，下次不在提醒
-						</Button>
-						<Button type="normal" onClick={onConfirm}>
-							确认
-						</Button>
-					</div>
-				}
-			>
-				该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮
-			</Dialog>
-		);
-	};
 	const toDetail = () => {
 		if (!data?.mysqlDTO.relationExist) {
-			Message.show(
-				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
-			);
+			notification.error({
+				message: '失败',
+				description: '该关联实例不存在，无法进行跳转'
+			});
 			return;
 		} else {
 			// * 源示例和备服务在用一个集群时
@@ -396,7 +368,20 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				// across the cluster
 				const flag = storage.getLocal('firstAlert');
 				if (flag === 0) {
-					setVisible(true);
+					Modal.confirm({
+						title: '操作确认',
+						content:
+							'该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮',
+						okText: '好的，下次不再提醒',
+						cancelText: '确认',
+						onOk: () => {
+							storage.setLocal('firstAlert', 1);
+							acrossCluster();
+						},
+						onCancel: () => {
+							acrossCluster();
+						}
+					});
 				} else {
 					acrossCluster();
 				}
@@ -443,7 +428,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							onClick={() => refresh(activeKey)}
 							style={{ padding: '0 9px', marginRight: '8px' }}
 						>
-							<Icon type="refresh" />
+							<RedoOutlined />
 						</Button>
 						{data?.mysqlDTO?.openDisasterRecoveryMode &&
 						data?.mysqlDTO?.isSource === false ? (
@@ -454,88 +439,81 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					</>
 				}
 			></ProHeader>
-			{waringVisible && reason && status !== 'Running' && (
-				<div className="warning-info">
-					<Icon
-						className="warning-icon"
-						size={'small'}
-						type="warning"
-					/>
-					<span className="info-text">{reason}</span>
-					<Icon
-						className="warning-close"
-						size={'xxs'}
-						type="times"
-						onClick={() => setWaringVisible(false)}
-					/>
-				</div>
+			{reason && status !== 'Running' && (
+				<Alert
+					message="Warning"
+					description={reason}
+					type="warning"
+					showIcon
+					closable
+				/>
 			)}
 			<ProContent>
-				<Tab
-					navStyle={{ marginBottom: '15px' }}
+				<Tabs
+					// navStyle={{ marginBottom: '15px' }}
 					activeKey={activeKey}
 					onChange={onChange}
 				>
-					<Tab.Item title="基本信息" key="basicInfo">
+					<TabPane tab="基本信息" tabKey="basicInfo">
 						{childrenRender('basicInfo')}
-					</Tab.Item>
+					</TabPane>
 					{operateFlag && (
-						<Tab.Item title="实例详情" key="highAvailability">
+						<TabPane tab="实例详情" tabKey="highAvailability">
 							{childrenRender('highAvailability')}
-						</Tab.Item>
+						</TabPane>
 					)}
 					{operateFlag &&
 					(type === 'mysql' || type === 'elasticsearch') ? (
-						<Tab.Item title="数据安全" key="backupRecovery">
+						<TabPane tab="数据安全" tabKey="backupRecovery">
 							{childrenRender('backupRecovery')}
-						</Tab.Item>
+						</TabPane>
 					) : null}
 					{operateFlag && (
-						<Tab.Item title="服务暴露" key="externalAccess">
+						<TabPane tab="服务暴露" tabKey="externalAccess">
 							{childrenRender('externalAccess')}
-						</Tab.Item>
+						</TabPane>
 					)}
 					{operateFlag && (
-						<Tab.Item title="数据监控" key="monitor">
+						<TabPane tab="数据监控" tabKey="monitor">
 							{childrenRender('monitor')}
-						</Tab.Item>
+						</TabPane>
 					)}
 					{operateFlag && (
-						<Tab.Item title="日志详情" key="log">
+						<TabPane tab="日志详情" tabKey="log">
 							{childrenRender('log')}
-						</Tab.Item>
+						</TabPane>
 					)}
 					{operateFlag && (
-						<Tab.Item title="参数设置" key="paramterSetting">
+						<TabPane tab="参数设置" tabKey="paramterSetting">
 							{childrenRender('paramterSetting')}
-						</Tab.Item>
+						</TabPane>
 					)}
 					{operateFlag && (
-						<Tab.Item title="服务告警" key="alarm">
+						<TabPane tab="服务告警" tabKey="alarm">
 							{childrenRender('alarm')}
-						</Tab.Item>
+						</TabPane>
 					)}
 					{operateFlag && type === 'mysql' ? (
-						<Tab.Item title="灾备服务" key="disaster">
+						<TabPane tab="灾备服务" tabKey="disaster">
 							{childrenRender('disaster')}
-						</Tab.Item>
+						</TabPane>
 					) : null}
 					{operateFlag && type === 'mysql' ? (
-						<Tab.Item title="数据库管理" key="database">
+						<TabPane tab="数据库管理" tabKey="database">
 							{childrenRender('database')}
-						</Tab.Item>
+						</TabPane>
 					) : null}
 					{type === 'redis' ? (
-						<Tab.Item title="数据库管理" key="redisDatabase">
+						<TabPane tab="数据库管理" tabKey="redisDatabase">
 							{childrenRender('redisDatabase')}
-						</Tab.Item>
+						</TabPane>
 					) : null}
-				</Tab>
+				</Tabs>
 			</ProContent>
-			<SecondConfirm
+			{/* <SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}
-			/>
+			/> */}
 		</ProPage>
 	);
 };
