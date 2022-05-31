@@ -11,7 +11,12 @@ import './index.scss';
 const { Search } = Input;
 const translateChildrenToColumns = (value: React.ReactNode[]) => {
 	const list = value
-		// .filter((item: any) => item?.type?.name === 'Column')
+		.filter(
+			(item: any) =>
+				typeof item !== 'boolean' &&
+				typeof item !== 'undefined' &&
+				item !== null
+		)
 		.map((item: any) => {
 			return item.props;
 		});

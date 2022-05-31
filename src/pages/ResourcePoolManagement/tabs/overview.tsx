@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import moment from 'moment';
 import { Radio, notification, Tooltip, RadioChangeEvent } from 'antd';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import ProTable from '@/components/ProTable';
@@ -304,7 +305,7 @@ const Overview = () => {
 				onChange={(e: RadioChangeEvent) =>
 					onViewChange(e.target.value, 'view')
 				}
-				style={{ width: '140px' }}
+				// style={{ width: '140px' }}
 			>
 				<Radio.Button id="service" value="service">
 					<Tooltip title="服务视角">
@@ -343,62 +344,6 @@ const Overview = () => {
 				<div className="node-title-name">节点信息</div>
 			</div>
 		)
-	};
-	const onNodeSort = (dataIndex: string, order: string) => {
-		const temp = nodeDataSource.sort(function (
-			a: NodeResourceProps,
-			b: NodeResourceProps
-		) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setNodeDataSource([...temp]);
-	};
-	const onNodeFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = nodeOriginData.filter(
-				(item: NodeResourceProps) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setNodeDataSource(list);
-		} else {
-			setNodeDataSource(nodeOriginData);
-		}
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		const temp = dataSource.sort(function (
-			a: MiddlewareResourceProps,
-			b: MiddlewareResourceProps
-		) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setDataSource([...temp]);
-	};
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = originData.filter(
-				(item: MiddlewareResourceProps) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setDataSource(list);
-		} else {
-			setDataSource(originData);
-		}
 	};
 	const handleSearch = (value: string) => {
 		const list = originData.filter((item: MiddlewareResourceProps) =>
@@ -464,7 +409,7 @@ const Overview = () => {
 				<div className="resource-pool-table-content">
 					<ProTable
 						dataSource={dataSource}
-						rowKey="namespace"
+						rowKey="name"
 						operation={Operation}
 						scroll={{
 							y: '280px'
@@ -485,7 +430,7 @@ const Overview = () => {
 							title="命名空间"
 							dataIndex="namespace"
 							filters={namespaceFilter}
-							// filterMode="single"
+							filterMultiple={false}
 							width={200}
 							fixed="left"
 						/>
@@ -495,7 +440,7 @@ const Overview = () => {
 								dataIndex="type"
 								render={iconTypeRender}
 								filters={typeFilter}
-								// filterMode="single"
+								filterMultiple={false}
 								width={180}
 							/>
 						)}
@@ -513,7 +458,10 @@ const Overview = () => {
 								dataIndex="requestCpu"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => (a.requestCpu || 0) - (b.requestCpu || 0)}
 							/>
 						)}
 						{tableType === 'cpu' && (
@@ -522,7 +470,10 @@ const Overview = () => {
 								dataIndex="per5MinCpu"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.per5MinCpu - b.per5MinCpu}
 							/>
 						)}
 						{tableType === 'cpu' && (
@@ -531,7 +482,10 @@ const Overview = () => {
 								dataIndex="cpuRate"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.cpuRate - b.cpuRate}
 							/>
 						)}
 						{tableType === 'memory' && (
@@ -540,7 +494,13 @@ const Overview = () => {
 								dataIndex="requestMemory"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) =>
+									(a.requestMemory || 0) -
+									(b.requestMemory || 0)
+								}
 							/>
 						)}
 						{tableType === 'memory' && (
@@ -549,7 +509,10 @@ const Overview = () => {
 								dataIndex="per5MinMemory"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.per5MinMemory - b.per5MinMemory}
 							/>
 						)}
 						{tableType === 'memory' && (
@@ -558,7 +521,10 @@ const Overview = () => {
 								dataIndex="memoryRate"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.memoryRate - b.memoryRate}
 							/>
 						)}
 						{tableType === 'storage' && (
@@ -567,6 +533,13 @@ const Overview = () => {
 								dataIndex="requestStorage"
 								render={nullRender}
 								width={200}
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) =>
+									(a.requestStorage || 0) -
+									(b.requestStorage || 0)
+								}
 								// sortable
 							/>
 						)}
@@ -576,7 +549,10 @@ const Overview = () => {
 								dataIndex="per5MinStorage"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.per5MinStorage - b.per5MinStorage}
 							/>
 						)}
 						{tableType === 'storage' && (
@@ -585,7 +561,10 @@ const Overview = () => {
 								dataIndex="storageRate"
 								render={nullRender}
 								width={200}
-								// sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.storageRate - b.storageRate}
 							/>
 						)}
 					</ProTable>
@@ -594,23 +573,25 @@ const Overview = () => {
 			<div>
 				<ProTable
 					dataSource={nodeDataSource}
-					// exact
 					rowKey="ip"
 					operation={NodeOperation}
-					// onSort={onNodeSort}
-					// onFilter={onNodeFilter}
 				>
 					<ProTable.Column title="节点IP" dataIndex="ip" />
 					<ProTable.Column
 						title="CPU(核)"
 						dataIndex="cpuRate"
 						render={cpuRender}
-						// sortable
+						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
+							(a.cpuRate || 0) - (b.cpuRate || 0)
+						}
 					/>
 					<ProTable.Column
 						title="内存(GB)"
 						dataIndex="memoryRate"
 						render={memoryRender}
+						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
+							a.memoryRate - b.memoryRate
+						}
 						// sortable
 					/>
 					<ProTable.Column
@@ -626,7 +607,10 @@ const Overview = () => {
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
-						// sortable
+						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
 					/>
 				</ProTable>
 			</div>
