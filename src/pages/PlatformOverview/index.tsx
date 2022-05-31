@@ -84,6 +84,7 @@ function PlatformOverview(): JSX.Element {
 			res.data.unshift({ name: '全部', id: 'all' });
 			setPoolList(res.data);
 		});
+		change_icon(storage.getLocal('personalization').tabLogo);
 	}, []);
 	useEffect(() => {
 		const clusterId = type === 'all' ? null : type;
@@ -235,6 +236,23 @@ function PlatformOverview(): JSX.Element {
 		});
 		getEventsData(alertData);
 	};
+
+	function change_icon(iconUrl: string) {
+		const changeFavicon = (link: any) => {
+			let $favicon: any = document.querySelector('link[rel="icon"]');
+			if ($favicon !== null) {
+				$favicon.href = link;
+			} else {
+				$favicon = document.createElement('link');
+				$favicon.rel = 'icon';
+				$favicon.href = link;
+				document.head.appendChild($favicon);
+			}
+		};
+
+		// 动态修改网站图标
+		changeFavicon(iconUrl);
+	}
 
 	return (
 		<Page>

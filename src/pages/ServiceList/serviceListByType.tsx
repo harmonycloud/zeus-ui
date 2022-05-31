@@ -310,6 +310,11 @@ const ServiceListByType = (props: serviceListProps) => {
 						`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
+				case 'postgresql':
+					history.push(
+						`/serviceList/${name}/${aliasName}/postgresqlCreate/${middlewareInfo?.chartVersion}`
+					);
+					break;
 				default:
 					history.push(
 						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
@@ -390,7 +395,6 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const operation = () => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		console.log(jsonRole);
 		let getFlag = false;
 		let createFlag = false;
 		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
@@ -589,7 +593,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps
 	) => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		console.log(jsonRole);
 		let deleteFlag = false;
 		let operateFlag = false;
 		if (jsonRole.userRoleList[0].roleId === 1) {
@@ -652,7 +655,6 @@ const ServiceListByType = (props: serviceListProps) => {
 						};
 						getPlatformAdd(sendData).then((res) => {
 							if (res.success) {
-								console.log(res);
 								if (res.data) {
 									window.open(
 										`${window.location.protocol.toLowerCase()}//${

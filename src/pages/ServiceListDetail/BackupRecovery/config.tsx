@@ -150,7 +150,8 @@ export default function Config(props: ConfigProps): JSX.Element {
 						}
 					} else {
 						if (
-							listData?.type === 'mysql' &&
+							(listData?.type === 'postgresql' ||
+								listData?.type === 'mysql') &&
 							!listData.isAllLvmStorage
 						) {
 							Message.show(
@@ -194,6 +195,7 @@ export default function Config(props: ConfigProps): JSX.Element {
 		index: number,
 		record: BackupRuleItem
 	) => {
+		console.log('config', value, record);
 		if (value === 'Cluster') {
 			return '服务';
 		} else {

@@ -491,7 +491,9 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						</Tab.Item>
 					)}
 					{operateFlag &&
-					(type === 'mysql' || type === 'elasticsearch') ? (
+					(type === 'mysql' ||
+						type === 'elasticsearch' ||
+						type === 'postgresql') ? (
 						<Tab.Item title="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</Tab.Item>
@@ -506,11 +508,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('monitor')}
 						</Tab.Item>
 					)}
-					{operateFlag && (
+					{operateFlag && type !== 'postgresql' ? (
 						<Tab.Item title="日志详情" key="log">
 							{childrenRender('log')}
 						</Tab.Item>
-					)}
+					) : null}
 					{operateFlag && (
 						<Tab.Item title="参数设置" key="paramterSetting">
 							{childrenRender('paramterSetting')}
