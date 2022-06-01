@@ -318,7 +318,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 					}
 					align="b"
 				>
-					谐云官方认证
+					官方认证
 				</Tooltip>
 				{statusIconRender(status)}
 			</div>
