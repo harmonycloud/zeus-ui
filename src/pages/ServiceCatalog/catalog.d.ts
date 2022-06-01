@@ -151,6 +151,7 @@ export interface KafkaDTO {
 }
 export interface KafkaCreateValuesParams extends CreateValuesParams {
 	kafkaDTO: KafkaDTO;
+	ingresses?: any;
 }
 export interface KafkaSendDataParams extends CommonSendDataParams {
 	clusterId: string;
@@ -171,6 +172,8 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 		};
 	};
 	mirrorImageId?: any;
+	ingresses?: any;
+	hostNetwork: boolean;
 }
 export interface NodeModifyParams {
 	nodeName: string;
@@ -222,10 +225,12 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 		replicas?: number;
 	};
 	mirrorImageId?: any;
+	ingresses?: any;
 }
 export interface RMQCreateValuesParams extends CreateValuesParams {
 	globalWhiteRemoteAddresses?: string;
 	rocketMQAccountList?: rocketMQAccount[];
+	[propsName: string]: any;
 }
 export interface EsSendDataParams extends CommonSendDataParams {
 	clusterId: string;

@@ -12,7 +12,8 @@ import {
 	Field,
 	Message,
 	CascaderSelect,
-	Icon
+	Icon,
+	Balloon
 } from '@alicloud/console-components';
 import { Page, Header, Content } from '@alicloud/console-components-page';
 import CustomIcon from '@/components/CustomIcon';
@@ -36,6 +37,7 @@ const { Option } = Select;
 interface stateProps {
 	middlewareName: string;
 }
+
 function AddServiceAvailableForm(props: any): JSX.Element {
 	const { cluster, namespace, project } = props.globalVar;
 
@@ -69,6 +71,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	]);
 	const field = Field.useField();
 	const record = storage.getLocal('availableRecord');
+	const [initService, setInitService] = useState<string[]>([]);
 	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
 
@@ -212,6 +215,29 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				storage.removeLocal('availableRecord');
 		};
 	}, []);
+	useEffect(() => {
+		if (record) {
+			setInitService([
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			]);
+		} else {
+			setInitService([
+				`${selectedInstance.name}-0-master`,
+				`${selectedInstance.name}-0-slave`,
+				`${selectedInstance.name}-1-master`,
+				`${selectedInstance.name}-1-slave`,
+				`${selectedInstance.name}-2-master`,
+				`${selectedInstance.name}-2-slave`,
+				`${selectedInstance.name}-nameserver-proxy-svc`
+			]);
+		}
+	}, [selectedInstance]);
 	const onChange = (value: string) => {
 		setExposedWay(value);
 		value === 'NodePort' ? setProtocol('TCP') : setProtocol('HTTP');
@@ -357,6 +383,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			name: value as string,
 			type: extra.selectedPath[0].value
 		});
+		// setInitService([
+		// 	`${value}-0-master`,
+		// 	`${value}-0-slave`,
+		// 	`${value}-1-master`,
+		// 	`${value}-1-slave`,
+		// 	`${value}-2-master`,
+		// 	`${value}-2-slave`
+		// ]);
 		getExposedService(
 			value as string,
 			extra.selectedPath[0].value,
@@ -378,20 +412,32 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		getServices(sendData).then((res) => {
 			if (res.success) {
 				setServices(res.data);
-				if (record?.exposeType === 'TCP' && res.data) {
-					res.data.find(
-						(item: any) =>
-							item.serviceName ===
-							record.serviceList[0].serviceName
-					)
-						? setSelectedService(
-								res.data.find(
-									(item: any) =>
-										item.serviceName ===
-										record.serviceList[0].serviceName
-								)
-						  )
-						: setSelectedService(res.data[0]);
+				if (record?.protocol === 'TCP' && res.data) {
+					if (record.exposeType === 'Ingress') {
+						res.data.find(
+							(item: any) =>
+								item.serviceName ===
+								record.serviceList[0].serviceName
+						)
+							? setSelectedService(
+									res.data.find(
+										(item: any) =>
+											item.serviceName ===
+											record.serviceList[0].serviceName
+									)
+							  )
+							: setSelectedService(res.data[0]);
+					} else {
+						res.data.find((item: any) =>
+							record.name.includes(item.serviceName)
+						)
+							? setSelectedService(
+									res.data.find((item: any) =>
+										record.name.includes(item.serviceName)
+									)
+							  )
+							: setSelectedService(res.data[0]);
+					}
 				} else {
 					res.data && setSelectedService(res.data[0]);
 				}
@@ -526,9 +572,9 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								format="number"
 								formatMessage="请填写数字！"
 								min={30000}
-								max={exposedWay === 'Ingress' ? 65535 : 32000}
+								max={exposedWay === 'Ingress' ? 65535 : 32767}
 								minmaxMessage={`对外端口不能小于30000，大于${
-									exposedWay === 'Ingress' ? 65535 : 32000
+									exposedWay === 'Ingress' ? 65535 : 32767
 								}`}
 							>
 								<Input
@@ -537,7 +583,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									placeholder={
 										exposedWay === 'Ingress'
 											? '端口范围：30000-65535'
-											: '端口范围：30000-32000'
+											: '端口范围：30000-32767'
 									}
 									style={{ width: '200px' }}
 									disabled={cluster.ingress === null}
@@ -547,7 +593,41 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					</FormItem>
 					{protocol !== 'HTTP' && (
 						<FormItem
-							label="选择暴露对象"
+							label={
+								record.middlewareType === 'rocketmq' ? (
+									<span>
+										选择暴露对象{' '}
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											修改集群外访问端口将导致服务连接中断，请谨慎操作！
+										</Balloon>
+									</span>
+								) : record.middlewareType === 'kafka' ? (
+									<span>
+										选择暴露对象{' '}
+										<Balloon
+											trigger={
+												<Icon
+													type="question-circle"
+													size="xs"
+												/>
+											}
+											closable={false}
+										>
+											修改集群外访问端口将导致服务重启，请谨慎操作！
+										</Balloon>
+									</span>
+								) : (
+									<span>选择暴露对象</span>
+								)
+							}
 							required
 							labelTextAlign="left"
 							asterisk={false}
@@ -564,7 +644,25 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									// disabled={
 									// 	cluster.ingress === null || !!record
 									// }
-									disabled={cluster.ingress === null}
+									disabled={
+										cluster.ingress === null ||
+										selectedService.serviceName?.includes(
+											`${selectedInstance.name}-kafka-external-svc`
+										) ||
+										(exposedWay === 'Ingress' &&
+											record &&
+											initService.includes(
+												record.serviceList[0]
+													.serviceName
+											)) ||
+										(exposedWay === 'NodePort' &&
+											record &&
+											initService.some((item) =>
+												record.serviceList[0].serviceName.includes(
+													item
+												)
+											))
+									}
 								>
 									{services &&
 										services.map((item: any) => {
@@ -572,6 +670,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												<Option
 													key={item.serviceName}
 													value={item.serviceName}
+													disabled={
+														item.serviceName.includes(
+															`${selectedInstance.name}-kafka-external-svc`
+														) ||
+														initService.includes(
+															item.serviceName
+														)
+													}
 												>
 													{item.serviceName}
 												</Option>
@@ -588,7 +694,25 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									style={{ width: '100%' }}
 									autoWidth={false}
 									placeholder="请选择端口"
-									disabled={cluster.ingress === null}
+									disabled={
+										cluster.ingress === null ||
+										selectedService.serviceName.includes(
+											`${selectedInstance.name}-kafka-external-svc`
+										) ||
+										(exposedWay === 'Ingress' &&
+											record &&
+											initService.includes(
+												record.serviceList[0]
+													.serviceName
+											)) ||
+										(exposedWay === 'NodePort' &&
+											record &&
+											initService.some((item) =>
+												record.serviceList[0].serviceName.includes(
+													item
+												)
+											))
+									}
 								>
 									{selectedService.portDetailDtoList &&
 										selectedService.portDetailDtoList.map(
@@ -648,6 +772,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 																	}
 																	value={
 																		item.serviceName
+																	}
+																	disabled={
+																		item.serviceName.includes(
+																			`${selectedInstance.name}-kafka-external-svc`
+																		) ||
+																		initService.includes(
+																			item.serviceName
+																		)
 																	}
 																>
 																	{

@@ -73,7 +73,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					namespace: namespace.name,
 					keyword: searchText
 				}).then((res) => {
-					console.log(res);
 					if (res.success) {
 						setOriginData(res.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
@@ -107,7 +106,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					namespace: namespace.name,
 					keyword: ''
 				}).then((res) => {
-					console.log(res);
 					if (res.success) {
 						const flag = res.data.every(
 							(item: any) => item.serviceNum === 0
@@ -286,7 +284,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		if (record.exposeType === 'Ingress') {
 			let address = '';
 			record.protocol === 'TCP'
-				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
+				? (address = `${record.exposeIP}:${record.serviceList[0].exposePort}`)
 				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
 				<div style={{ display: 'flex', alignItems: 'center' }}>
@@ -424,6 +422,37 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				: record.serviceList[0].servicePort;
 		return <span>{port}</span>;
 	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.serviceName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+	};
 	const actionRender = (value: string, index: number, record: any) => {
 		return (
 			<Actions>
@@ -435,7 +464,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => handleDelete(record)}>
+				<LinkButton
+					disabled={judgeInit(record)}
+					onClick={() => handleDelete(record)}
+				>
 					删除
 				</LinkButton>
 			</Actions>

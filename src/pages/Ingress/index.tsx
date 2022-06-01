@@ -169,6 +169,37 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.middlewareName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+	};
 	const actionRender = (
 		value: string,
 		index: number,
@@ -186,7 +217,10 @@ function IngressList(props: ingressProps) {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => handleDelete(record)}>
+				<LinkButton
+					disabled={judgeInit(record)}
+					onClick={() => handleDelete(record)}
+				>
 					删除
 				</LinkButton>
 			</Actions>
@@ -217,7 +251,7 @@ function IngressList(props: ingressProps) {
 		if (record.exposeType === 'Ingress') {
 			let address = '';
 			record.protocol === 'TCP'
-				? (address = `IngressIp:${record.serviceList[0].exposePort}`)
+				? (address = `${record.exposeIP}:${record.serviceList[0].exposePort}`)
 				: (address = `${record.rules[0].domain}:${record.httpExposePort}${record.rules[0].ingressHttpPaths[0].path}`);
 			return (
 				<div style={{ display: 'flex', alignItems: 'center' }}>
