@@ -180,14 +180,15 @@ function IngressList(props: ingressProps) {
 				`${record.middlewareName}-1-master`,
 				`${record.middlewareName}-1-slave`,
 				`${record.middlewareName}-2-master`,
-				`${record.middlewareName}-2-slave`
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
 			];
 			if (record.middlewareType === 'rocketmq') {
 				return initService.some((item) => record.name.includes(item));
 			} else {
 				if (
 					record.name.includes(
-						`${record.serviceName}-kafka-external-svc`
+						`${record.middlewareName}-kafka-external-svc`
 					)
 				) {
 					return true;
