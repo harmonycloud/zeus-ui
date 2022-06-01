@@ -87,7 +87,14 @@ export default function CompareParamTemplate(): JSX.Element {
 
 	const handleSearch = (value: string) => {
 		const list = dataSource.filter((item) => item.name.includes(value));
-		setShowDataSource(list);
+		if (checked) {
+			const checkedList = list.filter(
+				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
+			);
+			setShowDataSource(checkedList);
+		} else {
+			setShowDataSource(list);
+		}
 		setSearchText(value);
 	};
 	const onChange = (value: boolean) => {
