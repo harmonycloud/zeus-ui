@@ -407,6 +407,10 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 					);
 				}
 			}
+			if (backupFileName) {
+				sendData.middlewareName = middlewareName;
+				sendData.backupFileName = backupFileName;
+			}
 			// * 配额
 			if (instanceSpec === 'General') {
 				switch (specId) {

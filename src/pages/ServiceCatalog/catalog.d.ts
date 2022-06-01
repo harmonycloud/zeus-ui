@@ -303,5 +303,7 @@ export interface PostgresqlSendDataParams {
 			storageClassQuota?: string;
 		};
 	};
+	middlewareName?: string;
+	backupFileName?: string;
 	mirrorImageId?: any;
 }
