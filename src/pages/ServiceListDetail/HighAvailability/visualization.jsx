@@ -58,6 +58,7 @@ function Visualization(props) {
 		selectObj,
 		backup
 	} = props;
+	console.log(props);
 	const location = useLocation();
 	const { pathname } = location;
 	const { type, chartVersion } = useParams();
@@ -137,7 +138,10 @@ function Visualization(props) {
 		} else {
 			if (backup) {
 				if (serverData.name === selectObj) {
-					if (serverData.type === 'mysql') {
+					if (
+						serverData.type === 'mysql' ||
+						serverData.type === 'postgresql'
+					) {
 						return !cfg.depth ? true : false;
 					} else {
 						return true;
@@ -1094,6 +1098,18 @@ function Visualization(props) {
 				if (item._cfg.model.depth) {
 					Message.show(
 						messageConfig('warning', '提示', 'mysql只支持服务备份')
+					);
+					return;
+				}
+			}
+			if (serverData.type === 'postgresql') {
+				if (item._cfg.model.depth) {
+					Message.show(
+						messageConfig(
+							'warning',
+							'提示',
+							'postgresql只支持服务备份'
+						)
 					);
 					return;
 				}

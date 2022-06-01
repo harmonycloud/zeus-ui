@@ -70,7 +70,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	console.log(params);
 	const {
 		chartName,
 		chartVersion,
@@ -282,7 +281,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						}
 					},
 					mysqlDTO: {
-						replicaCount: replicaCount,
+						replicaCount:
+							mode !== '1m-ns'
+								? mode === '1m-3s'
+									? 3
+									: 1
+								: replicaCount,
 						openDisasterRecoveryMode: backupFlag,
 						type:
 							mode === '1m-1s' ? 'master-master' : 'master-slave'
@@ -458,7 +462,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							}
 						},
 						mysqlDTO: {
-							replicaCount: replicaCount,
+							replicaCount:
+								mode !== '1m-ns'
+									? mode === '1m-3s'
+										? 3
+										: 1
+									: replicaCount,
 							openDisasterRecoveryMode: true,
 							relationName: values.name,
 							relationAliasName: values.aliasName,
@@ -768,6 +777,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			});
 			if (JSON.stringify(globalNamespace) !== '{}') {
 				// 克隆服务
+				console.log(
+					'克隆服务',
+					globalNamespace,
+					backupFileName,
+					middlewareName
+				);
 				if (backupFileName) {
 					getMiddlewareDetailAndSetForm(middlewareName);
 				}
@@ -1093,11 +1108,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											patternMessage="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 										>
 											<Input
 												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
+												placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 												trim
 											/>
 										</FormItem>
@@ -2037,11 +2052,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														required
 														requiredMessage="请输入服务名称"
 														pattern={pattern.name}
-														patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+														patternMessage="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 													>
 														<Input
 															name="relationName"
-															placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
+															placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 															trim
 														/>
 													</FormItem>

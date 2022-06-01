@@ -130,6 +130,12 @@ const Routes = withRouter((props) => {
 					path="/serviceList/:chartName/:aliasName/kafkaCreate/:chartVersion"
 					component={KafkaCreate}
 				/>
+				{/* pgsql备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
+					component={PostgreSQLCreate}
+					exact
+				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion"
 					component={PostgreSQLCreate}

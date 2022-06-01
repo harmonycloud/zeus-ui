@@ -26,7 +26,8 @@ import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
-	postMiddleware
+	postMiddleware,
+	getMiddlewareDetail
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { getAspectFrom } from '@/services/common';
@@ -45,6 +46,7 @@ import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
 import { StoreState } from '@/types';
 import { formItemLayout614, instanceSpecList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
+import transUnit from '@/utils/transUnit';
 import pattern from '@/utils/pattern';
 import messageConfig from '@/components/messageConfig';
 
@@ -65,7 +67,14 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 	const history = useHistory();
 	const params: CreateParams = useParams();
 	const field = Field.useField();
-	const { chartName, aliasName, chartVersion } = params;
+	const {
+		chartName,
+		aliasName,
+		chartVersion,
+		middlewareName,
+		backupFileName,
+		namespace
+	} = params;
 	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	// * 主机亲和-start
 	const [affinity, setAffinity] = useState<AffinityProps>({
@@ -240,11 +249,83 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 					Message.show(messageConfig('error', '失败', res));
 				}
 			});
+			if (JSON.stringify(globalNamespace) !== '{}') {
+				// 克隆服务
+				console.log(
+					'克隆服务',
+					globalNamespace,
+					backupFileName,
+					middlewareName
+				);
+				if (backupFileName) {
+					getMiddlewareDetailAndSetForm(middlewareName);
+				}
+			}
 		}
 	}, [globalCluster, globalNamespace]);
+
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		console.log(namespace);
+		getMiddlewareDetail({
+			clusterId: globalCluster.id,
+			namespace: namespace,
+			middlewareName: middlewareName,
+			type: 'postgresql'
+		}).then((res) => {
+			// console.log(res);
+			setInstanceSpec('Customize');
+			if (res.data.nodeAffinity) {
+				setAffinity({
+					flag: true,
+					label: '',
+					checked: false
+				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item: string) => {
+						return { label: item };
+					}) || []
+				);
+			}
+			if (res.data.mode) {
+				setMode(res.data.mode);
+			}
+			if (res.data.version) {
+				setVersion(res.data.version);
+			}
+			field.setValues({
+				name: backupFileName ? res.data.name + '-backup' : '',
+				labels: res.data.labels,
+				annotations: res.data.annotations,
+				description: res.data.description,
+				postgresqlPwd: res.data.password,
+				cpu: res.data.quota.postgresql.cpu,
+				memory: transUnit.removeUnit(
+					res.data.quota.postgresql.memory,
+					'Gi'
+				),
+				storageClass: res.data.quota.postgresql.storageClassName,
+				storageQuota: transUnit.removeUnit(
+					res.data.quota.postgresql.storageClassQuota,
+					'Gi'
+				)
+			});
+			if (res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
+					field.setValue(i, res.data.dynamicValues[i]);
+				}
+			}
+		});
+	};
+
 	// * 表单提交
 	const handleSubmit = () => {
-		console.log('submit');
 		field.validate((err) => {
 			const values: PostgresqlCreateValuesParams = field.getValues();
 			if (err) return;
@@ -265,7 +346,7 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 				password: values.pgsqlPwd,
 				version: version,
 				mode,
-				replicaCount: replicaCount,
+				replicaCount: mode === '1m-1s' ? 1 : replicaCount,
 				quota: {
 					postgresql: {
 						storageClassName: values.storageClass,
@@ -552,11 +633,11 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 											required
 											requiredMessage="请输入服务名称"
 											pattern={pattern.name}
-											patternMessage="请输入由小写字母开头和数字及“-”组成的2-24个字符"
+											patternMessage="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 										>
 											<Input
 												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
+												placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 												trim
 											/>
 										</FormItem>
@@ -1280,7 +1361,11 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 						</Form.Submit>
 						<Button
 							type="normal"
-							onClick={() => window.history.back()}
+							onClick={() => {
+								history.push({
+									pathname: `/serviceList/${chartName}/${aliasName}`
+								});
+							}}
 						>
 							取消
 						</Button>
