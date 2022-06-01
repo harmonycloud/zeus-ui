@@ -149,7 +149,7 @@ function AlarmSet(props: any) {
 		};
 		const arr = [];
 		for (const key in obj) {
-			key !== 'time' && arr.push(obj[key]);
+			key !== 'time' && key !== 'mailPath' && arr.push(obj[key]);
 		}
 		arr.every((item) => item) ? setBtnStatus(false) : setBtnStatus(true);
 	};
