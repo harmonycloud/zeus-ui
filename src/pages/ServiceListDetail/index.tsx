@@ -454,57 +454,57 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					activeKey={activeKey}
 					onChange={onChange}
 				>
-					<TabPane tab="基本信息" tabKey="basicInfo">
+					<TabPane tab="基本信息" key="basicInfo">
 						{childrenRender('basicInfo')}
 					</TabPane>
 					{operateFlag && (
-						<TabPane tab="实例详情" tabKey="highAvailability">
+						<TabPane tab="实例详情" key="highAvailability">
 							{childrenRender('highAvailability')}
 						</TabPane>
 					)}
 					{operateFlag &&
 					(type === 'mysql' || type === 'elasticsearch') ? (
-						<TabPane tab="数据安全" tabKey="backupRecovery">
+						<TabPane tab="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</TabPane>
 					) : null}
 					{operateFlag && (
-						<TabPane tab="服务暴露" tabKey="externalAccess">
+						<TabPane tab="服务暴露" key="externalAccess">
 							{childrenRender('externalAccess')}
 						</TabPane>
 					)}
 					{operateFlag && (
-						<TabPane tab="数据监控" tabKey="monitor">
+						<TabPane tab="数据监控" key="monitor">
 							{childrenRender('monitor')}
 						</TabPane>
 					)}
 					{operateFlag && (
-						<TabPane tab="日志详情" tabKey="log">
+						<TabPane tab="日志详情" key="log">
 							{childrenRender('log')}
 						</TabPane>
 					)}
 					{operateFlag && (
-						<TabPane tab="参数设置" tabKey="paramterSetting">
+						<TabPane tab="参数设置" key="paramterSetting">
 							{childrenRender('paramterSetting')}
 						</TabPane>
 					)}
 					{operateFlag && (
-						<TabPane tab="服务告警" tabKey="alarm">
+						<TabPane tab="服务告警" key="alarm">
 							{childrenRender('alarm')}
 						</TabPane>
 					)}
 					{operateFlag && type === 'mysql' ? (
-						<TabPane tab="灾备服务" tabKey="disaster">
+						<TabPane tab="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</TabPane>
 					) : null}
 					{operateFlag && type === 'mysql' ? (
-						<TabPane tab="数据库管理" tabKey="database">
+						<TabPane tab="数据库管理" key="database">
 							{childrenRender('database')}
 						</TabPane>
 					) : null}
 					{type === 'redis' ? (
-						<TabPane tab="数据库管理" tabKey="redisDatabase">
+						<TabPane tab="数据库管理" key="redisDatabase">
 							{childrenRender('redisDatabase')}
 						</TabPane>
 					) : null}
