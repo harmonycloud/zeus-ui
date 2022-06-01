@@ -28,10 +28,6 @@
 - 资源管理
 
 
-## Quick Start
-
-部署详情移步: https://github.com/harmonycloud/zeus
-
 ## 支持组件版本
 
 |中间件|支持版本|支持模式|
@@ -44,20 +40,6 @@
 |Zookeeper|0.2.8| |
 |Minio|RELEASE.2021-02-14T04-01-33Z| |
 |Nacos|1.4.1| |
-
-## 平台组件
-
-zeus-ui: https: https://github.com/harmonycloud/zeus-ui
-
-redis-operator: https://github.com/harmonycloud/redis-operator
-
-其余operator暂未开源
-
-## 手册
-
-用户手册：https://github.com/harmonycloud/zeus/blob/main/docs/user-guide/README.md
-
-开发手册：https://github.com/harmonycloud/zeus/blob/main/docs/developer-guide/README.md
 
 ## License
 

@@ -270,7 +270,7 @@ export default function Login() {
 			)}
 			<div className={styles['copy']}>
 				{(data && data.copyrightNotice) ||
-					'Copyeight © 2021 杭州谐云科技有限公司 All rights reserved.Copyeight.'}
+					'Copyright © 2021 天翼云科技有限公司 All rights reserved.Copyright.'}
 			</div>
 		</div>
 	);
