@@ -115,7 +115,14 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 	}, [dataSource]);
 	const handleSearch = (value: string) => {
 		const list = dataSource.filter((item) => item.name.includes(value));
-		setShowDataSource(list);
+		if (checked) {
+			const checkedList = list.filter(
+				(item) => item[temp?.name || ''] !== item.value
+			);
+			setShowDataSource(checkedList);
+		} else {
+			setShowDataSource(list);
+		}
 		setSearchText(value);
 	};
 	const onChange = (value: boolean) => {
@@ -316,7 +323,6 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						customConfigList: list
 					}
 				};
-				// console.log(sendData);
 				return updateConfig(sendData).then((res) => {
 					if (res.success) {
 						Message.show(
