@@ -26,6 +26,7 @@ interface RoleFormProps {
 function RoleForm(props: RoleFormProps): JSX.Element {
 	const { visible, onCancel, onCreate, data } = props;
 	const [form] = Form.useForm();
+	console.log(data);
 	useEffect(() => {
 		if (data) {
 			form.setFieldsValue({
@@ -43,9 +44,10 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 			const sendData = {
 				...(values as unknown as roleProps)
 			};
+			console.log(sendData);
 			if (data) {
 				// * 修改用户
-				delete sendData.createTime;
+				sendData.roleId = data.id;
 				updateRole(sendData).then((res) => {
 					if (res.success) {
 						notification.success({
@@ -62,7 +64,6 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 				});
 			} else {
 				// * 创建用户
-				// sendData.menu = initMenu;
 				createRole(sendData).then((res) => {
 					if (res.success) {
 						notification.success({
