@@ -74,8 +74,11 @@ export default function ParamterHistory(
 			end
 		);
 	};
+
 	const onChange = (val: any[]) => {
 		if (val.length === 0) {
+			setStartTime('');
+			setEndTime('');
 			getData(clusterId, namespace, middlewareName, type, searchText);
 		}
 	};
