@@ -74,7 +74,7 @@ function DataSecurity(props: DataSecurityProps): JSX.Element {
 		setOperateFlag(true);
 		return (
 			<h3 style={{ textAlign: 'center' }}>
-				该中间件类型不支持该功能，请选择mysql或者elasticsearch类型的中间件
+				该中间件类型不支持该功能，请选择mysql，postgresql或者elasticsearch类型的中间件
 			</h3>
 		);
 	};
@@ -91,10 +91,12 @@ function DataSecurity(props: DataSecurityProps): JSX.Element {
 			onChange={onChange}
 		>
 			{basicData?.type !== 'mysql' &&
+				basicData?.type !== 'postgresql' &&
 				basicData?.type !== 'elasticsearch' &&
 				isService &&
 				operateFlag && <NotSupport />}
 			{(basicData?.type === 'mysql' ||
+				basicData?.type === 'postgresql' ||
 				basicData?.type === 'elasticsearch') &&
 				isService &&
 				operateFlag &&
