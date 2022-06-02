@@ -419,14 +419,14 @@ function DynamicForm(props: CreateProps): JSX.Element {
 														pattern.name
 													),
 													message:
-														'请输入由小写字母数字及“-”组成的2-24个字符'
+														'请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符'
 												}
 											]}
 											name="name"
 										>
 											<Input
 												style={{ width: '390px' }}
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
+												placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 											/>
 										</FormItem>
 									</div>
