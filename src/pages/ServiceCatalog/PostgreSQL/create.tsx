@@ -1020,6 +1020,9 @@ function PostgreSQLCreate(props: CreateProps): JSX.Element {
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={
+												backupFileName ? true : false
+											}
 										/>
 									</div>
 								</li>
