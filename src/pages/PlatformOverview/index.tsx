@@ -667,14 +667,27 @@ function PlatformOverview(): JSX.Element {
 										}}
 										type="platform"
 									/>
-									<Pagination
-										style={{ float: 'right' }}
-										current={current}
-										size="small"
-										onChange={paginationChange}
-										total={total}
-										showTotal={(total) => `总数：${total}`}
-									/>
+									<div
+										style={{
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'space-between',
+											marginTop: '8px'
+										}}
+									>
+										<span>总数：{total}</span>
+										<Pagination
+											style={{ float: 'right' }}
+											current={current}
+											size="small"
+											onChange={paginationChange}
+											total={total}
+											simple
+											showTotal={(total) =>
+												`总数：${total}`
+											}
+										/>
+									</div>
 								</HomeCard>
 								<HomeCard
 									title="系统信息"
