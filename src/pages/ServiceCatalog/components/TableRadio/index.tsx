@@ -1,5 +1,6 @@
 import React from 'react';
-import { Radio, RadioChangeEvent, Space } from 'antd';
+import { useState } from 'react';
+import { Table } from 'antd';
 import { TableRadioProps } from './tableRadio';
 
 /**
@@ -10,11 +11,18 @@ import { TableRadioProps } from './tableRadio';
 export default function TableRadio(props: TableRadioProps): JSX.Element {
 	const { id = '', isMysql = false, onCallBack } = props;
 	const columns = [
-		{ title: '', dataIndex: 'id' },
 		{ title: '规格', dataIndex: 'spec' },
 		{ title: 'CPU', dataIndex: 'cpu' },
 		{ title: '内存', dataIndex: 'memory' }
 	];
+	const [selectedRowKeys, setSelectedRowKeys] = useState(['1']);
+	const rowSelection = {
+		selectedRowKeys: selectedRowKeys,
+		onChange: (selectedRowKeys: any, selectedRows: any) => {
+			onCallBack(selectedRowKeys[0]);
+			setSelectedRowKeys(selectedRowKeys);
+		}
+	};
 	if (isMysql) {
 		columns.push({ title: '推荐连接数', dataIndex: 'num' });
 	}
@@ -57,97 +65,24 @@ export default function TableRadio(props: TableRadioProps): JSX.Element {
 	];
 
 	return (
-		<div style={{ width: '100%' }}>
-			<table className="table-list">
-				<thead>
-					<tr>
-						<th>
-							{columns.map((column, index) => {
-								if (column.dataIndex !== 'id') {
-									return (
-										<span
-											style={{
-												width: isMysql
-													? '22.6%'
-													: '30%',
-												marginLeft: index === 1 ? 35 : 0
-											}}
-											key={index}
-										>
-											{column.title}
-										</span>
-									);
-								}
-							})}
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<Radio.Group
-						value={id}
-						onChange={(e: RadioChangeEvent) => {
-							onCallBack(e.target.id as unknown as string);
-						}}
-						style={{ width: '100%' }}
-					>
-						<Space
-							direction="vertical"
-							style={{ width: '100%', gap: '0px' }}
-						>
-							{dataList.map((data, indexData) => {
-								return (
-									<Radio
-										key={indexData}
-										id={data.id}
-										value={data.id}
-									>
-										<tr>
-											{columns.map(
-												(column, indexColumn) => {
-													if (
-														column.dataIndex !==
-														'id'
-													) {
-														return (
-															<span
-																key={
-																	indexColumn
-																}
-																style={
-																	!isMysql
-																		? {
-																				width: '33% !important'
-																		  }
-																		: {}
-																}
-															>
-																{
-																	data[
-																		column
-																			.dataIndex
-																	]
-																}
-															</span>
-														);
-													} else {
-														return (
-															<span
-																key={
-																	indexColumn
-																}
-															></span>
-														);
-													}
-												}
-											)}
-										</tr>
-									</Radio>
-								);
-							})}
-						</Space>
-					</Radio.Group>
-				</tbody>
-			</table>
-		</div>
+		<Table
+			rowKey="id"
+			columns={columns}
+			dataSource={dataList}
+			rowSelection={{
+				type: 'radio',
+				...rowSelection
+			}}
+			onRow={(record: any) => {
+				return {
+					onClick: () => {
+						onCallBack(selectedRowKeys[0]);
+						setSelectedRowKeys([record.id]);
+					}
+				};
+			}}
+			size="middle"
+			pagination={false}
+		/>
 	);
 }
