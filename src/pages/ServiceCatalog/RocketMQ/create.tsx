@@ -51,6 +51,7 @@ import {
 	PlusOutlined,
 	QuestionCircleOutlined
 } from '@ant-design/icons';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 const { Item: FormItem } = Form;
 
@@ -772,9 +773,12 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														checked={
 															affinity.checked
 														}
-														onChange={(value) =>
+														onChange={(
+															e: CheckboxChangeEvent
+														) =>
 															changeAffinity(
-																value,
+																e.target
+																	.checked,
 																'checked'
 															)
 														}

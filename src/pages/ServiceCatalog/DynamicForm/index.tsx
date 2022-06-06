@@ -21,15 +21,6 @@ import { getProjectNamespace } from '@/services/project';
 import { middlewareDetailProps } from '@/types/comment';
 const { Item: FormItem } = Form;
 
-const formItemLayout = {
-	labelCol: {
-		span: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
-
 function DynamicForm(props: CreateProps): JSX.Element {
 	const {
 		cluster: globalCluster,
@@ -341,7 +332,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				<Form {...formItemLayout} form={form}>
+				<Form form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className="w-50">

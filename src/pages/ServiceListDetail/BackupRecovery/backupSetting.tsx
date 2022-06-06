@@ -25,6 +25,7 @@ import { StoreState } from '@/types';
 import { BackupRuleSendData, PodSendData } from '../detail';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import '../detail.scss';
 
 const formItemLayout = {
 	labelCol: {
@@ -118,8 +119,18 @@ function BackupSetting(): JSX.Element {
 				cycle: record.cron
 					.split(' ? ? ')[1]
 					.split(',')
-					.map((item: string) => Number(item))
-				// time: moment(date)
+					.map((item: string) => Number(item)),
+				time: moment(
+					record.cron
+						.split(' ? ? ')[0]
+						.split(' ')
+						.reverse()
+						.map((item: string) =>
+							item.length === 1 ? '0' + item : item
+						)
+						.join(':'),
+					'HH:mm'
+				)
 			});
 		record && setBackupObj(selectObj);
 	}, []);
@@ -358,54 +369,72 @@ function BackupSetting(): JSX.Element {
 								},
 								{
 									min: 1,
+									type: 'number',
 									message: '备份保留个数最小值为1'
 								}
 							]}
 							// requiredMessage="备份保留个数不能为空"
 							// min={1}
 							// minmaxLengthMessage="备份保留个数最小值为1"
+							initialValue={1}
 						>
 							<InputNumber
-								min={1}
-								defaultValue={1}
+								// min={1}
+								// defaultValue={1}
 								type="inline"
 							/>
 						</Form.Item>
 						<Form.Item
 							label="备份周期"
+							className="check-form"
 							required
-							name="cycle"
-							rules={[
-								{
-									required: true,
-									message: '备份周期不能为空！'
-								}
-							]}
 						>
-							<Checkbox
-								style={{ marginRight: '12px' }}
-								onChange={(value: CheckboxChangeEvent) => {
-									value
-										? setChecks([0, 1, 2, 3, 4, 5, 6])
-										: setChecks([]);
-									setAllChecked(value.target.value);
-								}}
-								checked={allChecked}
+							<Form.Item>
+								<Checkbox
+									style={{ marginRight: '12px' }}
+									onChange={(value: CheckboxChangeEvent) => {
+										value.target.checked
+											? setChecks([0, 1, 2, 3, 4, 5, 6])
+											: setChecks([]);
+										value.target.checked
+											? form.setFieldsValue({
+													cycle: [0, 1, 2, 3, 4, 5, 6]
+											  })
+											: form.setFieldsValue({
+													cycle: []
+											  });
+										form.validateFields(['cycle']);
+										setAllChecked(value.target.checked);
+									}}
+									checked={allChecked}
+								>
+									全选
+								</Checkbox>
+							</Form.Item>
+							<Form.Item
+								name="cycle"
+								rules={[
+									{
+										required: true,
+										message: '备份周期不能为空！'
+									}
+								]}
 							>
-								全选
-							</Checkbox>
-							<CheckboxGroup
-								options={list}
-								value={checks}
-								onChange={(value: CheckboxValueType[]) => {
-									setChecks(value as number[]);
-									(value as number[])
-										.sort((a: number, b: number) => a - b)
-										.join(',') === '0,1,2,3,4,5,6'
-										? setAllChecked(true)
-										: setAllChecked(false);
-								}}
-							/>
+								<CheckboxGroup
+									options={list}
+									value={checks}
+									onChange={(value: CheckboxValueType[]) => {
+										setChecks(value as number[]);
+										(value as number[])
+											.sort(
+												(a: number, b: number) => a - b
+											)
+											.join(',') === '0,1,2,3,4,5,6'
+											? setAllChecked(true)
+											: setAllChecked(false);
+									}}
+								/>
+							</Form.Item>
 						</Form.Item>
 						<Form.Item
 							label="备份时间"
@@ -416,7 +445,13 @@ function BackupSetting(): JSX.Element {
 							]}
 							// requiredMessage="备份时间不能为空"
 						>
-							<TimePicker minuteStep={30} format="HH:mm" />
+							<TimePicker
+								onChange={(value) => {
+									console.log(value);
+								}}
+								minuteStep={30}
+								format="HH:mm"
+							/>
 						</Form.Item>
 					</Form>
 				) : null}

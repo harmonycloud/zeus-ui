@@ -1578,7 +1578,7 @@ function Visualization(props) {
 									: '退出全屏'
 							}
 						>
-							<Button onClick={scale} iconSize="xs">
+							<Button onClick={scale}>
 								<FullscreenOutlined />
 							</Button>
 						</Tooltip>
