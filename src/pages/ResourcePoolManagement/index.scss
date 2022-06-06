@@ -39,21 +39,21 @@
 	background-color: $primary-color;
 	font-size: $font-1;
 	font-weight: $font-weight;
-	color: $white;
+	color: $white !important;
 	line-height: $line-height-5;
 	text-align: center;
 	position: absolute;
-	right: -120px;
-	bottom: 24px;
-}
-#my-upload-parse {
-	width: 100px;
-	height: 32px;
-	opacity: 0;
-	position: absolute;
-	right: 0px;
-	bottom: 0px;
-	cursor: pointer;
+	right: -115px;
+	bottom: 30px;
+	#my-upload-parse {
+		width: 100px;
+		height: 32px;
+		opacity: 0;
+		position: absolute;
+		right: 0px;
+		bottom: 0px;
+		cursor: pointer;
+	}
 }
 .upload-position {
 	position: relative;

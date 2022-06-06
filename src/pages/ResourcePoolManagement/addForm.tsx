@@ -8,7 +8,9 @@ import {
 	Select,
 	Button,
 	notification,
-	Tabs
+	Tabs,
+	InputNumber,
+	Space
 } from 'antd';
 import { connect } from 'react-redux';
 import { IconFont } from '@/components/IconFont';
@@ -291,20 +293,18 @@ function AddForm(props: addFormProps): JSX.Element {
 											'请输入由小写字母数字及“-”组成的2-40个字符'
 									}
 								]}
+								name="name"
 								required
 								labelAlign="left"
 							>
 								<div className="display-flex">
 									<Input
-										name="name"
 										value={quickName}
-										// state={inputState}
 										placeholder="请输入集群名称生成集群纳管脚本"
 										onChange={(e) => {
 											setQuickName(e.target.value);
 											setInputState(undefined);
 										}}
-										// onBlur={onBlur}
 										style={{
 											width: 'calc(100% - 100px)',
 											marginRight: 8
@@ -423,11 +423,16 @@ function AddForm(props: addFormProps): JSX.Element {
 								<FormItem
 									label="Apiserver地址"
 									style={{ marginBottom: 0 }}
+									name="apiserver"
 								>
-									<Row gutter={4}>
+									<Row>
 										<Col span={6}>
-											<FormItem name="protocol">
+											<FormItem
+												name="protocol"
+												initialValue="https"
+											>
 												<Input
+													style={{ width: '100%' }}
 													value="https"
 													disabled={true}
 												/>
@@ -450,8 +455,12 @@ function AddForm(props: addFormProps): JSX.Element {
 															'请输入正确的ip地址！'
 													}
 												]}
+												style={{ marginLeft: -2 }}
 											>
 												<Input
+													style={{
+														width: '100%'
+													}}
 													disabled={
 														params.clusterId
 															? true
@@ -463,6 +472,7 @@ function AddForm(props: addFormProps): JSX.Element {
 										</Col>
 										<Col span={6}>
 											<FormItem
+												style={{ marginLeft: -2 }}
 												required
 												name="port"
 												rules={[
@@ -471,15 +481,15 @@ function AddForm(props: addFormProps): JSX.Element {
 														message: '请输入端口'
 													}
 												]}
+												initialValue={6443}
 											>
-												<Input
-													type="number"
+												<InputNumber
+													style={{ width: '100%' }}
 													disabled={
 														params.clusterId
 															? true
 															: false
 													}
-													defaultValue={6443}
 													placeholder="端口"
 												/>
 											</FormItem>
@@ -488,35 +498,42 @@ function AddForm(props: addFormProps): JSX.Element {
 								</FormItem>
 								<FormItem
 									label="AdminConfig"
-									required
-									name="cert"
-									rules={[
-										{
-											required: true,
-											message: '请输入AdminConfig'
-										}
-									]}
+									style={{ marginBottom: 0 }}
 								>
-									<Input.TextArea
-										rows={4}
-										placeholder="请输入AdminConfig"
-									/>
-									<div className="upload-parse-file">
-										<VerticalAlignTopOutlined
-											style={{ marginRight: 4 }}
+									<FormItem
+										name="cert"
+										required
+										rules={[
+											{
+												required: true,
+												message: '请输入AdminConfig'
+											}
+										]}
+									>
+										<Input.TextArea
+											rows={4}
+											placeholder="请输入AdminConfig"
 										/>
-										上传文件
-										<input
-											id="my-upload-parse"
-											type="file"
-											name="file"
-											onChange={uploadConf}
-										/>
-									</div>
+									</FormItem>
+									<Form.Item className="upload-parse-file">
+										<div>
+											<VerticalAlignTopOutlined
+												style={{ marginRight: 4 }}
+											/>
+											上传文件
+											<input
+												id="my-upload-parse"
+												type="file"
+												name="file"
+												onChange={uploadConf}
+											/>
+										</div>
+									</Form.Item>
 								</FormItem>
 								<FormItem
 									label="Harbor地址"
 									style={{ marginBottom: 0 }}
+									name="harborAddress"
 								>
 									<Row>
 										<Col span={6}>
@@ -549,8 +566,8 @@ function AddForm(props: addFormProps): JSX.Element {
 												style={{ marginLeft: -2 }}
 												name="portHarbor"
 											>
-												<Input
-													type="number"
+												<InputNumber
+													style={{ width: '100%' }}
 													placeholder="端口"
 												/>
 											</FormItem>
@@ -563,14 +580,15 @@ function AddForm(props: addFormProps): JSX.Element {
 								<FormItem
 									label="Harbor鉴权"
 									style={{ marginBottom: 0 }}
+									name="harborAuth"
 								>
 									<Row gutter={4}>
-										<Col>
+										<Col span={12}>
 											<FormItem name="user">
 												<Input placeholder="请输入用户名" />
 											</FormItem>
 										</Col>
-										<Col>
+										<Col span={12}>
 											<FormItem name="password">
 												<Input.Password placeholder="请输入密码" />
 											</FormItem>
