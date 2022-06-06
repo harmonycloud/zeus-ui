@@ -59,6 +59,7 @@ import { getAspectFrom } from '@/services/common';
 
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
@@ -895,9 +896,12 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														checked={
 															affinity.checked
 														}
-														onChange={(value) =>
+														onChange={(
+															e: CheckboxChangeEvent
+														) =>
 															changeAffinity(
-																value,
+																e.target
+																	.checked,
 																'checked'
 															)
 														}
