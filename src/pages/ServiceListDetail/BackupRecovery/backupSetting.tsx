@@ -68,6 +68,36 @@ function BackupSetting(): JSX.Element {
 			type: listData?.type
 		};
 		getPodList(sendData);
+		// co·nst date = new Date(1, 1, );
+		// date.setMinutes(record.cron
+		// 	.split(' ? ? ')[0]
+		// 	.split(' ')
+		// 	.reverse()
+		// 	.map((item: string) =>
+		// 		item.length === 1 ? '0' + item : item
+		// 	)[0]);
+		// date.setSeconds(
+		// 	record.cron
+		// 		.split(' ? ? ')[0]
+		// 		.split(' ')
+		// 		.reverse()
+		// 		.map((item: string) =>
+		// 			item.length === 1 ? '0' + item : item
+		// 		)[1]
+		// )
+		console.log(
+			// date,
+			moment(
+				record.cron
+					.split(' ? ? ')[0]
+					.split(' ')
+					.reverse()
+					.map((item: string) =>
+						item.length === 1 ? '0' + item : item
+					)
+					.join(':')
+			)
+		);
 		record &&
 			setChecks(
 				record.cron
@@ -88,15 +118,8 @@ function BackupSetting(): JSX.Element {
 				cycle: record.cron
 					.split(' ? ? ')[1]
 					.split(',')
-					.map((item: string) => Number(item)),
-				time: record.cron
-					.split(' ? ? ')[0]
-					.split(' ')
-					.reverse()
-					.map((item: string) =>
-						item.length === 1 ? '0' + item : item
-					)
-					.join(':')
+					.map((item: string) => Number(item))
+				// time: moment(date)
 			});
 		record && setBackupObj(selectObj);
 	}, []);

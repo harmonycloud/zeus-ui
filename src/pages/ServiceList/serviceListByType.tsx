@@ -201,7 +201,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const handleFilterBackup = (e: CheckboxChangeEvent) => {
-		setBackupCheck(e.target.value);
+		setBackupCheck(e.target.checked);
 		let list = dataSource?.serviceList || [];
 		if (selectedKeys.length > 0) {
 			if (selectedKeys[0] !== 'Other') {
@@ -216,7 +216,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				});
 			}
 		}
-		if (e.target.value) {
+		if (e.target.checked) {
 			list = showDataSource.filter(
 				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
 			);
