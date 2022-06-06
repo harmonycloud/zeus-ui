@@ -223,7 +223,7 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
   width: 100%;
 }
 .form-layout .form-li {
-  padding: 8px 0;
+  padding: 12px 0;
 }
 .form-name {
   width: 120px;

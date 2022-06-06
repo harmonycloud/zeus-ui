@@ -13,7 +13,11 @@ export default function FormBlock(props: formBlockProps): JSX.Element {
 			) : (
 				<div className={styles['title']}>{title}</div>
 			)}
-			{children}
+			{children ? (
+				children
+			) : (
+				<div className={styles['form-block-none']}></div>
+			)}
 		</div>
 	);
 }

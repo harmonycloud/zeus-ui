@@ -827,42 +827,12 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 															}
 														}}
 													/>
-													{/* <Icon
-														type="error"
-														size="xs"
-														className={
-															styles['tag-close']
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
-															}
-														}}
-													/> */}
 												</p>
 											);
 										})}
 									</div>
 								) : null}
-								<li className="display-flex form-li">
+								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
 									</label>
@@ -990,7 +960,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 						<div className={styles['log-collection-content']}>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex form-li flex-align">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												文件日志收集
@@ -1022,7 +992,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex form-li flex-align">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												标准日志收集
@@ -1075,45 +1045,50 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										/>
 									</div>
 								</li>
-								<li className="display-flex">
-									<label className="form-name">
-										<span
-											className="ne-required"
-											style={{ marginRight: 8 }}
-										>
-											镜像仓库
-										</span>
-									</label>
-									<div
-										className="form-content"
-										style={{ flex: '0 0 376px' }}
-									>
-										<FormItem
-											required
-											name="mirrorImageId"
-											rules={[
-												{
-													required: true,
-													message: '请选择镜像仓库'
+								{mirrorList.length && (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span
+												className="ne-required"
+												style={{ marginRight: 8 }}
+											>
+												镜像仓库
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem
+												required
+												name="mirrorImageId"
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择镜像仓库'
+													}
+												]}
+												initialValue={
+													mirrorList[0].address
 												}
-											]}
-										>
-											<AutoComplete
-												placeholder="请选择"
-												allowClear={true}
-												defaultValue={
-													mirrorList[0]?.address
-												}
-												dataSource={mirrorList.map(
-													(item: any) => item.address
-												)}
-												style={{
-													width: '100%'
-												}}
-											/>
-										</FormItem>
-									</div>
-								</li>
+											>
+												<AutoComplete
+													placeholder="请选择"
+													allowClear={true}
+													dataSource={mirrorList.map(
+														(item: any) => {
+															return {
+																label: item.address,
+																value: item.address
+															};
+														}
+													)}
+													style={{
+														width: '376px'
+													}}
+												/>
+											</FormItem>
+										</div>
+									</li>
+								)}
 							</ul>
 						</div>
 					</FormBlock>
@@ -1306,11 +1281,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													message: '请选择存储类型'
 												}
 											]}
+											style={{ marginRight: 8 }}
 										>
-											<Select
-												placeholder="请选择存储类型"
-												style={{ marginRight: 8 }}
-											>
+											<Select placeholder="请选择存储类型">
 												{storageClassList.map(
 													(item, index) => {
 														return (
@@ -1354,7 +1327,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</div>
 								</li>
 								<li
-									className="display-flex form-li"
+									className="display-flex"
 									style={{ alignItems: 'center' }}
 								>
 									<label className="form-name">

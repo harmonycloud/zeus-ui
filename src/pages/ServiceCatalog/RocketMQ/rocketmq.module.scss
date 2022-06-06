@@ -7,6 +7,7 @@
 	width: 656px;
 	padding: 8px 0 16px 0;
 	.host-affinity {
+		align-items: center;
 		.switch {
 			width: 120px;
 			line-height: $line-height-2 * 2;
@@ -87,6 +88,7 @@
 	.log-collection {
 		padding: 8px 0 8px 0;
 		.file-log, .standard-log {
+			align-items: center;
 			.switch {
 				width: 120px;
 				line-height: $line-height-2 * 2;
