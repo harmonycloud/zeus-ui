@@ -86,19 +86,6 @@ function BackupSetting(): JSX.Element {
 		// 			item.length === 1 ? '0' + item : item
 		// 		)[1]
 		// )
-		console.log(
-			// date,
-			moment(
-				record.cron
-					.split(' ? ? ')[0]
-					.split(' ')
-					.reverse()
-					.map((item: string) =>
-						item.length === 1 ? '0' + item : item
-					)
-					.join(':')
-			)
-		);
 		record &&
 			setChecks(
 				record.cron
@@ -445,13 +432,7 @@ function BackupSetting(): JSX.Element {
 							]}
 							// requiredMessage="备份时间不能为空"
 						>
-							<TimePicker
-								onChange={(value) => {
-									console.log(value);
-								}}
-								minuteStep={30}
-								format="HH:mm"
-							/>
+							<TimePicker minuteStep={30} format="HH:mm" />
 						</Form.Item>
 					</Form>
 				) : null}
