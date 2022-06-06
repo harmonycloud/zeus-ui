@@ -46,7 +46,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 			};
 			console.log(sendData);
 			if (data) {
-				// * 修改用户
+				// * 修改角色
 				sendData.roleId = data.id;
 				updateRole(sendData).then((res) => {
 					if (res.success) {
@@ -63,7 +63,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 					}
 				});
 			} else {
-				// * 创建用户
+				// * 创建角色
 				createRole(sendData).then((res) => {
 					if (res.success) {
 						notification.success({
