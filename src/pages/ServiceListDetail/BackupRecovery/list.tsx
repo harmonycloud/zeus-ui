@@ -144,7 +144,7 @@ export default function List(props: ListProps): JSX.Element {
 								deleteBackups(sendData)
 									.then((res) => {
 										if (res.success) {
-											notification.error({
+											notification.success({
 												message: '成功',
 												description: '备份删除成功'
 											});
