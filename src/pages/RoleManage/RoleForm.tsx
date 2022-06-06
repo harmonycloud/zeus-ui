@@ -52,7 +52,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: '用户修改成功'
+							description: '角色修改成功'
 						});
 						onCreate();
 					} else {
@@ -68,7 +68,7 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: '用户创建成功'
+							description: '角色创建成功'
 						});
 						onCreate();
 					} else {
