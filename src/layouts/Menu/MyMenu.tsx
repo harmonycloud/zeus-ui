@@ -8,6 +8,7 @@ import { menuReduxProps, StoreState } from '@/types';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { ResMenuItem, MenuInfo, SelectInfo } from '@/types/comment';
 import './menu.scss';
+import storage from '@/utils/storage';
 
 interface MyMenuProps {
 	clusterId: string;
@@ -74,12 +75,15 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 					);
 				}
 			});
-			console.log(its, res.data);
 
 			setItems(its);
 		}
 	};
 	const onMenuItemClick = (info: MenuInfo) => {
+		console.log(info);
+		if (info.key.includes('serviceList')) {
+			storage.setSession('menuPath', `/${info.key}`);
+		}
 		history.push(`/${info.key}`);
 	};
 	const onMenuItemSelect = (info: SelectInfo) => {
