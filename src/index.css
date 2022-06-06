@@ -711,6 +711,12 @@ table.table-list tbody .ant-space-item label span tr span:nth-child(1) {
 .table-row-delete > .ant-table-cell-fix-left, .ant-table-cell-fix-right {
 	background: #F8F8F9;
 }
+.table-row-topping {
+	background: #F8F8F9;
+}
+.table-row-topping > .ant-table-cell-fix-left, .ant-table-cell-fix-right {
+	background: #F8F8F9;
+}
 .ant-menu-item {
 	margin-top: 0px !important;
 	margin-bottom: 0px !important;

@@ -452,10 +452,8 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		}
 	};
 	return (
-		// <div className="zeus-param-edit-table-content">
 		<ProTable
 			dataSource={showDataSource}
-			// hasBorder={false}
 			rowKey="name"
 			operation={operation()}
 			search={{
@@ -472,9 +470,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			}}
 			pagination={false}
 			scroll={{ x: 1500 }}
-			// onFilter={onFilter}
-			// rowProps={onRowProps}
-			// onSort={onSort}
+			rowClassName={(record) => {
+				if ((source === 'list' && record.topping) || editFlag) {
+					return 'table-row-topping';
+				}
+				return '';
+			}}
 		>
 			<ProTable.Column
 				title="参数名"
@@ -482,10 +483,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				width={210}
 				ellipsis={true}
 				fixed="left"
-				// render={(value: string, record: ConfigItem, index: number) =>
-				// 	tooltipRender(value, index, record, 210)
-				// }
-				// lock="left"
 			/>
 			<ProTable.Column
 				title="默认值"
@@ -534,7 +531,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 						moment(a.updateTime).unix() -
 						moment(b.updateTime).unix()
 					}
-					// sortable={true}
 					width={150}
 				/>
 			)}
@@ -547,7 +543,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				/>
 			)}
 		</ProTable>
-		// {/* </div> */}
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

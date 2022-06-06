@@ -65,8 +65,8 @@ export default function AllotRole(): JSX.Element {
 			<Checkbox
 				checked={allChecked}
 				onChange={(e: CheckboxChangeEvent) => {
-					setAllChecked(e.target.value);
-					if (e.target.value) {
+					setAllChecked(e.target.checked);
+					if (e.target.checked) {
 						const list = dataSource.map((item: AllotRoleItem) => {
 							item.roles = [
 								'all',
@@ -172,7 +172,6 @@ export default function AllotRole(): JSX.Element {
 		);
 	};
 	const handleSummit = () => {
-		console.log(dataSource);
 		const role = JSON.parse(storage.getSession('rolePower'));
 		const obj: Power = {};
 		dataSource.forEach((item: AllotRoleItem) => {
