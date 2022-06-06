@@ -36,7 +36,11 @@ import {
 	RMQSendDataParams
 } from '../catalog';
 import { StoreState } from '@/types';
-import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
+import {
+	AutoCompleteOptionItem,
+	middlewareDetailProps,
+	StorageClassProps
+} from '@/types/comment';
 import pattern from '@/utils/pattern';
 import { instanceSpecList } from '@/utils/const';
 // * 外接动态表单相关
@@ -74,7 +78,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
@@ -90,7 +94,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const [tolerationList, setTolerationList] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
@@ -179,7 +185,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
 			getProjectNamespace({ projectId: project.projectId }).then(
 				(res) => {
-					console.log(res);
 					if (res.success) {
 						const list = res.data.filter(
 							(item: NamespaceItem) =>
@@ -345,7 +350,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							label: item,
+							value: item
+						};
+					});
+					setLabelList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -355,7 +366,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setTolerationList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							label: item,
+							value: item
+						};
+					});
+					setTolerationList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -721,7 +738,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 															)
 														}
 														allowClear={true}
-														dataSource={labelList}
+														options={labelList}
 														style={{
 															width: '100%'
 														}}
@@ -873,9 +890,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 															)
 														}
 														allowClear={true}
-														dataSource={
-															tolerationList
-														}
+														options={tolerationList}
 														style={{
 															width: '100%'
 														}}
@@ -1072,7 +1087,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												<AutoComplete
 													placeholder="请选择"
 													allowClear={true}
-													dataSource={mirrorList.map(
+													options={mirrorList.map(
 														(item: any) => {
 															return {
 																label: item.address,

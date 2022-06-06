@@ -130,7 +130,13 @@ export default function TableRadio(props: TableRadioProps): JSX.Element {
 															</span>
 														);
 													} else {
-														return <span></span>;
+														return (
+															<span
+																key={
+																	indexColumn
+																}
+															></span>
+														);
 													}
 												}
 											)}
