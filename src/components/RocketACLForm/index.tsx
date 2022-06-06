@@ -7,7 +7,7 @@ import './index.scss';
 
 const { Item: FormItem } = Form;
 function RocketACLForm(props: any): JSX.Element {
-	const { field, data } = props;
+	const { form, data } = props;
 	const list =
 		data?.rocketMQAccountList.map((item: any) => {
 			return {
@@ -36,7 +36,7 @@ function RocketACLForm(props: any): JSX.Element {
 	);
 	useEffect(() => {
 		if (data) {
-			field.setValues({
+			form.setFieldsValue({
 				globalWhiteRemoteAddresses: data.globalWhiteRemoteAddresses
 			});
 		}
@@ -85,7 +85,8 @@ function RocketACLForm(props: any): JSX.Element {
 				topicPerms: item.topicPerms
 			};
 		});
-		field.setValue('rocketMQAccountList', list);
+
+		// field.setValue('rocketMQAccountList', list);
 	};
 	return (
 		<ul className="form-layout">

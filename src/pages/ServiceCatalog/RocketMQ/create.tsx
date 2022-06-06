@@ -33,8 +33,7 @@ import {
 	AffinityProps,
 	AffinityLabelsItem,
 	TolerationsProps,
-	RMQSendDataParams,
-	RMQCreateValuesParams
+	RMQSendDataParams
 } from '../catalog';
 import { StoreState } from '@/types';
 import { middlewareDetailProps, StorageClassProps } from '@/types/comment';

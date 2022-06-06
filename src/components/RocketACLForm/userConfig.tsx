@@ -217,11 +217,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 				</div>
 				<div className="acl-user-close">
 					<CloseOutlined onClick={(e) => deleteUserConfig(e)} />
-					{/* <Icon
-						type="close"
-						size="small"
-						onClick={(e) => deleteUserConfig(e)}
-					/> */}
 				</div>
 			</div>
 			{visible && (
@@ -323,45 +318,38 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 							<span style={{ marginRight: 8 }}>Topic权限</span>
 						</label>
 						<div className="form-content">
-							<Row>
-								<Input
-									placeholder="默认Topic权限"
-									style={{ width: '22%' }}
-									disabled={true}
-									value="defaultTopicPerm"
-								/>
-								<span className="acl-equal">=</span>
-								<Select
-									style={{ width: '22%' }}
-									onChange={(value: string) =>
-										handleSelectChange(
-											value,
-											'topicValue',
-											0
-										)
-									}
-									value={topics[0].value}
-									defaultValue="DENY"
-								>
-									<Option value="DENY">DENY</Option>
-									<Option value="PUB">PUB</Option>
-									<Option value="SUB">SUB</Option>
-									<Option value="PUB|SUB">PUB|SUB</Option>
-								</Select>
-								<span className="acl-custom-label">自定义</span>
-								<Switch
-									style={{
-										marginLeft: 16,
-										verticalAlign: 'middle',
-										marginTop: 5
-									}}
-									size="small"
-									checked={topicCustom}
-									onChange={(value: boolean) =>
-										handleSwitch(value, 'topic')
-									}
-								/>
-							</Row>
+							<Input
+								placeholder="默认Topic权限"
+								style={{ width: '22%' }}
+								disabled={true}
+								value="defaultTopicPerm"
+							/>
+							<span className="acl-equal">=</span>
+							<Select
+								style={{ width: '22%' }}
+								onChange={(value: string) =>
+									handleSelectChange(value, 'topicValue', 0)
+								}
+								value={topics[0].value}
+								defaultValue="DENY"
+							>
+								<Option value="DENY">DENY</Option>
+								<Option value="PUB">PUB</Option>
+								<Option value="SUB">SUB</Option>
+								<Option value="PUB|SUB">PUB|SUB</Option>
+							</Select>
+							<span className="acl-custom-label">自定义</span>
+							<Switch
+								style={{
+									marginLeft: 16,
+									verticalAlign: 'middle'
+								}}
+								size="small"
+								checked={topicCustom}
+								onChange={(value: boolean) =>
+									handleSwitch(value, 'topic')
+								}
+							/>
 						</div>
 					</li>
 					{topicCustom
@@ -470,45 +458,38 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 							<span style={{ marginRight: 8 }}>消费者权限</span>
 						</label>
 						<div className="form-content">
-							<Row>
-								<Input
-									placeholder="默认消费者权限"
-									style={{ width: '22%' }}
-									disabled={true}
-									value="defaultGroupPerm"
-								/>
-								<span className="acl-equal">=</span>
-								<Select
-									value={groups[0].value}
-									defaultValue="DENY"
-									style={{ width: '22%' }}
-									onChange={(value: string) =>
-										handleSelectChange(
-											value,
-											'groupValue',
-											0
-										)
-									}
-								>
-									<Option value="DENY">DENY</Option>
-									<Option value="PUB">PUB</Option>
-									<Option value="SUB">SUB</Option>
-									<Option value="PUB|SUB">PUB|SUB</Option>
-								</Select>
-								<span className="acl-custom-label">自定义</span>
-								<Switch
-									style={{
-										marginLeft: 16,
-										verticalAlign: 'middle',
-										marginTop: 5
-									}}
-									size="small"
-									checked={groupCustom}
-									onChange={(value: boolean) =>
-										handleSwitch(value, 'group')
-									}
-								/>
-							</Row>
+							<Input
+								placeholder="默认消费者权限"
+								style={{ width: '22%' }}
+								disabled={true}
+								value="defaultGroupPerm"
+							/>
+							<span className="acl-equal">=</span>
+							<Select
+								value={groups[0].value}
+								defaultValue="DENY"
+								style={{ width: '22%' }}
+								onChange={(value: string) =>
+									handleSelectChange(value, 'groupValue', 0)
+								}
+							>
+								<Option value="DENY">DENY</Option>
+								<Option value="PUB">PUB</Option>
+								<Option value="SUB">SUB</Option>
+								<Option value="PUB|SUB">PUB|SUB</Option>
+							</Select>
+							<span className="acl-custom-label">自定义</span>
+							<Switch
+								style={{
+									marginLeft: 16,
+									verticalAlign: 'middle'
+								}}
+								size="small"
+								checked={groupCustom}
+								onChange={(value: boolean) =>
+									handleSwitch(value, 'group')
+								}
+							/>
 						</div>
 					</li>
 					{groupCustom
