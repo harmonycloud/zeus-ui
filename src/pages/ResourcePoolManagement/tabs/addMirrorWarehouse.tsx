@@ -1,5 +1,15 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Select, Input, notification } from 'antd';
+import {
+	Modal,
+	Form,
+	Select,
+	Input,
+	notification,
+	Space,
+	Row,
+	Col,
+	InputNumber
+} from 'antd';
 import { addMirror, updateMirror } from '@/services/common';
 import { address } from '@/utils/const';
 import { AddMirrorWarehouseProps } from '../resource.pool';
@@ -13,6 +23,14 @@ const formItemLayout = {
 	},
 	wrapperCol: {
 		span: 18
+	}
+};
+const formItemLayout2 = {
+	labelCol: {
+		span: 0
+	},
+	wrapperCol: {
+		span: 24
 	}
 };
 
@@ -80,44 +98,64 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 		>
 			<Form labelAlign="left" form={form} {...formItemLayout}>
 				<div className="display-form">
+					{/* <FormItem label="镜像仓库地址"> */}
 					<label className="label">镜像仓库地址</label>
-					<FormItem
-						name="protocol"
-						required
-						rules={[{ required: true, message: '请选择' }]}
-					>
-						<Select>
-							{address.map((item: any) => {
-								return (
-									<Option key={item.key} value={item.value}>
-										{item.value}
-									</Option>
-								);
-							})}
-						</Select>
-					</FormItem>
-					<FormItem
-						required
-						name="hostAddress"
-						style={{ width: '40%' }}
-						rules={[
-							{ required: true, message: '请输入主机地址' },
-							{ max: 32, message: '主机地址不能超过32位' }
-						]}
-					>
-						<Input id="name" placeholder="请输入harbor主机地址" />
-					</FormItem>
-					<FormItem
-						required
-						style={{ width: '20%' }}
-						name="port"
-						rules={[
-							{ required: true, message: '请输入端口' },
-							{ max: 16, message: '端口不能超过16位' }
-						]}
-					>
-						<Input type="number" id="name" placeholder="端口" />
-					</FormItem>
+					<Row>
+						<Col span={8} style={{ marginRight: 7 }}>
+							<FormItem
+								{...formItemLayout2}
+								name="protocol"
+								required
+								rules={[{ required: true, message: '请选择' }]}
+							>
+								<Select
+									placeholder="请选择镜像地址"
+									style={{ width: '120px' }}
+								>
+									{address.map((item: any) => {
+										return (
+											<Option
+												key={item.key}
+												value={item.value}
+											>
+												{item.value}
+											</Option>
+										);
+									})}
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span={9} style={{ marginRight: 6 }}>
+							<FormItem
+								{...formItemLayout2}
+								required
+								name="hostAddress"
+								rules={[
+									{
+										required: true,
+										message: '请输入主机地址'
+									},
+									{ max: 32, message: '主机地址不能超过32位' }
+								]}
+							>
+								<Input placeholder="请输入harbor主机地址" />
+							</FormItem>
+						</Col>
+						<Col span={6}>
+							<FormItem
+								{...formItemLayout2}
+								required
+								name="port"
+								rules={[
+									{ required: true, message: '请输入端口' },
+									{ max: 16, message: '端口不能超过16位' }
+								]}
+							>
+								<InputNumber placeholder="端口" />
+							</FormItem>
+						</Col>
+					</Row>
+					{/* </FormItem> */}
 				</div>
 				<FormItem
 					label="镜像仓库项目"
@@ -128,11 +166,12 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 					]}
 					name="project"
 				>
-					<Input id="name" placeholder="请输入镜像仓库项目" />
+					<Input placeholder="请输入镜像仓库项目" />
 				</FormItem>
 				<div className="display-form user">
 					<label className="label">镜像仓库鉴权</label>
 					<FormItem
+						{...formItemLayout2}
 						required
 						rules={[
 							{ required: true, message: '请输入用户名' },
@@ -141,11 +180,13 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 								message: '用户名长度不可超过18字符'
 							}
 						]}
+						style={{ width: '36%', marginRight: 8 }}
 						name="username"
 					>
-						<Input id="name" placeholder="请输入用户名" />
+						<Input placeholder="请输入用户名" />
 					</FormItem>
 					<FormItem
+						{...formItemLayout2}
 						required
 						name="password"
 						rules={[
@@ -155,13 +196,13 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 								message: '密码长度为8-16位数字或字母'
 							}
 						]}
+						style={{ width: '37%' }}
 					>
-						<Input.Password id="name" placeholder="请输入密码" />
+						<Input.Password placeholder="请输入密码" />
 					</FormItem>
 				</div>
 				<FormItem label="描述" name="description">
 					<Input.TextArea
-						id="name"
 						maxLength={300}
 						placeholder="请输入描述信息，限定300字符串"
 					/>

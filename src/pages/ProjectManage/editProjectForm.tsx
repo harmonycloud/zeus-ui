@@ -277,20 +277,23 @@ export default function EditProjectForm(
 																	namespace: any
 																) => {
 																	return (
-																		<Checkbox
-																			key={
-																				namespace.name
-																			}
-																			value={`${
-																				namespace.name
-																			}/${
-																				namespace.aliasName ||
-																				'null'
-																			}/${key}`}
-																		>
-																			{namespace.aliasName ||
-																				namespace.name}
-																		</Checkbox>
+																		<>
+																			<Checkbox
+																				key={
+																					namespace.name
+																				}
+																				value={`${
+																					namespace.name
+																				}/${
+																					namespace.aliasName ||
+																					'null'
+																				}/${key}`}
+																			>
+																				{namespace.aliasName ||
+																					namespace.name}
+																			</Checkbox>
+																			<br />
+																		</>
 																	);
 																}
 															)}
