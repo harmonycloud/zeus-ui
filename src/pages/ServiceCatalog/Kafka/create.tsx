@@ -34,15 +34,18 @@ import {
 	AffinityProps,
 	CreateParams,
 	CreateProps,
-	KafkaCreateValuesParams,
 	KafkaDTO,
 	KafkaSendDataParams,
 	TolerationsProps
 } from '../catalog';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
+import {
+	AutoCompleteOptionItem,
+	middlewareDetailProps,
+	StorageClassProps
+} from '@/types/comment';
 import { StoreState } from '@/types';
-import { formItemLayout614, instanceSpecList } from '@/utils/const';
+import { instanceSpecList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
@@ -72,7 +75,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
@@ -88,7 +91,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const [tolerationList, setTolerationList] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
@@ -192,7 +197,13 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -202,7 +213,13 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setTolerationList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setTolerationList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -676,7 +693,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 															)
 														}
 														allowClear={true}
-														dataSource={labelList}
+														options={labelList}
 														style={{
 															width: '100%'
 														}}
@@ -825,9 +842,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 															)
 														}
 														allowClear={true}
-														dataSource={
-															tolerationList
-														}
+														options={tolerationList}
 														style={{
 															width: '100%'
 														}}
@@ -1043,42 +1058,50 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										/>
 									</div>
 								</li>
-								<li className="display-flex">
-									<label className="form-name">
-										<span
-											className="ne-required"
-											style={{ marginRight: 8 }}
-										>
-											镜像仓库
-										</span>
-									</label>
-									<div className="form-content">
-										<FormItem
-											name="mirrorImageId"
-											required
-											rules={[
-												{
-													required: true,
-													message: '请选择镜像仓库'
+								{mirrorList.length && (
+									<li className="display-flex">
+										<label className="form-name">
+											<span
+												className="ne-required"
+												style={{ marginRight: 8 }}
+											>
+												镜像仓库
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem
+												name="mirrorImageId"
+												required
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择镜像仓库'
+													}
+												]}
+												initialValue={
+													mirrorList[0].address
 												}
-											]}
-											initialValue={
-												mirrorList[0]?.address
-											}
-										>
-											<AutoComplete
-												placeholder="请选择"
-												allowClear={true}
-												dataSource={mirrorList.map(
-													(item: any) => item.address
-												)}
-												style={{
-													width: '100%'
-												}}
-											/>
-										</FormItem>
-									</div>
-								</li>
+											>
+												<AutoComplete
+													placeholder="请选择"
+													allowClear={true}
+													options={mirrorList.map(
+														(item: any) => {
+															return {
+																value: item.address,
+																label: item.address
+															};
+														}
+													)}
+													style={{
+														width: '100%'
+													}}
+												/>
+											</FormItem>
+										</div>
+									</li>
+								)}
 							</ul>
 						</div>
 					</FormBlock>

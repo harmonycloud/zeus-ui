@@ -813,16 +813,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalNamespace]);
 
 	const handleChange = (value: any, data: any) => {
-		setRelationClusterId(data.parent);
-		if (data.parent === globalCluster.id) {
+		setRelationClusterId(value[0]);
+		if (value[0] === globalCluster.id) {
 			setReClusterFlag(true);
 		} else {
 			setReClusterFlag(false);
 		}
-		setRelationNamespace(data.value);
+		setRelationNamespace(value[1]);
 	};
 	const onLoadData = (selectedOptions: any) => {
-		console.log(selectedOptions);
 		const targetOption = selectedOptions[selectedOptions.length - 1];
 		targetOption.loading = true;
 		getNamespaces({
@@ -952,8 +951,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		<ProPage>
 			<ProHeader
 				title="发布MySQL服务"
-				// className="page-header"
-				// hasBackArrow
 				onBack={() => {
 					history.push({
 						pathname: `/serviceList/${chartName}/${aliasName}`
@@ -961,7 +958,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}}
 			/>
 			<ProContent>
-				<Form {...formItemLayout614} form={form}>
+				<Form form={form}>
 					{state && state.disasterOriginName ? (
 						<>
 							<FormBlock title="源服务信息">
@@ -1042,15 +1039,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													required
 												>
 													<Cascader
+														style={{
+															width: '380px'
+														}}
 														options={dataSource}
 														loadData={onLoadData}
 														onChange={handleChange}
 													/>
 												</FormItem>
 												{reClusterFlag && (
-													<p>
+													<span>
 														若有可用的其它集群的情况下，不建议将灾备服务和源服务部署在一个集群
-													</p>
+													</span>
 												)}
 											</div>
 										</li>
@@ -1610,7 +1610,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											]}
 										>
 											<InputNumber
-												style={{ width: '100%' }}
+												style={{ width: '380px' }}
 												placeholder="请输入mysql的服务端口号，默认为3306"
 											/>
 										</FormItem>
@@ -1681,6 +1681,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										>
 											<FormItem name="mysqlPwd">
 												<Password
+													style={{ width: '380px' }}
 													value={mysqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={mysqlPwdChange}
@@ -1710,13 +1711,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 															'请选择镜像仓库'
 													}
 												]}
+												initialValue={
+													mirrorList[0].address
+												}
 											>
 												<AutoComplete
 													placeholder="请选择"
 													allowClear={true}
-													defaultValue={
-														mirrorList[0]?.address
-													}
 													options={mirrorList.map(
 														(item) => {
 															return {
@@ -1726,7 +1727,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														}
 													)}
 													style={{
-														width: '100%'
+														width: '380px'
 													}}
 												/>
 											</FormItem>
