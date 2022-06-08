@@ -172,6 +172,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 		};
 	};
 	mirrorImageId?: any;
+	ingresses?: any;
 }
 export interface NodeModifyParams {
 	nodeName: string;
@@ -223,6 +224,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 		replicas?: number;
 	};
 	mirrorImageId?: any;
+	ingresses?: any;
 }
 export interface RMQCreateValuesParams extends CreateValuesParams {
 	globalWhiteRemoteAddresses?: string;
