@@ -58,6 +58,22 @@ export default function FormNodeAffinity(
 			...affinity,
 			[key]: value
 		});
+		if (
+			key === 'nodeAffinityForce' &&
+			typeof props.form.getFieldValue('nodeAffinity') === 'object'
+		) {
+			const data = props.form
+				.getFieldValue('nodeAffinity')
+				.map((item: any) => {
+					return {
+						...item,
+						required: value
+					};
+				});
+			props.form.setFieldsValue({
+				nodeAffinity: data
+			});
+		}
 	};
 
 	const addAffinityLabels = () => {
@@ -126,37 +142,37 @@ export default function FormNodeAffinity(
 				) : null}
 			</label>
 			<div className="form-content">
-				<FormItem
-					rules={[
-						{
-							required:
-								keys.includes('required') && props.required,
-							message:
-								keys.includes('required') && props.required
-									? `请输入${props.label}`
-									: ''
-						}
-					]}
-					name={props.variable}
-					initialValue={props.nodeAffinity}
-				>
-					<label className="dynamic-switch-label">
-						{affinity.nodeAffinity ? '已开启' : '已关闭 '}
-					</label>
-					<Switch
-						checked={affinity.nodeAffinity}
-						onChange={(value) =>
-							changeAffinity(value, 'nodeAffinity')
-						}
-						size="small"
-						style={{
-							marginLeft: 24,
-							verticalAlign: 'middle'
-						}}
-					/>
-					{affinity.nodeAffinity ? (
-						<>
-							<div className="dynamic-form-node-affinity-content">
+				<label className="dynamic-switch-label">
+					{affinity.nodeAffinity ? '已开启' : '已关闭 '}
+				</label>
+				<Switch
+					checked={affinity.nodeAffinity}
+					onChange={(value) => changeAffinity(value, 'nodeAffinity')}
+					size="small"
+					style={{
+						marginLeft: 24,
+						verticalAlign: 'middle'
+					}}
+				/>
+				{affinity.nodeAffinity ? (
+					<>
+						<div className="dynamic-form-node-affinity-content">
+							<FormItem
+								rules={[
+									{
+										required:
+											keys.includes('required') &&
+											props.required,
+										message:
+											keys.includes('required') &&
+											props.required
+												? `请输入${props.label}`
+												: ''
+									}
+								]}
+								name={props.variable}
+								initialValue={props.nodeAffinity}
+							>
 								<AutoComplete
 									value={affinity.nodeAffinityLabel}
 									onChange={(value) =>
@@ -171,42 +187,40 @@ export default function FormNodeAffinity(
 										width: '100%'
 									}}
 								/>
-							</div>
-							<div className={'add'}>
-								<Button
-									style={{
-										marginLeft: '4px',
-										padding: '0 9px'
-									}}
-									disabled={
-										affinity.nodeAffinityLabel
-											? false
-											: true
-									}
-									onClick={addAffinityLabels}
-									icon={
-										<PlusOutlined
-											style={{ color: '#005AA5' }}
-										/>
-									}
-								></Button>
-							</div>
-							<div className="dynamic-form-node-affinity-check">
-								<Checkbox
-									checked={affinity.nodeAffinityForce}
-									onChange={(e) =>
-										changeAffinity(
-											e.target.checked,
-											'nodeAffinityForce'
-										)
-									}
-								>
-									强制亲和
-								</Checkbox>
-							</div>
-						</>
-					) : null}
-				</FormItem>
+							</FormItem>
+						</div>
+						<div className={'add'}>
+							<Button
+								style={{
+									marginLeft: '4px',
+									padding: '0 9px'
+								}}
+								disabled={
+									affinity.nodeAffinityLabel ? false : true
+								}
+								onClick={addAffinityLabels}
+								icon={
+									<PlusOutlined
+										style={{ color: '#005AA5' }}
+									/>
+								}
+							></Button>
+						</div>
+						<div className="dynamic-form-node-affinity-check">
+							<Checkbox
+								checked={affinity.nodeAffinityForce}
+								onChange={(e) =>
+									changeAffinity(
+										e.target.checked,
+										'nodeAffinityForce'
+									)
+								}
+							>
+								强制亲和
+							</Checkbox>
+						</div>
+					</>
+				) : null}
 				{affinity.nodeAffinity && affinityLabels.length ? (
 					<div className={'tags'}>
 						{affinityLabels.map((item: any) => {

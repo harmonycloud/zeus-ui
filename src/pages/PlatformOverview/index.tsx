@@ -32,6 +32,7 @@ import { IconFont } from '@/components/IconFont';
 import HomeCard from '@/components/HomeCard';
 import EChartsReact from 'echarts-for-react';
 import { getLineOption, getPieOption } from '@/utils/echartsOption';
+import { setNamespace } from '@/redux/globalVar/var';
 
 import { radioList } from '@/utils/const';
 import * as echarts from 'echarts/core';
@@ -50,9 +51,10 @@ import { poolListItem, evevtDataProps } from '@/types/comment';
 import './platformOverview.scss';
 import storage from '@/utils/storage';
 
-function PlatformOverview(): JSX.Element {
+function PlatformOverview(props: any): JSX.Element {
 	let x = [];
 
+	const { setNamespace } = props;
 	// 设置事件数据
 	const [eventData, setEventData] = useState<evevtDataProps[]>([]);
 	// 顶部统计数据
@@ -431,6 +433,9 @@ function PlatformOverview(): JSX.Element {
 																'menuPath',
 																`/serviceList/${item.name}/${item.aliasName}`
 															);
+															setNamespace({
+																name: '*'
+															});
 															history.push(
 																`/serviceList/${item.name}/${item.aliasName}`
 															);
@@ -712,4 +717,6 @@ function PlatformOverview(): JSX.Element {
 const mapStateToProps = (state: StoreState) => ({
 	globalVar: state.globalVar
 });
-export default connect(mapStateToProps)(PlatformOverview);
+export default connect(mapStateToProps, {
+	setNamespace
+})(PlatformOverview);

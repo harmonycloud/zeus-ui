@@ -9,7 +9,7 @@ const { Item: FormItem } = Form;
 export default function FormString(props: any): JSX.Element {
 	const { cluster, namespace } = props;
 	const keys = Object.keys(props);
-	const [mirrorList, setMirrorList] = useState<string[]>([]);
+	const [mirrorList, setMirrorList] = useState<any[]>([]);
 
 	const [value, setValue] = useState<string>(props.defaultValue);
 
@@ -18,7 +18,14 @@ export default function FormString(props: any): JSX.Element {
 			clusterId: cluster.id
 		}).then((res) => {
 			if (res.success) {
-				setMirrorList(res.data.list.map((item: any) => item.address));
+				setMirrorList(
+					res.data.list.map((item: any) => {
+						return {
+							label: item.address,
+							value: item.address
+						};
+					})
+				);
 			}
 		});
 	}, [cluster]);
@@ -56,28 +63,31 @@ export default function FormString(props: any): JSX.Element {
 				) : null}
 			</label>
 			<div className="form-content">
-				<FormItem
-					rules={[
-						{
-							required:
-								keys.includes('required') && props.required,
-							message:
-								keys.includes('required') && props.required
-									? `请输入${props.label}`
-									: ''
-						}
-					]}
-					name={props.variable}
-				>
-					<AutoComplete
-						style={{ width: '390px' }}
-						onChange={handleChange}
-						value={value}
-						placeholder="请选择"
-						allowClear={true}
-						dataSource={mirrorList}
-					/>
-				</FormItem>
+				{mirrorList.length && (
+					<FormItem
+						rules={[
+							{
+								required:
+									keys.includes('required') && props.required,
+								message:
+									keys.includes('required') && props.required
+										? `请输入${props.label}`
+										: ''
+							}
+						]}
+						name={props.variable}
+						initialValue={mirrorList[0].label}
+					>
+						<AutoComplete
+							style={{ width: '390px' }}
+							onChange={handleChange}
+							value={value}
+							placeholder="请选择"
+							allowClear={true}
+							options={mirrorList}
+						/>
+					</FormItem>
+				)}
 			</div>
 		</div>
 	);

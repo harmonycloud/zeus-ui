@@ -38,7 +38,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		getClusterId,
 		setMenuRefresh
 	} = props;
-	const { flag } = props.globalVar;
+	const { flag, namespace } = props.globalVar;
 	const location = useLocation();
 	const [currentCluster, setCurrentCluster] = useState<{
 		id?: number | null;
@@ -283,6 +283,10 @@ function Navbar(props: NavbarProps): JSX.Element {
 			}
 		}
 	}, [location]);
+
+	useEffect(() => {
+		setCurrentNamespace(namespace);
+	}, [namespace]);
 
 	useEffect(() => {
 		/**TODO 用户权限 */
