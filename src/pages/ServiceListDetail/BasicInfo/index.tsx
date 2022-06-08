@@ -768,7 +768,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	};
 	return (
-		<div>
+		<div className="basic-info">
 			{customMid &&
 			!(data.capabilities || ['basic']).includes('basic') ? (
 				<DefaultPicture />
