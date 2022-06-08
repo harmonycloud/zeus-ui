@@ -23,7 +23,6 @@ export default function FormStorageClass(
 			clusterId: cluster.id,
 			namespace: namespace.name
 		}).then((res) => {
-			console.log(res);
 			if (res.success) {
 				for (let i = 0; i < res.data.length; i++) {
 					if (res.data[i].type === 'CSI-LVM') {
