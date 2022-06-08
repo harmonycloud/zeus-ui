@@ -266,35 +266,35 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 
 	const checkGeneral = (value: any) => {
 		setSpecId(value);
-		const temp = nodeObj[nodeModify.nodeName];
-		switch (value) {
-			case '1':
-				temp.cpu = 1;
-				temp.memory = 2;
-				break;
-			case '2':
-				temp.cpu = 2;
-				temp.memory = 8;
-				break;
-			case '3':
-				temp.cpu = 4;
-				temp.memory = 16;
-				break;
-			case '4':
-				temp.cpu = 8;
-				temp.memory = 32;
-				break;
-			case '5':
-				temp.cpu = 16;
-				temp.memory = 64;
-				break;
-			default:
-				break;
-		}
-		setNodeObj({
-			...nodeObj,
-			[nodeModify.nodeName]: temp
-		});
+		// const temp = nodeObj[nodeModify.nodeName];
+		// switch (value) {
+		// 	case '1':
+		// 		temp.cpu = 1;
+		// 		temp.memory = 2;
+		// 		break;
+		// 	case '2':
+		// 		temp.cpu = 2;
+		// 		temp.memory = 8;
+		// 		break;
+		// 	case '3':
+		// 		temp.cpu = 4;
+		// 		temp.memory = 16;
+		// 		break;
+		// 	case '4':
+		// 		temp.cpu = 8;
+		// 		temp.memory = 32;
+		// 		break;
+		// 	case '5':
+		// 		temp.cpu = 16;
+		// 		temp.memory = 64;
+		// 		break;
+		// 	default:
+		// 		break;
+		// }
+		// setNodeObj({
+		// 	...nodeObj,
+		// 	[nodeModify.nodeName]: temp
+		// });
 	};
 
 	const handleSubmit = () => {

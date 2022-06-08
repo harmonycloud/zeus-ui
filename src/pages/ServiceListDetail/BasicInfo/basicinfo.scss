@@ -1,19 +1,23 @@
-#basic-info-event > .next-timeline-item-content {
-	width: calc(100% - 55px);
+.basic-info {
+	.ant-timeline {
+		margin-top: 16px;
+		padding-left: 24px;
+		.ant-timeline-item-content{
+			margin: 0 0 0 42px;
+		}
+	}
 }
-#basic-info-event > .next-timeline-item-content > .next-timeline-item-body {
-	margin-top: 0 !important;
-}
-.rocketmq-acl-field-content{
-	.rocketmq-acl-field-title{
+
+.rocketmq-acl-field-content {
+	.rocketmq-acl-field-title {
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: 22px;
-		.rocketmq-acl-left{
+		.rocketmq-acl-left {
 			display: flex;
 			align-items: center;
 			font-size: $font-2;
-			.rocketmq-acl-blue-line{
+			.rocketmq-acl-blue-line {
 				width: 1px;
 				height: 14px;
 				border: 1px solid $primary-color;
@@ -22,39 +26,39 @@
 		}
 	}
 }
-.rocketmq-no-acl{
+.rocketmq-no-acl {
 	text-align: center;
 	color: #666666;
 }
 @media screen and (max-width: 1920px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
+	.annotation-content {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		width: 80%;
 	}
 }
 @media screen and (max-width: 1840px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
+	.annotation-content {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		width: 70%;
 	}
 }
 @media screen and (max-width: 1650px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
+	.annotation-content {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		width: 50%;
 	}
 }
 @media screen and (max-width: 1340px) {
-	.annotation-content{
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
+	.annotation-content {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		width: 40%;
 	}
 }
