@@ -421,6 +421,37 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				: record.serviceList[0].servicePort;
 		return <span>{port}</span>;
 	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.serviceName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+	};
 	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
@@ -432,7 +463,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				>
 					编辑
 				</LinkButton>
-				<LinkButton onClick={() => handleDelete(record)}>
+				<LinkButton
+					disabled={judgeInit(record)}
+					onClick={() => handleDelete(record)}
+				>
 					删除
 				</LinkButton>
 			</Actions>

@@ -15,7 +15,6 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 		middlewareType,
 		customCluster
 	} = props;
-	console.log(props);
 	const [exposedWay, setExposedWay] = useState<string>('Ingress');
 	const [protocol] = useState<string>('TCP');
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
@@ -151,6 +150,7 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 		}
 	}, [posts, middlewareName]);
 	useEffect(() => {
+		console.log([data]);
 		form.setFieldsValue({
 			ingresses: [data]
 		});

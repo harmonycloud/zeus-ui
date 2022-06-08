@@ -69,6 +69,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	]);
 	const [form] = Form.useForm();
 	const record = storage.getLocal('availableRecord');
+	const [initService, setInitService] = useState<string[]>([]);
 	const [newNamespace, setNewNamespace] = useState<string>();
 	const history = useHistory();
 
@@ -248,6 +249,29 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				storage.removeLocal('availableRecord');
 		};
 	}, []);
+	useEffect(() => {
+		if (record) {
+			setInitService([
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			]);
+		} else {
+			setInitService([
+				`${selectedInstance.name}-0-master`,
+				`${selectedInstance.name}-0-slave`,
+				`${selectedInstance.name}-1-master`,
+				`${selectedInstance.name}-1-slave`,
+				`${selectedInstance.name}-2-master`,
+				`${selectedInstance.name}-2-slave`,
+				`${selectedInstance.name}-nameserver-proxy-svc`
+			]);
+		}
+	}, [selectedInstance]);
 	const onChange = (value: string) => {
 		setExposedWay(value);
 		value === 'NodePort' ? setProtocol('TCP') : setProtocol('HTTP');
@@ -659,7 +683,25 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									style={{ width: '100%' }}
 									value={selectedService.serviceName}
 									placeholder="请选择Service"
-									disabled={cluster.ingress === null}
+									disabled={
+										cluster.ingress === null ||
+										selectedService.serviceName?.includes(
+											`${selectedInstance.name}-kafka-external-svc`
+										) ||
+										(exposedWay === 'Ingress' &&
+											record &&
+											initService.includes(
+												record.serviceList[0]
+													.serviceName
+											)) ||
+										(exposedWay === 'NodePort' &&
+											record &&
+											initService.some((item) =>
+												record.serviceList[0].serviceName.includes(
+													item
+												)
+											))
+									}
 								>
 									{services &&
 										services.map((item: any) => {
@@ -667,6 +709,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												<Option
 													key={item.serviceName}
 													value={item.serviceName}
+													disabled={
+														item.serviceName.includes(
+															`${selectedInstance.name}-kafka-external-svc`
+														) ||
+														initService.includes(
+															item.serviceName
+														)
+													}
 												>
 													{item.serviceName}
 												</Option>
@@ -735,7 +785,26 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												style={{ width: '200px' }}
 												placeholder="请选择Service"
 												disabled={
-													cluster.ingress === null
+													cluster.ingress === null ||
+													selectedService.serviceName.includes(
+														`${selectedInstance.name}-kafka-external-svc`
+													) ||
+													(exposedWay === 'Ingress' &&
+														record &&
+														initService.includes(
+															record
+																.serviceList[0]
+																.serviceName
+														)) ||
+													(exposedWay ===
+														'NodePort' &&
+														record &&
+														initService.some(
+															(item) =>
+																record.serviceList[0].serviceName.includes(
+																	item
+																)
+														))
 												}
 											>
 												{services &&
@@ -748,6 +817,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 																	}
 																	value={
 																		item.serviceName
+																	}
+																	disabled={
+																		item.serviceName.includes(
+																			`${selectedInstance.name}-kafka-external-svc`
+																		) ||
+																		initService.includes(
+																			item.serviceName
+																		)
 																	}
 																>
 																	{

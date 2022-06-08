@@ -381,6 +381,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				sendData.quota.kafka.cpu = values.cpu;
 				sendData.quota.kafka.memory = values.memory + 'Gi';
 			}
+			if (hostNetwork) {
+				sendData.ingresses = values.ingresses;
+			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -482,14 +485,16 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	}
 	const childrenPostRender = (mode: string) => {
 		return (
-			<ModePost
-				mode={mode}
-				clusterId={globalCluster.id}
-				middlewareName={form.getFieldValue('name')}
-				form={form}
-				middlewareType={chartName}
-				customCluster={customCluster}
-			/>
+			<FormItem name="ingresses">
+				<ModePost
+					mode={mode}
+					clusterId={globalCluster.id}
+					middlewareName={form.getFieldValue('name')}
+					form={form}
+					middlewareType={chartName}
+					customCluster={customCluster}
+				/>
+			</FormItem>
 		);
 	};
 	return (

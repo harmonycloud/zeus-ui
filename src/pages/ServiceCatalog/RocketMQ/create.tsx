@@ -55,6 +55,7 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import ModePost from '../components/ModePost';
 
 const { Item: FormItem } = Form;
 
@@ -326,6 +327,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				sendData.rocketMQParam.acl.rocketMQAccountList =
 					values.rocketMQAccountList;
 			}
+			if (hostNetwork) {
+				sendData.ingresses = values.ingresses;
+			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -497,6 +502,19 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			</ProPage>
 		);
 	}
+	const childrenPostRender = (mode: string) => {
+		return (
+			<FormItem name="ingresses">
+				<ModePost
+					mode={mode}
+					clusterId={globalCluster.id}
+					middlewareName={form.getFieldValue('name')}
+					form={form}
+					middlewareType={chartName}
+				/>
+			</FormItem>
+		);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -1340,7 +1358,50 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										</FormItem>
 									</div>
 								</li>
-								<li
+								{mode !== 'dledger' && (
+									<>
+										<li
+											className="display-flex form-li"
+											style={{
+												alignItems: 'center'
+											}}
+										>
+											<label className="form-name">
+												<span className="ne-required">
+													集群外访问
+												</span>
+											</label>
+											<div
+												className={`form-content display-flex ${styles['standard-log']}`}
+											>
+												<div
+													className={styles['switch']}
+												>
+													{hostNetwork
+														? '已开启'
+														: '关闭'}
+													<Switch
+														checked={hostNetwork}
+														onChange={(value) =>
+															setHostNetwork(
+																value
+															)
+														}
+														size="small"
+														style={{
+															marginLeft: 16,
+															verticalAlign:
+																'middle'
+														}}
+													/>
+												</div>
+											</div>
+										</li>
+										{hostNetwork &&
+											childrenPostRender(mode)}
+									</>
+								)}
+								{/* <li
 									className="display-flex"
 									style={{ alignItems: 'center' }}
 								>
@@ -1367,7 +1428,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											/>
 										</div>
 									</div>
-								</li>
+								</li> */}
 							</ul>
 						</div>
 					</FormBlock>
