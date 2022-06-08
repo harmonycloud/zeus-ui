@@ -55,6 +55,7 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import styles from './kafka.module.scss';
+import ModePost from '../components/ModePost';
 
 const FormItem = Form.Item;
 
@@ -151,6 +152,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	// * 集群外访问
+	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 根据命名空间，来提示可编辑的最大最小值
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -477,6 +480,18 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			</ProPage>
 		);
 	}
+	const childrenPostRender = (mode: string) => {
+		return (
+			<ModePost
+				mode={mode}
+				clusterId={globalCluster.id}
+				middlewareName={form.getFieldValue('name')}
+				form={form}
+				middlewareType={chartName}
+				customCluster={customCluster}
+			/>
+		);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -1328,6 +1343,35 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										</FormItem>
 									</div>
 								</li>
+								<li
+									className="display-flex form-li"
+									style={{ alignItems: 'center' }}
+								>
+									<label className="form-name">
+										<span className="ne-required">
+											集群外访问
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['standard-log']}`}
+									>
+										<div className={styles['switch']}>
+											{hostNetwork ? '已开启' : '关闭'}
+											<Switch
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+											/>
+										</div>
+									</div>
+								</li>
+								{hostNetwork && childrenPostRender(mode)}
 							</ul>
 						</div>
 					</FormBlock>
