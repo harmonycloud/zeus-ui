@@ -150,7 +150,6 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 		}
 	}, [posts, middlewareName]);
 	useEffect(() => {
-		console.log([data]);
 		form.setFieldsValue({
 			ingresses: [data]
 		});

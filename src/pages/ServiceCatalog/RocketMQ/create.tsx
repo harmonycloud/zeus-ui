@@ -327,6 +327,17 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				sendData.rocketMQParam.acl.rocketMQAccountList =
 					values.rocketMQAccountList;
 			}
+			if (
+				values.ingresses[0].serviceList.some(
+					(item: any) => item.exposePort === null
+				)
+			) {
+				notification.error({
+					message: '失败',
+					description: '请输入端口号'
+				});
+				return;
+			}
 			if (hostNetwork) {
 				sendData.ingresses = values.ingresses;
 			}
@@ -504,7 +515,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	}
 	const childrenPostRender = (mode: string) => {
 		return (
-			<FormItem name="ingresses">
+			<FormItem name="ingresses" noStyle>
 				<ModePost
 					mode={mode}
 					clusterId={globalCluster.id}

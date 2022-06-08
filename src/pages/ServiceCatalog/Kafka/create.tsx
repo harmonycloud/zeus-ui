@@ -381,6 +381,17 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				sendData.quota.kafka.cpu = values.cpu;
 				sendData.quota.kafka.memory = values.memory + 'Gi';
 			}
+			if (
+				values.ingresses[0].serviceList.some(
+					(item: any) => item.exposePort === null
+				)
+			) {
+				notification.error({
+					message: '失败',
+					description: '请输入端口号'
+				});
+				return;
+			}
 			if (hostNetwork) {
 				sendData.ingresses = values.ingresses;
 			}
