@@ -441,11 +441,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 			></ProHeader>
 			{reason && status !== 'Running' && (
 				<Alert
-					message="Warning"
-					description={reason}
+					message={reason}
 					type="warning"
 					showIcon
 					closable
+					style={{ margin: '0 24px' }}
 				/>
 			)}
 			<ProContent>
