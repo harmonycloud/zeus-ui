@@ -7,7 +7,6 @@ import {
 	Switch,
 	Select,
 	Button,
-	Checkbox,
 	InputNumber,
 	notification,
 	AutoComplete,
@@ -18,6 +17,7 @@ import { useHistory, useParams } from 'react-router';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio';
+import Affinity from '@/components/Affinity';
 
 import {
 	getNodePort,
@@ -76,13 +76,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
-	const changeAffinity = (value: any, key: string) => {
-		setAffinity({
-			...affinity,
-			[key]: value
-		});
-	};
+	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
 	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
 		[]
 	);
@@ -206,7 +200,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 							label: item
 						};
 					});
-					setLabelList(list);
 				} else {
 					notification.error({
 						message: '失败',
@@ -320,7 +313,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				sendData.dynamicValues = dynamicValues;
 			}
 			// * 主机亲和
-			if (affinity.flag) {
+			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
 						message: '错误',
@@ -331,7 +324,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -670,7 +663,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li flex-align">
+								{/* <li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											主机亲和
@@ -819,7 +812,13 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											);
 										})}
 									</div>
-								) : null}
+								) : null} */}
+								<Affinity
+									flag={affinityFlag}
+									flagChange={setAffinityFlag}
+									values={affinityLabels}
+									onChange={setAffinityLabels}
+								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>

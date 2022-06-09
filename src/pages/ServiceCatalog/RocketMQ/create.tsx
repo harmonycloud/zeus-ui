@@ -35,6 +35,7 @@ import {
 	TolerationsProps,
 	RMQSendDataParams
 } from '../catalog';
+import Affinity from '@/components/Affinity';
 import { StoreState } from '@/types';
 import {
 	AutoCompleteOptionItem,
@@ -90,6 +91,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
 		[]
 	);
+	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -262,7 +264,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				});
 				sendData.dynamicValues = dynamicValues;
 			}
-			if (affinity.flag) {
+			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
 						message: '错误',
@@ -713,7 +715,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li flex-align">
+								{/* <li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											主机亲和
@@ -786,6 +788,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		...affinityLabels,
 																		{
 																			label: affinity.label,
+																			checked:
+																				affinity.checked,
 																			id: Math.random()
 																		}
 																	]
@@ -850,6 +854,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		...affinityLabels,
 																		{
 																			label: affinity.label,
+																			checked:
+																				affinity.checked,
 																			id: Math.random()
 																		}
 																	]
@@ -865,7 +871,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											);
 										})}
 									</div>
-								) : null}
+								) : null} */}
+								<Affinity
+									flag={affinityFlag}
+									flagChange={setAffinityFlag}
+									values={affinityLabels}
+									onChange={setAffinityLabels}
+								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
