@@ -288,9 +288,9 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 										}
 									]}
 									name="storageQuota"
+									initialValue={5}
 								>
 									<Input
-										defaultValue={5}
 										min={1}
 										placeholder="请输入存储配额大小"
 										addonAfter="GB"

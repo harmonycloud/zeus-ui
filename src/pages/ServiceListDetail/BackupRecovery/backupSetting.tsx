@@ -432,7 +432,11 @@ function BackupSetting(): JSX.Element {
 							]}
 							// requiredMessage="备份时间不能为空"
 						>
-							<TimePicker minuteStep={30} format="HH:mm" />
+							<TimePicker
+								showNow={false}
+								minuteStep={30}
+								format="HH:mm"
+							/>
 						</Form.Item>
 					</Form>
 				) : null}

@@ -35,6 +35,7 @@ import transUnit from '@/utils/transUnit';
 import pattern from '@/utils/pattern';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
+import Affinity from '@/components/Affinity';
 
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import {
@@ -103,6 +104,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			[key]: value
 		});
 	};
+	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
+
 	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
 		[]
 	);
@@ -331,7 +334,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData.dynamicValues = dynamicValues;
 			}
 			// 主机亲和
-			if (affinity.flag) {
+			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
 						message: '错误',
@@ -1218,7 +1221,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li flex-align">
+								{/* <li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											主机亲和
@@ -1291,6 +1294,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																		...affinityLabels,
 																		{
 																			label: affinity.label,
+																			checked:
+																				affinity.checked,
 																			id: Math.random()
 																		}
 																	]
@@ -1356,7 +1361,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											);
 										})}
 									</div>
-								) : null}
+								) : null} */}
+								<Affinity
+									flag={affinityFlag}
+									flagChange={setAffinityFlag}
+									values={affinityLabels}
+									onChange={setAffinityLabels}
+								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>

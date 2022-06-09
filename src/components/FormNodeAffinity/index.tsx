@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Form, AutoComplete, Checkbox, Button, Switch, Popover } from 'antd';
+import {
+	Form,
+	AutoComplete,
+	Checkbox,
+	Button,
+	Switch,
+	Popover,
+	Tag,
+	Input
+} from 'antd';
 import {
 	QuestionCircleOutlined,
 	PlusOutlined,
@@ -171,9 +180,22 @@ export default function FormNodeAffinity(
 									}
 								]}
 								name={props.variable}
-								initialValue={props.nodeAffinity}
+								// initialValue={props.nodeAffinity}
 							>
-								<AutoComplete
+								<Input
+									placeholder="键"
+									// value={key}
+									style={{ width: '140px' }}
+									// onChange={(e) => setKey(e.target.value)}
+								/>
+								<span style={{ margin: '0 8px' }}>=</span>
+								<Input
+									placeholder="值"
+									// value={value}
+									style={{ width: '140px' }}
+									// onChange={(e) => setValue(e.target.value)}
+								/>
+								{/* <AutoComplete
 									value={affinity.nodeAffinityLabel}
 									onChange={(value) =>
 										changeAffinity(
@@ -186,7 +208,7 @@ export default function FormNodeAffinity(
 									style={{
 										width: '100%'
 									}}
-								/>
+								/> */}
 							</FormItem>
 						</div>
 						<div className={'add'}>
@@ -225,15 +247,19 @@ export default function FormNodeAffinity(
 					<div className={'tags'}>
 						{affinityLabels.map((item: any) => {
 							return (
-								<p className={'tag'} key={item.id}>
-									<span>{item.label}</span>
-									<CloseCircleFilled
-										className={'tag-close'}
-										onClick={() =>
-											reduceAffinityLabels(item)
-										}
-									/>
-								</p>
+								<Tag
+									key={item.label}
+									closable
+									style={{ padding: '4px 10px' }}
+									onClose={(
+										e: React.MouseEvent<HTMLElement>
+									) => {
+										e.preventDefault();
+										reduceAffinityLabels(item);
+									}}
+								>
+									{item.label}
+								</Tag>
 							);
 						})}
 					</div>
