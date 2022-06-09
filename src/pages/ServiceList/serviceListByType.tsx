@@ -252,6 +252,11 @@ const ServiceListByType = (props: serviceListProps) => {
 						`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
+				case 'zookeeper':
+					history.push(
+						`/serviceList/${name}/${aliasName}/ZookeeperCreate/${middlewareInfo?.chartVersion}`
+					);
+					break;
 				default:
 					history.push(
 						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
