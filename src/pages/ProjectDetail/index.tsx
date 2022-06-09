@@ -7,6 +7,7 @@ import Namespace from './namespace';
 import Member from './member';
 import { StoreState } from '@/types';
 import { ProjectDetailProps } from './projectDetail';
+import ServiceList from './serviceList';
 
 const { TabPane } = Tabs;
 function ProjectDetail(props: ProjectDetailProps): JSX.Element {
@@ -37,6 +38,9 @@ function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 			/>
 			<ProContent>
 				<Tabs activeKey={activeKey} onChange={onChange}>
+					<TabPane tab="服务列表" key="service">
+						<ServiceList />
+					</TabPane>
 					<TabPane tab="命名空间" key="namespace">
 						<Namespace />
 					</TabPane>
