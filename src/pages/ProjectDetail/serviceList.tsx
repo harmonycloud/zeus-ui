@@ -1,26 +1,89 @@
-import React, { useState } from 'react';
-import { Radio, Input, RadioChangeEvent, Select } from 'antd';
-import { useHistory } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import {
+	Radio,
+	Input,
+	RadioChangeEvent,
+	Select,
+	notification,
+	Space
+} from 'antd';
+import { useHistory, useParams } from 'react-router';
 import ProTable from '@/components/ProTable';
 import { nullRender } from '@/utils/utils';
 import {
 	MiddlewareResourceInfo,
-	MiddlewareTableProps
+	MiddlewareTableItem
 } from '../MyProject/myProject';
 import storage from '@/utils/storage';
+import { getProjectMiddleware } from '@/services/project';
+import { DetailParams } from './projectDetail';
+import { AutoCompleteOptionItem } from '@/types/comment';
 
 const Search = Input.Search;
 const RadioGroup = Radio.Group;
+type SelectOption = AutoCompleteOptionItem;
 export default function ServiceList(): JSX.Element {
 	const history = useHistory();
+	const [tableDataSource, setTableDataSource] = useState<
+		MiddlewareTableItem[]
+	>([]);
 	const [dataSource, setDataSource] = useState<MiddlewareResourceInfo[]>([]);
 	const [tableType, setTableType] = useState<string>('cpu');
+	const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
+	const [typeOptions, setTypeOptions] = useState<SelectOption[]>([]);
+	const [selectType, setSelectType] = useState<string>('');
+	const params: DetailParams = useParams();
+	const { id } = params;
+	useEffect(() => {
+		getData();
+	}, []);
+	useEffect(() => {
+		if (selectType) {
+			setDataSource(
+				tableDataSource.filter(
+					(item: MiddlewareTableItem) => item.type === selectType
+				)[0].middlewareResourceInfoList
+			);
+		}
+	}, [selectType]);
+	const getData = () => {
+		setLoadingVisible(true);
+		getProjectMiddleware({ projectId: id })
+			.then((res) => {
+				if (res.success) {
+					setTableDataSource(res.data);
+					if (res.data.length > 0) {
+						const lt = res.data.map((item: MiddlewareTableItem) => {
+							return {
+								value: item.type,
+								label: item.aliasName
+							};
+						});
+						setTypeOptions(lt);
+						setSelectType(lt[0].value);
+					} else {
+						setTypeOptions([]);
+						setSelectType('');
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			})
+			.finally(() => {
+				setLoadingVisible(false);
+			});
+	};
 	const handleSearch = (value: string) => {
-		console.log(value);
-		// const list = data.middlewareResourceInfoList.filter(
-		// 	(item: MiddlewareResourceInfo) => item.name.includes(value)
-		// );
-		// setDataSource(list);
+		const list = tableDataSource
+			.filter((item) => item.type === selectType)[0]
+			.middlewareResourceInfoList.filter((i) => i.name.includes(value));
+		setDataSource(list);
+	};
+	const onChange = (value: string) => {
+		setSelectType(value);
 	};
 	const Operation = {
 		primary: (
@@ -32,36 +95,15 @@ export default function ServiceList(): JSX.Element {
 					height: 40
 				}}
 			>
-				服务类型
-				{/* <Select>
-
-				</Select> */}
-				{/* <div>
-					<img
-						width={16}
-						height={16}
-						src={
-							data.imagePath
-								? `${api}/images/middleware/${data.imagePath}`
-								: nodata
-						}
-						alt={data.aliasName}
+				<Space>
+					<div>服务类型</div>
+					<Select
+						value={selectType}
+						onChange={onChange}
+						style={{ width: 120 }}
+						options={typeOptions}
 					/>
-				</div>
-				<div
-					style={{ marginLeft: 8 }}
-					onClick={() => {
-						storage.setSession(
-							'menuPath',
-							`/serviceList/${data.type}/${data.aliasName}`
-						);
-						history.push(
-							`/serviceList/${data.type}/${data.aliasName}`
-						);
-					}}
-				>
-					{data.aliasName}
-				</div> */}
+				</Space>
 			</div>
 		),
 		secondary: (
@@ -73,7 +115,6 @@ export default function ServiceList(): JSX.Element {
 					style={{ width: '260px', marginRight: 8 }}
 				/>
 				<RadioGroup
-					// shape="button"
 					value={tableType}
 					onChange={(e: RadioChangeEvent) =>
 						setTableType(e.target.value)
@@ -103,13 +144,23 @@ export default function ServiceList(): JSX.Element {
 					title={record.name}
 					className="name-link text-overflow"
 					onClick={() => {
-						// storage.setSession(
-						// 	'menuPath',
-						// 	`/serviceList/${data.type}/${data.aliasName}`
-						// );
-						// history.push(
-						// 	`/serviceList/${data.type}/${data.aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
-						// );
+						storage.setSession(
+							'menuPath',
+							`/serviceList/${selectType}/${
+								typeOptions.filter(
+									(item) => item.value === selectType
+								)[0].label
+							}`
+						);
+						history.push(
+							`/serviceList/${selectType}/${
+								typeOptions.filter(
+									(item) => item.value === selectType
+								)[0].label
+							}/basicInfo/${record.name}/${record.type}/${
+								record.chartVersion
+							}/${record.namespace}`
+						);
 					}}
 				>
 					{record.name}
@@ -121,7 +172,12 @@ export default function ServiceList(): JSX.Element {
 		);
 	};
 	return (
-		<ProTable dataSource={dataSource} rowKey="name" operation={Operation}>
+		<ProTable
+			loading={loadingVisible}
+			dataSource={dataSource}
+			rowKey="name"
+			operation={Operation}
+		>
 			<ProTable.Column
 				title="服务名称/中文别名"
 				dataIndex="name"

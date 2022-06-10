@@ -15,7 +15,7 @@ import { createNamespace } from '@/services/common';
 import { bingNamespace, getAllocatableNamespace } from '@/services/project';
 import { formItemLayout618 } from '@/utils/const';
 import { clusterType } from '@/types';
-import { AddNamespaceFieldValues, AddNamespaceProps } from './projectDetail';
+import { AddNamespaceProps } from './projectDetail';
 import { ProjectItem } from '../ProjectManage/project';
 
 const list = [
@@ -155,6 +155,7 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 							message: '选择操作必填'
 						}
 					]}
+					initialValue={'create'}
 				>
 					<RadioGroup
 						options={list}
@@ -215,9 +216,13 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 						<Input id="name" />
 					</FormItem>
 				)}
-				<FormItem label="绑定项目" name="projectId">
+				<FormItem
+					label="绑定项目"
+					name="projectId"
+					initialValue={project.projectId}
+				>
 					<Select
-						value={project.projectId}
+						// value={project.projectId}
 						disabled={true}
 						style={{ width: '100%' }}
 					>

@@ -10,9 +10,10 @@ import { ProjectDetailProps } from './projectDetail';
 import ServiceList from './serviceList';
 
 const { TabPane } = Tabs;
+// ! 我的项目的项目详情和项目管理的项目详情共用一个页面
 function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 	const { project } = props;
-	const [activeKey, setActiveKey] = useState<string>('namespace');
+	const [activeKey, setActiveKey] = useState<string>('service');
 	const location = useLocation();
 	const history = useHistory();
 	const onChange = (key: string | number) => {
@@ -23,6 +24,7 @@ function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 			history.push(`/myProject/projectDetail/${project.projectId}`);
 		}
 	}, [project]);
+
 	return (
 		<ProPage>
 			<ProHeader
