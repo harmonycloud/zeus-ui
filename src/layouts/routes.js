@@ -48,6 +48,7 @@ import ProjectManage from '@/pages/ProjectManage';
 import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
+import StorageManagement from '@/pages/StorageManagement';
 
 const Routes = withRouter((props) => {
 	return (
@@ -241,6 +242,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/disasterBackup/dataSecurity/addBackup/:middlewareName/:type/:chartVersion"
 					component={BackupSetting}
+					exact
+				/>
+				{/* 存储管理 */}
+				<Route
+					path="/storageManagement"
+					component={StorageManagement}
 					exact
 				/>
 				{/* 系统管理 */}
