@@ -8,7 +8,7 @@
 		&:first-child {
 			margin-left: 0;
 		}
-		img{
+		img {
 			width: 64px;
 			height: 64px;
 		}
@@ -50,7 +50,7 @@
 	}
 	.service-cards {
 		display: flex;
-		.ant-card{
+		.ant-card {
 			margin-right: 24px;
 			text-align: center;
 			&:hover {
@@ -82,7 +82,7 @@
 		flex: 1;
 		.ant-card-head {
 			background: #ececec;
-			img{
+			img {
 				margin-right: 24px;
 			}
 		}
@@ -107,5 +107,36 @@ h2 {
 		height: 14px;
 		border: 1px solid #0064c8;
 		margin-right: 5px;
+	}
+}
+.list-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+	.list-header-left {
+		display: flex;
+		button {
+			margin-right: 16px;
+		}
+	}
+}
+
+.ant-form-item.flex-form {
+	display: flex;
+	.ant-form-item-control-input-content {
+		display: flex;
+		.ant-form-item-control {
+			display: block;
+		}
+		.ant-form-item {
+			&:first-of-type {
+				margin: 0;
+			}
+			margin-bottom: 0;
+		}
+	}
+	.ant-form-item-label {
+		width: 100px;
 	}
 }
