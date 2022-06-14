@@ -96,32 +96,6 @@ export default function Member(): JSX.Element {
 				>
 					删除
 				</LinkButton>
-				{/* <Confirm
-					type="error"
-					title="确认删除"
-					content="确认要删除该项目成员？"
-					onConfirm={() => {
-						deleteProjectMember({
-							projectId: id,
-							username: record.userName
-						}).then((res) => {
-							if (res.success) {
-								notification.success({
-									message: '成功',
-									description: '项目成员删除成功'
-								});
-								getData();
-							} else {
-								notification.error({
-									message: '失败',
-									description: res.errorMsg
-								});
-							}
-						});
-					}}
-				>
-
-				</Confirm> */}
 			</Actions>
 		);
 	};
@@ -129,7 +103,7 @@ export default function Member(): JSX.Element {
 		<div className="mt-8">
 			<ProTable
 				dataSource={showDataSource}
-				rowKey="key"
+				rowKey="userName"
 				operation={Operation}
 				showRefresh
 				onRefresh={getData}

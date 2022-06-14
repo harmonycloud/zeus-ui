@@ -140,44 +140,6 @@ function Namespace(props: NamespaceProps): JSX.Element {
 				>
 					删除
 				</LinkButton>
-				{/* <Confirm
-					type="error"
-					title="确认取消接入"
-					content="确认要取消接入该命名空间？"
-					onConfirm={() => {
-						unBindNamespace({
-							clusterId: record.clusterId,
-							projectId: id,
-							namespace: record.name
-						}).then((res) => {
-							if (res.success) {
-								notification.success({
-									message: '成功',
-									description: '命名空间取消接入成功'
-								});
-								setRefreshCluster(true);
-								getData();
-							} else {
-								notification.error({
-									message: '失败',
-									description: res.errorMsg
-								});
-							}
-						});
-					}}
-				>
-
-				</Confirm> */}
-				{/* <Confirm
-					type="error"
-					title="确认删除"
-					content="确认要删除该命名空间？"
-					onConfirm={() => {
-
-					}}
-				>
-
-				</Confirm> */}
 			</Actions>
 		);
 	};

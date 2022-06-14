@@ -52,17 +52,14 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			}
 		});
 	};
-	const handleChange = (value: string) => {
-		setKey(value);
-	};
 	const handleSearch = (value: string) => {
-		// getData();
 		const list = dataSource.filter((item: userProps) =>
 			item.userName.includes(value)
 		);
 		setShowDataSource(list);
 	};
 	const onChange = (selectedRowKeys: any) => {
+		console.log(selectedRowKeys);
 		setPrimaryKeys(selectedRowKeys);
 	};
 	const roleChange = (value: number, record: userProps) => {
@@ -84,7 +81,6 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 				}
 			});
 		});
-		// console.log(list);
 		if (list.some((item: userProps) => item.roleId === null)) {
 			notification.error({
 				message: '失败',
@@ -145,10 +141,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 		>
 			<ProTable
 				dataSource={showDataSource}
-				// exact
 				search={{
-					// value: key,
-					// onChange: handleChange,
 					onSearch: handleSearch,
 					placeholder: '请输入关键字搜索'
 				}}
@@ -156,14 +149,23 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 					onChange,
 					selectedRowKeys: primaryKeys
 				}}
-				// showJump={false}
+				rowKey="userName"
 			>
-				<ProTable.Column title="登录账户" dataIndex="userName" />
-				<ProTable.Column title="用户名" dataIndex="aliasName" />
+				<ProTable.Column
+					title="登录账户"
+					dataIndex="userName"
+					ellipsis={true}
+				/>
+				<ProTable.Column
+					title="用户名"
+					dataIndex="aliasName"
+					ellipsis={true}
+				/>
 				<ProTable.Column
 					title="邮箱"
 					dataIndex="email"
 					render={nullRender}
+					ellipsis={true}
 				/>
 				<ProTable.Column
 					title="创建时间"
@@ -173,6 +175,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 				<ProTable.Column
 					title="角色"
 					dataIndex="role"
+					width={200}
 					render={roleRender}
 				/>
 			</ProTable>

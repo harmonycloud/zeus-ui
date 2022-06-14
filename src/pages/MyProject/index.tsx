@@ -19,7 +19,11 @@ import { StoreState } from '@/types';
 import { ProjectItem } from '../ProjectManage/project';
 import { roleProps } from '../RoleManage/role';
 import './index.scss';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+import { nullRender } from '@/utils/utils';
 
+const LinkButton = Actions.LinkButton;
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setProject, setRefreshCluster, project, setMenuRefresh } = props;
 	const history = useHistory();
@@ -56,14 +60,14 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			}
 		}
 	}, [role]);
-	useEffect(() => {
-		if (
-			JSON.stringify(currentProject) !== '{}' &&
-			currentProject !== undefined
-		) {
-			getMiddlewareData(currentProject.projectId);
-		}
-	}, [currentProject]);
+	// useEffect(() => {
+	// 	if (
+	// 		JSON.stringify(currentProject) !== '{}' &&
+	// 		currentProject !== undefined
+	// 	) {
+	// 		getMiddlewareData(currentProject.projectId);
+	// 	}
+	// }, [currentProject]);
 	const getCount = () => {
 		getProjectMiddlewareCount().then((res) => {
 			if (res.success) {
@@ -119,11 +123,99 @@ function MyProject(props: MyProjectProps): JSX.Element {
 				setMiddlewareLoading(false);
 			});
 	};
+	const aliasNameRender = (
+		text: string,
+		record: ProjectItem,
+		index: number
+	) => {
+		return (
+			<span
+				className="name-link"
+				onClick={() => {
+					history.push(
+						`/myProject/projectDetail/${record.projectId}`
+					);
+				}}
+			>
+				{text}
+			</span>
+		);
+	};
+	const middlewareCountRender = (
+		text: string,
+		record: ProjectItem,
+		index: number
+	) => {
+		return (
+			<span>
+				{
+					projectMiddlewareCount?.find(
+						(mid: ProjectItem) => mid.projectId === record.projectId
+					)?.middlewareCount
+				}
+			</span>
+		);
+	};
+	const actionRender = (text: string, record: ProjectItem, index: number) => {
+		return (
+			<Actions>
+				<LinkButton
+					onClick={() => {
+						setEditVisible(true);
+					}}
+				>
+					编辑信息
+				</LinkButton>
+			</Actions>
+		);
+	};
 	return (
 		<ProPage>
 			<ProHeader title="我的项目" subTitle="管理用户自己的项目" />
 			<ProContent style={{ width: '100%' }}>
-				<Spin
+				<ProTable
+					dataSource={dataSource}
+					rowKey="projectId"
+					loading={projectLoading}
+				>
+					<ProTable.Column
+						title="项目名称"
+						dataIndex="aliasName"
+						render={aliasNameRender}
+					/>
+					<ProTable.Column
+						title="项目角色"
+						dataIndex="roleName"
+						ellipsis={true}
+					/>
+					<ProTable.Column
+						title="英文简称"
+						dataIndex="name"
+						ellipsis={true}
+					/>
+					<ProTable.Column
+						title="命名空间"
+						dataIndex="namespaceCount"
+					/>
+					<ProTable.Column title="成员数" dataIndex="memberCount" />
+					<ProTable.Column
+						title="服务数"
+						dataIndex="middlewareCount"
+						render={middlewareCountRender}
+					/>
+					<ProTable.Column
+						title="备注"
+						dataIndex="description"
+						render={nullRender}
+						ellipsis={true}
+					/>
+					<ProTable.Column
+						title="操作"
+						dataIndex="action"
+						render={actionRender}
+					/>
+				</ProTable>
+				{/* <Spin
 					spinning={projectLoading}
 					tip="加载中，请稍后"
 					// size="medium"
@@ -256,7 +348,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 							</div>
 						)}
 					</div>
-				</Spin>
+				</Spin> */}
 			</ProContent>
 			{editVisible && (
 				<EditProjectForm

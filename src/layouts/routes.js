@@ -53,6 +53,7 @@ import BackupTask from '@/pages/BackupService/proBackupTask';
 import AddBackupTask from '@/pages/BackupService/addBackupTask';
 import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
 import BackupPosition from '@/pages/BackupService/backupPosition';
+import StorageManagement from '@/pages/StorageManagement';
 
 const Routes = withRouter((props) => {
 	return (
@@ -270,6 +271,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/backupService/backupPosition"
 					component={BackupPosition}
+				/>
+				{/* 存储管理 */}
+				<Route
+					path="/storageManagement"
+					component={StorageManagement}
 					exact
 				/>
 				{/* 系统管理 */}
