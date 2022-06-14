@@ -49,6 +49,10 @@ import ProjectManage from '@/pages/ProjectManage';
 import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
+import BackupTask from '@/pages/BackupService/proBackupTask';
+import AddBackupTask from '@/pages/BackupService/addBackupTask';
+import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
+import BackupPosition from '@/pages/BackupService/backupPosition';
 
 const Routes = withRouter((props) => {
 	return (
@@ -246,6 +250,26 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/disasterBackup/dataSecurity/addBackup/:middlewareName/:type/:chartVersion"
 					component={BackupSetting}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask"
+					component={BackupTask}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask/addBackupTask"
+					component={AddBackupTask}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask/detail"
+					component={BackupTaskDetail}
+					exact
+				/>
+				<Route
+					path="/backupService/backupPosition"
+					component={BackupPosition}
 					exact
 				/>
 				{/* 系统管理 */}

@@ -1,0 +1,14 @@
+.table-radio-header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	.header-search{
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 16px;
+		.label{
+			margin-right: 16px;
+		}
+	}
+}
