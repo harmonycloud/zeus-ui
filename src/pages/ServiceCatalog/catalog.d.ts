@@ -175,6 +175,40 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	mirrorImageId?: any;
 	ingresses?: any;
 }
+export interface PostgresqlCreateValuesParams extends CreateValuesParams {
+	replicaCount: number;
+	pgsqlPwd: string;
+}
+export interface PostgresqlSendDataParams {
+	chartName: string;
+	chartVersion: string;
+	type: string;
+	labels: string;
+	annotations: string;
+	password: string;
+	description: string;
+	version: string;
+	clusterId: string;
+	namespace: string;
+	name: string;
+	aliasName: string;
+	nodeAffinity?: AffinityItem[];
+	tolerations?: string[];
+	dynamicValues?: any;
+	mode: string;
+	replicaCount: number;
+	quota: {
+		postgresql: {
+			cpu?: number;
+			memory?: string;
+			storageClassName?: string;
+			storageClassQuota?: string;
+		};
+	};
+	middlewareName?: string;
+	backupFileName?: string;
+	mirrorImageId?: any;
+}
 export interface NodeModifyParams {
 	nodeName: string;
 	flag: boolean;

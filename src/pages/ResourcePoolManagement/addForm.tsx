@@ -8,20 +8,12 @@ import {
 	Select,
 	Button,
 	notification,
-	Tabs,
-	InputNumber,
-	Space
+	InputNumber
 } from 'antd';
 import { connect } from 'react-redux';
-import { IconFont } from '@/components/IconFont';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import FormBlock from '@/components/FormBlock';
-import {
-	postCluster,
-	getCluster,
-	putCluster,
-	getJoinCommand
-} from '@/services/common';
+import { postCluster, getCluster, putCluster } from '@/services/common';
 import pattern from '@/utils/pattern';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { clusterAddType } from '@/types';
@@ -37,7 +29,6 @@ const formItemLayout = {
 		span: 19
 	}
 };
-const { TabPane } = Tabs;
 export interface valuesProps {
 	name: string;
 	nickname: string;
@@ -81,22 +72,10 @@ interface paramsProps {
 interface addFormProps {
 	setRefreshCluster: (flag: boolean) => void;
 }
-enum stateEnum {
-	error = 'error',
-	loading = 'loading',
-	success = 'success',
-	warning = 'warning'
-}
 function AddForm(props: addFormProps): JSX.Element {
 	const { setRefreshCluster } = props;
 	const params: paramsProps = useParams();
 	const [dcId, setDcId] = useState<string>('');
-	const [quickName, setQuickName] = useState<string>();
-	const [command, setCommand] = useState<string>('');
-	const [inputState, setInputState] = useState<stateEnum>();
-	const [tabKey, setTabKey] = useState<string>(
-		params.clusterId ? 'form' : 'quick'
-	);
 	const [form] = Form.useForm();
 
 	const history = useHistory();
@@ -140,7 +119,6 @@ function AddForm(props: addFormProps): JSX.Element {
 			form.setFieldsValue({
 				cert: reader.result
 			});
-			// field.setValue('cert', reader.result);
 		};
 		reader.readAsText(e.target.files[0]);
 	};
@@ -210,52 +188,7 @@ function AddForm(props: addFormProps): JSX.Element {
 			}
 		});
 	};
-	const onBlur = () => {
-		// 构建到环境中使用
-		if (!quickName || quickName === '') {
-			setInputState(stateEnum.error);
-			return;
-		}
-		const apiAddress =
-			window.location.protocol.toLowerCase() === 'https:'
-				? `https://${window.location.hostname}:${window.location.port}/api`
-				: `http://${window.location.hostname}:${window.location.port}/api`;
-		const sendData = {
-			name: quickName,
-			apiAddress: apiAddress
-		};
-		getJoinCommand(sendData).then((res) => {
-			if (res.success) {
-				setCommand(res.data);
-			} else {
-				setCommand('');
-				notification.error({
-					message: '错误',
-					description: res.errorMsg
-				});
-			}
-		});
-	};
-	// * 浏览器复制到剪切板方法
-	const copyValue = () => {
-		const input = document.createElement('input');
-		document.body.appendChild(input);
-		input.style.position = 'absolute';
-		input.style.top = '0px';
-		input.style.opacity = '0';
-		input.value = command;
-		input.focus();
-		input.select();
-		if (document.execCommand('copy')) {
-			document.execCommand('copy');
-		}
-		input.blur();
-		document.body.removeChild(input);
-		notification.success({
-			message: '错误',
-			description: '复制成功'
-		});
-	};
+
 	return (
 		<ProPage>
 			<ProHeader
@@ -267,350 +200,230 @@ function AddForm(props: addFormProps): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				<Tabs
-					activeKey={tabKey}
-					defaultActiveKey="quick"
-					onChange={(key: string) => setTabKey(key)}
-				>
-					<TabPane
-						tab="快捷模式"
-						key="quick"
-						disabled={params.clusterId ? true : false}
+				<FormBlock title="基础信息">
+					<Form
+						{...formItemLayout}
+						form={form}
+						labelAlign="left"
+						style={{ width: '50%', paddingLeft: 12 }}
 					>
-						<FormBlock title="基础信息">
-							<FormItem
-								style={{ width: '50%', marginLeft: 12 }}
-								{...formItemLayout}
-								label="英文简称"
-								rules={[
-									{
-										required: true,
-										message: '请输入英文简称'
-									},
-									{
-										pattern: new RegExp(pattern.name),
-										message:
-											'请输入由小写字母数字及“-”组成的2-40个字符'
-									}
-								]}
-								name="name"
-								required
-								labelAlign="left"
-							>
-								<div className="display-flex">
-									<Input
-										value={quickName}
-										placeholder="请输入集群名称生成集群纳管脚本"
-										onChange={(e) => {
-											setQuickName(e.target.value);
-											setInputState(undefined);
-										}}
-										style={{
-											width: 'calc(100% - 100px)',
-											marginRight: 8
-										}}
-									/>
-									<Button type="primary" onClick={onBlur}>
-										生成
-									</Button>
-								</div>
-								<p
-									style={{
-										display:
-											inputState === 'error'
-												? 'block'
-												: 'none',
-										color: '#Ef595C'
-									}}
-								>
-									请输入集群的英文简称
-								</p>
-							</FormItem>
-							<div className="quick-model-content">
-								<div className="quick-model-title">
-									在已有集群的任意一个master节点上运行以下指令，实现集群纳管
-								</div>
-								<div className="display-flex">
-									<div className="quick-model-text">
-										{command}
-									</div>
-									<div
-										className="quick-model-copy"
-										onClick={copyValue}
-									>
-										<IconFont
-											type="icon-fuzhi1"
-											style={{
-												color: '#FFFFFF',
-												marginLeft: 7,
-												marginTop: 40,
-												cursor: 'pointer',
-												fontSize: 32
-											}}
-										/>
-									</div>
-								</div>
-							</div>
-						</FormBlock>
-						<div>
-							<Button
-								style={{ marginRight: 8 }}
-								onClick={() => window.history.back()}
-							>
-								返回上一页
-							</Button>
-							<Button
-								type="primary"
-								onClick={() =>
-									history.push(
-										'/systemManagement/resourcePoolManagement'
-									)
+						<FormItem
+							label="英文简称"
+							required
+							rules={[
+								{
+									required: true,
+									message: '请输入英文简称'
+								},
+								{
+									pattern: new RegExp(pattern.name),
+									message:
+										'请输入由小写字母数字及“-”组成的2-40个字符'
 								}
-							>
-								退出
-							</Button>
-						</div>
-					</TabPane>
-					<TabPane tab="表单模式" key="form">
-						<FormBlock title="基础信息">
-							<Form
-								{...formItemLayout}
-								form={form}
-								labelAlign="left"
-								style={{ width: '50%', paddingLeft: 12 }}
-							>
-								<FormItem
-									label="英文简称"
-									required
-									rules={[
-										{
-											required: true,
-											message: '请输入英文简称'
-										},
-										{
-											pattern: new RegExp(pattern.name),
-											message:
-												'请输入由小写字母数字及“-”组成的2-40个字符'
-										}
-									]}
-									name="name"
-								>
-									<Input
-										disabled={
-											params.clusterId ? true : false
-										}
-										placeholder="请输入英文简称"
-									/>
-								</FormItem>
-								<FormItem
-									label="显示名称"
-									required
-									rules={[
-										{
-											required: true,
-											message: '请输入显示名称'
-										},
-										{
-											max: 80,
-											message:
-												'请输入名称，且最大长度不超过80个字符'
-										}
-									]}
-									name="nickname"
-								>
-									<Input placeholder="请输入显示名称" />
-								</FormItem>
-								<FormItem
-									label="Apiserver地址"
-									style={{ marginBottom: 0 }}
-									name="apiserver"
-								>
-									<Row>
-										<Col span={6}>
-											<FormItem
-												name="protocol"
-												initialValue="https"
-											>
-												<Input
-													style={{ width: '100%' }}
-													value="https"
-													disabled={true}
-												/>
-											</FormItem>
-										</Col>
-										<Col span={12}>
-											<FormItem
-												required
-												name="host"
-												rules={[
-													{
-														required: true,
-														message: '请输入地址'
-													},
-													{
-														pattern: new RegExp(
-															pattern.ip
-														),
-														message:
-															'请输入正确的ip地址！'
-													}
-												]}
-												style={{ marginLeft: -2 }}
-											>
-												<Input
-													style={{
-														width: '100%'
-													}}
-													disabled={
-														params.clusterId
-															? true
-															: false
-													}
-													placeholder="请输入主机地址"
-												/>
-											</FormItem>
-										</Col>
-										<Col span={6}>
-											<FormItem
-												style={{ marginLeft: -2 }}
-												required
-												name="port"
-												rules={[
-													{
-														required: true,
-														message: '请输入端口'
-													}
-												]}
-												initialValue={6443}
-											>
-												<InputNumber
-													style={{ width: '100%' }}
-													disabled={
-														params.clusterId
-															? true
-															: false
-													}
-													placeholder="端口"
-												/>
-											</FormItem>
-										</Col>
-									</Row>
-								</FormItem>
-								<FormItem
-									label="AdminConfig"
-									style={{ marginBottom: 0 }}
-								>
+							]}
+							name="name"
+						>
+							<Input
+								disabled={params.clusterId ? true : false}
+								placeholder="请输入英文简称"
+							/>
+						</FormItem>
+						<FormItem
+							label="显示名称"
+							required
+							rules={[
+								{
+									required: true,
+									message: '请输入显示名称'
+								},
+								{
+									max: 80,
+									message:
+										'请输入名称，且最大长度不超过80个字符'
+								}
+							]}
+							name="nickname"
+						>
+							<Input placeholder="请输入显示名称" />
+						</FormItem>
+						<FormItem
+							label="Apiserver地址"
+							style={{ marginBottom: 0 }}
+							name="apiserver"
+						>
+							<Row>
+								<Col span={6}>
 									<FormItem
-										name="cert"
+										name="protocol"
+										initialValue="https"
+									>
+										<Input
+											style={{ width: '100%' }}
+											value="https"
+											disabled={true}
+										/>
+									</FormItem>
+								</Col>
+								<Col span={12}>
+									<FormItem
 										required
+										name="host"
 										rules={[
 											{
 												required: true,
-												message: '请输入AdminConfig'
+												message: '请输入地址'
+											},
+											{
+												pattern: new RegExp(pattern.ip),
+												message: '请输入正确的ip地址！'
 											}
 										]}
+										style={{ marginLeft: -2 }}
 									>
-										<Input.TextArea
-											rows={4}
-											placeholder="请输入AdminConfig"
+										<Input
+											style={{
+												width: '100%'
+											}}
+											disabled={
+												params.clusterId ? true : false
+											}
+											placeholder="请输入主机地址"
 										/>
 									</FormItem>
-									<Form.Item className="upload-parse-file">
-										<div>
-											<VerticalAlignTopOutlined
-												style={{ marginRight: 4 }}
-											/>
-											上传文件
-											<input
-												id="my-upload-parse"
-												type="file"
-												name="file"
-												onChange={uploadConf}
-											/>
-										</div>
-									</Form.Item>
-								</FormItem>
-								<FormItem
-									label="Harbor地址"
-									style={{ marginBottom: 0 }}
-									name="harborAddress"
-								>
-									<Row>
-										<Col span={6}>
-											<FormItem name="protocolHarbor">
-												<Select
-													style={{ width: '100%' }}
-												>
-													<Select.Option value="https">
-														https
-													</Select.Option>
-													<Select.Option value="http">
-														http
-													</Select.Option>
-												</Select>
-											</FormItem>
-										</Col>
-										<Col span={12}>
-											<FormItem
-												style={{ marginLeft: -2 }}
-												name="addressHarbor"
-											>
-												<Input
-													type="text"
-													placeholder="请输入主机地址"
-												/>
-											</FormItem>
-										</Col>
-										<Col span={6}>
-											<FormItem
-												style={{ marginLeft: -2 }}
-												name="portHarbor"
-											>
-												<InputNumber
-													style={{ width: '100%' }}
-													placeholder="端口"
-												/>
-											</FormItem>
-										</Col>
-									</Row>
-								</FormItem>
-								<FormItem label="Harbor项目" name="chartRepo">
-									<Input placeholder="请输入Harbor项目" />
-								</FormItem>
-								<FormItem
-									label="Harbor鉴权"
-									style={{ marginBottom: 0 }}
-									name="harborAuth"
-								>
-									<Row gutter={4}>
-										<Col span={12}>
-											<FormItem name="user">
-												<Input placeholder="请输入用户名" />
-											</FormItem>
-										</Col>
-										<Col span={12}>
-											<FormItem name="password">
-												<Input.Password placeholder="请输入密码" />
-											</FormItem>
-										</Col>
-									</Row>
-								</FormItem>
-							</Form>
-						</FormBlock>
-						<div>
-							<Button
-								type="primary"
-								onClick={onOk}
-								style={{ marginRight: 8 }}
+								</Col>
+								<Col span={6}>
+									<FormItem
+										style={{ marginLeft: -2 }}
+										required
+										name="port"
+										rules={[
+											{
+												required: true,
+												message: '请输入端口'
+											}
+										]}
+										initialValue={6443}
+									>
+										<InputNumber
+											style={{ width: '100%' }}
+											disabled={
+												params.clusterId ? true : false
+											}
+											placeholder="端口"
+										/>
+									</FormItem>
+								</Col>
+							</Row>
+						</FormItem>
+						<FormItem
+							label="AdminConfig"
+							style={{ marginBottom: 0 }}
+						>
+							<FormItem
+								name="cert"
+								required
+								rules={[
+									{
+										required: true,
+										message: '请输入AdminConfig'
+									}
+								]}
 							>
-								完成
-							</Button>
-							<Button onClick={() => window.history.back()}>
-								取消
-							</Button>
-						</div>
-					</TabPane>
-				</Tabs>
+								<Input.TextArea
+									rows={4}
+									placeholder="请输入AdminConfig"
+								/>
+							</FormItem>
+							<Form.Item className="upload-parse-file">
+								<div>
+									<VerticalAlignTopOutlined
+										style={{ marginRight: 4 }}
+									/>
+									上传文件
+									<input
+										id="my-upload-parse"
+										type="file"
+										name="file"
+										onChange={uploadConf}
+									/>
+								</div>
+							</Form.Item>
+						</FormItem>
+						<FormItem
+							label="镜像仓库地址"
+							style={{ marginBottom: 0 }}
+							name="harborAddress"
+						>
+							<Row>
+								<Col span={6}>
+									<FormItem name="protocolHarbor">
+										<Select style={{ width: '100%' }}>
+											<Select.Option value="https">
+												https
+											</Select.Option>
+											<Select.Option value="http">
+												http
+											</Select.Option>
+										</Select>
+									</FormItem>
+								</Col>
+								<Col span={12}>
+									<FormItem
+										style={{ marginLeft: -2 }}
+										name="addressHarbor"
+									>
+										<Input
+											type="text"
+											placeholder="请输入主机地址"
+										/>
+									</FormItem>
+								</Col>
+								<Col span={6}>
+									<FormItem
+										style={{ marginLeft: -2 }}
+										name="portHarbor"
+									>
+										<InputNumber
+											style={{ width: '100%' }}
+											placeholder="端口"
+										/>
+									</FormItem>
+								</Col>
+							</Row>
+						</FormItem>
+						<FormItem label="镜像仓库项目" name="chartRepo">
+							<Input placeholder="请输入镜像仓库项目" />
+						</FormItem>
+						<FormItem
+							label="镜像仓库鉴权"
+							style={{ marginBottom: 0 }}
+							name="harborAuth"
+						>
+							<Row gutter={4}>
+								<Col span={12}>
+									<FormItem name="user">
+										<Input placeholder="请输入用户名" />
+									</FormItem>
+								</Col>
+								<Col span={12}>
+									<FormItem name="password">
+										<Input.Password placeholder="请输入密码" />
+									</FormItem>
+								</Col>
+							</Row>
+						</FormItem>
+					</Form>
+				</FormBlock>
+				<div>
+					<Button
+						type="primary"
+						onClick={onOk}
+						style={{ marginRight: 8 }}
+					>
+						完成
+					</Button>
+					<Button onClick={() => window.history.back()}>取消</Button>
+				</div>
 			</ProContent>
 		</ProPage>
 	);

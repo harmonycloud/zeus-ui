@@ -95,3 +95,6 @@ export interface AddMirrorWarehouseProps {
 	onRefresh: () => void;
 	data: any;
 }
+export interface AddResourcePoolProps {
+	setRefreshCluster: (flag: boolean) => void;
+}

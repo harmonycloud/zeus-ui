@@ -36,6 +36,7 @@ const Actions = (props: ActionsProps) => {
 										(item as ReactElement).props
 											?.disabled || false
 									}
+									{...(item as ReactElement).props}
 								>
 									{(item as ReactElement).props.children}
 								</LinkButton>
@@ -66,6 +67,10 @@ const Actions = (props: ActionsProps) => {
 							style={{ marginRight: 8, marginLeft: 8 }}
 							key={index}
 							onClick={(item as ReactElement).props?.onClick}
+							disabled={
+								(item as ReactElement).props?.disabled || false
+							}
+							{...(item as ReactElement).props}
 						>
 							{(item as ReactElement).props?.children}
 						</LinkButton>
@@ -85,12 +90,13 @@ const Actions = (props: ActionsProps) => {
 	}
 };
 const LinkButton = (props: LinkButtonProps) => {
-	const { disabled = false, children, onClick, style } = props;
+	const { disabled = false, children, onClick, style, ...args } = props;
 	return (
 		<span
 			style={style}
 			className={disabled ? 'displayed-name' : 'name-link'}
 			onClick={disabled ? undefined : onClick}
+			{...args}
 		>
 			{children}
 		</span>

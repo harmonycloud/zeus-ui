@@ -13,6 +13,7 @@ import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
 import KafkaCreate from '@/pages/ServiceCatalog/Kafka/create';
 import ZookeeperCreate from '@/pages/ServiceCatalog/Zookeeper/create';
+import PostgreSQLCreate from '@/pages/ServiceCatalog/PostgreSQL/create';
 import InstanceDetails from '@/pages/ServiceListDetail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
@@ -55,6 +56,7 @@ import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
 import BackupPosition from '@/pages/BackupService/backupPosition';
 import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
+import AddStorage from '@/pages/StorageManagement/addStorage';
 
 const Routes = withRouter((props) => {
 	return (
@@ -134,6 +136,17 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:chartName/:aliasName/ZookeeperCreate/:chartVersion"
 					component={ZookeeperCreate}
+				/>
+				{/* pgsql备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
+					component={PostgreSQLCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/:chartName/:aliasName/PostgreSQLCreate/:chartVersion"
+					component={PostgreSQLCreate}
+					exact
 				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/dynamicForm/:chartVersion/:version"
@@ -283,6 +296,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/storageManagement"
 					component={StorageManagement}
+					exact
+				/>
+				<Route
+					path="/storageManagement/create"
+					component={AddStorage}
 					exact
 				/>
 				{/* 系统管理 */}

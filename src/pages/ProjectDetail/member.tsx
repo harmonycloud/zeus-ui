@@ -22,6 +22,19 @@ export default function Member(): JSX.Element {
 	const [role] = useState(JSON.parse(storage.getLocal('role')));
 	const params: DetailParams = useParams();
 	const { id } = params;
+	const [disabledFlag, setDisabledFlag] = useState<boolean>(true);
+	useEffect(() => {
+		if (role.isAdmin) {
+			setDisabledFlag(false);
+		} else {
+			if (
+				role.userRoleList.find((item: any) => item.projectId === id)
+					.roleId === 2
+			) {
+				setDisabledFlag(false);
+			}
+		}
+	}, [role]);
 	useEffect(() => {
 		getData();
 	}, []);
@@ -40,7 +53,16 @@ export default function Member(): JSX.Element {
 	};
 	const Operation = {
 		primary: (
-			<Button type="primary" onClick={() => setAddVisible(true)}>
+			<Button
+				title={
+					disabledFlag
+						? '当前用户不具有该操作权限，请联系项目管理员'
+						: ''
+				}
+				disabled={disabledFlag}
+				type="primary"
+				onClick={() => setAddVisible(true)}
+			>
 				新增
 			</Button>
 		)
@@ -56,7 +78,12 @@ export default function Member(): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={record.id === role.id}
+					title={
+						disabledFlag
+							? '当前用户不具有该操作权限，请联系项目管理员'
+							: ''
+					}
+					disabled={record.id === role.id || disabledFlag}
 					onClick={() => {
 						setEditVisible(true);
 						setEditData(record);
@@ -65,6 +92,11 @@ export default function Member(): JSX.Element {
 					编辑
 				</LinkButton>
 				<LinkButton
+					title={
+						disabledFlag
+							? '当前用户不具有该操作权限，请联系项目管理员'
+							: ''
+					}
 					onClick={() =>
 						confirm({
 							title: '确认删除',
@@ -92,7 +124,7 @@ export default function Member(): JSX.Element {
 							}
 						})
 					}
-					disabled={record.id === role.id}
+					disabled={record.id === role.id || disabledFlag}
 				>
 					删除
 				</LinkButton>

@@ -73,6 +73,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			});
 			return;
 		}
+		console.log(primaryKeys);
 		const list: userProps[] = [];
 		primaryKeys.forEach((item: any) => {
 			dataSource.forEach((i: userProps) => {
@@ -149,7 +150,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 					onChange,
 					selectedRowKeys: primaryKeys
 				}}
-				rowKey="userName"
+				rowKey="id"
 			>
 				<ProTable.Column
 					title="登录账户"

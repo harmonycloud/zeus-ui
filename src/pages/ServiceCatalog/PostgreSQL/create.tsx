@@ -15,15 +15,17 @@ import {
 	Form,
 	notification,
 	Result,
-	InputNumber
+	InputNumber,
+	Tooltip
 } from 'antd';
 import {
 	QuestionCircleOutlined,
 	PlusOutlined,
-	CloseCircleFilled
+	CloseCircleFilled,
+	CheckCircleFilled
 } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
-import styles from './redis.module.scss';
+import styles from './pgsql.module.scss';
 import {
 	getNodePort,
 	getNodeTaint,
@@ -39,10 +41,7 @@ import {
 	AffinityProps,
 	AffinityLabelsItem,
 	TolerationsProps,
-	RedisSendDataParams,
-	RedisCreateValuesParams,
-	NodeModifyParams,
-	NodeObjParams
+	PostgresqlSendDataParams
 } from '../catalog';
 import Affinity from '@/components/Affinity';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
@@ -61,7 +60,8 @@ import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 
 const { Item: FormItem } = Form;
-const RedisCreate: (props: CreateProps) => JSX.Element = (
+const Password = Input.Password;
+const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	props: CreateProps
 ) => {
 	const {
@@ -70,7 +70,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	const { chartName, chartVersion, aliasName } = params;
+	const {
+		chartName,
+		aliasName,
+		chartVersion,
+		middlewareName,
+		backupFileName,
+		namespace
+	} = params;
 	const [form] = Form.useForm();
 	const history = useHistory();
 
@@ -110,64 +117,41 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		TolerationLabelItem[]
 	>([]);
 
-	// 日志
-	const [fileLog, setFileLog] = useState<boolean>(false);
-	const [standardLog, setStandardLog] = useState<boolean>(false);
-
-	// Redis配置
-	const [version, setVersion] = useState<string>('5.0');
+	// pgsql配置
+	const [version, setVersion] = useState<string>('14');
 	const versionList = [
 		{
-			label: '5.0',
-			value: '5.0'
+			label: '14',
+			value: '14'
+		},
+		{
+			label: '13',
+			value: '13'
+		},
+		{
+			label: '12',
+			value: '12'
+		},
+		{
+			label: '11',
+			value: '11'
+		},
+		{
+			label: '9.6',
+			value: '9.6'
 		}
 	];
-	const [mode, setMode] = useState<string>('cluster');
+	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
 		{
-			label: '集群模式',
-			value: 'cluster'
+			label: '一主一从',
+			value: '1m-1s'
 		},
 		{
-			label: '哨兵模式',
-			value: 'sentinel'
+			label: '一主多从（beta版）',
+			value: '1m-ns'
 		}
 	];
-	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
-	const clusterModeList = [
-		{
-			label: '三主三从',
-			value: '3s-3m'
-		},
-		{
-			label: '五主五从',
-			value: '5s-5m'
-		}
-	];
-	const [nodeObj, setNodeObj] = useState<NodeObjParams>({
-		redis: {
-			disabled: false,
-			title: 'Redis 节点',
-			num: 3,
-			specId: '1',
-			cpu: 1,
-			memory: 2,
-			storageClass: '',
-			storageQuota: 0
-		},
-		sentinel: {
-			disabled: false,
-			title: '哨兵节点',
-			num: 3,
-			specId: '1',
-			cpu: 1,
-			memory: 2
-		}
-	});
-	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
-		nodeName: '',
-		flag: false
-	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [storageClassList, setStorageClassList] = useState<
@@ -175,6 +159,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
+	const [replicaCount, setReplicaCount] = useState(2); // * 一主多从
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 
@@ -188,6 +173,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	// * root密码
+	const [pgsqlPwd, setPgsqlPwd] = useState<string>('');
+	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -227,50 +215,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		}
 	}, [project, globalNamespace]);
 
-	const formHandle = (obj: any, item: any) => {
-		if (
-			['cpu', 'memory', 'storageClass', 'storageQuota'].indexOf(
-				item.name
-			) > -1 &&
-			mode === 'sentinel'
-		) {
-			const temp = nodeObj[nodeModify.nodeName];
-			temp[item.name] = item.value;
-			setNodeObj({
-				...nodeObj,
-				[nodeModify.nodeName]: temp
-			});
-		}
-	};
-
-	const modifyQuota = (key: string) => {
-		setNodeModify({
-			nodeName: key,
-			flag: true
-		});
-		setSpecId(nodeObj[key].specId);
-		if (nodeObj[key].specId === '') {
-			setInstanceSpec('Customize');
-			form.setFieldsValue({
-				cpu: nodeObj[key].cpu,
-				memory: nodeObj[key].memory
-			});
-		} else {
-			setInstanceSpec('General');
-		}
-		form.setFieldsValue({
-			storageClass: nodeObj[key].storageClass,
-			storageQuota: nodeObj[key].storageQuota
-		});
-	};
-
 	const checkGeneral = (value: any) => {
 		setSpecId(value);
 	};
 
 	const handleSubmit = () => {
-		form.validateFields().then((values: RedisCreateValuesParams) => {
-			const sendData: RedisSendDataParams = {
+		form.validateFields().then((values) => {
+			const sendData: PostgresqlSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
 				clusterId: globalCluster.id,
@@ -278,7 +229,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					globalNamespace.name === '*'
 						? values.namespace
 						: globalNamespace.name,
-				type: 'redis',
+				type: 'postgresql',
 				name: values.name,
 				aliasName: values.aliasName,
 				labels: values.labels,
@@ -287,9 +238,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				version: version,
 				password: values.pwd,
 				mode: mode,
-				filelogEnabled: fileLog,
-				stdoutEnabled: standardLog,
-				quota: { redis: {} },
+				replicaCount: mode === '1m-1s' ? 1 : replicaCount,
+				quota: {
+					postgresql: {
+						storageClassName: values.storageClass,
+						storageClassQuota: values.storageQuota
+					}
+				},
 				mirrorImageId:
 					mirrorList
 						.find(
@@ -297,16 +252,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 								item.address === values.mirrorImageId
 						)
 						?.id.toString() || ''
-				// mirrorImageId: mirrorList.find(
-				// 	(item) => item.address === values['mirrorImageId']
-				// )
-				// 	? mirrorList
-				// 			.find(
-				// 				(item) =>
-				// 					item.address === values['mirrorImageId']
-				// 			)
-				// 			.id.toString()
-				// 	: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -351,68 +296,38 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					);
 				}
 			}
-			if (mode === 'cluster') {
-				sendData.quota = {
-					redis: {
-						num: clusterMode === '3s-3m' ? 6 : 10,
-						storageClassName: values.storageClass,
-						storageClassQuota: values.storageQuota
-					}
-				};
-				if (instanceSpec === 'General') {
-					switch (specId) {
-						case '1':
-							sendData.quota.redis.cpu = 1;
-							sendData.quota.redis.memory = '2Gi';
-							break;
-						case '2':
-							sendData.quota.redis.cpu = 2;
-							sendData.quota.redis.memory = '8Gi';
-							break;
-						case '3':
-							sendData.quota.redis.cpu = 4;
-							sendData.quota.redis.memory = '16Gi';
-							break;
-						case '4':
-							sendData.quota.redis.cpu = 8;
-							sendData.quota.redis.memory = '32Gi';
-							break;
-						case '5':
-							sendData.quota.redis.cpu = 16;
-							sendData.quota.redis.memory = '64Gi';
-							break;
-						default:
-							break;
-					}
-				} else if (instanceSpec === 'Customize') {
-					sendData.quota.redis.cpu = values.cpu;
-					sendData.quota.redis.memory = values.memory + 'Gi';
+			if (backupFileName) {
+				sendData.middlewareName = middlewareName;
+				sendData.backupFileName = backupFileName;
+			}
+			if (instanceSpec === 'General') {
+				switch (specId) {
+					case '1':
+						sendData.quota.postgresql.cpu = 1;
+						sendData.quota.postgresql.memory = '2Gi';
+						break;
+					case '2':
+						sendData.quota.postgresql.cpu = 2;
+						sendData.quota.postgresql.memory = '4Gi';
+						break;
+					case '3':
+						sendData.quota.postgresql.cpu = 4;
+						sendData.quota.postgresql.memory = '16Gi';
+						break;
+					case '4':
+						sendData.quota.postgresql.cpu = 8;
+						sendData.quota.postgresql.memory = '32Gi';
+						break;
+					case '5':
+						sendData.quota.postgresql.cpu = 16;
+						sendData.quota.postgresql.memory = '64Gi';
+						break;
+					default:
+						break;
 				}
-			} else {
-				if (nodeObj) {
-					sendData.quota = { redis: {} };
-					for (const key in nodeObj) {
-						if (!nodeObj[key].disabled) {
-							if (nodeObj[key].storageClass === '') {
-								modifyQuota(key);
-								return;
-							}
-							if (nodeObj[key].storageQuota === 0) {
-								notification.error({
-									message: '失败',
-									description: `${key}节点存储配额不能为0`
-								});
-								modifyQuota(key);
-								return;
-							}
-							sendData.quota[key] = {
-								...nodeObj[key],
-								storageClassName: nodeObj[key].storageClass,
-								storageClassQuota: nodeObj[key].storageQuota
-							};
-						}
-					}
-				}
+			} else if (instanceSpec === 'Customize') {
+				sendData.quota.postgresql.cpu = values.cpu;
+				sendData.quota.postgresql.memory = values.memory + 'Gi';
 			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
@@ -587,14 +502,34 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			</ProPage>
 		);
 	}
+	const pgsqlPwdChange = (e: any) => {
+		const temp = [...checks];
+		if (e.target.value.length >= 8 && e.target.value.length <= 32) {
+			temp[0] = true;
+		} else {
+			temp[0] = false;
+		}
+		if (
+			/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{3,}$/.test(
+				e.target.value
+			)
+		) {
+			temp[1] = true;
+		} else {
+			temp[1] = false;
+		}
+		setChecks(temp);
+		setPgsqlPwd(e.target.value);
+	};
 
 	return (
 		<ProPage>
 			<ProHeader
-				title="发布Redis服务"
-				className="page-header"
+				title="发布PostgreSQL服务"
 				onBack={() => {
-					window.history.back();
+					history.push({
+						pathname: `/serviceList/${chartName}/${aliasName}`
+					});
 				}}
 			/>
 			<ProContent>
@@ -768,152 +703,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex flex-center form-li">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Popover
-											content={
-												'勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败'
-											}
-										>
-											<QuestionCircleOutlined />
-										</Popover>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														dataSource={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			checked:
-																				affinity.checked,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-														icon={
-															<PlusOutlined
-																style={{
-																	color: '#005AA5'
-																}}
-															/>
-														}
-													></Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(
-															e: CheckboxChangeEvent
-														) =>
-															changeAffinity(
-																e.target
-																	.checked,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
-															)
-														}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -998,10 +787,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		}
 																	]
 																);
-																// changeTolerations(
-																// 	'',
-																// 	'label'
-																// );
 															}
 														}}
 														icon={
@@ -1049,97 +834,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					<FormBlock title="日志收集">
-						<div className={styles['log-collection-content']}>
-							<div className={styles['log-collection']}>
-								<ul className="form-layout">
-									<li className="display-flex flex-center form-li">
-										<label className="form-name">
-											<span style={{ marginRight: 8 }}>
-												文件日志收集
-											</span>
-											<Popover
-												content={
-													<span
-														style={{
-															lineHeight: '18px'
-														}}
-													>
-														安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-													</span>
-												}
-											>
-												<QuestionCircleOutlined />
-											</Popover>
-										</label>
-										<div
-											className={`form-content display-flex ${styles['file-log']}`}
-										>
-											<div className={styles['switch']}>
-												{fileLog ? '已开启' : '关闭'}
-												<Switch
-													checked={fileLog}
-													onChange={(value) =>
-														setFileLog(value)
-													}
-													size="small"
-													style={{
-														marginLeft: 16,
-														verticalAlign: 'middle'
-													}}
-												/>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-							<div className={styles['log-collection']}>
-								<ul className="form-layout">
-									<li className="display-flex flex-center form-li">
-										<label className="form-name">
-											<span style={{ marginRight: 8 }}>
-												标准日志收集
-											</span>
-											<Popover
-												content={
-													<span
-														style={{
-															lineHeight: '18px'
-														}}
-													>
-														安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-													</span>
-												}
-											>
-												<QuestionCircleOutlined />
-											</Popover>
-										</label>
-										<div
-											className={`form-content display-flex ${styles['standard-log']}`}
-										>
-											<div className={styles['switch']}>
-												{standardLog
-													? '已开启'
-													: '关闭'}
-												<Switch
-													checked={standardLog}
-													onChange={(value) =>
-														setStandardLog(value)
-													}
-													size="small"
-													style={{
-														marginLeft: 16,
-														verticalAlign: 'middle'
-													}}
-												/>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</FormBlock>
-					<FormBlock title="Redis配置">
+					<FormBlock title="PostgreSQL配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
 								<li className="display-flex form-li">
@@ -1155,24 +850,87 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={
+												backupFileName ? true : false
+											}
 										/>
 									</div>
 								</li>
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>初始密码</span>
+										<span>postgre密码</span>
 									</label>
-									<div
-										className="form-content"
-										style={{ flex: '0 0 376px' }}
-									>
-										<FormItem>
-											<Input
-												type="password"
-												name="pwd"
-												placeholder="请输入初始密码，输入空则由平台随机生成"
-											/>
-										</FormItem>
+									<div className="form-content">
+										<Tooltip
+											title={
+												<ul>
+													<li
+														className={
+															styles[
+																'edit-form-icon-style'
+															]
+														}
+													>
+														{checks[0] ? (
+															<CheckCircleFilled
+																style={{
+																	color: '#68B642',
+																	marginRight: 4
+																}}
+															/>
+														) : (
+															<CloseCircleFilled
+																style={{
+																	color: '#Ef595C',
+																	marginRight: 4
+																}}
+															/>
+														)}
+														<span>
+															(长度需要8-32之间)
+														</span>
+													</li>
+													<li
+														className={
+															styles[
+																'edit-form-icon-style'
+															]
+														}
+													>
+														{checks[1] ? (
+															<CheckCircleFilled
+																style={{
+																	color: '#68B642',
+																	marginRight: 4
+																}}
+															/>
+														) : (
+															<CloseCircleFilled
+																style={{
+																	color: '#Ef595C',
+																	marginRight: 4
+																}}
+															/>
+														)}
+														<span>
+															至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
+														</span>
+													</li>
+												</ul>
+											}
+										>
+											<FormItem
+												name="pgsqlPwd"
+												style={{ marginBottom: 12 }}
+											>
+												<Password
+													style={{ width: '380px' }}
+													value={pgsqlPwd}
+													placeholder="请输入root密码，输入为空则由平台随机生成"
+													onChange={pgsqlPwdChange}
+												/>
+											</FormItem>
+										</Tooltip>
 									</div>
 								</li>
 								<li className="display-flex">
@@ -1229,284 +987,231 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>高可用模式</span>
+										<span style={{ marginRight: 8 }}>
+											模式
+										</span>
+										<Tooltip title="本模式中的主、从节点，特指不同类型实例个数">
+											<QuestionCircleOutlined />
+										</Tooltip>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['redis-mode']}`}
 									>
-										<Select
-											value={mode}
-											onChange={(value) => setMode(value)}
-											style={{ width: 150 }}
+										<SelectBlock
+											options={modeList}
+											currentValue={mode}
+											onCallBack={(value: any) =>
+												setMode(value)
+											}
+										/>
+										<div
+											style={{
+												display:
+													mode === '1m-1s'
+														? 'none'
+														: 'block'
+											}}
 										>
-											{modeList.map((item, index) => (
-												<Select.Option
-													key={index}
-													value={item.value}
-												>
-													{item.label}
-												</Select.Option>
-											))}
-										</Select>
-										{mode === 'cluster' ? (
-											<div style={{ marginLeft: 16 }}>
-												<SelectBlock
-													options={clusterModeList}
-													currentValue={clusterMode}
-													onCallBack={(value: any) =>
-														setClusterMode(value)
-													}
-												/>
-											</div>
-										) : null}
+											<label style={{ margin: '0 16px' }}>
+												自定义从节点实例数量
+											</label>
+											<InputNumber
+												name="从节点数量字段"
+												defaultValue={2}
+												onChange={(value) =>
+													setReplicaCount(value)
+												}
+												value={replicaCount}
+												max={6}
+												min={2}
+											/>
+										</div>
 									</div>
 								</li>
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span></span>
+										<span>节点规格</span>
 									</label>
-									<div>
-										{mode === 'sentinel' ? (
+									<div
+										className={`form-content display-flex ${styles['instance-spec-content']}`}
+									>
+										<SelectBlock
+											options={instanceSpecList}
+											currentValue={instanceSpec}
+											onCallBack={(value: any) =>
+												setInstanceSpec(value)
+											}
+										/>
+										{instanceSpec === 'General' ? (
 											<div
-												className={`display-flex ${styles['mode-content']}`}
+												style={{
+													width: 652,
+													marginTop: 16
+												}}
 											>
-												{Object.keys(nodeObj).map(
-													(key) => (
-														<ModeItem
-															key={key}
-															type={key}
-															data={nodeObj[key]}
-															clusterId={
-																globalCluster.id
-															}
-															namespace={
-																globalNamespace.name
-															}
-															onChange={(
-																values
-															) => {
-																setNodeObj({
-																	...nodeObj,
-																	[key]: values
-																});
-															}}
-														/>
-													)
-												)}
+												<TableRadio
+													id={specId}
+													onCallBack={(value: any) =>
+														checkGeneral(value)
+													}
+												/>
+											</div>
+										) : null}
+										{instanceSpec === 'Customize' ? (
+											<div
+												className={
+													styles['spec-custom']
+												}
+											>
+												<ul className="form-layout">
+													<li className="display-flex">
+														<label className="form-name">
+															<span className="ne-required">
+																CPU
+															</span>
+														</label>
+														<div className="form-content">
+															<FormItem
+																rules={[
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义CPU配额，单位为Core'
+																	},
+																	{
+																		type: 'number',
+																		min: 0.1,
+																		...maxCpu,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
+																			maxCpu?.max ||
+																			''
+																		}Core）`
+																	}
+																]}
+																name="cpu"
+															>
+																<InputNumber
+																	step={0.1}
+																	style={{
+																		width: '100%'
+																	}}
+																	placeholder="请输入自定义CPU配额，单位为Core"
+																/>
+															</FormItem>
+														</div>
+													</li>
+													<li className="display-flex">
+														<label className="form-name">
+															<span className="ne-required">
+																内存
+															</span>
+														</label>
+														<div className="form-content">
+															<FormItem
+																rules={[
+																	{
+																		required:
+																			true,
+																		message:
+																			'请输入自定义内存配额，单位为Gi'
+																	},
+																	{
+																		type: 'number',
+																		min: 0.1,
+																		...maxMemory,
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
+																			maxMemory?.max ||
+																			''
+																		}Gi`
+																	}
+																]}
+																name="memory"
+															>
+																<InputNumber
+																	step={0.1}
+																	style={{
+																		width: '100%'
+																	}}
+																	placeholder="请输入自定义内存配额，单位为Gi"
+																/>
+															</FormItem>
+														</div>
+													</li>
+												</ul>
 											</div>
 										) : null}
 									</div>
 								</li>
-								{(mode === 'cluster' || nodeModify.flag) && (
-									<>
-										<li className="display-flex form-li">
-											<label className="form-name">
-												<span>节点规格</span>
-											</label>
-											<div
-												className={`form-content display-flex ${styles['instance-spec-content']}`}
+								<li className="display-flex">
+									<label className="form-name">
+										<span className="ne-required">
+											存储配额
+										</span>
+									</label>
+									<div
+										className={`form-content display-flex`}
+									>
+										<FormItem
+											rules={[
+												{
+													required: true,
+													message: '请选择存储类型'
+												}
+											]}
+											name="storageClass"
+										>
+											<Select
+												style={{
+													marginRight: 8,
+													width: 150
+												}}
+												placeholder="请选择"
 											>
-												<SelectBlock
-													options={instanceSpecList}
-													currentValue={instanceSpec}
-													onCallBack={(value: any) =>
-														setInstanceSpec(value)
-													}
-												/>
-												{instanceSpec === 'General' ? (
-													<div
-														style={{
-															width: 652,
-															marginTop: 16
-														}}
-													>
-														<TableRadio
-															id={specId}
-															onCallBack={(
-																value: any
-															) =>
-																checkGeneral(
-																	value
-																)
-															}
-														/>
-													</div>
-												) : null}
-												{instanceSpec ===
-												'Customize' ? (
-													<div
-														className={
-															styles[
-																'spec-custom'
-															]
-														}
-													>
-														<ul className="form-layout">
-															<li className="display-flex">
-																<label className="form-name">
-																	<span className="ne-required">
-																		CPU
-																	</span>
-																</label>
-																<div className="form-content">
-																	<FormItem
-																		rules={[
-																			{
-																				required:
-																					true,
-																				message:
-																					'请输入自定义CPU配额，单位为Core'
-																			},
-																			{
-																				type: 'number',
-																				min: 0.1,
-																				...maxCpu,
-																				message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
-																					maxCpu?.max ||
-																					''
-																				}Core）`
-																			}
-																		]}
-																		name="cpu"
-																	>
-																		<InputNumber
-																			step={
-																				0.1
-																			}
-																			style={{
-																				width: '100%'
-																			}}
-																			placeholder="请输入自定义CPU配额，单位为Core"
-																		/>
-																	</FormItem>
-																</div>
-															</li>
-															<li className="display-flex">
-																<label className="form-name">
-																	<span className="ne-required">
-																		内存
-																	</span>
-																</label>
-																<div className="form-content">
-																	<FormItem
-																		rules={[
-																			{
-																				required:
-																					true,
-																				message:
-																					'请输入自定义内存配额，单位为Gi'
-																			},
-																			{
-																				type: 'number',
-																				min: 0.1,
-																				...maxMemory,
-																				message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
-																					maxMemory?.max ||
-																					''
-																				}Gi`
-																			}
-																		]}
-																		name="memory"
-																	>
-																		<InputNumber
-																			step={
-																				0.1
-																			}
-																			style={{
-																				width: '100%'
-																			}}
-																			placeholder="请输入自定义内存配额，单位为Gi"
-																		/>
-																	</FormItem>
-																</div>
-															</li>
-														</ul>
-													</div>
-												) : null}
-											</div>
-										</li>
-										{nodeModify.nodeName !== 'sentinel' && (
-											<li className="display-flex">
-												<label className="form-name">
-													<span className="ne-required">
-														存储配额
-													</span>
-												</label>
-												<div
-													className={`form-content display-flex`}
-												>
-													<FormItem
-														rules={[
-															{
-																required: true,
-																message:
-																	'请选择存储类型'
-															}
-														]}
-														name="storageClass"
-													>
-														<Select
-															style={{
-																marginRight: 8,
-																width: 150
-															}}
-															placeholder="请选择"
-														>
-															{storageClassList.map(
-																(
-																	item,
-																	index
-																) => {
-																	return (
-																		<Select.Option
-																			key={
-																				index
-																			}
-																			value={
-																				item.name
-																			}
-																		>
-																			{
-																				item.name
-																			}
-																		</Select.Option>
-																	);
+												{storageClassList.map(
+													(item, index) => {
+														return (
+															<Select.Option
+																key={index}
+																value={
+																	item.name
 																}
-															)}
-														</Select>
-													</FormItem>
-													<FormItem
-														rules={[
-															{
-																required: true,
-																message:
-																	'请输入存储配额大小（GB）'
-															},
-															{
-																pattern:
-																	new RegExp(
-																		pattern.posInt
-																	),
-																message:
-																	'请输入小于21位的正整数'
-															}
-														]}
-														name="storageQuota"
-														initialValue={5}
-													>
-														<InputNumber
-															style={{
-																width: '100%'
-															}}
-															placeholder="请输入存储配额大小"
-															addonAfter="GB"
-														/>
-													</FormItem>
-												</div>
-											</li>
-										)}
-									</>
-								)}
+															>
+																{item.name}
+															</Select.Option>
+														);
+													}
+												)}
+											</Select>
+										</FormItem>
+										<FormItem
+											rules={[
+												{
+													required: true,
+													message:
+														'请输入存储配额大小（GB）'
+												},
+												{
+													pattern: new RegExp(
+														pattern.posInt
+													),
+													message:
+														'请输入小于21位的正整数'
+												}
+											]}
+											name="storageQuota"
+											initialValue={5}
+										>
+											<InputNumber
+												style={{
+													width: '100%'
+												}}
+												placeholder="请输入存储配额大小"
+												addonAfter="GB"
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
@@ -1536,4 +1241,4 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 const mapStateToProps = (state: StoreState) => ({
 	globalVar: state.globalVar
 });
-export default connect(mapStateToProps, {})(RedisCreate);
+export default connect(mapStateToProps, {})(PostgreSQLCreate);
