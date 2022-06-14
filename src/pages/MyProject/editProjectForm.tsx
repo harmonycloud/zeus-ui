@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import { Input, Modal, Form, notification } from 'antd';
-import { connect } from 'react-redux';
 import { formItemLayout618 } from '@/utils/const';
 import pattern from '@/utils/pattern';
-import { StoreState } from '@/types';
 import { updateProject } from '@/services/project';
 import { ProjectItem } from '../ProjectManage/project';
 
@@ -12,15 +10,11 @@ interface EditProjectFormProps {
 	onCancel: () => void;
 	project: ProjectItem;
 	onRefresh: () => void;
-}
-interface UpdateProjectValuesFields {
-	name: string;
-	aliasName: string;
-	description: string;
+	setRefreshCluster: (value: boolean) => void;
 }
 const FormItem = Form.Item;
 function EditProjectForm(props: EditProjectFormProps): JSX.Element {
-	const { visible, onCancel, project, onRefresh } = props;
+	const { visible, onCancel, project, onRefresh, setRefreshCluster } = props;
 	const [form] = Form.useForm();
 	useEffect(() => {
 		if (project) {
@@ -47,6 +41,7 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 							message: '成功',
 							description: '项目修改成功'
 						});
+						setRefreshCluster(true);
 					} else {
 						notification.error({
 							message: '失败',
@@ -101,7 +96,4 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 		</Modal>
 	);
 }
-const mapStateToProps = (state: StoreState) => ({
-	project: state.globalVar.project
-});
-export default connect(mapStateToProps)(EditProjectForm);
+export default EditProjectForm;

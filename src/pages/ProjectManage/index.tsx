@@ -7,7 +7,7 @@ import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import EditProjectForm from './editProjectForm';
 import UpdateProjectFrom from '../MyProject/editProjectForm';
-import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
+import { setRefreshCluster } from '@/redux/globalVar/var';
 import { getProjects, deleteProject } from '@/services/project';
 import { nullRender } from '@/utils/utils';
 import { ProjectItem, ProjectManageProps } from './project';
@@ -16,16 +16,16 @@ import storage from '@/utils/storage';
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 function ProjectManage(props: ProjectManageProps): JSX.Element {
-	const { setProject, setRefreshCluster } = props;
+	const { setRefreshCluster } = props;
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
-	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
 	const [editVisible, setEditVisible] = useState<boolean>(false);
+	const [editData, setEditData] = useState<ProjectItem>();
 	const history = useHistory();
 	useEffect(() => {
 		getData();
 	}, []);
-	const getData = (key = keyword) => {
+	const getData = (key = '') => {
 		getProjects({ key }).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
@@ -50,9 +50,6 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 			</Button>
 		)
 	};
-	const handleChange = (value: string) => {
-		setKeyword(value);
-	};
 	const handleSearch = (value: string) => {
 		getData(value);
 	};
@@ -62,7 +59,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 				className="text-overflow name-link"
 				title={value}
 				onClick={() => {
-					storage.setLocal('project', JSON.stringify(record));
+					// storage.setLocal('project', JSON.stringify(record));
 					history.push(
 						`/systemManagement/projectManagement/projectDetail/${record.projectId}`
 					);
@@ -85,8 +82,9 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 				<LinkButton
 					onClick={() => {
 						setEditVisible(true);
-						setProject(record);
-						storage.setLocal('project', JSON.stringify(record));
+						setEditData(record);
+						// setProject(record);
+						// storage.setLocal('project', JSON.stringify(record));
 						setRefreshCluster(true);
 					}}
 				>
@@ -123,26 +121,6 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 							}
 						})
 					}
-					// onClick={() => {
-					// 	Dialog.show({
-					// 		title: '删除项目确认',
-					// 		content: '删除将无法找回，是否继续？',
-					// 		onOk: () => {
-					// 			return deleteProject({
-					// 				projectId: record.projectId
-					// 			}).then((res) => {
-					// 				if (res.success) {
-					// 					setRefreshCluster(true);
-					// 					getData();
-					// 				} else {
-					// 					Message.show(
-					// 						messageConfig('error', '失败', res)
-					// 					);
-					// 				}
-					// 			});
-					// 		}
-					// 	});
-					// }}
 				>
 					删除
 				</LinkButton>
@@ -159,12 +137,9 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 						showRefresh
 						onRefresh={() => getData()}
 						rowKey="name"
-						// primaryKey="name"
 						operation={Operation}
 						showColumnSetting
 						search={{
-							// value: keyword,
-							// onChange: handleChange,
 							onSearch: handleSearch,
 							placeholder: '请输入关键字搜索'
 						}}
@@ -210,11 +185,13 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
-			{editVisible && (
+			{editVisible && editData && (
 				<UpdateProjectFrom
 					visible={editVisible}
 					onCancel={() => setEditVisible(false)}
 					onRefresh={getData}
+					project={editData}
+					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
 		</>
@@ -222,6 +199,5 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 }
 const mapStateToProps = () => ({});
 export default connect(mapStateToProps, {
-	setProject,
 	setRefreshCluster
 })(ProjectManage);

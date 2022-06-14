@@ -101,7 +101,8 @@ export const projectHideRoute = [
 	'/dataOverview',
 	'/systemManagement',
 	'/terminal',
-	'/middlewareRepository'
+	'/middlewareRepository',
+	'/myProject'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },

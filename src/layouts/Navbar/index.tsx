@@ -274,8 +274,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 			if (
 				projectHideRoute.some(
 					(item: string) => location.pathname.indexOf(item) > -1
-				) ||
-				location.pathname === '/myProject'
+				)
 			) {
 				setProjectHideFlag(true);
 			} else {
