@@ -12,6 +12,7 @@ import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
 import KafkaCreate from '@/pages/ServiceCatalog/Kafka/create';
+import ZookeeperCreate from '@/pages/ServiceCatalog/Zookeeper/create';
 import InstanceDetails from '@/pages/ServiceListDetail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
@@ -48,6 +49,10 @@ import ProjectManage from '@/pages/ProjectManage';
 import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
+import BackupTask from '@/pages/BackupService/proBackupTask';
+import AddBackupTask from '@/pages/BackupService/addBackupTask';
+import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
+import BackupPosition from '@/pages/BackupService/backupPosition';
 import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
 
@@ -125,6 +130,10 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:chartName/:aliasName/kafkaCreate/:chartVersion"
 					component={KafkaCreate}
+				/>
+				<Route
+					path="/serviceList/:chartName/:aliasName/ZookeeperCreate/:chartVersion"
+					component={ZookeeperCreate}
 				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/dynamicForm/:chartVersion/:version"
@@ -244,6 +253,25 @@ const Routes = withRouter((props) => {
 					path="/disasterBackup/dataSecurity/addBackup/:middlewareName/:type/:chartVersion"
 					component={BackupSetting}
 					exact
+				/>
+				<Route
+					path="/backupService/backupTask"
+					component={BackupTask}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask/addBackupTask"
+					component={AddBackupTask}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask/detail"
+					component={BackupTaskDetail}
+					exact
+				/>
+				<Route
+					path="/backupService/backupPosition"
+					component={BackupPosition}
 				/>
 				{/* 存储管理 */}
 				<Route
