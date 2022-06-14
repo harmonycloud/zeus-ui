@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Spin, notification } from 'antd';
+import { notification } from 'antd';
 import {
 	getProjects,
 	getProjectMiddleware,
@@ -11,17 +11,16 @@ import {
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
-import MiddlewareTable from './middlewareTable';
-import imgNone from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
 import { MiddlewareTableItem, MyProjectProps } from './myProject';
 import { StoreState } from '@/types';
 import { ProjectItem } from '../ProjectManage/project';
 import { roleProps } from '../RoleManage/role';
-import './index.scss';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
 import { nullRender } from '@/utils/utils';
+import projectIcon from '@/assets/images/project.svg';
+import './index.scss';
 
 const LinkButton = Actions.LinkButton;
 function MyProject(props: MyProjectProps): JSX.Element {
@@ -60,14 +59,6 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			}
 		}
 	}, [role]);
-	// useEffect(() => {
-	// 	if (
-	// 		JSON.stringify(currentProject) !== '{}' &&
-	// 		currentProject !== undefined
-	// 	) {
-	// 		getMiddlewareData(currentProject.projectId);
-	// 	}
-	// }, [currentProject]);
 	const getCount = () => {
 		getProjectMiddlewareCount().then((res) => {
 			if (res.success) {
@@ -171,7 +162,13 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	};
 	return (
 		<ProPage>
-			<ProHeader title="我的项目" subTitle="管理用户自己的项目" />
+			<ProHeader
+				avatar={{
+					icon: <img src={projectIcon} width={80} />
+				}}
+				title="我的项目"
+				subTitle="管理用户自己的项目"
+			/>
 			<ProContent style={{ width: '100%' }}>
 				<ProTable
 					dataSource={dataSource}
