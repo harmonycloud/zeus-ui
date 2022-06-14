@@ -30,27 +30,27 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	const [projectMiddlewareCount, setProjectMiddleware] = useState<
 		ProjectItem[]
 	>([]);
+	// useEffect(() => {
+	// 	if (storage.getLocal('role')) {
+	// 		setRole(JSON.parse(storage.getLocal('role')));
+	// 	}
+	// }, [storage.getLocal('role')]);
 	useEffect(() => {
-		if (storage.getLocal('role')) {
-			setRole(JSON.parse(storage.getLocal('role')));
-		}
-	}, [storage.getLocal('role')]);
-	useEffect(() => {
-		if (role) {
-			// if (role.userRoleList.some((i: any) => i.roleId) === 1) {
-			// 	if (
-			// 		JSON.stringify(currentProject) !== '{}' &&
-			// 		currentProject !== undefined
-			// 	) {
-			// 		getData();
-			// 		getCount();
-			// 	}
-			// } else {
-			getData();
-			getCount();
-			// }
-		}
-	}, [role]);
+		// if (role) {
+		// if (role.userRoleList.some((i: any) => i.roleId) === 1) {
+		// 	if (
+		// 		JSON.stringify(currentProject) !== '{}' &&
+		// 		currentProject !== undefined
+		// 	) {
+		// 		getData();
+		// 		getCount();
+		// 	}
+		// } else {
+		getData();
+		getCount();
+		// }
+		// }
+	}, []);
 	const getCount = () => {
 		getProjectMiddlewareCount().then((res) => {
 			if (res.success) {
@@ -125,6 +125,12 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						setEditData(record);
 						setEditVisible(true);
 					}}
+					disabled={record.roleId !== 2}
+					title={
+						record.roleId !== 2
+							? '当前用户不具有该操作权限，请联系项目管理员'
+							: ''
+					}
 				>
 					编辑信息
 				</LinkButton>

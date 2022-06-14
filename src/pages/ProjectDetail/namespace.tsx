@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import Confirm from '@alicloud/console-components-confirm';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router';
 import { Button, notification, Modal } from 'antd';
@@ -9,24 +8,39 @@ import { getProjectNamespace, unBindNamespace } from '@/services/project';
 import { DetailParams, NamespaceItem, NamespaceProps } from './projectDetail';
 import AddNamespace from './addNamespace';
 import { setRefreshCluster } from '@/redux/globalVar/var';
-// import { Actions, LinkButton } from '@alicloud/console-components-actions';
 import { deleteNamespace } from '@/services/common';
 import { clusterType, StoreState } from '@/types';
+import { roleProps } from '../RoleManage/role';
 import {
 	ColumnFilterItem,
 	TablePaginationConfig
 } from 'antd/lib/table/interface';
+import storage from '@/utils/storage';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 function Namespace(props: NamespaceProps): JSX.Element {
 	const { clusterList, setRefreshCluster } = props;
-	const [dataSource, setDataSource] = useState<NamespaceItem[]>([]);
-	const [showDataSource, setShowDataSource] = useState<NamespaceItem[]>([]);
 	const params: DetailParams = useParams();
 	const { id } = params;
+	const [dataSource, setDataSource] = useState<NamespaceItem[]>([]);
+	const [showDataSource, setShowDataSource] = useState<NamespaceItem[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
 	const [filters, setFilters] = useState<ColumnFilterItem[]>([]);
+	const [role] = useState<roleProps>(JSON.parse(storage.getLocal('role')));
+	const [disabledFlag, setDisabledFlag] = useState<boolean>(true);
+	useEffect(() => {
+		if (role.isAdmin) {
+			setDisabledFlag(false);
+		} else {
+			if (
+				role.userRoleList.find((item: any) => item.projectId === id)
+					.roleId === 2
+			) {
+				setDisabledFlag(false);
+			}
+		}
+	}, [role]);
 	useEffect(() => {
 		let mounted = true;
 		getProjectNamespace({ projectId: id }).then((res) => {
@@ -76,6 +90,12 @@ function Namespace(props: NamespaceProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
+					title={
+						disabledFlag
+							? '当前用户不具有该操作权限，请联系项目管理员'
+							: ''
+					}
+					disabled={disabledFlag}
 					onClick={() =>
 						confirm({
 							title: '确认取消接入',
@@ -109,6 +129,12 @@ function Namespace(props: NamespaceProps): JSX.Element {
 					取消接入
 				</LinkButton>
 				<LinkButton
+					title={
+						disabledFlag
+							? '当前用户不具有该操作权限，请联系项目管理员'
+							: ''
+					}
+					disabled={disabledFlag}
 					onClick={() =>
 						confirm({
 							title: '确认删除',
@@ -145,7 +171,16 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	};
 	const Operation = {
 		primary: (
-			<Button type="primary" onClick={() => setVisible(true)}>
+			<Button
+				disabled={disabledFlag}
+				type="primary"
+				onClick={() => setVisible(true)}
+				title={
+					disabledFlag
+						? '当前用户不具有该操作权限，请联系项目管理员'
+						: ''
+				}
+			>
 				新建/接入
 			</Button>
 		)
@@ -170,22 +205,6 @@ function Namespace(props: NamespaceProps): JSX.Element {
 			.filter((item: NamespaceItem) => item.aliasName.includes(value));
 		setShowDataSource(list);
 	};
-	// const onFilter = (filterParams: any) => {
-	// 	let list: NamespaceItem[] = [];
-	// 	Object.keys(filterParams).forEach((key) => {
-	// 		const { selectedKeys } = filterParams[key];
-	// 		if (selectedKeys.length) {
-	// 			list = dataSource.filter((record) => {
-	// 				return selectedKeys.some((value: any) => {
-	// 					return record.clusterId === value;
-	// 				});
-	// 			});
-	// 		} else {
-	// 			list = dataSource;
-	// 		}
-	// 	});
-	// 	setShowDataSource(list);
-	// };
 	const onChange = (
 		pagination: TablePaginationConfig,
 		filters: any,
@@ -207,7 +226,6 @@ function Namespace(props: NamespaceProps): JSX.Element {
 					placeholder: '请输入关键字搜索'
 				}}
 				onChange={onChange}
-				// onFilter={onFilter}
 			>
 				<Table.Column
 					title="命名空间名称"

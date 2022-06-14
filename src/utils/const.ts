@@ -55,6 +55,8 @@ export const disabledRoute = [
 	'/redisCreat',
 	'/elasticsearchCreate',
 	'/rocketmqCreate',
+	'/postgresqlCreate',
+	'/ZookeeperCreate',
 	'/dynamicForm',
 	'/serviceList/versionManagement',
 	'/instanceList/detail',
@@ -87,7 +89,8 @@ export const hideRoute = [
 	'/terminal',
 	'/myProject',
 	'/projectDetail',
-	'/middlewareRepository'
+	'/middlewareRepository',
+	'/storageManagement'
 ];
 // * 项目不显示路由名单
 export const projectHideRoute = [
@@ -102,7 +105,8 @@ export const projectHideRoute = [
 	'/systemManagement',
 	'/terminal',
 	'/middlewareRepository',
-	'/myProject'
+	'/myProject',
+	'/storageManagement'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },

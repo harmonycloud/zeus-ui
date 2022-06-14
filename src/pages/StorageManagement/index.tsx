@@ -1,14 +1,33 @@
+import React, { useEffect, useState } from 'react';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import storageIcon from '@/assets/images/storage-manage.svg';
-import React from 'react';
 import { ListCard, ListCardItem } from '@/components/ListCard';
 import Actions from '@/components/Actions';
+import { getLists, GetParams } from '@/services/storage';
 
 const LinkButton = Actions.LinkButton;
 export default function StorageManagement(): JSX.Element {
+	const getData = () => {
+		const sendData: GetParams = {
+			all: false,
+			clusterId: ''
+		};
+		getLists(sendData).then((res) => {
+			console.log(res);
+		});
+	};
 	return (
 		<ProPage>
-			<ProHeader title="存储管理" subTitle="发布中间件需要使用的存储" />
+			<ProHeader
+				avatar={{
+					children: <img src={storageIcon} />,
+					shape: 'square',
+					size: 48,
+					style: { background: '#F5F5F5' }
+				}}
+				title="存储管理"
+				subTitle="发布中间件需要使用的存储"
+			/>
 			<ProContent>
 				<ListCard
 					title="lvm存储"
