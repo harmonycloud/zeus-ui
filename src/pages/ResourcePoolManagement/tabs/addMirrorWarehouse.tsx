@@ -98,7 +98,6 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 		>
 			<Form labelAlign="left" form={form} {...formItemLayout}>
 				<div className="display-form">
-					{/* <FormItem label="镜像仓库地址"> */}
 					<label className="label">镜像仓库地址</label>
 					<Row>
 						<Col span={8} style={{ marginRight: 7 }}>
@@ -147,8 +146,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 								required
 								name="port"
 								rules={[
-									{ required: true, message: '请输入端口' },
-									{ max: 16, message: '端口不能超过16位' }
+									{ required: true, message: '请输入端口' }
 								]}
 							>
 								<InputNumber placeholder="端口" />

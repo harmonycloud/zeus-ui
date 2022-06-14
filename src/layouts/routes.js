@@ -49,6 +49,7 @@ import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
 import StorageManagement from '@/pages/StorageManagement';
+import AddStorage from '@/pages/StorageManagement/addStorage';
 
 const Routes = withRouter((props) => {
 	return (
@@ -248,6 +249,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/storageManagement"
 					component={StorageManagement}
+					exact
+				/>
+				<Route
+					path="/storageManagement/create"
+					component={AddStorage}
 					exact
 				/>
 				{/* 系统管理 */}
