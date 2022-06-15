@@ -10,7 +10,8 @@ import {
 	InputNumber,
 	notification,
 	AutoComplete,
-	Result
+	Result,
+	Tag
 } from 'antd';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { useHistory, useParams } from 'react-router';
@@ -829,6 +830,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									flagChange={setAffinityFlag}
 									values={affinityLabels}
 									onChange={setAffinityLabels}
+									cluster={globalCluster}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -925,26 +927,24 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (
-												<p
-													className={styles['tag']}
+												<Tag
 													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setTolerationsLabels(
-																tolerationsLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
+													closable
+													style={{
+														padding: '4px 10px'
+													}}
+													onClose={() =>
+														setTolerationsLabels(
+															tolerationsLabels.filter(
+																(arr) =>
+																	arr.id !==
+																	item.id
 															)
-														}
-													/>
-												</p>
+														)
+													}
+												>
+													{item.label}
+												</Tag>
 											);
 										})}
 									</div>

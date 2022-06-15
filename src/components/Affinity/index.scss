@@ -26,6 +26,11 @@
 		cursor: pointer;
 	}
 }
-.add {
-	margin: 0 8px;
+.host-affinity{
+	.switch{
+		width: 120px;
+	}
+	.add {
+		margin-right: 4px;
+	}
 }

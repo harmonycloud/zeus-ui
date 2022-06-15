@@ -17,7 +17,8 @@ import {
 	InputNumber,
 	Cascader,
 	Tooltip,
-	AutoComplete
+	AutoComplete,
+	Tag
 } from 'antd';
 import {
 	getNodePort,
@@ -1367,6 +1368,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									flagChange={setAffinityFlag}
 									values={affinityLabels}
 									onChange={setAffinityLabels}
+									cluster={globalCluster}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -1463,26 +1465,24 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (
-												<p
-													className={styles['tag']}
+												<Tag
 													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setTolerationsLabels(
-																tolerationsLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
+													closable
+													style={{
+														padding: '4px 10px'
+													}}
+													onClose={() =>
+														setTolerationsLabels(
+															tolerationsLabels.filter(
+																(arr) =>
+																	arr.id !==
+																	item.id
 															)
-														}
-													/>
-												</p>
+														)
+													}
+												>
+													{item.label}
+												</Tag>
 											);
 										})}
 									</div>

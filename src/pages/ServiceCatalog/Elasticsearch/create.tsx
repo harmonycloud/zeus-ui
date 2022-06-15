@@ -14,7 +14,8 @@ import {
 	Popover,
 	Form,
 	notification,
-	Result
+	Result,
+	Tag
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -853,6 +854,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									flagChange={setAffinityFlag}
 									values={affinityLabels}
 									onChange={setAffinityLabels}
+									cluster={globalCluster}
 								/>
 								<li className="display-flex form-li flex-center">
 									<label className="form-name">
@@ -896,9 +898,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 															)
 														}
 														allowClear={true}
-														dataSource={
-															tolerationList
-														}
+														options={tolerationList}
 														style={{
 															width: '100%'
 														}}
@@ -952,26 +952,24 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (
-												<p
-													className={styles['tag']}
+												<Tag
 													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setTolerationsLabels(
-																tolerationsLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
+													closable
+													style={{
+														padding: '4px 10px'
+													}}
+													onClose={() =>
+														setTolerationsLabels(
+															tolerationsLabels.filter(
+																(arr) =>
+																	arr.id !==
+																	item.id
 															)
-														}
-													/>
-												</p>
+														)
+													}
+												>
+													{item.label}
+												</Tag>
 											);
 										})}
 									</div>

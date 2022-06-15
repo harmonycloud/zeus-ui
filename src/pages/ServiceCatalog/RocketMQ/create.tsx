@@ -12,7 +12,8 @@ import {
 	notification,
 	Result,
 	AutoComplete,
-	InputNumber
+	InputNumber,
+	Tag
 } from 'antd';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import FormBlock from '@/components/FormBlock';
@@ -888,6 +889,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									flagChange={setAffinityFlag}
 									values={affinityLabels}
 									onChange={setAffinityLabels}
+									cluster={globalCluster}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -984,26 +986,24 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (
-												<p
-													className={styles['tag']}
+												<Tag
 													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setTolerationsLabels(
-																tolerationsLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
+													closable
+													style={{
+														padding: '4px 10px'
+													}}
+													onClose={() =>
+														setTolerationsLabels(
+															tolerationsLabels.filter(
+																(arr) =>
+																	arr.id !==
+																	item.id
 															)
-														}
-													/>
-												</p>
+														)
+													}
+												>
+													{item.label}
+												</Tag>
 											);
 										})}
 									</div>

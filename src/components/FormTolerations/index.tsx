@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, AutoComplete, Button, Switch } from 'antd';
+import { Form, AutoComplete, Button, Switch, Tag } from 'antd';
 import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
 import { getNodeTaint } from '@/services/middleware';
 import {
@@ -172,15 +172,18 @@ export default function FormTolerations(
 					<div className={'tags'}>
 						{tolerationsLabels.map((item) => {
 							return (
-								<p className={'tag'} key={item.id}>
-									<span>{item.label}</span>
-									<CloseCircleFilled
-										className={'tag-close'}
-										onClick={() =>
-											reduceTolerationsLabels(item)
-										}
-									/>
-								</p>
+								<Tag
+									key={item.label}
+									closable
+									style={{
+										padding: '4px 10px'
+									}}
+									onClose={() =>
+										reduceTolerationsLabels(item)
+									}
+								>
+									{item.label}
+								</Tag>
 							);
 						})}
 					</div>
