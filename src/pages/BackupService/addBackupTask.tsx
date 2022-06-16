@@ -576,13 +576,10 @@ function AddBackup(): JSX.Element {
 			<ProHeader
 				title="新增备份任务"
 				avatar={{
-					src: Backup,
-					style: {
-						width: '24px',
-						height: '24px',
-						background: '#F5F5F5',
-						borderRadius: '4px'
-					}
+					children: <img src={Backup} />,
+					shape: 'square',
+					size: 24,
+					style: { background: '#f5f5f5' }
 				}}
 				onBack={() => history.goBack()}
 			/>

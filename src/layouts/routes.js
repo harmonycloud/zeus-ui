@@ -54,6 +54,7 @@ import BackupTask from '@/pages/BackupService/proBackupTask';
 import AddBackupTask from '@/pages/BackupService/addBackupTask';
 import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
 import BackupPosition from '@/pages/BackupService/backupPosition';
+import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
 
@@ -284,6 +285,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/backupService/backupPosition"
 					component={BackupPosition}
+					exact
+				/>
+				<Route
+					path="/backupService/backupPosition/addBackupPosition"
+					component={AddBackupPosition}
+					exact
 				/>
 				{/* 存储管理 */}
 				<Route
