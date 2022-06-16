@@ -208,7 +208,7 @@ export interface StorageClassProps {
 // * 集群列表
 export interface poolListItem {
 	name?: string;
-	id: number;
+	id: string;
 }
 
 // * 告警记录

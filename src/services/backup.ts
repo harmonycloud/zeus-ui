@@ -17,6 +17,17 @@ interface useBackupParams {
 	restoreName: string;
 	aliasName: string;
 }
+interface addressParams {
+	accessKeyId: string;
+	capacity: string;
+	clusterIds: string[];
+	endpoint: string;
+	id?: number;
+	name: string;
+	secretAccessKey: string;
+	type: string;
+	[propName: string]: any;
+}
 export const getBackups = (params: listParams) => {
 	return Axios.get(BACKUP.backupList, params);
 };
@@ -40,4 +51,25 @@ export const deleteBackups = (params: listParams) => {
 };
 export const applyBackup = (params: useBackupParams) => {
 	return Axios.post(BACKUP.useBackup, params);
+};
+export const getBackupAddress = (params: { keyword: string }) => {
+	return Axios.get(BACKUP.backupAddress, params);
+};
+export const getBackupAddressDetail = (params: { id: number }) => {
+	return Axios.get(BACKUP.backupAddressDetail, params);
+};
+export const addBackupAddress = (params: addressParams) => {
+	return Axios.json(BACKUP.backupAddress, params, {}, 'POST');
+};
+export const backupAddressCheck = (params: addressParams) => {
+	return Axios.json(BACKUP.backupAddressCheck, params, {}, 'POST');
+};
+export const editBackupAddress = (params: addressParams) => {
+	return Axios.json(BACKUP.backupAddress, params, {}, 'PUT');
+};
+export const deleteBackupAddress = (params: {
+	id: number;
+	clusterId?: string;
+}) => {
+	return Axios.delete(BACKUP.backupAddress, params);
 };

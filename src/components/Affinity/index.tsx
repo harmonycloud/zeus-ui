@@ -142,7 +142,7 @@ function Affinity(props: any): JSX.Element {
 				</div>
 			</li>
 			{label && !/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(label) ? (
-				<div style={{ marginLeft: 216, color: '#ff4d4f' }}>
+				<div style={{ marginLeft: 240, color: '#ff4d4f' }}>
 					请输入key=value格式的内容
 				</div>
 			) : null}

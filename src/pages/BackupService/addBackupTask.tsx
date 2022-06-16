@@ -45,7 +45,7 @@ const steps = [
 ];
 const formItemLayout = {
 	labelCol: {
-		span: 2
+		span: 3
 	},
 	wrapperCol: {
 		span: 16
@@ -262,6 +262,7 @@ function AddBackup(): JSX.Element {
 							{...formItemLayout}
 							form={form}
 							style={{ marginTop: '24px' }}
+							labelAlign="left"
 						>
 							<Form.Item
 								label="备份方式"
@@ -413,8 +414,7 @@ function AddBackup(): JSX.Element {
 									</Form.Item>
 									<Form.Item
 										label="备份时间"
-										required
-										name="time"
+										name="time2"
 										rules={[
 											{
 												required: true,
@@ -458,7 +458,11 @@ function AddBackup(): JSX.Element {
 			case 2:
 				return (
 					<div>
-						<Form {...formItemLayout} form={formWay}>
+						<Form
+							{...formItemLayout}
+							form={formWay}
+							labelAlign="left"
+						>
 							<Form.Item
 								label="备份任务名称"
 								name="aa"
