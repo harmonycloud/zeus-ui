@@ -238,9 +238,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				version: version,
 				password: values.pwd,
 				mode: mode,
-				replicaCount: mode === '1m-1s' ? 1 : replicaCount,
 				quota: {
 					postgresql: {
+						num: mode === '1m-1s' ? 1 : replicaCount,
 						storageClassName: values.storageClass,
 						storageClassQuota: values.storageQuota
 					}

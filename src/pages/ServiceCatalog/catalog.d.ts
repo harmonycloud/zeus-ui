@@ -196,13 +196,14 @@ export interface PostgresqlSendDataParams {
 	tolerations?: string[];
 	dynamicValues?: any;
 	mode: string;
-	replicaCount: number;
+	// replicaCount?: number;
 	quota: {
 		postgresql: {
 			cpu?: number;
 			memory?: string;
 			storageClassName?: string;
 			storageClassQuota?: string;
+			num?: number;
 		};
 	};
 	middlewareName?: string;

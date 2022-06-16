@@ -46,7 +46,6 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 			}
 			const v: sendDataProps = values;
 			const rsaPass = encrypt(v.password, publicKey);
-			// console.log(rsaPass);
 			const newRsaPass = encrypt(v.newPassword, publicKey);
 			const reNewRsaPass = encrypt(v.reNewPassword, publicKey);
 			const sendData = {
@@ -133,9 +132,7 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 					label="原密码"
 					labelAlign="left"
 					name="password"
-					// asterisk={false}
 					rules={[{ required: true, message: '请输入原密码' }]}
-					// className="ne-required-ingress"
 				>
 					<Input.Password />
 				</Form.Item>
@@ -244,15 +241,12 @@ export default function EditPasswordForm(props: editProps): JSX.Element {
 					{defaultTrigger}
 				</Popover>
 				<Form.Item
-					label="新密码二次确认"
+					label="二次确认"
 					labelAlign="left"
 					name="reNewPassword"
-					// asterisk={false}
 					rules={[
 						{ required: true, message: '请输入新密码二次确认' }
 					]}
-					// requiredMessage="请输入确认密码"
-					// className="ne-required-ingress"
 				>
 					<Input.Password
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
