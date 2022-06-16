@@ -80,7 +80,6 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 		}
 	};
 	const onMenuItemClick = (info: MenuInfo) => {
-		console.log(info);
 		if (info.key.includes('serviceList')) {
 			storage.setSession('menuPath', `/${info.key}`);
 		}
@@ -99,7 +98,8 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 				'monitorAlarm',
 				'disasterBackup',
 				'systemManagement',
-				'serviceList'
+				'serviceList',
+				'disasterBackup'
 			]}
 			onClick={onMenuItemClick}
 			selectedKeys={selectedKeys}

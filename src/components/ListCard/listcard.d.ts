@@ -1,8 +1,10 @@
+import React from 'react';
+
 export interface ListCardItemProps {
-	label?: string | JSX.Element;
-	value?: string | JSX.Element;
+	label?: any;
+	value?: any;
 	width?: number;
-	render?: JSX.Element;
+	render?: any;
 }
 export interface ListCardProps {
 	title: string;

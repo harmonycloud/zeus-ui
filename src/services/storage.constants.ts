@@ -7,3 +7,5 @@ export const handleStorage = `${api}/clusters/{clusterId}/storage/{storageName}`
 export const getMiddlewareStorage = `${api}/clusters/{clusterId}/storage/{storageName}/middlewares`;
 // * 获取中间件存储使用详情
 export const getMiddlewareStorageDetail = `${api}/clusters/{clusterId}/storage/{storageName}/middlewares/{middlewareName}`;
+// * 查询存储类型
+export const getStorageTypes = `${api}/clusters/{clusterId}/storage/type`;
