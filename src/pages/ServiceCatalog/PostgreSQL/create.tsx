@@ -16,7 +16,8 @@ import {
 	notification,
 	Result,
 	InputNumber,
-	Tooltip
+	Tooltip,
+	Tag
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -717,6 +718,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									flagChange={setAffinityFlag}
 									values={affinityLabels}
 									onChange={setAffinityLabels}
+									cluster={globalCluster}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -816,26 +818,24 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (
-												<p
-													className={styles['tag']}
+												<Tag
 													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setTolerationsLabels(
-																tolerationsLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
+													closable
+													style={{
+														padding: '4px 10px'
+													}}
+													onClose={() =>
+														setTolerationsLabels(
+															tolerationsLabels.filter(
+																(arr) =>
+																	arr.id !==
+																	item.id
 															)
-														}
-													/>
-												</p>
+														)
+													}
+												>
+													{item.label}
+												</Tag>
 											);
 										})}
 									</div>

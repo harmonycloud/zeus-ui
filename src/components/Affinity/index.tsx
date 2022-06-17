@@ -1,23 +1,41 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Tooltip, Switch, Button, Tag, Checkbox, Input } from 'antd';
 import {
-	QuestionCircleOutlined,
-	PlusOutlined,
-	CloseCircleFilled
-} from '@ant-design/icons';
-import {
-	AffinityLabelsItem,
-	AffinityProps
-} from '@/pages/ServiceCatalog/catalog';
+	Tooltip,
+	Switch,
+	Button,
+	Tag,
+	Checkbox,
+	Input,
+	AutoComplete
+} from 'antd';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { AutoCompleteOptionItem } from '@/types/comment';
+import { getNodePort } from '@/services/middleware';
 
 import './index.scss';
 
 function Affinity(props: any): JSX.Element {
-	const { values, onChange, flag, flagChange } = props;
-	const [key, setKey] = useState<string>('');
-	const [value, setValue] = useState<string>('');
+	const { values, onChange, flag, flagChange, cluster } = props;
+	const [label, setLabel] = useState<string>('');
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [checked, setChecked] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (JSON.stringify(cluster) !== '{}') {
+			getNodePort({ clusterId: cluster.id }).then((res) => {
+				if (res.success) {
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
+				}
+			});
+		}
+	}, [cluster]);
 
 	return (
 		<>
@@ -44,18 +62,21 @@ function Affinity(props: any): JSX.Element {
 					{flag ? (
 						<>
 							<div className={'input'}>
-								<Input
-									placeholder="键"
-									value={key}
-									style={{ width: '140px' }}
-									onChange={(e) => setKey(e.target.value)}
-								/>
-								<span style={{ margin: '0 8px' }}>=</span>
-								<Input
-									placeholder="值"
-									value={value}
-									style={{ width: '140px' }}
-									onChange={(e) => setValue(e.target.value)}
+								<AutoComplete
+									allowClear
+									placeholder="请输入key=value格式的内容"
+									value={label}
+									style={{ width: 260 }}
+									options={labelList}
+									onChange={(value) => setLabel(value)}
+									status={
+										label &&
+										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+											label
+										)
+											? 'error'
+											: ''
+									}
 								/>
 							</div>
 							<div className={'add'}>
@@ -64,25 +85,29 @@ function Affinity(props: any): JSX.Element {
 										marginLeft: '4px',
 										padding: '0 9px'
 									}}
-									disabled={key && value ? false : true}
+									disabled={
+										!label ||
+										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+											label
+										)
+											? true
+											: false
+									}
 									onClick={() => {
 										if (
 											!values.find(
 												(item: any) =>
-													item.label ===
-													`${key}=${value}`
+													item.label === label
 											)
 										) {
 											onChange([
 												...values,
 												{
-													label: `${key}=${value}`,
+													label: label,
 													checked,
 													id: Math.random()
 												}
 											]);
-											setKey('');
-											setValue('');
 										}
 									}}
 								>
@@ -116,6 +141,11 @@ function Affinity(props: any): JSX.Element {
 					) : null}
 				</div>
 			</li>
+			{label && !/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(label) ? (
+				<div style={{ marginLeft: 240, color: '#ff4d4f' }}>
+					请输入key=value格式的内容
+				</div>
+			) : null}
 			{flag && values.length ? (
 				<div className={'tags'}>
 					{values.map((item: any) => {
@@ -135,19 +165,6 @@ function Affinity(props: any): JSX.Element {
 							>
 								{item.label}
 							</Tag>
-							// <p className={'tag'} key={item.label}>
-							// 	<span>{item.label}</span>
-							// 	<CloseCircleFilled
-							// 		className={'tag-close'}
-							// 		onClick={() => {
-							// 			onChange(
-							// 				values.filter(
-							// 					(arr: any) => arr.id !== item.id
-							// 				)
-							// 			);
-							// 		}}
-							// 	/>
-							// </p>
 						);
 					})}
 				</div>

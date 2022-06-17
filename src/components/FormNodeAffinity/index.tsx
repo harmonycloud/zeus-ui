@@ -9,11 +9,7 @@ import {
 	Tag,
 	Input
 } from 'antd';
-import {
-	QuestionCircleOutlined,
-	PlusOutlined,
-	CloseCircleFilled
-} from '@ant-design/icons';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { getNodePort } from '@/services/middleware';
 import { AutoCompleteOptionItem } from '@/types/comment';
@@ -177,25 +173,17 @@ export default function FormNodeAffinity(
 											props.required
 												? `请输入${props.label}`
 												: ''
+									},
+									{
+										pattern:
+											/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/,
+										message: '请输入key=value格式的内容'
 									}
 								]}
 								name={props.variable}
-								// initialValue={props.nodeAffinity}
+								initialValue={props.nodeAffinity}
 							>
-								<Input
-									placeholder="键"
-									// value={key}
-									style={{ width: '140px' }}
-									// onChange={(e) => setKey(e.target.value)}
-								/>
-								<span style={{ margin: '0 8px' }}>=</span>
-								<Input
-									placeholder="值"
-									// value={value}
-									style={{ width: '140px' }}
-									// onChange={(e) => setValue(e.target.value)}
-								/>
-								{/* <AutoComplete
+								<AutoComplete
 									value={affinity.nodeAffinityLabel}
 									onChange={(value) =>
 										changeAffinity(
@@ -208,7 +196,7 @@ export default function FormNodeAffinity(
 									style={{
 										width: '100%'
 									}}
-								/> */}
+								/>
 							</FormItem>
 						</div>
 						<div className={'add'}>
@@ -218,7 +206,12 @@ export default function FormNodeAffinity(
 									padding: '0 9px'
 								}}
 								disabled={
-									affinity.nodeAffinityLabel ? false : true
+									!affinity.nodeAffinityLabel ||
+									!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+										affinity.nodeAffinityLabel
+									)
+										? true
+										: false
 								}
 								onClick={addAffinityLabels}
 								icon={

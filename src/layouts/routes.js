@@ -293,6 +293,11 @@ const Routes = withRouter((props) => {
 					component={AddBackupPosition}
 					exact
 				/>
+				<Route
+					path="/backupService/backupPosition/addBackupPosition/:id"
+					component={AddBackupPosition}
+					exact
+				/>
 				{/* 存储管理 */}
 				<Route
 					path="/storageManagement"
