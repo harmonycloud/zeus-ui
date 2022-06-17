@@ -150,6 +150,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '一主多从（beta版）',
 			value: '1m-ns'
+		},
+		{
+			label: '单实例',
+			value: '1m'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -240,7 +244,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				mode: mode,
 				quota: {
 					postgresql: {
-						num: mode === '1m-1s' ? 1 : replicaCount,
+						num:
+							mode === '1m-1s'
+								? 1
+								: mode === '1m'
+								? 0
+								: replicaCount,
 						storageClassName: values.storageClass,
 						storageClassQuota: values.storageQuota
 					}

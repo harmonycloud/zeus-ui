@@ -1,11 +1,11 @@
 import React from 'react';
-import { Collapse } from 'antd';
+import { Collapse, Row, Col } from 'antd';
 import { ListCardProps, ListCardItemProps } from './listcard.d';
 import './index.scss';
 
 const { Panel } = Collapse;
 export const ListCardItem = (props: ListCardItemProps) => {
-	const { width, label, value, render } = props;
+	const { width, label, value, render, style } = props;
 	const upValue = () => {
 		if (value as string) {
 			return <div className="zeus-list-card-item-value">{value}</div>;
@@ -21,25 +21,31 @@ export const ListCardItem = (props: ListCardItemProps) => {
 		}
 	};
 	if (render) {
-		return render;
+		return (
+			<Col>
+				<div
+					className="zeus-list-card-item-content"
+					style={{ width: width, ...style }}
+				>
+					{render}
+				</div>
+			</Col>
+		);
 	}
 	return (
-		<div className="zeus-list-card-item-content" style={{ width: width }}>
-			{upValue()}
-			{downValue()}
-		</div>
+		<Col>
+			<div
+				className="zeus-list-card-item-content"
+				style={{ width: width, ...style }}
+			>
+				{upValue()}
+				{downValue()}
+			</div>
+		</Col>
 	);
 };
 export const ListCard = (props: ListCardProps) => {
-	const {
-		title,
-		subTitle,
-		icon,
-		children,
-		actionRender,
-		titleClick,
-		render
-	} = props;
+	const { title, subTitle, icon, children, actionRender, titleClick } = props;
 	return (
 		<div className="zeus-list-card-box">
 			<div className="zeus-list-card-head">
@@ -49,11 +55,18 @@ export const ListCard = (props: ListCardProps) => {
 						titleClick ? 'active' : ''
 					}`}
 				>
-					<div className="zeus-list-card-title">{title}</div>
+					<div
+						className="zeus-list-card-title"
+						onClick={titleClick ? titleClick : undefined}
+					>
+						{title}
+					</div>
 					<div className="zeus-list-card-subTitle">{subTitle}</div>
 				</div>
 			</div>
-			<div className="zeus-list-card-content">{children}</div>
+			<div className="zeus-list-card-content">
+				<Row justify="center">{children}</Row>
+			</div>
 			<div className="zeus-list-card-action">{actionRender}</div>
 		</div>
 	);

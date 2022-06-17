@@ -65,7 +65,57 @@ const ServiceListByType = (props: serviceListProps) => {
 	// const [lock, setLock] = useState<any>({ lock: 'right' });
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
-
+	// * 角色权限
+	const [role] = useState<User>(JSON.parse(storage.getLocal('role')));
+	const [roleFlag, setRoleFlag] = useState({
+		getFlag: false,
+		createFlag: false,
+		operateFlag: false,
+		deleteFlag: false
+	});
+	useEffect(() => {
+		let getFlag = false;
+		let createFlag = false;
+		let operateFlag = false;
+		let deleteFlag = false;
+		if (role.userRoleList.some((i: any) => i.roleId === 1)) {
+			getFlag = true;
+			createFlag = true;
+			operateFlag = true;
+			deleteFlag = true;
+		} else {
+			getFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][0] === '1'
+					? true
+					: false;
+			createFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][2] === '1'
+					? true
+					: false;
+			deleteFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][3] === '1'
+					? true
+					: false;
+			operateFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][1] === '1'
+					? true
+					: false;
+		}
+		setRoleFlag({
+			getFlag,
+			createFlag,
+			operateFlag,
+			deleteFlag
+		});
+	}, []);
 	useEffect(() => {
 		let mounted = true;
 		if (JSON.stringify(namespace) !== '{}') {
@@ -341,39 +391,29 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
-		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		let getFlag = false;
-		let createFlag = false;
-		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
-			getFlag = true;
-			createFlag = true;
-		} else {
-			getFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[name][0] === '1'
-					? true
-					: false;
-			createFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[name][2] === '1'
-					? true
-					: false;
-		}
-		if (!createFlag || !getFlag) {
+		// const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		// let getFlag = false;
+		// let createFlag = false;
+		// if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
+		// 	getFlag = true;
+		// 	createFlag = true;
+		// } else {
+		// 	getFlag =
+		// 		jsonRole.userRoleList.find(
+		// 			(item) => item.projectId === project.projectId
+		// 		)?.power[name][0] === '1'
+		// 			? true
+		// 			: false;
+		// 	createFlag =
+		// 		jsonRole.userRoleList.find(
+		// 			(item) => item.projectId === project.projectId
+		// 		)?.power[name][2] === '1'
+		// 			? true
+		// 			: false;
+		// }
+		if (!roleFlag.createFlag || !roleFlag.getFlag) {
 			if (name === 'mysql') {
 				return {
-					primary: (
-						<Tooltip title="当前用户无该操作的权限!">
-							<Button
-								type="primary"
-								disabled={!createFlag || !getFlag}
-							>
-								发布服务
-							</Button>
-						</Tooltip>
-					),
 					secondary: (
 						<Checkbox
 							checked={backupCheck}
@@ -384,18 +424,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			} else {
-				return {
-					primary: (
-						<Tooltip title="当前用户无该操作的权限!">
-							<Button
-								type="primary"
-								disabled={!createFlag || !getFlag}
-							>
-								发布服务
-							</Button>
-						</Tooltip>
-					)
-				};
+				return {};
 			}
 		}
 		if (cantRelease) {
@@ -515,32 +544,32 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps,
 		index: number
 	) => {
-		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		console.log(jsonRole);
-		let deleteFlag = false;
-		let operateFlag = false;
-		if (jsonRole.userRoleList[0].roleId === 1) {
-			deleteFlag = true;
-			operateFlag = true;
-		} else {
-			deleteFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[record.type][3] === '1'
-					? true
-					: false;
-			operateFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[record.type][1] === '1'
-					? true
-					: false;
-		}
+		// const jsonRole: User = JSON.parse(storage.getLocal('role'));
+		// console.log(jsonRole);
+		// let deleteFlag = false;
+		// let operateFlag = false;
+		// if (jsonRole.userRoleList[0].roleId === 1) {
+		// 	deleteFlag = true;
+		// 	operateFlag = true;
+		// } else {
+		// 	deleteFlag =
+		// 		jsonRole.userRoleList.find(
+		// 			(item) => item.projectId === project.projectId
+		// 		)?.power[record.type][3] === '1'
+		// 			? true
+		// 			: false;
+		// 	operateFlag =
+		// 		jsonRole.userRoleList.find(
+		// 			(item) => item.projectId === project.projectId
+		// 		)?.power[record.type][1] === '1'
+		// 			? true
+		// 			: false;
+		// }
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!deleteFlag}
+						disabled={!roleFlag.deleteFlag}
 						onClick={() => deleteFn(record)}
 					>
 						删除
@@ -552,13 +581,13 @@ const ServiceListByType = (props: serviceListProps) => {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!operateFlag}
+						disabled={!roleFlag.operateFlag}
 						onClick={() => recoveryService(record)}
 					>
 						恢复服务
 					</LinkButton>
 					<LinkButton
-						disabled={!deleteFlag}
+						disabled={!roleFlag.deleteFlag}
 						onClick={() => deleteStorage(record)}
 					>
 						彻底删除
@@ -566,10 +595,75 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
+		if (!roleFlag.operateFlag && roleFlag.deleteFlag) {
+			return (
+				<Actions>
+					<LinkButton onClick={() => deleteFn(record)}>
+						<span>删除</span>
+					</LinkButton>
+				</Actions>
+			);
+		}
+		if (roleFlag.operateFlag && !roleFlag.deleteFlag) {
+			return (
+				<Actions>
+					<LinkButton
+						onClick={() => {
+							const sendData = {
+								clusterId: cluster.id,
+								namespace: record.namespace,
+								middlewareName: record.name,
+								type: record.type
+							};
+							getPlatformAdd(sendData).then((res) => {
+								if (res.success) {
+									console.log(res);
+									if (res.data) {
+										window.open(
+											`${window.location.protocol.toLowerCase()}//${
+												res.data
+											}`,
+											'_blank'
+										);
+									} else {
+										const sn =
+											record.type === 'elasticsearch'
+												? `${record.name}-kibana`
+												: record.type === 'rocketmq'
+												? `${record.name}-console-svc`
+												: `${record.name}-manager-svc`;
+										notification.error({
+											message: '失败',
+											description: `请先前往“服务暴露”暴露该服务的${sn}服务`
+										});
+									}
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						}}
+					>
+						<span>服务控制台</span>
+					</LinkButton>
+					<LinkButton
+						onClick={() =>
+							history.push(
+								`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
+							)
+						}
+					>
+						<span>版本管理</span>
+					</LinkButton>
+				</Actions>
+			);
+		}
 		return (
 			<Actions>
 				<LinkButton
-					disabled={!operateFlag}
+					disabled={!roleFlag.operateFlag}
 					onClick={() => {
 						const sendData = {
 							clusterId: cluster.id,
@@ -608,27 +702,43 @@ const ServiceListByType = (props: serviceListProps) => {
 						});
 					}}
 				>
-					<span title={!operateFlag ? '当前用户无改操作的权限' : ''}>
+					<span
+						title={
+							!roleFlag.operateFlag
+								? '当前用户无改操作的权限'
+								: ''
+						}
+					>
 						服务控制台
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={!operateFlag}
+					disabled={!roleFlag.operateFlag}
 					onClick={() =>
 						history.push(
 							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
 						)
 					}
 				>
-					<span title={!operateFlag ? '当前用户无改操作的权限' : ''}>
+					<span
+						title={
+							!roleFlag.operateFlag
+								? '当前用户无改操作的权限'
+								: ''
+						}
+					>
 						版本管理
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={!deleteFlag}
+					disabled={!roleFlag.deleteFlag}
 					onClick={() => deleteFn(record)}
 				>
-					<span title={!deleteFlag ? '当前用户无改操作的权限' : ''}>
+					<span
+						title={
+							!roleFlag.deleteFlag ? '当前用户无改操作的权限' : ''
+						}
+					>
 						删除
 					</span>
 				</LinkButton>
@@ -905,12 +1015,16 @@ const ServiceListByType = (props: serviceListProps) => {
 						}
 						render={timeRender}
 					/>
-					<ProTable.Column
-						title="操作"
-						dataIndex="action"
-						render={actionRender}
-						width={300}
-					/>
+					{roleFlag.createFlag !== false ||
+					roleFlag.operateFlag !== false ||
+					roleFlag.deleteFlag !== false ? (
+						<ProTable.Column
+							title="操作"
+							dataIndex="action"
+							render={actionRender}
+							width={300}
+						/>
+					) : null}
 				</ProTable>
 			</ProContent>
 		</ProPage>

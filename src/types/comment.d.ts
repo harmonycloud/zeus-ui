@@ -12,6 +12,9 @@ export interface resProps {
 	count?: number | null;
 	errorStack?: StackTraceElement[] | null;
 }
+export interface updateResProps extends resProps {
+	data: null;
+}
 export interface filtersProps {
 	label: string;
 	value: number | string;

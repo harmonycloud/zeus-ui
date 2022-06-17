@@ -21,7 +21,7 @@
 				font-weight: $font-weight-sm;
 				line-height: $line-height-1;
 				cursor: pointer;
-				&.active {
+				& .active {
 					color: $primary-color;
 				}
 				@include text-ellipsis;
@@ -38,7 +38,9 @@
 		}
 	}
 	.zeus-list-card-content {
-		display: flex;
+		// display: flex;
+		// flex-wrap: nowrap;
+		// justify-content: space-between;
 	}
 	.zeus-list-card-action {
 		height: 62px;
@@ -49,8 +51,7 @@
 }
 .zeus-list-card-item-content {
 	height: 62px;
-	min-width: 150px;
-	max-width: 300px;
+	width: 150px;
 	padding: 12px;
 	.zeus-list-card-item-label,
 	.zeus-list-card-item-value {
