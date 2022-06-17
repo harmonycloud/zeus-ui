@@ -15,7 +15,6 @@ export default function ProList(props: ProListProps): JSX.Element {
 		refreshDisabled,
 		children
 	} = props;
-	console.log(children);
 	return (
 		<div className="zeus-pro-list-content">
 			<div className="zeus-pro-list-header">

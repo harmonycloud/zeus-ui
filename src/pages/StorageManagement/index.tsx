@@ -45,15 +45,17 @@ export default function StorageManagement(): JSX.Element {
 		});
 	}, []);
 	useEffect(() => {
-		getData();
+		getData(key);
 	}, [selectedClusterId, selectedType]);
-	const getData = (keyword = key) => {
+	const getData = (keyword: string) => {
+		console.log(keyword);
 		const sendData: GetParams = {
 			all: false,
 			clusterId: selectedClusterId || '*',
 			type: selectedType || '',
 			key: keyword || ''
 		};
+		console.log(sendData);
 		getLists(sendData).then((res) => {
 			if (res.success) {
 				setStorages(res.data);
@@ -141,7 +143,7 @@ export default function StorageManagement(): JSX.Element {
 						placeholder: '请输入存储服务名称搜索'
 					}}
 					showRefresh
-					onRefresh={getData}
+					onRefresh={() => getData(key)}
 				>
 					{storages.map((item: StorageItem, index: number) => {
 						return (
@@ -210,7 +212,7 @@ export default function StorageManagement(): JSX.Element {
 																}
 															})
 															.finally(() => {
-																getData();
+																getData(key);
 															});
 													}
 												});

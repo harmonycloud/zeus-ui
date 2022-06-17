@@ -35,7 +35,7 @@ export default function AddStorage(): JSX.Element {
 	const [form] = Form.useForm();
 	const [storages, setStorages] = useState<StorageItem[]>([]);
 	// const [curStorage, setCurStorage] = useState<StorageItem>();
-	// const [volumeType, setVolumeType] = useState<string>('');
+	const [volumeType, setVolumeType] = useState<string>('');
 	// const [requestQuota, setRequestQuota] = useState<number>();
 	useEffect(() => {
 		if (params.name) {
@@ -52,6 +52,7 @@ export default function AddStorage(): JSX.Element {
 						volumeType: res.data.volumeType,
 						vgName: res.data.vgName
 					});
+					setVolumeType(res.data.volumeType);
 				} else {
 					notification.error({
 						message: '失败',
@@ -128,7 +129,7 @@ export default function AddStorage(): JSX.Element {
 			vgName: cur?.vgName,
 			requestQuota: cur?.requestQuota
 		});
-		// setVolumeType(cur?.volumeType || '');
+		setVolumeType(cur?.volumeType || '');
 		// setRequestQuota(cur?.requestQuota);
 	};
 	return (
@@ -197,16 +198,21 @@ export default function AddStorage(): JSX.Element {
 						<FormItem label="类型" required name="volumeType">
 							<Input disabled />
 						</FormItem>
-						<FormItem
-							label="VG名称"
-							required
-							rules={[
-								{ required: true, message: '请填写中文名称' }
-							]}
-							name="vgName"
-						>
-							<Input disabled />
-						</FormItem>
+						{volumeType === 'CSI-LVM' && (
+							<FormItem
+								label="VG名称"
+								required
+								rules={[
+									{
+										required: true,
+										message: '请填写中文名称'
+									}
+								]}
+								name="vgName"
+							>
+								<Input disabled />
+							</FormItem>
+						)}
 						{/* {volumeType !== 'LocalPath' && (
 							<FormItem
 								label="配额"
