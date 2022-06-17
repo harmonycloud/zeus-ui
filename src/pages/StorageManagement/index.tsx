@@ -121,6 +121,9 @@ export default function StorageManagement(): JSX.Element {
 			</Space>
 		)
 	};
+	const quotaRender = (record: StorageItem) => {
+		return `${Number(record.monitorResourceQuota.storage.used)}GB`;
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -237,8 +240,8 @@ export default function StorageManagement(): JSX.Element {
 									value={item.volumeType}
 								/>
 								<ListCardItem
-									label="存储容量"
-									value="12.2GB/61.11GB"
+									label="存储使用量"
+									value={quotaRender(item)}
 								/>
 							</ListCard>
 						);
