@@ -81,8 +81,8 @@ export interface DetailParams {
 
 type numberOrNull = number | null;
 export interface StorageMiddlewareParams {
-	name: string;
-	aliasName: string;
+	middlewareAliasName: string;
+	middlewareName: string;
 	status: string;
 	podNum: number;
 	monitorResourceQuota: {
@@ -110,5 +110,8 @@ export interface StorageMiddlewareParams {
 	};
 	createTime: string;
 	imagePath: string;
+	namespace: string;
+	projectAliasName: string;
+	projectId: string;
 	[propsName: string]: any;
 }

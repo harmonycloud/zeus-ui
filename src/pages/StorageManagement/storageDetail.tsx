@@ -41,6 +41,14 @@ export default function StorageDetail(): JSX.Element {
 			/>
 		);
 	};
+	const belongRender = (value: any, record: StorageMiddlewareParams) => {
+		return (
+			<div>
+				<div>项目：{record.projectAliasName || '-'}</div>
+				<div>命名空间：{record.namespace || '-'}</div>
+			</div>
+		);
+	};
 	const nameAndAliasNameWithIcon = (
 		value: any,
 		record: StorageMiddlewareParams
@@ -48,8 +56,8 @@ export default function StorageDetail(): JSX.Element {
 		return (
 			<div className="icon-type-content">
 				<img
-					width={14}
-					height={14}
+					width={28}
+					height={28}
 					src={
 						record.imagePath
 							? `${api}/images/middleware/${record.imagePath}`
@@ -66,17 +74,17 @@ export default function StorageDetail(): JSX.Element {
 							setVisible(true);
 						}}
 					>
-						{record.name}
+						{record.middlewareName}
 					</div>
-					<div>{record.aliasName}</div>
+					<div>{record.middlewareAliasName}</div>
 				</div>
 			</div>
 		);
 	};
-	const items = [
+	const item = [
 		{
 			dataIndex: 'title',
-			render: (val: string) => (
+			render: () => (
 				<div className="title-content">
 					<div className="blue-line"></div>
 					<div className="detail-title">基本信息</div>
@@ -85,7 +93,7 @@ export default function StorageDetail(): JSX.Element {
 			span: 24
 		},
 		{
-			dataIndex: 'clusterId',
+			dataIndex: 'clusterAliasName',
 			label: '所属集群'
 		},
 		{
@@ -94,10 +102,11 @@ export default function StorageDetail(): JSX.Element {
 		},
 		{
 			dataIndex: 'vgName',
-			label: 'VG名称'
+			label: 'VG名称',
+			render: (val: string) => val || '/'
 		},
 		{
-			dataIndex: 'remoteIp',
+			dataIndex: 'createTime',
 			label: '创建时间'
 		}
 	];
@@ -140,7 +149,11 @@ export default function StorageDetail(): JSX.Element {
 							}}
 						/>
 						<Table.Column dataIndex="podNum" title="实例数" />
-						<Table.Column dataIndex="aliasName" title="所属" />
+						<Table.Column
+							dataIndex="belong"
+							title="所属"
+							render={belongRender}
+						/>
 						<Table.Column
 							dataIndex="used"
 							title="存储使用量(GB)"
@@ -204,7 +217,7 @@ export default function StorageDetail(): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				<DataFields dataSource={dataSource || {}} items={items} />
+				<DataFields dataSource={dataSource || {}} items={item} />
 				<div className="detail-divider" />
 				<DataFields dataSource={{}} items={item2} />
 				{visible && current && (
