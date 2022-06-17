@@ -233,6 +233,10 @@ export default function StorageManagement(): JSX.Element {
 									value={item.clusterAliasName}
 								/>
 								<ListCardItem
+									label="类型"
+									value={item.volumeType}
+								/>
+								<ListCardItem
 									label="存储容量"
 									value="12.2GB/61.11GB"
 								/>

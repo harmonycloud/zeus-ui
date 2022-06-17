@@ -9,11 +9,11 @@
 .zeus-list-card-box,
 .zeus-list-panel {
 	.zeus-list-card-head {
-		width: 250px;
+		width: 200px;
 		padding: 12px;
 		display: flex;
 		.zeus-list-card-title-content {
-			width: 190px;
+			width: 140px;
 			.zeus-list-card-title {
 				width: 100%;
 				height: $line-height-1;
@@ -38,11 +38,14 @@
 		}
 	}
 	.zeus-list-card-content {
-		// display: flex;
-		// flex-wrap: nowrap;
-		// justify-content: space-between;
+		width: 100%;
+		display: flex;
+		flex-wrap: nowrap;
+		justify-content: center;
+		column-gap: 50px;
 	}
 	.zeus-list-card-action {
+		min-width: 100px;
 		height: 62px;
 		line-height: 62px;
 		margin-left: auto;

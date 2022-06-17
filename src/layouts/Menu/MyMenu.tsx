@@ -99,7 +99,7 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 				'disasterBackup',
 				'systemManagement',
 				'serviceList',
-				'disasterBackup'
+				'backupService'
 			]}
 			onClick={onMenuItemClick}
 			selectedKeys={selectedKeys}
