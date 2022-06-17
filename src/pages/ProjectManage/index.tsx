@@ -11,7 +11,7 @@ import { setRefreshCluster } from '@/redux/globalVar/var';
 import { getProjects, deleteProject } from '@/services/project';
 import { nullRender } from '@/utils/utils';
 import { ProjectItem, ProjectManageProps } from './project';
-import storage from '@/utils/storage';
+import { getIsAccessGYT } from '@/services/common';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -21,9 +21,15 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [editData, setEditData] = useState<ProjectItem>();
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		getData();
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
+		});
 	}, []);
 	const getData = (key = '') => {
 		getProjects({ key }).then((res) => {
@@ -44,6 +50,8 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					console.log('click');
 					setVisible(true);
 				}}
+				disabled={isAccess}
+				title={isAccess ? '平台已接入观云台，请联系观云台管理员' : ''}
 				type="primary"
 			>
 				新增项目
@@ -83,14 +91,20 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 					onClick={() => {
 						setEditVisible(true);
 						setEditData(record);
-						// setProject(record);
-						// storage.setLocal('project', JSON.stringify(record));
 						setRefreshCluster(true);
 					}}
+					disabled={isAccess}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
 				>
 					编辑
 				</LinkButton>
 				<LinkButton
+					disabled={isAccess}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
 					onClick={() =>
 						confirm({
 							title: '删除项目确认',

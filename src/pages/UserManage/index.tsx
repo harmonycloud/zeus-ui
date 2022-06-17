@@ -10,6 +10,7 @@ import {
 	resetPassword,
 	getLDAP
 } from '@/services/user';
+import { getIsAccessGYT } from '@/services/common';
 import { userProps } from './user';
 import { nullRender } from '@/utils/utils';
 import UserForm from './UserForm';
@@ -26,10 +27,15 @@ function UserManage(): JSX.Element {
 	const [updateData, setUpdateData] = useState<userProps>();
 	const [isEdit, setIsEdit] = useState(true);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
-
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	useEffect(() => {
 		getLDAP().then((res) => {
 			res.success && setIsLDAP(res.data.isOn);
+		});
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
 		});
 	}, []);
 	useEffect(() => {
@@ -132,22 +138,6 @@ function UserManage(): JSX.Element {
 			}
 		});
 	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const dsTemp = dataSource.sort((a, b) => {
-				const result =
-					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		}
-	};
 	const actionRender = (value: string, record: userProps, index: number) => {
 		return (
 			<Actions>
@@ -156,29 +146,44 @@ function UserManage(): JSX.Element {
 						edit(record);
 						setIsEdit(true);
 					}}
-					disabled={isLDAP}
+					disabled={isLDAP || isAccess}
+					title={
+						isLDAP
+							? '请联系LDAP管理员'
+							: isAccess
+							? '平台已接入观云台，请联系观云台管理员'
+							: ''
+					}
 				>
 					编辑
 				</LinkButton>
 				{record.userName !== storage.getLocal('userName') && (
 					<LinkButton
-						disabled={isLDAP}
+						disabled={isLDAP || isAccess}
 						onClick={() => deleteUserHandle(record)}
+						title={
+							isLDAP
+								? '请联系LDAP管理员'
+								: isAccess
+								? '平台已接入观云台，请联系观云台管理员'
+								: ''
+						}
 					>
 						删除
 					</LinkButton>
 				)}
 				<LinkButton
 					onClick={() => resetPasswordHandle(record)}
-					disabled={isLDAP}
+					disabled={isLDAP || isAccess}
+					title={
+						isLDAP
+							? '请联系LDAP管理员修改密码'
+							: isAccess
+							? '平台已接入观云台，请联系观云台管理员修改密码'
+							: ''
+					}
 				>
-					{isLDAP ? (
-						<span title={'请联系LDAP管理员修改密码。'}>
-							密码重置
-						</span>
-					) : (
-						<span>密码重置</span>
-					)}
+					密码重置
 				</LinkButton>
 			</Actions>
 		);
@@ -246,7 +251,14 @@ function UserManage(): JSX.Element {
 					setVisible(true);
 					setIsEdit(false);
 				}}
-				disabled={isLDAP}
+				disabled={isLDAP || isAccess}
+				title={
+					isLDAP
+						? '请联系LDAP管理员'
+						: isAccess
+						? '平台已接入观云台，请联系观云台管理员'
+						: ''
+				}
 			>
 				新增
 			</Button>
@@ -269,8 +281,6 @@ function UserManage(): JSX.Element {
 						placeholder:
 							'请输入登录账户、用户名、手机号、角色进行搜索',
 						onSearch: handleSearch,
-						// onChange: handleChange,
-						// value: keyword
 						style: { width: '360px' }
 					}}
 					operation={Operation}

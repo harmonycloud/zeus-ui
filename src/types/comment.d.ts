@@ -15,6 +15,9 @@ export interface resProps {
 export interface updateResProps extends resProps {
 	data: null;
 }
+export interface judgeResProps extends resProps {
+	data: boolean;
+}
 export interface filtersProps {
 	label: string;
 	value: number | string;

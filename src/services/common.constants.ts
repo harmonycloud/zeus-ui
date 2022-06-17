@@ -23,3 +23,5 @@ export const getAspectFrom = `${api}/aspect/form`;
 export const cutInComponents = `${api}/clusters/{clusterId}/components/{componentName}/integrate`;
 // * 镜像仓库
 export const mirror = `${api}/clusters/{clusterId}/mirror`;
+// * 查询是否接入观云台
+export const isAccessGYT = `${api}/user/useOpenUserCenter`;

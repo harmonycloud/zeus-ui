@@ -10,12 +10,11 @@ import AddNamespace from './addNamespace';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { deleteNamespace } from '@/services/common';
 import { clusterType, StoreState } from '@/types';
-import { roleProps } from '../RoleManage/role';
 import {
 	ColumnFilterItem,
 	TablePaginationConfig
 } from 'antd/lib/table/interface';
-import storage from '@/utils/storage';
+import { getIsAccessGYT } from '@/services/common';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -27,20 +26,14 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	const [showDataSource, setShowDataSource] = useState<NamespaceItem[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
 	const [filters, setFilters] = useState<ColumnFilterItem[]>([]);
-	const [role] = useState<roleProps>(JSON.parse(storage.getLocal('role')));
-	const [disabledFlag, setDisabledFlag] = useState<boolean>(true);
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	useEffect(() => {
-		if (role.isAdmin) {
-			setDisabledFlag(false);
-		} else {
-			if (
-				role.userRoleList.find((item: any) => item.projectId === id)
-					.roleId === 2
-			) {
-				setDisabledFlag(false);
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
 			}
-		}
-	}, [role]);
+		});
+	}, []);
 	useEffect(() => {
 		let mounted = true;
 		getProjectNamespace({ projectId: id }).then((res) => {
@@ -90,12 +83,10 @@ function Namespace(props: NamespaceProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
+					disabled={isAccess}
 					title={
-						disabledFlag
-							? '当前用户不具有该操作权限，请联系项目管理员'
-							: ''
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
 					}
-					disabled={disabledFlag}
 					onClick={() =>
 						confirm({
 							title: '确认取消接入',
@@ -129,12 +120,10 @@ function Namespace(props: NamespaceProps): JSX.Element {
 					取消接入
 				</LinkButton>
 				<LinkButton
+					disabled={isAccess}
 					title={
-						disabledFlag
-							? '当前用户不具有该操作权限，请联系项目管理员'
-							: ''
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
 					}
-					disabled={disabledFlag}
 					onClick={() =>
 						confirm({
 							title: '确认删除',
@@ -172,14 +161,10 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	const Operation = {
 		primary: (
 			<Button
-				disabled={disabledFlag}
+				disabled={isAccess}
+				title={isAccess ? '平台已接入观云台，请联系观云台管理员' : ''}
 				type="primary"
 				onClick={() => setVisible(true)}
-				title={
-					disabledFlag
-						? '当前用户不具有该操作权限，请联系项目管理员'
-						: ''
-				}
 			>
 				新建/接入
 			</Button>
