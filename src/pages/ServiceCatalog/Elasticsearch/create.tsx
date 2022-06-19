@@ -10,7 +10,6 @@ import {
 	Select,
 	AutoComplete,
 	Button,
-	Checkbox,
 	Popover,
 	Form,
 	notification,
@@ -236,16 +235,6 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 								item.address === values.mirrorImageId
 						)
 						?.id.toString() || ''
-				// mirrorImageId: mirrorList.find(
-				// 	(item) => item.address === values['mirrorImageId']
-				// )
-				// 	? mirrorList
-				// 			.find(
-				// 				(item) =>
-				// 					item.address === values['mirrorImageId']
-				// 			)
-				// 			.id.toString()
-				// 	: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -710,145 +699,6 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex form-li flex-center">
-									<label className="form-name">
-										<span className="mr-8">主机亲和</span>
-										<Popover
-											content={
-												'勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败'
-											}
-										>
-											<QuestionCircleOutlined />
-										</Popover>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												className={styles['component']}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														options={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			checked:
-																				affinity.checked,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-														icon={
-															<PlusOutlined
-																style={{
-																	color: '#005AA5'
-																}}
-															/>
-														}
-													></Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(e) =>
-															changeAffinity(
-																e.target
-																	.checked,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
-															)
-														}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -1185,6 +1035,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 										>
 											{Object.keys(nodeObj).map((key) => (
 												<ModeItem
+													middlewareType={chartName}
 													key={key}
 													type={key}
 													data={nodeObj[key]}

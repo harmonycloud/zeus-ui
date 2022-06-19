@@ -46,7 +46,7 @@ import {
 	StorageClassProps
 } from '@/types/comment';
 import { StoreState } from '@/types';
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, kafkaDataList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
@@ -349,24 +349,24 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
-						sendData.quota.kafka.cpu = 1;
-						sendData.quota.kafka.memory = '2Gi';
-						break;
-					case '2':
 						sendData.quota.kafka.cpu = 2;
 						sendData.quota.kafka.memory = '4Gi';
 						break;
-					case '3':
+					case '2':
 						sendData.quota.kafka.cpu = 4;
+						sendData.quota.kafka.memory = '8Gi';
+						break;
+					case '3':
+						sendData.quota.kafka.cpu = 8;
 						sendData.quota.kafka.memory = '16Gi';
 						break;
 					case '4':
-						sendData.quota.kafka.cpu = 8;
-						sendData.quota.kafka.memory = '32Gi';
+						sendData.quota.kafka.cpu = 12;
+						sendData.quota.kafka.memory = '24Gi';
 						break;
 					case '5':
 						sendData.quota.kafka.cpu = 16;
-						sendData.quota.kafka.memory = '64Gi';
+						sendData.quota.kafka.memory = '32Gi';
 						break;
 					default:
 						break;
@@ -675,156 +675,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex form-li flex-align">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
-											<QuestionCircleOutlined />
-										</Tooltip>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														options={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-													>
-														<PlusOutlined
-															style={{
-																color: '#005AA5'
-															}}
-														/>
-													</Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
-															}
-														}}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -1202,6 +1052,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													onCallBack={(value: any) =>
 														setSpecId(value)
 													}
+													dataList={kafkaDataList}
 												/>
 											</div>
 										) : null}

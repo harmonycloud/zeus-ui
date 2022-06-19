@@ -5,7 +5,7 @@ import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
 
 import pattern from '@/utils/pattern';
 import { getStorageClass } from '@/services/middleware';
-import { instanceSpecList } from '@/utils/const';
+import { esDataList, instanceSpecList, redisDataList } from '@/utils/const';
 import { modeItemProps } from './index';
 
 interface EditQuotaFormProps extends modeItemProps {
@@ -29,7 +29,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		clusterId,
 		namespace,
 		type,
-		inputChange
+		inputChange,
+		middlewareType
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [storageClassList, setStorageClassList] = useState<
@@ -63,8 +64,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 			case '1':
 				setModifyData({
 					...modifyData,
-					cpu: 1,
-					memory: 2,
+					cpu: 2,
+					memory: middlewareType === 'elasticsearch' ? 4 : 1,
 					specId: value
 				});
 				break;
@@ -72,31 +73,39 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: 8,
+					memory: middlewareType === 'elasticsearch' ? 8 : 2,
 					specId: value
 				});
 				break;
 			case '3':
 				setModifyData({
 					...modifyData,
-					cpu: 4,
-					memory: 16,
+					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
+					memory: middlewareType === 'elasticsearch' ? 8 : 4,
 					specId: value
 				});
 				break;
 			case '4':
 				setModifyData({
 					...modifyData,
-					cpu: 8,
-					memory: 32,
+					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
+					memory: middlewareType === 'elasticsearch' ? 16 : 8,
 					specId: value
 				});
 				break;
 			case '5':
 				setModifyData({
 					...modifyData,
-					cpu: 16,
-					memory: 64,
+					cpu: middlewareType === 'elasticsearch' ? 8 : 2,
+					memory: middlewareType === 'elasticsearch' ? 32 : 16,
+					specId: value
+				});
+				break;
+			case '6':
+				setModifyData({
+					...modifyData,
+					cpu: 2,
+					memory: 32,
 					specId: value
 				});
 				break;
@@ -166,6 +175,11 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 										id={modifyData.specId}
 										onCallBack={(value: any) =>
 											checkGeneral(value)
+										}
+										dataList={
+											middlewareType === 'elasticsearch'
+												? esDataList
+												: redisDataList
 										}
 									/>
 								</div>

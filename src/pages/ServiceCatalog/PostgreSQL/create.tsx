@@ -34,8 +34,7 @@ import {
 	postMiddleware
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
-import ModeItem from '@/components/ModeItem';
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, mysqlDataList } from '@/utils/const';
 import {
 	CreateProps,
 	CreateParams,
@@ -313,12 +312,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
-						sendData.quota.postgresql.cpu = 1;
-						sendData.quota.postgresql.memory = '2Gi';
-						break;
-					case '2':
 						sendData.quota.postgresql.cpu = 2;
 						sendData.quota.postgresql.memory = '4Gi';
+						break;
+					case '2':
+						sendData.quota.postgresql.cpu = 4;
+						sendData.quota.postgresql.memory = '8Gi';
 						break;
 					case '3':
 						sendData.quota.postgresql.cpu = 4;
@@ -1063,6 +1062,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														checkGeneral(value)
 													}
+													dataList={mysqlDataList}
 												/>
 											</div>
 										) : null}

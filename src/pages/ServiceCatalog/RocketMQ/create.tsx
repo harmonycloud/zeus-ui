@@ -44,7 +44,7 @@ import {
 	StorageClassProps
 } from '@/types/comment';
 import pattern from '@/utils/pattern';
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, mqDataList } from '@/utils/const';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
@@ -298,24 +298,24 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
-						sendData.quota.rocketmq.cpu = 1;
-						sendData.quota.rocketmq.memory = '2Gi';
-						break;
-					case '2':
 						sendData.quota.rocketmq.cpu = 2;
 						sendData.quota.rocketmq.memory = '4Gi';
 						break;
-					case '3':
+					case '2':
 						sendData.quota.rocketmq.cpu = 4;
+						sendData.quota.rocketmq.memory = '8Gi';
+						break;
+					case '3':
+						sendData.quota.rocketmq.cpu = 8;
 						sendData.quota.rocketmq.memory = '16Gi';
 						break;
 					case '4':
-						sendData.quota.rocketmq.cpu = 8;
-						sendData.quota.rocketmq.memory = '32Gi';
+						sendData.quota.rocketmq.cpu = 12;
+						sendData.quota.rocketmq.memory = '24Gi';
 						break;
 					case '5':
 						sendData.quota.rocketmq.cpu = 16;
-						sendData.quota.rocketmq.memory = '64Gi';
+						sendData.quota.rocketmq.memory = '32Gi';
 						break;
 					default:
 						break;
@@ -727,163 +727,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex form-li flex-align">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
-											<QuestionCircleOutlined />
-										</Tooltip>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														options={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			checked:
-																				affinity.checked,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-													>
-														<PlusOutlined
-															style={{
-																color: '#005AA5'
-															}}
-														/>
-													</Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(
-															e: CheckboxChangeEvent
-														) =>
-															changeAffinity(
-																e.target
-																	.checked,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			checked:
-																				affinity.checked,
-																			id: Math.random()
-																		}
-																	]
-																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
-															}
-														}}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -1235,6 +1078,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setSpecId(value)
 													}
+													dataList={mqDataList}
 												/>
 											</div>
 										) : null}
@@ -1428,34 +1272,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											childrenPostRender(mode)}
 									</>
 								)}
-								{/* <li
-									className="display-flex"
-									style={{ alignItems: 'center' }}
-								>
-									<label className="form-name">
-										<span className="ne-required">
-											主机网络
-										</span>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['standard-log']}`}
-									>
-										<div className={styles['switch']}>
-											{hostNetwork ? '已开启' : '关闭'}
-											<Switch
-												checked={hostNetwork}
-												onChange={(value) =>
-													setHostNetwork(value)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-									</div>
-								</li> */}
 							</ul>
 						</div>
 					</FormBlock>

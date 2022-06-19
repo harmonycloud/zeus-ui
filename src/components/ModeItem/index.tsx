@@ -18,9 +18,11 @@ export interface modeItemProps {
 	namespace: string;
 	type: string;
 	onChange: (value: modeItemProps['data']) => void;
+	middlewareType: string;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
-	const { data, clusterId, namespace, type, onChange } = props;
+	const { data, clusterId, namespace, type, onChange, middlewareType } =
+		props;
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -113,6 +115,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 				</div>
 				{visible && (
 					<EditQuotaForm
+						middlewareType={middlewareType}
 						visible={visible}
 						onCancel={() => setVisible(false)}
 						onCreate={onCreate}

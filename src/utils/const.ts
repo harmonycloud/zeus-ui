@@ -389,3 +389,215 @@ export const authorityList = [
 		value: '仅DML'
 	}
 ];
+// mysql版本
+export const mysqlDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '4 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '4',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '5',
+		cpu: '8 Core',
+		memory: '32 Gi'
+	},
+	{
+		id: '6',
+		cpu: '16 Core',
+		memory: '64 Gi'
+	}
+];
+// * redis 哨兵版本
+export const redisClusterDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '0.256 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '1 Gi'
+	},
+	{
+		id: '3',
+		cpu: '2 Core',
+		memory: '2 Gi'
+	},
+	{
+		id: '4',
+		cpu: '2 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '5',
+		cpu: '2 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '6',
+		cpu: '2 Core',
+		memory: '32 Gi'
+	}
+];
+
+//* redis
+export const redisDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '1 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '2 Gi'
+	},
+	{
+		id: '3',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '4',
+		cpu: '2 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '5',
+		cpu: '2 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '6',
+		cpu: '2 Core',
+		memory: '32 Gi'
+	}
+];
+// * es
+export const esDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '4',
+		cpu: '4 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '5',
+		cpu: '8 Core',
+		memory: '32 Gi'
+	}
+];
+// * mq
+export const mqDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '4',
+		cpu: '12 Core',
+		memory: '24 Gi'
+	},
+	{
+		id: '5',
+		cpu: '16 Core',
+		memory: '32 Gi'
+	}
+];
+// * kafka
+export const kafkaDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '4',
+		cpu: '12 Core',
+		memory: '24 Gi'
+	},
+	{
+		id: '5',
+		cpu: '16 Core',
+		memory: '32 Gi'
+	}
+];
+// * zkp
+export const zkpDataList = [
+	{
+		id: '1',
+		cpu: '1 Core',
+		memory: '2 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '3',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '4',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '5',
+		cpu: '16 Core',
+		memory: '32 Gi'
+	}
+];
