@@ -520,19 +520,28 @@ function AddBackupTask(props: StoreState): JSX.Element {
 												: '单次备份'}
 										</p>
 										<p>
-											备份时间：每周
-											{formData.cycle
-												.map(
-													(item: string) =>
-														weekMap[item]
-												)
-												.join('、')}
+											备份时间：
+											{formData.rule !== 'now'
+												? '每周'
+												: ''}
+											{formData.rule !== 'now'
+												? formData.cycle
+														.map(
+															(item: string) =>
+																weekMap[item]
+														)
+														.join('、')
+												: '/'}
 											（
-											{moment(formData.time).get('hour') +
-												':' +
-												moment(formData.time).get(
-													'minute'
-												)}
+											{formData.rule !== 'now'
+												? moment(formData.time).get(
+														'hour'
+												  ) +
+												  ':' +
+												  moment(formData.time).get(
+														'minute'
+												  )
+												: ''}
 											）
 										</p>
 										<Button
@@ -597,7 +606,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 		formWay.validateFields().then((values) => {
 			const minute = moment(formData.time).get('minute');
 			const hour = moment(formData.time).get('hour');
-			const week = formData.cycle.join(',');
+			const week = formData.cycle?.join(',');
 			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
 				...values,
@@ -605,13 +614,14 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				namespace: selectedRow.namespace,
 				middlewareName: selectedRow.name,
 				type: selectedRow.type,
-				cron:
-					typeof formData.time !== 'string'
-						? cron
-						: `${formData.time.substring(
-								3,
-								5
-						  )} ${formData.time.substring(0, 2)} ? ? ${week}`
+				// cron:
+				// 	typeof formData.time !== 'string'
+				// 		? cron
+				// 		: `${formData.time.substring(
+				// 				3,
+				// 				5
+				// 		  )} ${formData.time.substring(0, 2)} ? ? ${week}`
+				cron: formData.rule !== 'now' ? cron : ''
 			};
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {

@@ -28,7 +28,7 @@ interface addressParams {
 	type: string;
 	[propName: string]: any;
 }
-export const getBackups = (params: listParams) => {
+export const getBackups = (params: any) => {
 	return Axios.get(BACKUP.backupList, params);
 };
 export const backupNow = (params: listParams) => {
@@ -46,10 +46,10 @@ export const updateBackupConfig = (params: listParams) => {
 export const deleteBackupConfig = (params: listParams) => {
 	return Axios.delete(BACKUP.backups, params);
 };
-export const deleteBackups = (params: listParams) => {
+export const deleteBackups = (params: any) => {
 	return Axios.delete(BACKUP.backupList, params);
 };
-export const applyBackup = (params: useBackupParams) => {
+export const applyBackup = (params: any) => {
 	return Axios.post(BACKUP.useBackup, params);
 };
 export const getBackupAddress = (params: { keyword: string }) => {

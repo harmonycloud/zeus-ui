@@ -71,13 +71,13 @@
 	}
 }
 .ant-collapse {
+	margin-bottom: $margin-lg !important;
 	.ant-collapse-item.zeus-list-panel {
 		.ant-collapse-header {
 			.zeus-list-panel-box {
 				width: 100%;
 				display: flex;
 				align-items: center;
-				margin-bottom: $margin-lg;
 			}
 			align-items: center;
 			padding: 0;

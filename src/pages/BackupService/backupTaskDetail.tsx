@@ -1,24 +1,31 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { useHistory } from 'react-router';
 import DataFields from '@/components/DataFields';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import moment from 'antd/node_modules/moment';
+import { weekMap } from '@/utils/const';
+import { getBackups, applyBackup } from '@/services/backup';
+import storage from '@/utils/storage';
+import { middlewareProps } from '@/pages/ServiceList/service.list';
+import { getCanReleaseMiddleware } from '@/services/middleware';
+import { StoreState } from '@/types';
+import { connect } from 'react-redux';
+import { notification } from 'antd';
+import { nullRender } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
 
-const basicData = {
+const info = {
 	title: '基础信息',
-	name: '',
-	aliasName: '',
-	label: '',
-	hostAffinity: '',
-	chartVersion: '',
-	description: '',
-	annotations: '',
-	tolerations: '',
-	mirror: ''
+	phrase: '',
+	sourceName: '',
+	position: '',
+	backupTime: '',
+	cron: ''
 };
 const InfoConfig = [
 	{
@@ -32,11 +39,11 @@ const InfoConfig = [
 		span: 24
 	},
 	{
-		dataIndex: 'name',
+		dataIndex: 'phrase',
 		label: '状态情况'
 	},
 	{
-		dataIndex: 'aliasName',
+		dataIndex: 'sourceName',
 		label: '备份源名称',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
@@ -45,16 +52,29 @@ const InfoConfig = [
 		)
 	},
 	{
-		dataIndex: 'label',
+		dataIndex: 'cron',
 		label: '备份方式',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
-				{val}
+				{val ? '周期' : '单次'}
+				{/* {val.split('* *')} */}
+				{/* {val
+					? val
+							.split('* *')
+							.map((item: string) => weekMap[item])
+							.join('、')
+					: '/'} */}
+				{/* {val
+					? moment(formData.time).get('hour') +
+					  ':' +
+					  moment(formData.time).get('minute')
+					: ''}
+				） } */}
 			</div>
 		)
 	},
 	{
-		dataIndex: 'annotations',
+		dataIndex: 'position',
 		label: '备份位置',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
@@ -63,7 +83,7 @@ const InfoConfig = [
 		)
 	},
 	{
-		dataIndex: 'hostAffinity',
+		dataIndex: 'backupTime',
 		label: '创建时间',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
@@ -73,17 +93,129 @@ const InfoConfig = [
 	}
 ];
 
-const actionRender = (value: any, record: any, index: number) => {
-	return (
-		<Actions>
-			<LinkButton>克隆服务</LinkButton>
-			<LinkButton>删除</LinkButton>
-		</Actions>
-	);
-};
-
-function BackupTaskDetail(): JSX.Element {
+function BackupTaskDetail(props: any): JSX.Element {
+	const {
+		globalVar: { cluster, namespace }
+	} = props;
 	const history = useHistory();
+	const params: any = useParams();
+	const [data, setData] = useState();
+	const [basicData, setBasicData] = useState<any>(info);
+	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
+
+	useEffect(() => {
+		storage.getLocal('backupDetail') &&
+			setBasicData({
+				title: '基础信息',
+				cron: storage.getLocal('backupDetail').cron,
+				phrase: storage.getLocal('backupDetail').phrase,
+				sourceName: storage.getLocal('backupDetail').sourceName,
+				position: storage.getLocal('backupDetail').position,
+				backupTime: storage.getLocal('backupDetail').backupTime
+			});
+	}, []);
+
+	useEffect(() => {
+		if (cluster.id !== undefined && namespace.name !== undefined) {
+			getData();
+			getCanReleaseMiddleware({
+				clusterId: cluster.id,
+				type: params.type
+			}).then((res) => {
+				if (res.success) {
+					setMiddlewareInfo(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [cluster.id, namespace.name]);
+
+	const getData = () => {
+		getBackups({
+			backupName: params.backupName,
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			type: params.type
+		}).then((res) => {
+			if (res.success) {
+				setData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+
+	const releaseMiddleware = (chartName: string) => {
+		switch (chartName) {
+			case 'mysql':
+				history.push(
+					`/serviceList/${chartName}/MySql/mysqlCreate/${middlewareInfo?.chartVersion}`
+				);
+				break;
+			case 'redis':
+				history.push(
+					`/serviceList/${chartName}Redis/redisCreate/${middlewareInfo?.chartVersion}`
+				);
+				break;
+			case 'elasticsearch':
+				history.push(
+					`/serviceList/${chartName}/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}`
+				);
+				break;
+			case 'rocketmq':
+				history.push(
+					`/serviceList/${chartName}/Rocketmq/rocketmqCreate/${middlewareInfo?.chartVersion}`
+				);
+				break;
+		}
+	};
+
+	const actionRender = (value: any, record: any, index: number) => {
+		return (
+			<Actions>
+				<LinkButton
+					// onClick={() => releaseMiddleware(record.sourceType)}
+					onClick={() => {
+						const result = {
+							clusterId: cluster.id,
+							namespace: namespace.name,
+							middlewareName:
+								storage.getLocal('backupDetail').sourceName,
+							type: storage.getLocal('backupDetail').sourceType,
+							cron: storage.getLocal('backupDetail').cron,
+							backupName:
+								storage.getLocal('backupDetail').backupName,
+							addressName:
+								storage.getLocal('backupDetail').addressName
+						};
+						applyBackup(result).then((res) => {
+							if (res.success) {
+								notification.success({
+									message: '成功',
+									description: '恢复成功'
+								});
+							} else {
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
+							}
+						});
+					}}
+				>
+					克隆服务
+				</LinkButton>
+				<LinkButton>删除</LinkButton>
+			</Actions>
+		);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -93,15 +225,16 @@ function BackupTaskDetail(): JSX.Element {
 			<ProContent>
 				<DataFields dataSource={basicData} items={InfoConfig} />
 				<ProTable
-					dataSource={[]}
+					dataSource={data}
 					showRefresh
-					// onRefresh={getData}
+					onRefresh={getData}
 					rowKey="key"
 				>
-					<ProTable.Column title="备份记录" dataIndex="backupType" />
+					<ProTable.Column title="备份记录" dataIndex="taskName" />
 					<ProTable.Column
 						title="备份使用量(GB)"
-						dataIndex="phrase"
+						dataIndex="percent"
+						render={nullRender}
 					/>
 					<ProTable.Column
 						title="备份时间"
@@ -118,4 +251,7 @@ function BackupTaskDetail(): JSX.Element {
 	);
 }
 
-export default BackupTaskDetail;
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps)(BackupTaskDetail);
