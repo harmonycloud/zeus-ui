@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Space, Button, Select, notification } from 'antd';
+import { Space, Button, Select, notification, Modal } from 'antd';
 import { useHistory } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import { ListCard, ListCardItem } from '@/components/ListCard';
 import Actions from '@/components/Actions';
 import ProList from '@/components/ProList';
 import storageIcon from '@/assets/images/storage-manage.svg';
-import { getLists, getTypes } from '@/services/storage';
+import { getLists, getTypes, deleteStorage } from '@/services/storage';
 import { getClusters } from '@/services/common';
 import { clusterType } from '@/types';
-import { GetParams, StorageItem } from './storageManage';
+import { GetParams, StorageItem, GetDetailParams } from './storageManage';
 
 const LinkButton = Actions.LinkButton;
 const { Option } = Select;
+const { confirm } = Modal;
 export default function StorageManagement(): JSX.Element {
 	const history = useHistory();
 	const [storages, setStorages] = useState<StorageItem[]>([]);
@@ -44,15 +45,17 @@ export default function StorageManagement(): JSX.Element {
 		});
 	}, []);
 	useEffect(() => {
-		getData();
+		getData(key);
 	}, [selectedClusterId, selectedType]);
-	const getData = (keyword = key) => {
+	const getData = (keyword: string) => {
+		console.log(keyword);
 		const sendData: GetParams = {
 			all: false,
 			clusterId: selectedClusterId || '*',
 			type: selectedType || '',
 			key: keyword || ''
 		};
+		console.log(sendData);
 		getLists(sendData).then((res) => {
 			if (res.success) {
 				setStorages(res.data);
@@ -118,9 +121,9 @@ export default function StorageManagement(): JSX.Element {
 			</Space>
 		)
 	};
-	const clusterRender = (record: StorageItem) =>
-		clusterList.find((item: clusterType) => item.id === record.clusterId)
-			?.nickname || '';
+	const quotaRender = (record: StorageItem) => {
+		return `${Number(record.monitorResourceQuota.storage.used)}GB`;
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -143,7 +146,7 @@ export default function StorageManagement(): JSX.Element {
 						placeholder: '请输入存储服务名称搜索'
 					}}
 					showRefresh
-					onRefresh={getData}
+					onRefresh={() => getData(key)}
 				>
 					{storages.map((item: StorageItem, index: number) => {
 						return (
@@ -162,43 +165,87 @@ export default function StorageManagement(): JSX.Element {
 								}
 								actionRender={
 									<Actions>
-										<LinkButton>编辑</LinkButton>
-										<LinkButton>删除</LinkButton>
+										<LinkButton
+											onClick={() => {
+												history.push(
+													`/storageManagement/edit/${item.name}/${item.clusterId}/${item.clusterAliasName}`
+												);
+											}}
+										>
+											编辑
+										</LinkButton>
+										<LinkButton
+											onClick={() => {
+												confirm({
+													title: '操作确认',
+													content:
+														'是否确认删除该存储?',
+													onOk: () => {
+														const sendData: GetDetailParams =
+															{
+																clusterId:
+																	item.clusterId,
+																storageName:
+																	item.name
+															};
+														return deleteStorage(
+															sendData
+														)
+															.then((res) => {
+																if (
+																	res.success
+																) {
+																	notification.success(
+																		{
+																			message:
+																				'成功',
+																			description:
+																				'存储删除成功'
+																		}
+																	);
+																} else {
+																	notification.error(
+																		{
+																			message:
+																				'失败',
+																			description:
+																				res.errorMsg
+																		}
+																	);
+																}
+															})
+															.finally(() => {
+																getData(key);
+															});
+													}
+												});
+											}}
+										>
+											删除
+										</LinkButton>
 									</Actions>
 								}
+								titleClick={() => {
+									history.push(
+										`/storageManagement/${item.name}/${item.aliasName}/${item.clusterId}`
+									);
+								}}
 							>
-								<ListCardItem label="状态" value="正常" />
 								<ListCardItem
 									label="所属集群"
-									render={() => clusterRender(item)}
+									value={item.clusterAliasName}
 								/>
 								<ListCardItem
-									label="存储容量"
-									value="12.2GB/61.11GB"
+									label="类型"
+									value={item.volumeType}
+								/>
+								<ListCardItem
+									label="存储使用量"
+									value={quotaRender(item)}
 								/>
 							</ListCard>
 						);
 					})}
-					<ListCard
-						title="lvm存储"
-						subTitle="CSI-Plugin"
-						icon={
-							<img
-								src={storageIcon}
-								style={{ marginLeft: 13, marginRight: 16 }}
-							/>
-						}
-						actionRender={
-							<Actions>
-								<LinkButton>编辑</LinkButton>
-								<LinkButton>删除</LinkButton>
-							</Actions>
-						}
-					>
-						<ListCardItem label="状态" value="正常" />
-						<ListCardItem label="所属集群" value="140集群" />
-						<ListCardItem label="存储容量" value="12.2GB/61.11GB" />
-					</ListCard>
 				</ProList>
 			</ProContent>
 		</ProPage>

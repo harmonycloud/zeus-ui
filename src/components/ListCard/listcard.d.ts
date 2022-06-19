@@ -5,6 +5,7 @@ export interface ListCardItemProps {
 	value?: any;
 	width?: number;
 	render?: any;
+	style?: React.CSSProperties;
 }
 export interface ListCardProps {
 	title: string;

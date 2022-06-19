@@ -56,6 +56,7 @@ import BackupPosition from '@/pages/BackupService/backupPosition';
 import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
+import StorageDetail from '@/pages/StorageManagement/storageDetail';
 
 const Routes = withRouter((props) => {
 	return (
@@ -300,6 +301,16 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/storageManagement/create"
 					component={AddStorage}
+					exact
+				/>
+				<Route
+					path="/storageManagement/edit/:name/:clusterId/:clusterAliasName"
+					component={AddStorage}
+					exact
+				/>
+				<Route
+					path="/storageManagement/:name/:aliasName/:clusterId"
+					component={StorageDetail}
 					exact
 				/>
 				{/* 系统管理 */}

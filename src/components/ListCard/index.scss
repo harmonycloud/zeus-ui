@@ -9,11 +9,11 @@
 .zeus-list-card-box,
 .zeus-list-panel {
 	.zeus-list-card-head {
-		width: 250px;
+		width: 200px;
 		padding: 12px;
 		display: flex;
 		.zeus-list-card-title-content {
-			width: 190px;
+			width: 140px;
 			.zeus-list-card-title {
 				width: 100%;
 				height: $line-height-1;
@@ -21,7 +21,7 @@
 				font-weight: $font-weight-sm;
 				line-height: $line-height-1;
 				cursor: pointer;
-				&.active {
+				& .active {
 					color: $primary-color;
 				}
 				@include text-ellipsis;
@@ -38,9 +38,14 @@
 		}
 	}
 	.zeus-list-card-content {
+		width: 100%;
 		display: flex;
+		flex-wrap: nowrap;
+		justify-content: center;
+		column-gap: 50px;
 	}
 	.zeus-list-card-action {
+		min-width: 100px;
 		height: 62px;
 		line-height: 62px;
 		margin-left: auto;
@@ -49,8 +54,7 @@
 }
 .zeus-list-card-item-content {
 	height: 62px;
-	min-width: 150px;
-	max-width: 300px;
+	width: 150px;
 	padding: 12px;
 	.zeus-list-card-item-label,
 	.zeus-list-card-item-value {

@@ -12,9 +12,19 @@ import {
 import storageIcon from '@/assets/images/storage-manage.svg';
 import FormBlock from '@/components/FormBlock';
 import { ProHeader, ProPage, ProContent } from '@/components/ProPage';
-import { EditStorageParams, StorageItem } from './storageManage';
-import { getLists } from '@/services/storage';
-import { GetParams } from './storageManage';
+import {
+	AddParams,
+	EditStorageParams,
+	StorageItem,
+	GetParams,
+	GetDetailParams
+} from './storageManage';
+import {
+	getLists,
+	addStorage,
+	getStorageDetail,
+	updateStorage
+} from '@/services/storage';
 import { formItemLayout614 } from '@/utils/const';
 
 const FormItem = Form.Item;
@@ -24,30 +34,103 @@ export default function AddStorage(): JSX.Element {
 	const history = useHistory();
 	const [form] = Form.useForm();
 	const [storages, setStorages] = useState<StorageItem[]>([]);
+	// const [curStorage, setCurStorage] = useState<StorageItem>();
+	const [volumeType, setVolumeType] = useState<string>('');
+	// const [requestQuota, setRequestQuota] = useState<number>();
 	useEffect(() => {
-		const sendData: GetParams = {
-			all: true,
-			clusterId: '*'
-		};
-		getLists(sendData).then((res) => {
-			console.log(res);
-			if (res.success) {
-				setStorages(res.data);
+		if (params.name) {
+			const sendData: GetDetailParams = {
+				clusterId: params.clusterId,
+				storageName: params.name
+			};
+			getStorageDetail(sendData).then((res) => {
+				if (res.success) {
+					form.setFieldsValue({
+						name: params.name,
+						aliasName: res.data.aliasName,
+						clusterId: params.clusterId,
+						volumeType: res.data.volumeType,
+						vgName: res.data.vgName
+					});
+					setVolumeType(res.data.volumeType);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		} else {
+			const sendData: GetParams = {
+				all: true,
+				clusterId: '*'
+			};
+			getLists(sendData).then((res) => {
+				if (res.success) {
+					setStorages(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, []);
+	const handleSubmit = () => {
+		form.validateFields().then((values) => {
+			const sendData: AddParams = {
+				name: values.name,
+				aliasName: values.aliasName,
+				clusterId: values.clusterId,
+				vgName: values.vgName,
+				volumeType: values.volumeType,
+				requestQuota: values.requestQuota,
+				storageName: params.name
+			};
+			if (params.name) {
+				updateStorage(sendData).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '存储编辑成功'
+						});
+						history.push('/storageManagement');
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				});
 			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
+				addStorage(sendData).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '存储添加成功'
+						});
+						history.push('/storageManagement');
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
 				});
 			}
 		});
-	}, []);
+	};
 	const handleChange = (value: any) => {
 		const cur = storages.find((item: StorageItem) => item.name === value);
 		form.setFieldsValue({
 			clusterId: cur?.clusterId,
 			volumeType: cur?.volumeType,
-			vgName: cur?.vgName
+			vgName: cur?.vgName,
+			requestQuota: cur?.requestQuota
 		});
+		setVolumeType(cur?.volumeType || '');
+		// setRequestQuota(cur?.requestQuota);
 	};
 	return (
 		<ProPage>
@@ -61,7 +144,7 @@ export default function AddStorage(): JSX.Element {
 					size: 48,
 					style: { background: '#F5F5F5' }
 				}}
-				title={`${params.id ? '编辑' : '新增'}存储管理`}
+				title={`${params.name ? '编辑' : '新增'}存储管理`}
 			/>
 			<ProContent>
 				<FormBlock title="基础信息">
@@ -79,7 +162,10 @@ export default function AddStorage(): JSX.Element {
 							]}
 							name="name"
 						>
-							<Select onChange={handleChange}>
+							<Select
+								disabled={params.name ? true : false}
+								onChange={handleChange}
+							>
 								{storages.map((item: StorageItem) => {
 									return (
 										<Option
@@ -96,7 +182,11 @@ export default function AddStorage(): JSX.Element {
 							label="中文名称"
 							required
 							rules={[
-								{ required: true, message: '请填写中文名称' }
+								{ required: true, message: '请填写中文名称' },
+								{
+									max: 10,
+									message: '中文名称长度不超过10个字符'
+								}
 							]}
 							name="aliasName"
 						>
@@ -108,32 +198,50 @@ export default function AddStorage(): JSX.Element {
 						<FormItem label="类型" required name="volumeType">
 							<Input disabled />
 						</FormItem>
-						<FormItem
-							label="VG名称"
-							required
-							rules={[
-								{ required: true, message: '请填写中文名称' }
-							]}
-							name="vgName"
-						>
-							<Input disabled />
-						</FormItem>
-						<FormItem
-							label="配额"
-							required
-							rules={[
-								{ required: true, message: '请填写中文名称' }
-							]}
-						>
-							<InputNumber
-								style={{ width: '100%' }}
-								addonAfter="GB"
-							/>
-						</FormItem>
+						{volumeType === 'CSI-LVM' && (
+							<FormItem
+								label="VG名称"
+								required
+								rules={[
+									{
+										required: true,
+										message: '请填写中文名称'
+									}
+								]}
+								name="vgName"
+							>
+								<Input disabled />
+							</FormItem>
+						)}
+						{/* {volumeType !== 'LocalPath' && (
+							<FormItem
+								label="配额"
+								required
+								rules={[
+									{
+										required: true,
+										message: '请填写中文名称'
+									}
+								]}
+								name="requestQuota"
+							>
+								<InputNumber
+									style={{ width: '100%' }}
+									addonAfter="GB"
+									value={requestQuota}
+									onChange={(value: number) => {
+										setRequestQuota(value);
+									}}
+									disabled={requestQuota ? true : false}
+								/>
+							</FormItem>
+						)} */}
 					</Form>
 				</FormBlock>
 				<Space>
-					<Button type="primary">确认</Button>
+					<Button type="primary" onClick={handleSubmit}>
+						确认
+					</Button>
 					<Button
 						onClick={() => {
 							history.goBack();

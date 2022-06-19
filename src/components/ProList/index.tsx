@@ -3,6 +3,7 @@ import { Space, Input, Button } from 'antd';
 import { ProListProps } from './proList';
 import './index.scss';
 import { ReloadOutlined } from '@ant-design/icons';
+import DefaultPicture from '../DefaultPicture';
 
 const { Search } = Input;
 export default function ProList(props: ProListProps): JSX.Element {
@@ -37,7 +38,13 @@ export default function ProList(props: ProListProps): JSX.Element {
 					</Space>
 				</div>
 			</div>
-			<div className="zeus-pro-list-body">{children}</div>
+			<div className="zeus-pro-list-body">
+				{children?.length > 0 ? (
+					children
+				) : (
+					<DefaultPicture title="当前列表无数据" />
+				)}
+			</div>
 		</div>
 	);
 }

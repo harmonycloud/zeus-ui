@@ -3,11 +3,17 @@ import noData from '@/assets/images/nodata.svg';
 
 import './index.scss';
 
-export default function DefaultPicture(): JSX.Element {
+export interface DefaultPictureProps {
+	title?: string;
+}
+export default function DefaultPicture(
+	props: DefaultPictureProps
+): JSX.Element {
+	const { title = '该中间件不支持当前功能' } = props;
 	return (
 		<div className="default-picture-content">
 			<img width={140} height={140} src={noData} />
-			<p>该中间件不支持当前功能</p>
+			<p>{title}</p>
 		</div>
 	);
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface ProListProps {
-	children: React.ReactNode;
+	children: any;
 	operation?: {
 		primary?: React.ReactNode;
 		secondary?: React.ReactNode;

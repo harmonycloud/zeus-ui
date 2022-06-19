@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Button, notification, Modal } from 'antd';
-// import Confirm from '@alicloud/console-components-confirm';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
 import AddMember from './addMember';
@@ -10,6 +9,7 @@ import { DetailParams, UserItem } from './projectDetail';
 import { nullRender } from '@/utils/utils';
 import EditMember from './editMember';
 import storage from '@/utils/storage';
+import { getIsAccessGYT } from '@/services/common';
 
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
@@ -20,23 +20,17 @@ export default function Member(): JSX.Element {
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [editData, setEditData] = useState<UserItem>();
 	const [role] = useState(JSON.parse(storage.getLocal('role')));
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	const params: DetailParams = useParams();
 	const { id } = params;
-	const [disabledFlag, setDisabledFlag] = useState<boolean>(true);
-	useEffect(() => {
-		if (role.isAdmin) {
-			setDisabledFlag(false);
-		} else {
-			if (
-				role.userRoleList.find((item: any) => item.projectId === id)
-					.roleId === 2
-			) {
-				setDisabledFlag(false);
-			}
-		}
-	}, [role]);
+
 	useEffect(() => {
 		getData();
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
+		});
 	}, []);
 	const getData = () => {
 		getProjectMember({ projectId: id, allocatable: false }).then((res) => {
@@ -54,12 +48,8 @@ export default function Member(): JSX.Element {
 	const Operation = {
 		primary: (
 			<Button
-				title={
-					disabledFlag
-						? '当前用户不具有该操作权限，请联系项目管理员'
-						: ''
-				}
-				disabled={disabledFlag}
+				disabled={isAccess}
+				title={isAccess ? '平台已接入观云台，请联系观云台管理员' : ''}
 				type="primary"
 				onClick={() => setAddVisible(true)}
 			>
@@ -78,12 +68,7 @@ export default function Member(): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					title={
-						disabledFlag
-							? '当前用户不具有该操作权限，请联系项目管理员'
-							: ''
-					}
-					disabled={record.id === role.id || disabledFlag}
+					disabled={record.id === role.id}
 					onClick={() => {
 						setEditVisible(true);
 						setEditData(record);
@@ -92,11 +77,6 @@ export default function Member(): JSX.Element {
 					编辑
 				</LinkButton>
 				<LinkButton
-					title={
-						disabledFlag
-							? '当前用户不具有该操作权限，请联系项目管理员'
-							: ''
-					}
 					onClick={() =>
 						confirm({
 							title: '确认删除',
@@ -124,7 +104,10 @@ export default function Member(): JSX.Element {
 							}
 						})
 					}
-					disabled={record.id === role.id || disabledFlag}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
+					disabled={record.id === role.id || isAccess}
 				>
 					删除
 				</LinkButton>
