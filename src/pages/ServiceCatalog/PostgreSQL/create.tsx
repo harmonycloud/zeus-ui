@@ -240,7 +240,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				annotations: values.annotations,
 				description: values.description,
 				version: version,
-				password: values.pwd,
+				password: values.pgsqlPwd,
 				mode: mode,
 				quota: {
 					postgresql: {
