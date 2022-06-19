@@ -49,19 +49,19 @@ export default function AddBackupPosition(): JSX.Element {
 		if (params.id) {
 			getBackupAddressDetail({ id: Number(params.id) }).then((res) => {
 				if (res.success) {
-					setSelectClusterId(res.data[0].clusterIds[0]);
-					setSelectClusterIds(res.data[0].clusterIds);
+					setSelectClusterId(res.data.clusterIds[0]);
+					setSelectClusterIds(res.data.clusterIds);
 					form.setFieldsValue({
-						...res.data[0],
-						clusterId: res.data[0].clusterIds[0],
-						http: res.data[0].endpoint.split(':')[0],
-						serverHost: res.data[0].endpoint
+						...res.data,
+						clusterId: res.data.clusterIds[0],
+						http: res.data.endpoint.split(':')[0],
+						serverHost: res.data.endpoint
 							.split(':')[1]
 							.split('//')[1],
-						serverPort: res.data[0].endpoint
+						serverPort: res.data.endpoint
 							.split(':')[2]
 							.split('/')[0],
-						bucketName: res.data[0].endpoint
+						bucketName: res.data.endpoint
 							.split(':')[2]
 							.split('/')[1]
 					});
@@ -99,14 +99,14 @@ export default function AddBackupPosition(): JSX.Element {
 						'/' +
 						values.bucketName
 				};
-				if (params.id) {
-					editBackupAddress(sendData).then((res) => {
+
+				if (isCheck) {
+					backupAddressCheck(sendData).then((res) => {
 						if (res.success) {
 							notification.success({
 								message: '成功',
-								description: '修改成功'
+								description: '测试成功'
 							});
-							history.goBack();
 						} else {
 							notification.error({
 								message: '失败',
@@ -115,13 +115,14 @@ export default function AddBackupPosition(): JSX.Element {
 						}
 					});
 				} else {
-					if (isCheck) {
-						backupAddressCheck(sendData).then((res) => {
+					if (params.id) {
+						editBackupAddress(sendData).then((res) => {
 							if (res.success) {
 								notification.success({
 									message: '成功',
-									description: '测试成功'
+									description: '修改成功'
 								});
+								history.goBack();
 							} else {
 								notification.error({
 									message: '失败',
@@ -158,7 +159,7 @@ export default function AddBackupPosition(): JSX.Element {
 				avatar={{
 					children: <img src={Backup} />,
 					shape: 'square',
-					size: 24,
+					size: 48,
 					style: { background: '#f5f5f5' }
 				}}
 			/>

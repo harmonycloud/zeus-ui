@@ -1,39 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, notification, Tooltip } from 'antd';
 import moment from 'moment';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
-import { getBackups, addBackupConfig, deleteBackups } from '@/services/backup';
-import { statusBackupRender } from '@/utils/utils';
-import { BackupRecordItem, ListProps } from './backup';
-import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import {
+	getBackupTasks,
+	addBackupConfig,
+	deleteBackups,
+	getServiceList
+} from '@/services/backup';
+import { statusBackupRender, nameRender } from '@/utils/utils';
+import { backupTaskStatus } from '@/utils/const';
+import { BackupRecordItem } from './backup';
 
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 export default function List(props: any): JSX.Element {
-	const { clusterId, namespace, data: listData, storage } = props;
+	const { clusterId, namespace } = props;
+	const params: any = useParams();
+	const [disabled, setDisabled] = useState<boolean>(false);
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
 	const history = useHistory();
+
 	useEffect(() => {
-		if (
-			clusterId !== undefined &&
-			namespace !== undefined &&
-			listData !== undefined &&
-			storage?.backup
-		) {
+		if (clusterId !== undefined && namespace !== undefined) {
 			getData();
+			getServiceList().then((res) => {
+				res.data?.length ? setDisabled(false) : setDisabled(true);
+			});
 		}
-	}, [props.data]);
+	}, [clusterId, namespace]);
 
 	const getData = () => {
 		const sendData = {
 			clusterId,
 			namespace,
-			middlewareName: listData?.name || '',
-			type: listData?.type || ''
+			middlewareName: params?.name || '',
+			type: params?.type || ''
 		};
-		getBackups(sendData).then((res) => {
+		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
 					setBackups(
@@ -56,17 +62,6 @@ export default function List(props: any): JSX.Element {
 	};
 
 	const backupOnNow = () => {
-		if (
-			(listData?.type === 'mysql' ||
-				listData?.type === 'elasticsearch') &&
-			!listData.isAllLvmStorage
-		) {
-			notification.error({
-				message: '失败',
-				description: '存储不使用lvm时，不支持立即备份功能'
-			});
-			return;
-		}
 		confirm({
 			title: '操作确认',
 			content: '请确认是否立刻备份？',
@@ -74,8 +69,8 @@ export default function List(props: any): JSX.Element {
 				const sendData = {
 					clusterId,
 					namespace,
-					middlewareName: listData?.name || '',
-					type: listData?.type || ''
+					middlewareName: params?.name || '',
+					type: params?.type || ''
 				};
 				addBackupConfig(sendData)
 					.then((res) => {
@@ -105,62 +100,45 @@ export default function List(props: any): JSX.Element {
 	) => {
 		return (
 			<Actions>
-				<LinkButton
-					disabled={record.backupName === ''}
-					onClick={() => {
-						history.push(
-							`/disasterBackup/dataSecurity/addBackup/${props?.data?.name}/${props?.data?.type}/${props.data?.chartVersion}`
-						);
-						sessionStorage.setItem(
-							'detail',
-							JSON.stringify({
-								...props,
-								isEdit: true,
-								backup: record,
-								selectObj: record.sourceName
-							})
-						);
-					}}
-				>
-					使用备份
-				</LinkButton>
-				<LinkButton
-					onClick={() => {
+				<Button
+					type="link"
+					onClick={(e) => {
+						e.stopPropagation();
 						confirm({
 							title: '操作确认',
-							content: '备份删除后将无法恢复，请确认执行',
-							onOk: () => {
-								const sendData = {
-									clusterId,
-									namespace,
-									backupName: record.backupName,
-									middlewareName: listData?.name || '',
-									type: listData?.type || '',
-									backupFileName: record.backupFileName
-								};
-								deleteBackups(sendData)
-									.then((res) => {
-										if (res.success) {
-											notification.success({
-												message: '成功',
-												description: '备份删除成功'
-											});
-										} else {
-											notification.error({
-												message: '失败',
-												description: res.errorMsg
-											});
-										}
-									})
-									.finally(() => {
-										getData();
-									});
-							}
+							content: '备份删除后将无法恢复，请确认执行'
+							// onOk: () => {
+							// 	const sendData = {
+							// 		clusterId,
+							// 		namespace,
+							// 		backupName: record.backupName,
+							// 		middlewareName: listData?.name || '',
+							// 		type: listData?.type || '',
+							// 		backupFileName: record.backupFileName
+							// 	};
+							// 	deleteBackups(sendData)
+							// 		.then((res) => {
+							// 			if (res.success) {
+							// 				notification.success({
+							// 					message: '成功',
+							// 					description: '备份删除成功'
+							// 				});
+							// 			} else {
+							// 				notification.error({
+							// 					message: '失败',
+							// 					description: res.errorMsg
+							// 				});
+							// 			}
+							// 		})
+							// 		.finally(() => {
+							// 			getData();
+							// 		});
+							// }
 						});
 					}}
 				>
 					删除
-				</LinkButton>
+				</Button>
 			</Actions>
 		);
 	};
@@ -168,9 +146,16 @@ export default function List(props: any): JSX.Element {
 	const Operation = {
 		primary: (
 			<Button
-				onClick={() =>
-					history.push('/backupService/backupTask/AddBackupTask')
-				}
+				onClick={() => {
+					if (disabled) {
+						notification.error({
+							message: '提示',
+							description: '当前集群下没有服务，没有备份对象'
+						});
+					} else {
+						history.push('/backupService/backupTask/AddBackupTask');
+					}
+				}}
 				type="primary"
 			>
 				新增
@@ -230,55 +215,6 @@ export default function List(props: any): JSX.Element {
 		}
 	};
 
-	const roleRender = (
-		value: string,
-		record: BackupRecordItem,
-		index: number
-	) => {
-		if (value === 'Cluster') {
-			return '服务';
-		} else {
-			if (record.podRole.includes('exporter')) {
-				return 'exporter';
-			} else {
-				if (listData?.type === 'elasticsearch') {
-					if (record.podRole.includes('kibana')) {
-						return 'kibana';
-					} else if (record.podRole.includes('client')) {
-						return '协调节点';
-					} else if (record.podRole.includes('master')) {
-						return '主节点';
-					} else if (record.podRole.includes('data')) {
-						return '数据节点';
-					} else if (record.podRole.includes('cold')) {
-						return '冷节点';
-					}
-				} else {
-					switch (value) {
-						case 'master':
-							return '主节点';
-						case 'slave':
-							return '从节点';
-						case 'data':
-							return '数据节点';
-						case 'client':
-							return '协调节点';
-						case 'cold':
-							return '冷节点';
-						case 'kibana':
-							return 'kibana';
-						case 'nameserver':
-							return 'nameserver';
-						case 'exporter':
-							return 'exporter';
-						default:
-							return '未知';
-					}
-				}
-			}
-		}
-	};
-
 	const sourceNameRender = (
 		value: string,
 		record: BackupRecordItem,
@@ -297,7 +233,7 @@ export default function List(props: any): JSX.Element {
 	};
 
 	return (
-		<div style={{ marginTop: 15 }}>
+		<div>
 			<ProTable
 				dataSource={backups}
 				showRefresh
@@ -310,12 +246,18 @@ export default function List(props: any): JSX.Element {
 					// onSearch: handleSearch,
 					style: { width: '360px' }
 				}}
+				onRow={(record: any) => {
+					return {
+						onClick: () =>
+							history.push('/backupService/backupTask/detail')
+					};
+				}}
 			>
 				<ProTable.Column
 					title="备份任务名称"
-					dataIndex="backupType"
-					width={100}
-					render={roleRender}
+					dataIndex="taskName"
+					render={nameRender}
+					width={160}
 				/>
 				{/* <ProTable.Column
 							title="名字"
@@ -329,38 +271,31 @@ export default function List(props: any): JSX.Element {
 					dataIndex="phrase"
 					render={statusBackupRender}
 					width={120}
-					filters={[{ text: '11', value: '11' }]}
+					filterMultiple={false}
+					filters={backupTaskStatus}
+					onFilter={(value, record: any) => {
+						console.log(record.phrase, value);
+						return record.phrase === value;
+					}}
 				/>
 				<ProTable.Column
 					title="备份源名称"
-					dataIndex="backupAddressList"
-					render={addressListRender}
+					dataIndex="sourceName"
+					// render={addressListRender}
 					filters={[{ text: '11', value: '11' }]}
-					width={100}
+					width={160}
 				/>
-				{/* <ProTable.Column
-							title="备份对象"
-							dataIndex="phrase"
-							render={statusBackupRender}
-							width={120}
-							filters={[{ text: '11', value: '11' }]}
-						/> */}
 				<ProTable.Column
 					title="备份方式"
 					dataIndex="phrase"
-					render={statusBackupRender}
+					render={() => '单次备份'}
 					width={120}
 					filters={[{ text: '11', value: '11' }]}
 				/>
-				<ProTable.Column
-					title="备份位置"
-					dataIndex="phrase"
-					render={statusBackupRender}
-				/>
+				<ProTable.Column title="备份位置" dataIndex="position" />
 				<ProTable.Column
 					title="备份时间"
 					dataIndex="backupTime"
-					// sortable
 					width={160}
 					sorter={(a: BackupRecordItem, b: BackupRecordItem) =>
 						moment(a.backupTime).unix() -

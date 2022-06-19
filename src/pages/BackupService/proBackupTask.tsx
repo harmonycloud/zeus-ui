@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import BackupBask from '../ServiceListDetail/BackupRecovery/backupBask';
+import { StoreState } from '@/types';
+import { connect } from 'react-redux';
 import Backup from '@/assets/images/backup.svg';
 
-export default function ProBackupBask(): JSX.Element {
+function ProBackupBask(props: StoreState): JSX.Element {
+	const {
+		globalVar: { cluster, namespace }
+	} = props;
+
 	return (
 		<ProPage>
 			<ProHeader
@@ -17,8 +23,13 @@ export default function ProBackupBask(): JSX.Element {
 				}}
 			/>
 			<ProContent>
-				<BackupBask />
+				<BackupBask clusterId={cluster.id} namespace={namespace.name} />
 			</ProContent>
 		</ProPage>
 	);
 }
+
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps)(ProBackupBask);

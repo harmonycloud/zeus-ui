@@ -4,6 +4,7 @@ import { useHistory } from 'react-router';
 import DataFields from '@/components/DataFields';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
+import moment from 'moment';
 
 const LinkButton = Actions.LinkButton;
 
@@ -101,12 +102,14 @@ function BackupTaskDetail(): JSX.Element {
 					<ProTable.Column
 						title="备份使用量(GB)"
 						dataIndex="phrase"
-						filters={[{ text: '11', value: '11' }]}
 					/>
 					<ProTable.Column
 						title="备份时间"
 						dataIndex="backupTime"
-						sorter
+						sorter={(a: any, b: any) =>
+							moment(a.backupTime).unix() -
+							moment(b.backupTime).unix()
+						}
 					/>
 					<ProTable.Column title="操作" render={actionRender} />
 				</ProTable>

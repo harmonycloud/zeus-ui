@@ -73,3 +73,18 @@ export const deleteBackupAddress = (params: {
 }) => {
 	return Axios.delete(BACKUP.backupAddress, params);
 };
+export const getMiddlewares = () => {
+	return Axios.get(BACKUP.middlewares);
+};
+export const getServiceList = (params?: {
+	keyword?: string;
+	type?: string;
+}) => {
+	return Axios.get(BACKUP.serviceList, params);
+};
+export const getBackupTasks = (params: any) => {
+	return Axios.get(BACKUP.backupTask, params);
+};
+export const deleteBackupTasks = (params: any) => {
+	return Axios.delete(BACKUP.backupTask, params);
+};
