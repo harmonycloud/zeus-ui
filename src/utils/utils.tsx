@@ -1,6 +1,6 @@
 import React from 'react';
 // import { Icon, Balloon } from '@alicloud/console-components';
-import { Tooltip } from 'antd';
+import { Tooltip, Badge } from 'antd';
 import { api } from '@/api.json';
 import JSEncrypt from 'jsencrypt';
 import moment from 'moment';
@@ -64,30 +64,13 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 ) => {
 	switch (value) {
 		case 'Running':
-			return (
-				<>
-					<SyncOutlined style={{ color: '#0091FF' }} /> 进行中
-				</>
-			);
+			return <Badge status="warning" text="进行中" />;
 		case 'Failed':
-			return (
-				<>
-					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
-					失败
-				</>
-			);
+			return <Badge status="error" text="失败" />;
 		case 'Success':
-			return (
-				<>
-					<CheckCircleFilled style={{ color: '#00A700' }} /> 成功
-				</>
-			);
+			return <Badge status="success" text="成功" />;
 		default:
-			return (
-				<>
-					<MinusCircleFilled style={{ color: '#FAC800' }} /> 未知
-				</>
-			);
+			return <Badge status="default" text="未知" />;
 	}
 };
 

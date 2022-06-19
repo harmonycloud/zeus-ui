@@ -9,6 +9,8 @@ const { Search } = Input;
 export default function TableRadio(props: any): JSX.Element {
 	const {
 		selectedRow,
+		selectedRowKeys,
+		setSelectedRowKeys,
 		setSelectedRow,
 		showHeader,
 		label,
@@ -18,7 +20,6 @@ export default function TableRadio(props: any): JSX.Element {
 		onRefresh,
 		...option
 	} = props;
-	const [selectedRowKeys, setSelectedRowKeys] = useState(['1']);
 	const rowSelection = {
 		selectedRowKeys: selectedRowKeys,
 		onChange: (selectedRowKeys: any, selectedRows: any) => {
@@ -45,7 +46,7 @@ export default function TableRadio(props: any): JSX.Element {
 				</div>
 			) : null}
 			<Table
-				rowKey="id"
+				rowKey="name"
 				rowSelection={{
 					type: 'radio',
 					...rowSelection
@@ -54,7 +55,7 @@ export default function TableRadio(props: any): JSX.Element {
 					return {
 						onClick: () => {
 							setSelectedRow(record);
-							setSelectedRowKeys([record.id]);
+							setSelectedRowKeys([record.name]);
 						}
 					};
 				}}

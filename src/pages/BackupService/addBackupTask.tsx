@@ -13,8 +13,10 @@ import {
 	Radio,
 	Input,
 	Select,
-	Card
+	Card,
+	notification
 } from 'antd';
+import { api } from '@/api.json';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import TableRadio from '@/components/TableRadio';
@@ -23,7 +25,16 @@ import Backup from '@/assets/images/backup.svg';
 import Database from '@/assets/images/database.svg';
 import BackupRule from '@/assets/images/backupRule.svg';
 import BackupPosition from '@/assets/images/backupPosition.svg';
-
+import {
+	getMiddlewares,
+	getServiceList,
+	getBackupAddress,
+	addBackupConfig
+} from '@/services/backup';
+import moment from 'moment';
+import { weekMap } from '@/utils/const';
+import { StoreState } from '@/types';
+import { connect } from 'react-redux';
 import './index.scss';
 
 const { Step } = Steps;
@@ -53,9 +64,10 @@ const formItemLayout = {
 };
 
 const columns = [
-	{ title: '规格', dataIndex: 'spec' },
-	{ title: 'CPU', dataIndex: 'cpu' },
-	{ title: '内存', dataIndex: 'memory' }
+	{ title: '数据源名称', dataIndex: 'name' },
+	{ title: '类型', dataIndex: 'type' },
+	{ title: '实例数', dataIndex: 'podNum' },
+	{ title: '所属集群', dataIndex: 'clusterId' }
 ];
 const dataType = [
 	{ label: '天', value: 'day', max: 3650 },
@@ -63,63 +75,49 @@ const dataType = [
 	{ label: '月', value: 'month', max: 120 },
 	{ label: '年', value: 'year', max: 10 }
 ];
-function AddBackup(): JSX.Element {
+function AddBackupTask(props: StoreState): JSX.Element {
+	const {
+		globalVar: { cluster, namespace }
+	} = props;
 	const [form] = Form.useForm();
 	const [formWay] = Form.useForm();
 	const history = useHistory();
-	const [select, setSelect] = useState('Mysql');
+	const [middlewares, serMiddleware] = useState<any[]>([]);
+	const [select, setSelect] = useState('');
 	const [isStep, setIsStep] = useState(false);
 	const [current, setCurrent] = useState<number>(0);
-	const [selectedRow, setSelectedRow] = useState();
+	const [selectedRow, setSelectedRow] = useState<any>();
+	const [selectedRowKeys, setSelectedRowKeys] = useState<string>();
 	const [searchText, setSearchText] = useState<string>('');
-	const [selectText, setSelectText] = useState<string>('1');
-	const [backupType, setBackupType] = useState<string>('service');
+	const [selectText, setSelectText] = useState<string>('');
+	// const [backupType, setBackupType] = useState<string>('service');
 	const [backupWay, setBackupWay] = useState<string>('time');
 	const [backupTime, setBackupTime] = useState<string>('time');
 	const [checks, setChecks] = useState<number[]>();
 	const [allChecked, setAllChecked] = useState<boolean>();
 	const [dataSelect, setDataSelect] = useState<string>('天');
-
-	const [data, setData] = useState([
-		{
-			id: '1',
-			spec: '基本性能',
-			cpu: '1 Core',
-			memory: '2 Gi',
-			num: '600'
-		},
-		{
-			id: '2',
-			spec: '一般性能',
-			cpu: '2 Core',
-			memory: '8 Gi',
-			num: '2000'
-		},
-		{
-			id: '3',
-			spec: '较强性能',
-			cpu: '4 Core',
-			memory: '16 Gi',
-			num: '4000'
-		},
-		{
-			id: '4',
-			spec: '高强性能',
-			cpu: '8 Core',
-			memory: '32 Gi',
-			num: '8000'
-		},
-		{
-			id: '5',
-			spec: '超强性能',
-			cpu: '16 Core',
-			memory: '64 Gi',
-			num: '16000'
-		}
-	]);
+	const [formData, setFormData] = useState<any>();
+	const [tableData, setTableData] = useState<any[]>([]);
+	const [addressList, setAddressList] = useState<any>();
+	const [selectAddress, setSelectAddress] = useState<any>();
 
 	const next = () => {
-		setCurrent(current + 1);
+		if (current === 0) {
+			if (selectedRow) {
+				setCurrent(current + 1);
+			} else {
+				notification.error({
+					message: '失败',
+					description: '请选择备份源'
+				});
+			}
+		}
+		if (current === 1) {
+			form.validateFields().then((values) => {
+				setFormData(values);
+				setCurrent(current + 1);
+			});
+		}
 	};
 
 	const prev = () => {
@@ -127,30 +125,38 @@ function AddBackup(): JSX.Element {
 	};
 
 	useEffect(() => {
-		setData([
-			{
-				id: '1',
-				spec: '基本性能',
-				cpu: '1 Core',
-				memory: '2 Gi',
-				num: '600'
-			},
-			{
-				id: '2',
-				spec: '一般性能',
-				cpu: '2 Core',
-				memory: '8 Gi',
-				num: '2000'
-			},
-			{
-				id: '3',
-				spec: '较强性能',
-				cpu: `${Math.random()}`,
-				memory: '16 Gi',
-				num: `${Math.random()}`
+		getServiceList({ type: selectText, keyword: searchText }).then(
+			(res) => {
+				setTableData(res.data);
+				setSelectedRow(res.data[0]);
+				// setSelectedRowKeys(res.data[0]?.name);
 			}
-		]);
+		);
 	}, [searchText, selectText]);
+
+	useEffect(() => {
+		getMiddlewares().then((res) => {
+			const data = res.data.filter(
+				(item: any) =>
+					item.name === 'redis' ||
+					item.name === 'rocketmq' ||
+					item.name === 'elasticsearch' ||
+					item.name === 'mysql'
+			);
+			serMiddleware(data);
+			setSelect(data[0].name);
+			setSelectText(data[0].name);
+		});
+		getBackupAddress({ keyword: '' }).then((res) => {
+			setAddressList(res.data);
+		});
+	}, []);
+
+	useEffect(() => {
+		if (current === 1) {
+			form.setFieldsValue(formData);
+		}
+	}, [current]);
 
 	const renderStep = () => {
 		switch (current) {
@@ -168,16 +174,12 @@ function AddBackup(): JSX.Element {
 									marginRight: '16px',
 									width: '100px'
 								},
-								options: [
-									{
-										label: '1',
-										value: '1'
-									},
-									{
-										label: '2',
-										value: '2'
-									}
-								]
+								options: middlewares.map((item) => {
+									return {
+										label: item.name,
+										value: item.name
+									};
+								})
 							}}
 							search={{
 								placeholder: '请输入关键字搜索',
@@ -188,11 +190,13 @@ function AddBackup(): JSX.Element {
 								}
 							}}
 							showRefresh
-							onRefresh={() => setSearchText(`${Math.random()}`)}
+							onRefresh={() => setSearchText('')}
 							columns={columns}
-							dataSource={data}
+							dataSource={tableData}
 							selectedRow={selectedRow}
 							setSelectedRow={setSelectedRow}
+							selectedRowKeys={selectedRowKeys}
+							setSelectedRowKeys={setSelectedRowKeys}
 						/>
 					</div>
 				);
@@ -287,58 +291,78 @@ function AddBackup(): JSX.Element {
 								</RadioGroup>
 							</Form.Item>
 							{backupWay === 'time' ? (
-								<>
-									<Form.Item
-										label="备份保留时间"
-										name="count"
-										rules={[
-											{
-												required: true,
-												message: '备份保留时间不能为空'
-											},
-											{
-												max: dataType.find(
-													(item: any) =>
-														item.value ===
-														dataSelect
-												)?.max,
-												type: 'number',
-												message: '保留时间最长为10年'
-											}
-										]}
+								<Form.Item
+									label="备份保留时间"
+									name="count"
+									rules={[
+										{
+											required: false,
+											message: '备份保留时间不能为空'
+										},
+										{
+											max: dataType.find(
+												(item: any) =>
+													item.value === dataSelect
+											)?.max,
+											type: 'number',
+											message: '保留时间最长为10年'
+										}
+									]}
+								>
+									<InputNumber
+										type="inline"
+										disabled
+										addonAfter={
+											<Select
+												disabled
+												value={dataSelect}
+												onChange={(value) => {
+													setDataSelect(value);
+													form.validateFields([
+														'count'
+													]);
+												}}
+											>
+												{dataType.map((item: any) => {
+													return (
+														<Select.Option
+															key={item.value}
+															value={item.value}
+														>
+															{item.label}
+														</Select.Option>
+													);
+												})}
+											</Select>
+										}
+									/>
+								</Form.Item>
+							) : (
+								<Form.Item
+									label="备份规则"
+									name="rule"
+									rules={[
+										{
+											required: true,
+											message: '请选择备时间'
+										}
+									]}
+									initialValue="now"
+								>
+									<RadioGroup
+										value={backupTime}
+										onChange={(e) =>
+											setBackupTime(e.target.value)
+										}
 									>
-										<InputNumber
-											type="inline"
-											addonAfter={
-												<Select
-													value={dataSelect}
-													onChange={(value) => {
-														setDataSelect(value);
-														form.validateFields([
-															'count'
-														]);
-													}}
-												>
-													{dataType.map(
-														(item: any) => {
-															return (
-																<Select.Option
-																	key={
-																		item.value
-																	}
-																	value={
-																		item.value
-																	}
-																>
-																	{item.label}
-																</Select.Option>
-															);
-														}
-													)}
-												</Select>
-											}
-										/>
-									</Form.Item>
+										<Radio value="now">立即备份</Radio>
+										<Radio value="onetime">定时备份</Radio>
+									</RadioGroup>
+								</Form.Item>
+							)}
+							{backupWay === 'time' ||
+							backupTime === 'onetime' ? (
+								<>
 									<Form.Item
 										label="备份周期"
 										className="check-form"
@@ -414,7 +438,7 @@ function AddBackup(): JSX.Element {
 									</Form.Item>
 									<Form.Item
 										label="备份时间"
-										name="time2"
+										name="time"
 										rules={[
 											{
 												required: true,
@@ -429,29 +453,7 @@ function AddBackup(): JSX.Element {
 										/>
 									</Form.Item>
 								</>
-							) : (
-								<Form.Item
-									label="备份时间"
-									name="time"
-									rules={[
-										{
-											required: true,
-											message: '请选择备时间'
-										}
-									]}
-									initialValue="time"
-								>
-									<RadioGroup
-										value={backupTime}
-										onChange={(e) =>
-											setBackupTime(e.target.value)
-										}
-									>
-										<Radio value="time">立即备份</Radio>
-										<Radio value="one">周期备份</Radio>
-									</RadioGroup>
-								</Form.Item>
-							)}
+							) : null}
 						</Form>
 					</div>
 				);
@@ -465,7 +467,7 @@ function AddBackup(): JSX.Element {
 						>
 							<Form.Item
 								label="备份任务名称"
-								name="aa"
+								name="taskName"
 								rules={[
 									{
 										required: true,
@@ -483,16 +485,7 @@ function AddBackup(): JSX.Element {
 									style={{ width: 260 }}
 								/>
 							</Form.Item>
-							<Form.Item
-								label="备份方式"
-								name="bb"
-								rules={[
-									{
-										required: true,
-										message: '请选择备份位置'
-									}
-								]}
-							>
+							<Form.Item label="备份方式" required>
 								<div className="backup-way">
 									<Card
 										title={
@@ -502,10 +495,8 @@ function AddBackup(): JSX.Element {
 											</div>
 										}
 									>
-										<p>数据源类型：MySQL</p>
-										<p>
-											数据源名称：Mysqltest-test-asdas-sdadasdfa
-										</p>
+										<p>数据源类型：{selectedRow.type}</p>
+										<p>数据源名称：{selectedRow.name}</p>
 										<Button
 											type="primary"
 											style={{ marginTop: '24px' }}
@@ -522,9 +513,27 @@ function AddBackup(): JSX.Element {
 											</div>
 										}
 									>
-										<p>备份方式：MySQL</p>
 										<p>
-											备份时间：每周一、二、三、四、五、六、日（14:00）
+											备份方式：
+											{formData.way === 'time'
+												? '周期备份'
+												: '单次备份'}
+										</p>
+										<p>
+											备份时间：每周
+											{formData.cycle
+												.map(
+													(item: string) =>
+														weekMap[item]
+												)
+												.join('、')}
+											（
+											{moment(formData.time).get('hour') +
+												':' +
+												moment(formData.time).get(
+													'minute'
+												)}
+											）
 										</p>
 										<Button
 											type="primary"
@@ -543,25 +552,38 @@ function AddBackup(): JSX.Element {
 										}
 									>
 										<span>备份位置：</span>
-										<Select
-											value={dataSelect}
-											onChange={(value) => {
-												setDataSelect(value);
-												form.validateFields(['count']);
-											}}
-											style={{ width: '150px' }}
+										<Form.Item
+											name="addressName"
+											rules={[
+												{
+													required: true,
+													message: '请选择备份位置'
+												}
+											]}
 										>
-											{dataType.map((item: any) => {
-												return (
-													<Select.Option
-														key={item.value}
-														value={item.value}
-													>
-														{item.label}
-													</Select.Option>
-												);
-											})}
-										</Select>
+											<Select
+												value={selectAddress}
+												onChange={(value) => {
+													setSelectAddress(value);
+												}}
+												style={{ width: '150px' }}
+											>
+												{addressList.map(
+													(item: any) => {
+														return (
+															<Select.Option
+																key={item.name}
+																value={
+																	item.name
+																}
+															>
+																{item.name}
+															</Select.Option>
+														);
+													}
+												)}
+											</Select>
+										</Form.Item>
 									</Card>
 								</div>
 							</Form.Item>
@@ -572,7 +594,40 @@ function AddBackup(): JSX.Element {
 	};
 
 	const handleSubmit = () => {
-		history.goBack();
+		formWay.validateFields().then((values) => {
+			const minute = moment(formData.time).get('minute');
+			const hour = moment(formData.time).get('hour');
+			const week = formData.cycle.join(',');
+			const cron = `${minute} ${hour} ? ? ${week}`;
+			const sendData = {
+				...values,
+				clusterId: cluster.id,
+				namespace: selectedRow.namespace,
+				middlewareName: selectedRow.name,
+				type: selectedRow.type,
+				cron:
+					typeof formData.time !== 'string'
+						? cron
+						: `${formData.time.substring(
+								3,
+								5
+						  )} ${formData.time.substring(0, 2)} ? ? ${week}`
+			};
+			addBackupConfig(sendData).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '创建成功'
+					});
+					history.goBack();
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		});
 	};
 
 	return (
@@ -582,26 +637,34 @@ function AddBackup(): JSX.Element {
 				avatar={{
 					children: <img src={Backup} />,
 					shape: 'square',
-					size: 24,
+					size: 48,
 					style: { background: '#f5f5f5' }
 				}}
 				onBack={() => history.goBack()}
 			/>
 			<ProContent>
+				<h2>数据源类型</h2>
 				{!isStep ? (
 					<div className="cards">
-						{['Mysql', 'Rocketmq'].map((item) => {
+						{middlewares.map((item) => {
 							return (
-								<div key={item} className="card-box">
+								<div key={item.id} className="card-box">
 									<div
 										className={`card ${
-											select === item ? 'active' : ''
+											select === item.name ? 'active' : ''
 										}`}
-										onClick={() => setSelect(item)}
+										onClick={() => {
+											setSelect(item.name);
+											setSelectText(item.name);
+										}}
 									>
-										<img src={Backup} />
+										<img
+											src={`${api}/images/middleware/${item.imagePath}`}
+										/>
 									</div>
-									<div className="card-title">{item}</div>
+									<div className="card-title">
+										{item.name}
+									</div>
 								</div>
 							);
 						})}
@@ -624,7 +687,12 @@ function AddBackup(): JSX.Element {
 						<Button type="primary" onClick={() => setIsStep(true)}>
 							开始备份
 						</Button>
-						<Button style={{ marginLeft: '8px' }}>取消</Button>
+						<Button
+							style={{ marginLeft: '8px' }}
+							onClick={() => history.goBack()}
+						>
+							取消
+						</Button>
 					</div>
 				) : (
 					<div className="steps-action">
@@ -646,7 +714,12 @@ function AddBackup(): JSX.Element {
 								完成
 							</Button>
 						)}
-						<Button style={{ marginLeft: '8px' }}>取消</Button>
+						<Button
+							style={{ marginLeft: '8px' }}
+							onClick={() => history.goBack()}
+						>
+							取消
+						</Button>
 					</div>
 				)}
 			</ProContent>
@@ -654,4 +727,7 @@ function AddBackup(): JSX.Element {
 	);
 }
 
-export default AddBackup;
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps)(AddBackupTask);

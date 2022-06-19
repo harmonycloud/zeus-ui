@@ -118,13 +118,13 @@ export const list = [
 	{ value: 0, label: '星期日' }
 ];
 export const weekMap = {
-	1: '星期一',
-	2: '星期二',
-	3: '星期三',
-	4: '星期四',
-	5: '星期五',
-	6: '星期六',
-	0: '星期日'
+	1: '一',
+	2: '二',
+	3: '三',
+	4: '四',
+	5: '五',
+	6: '六',
+	0: '日'
 };
 export const esMap = {
 	master: '主节点',
@@ -388,4 +388,10 @@ export const authorityList = [
 		authority: 4,
 		value: '仅DML'
 	}
+];
+export const backupTaskStatus = [
+	{ value: 'Running', text: '进行中', color: '#faad14' },
+	{ value: 'Success', text: '成功', color: '#52c41a' },
+	{ value: 'Failed', text: '失败', color: '#ff4d4f' },
+	{ value: 'Unknown', text: '未知', color: '#d7d7d7' }
 ];

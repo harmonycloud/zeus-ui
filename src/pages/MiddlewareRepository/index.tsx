@@ -243,7 +243,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								>
 									<p>{key}</p>
 									<div className="middleware-repository-list-content">
-										{dataSource[key].map((item) => {
+										{dataSource[key]?.map((item) => {
 											return (
 												<MiddlewareItem
 													key={item.id}

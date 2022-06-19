@@ -40,7 +40,6 @@ import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
 import CreateAlarm from '@/pages/ServiceListDetail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
-import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
@@ -260,11 +259,6 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/disasterBackup/dataSecurity"
 					component={DataSecurity}
-					exact
-				/>
-				<Route
-					path="/disasterBackup/dataSecurity/addBackup/:middlewareName/:type/:chartVersion"
-					component={BackupSetting}
 					exact
 				/>
 				<Route
