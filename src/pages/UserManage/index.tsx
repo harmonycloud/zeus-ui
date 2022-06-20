@@ -214,11 +214,11 @@ function UserManage(): JSX.Element {
 					</div>
 				);
 			});
-		} else {
+		} else if (list.length > 0) {
 			return (
 				<div className="display-flex flex-align">
 					<div className="blue-tip">
-						{list[0].projectName}:{list[0].roleName}
+						{list?.[0].projectName}:{list?.[0].roleName}
 					</div>
 					<Popover
 						content={list.map((i: any) => {
@@ -241,6 +241,8 @@ function UserManage(): JSX.Element {
 					</Popover>
 				</div>
 			);
+		} else {
+			return '/';
 		}
 	};
 	const Operation = {

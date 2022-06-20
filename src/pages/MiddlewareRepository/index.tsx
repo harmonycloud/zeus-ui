@@ -76,6 +76,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const list = Array.from(
 				new Set(originData.map((item) => item.type))
 			);
+			console.log(list);
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
 				list.forEach((item) => {
@@ -98,8 +99,10 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					}
 				});
 			}
-
-			setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
+			console.log(obj);
+			console.log(changeObjectIndex(obj, '其他', list.length - 1));
+			if (!list.includes(null)) setDataSource(obj);
+			else setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
 		} else if (rule === 'source') {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
@@ -236,6 +239,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					{JSON.stringify(dataSource) !== '{}' &&
 						currentCluster &&
 						Object.keys(dataSource).map((key) => {
+							console.log(key);
 							return (
 								<div
 									key={key}

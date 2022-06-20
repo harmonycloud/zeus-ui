@@ -33,7 +33,7 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, redisClusterDataList } from '@/utils/const';
 import {
 	CreateProps,
 	CreateParams,
@@ -1229,7 +1229,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>高可用模式</span>
+										<span>模式</span>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['redis-mode']}`}
@@ -1273,6 +1273,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												{Object.keys(nodeObj).map(
 													(key) => (
 														<ModeItem
+															middlewareType={
+																chartName
+															}
 															key={key}
 															type={key}
 															data={nodeObj[key]}
@@ -1328,6 +1331,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																checkGeneral(
 																	value
 																)
+															}
+															dataList={
+																redisClusterDataList
 															}
 														/>
 													</div>

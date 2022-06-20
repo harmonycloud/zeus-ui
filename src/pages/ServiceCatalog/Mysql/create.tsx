@@ -10,7 +10,6 @@ import {
 	Form,
 	Input,
 	Switch,
-	Checkbox,
 	Select,
 	Button,
 	notification,
@@ -31,7 +30,7 @@ import {
 import { getMirror } from '@/services/common';
 import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import { getProjectNamespace } from '@/services/project';
-import { instanceSpecList, formItemLayout614 } from '@/utils/const';
+import { instanceSpecList, mysqlDataList } from '@/utils/const';
 import transUnit from '@/utils/transUnit';
 import pattern from '@/utils/pattern';
 // * 外接动态表单相关
@@ -317,17 +316,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								item.address === values.mirrorImageId
 						)
 						?.id.toString() || ''
-				// mirrorImageId: mirrorList.find(
-				// 	(item: MirrorItem) =>
-				// 		item.address === values['mirrorImageId']
-				// )
-				// 	? mirrorList
-				// 			.find(
-				// 				(item: MirrorItem) =>
-				// 					item.address === values['mirrorImageId']
-				// 			)
-				// 			.id.toString()
-				// 	: ''
 			};
 
 			// * 动态表单相关
@@ -379,12 +367,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
-						sendData.quota.mysql.cpu = 1;
-						sendData.quota.mysql.memory = '2Gi';
-						break;
-					case '2':
 						sendData.quota.mysql.cpu = 2;
 						sendData.quota.mysql.memory = '4Gi';
+						break;
+					case '2':
+						sendData.quota.mysql.cpu = 4;
+						sendData.quota.mysql.memory = '8Gi';
 						break;
 					case '3':
 						sendData.quota.mysql.cpu = 4;
@@ -392,9 +380,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						break;
 					case '4':
 						sendData.quota.mysql.cpu = 8;
-						sendData.quota.mysql.memory = '32Gi';
+						sendData.quota.mysql.memory = '16Gi';
 						break;
 					case '5':
+						sendData.quota.mysql.cpu = 8;
+						sendData.quota.mysql.memory = '32Gi';
+						break;
+					case '6':
 						sendData.quota.mysql.cpu = 16;
 						sendData.quota.mysql.memory = '64Gi';
 						break;
@@ -1840,6 +1832,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setSpecId(value)
 													}
+													dataList={mysqlDataList}
 												/>
 											</div>
 										) : null}

@@ -46,7 +46,7 @@ import {
 	StorageClassProps
 } from '@/types/comment';
 import { StoreState } from '@/types';
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, zkpDataList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
@@ -365,15 +365,15 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 						break;
 					case '3':
 						sendData.quota.zookeeper.cpu = 4;
-						sendData.quota.zookeeper.memory = '16Gi';
+						sendData.quota.zookeeper.memory = '8Gi';
 						break;
 					case '4':
 						sendData.quota.zookeeper.cpu = 8;
-						sendData.quota.zookeeper.memory = '32Gi';
+						sendData.quota.zookeeper.memory = '16Gi';
 						break;
 					case '5':
 						sendData.quota.zookeeper.cpu = 16;
-						sendData.quota.zookeeper.memory = '64Gi';
+						sendData.quota.zookeeper.memory = '32Gi';
 						break;
 					default:
 						break;
@@ -1135,6 +1135,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 													onCallBack={(value: any) =>
 														setSpecId(value)
 													}
+													dataList={zkpDataList}
 												/>
 											</div>
 										) : null}
