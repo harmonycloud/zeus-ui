@@ -168,7 +168,7 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 							'component'
 						);
 						history.push(
-							`/systemManagement/resourcePoolManagement/resourcePoolDetail/default--${sendData.name}/${sendData.nickname}/${values.activeActive}`
+							`/systemManagement/resourcePoolManagement/resourcePoolDetail/default--${sendData.name}/${sendData.nickname}`
 						);
 					} else {
 						notification.error({
@@ -644,27 +644,6 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 						</Button>
 					)}
 				</Space>
-				{/* <FormBlock title="纳管现有集群">
-					<div
-						className="resource-pool-content"
-						onClick={() =>
-							history.push(
-								'/systemManagement/resourcePoolManagement/addResourcePool/addOther'
-							)
-						}
-					>
-						<img
-							src={OtherResourcePoolImg}
-							width={80}
-							height={80}
-						/>
-						<div>基于已有集群</div>
-						<IconFont type="icon-xuanzhong" />
-					</div>
-				</FormBlock>
-				<Button type="primary" onClick={() => window.history.back()}>
-					返回
-				</Button> */}
 			</ProContent>
 		</ProPage>
 	);
