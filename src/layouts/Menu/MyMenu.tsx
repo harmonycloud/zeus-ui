@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps } from 'antd';
 import { useHistory, useLocation } from 'react-router';
+import { HashRouter as Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { IconFont } from '@/components/IconFont';
 import { getMenu } from '@/services/user';
 import { menuReduxProps, StoreState } from '@/types';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { ResMenuItem, MenuInfo, SelectInfo } from '@/types/comment';
-import './menu.scss';
 import storage from '@/utils/storage';
+import './menu.scss';
 
 interface MyMenuProps {
 	clusterId: string;
@@ -47,6 +48,23 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 			setMenuRefresh(false);
 		}
 	}, [menu]);
+	const mapLocationToActiveKey = (location: Location) => {
+		const pathArray = location.pathname.split('/');
+		if (!location || !location.pathname || location.pathname === '/') {
+			return ['dataOverview'];
+		} else if (pathArray.includes('middlewareRepository'))
+			return ['middlewareRepository'];
+		else if (pathArray.includes('operationAudit'))
+			return ['systemManagement/operationAudit'];
+		else if (pathArray.includes('resourcePoolManagement'))
+			return ['systemManagement/resourcePoolManagement'];
+		else if (pathArray.includes('projectManagement'))
+			return ['systemManagement/projectManagement'];
+		else if (pathArray.includes('myProject')) return ['myProject'];
+		else if (pathArray.includes('serviceList'))
+			return [storage.getSession('menuPath')];
+		return [location.pathname.substring(1)];
+	};
 	const getMenus = async () => {
 		const res = await getMenu(
 			clusterId !== ''
@@ -81,7 +99,7 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 	};
 	const onMenuItemClick = (info: MenuInfo) => {
 		if (info.key.includes('serviceList')) {
-			storage.setSession('menuPath', `/${info.key}`);
+			storage.setSession('menuPath', `${info.key}`);
 		}
 		history.push(`/${info.key}`);
 	};
@@ -89,22 +107,28 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 		setSelectedKeys([info.key]);
 	};
 	return (
-		<Menu
-			style={{ height: '100vh' }}
-			theme="light"
-			mode="inline"
-			items={items}
-			defaultOpenKeys={[
-				'monitorAlarm',
-				'disasterBackup',
-				'systemManagement',
-				'serviceList',
-				'backupService'
-			]}
-			onClick={onMenuItemClick}
-			selectedKeys={selectedKeys}
-			onSelect={onMenuItemSelect}
-		/>
+		<Router>
+			<Route>
+				{({ location }: { location: Location }) => (
+					<Menu
+						style={{ height: '100vh' }}
+						theme="light"
+						mode="inline"
+						items={items}
+						defaultOpenKeys={[
+							'monitorAlarm',
+							'disasterBackup',
+							'systemManagement',
+							'serviceList',
+							'backupService'
+						]}
+						onClick={onMenuItemClick}
+						selectedKeys={mapLocationToActiveKey(location)}
+						onSelect={onMenuItemSelect}
+					/>
+				)}
+			</Route>
+		</Router>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
