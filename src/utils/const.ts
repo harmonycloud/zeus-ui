@@ -56,7 +56,7 @@ export const disabledRoute = [
 	'/elasticsearchCreate',
 	'/rocketmqCreate',
 	'/postgresqlCreate',
-	'/ZookeeperCreate',
+	'/zookeeperCreate',
 	'/dynamicForm',
 	'/serviceList/versionManagement',
 	'/instanceList/detail',

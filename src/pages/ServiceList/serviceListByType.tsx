@@ -304,7 +304,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					break;
 				case 'zookeeper':
 					history.push(
-						`/serviceList/${name}/${aliasName}/ZookeeperCreate/${middlewareInfo?.chartVersion}`
+						`/serviceList/${name}/${aliasName}/zookeeperCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
 				case 'postgresql':
@@ -780,6 +780,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps,
 		index: number
 	) => {
+		if (name !== 'mysql') return '--';
 		return (
 			<div className="display-flex flex-align">
 				{/* 主备标识符 */}
