@@ -163,6 +163,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
 	kafkaDTO: KafkaDTO;
+	hostNetwork: boolean;
 	quota: {
 		kafka: {
 			num?: number;

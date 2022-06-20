@@ -57,6 +57,7 @@ export const disabledRoute = [
 	'/rocketmqCreate',
 	'/postgresqlCreate',
 	'/zookeeperCreate',
+	'kafkaCreate',
 	'/dynamicForm',
 	'/serviceList/versionManagement',
 	'/instanceList/detail',
