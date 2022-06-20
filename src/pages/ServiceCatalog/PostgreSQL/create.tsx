@@ -698,11 +698,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										<span>备注</span>
 									</label>
 									<div className="form-content">
-										<FormItem>
-											<Input.TextArea
-												name="description"
-												placeholder="请输入备注信息"
-											/>
+										<FormItem name="description">
+											<Input.TextArea placeholder="请输入备注信息" />
 										</FormItem>
 									</div>
 								</li>

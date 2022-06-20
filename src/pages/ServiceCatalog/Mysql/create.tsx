@@ -46,7 +46,6 @@ import {
 	AffinityLabelsItem,
 	TolerationsLabelsItem,
 	MysqlSendDataParams,
-	MysqlCreateValuesParams,
 	MysqlSendDataTempParams
 } from '../catalog';
 import { StoreState, clusterType, namespaceType } from '@/types/index';
@@ -64,7 +63,7 @@ import {
 	PlusOutlined,
 	QuestionCircleOutlined
 } from '@ant-design/icons';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import StorageQuota from '@/components/StorageQuota';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -175,9 +174,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
-	const [storageClassList, setStorageClassList] = useState<
-		StorageClassProps[]
-	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	const [replicaCount, setReplicaCount] = useState(2); // * 一主多从
@@ -799,19 +795,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	// 全局分区更新
 	useEffect(() => {
 		if (JSON.stringify(globalNamespace) !== '{}') {
-			getStorageClass({
-				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
-			}).then((res) => {
-				if (res.success) {
-					setStorageClassList(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
-			});
 			if (JSON.stringify(globalNamespace) !== '{}') {
 				// 克隆服务
 				if (backupFileName) {
@@ -1233,147 +1216,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex form-li flex-align">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
-											<QuestionCircleOutlined />
-										</Tooltip>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														style={{
-															width: '100%'
-														}}
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														options={labelList}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			checked:
-																				affinity.checked,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-													>
-														<PlusOutlined
-															style={{
-																color: '#005AA5'
-															}}
-														/>
-													</Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(
-															e: CheckboxChangeEvent
-														) =>
-															changeAffinity(
-																e.target
-																	.checked,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
-															)
-														}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -1926,7 +1768,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<li className="display-flex">
+								<StorageQuota clusterId={globalCluster.id} />
+								{/* <li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
 											存储配额
@@ -1993,7 +1836,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											/>
 										</FormItem>
 									</div>
-								</li>
+								</li> */}
 							</ul>
 						</div>
 					</FormBlock>

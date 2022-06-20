@@ -146,7 +146,7 @@ export default function ServiceList(): JSX.Element {
 					onClick={() => {
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${selectType}/${
+							`serviceList/${selectType}/${
 								typeOptions.filter(
 									(item) => item.value === selectType
 								)[0].label

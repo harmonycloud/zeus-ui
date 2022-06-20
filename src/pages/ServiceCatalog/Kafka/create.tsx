@@ -57,6 +57,7 @@ import {
 } from '@ant-design/icons';
 import styles from './kafka.module.scss';
 import ModePost from '../components/ModePost';
+import StorageQuota from '@/components/StorageQuota';
 
 const FormItem = Form.Item;
 
@@ -283,6 +284,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				kafkaDTO: kfkDTO,
+				hostNetwork: hostNetwork,
 				quota: {
 					kafka: {
 						num: customCluster,
@@ -376,7 +378,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				sendData.quota.kafka.memory = values.memory + 'Gi';
 			}
 			if (
-				values.ingresses[0].serviceList.some(
+				values.ingresses?.[0].serviceList.some(
 					(item: any) => item.exposePort === null
 				)
 			) {
@@ -924,6 +926,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													zkPort: value
 												})
 											}
+											min={0}
 										/>
 										<Input
 											className={styles['zeus-zk-path']}
@@ -1146,7 +1149,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										) : null}
 									</div>
 								</li>
-								<li className="display-flex">
+								<StorageQuota clusterId={globalCluster.id} />
+								{/* <li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
 											存储配额
@@ -1212,7 +1216,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											/>
 										</FormItem>
 									</div>
-								</li>
+								</li> */}
 								<li
 									className="display-flex form-li"
 									style={{ alignItems: 'center' }}

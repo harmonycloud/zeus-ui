@@ -12,7 +12,7 @@ import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
 import KafkaCreate from '@/pages/ServiceCatalog/Kafka/create';
-import ZookeeperCreate from '@/pages/ServiceCatalog/Zookeeper/create';
+import zookeeperCreate from '@/pages/ServiceCatalog/Zookeeper/create';
 import PostgreSQLCreate from '@/pages/ServiceCatalog/PostgreSQL/create';
 import InstanceDetails from '@/pages/ServiceListDetail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
@@ -134,8 +134,8 @@ const Routes = withRouter((props) => {
 					component={KafkaCreate}
 				/>
 				<Route
-					path="/serviceList/:chartName/:aliasName/ZookeeperCreate/:chartVersion"
-					component={ZookeeperCreate}
+					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion"
+					component={zookeeperCreate}
 				/>
 				{/* pgsql备份跳转使用 */}
 				<Route
