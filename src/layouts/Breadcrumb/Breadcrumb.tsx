@@ -29,7 +29,10 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 		if (route.includes('middlewareRepository')) {
 			return '/middlewareRepository';
 		}
-		if (pathname.includes('externalAccess/addExternalAccess')) {
+		if (
+			pathname.includes('externalAccess/addExternalAccess') ||
+			pathname.includes('backupRecovery/addBackupTask')
+		) {
 			const arr = pathname.split('/');
 			arr.splice(5, 1);
 			const result = arr.join('/');
