@@ -26,15 +26,16 @@ export default function List(props: any): JSX.Element {
 
 	useEffect(() => {
 		if (clusterId !== undefined && namespace !== undefined) {
-			getData();
+			getData('');
 			getServiceList().then((res) => {
 				res.data?.length ? setDisabled(false) : setDisabled(true);
 			});
 		}
 	}, [clusterId, namespace]);
 
-	const getData = () => {
+	const getData = (keyword: string) => {
 		const sendData = {
+			keyword,
 			clusterId,
 			namespace,
 			middlewareName: params?.name || '',
@@ -104,7 +105,7 @@ export default function List(props: any): JSX.Element {
 										}
 									})
 									.finally(() => {
-										getData();
+										getData('');
 									});
 							}
 						});
@@ -210,13 +211,13 @@ export default function List(props: any): JSX.Element {
 			<ProTable
 				dataSource={backups}
 				showRefresh
-				onRefresh={getData}
+				onRefresh={() => getData('')}
 				rowKey="key"
 				operation={Operation}
 				showColumnSetting
 				search={{
 					placeholder: '请输入关键字搜索',
-					// onSearch: handleSearch,
+					onSearch: (value: string) => getData(value),
 					style: { width: '360px' }
 				}}
 				onRow={(record: any) => {

@@ -8,7 +8,7 @@ import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import moment from 'antd/node_modules/moment';
 import { weekMap } from '@/utils/const';
-import { getBackups, applyBackup } from '@/services/backup';
+import { getBackups, applyBackup, deleteBackups } from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
 import { getCanReleaseMiddleware } from '@/services/middleware';
@@ -183,24 +183,63 @@ function BackupTaskDetail(props: any): JSX.Element {
 				<LinkButton
 					// onClick={() => releaseMiddleware(record.sourceType)}
 					onClick={() => {
+						if (record.sourceType === 'mysql') {
+							history.push(
+								`/serviceList/mysql/MySQL/mysqlCreate/${
+									middlewareInfo?.chartVersion
+								}/${record.sourceName}/${
+									record.backupFileName || 1
+								}`
+							);
+						} else {
+							const result = {
+								clusterId: cluster.id,
+								namespace: namespace.name,
+								middlewareName:
+									storage.getLocal('backupDetail').sourceName,
+								type: storage.getLocal('backupDetail')
+									.sourceType,
+								cron: storage.getLocal('backupDetail').cron,
+								backupName:
+									storage.getLocal('backupDetail').backupName,
+								addressName:
+									storage.getLocal('backupDetail').addressName
+							};
+							applyBackup(result).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '恢复成功'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						}
+					}}
+				>
+					克隆服务
+				</LinkButton>
+				<LinkButton
+					onClick={() => {
 						const result = {
 							clusterId: cluster.id,
 							namespace: namespace.name,
-							middlewareName:
-								storage.getLocal('backupDetail').sourceName,
-							type: storage.getLocal('backupDetail').sourceType,
-							cron: storage.getLocal('backupDetail').cron,
-							backupName:
-								storage.getLocal('backupDetail').backupName,
-							addressName:
-								storage.getLocal('backupDetail').addressName
+							type: record.sourceType,
+							backupName: record.backupName,
+							backupFileName: record.backupFileName || '',
+							addressName: record.addressName
 						};
-						applyBackup(result).then((res) => {
+						deleteBackups(result).then((res) => {
 							if (res.success) {
 								notification.success({
 									message: '成功',
-									description: '恢复成功'
+									description: '删除成功'
 								});
+								getData();
 							} else {
 								notification.error({
 									message: '失败',
@@ -210,9 +249,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 						});
 					}}
 				>
-					克隆服务
+					删除
 				</LinkButton>
-				<LinkButton>删除</LinkButton>
 			</Actions>
 		);
 	};
