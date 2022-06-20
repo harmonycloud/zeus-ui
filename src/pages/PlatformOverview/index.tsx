@@ -86,8 +86,9 @@ function PlatformOverview(props: any): JSX.Element {
 
 	useEffect(() => {
 		getClusters().then((res) => {
+			console.log(res);
 			if (!res.data) return;
-			res.data.unshift({ name: '全部', id: 'all' });
+			res.data.unshift({ nickname: '全部', id: 'all' });
 			setPoolList(res.data);
 		});
 	}, []);
@@ -265,7 +266,7 @@ function PlatformOverview(props: any): JSX.Element {
 													value={item.id}
 													key={item.id}
 												>
-													{item.name}
+													{item.nickname}
 												</Select.Option>
 											);
 										})}
@@ -463,7 +464,7 @@ function PlatformOverview(props: any): JSX.Element {
 															) : null}
 														</div>
 														<p className="info-name">
-															{item.name}
+															{item.aliasName}
 														</p>
 														<p className="info-count">
 															<span>服务数 </span>
