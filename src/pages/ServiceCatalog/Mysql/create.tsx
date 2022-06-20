@@ -662,7 +662,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
-			namespace: namespace,
+			namespace: globalNamespace.name,
 			middlewareName: middlewareName,
 			type: 'mysql'
 		}).then((res) => {

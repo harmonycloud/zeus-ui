@@ -290,7 +290,6 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 				mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
-				zookeeperDTO: kfkDTO,
 				quota: {
 					zookeeper: {
 						num: customCluster,

@@ -7,11 +7,12 @@ import ProTable from '@/components/ProTable';
 import {
 	getBackupTasks,
 	addBackupConfig,
-	deleteBackups,
+	deleteBackupTasks,
 	getServiceList
 } from '@/services/backup';
 import { statusBackupRender, nameRender } from '@/utils/utils';
 import { backupTaskStatus } from '@/utils/const';
+import storage from '@/utils/storage';
 import { BackupRecordItem } from './backup';
 
 const LinkButton = Actions.LinkButton;
@@ -25,15 +26,16 @@ export default function List(props: any): JSX.Element {
 
 	useEffect(() => {
 		if (clusterId !== undefined && namespace !== undefined) {
-			getData();
+			getData('');
 			getServiceList().then((res) => {
 				res.data?.length ? setDisabled(false) : setDisabled(true);
 			});
 		}
 	}, [clusterId, namespace]);
 
-	const getData = () => {
+	const getData = (keyword: string) => {
 		const sendData = {
+			keyword,
 			clusterId,
 			namespace,
 			middlewareName: params?.name || '',
@@ -61,41 +63,10 @@ export default function List(props: any): JSX.Element {
 		});
 	};
 
-	const backupOnNow = () => {
-		confirm({
-			title: '操作确认',
-			content: '请确认是否立刻备份？',
-			onOk: () => {
-				const sendData = {
-					clusterId,
-					namespace,
-					middlewareName: params?.name || '',
-					type: params?.type || ''
-				};
-				addBackupConfig(sendData)
-					.then((res) => {
-						if (res.success) {
-							notification.success({
-								message: '成功',
-								description: '备份成功'
-							});
-						} else {
-							notification.error({
-								message: '失败',
-								description: res.errorMsg
-							});
-						}
-					})
-					.finally(() => {
-						getData();
-					});
-			}
-		});
-	};
-
 	const actionRender = (
 		value: any,
-		record: BackupRecordItem,
+		// record: BackupRecordItem,
+		record: any,
 		index: number
 	) => {
 		return (
@@ -106,34 +77,37 @@ export default function List(props: any): JSX.Element {
 						e.stopPropagation();
 						confirm({
 							title: '操作确认',
-							content: '备份删除后将无法恢复，请确认执行'
-							// onOk: () => {
-							// 	const sendData = {
-							// 		clusterId,
-							// 		namespace,
-							// 		backupName: record.backupName,
-							// 		middlewareName: listData?.name || '',
-							// 		type: listData?.type || '',
-							// 		backupFileName: record.backupFileName
-							// 	};
-							// 	deleteBackups(sendData)
-							// 		.then((res) => {
-							// 			if (res.success) {
-							// 				notification.success({
-							// 					message: '成功',
-							// 					description: '备份删除成功'
-							// 				});
-							// 			} else {
-							// 				notification.error({
-							// 					message: '失败',
-							// 					description: res.errorMsg
-							// 				});
-							// 			}
-							// 		})
-							// 		.finally(() => {
-							// 			getData();
-							// 		});
-							// }
+							content: '备份删除后将无法恢复，请确认执行',
+							onOk: () => {
+								const sendData = {
+									clusterId,
+									namespace,
+									type: record.sourceType,
+									cron: record.cron || '',
+									backupName: record.backupName,
+									addressName: record.addressName,
+									backupFileName: record.backupFileName || ''
+								};
+								console.log(sendData);
+
+								deleteBackupTasks(sendData)
+									.then((res) => {
+										if (res.success) {
+											notification.success({
+												message: '成功',
+												description: '备份删除成功'
+											});
+										} else {
+											notification.error({
+												message: '失败',
+												description: res.errorMsg
+											});
+										}
+									})
+									.finally(() => {
+										getData('');
+									});
+							}
 						});
 					}}
 				>
@@ -237,19 +211,23 @@ export default function List(props: any): JSX.Element {
 			<ProTable
 				dataSource={backups}
 				showRefresh
-				onRefresh={getData}
+				onRefresh={() => getData('')}
 				rowKey="key"
 				operation={Operation}
 				showColumnSetting
 				search={{
 					placeholder: '请输入关键字搜索',
-					// onSearch: handleSearch,
+					onSearch: (value: string) => getData(value),
 					style: { width: '360px' }
 				}}
 				onRow={(record: any) => {
 					return {
-						onClick: () =>
-							history.push('/backupService/backupTask/detail')
+						onClick: () => {
+							history.push(
+								`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
+							);
+							storage.setLocal('backupDetail', record);
+						}
 					};
 				}}
 			>
@@ -290,7 +268,10 @@ export default function List(props: any): JSX.Element {
 					dataIndex="phrase"
 					render={() => '单次备份'}
 					width={120}
-					filters={[{ text: '11', value: '11' }]}
+					filters={[
+						{ text: '周期备份', value: '' },
+						{ text: '单次备份', value: '' }
+					]}
 				/>
 				<ProTable.Column title="备份位置" dataIndex="position" />
 				<ProTable.Column
