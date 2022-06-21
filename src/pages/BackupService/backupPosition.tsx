@@ -200,7 +200,13 @@ export default function BackupPosition(): JSX.Element {
 										<Button
 											icon={<PlusOutlined />}
 											style={{ marginLeft: 16 }}
-											disabled={!selectService}
+											disabled={
+												!selectService ||
+												!!item.clusterIds.find(
+													(res: any) =>
+														res === selectService
+												)
+											}
 											onClick={() => handleAdd(item)}
 										></Button>
 										<div style={{ marginTop: 16 }}>
