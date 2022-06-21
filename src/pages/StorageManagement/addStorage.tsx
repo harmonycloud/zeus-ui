@@ -35,9 +35,6 @@ export default function AddStorage(): JSX.Element {
 		getClusters({ detail: true }).then((res) => {
 			if (res.success) {
 				setClusterList(res.data);
-				if (res.data.length > 0) {
-					setCurClusterId(res.data[0].name);
-				}
 			} else {
 				notification.error({
 					message: '失败',
@@ -67,23 +64,29 @@ export default function AddStorage(): JSX.Element {
 					});
 				}
 			});
-		} else {
-			const sendData: GetParams = {
-				all: true,
-				clusterId: '*'
-			};
-			getLists(sendData).then((res) => {
-				if (res.success) {
-					setStorages(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
-			});
 		}
 	}, []);
+	useEffect(() => {
+		if (curClusterId) {
+			getData(curClusterId);
+		}
+	}, [curClusterId]);
+	const getData = (clusterId: string) => {
+		const sendData: GetParams = {
+			all: true,
+			clusterId: clusterId
+		};
+		getLists(sendData).then((res) => {
+			if (res.success) {
+				setStorages(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
 			const sendData: AddParams = {
@@ -171,12 +174,13 @@ export default function AddStorage(): JSX.Element {
 								onChange={(value: string) =>
 									setCurClusterId(value)
 								}
+								disabled={params.name ? true : false}
 							>
 								{clusterList.map((item: clusterType) => {
 									return (
 										<Select.Option
-											key={item.name}
-											value={item.name}
+											key={item.id}
+											value={item.id}
 										>
 											{item.nickname}
 										</Select.Option>
