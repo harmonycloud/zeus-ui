@@ -22,38 +22,50 @@ export const statusRender: (value: string) => JSX.Element = (value: string) => {
 	switch (value) {
 		case 'Creating':
 			return (
-				<>
-					<SyncOutlined style={{ color: '#0091FF' }} /> 启动中
-				</>
+				<div className="display-flex flex-align">
+					<SyncOutlined
+						style={{ color: '#0091FF', marginRight: 4 }}
+					/>{' '}
+					启动中
+				</div>
 			);
 		case 'Running':
 			return (
-				<>
-					<CheckCircleFilled style={{ color: '#00A700' }} /> 运行正常
-				</>
+				<div className="display-flex flex-align">
+					<CheckCircleFilled
+						style={{ color: '#00A700', marginRight: 4 }}
+					/>{' '}
+					运行正常
+				</div>
 			);
 		case 'Failed':
 			return (
-				<>
-					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+				<div className="display-flex flex-align">
+					<ExclamationCircleFilled
+						style={{ color: '#C80000', marginRight: 4 }}
+					/>{' '}
 					运行异常
-				</>
+				</div>
 			);
 		case 'RunningError':
 			return (
-				<>
-					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+				<div className="display-flex flex-align">
+					<ExclamationCircleFilled
+						style={{ color: '#C80000', marginRight: 4 }}
+					/>{' '}
 					运行异常
-				</>
+				</div>
 			);
 		case '':
 			return <></>;
 		default:
 			return (
-				<>
-					<ExclamationCircleFilled style={{ color: '#C80000' }} />{' '}
+				<div className="display-flex flex-align">
+					<ExclamationCircleFilled
+						style={{ color: '#C80000', marginRight: 4 }}
+					/>{' '}
 					运行异常
-				</>
+				</div>
 			);
 	}
 };

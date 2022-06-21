@@ -58,6 +58,7 @@ import { getAspectFrom } from '@/services/common';
 
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import StorageQuota from '@/components/StorageQuota';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -158,9 +159,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
-	const [storageClassList, setStorageClassList] = useState<
-		StorageClassProps[]
-	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	const [replicaCount, setReplicaCount] = useState(2); // * 一主多从
@@ -250,7 +248,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 								: mode === '1m'
 								? 0
 								: replicaCount,
-						storageClassName: values.storageClass,
+						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -407,19 +405,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					setMirrorList(res.data.list);
-				}
-			});
-			getStorageClass({
-				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
-			}).then((res) => {
-				if (res.success) {
-					setStorageClassList(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
 				}
 			});
 		}
@@ -863,7 +848,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 								</li>
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>postgre密码</span>
+										<span>postgres密码</span>
 									</label>
 									<div className="form-content">
 										<Tooltip
@@ -1012,9 +997,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										<div
 											style={{
 												display:
-													mode === '1m-1s'
-														? 'none'
-														: 'block'
+													mode === '1m-ns'
+														? 'block'
+														: 'none'
 											}}
 										>
 											<label style={{ margin: '0 16px' }}>
@@ -1149,7 +1134,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<li className="display-flex">
+								<StorageQuota clusterId={globalCluster.id} />
+								{/* <li className="display-flex">
 									<label className="form-name">
 										<span className="ne-required">
 											存储配额
@@ -1217,7 +1203,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											/>
 										</FormItem>
 									</div>
-								</li>
+								</li> */}
 							</ul>
 						</div>
 					</FormBlock>

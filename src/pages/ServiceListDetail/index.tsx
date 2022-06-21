@@ -2,13 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-// import {
-// 	Button,
-// 	Dialog,
-// 	Message,
-// 	Icon,
-// 	Tab
-// } from '@alicloud/console-components';
 import { Button, Modal, Tabs, notification, Alert } from 'antd';
 
 import BasicInfo from './BasicInfo/index';
@@ -36,7 +29,7 @@ import './detail.scss';
 import { DetailParams, InstanceDetailsProps } from './detail';
 import { middlewareDetailProps, monitorProps } from '@/types/comment';
 import { StoreState, User } from '@/types';
-import { ExclamationCircleFilled, RedoOutlined } from '@ant-design/icons';
+import { ReloadOutlined } from '@ant-design/icons';
 
 /*
  * 自定义中间tab页显示判断 后端
@@ -428,7 +421,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							onClick={() => refresh(activeKey)}
 							style={{ padding: '0 9px', marginRight: '8px' }}
 						>
-							<RedoOutlined />
+							<ReloadOutlined />
 						</Button>
 						{data?.mysqlDTO?.openDisasterRecoveryMode &&
 						data?.mysqlDTO?.isSource === false ? (

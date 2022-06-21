@@ -292,7 +292,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						}
 						sendData.quota[key] = {
 							...nodeObj[key],
-							storageClassName: nodeObj[key].storageClass,
+							storageClassName:
+								nodeObj[key].storageClass?.split('/')[0],
 							storageClassQuota: nodeObj[key].storageQuota
 						};
 					}
@@ -685,11 +686,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 										<span>备注</span>
 									</label>
 									<div className="form-content">
-										<FormItem>
-											<Input.TextArea
-												name="description"
-												placeholder="请输入备注信息"
-											/>
+										<FormItem name="description">
+											<Input.TextArea placeholder="请输入备注信息" />
 										</FormItem>
 									</div>
 								</li>

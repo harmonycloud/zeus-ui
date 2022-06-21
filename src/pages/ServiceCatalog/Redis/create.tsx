@@ -18,11 +18,7 @@ import {
 	InputNumber,
 	Tag
 } from 'antd';
-import {
-	QuestionCircleOutlined,
-	PlusOutlined,
-	CloseCircleFilled
-} from '@ant-design/icons';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
 import styles from './redis.module.scss';
 import {
@@ -33,7 +29,7 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
-import { instanceSpecList, redisClusterDataList } from '@/utils/const';
+import { instanceSpecList, redisDataList } from '@/utils/const';
 import {
 	CreateProps,
 	CreateParams,
@@ -60,6 +56,7 @@ import { getAspectFrom } from '@/services/common';
 
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import StorageQuota from '@/components/StorageQuota';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
@@ -151,8 +148,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: 'Redis 节点',
 			num: 3,
 			specId: '1',
-			cpu: 1,
-			memory: 2,
+			cpu: 2,
+			memory: 0.256,
 			storageClass: '',
 			storageQuota: 0
 		},
@@ -161,8 +158,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: '哨兵节点',
 			num: 3,
 			specId: '1',
-			cpu: 1,
-			memory: 2
+			cpu: 2,
+			memory: 0.256
 		}
 	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
@@ -171,9 +168,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
-	const [storageClassList, setStorageClassList] = useState<
-		StorageClassProps[]
-	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * 外接的动态表单
@@ -210,7 +204,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
 			getProjectNamespace({ projectId: project.projectId }).then(
 				(res) => {
-					console.log(res);
 					if (res.success) {
 						const list = res.data.filter(
 							(item: NamespaceItem) =>
@@ -227,22 +220,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			);
 		}
 	}, [project, globalNamespace]);
-
-	const formHandle = (obj: any, item: any) => {
-		if (
-			['cpu', 'memory', 'storageClass', 'storageQuota'].indexOf(
-				item.name
-			) > -1 &&
-			mode === 'sentinel'
-		) {
-			const temp = nodeObj[nodeModify.nodeName];
-			temp[item.name] = item.value;
-			setNodeObj({
-				...nodeObj,
-				[nodeModify.nodeName]: temp
-			});
-		}
-	};
 
 	const modifyQuota = (key: string) => {
 		setNodeModify({
@@ -298,16 +275,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 								item.address === values.mirrorImageId
 						)
 						?.id.toString() || ''
-				// mirrorImageId: mirrorList.find(
-				// 	(item) => item.address === values['mirrorImageId']
-				// )
-				// 	? mirrorList
-				// 			.find(
-				// 				(item) =>
-				// 					item.address === values['mirrorImageId']
-				// 			)
-				// 			.id.toString()
-				// 	: ''
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -356,7 +323,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				sendData.quota = {
 					redis: {
 						num: clusterMode === '3s-3m' ? 6 : 10,
-						storageClassName: values.storageClass,
+						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
 				};
@@ -408,7 +375,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							}
 							sendData.quota[key] = {
 								...nodeObj[key],
-								storageClassName: nodeObj[key].storageClass,
+								storageClassName:
+									nodeObj[key].storageClass?.split('/')[0],
 								storageClassQuota: nodeObj[key].storageQuota
 							};
 						}
@@ -484,19 +452,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					setMirrorList(res.data.list);
-				}
-			});
-			getStorageClass({
-				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
-			}).then((res) => {
-				if (res.success) {
-					setStorageClassList(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
 				}
 			});
 		}
@@ -755,11 +710,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										<span>备注</span>
 									</label>
 									<div className="form-content">
-										<FormItem>
-											<Input.TextArea
-												name="description"
-												placeholder="请输入备注信息"
-											/>
+										<FormItem name="description">
+											<Input.TextArea placeholder="请输入备注信息" />
 										</FormItem>
 									</div>
 								</li>
@@ -769,152 +721,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex flex-center form-li">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Popover
-											content={
-												'勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败'
-											}
-										>
-											<QuestionCircleOutlined />
-										</Popover>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														dataSource={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			checked:
-																				affinity.checked,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-														icon={
-															<PlusOutlined
-																style={{
-																	color: '#005AA5'
-																}}
-															/>
-														}
-													></Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(
-															e: CheckboxChangeEvent
-														) =>
-															changeAffinity(
-																e.target
-																	.checked,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
-															)
-														}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -1333,7 +1139,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																)
 															}
 															dataList={
-																redisClusterDataList
+																redisDataList
 															}
 														/>
 													</div>
@@ -1432,84 +1238,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											</div>
 										</li>
 										{nodeModify.nodeName !== 'sentinel' && (
-											<li className="display-flex">
-												<label className="form-name">
-													<span className="ne-required">
-														存储配额
-													</span>
-												</label>
-												<div
-													className={`form-content display-flex`}
-												>
-													<FormItem
-														rules={[
-															{
-																required: true,
-																message:
-																	'请选择存储类型'
-															}
-														]}
-														name="storageClass"
-													>
-														<Select
-															style={{
-																marginRight: 8,
-																width: 150
-															}}
-															placeholder="请选择"
-														>
-															{storageClassList.map(
-																(
-																	item,
-																	index
-																) => {
-																	return (
-																		<Select.Option
-																			key={
-																				index
-																			}
-																			value={
-																				item.name
-																			}
-																		>
-																			{
-																				item.name
-																			}
-																		</Select.Option>
-																	);
-																}
-															)}
-														</Select>
-													</FormItem>
-													<FormItem
-														rules={[
-															{
-																required: true,
-																message:
-																	'请输入存储配额大小（GB）'
-															},
-															{
-																pattern:
-																	new RegExp(
-																		pattern.posInt
-																	),
-																message:
-																	'请输入小于21位的正整数'
-															}
-														]}
-														name="storageQuota"
-														initialValue={5}
-													>
-														<InputNumber
-															style={{
-																width: '100%'
-															}}
-															placeholder="请输入存储配额大小"
-															addonAfter="GB"
-														/>
-													</FormItem>
-												</div>
-											</li>
+											<StorageQuota
+												clusterId={globalCluster.id}
+											/>
 										)}
 									</>
 								)}

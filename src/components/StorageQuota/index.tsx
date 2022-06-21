@@ -52,7 +52,7 @@ export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
 							return (
 								<Select.Option
 									key={item.name}
-									value={item.name}
+									value={`${item.name}/${item.aliasName}`}
 								>
 									{item.aliasName}
 								</Select.Option>

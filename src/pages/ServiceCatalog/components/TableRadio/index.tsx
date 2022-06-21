@@ -10,17 +10,18 @@ import { mysqlDataList } from '@/utils/const';
  * id 一项数据的唯一id
  */
 export default function TableRadio(props: TableRadioProps): JSX.Element {
-	const { id = '', onCallBack, dataList = mysqlDataList } = props;
+	const { id, onCallBack, dataList = mysqlDataList } = props;
 	const columns = [
 		{ title: 'CPU', dataIndex: 'cpu' },
 		{ title: '内存', dataIndex: 'memory' }
 	];
-	const [selectedRowKeys, setSelectedRowKeys] = useState(['1']);
+	const [selectedRowKeys, setSelectedRowKeys] = useState([id]);
 	const rowSelection = {
 		selectedRowKeys: selectedRowKeys,
 		onChange: (selectedRowKeys: any, selectedRows: any) => {
-			onCallBack(selectedRowKeys[0]);
+			console.log(selectedRowKeys, selectedRows);
 			setSelectedRowKeys(selectedRowKeys);
+			onCallBack(selectedRowKeys[0]);
 		}
 	};
 
@@ -36,8 +37,8 @@ export default function TableRadio(props: TableRadioProps): JSX.Element {
 			onRow={(record: any) => {
 				return {
 					onClick: () => {
-						onCallBack(selectedRowKeys[0]);
 						setSelectedRowKeys([record.id]);
+						onCallBack(record.id);
 					}
 				};
 			}}

@@ -37,17 +37,15 @@ export default function MyLayout() {
 			<Router>
 				<Navbar getClusterId={getClusterId} />
 				<div className="zeus-mid-content">
-					<aside style={{ width: collapsed ? '10px' : '200px' }}>
+					<aside style={{ width: collapsed ? '0px' : '200px' }}>
 						<div className="zeus-mid-title">中间件平台</div>
 						<MyMenu clusterId={clusterId} />
 					</aside>
 					<div
 						className="zeus-mid-left-content"
 						style={{
-							marginLeft: collapsed ? '15px' : '200px',
-							minWidth: collapsed
-								? 'calc(100% - 10px)'
-								: 'calc(100% - 200px)'
+							marginLeft: collapsed ? '0px' : '200px',
+							minWidth: collapsed ? '100%' : 'calc(100% - 200px)'
 						}}
 					>
 						<Routes />
@@ -56,7 +54,7 @@ export default function MyLayout() {
 				<div
 					className="zeus-mid-flod-content"
 					style={{
-						left: collapsed ? '10px' : '200px'
+						left: collapsed ? '0px' : '200px'
 					}}
 					onClick={() => setCollapsed(!collapsed)}
 				>

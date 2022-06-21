@@ -58,6 +58,7 @@ import {
 } from '@ant-design/icons';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import ModePost from '../components/ModePost';
+import StorageQuota from '@/components/StorageQuota';
 
 const { Item: FormItem } = Form;
 
@@ -147,9 +148,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
-	const [storageClassList, setStorageClassList] = useState<
-		StorageClassProps[]
-	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * acl相关
@@ -229,7 +227,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				hostNetwork: hostNetwork,
 				quota: {
 					rocketmq: {
-						storageClassName: values.storageClass,
+						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -331,7 +329,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					values.rocketMQAccountList;
 			}
 			if (
-				values.ingresses[0].serviceList.some(
+				values.ingresses?.[0].serviceList.some(
 					(item: any) => item.exposePort === null
 				)
 			) {
@@ -414,19 +412,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					setMirrorList(res.data.list);
-				}
-			});
-			getStorageClass({
-				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
-			}).then((res) => {
-				if (res.success) {
-					setStorageClassList(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
 				}
 			});
 		}
@@ -1166,69 +1151,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<li className="display-flex">
-									<label className="form-name">
-										<span className="ne-required">
-											存储配额
-										</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<FormItem
-											name="storageClass"
-											required
-											rules={[
-												{
-													required: true,
-													message: '请选择存储类型'
-												}
-											]}
-											style={{ marginRight: 8 }}
-										>
-											<Select placeholder="请选择存储类型">
-												{storageClassList.map(
-													(item, index) => {
-														return (
-															<Select.Option
-																key={index}
-																value={
-																	item.name
-																}
-															>
-																{item.name}
-															</Select.Option>
-														);
-													}
-												)}
-											</Select>
-										</FormItem>
-										<FormItem
-											name="storageQuota"
-											rules={[
-												{
-													pattern: new RegExp(
-														pattern.posInt
-													),
-													message:
-														'请输入小于21位的正整数'
-												},
-												{
-													required: true,
-													message:
-														'请输入存储配额大小（GB）'
-												}
-											]}
-											required
-											initialValue={5}
-										>
-											<InputNumber
-												placeholder="请输入存储配额大小"
-												addonAfter="GB"
-											/>
-										</FormItem>
-									</div>
-								</li>
+								<StorageQuota clusterId={globalCluster.id} />
 								{mode !== 'dledger' && (
 									<>
 										<li
