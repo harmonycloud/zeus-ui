@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, notification, Form, Input } from 'antd';
+import React, { useEffect } from 'react';
+import { Modal, notification, Form, Input, InputNumber } from 'antd';
 import { installIngress } from '@/services/common';
 import pattern from '@/utils/pattern';
 
@@ -21,14 +21,24 @@ const FormItem = Form.Item;
 const InstallIngressForm = (props: InstallIngressProps) => {
 	const { visible, onCancel, onRefresh, clusterId } = props;
 	const [form] = Form.useForm();
+	useEffect(() => {
+		form.setFieldsValue({
+			ingressClassName: 'nginx-ingress-controller',
+			httpPort: 80,
+			httpsPort: 443,
+			healthzPort: 10254,
+			defaultServerPort: 8181
+		});
+	}, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
 			onCancel();
+			// console.log({ ...values, clusterId });
 			installIngress({ ...values, clusterId }).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
-						description: '服务暴露安装成功'
+						description: '负载均衡成功'
 					});
 					onRefresh();
 				} else {
@@ -42,7 +52,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 	};
 	return (
 		<Modal
-			title="安装服务暴露"
+			title="安装负载均衡"
 			width={640}
 			visible={visible}
 			onCancel={onCancel}
@@ -61,88 +71,63 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
 						}
 					]}
+					name="ingressClassName"
 				>
-					<Input
-						type="text"
-						name="ingressClassName"
-						// trim={true}
-						defaultValue="nginx-ingress-controller"
-						placeholder="请输入Ingress名称"
-					/>
+					<Input placeholder="请输入Ingress名称" />
 				</FormItem>
 				<FormItem
 					label="http端口"
 					required
-					rules={[
-						{ required: true, message: '请输入http端口' },
-						{ min: 1, message: '端口范围为1' },
-						{ max: 65535, message: '端口范围为1-65535' }
-					]}
+					rules={[{ required: true, message: '请输入http端口' }]}
+					name="httpPort"
 				>
-					<Input
-						type="number"
-						name="httpPort"
-						defaultValue={80}
-						// trim={true}
+					<InputNumber
+						step={1}
 						min={1}
 						max={65535}
+						style={{ width: '100%' }}
 						placeholder="请输入http端口"
 					/>
 				</FormItem>
 				<FormItem
 					label="https端口"
 					required
-					rules={[
-						{ required: true, message: '请输入https端口' },
-						{ min: 1, message: '端口范围为1' },
-						{ max: 65535, message: '端口范围为1-65535' }
-					]}
+					rules={[{ required: true, message: '请输入https端口' }]}
+					name="httpsPort"
 				>
-					<Input
-						type="number"
-						name="httpsPort"
-						// trim={true}
-						defaultValue={443}
+					<InputNumber
+						step={1}
 						min={1}
 						max={65535}
+						style={{ width: '100%' }}
 						placeholder="请输入https端口"
 					/>
 				</FormItem>
 				<FormItem
 					label="healthz端口"
 					required
-					rules={[
-						{ required: true, message: '请输入healthz端口' },
-						{ min: 1, message: '端口范围为1' },
-						{ max: 65535, message: '端口范围为1-65535' }
-					]}
+					rules={[{ required: true, message: '请输入healthz端口' }]}
+					name="healthzPort"
 				>
-					<Input
-						type="number"
-						name="healthzPort"
-						// trim={true}
-						defaultValue={10254}
+					<InputNumber
+						step={1}
 						min={1}
 						max={65535}
+						style={{ width: '100%' }}
 						placeholder="请输入healthz端口"
 					/>
 				</FormItem>
 				<FormItem
 					label="默认服务端口"
 					required
-					rules={[
-						{ required: true, message: '请输入默认服务端口' },
-						{ min: 1, message: '端口范围为1' },
-						{ max: 65535, message: '端口范围为1-65535' }
-					]}
+					rules={[{ required: true, message: '请输入默认服务端口' }]}
+					name="defaultServerPort"
 				>
-					<Input
-						type="number"
-						name="defaultServerPort"
-						// trim={true}
-						defaultValue={8181}
+					<InputNumber
+						step={1}
 						min={1}
 						max={65535}
+						style={{ width: '100%' }}
 						placeholder="请输入默认服务端口"
 					/>
 				</FormItem>

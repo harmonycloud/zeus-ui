@@ -37,7 +37,6 @@ interface SendDataProps {
 }
 const AccessIngressForm = (props: AccessIngressProps) => {
 	const { visible, onCancel, clusterId, onRefresh, data } = props;
-	// const field = Field.useField();
 	const [form] = Form.useForm();
 	useEffect(() => {
 		if (data) {
@@ -62,7 +61,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: '服务暴露修改成功'
+							description: '负载均衡修改成功'
 						});
 						onRefresh();
 					} else {
@@ -78,7 +77,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: '服务暴露接入成功'
+							description: '负载均衡接入成功'
 						});
 						onRefresh();
 					} else {
@@ -93,7 +92,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 	};
 	return (
 		<Modal
-			title={data ? '编辑服务暴露' : '接入服务暴露'}
+			title={data ? '编辑负载均衡' : '接入负载均衡'}
 			width={640}
 			visible={visible}
 			okText="确定"
@@ -112,12 +111,10 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
 						}
 					]}
+					initialValue="nginx-ingress-controller"
 					name="ingressClassName"
 				>
-					<Input
-						defaultValue="nginx-ingress-controller"
-						placeholder="请输入Ingress名称"
-					/>
+					<Input placeholder="请输入Ingress名称" />
 				</FormItem>
 				<FormItem
 					label="Ingress地址"
