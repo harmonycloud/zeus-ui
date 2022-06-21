@@ -86,7 +86,6 @@ function PlatformOverview(props: any): JSX.Element {
 
 	useEffect(() => {
 		getClusters().then((res) => {
-			console.log(res);
 			if (!res.data) return;
 			res.data.unshift({ nickname: '全部', id: 'all' });
 			setPoolList(res.data);
