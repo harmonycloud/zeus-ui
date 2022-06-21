@@ -50,11 +50,7 @@ import { instanceSpecList, kafkaDataList } from '@/utils/const';
 import { childrenRender, getCustomFormKeys } from '@/utils/utils';
 import pattern from '@/utils/pattern';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
-import {
-	CloseCircleFilled,
-	PlusOutlined,
-	QuestionCircleOutlined
-} from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './kafka.module.scss';
 import ModePost from '../components/ModePost';
 import StorageQuota from '@/components/StorageQuota';
@@ -129,9 +125,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
-	const [storageClassList, setStorageClassList] = useState<
-		StorageClassProps[]
-	>([]);
 	const [customCluster, setCustomCluster] = useState<number>(3);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
@@ -247,19 +240,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					});
 				}
 			});
-			getStorageClass({
-				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
-			}).then((res) => {
-				if (res.success) {
-					setStorageClassList(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
-			});
 		}
 	}, [globalCluster, globalNamespace]);
 	// * 表单提交
@@ -288,7 +268,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				quota: {
 					kafka: {
 						num: customCluster,
-						storageClassName: values.storageClass,
+						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
 				},

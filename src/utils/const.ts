@@ -424,7 +424,7 @@ export const mysqlDataList = [
 	}
 ];
 // * redis 哨兵版本
-export const redisClusterDataList = [
+export const redisSentinelDataList = [
 	{
 		id: '1',
 		cpu: '2 Core',

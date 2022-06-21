@@ -5,8 +5,13 @@ import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
 
 import pattern from '@/utils/pattern';
 import { getStorageClass } from '@/services/middleware';
-import { esDataList, instanceSpecList, redisDataList } from '@/utils/const';
+import {
+	esDataList,
+	instanceSpecList,
+	redisSentinelDataList
+} from '@/utils/const';
 import { modeItemProps } from './index';
+import StorageQuota from '../StorageQuota';
 
 interface EditQuotaFormProps extends modeItemProps {
 	visible: boolean;
@@ -55,17 +60,19 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 	}, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
+			console.log(values);
 			const value = { ...modifyData, ...values };
 			onCreate(value);
 		});
 	};
 	const checkGeneral = (value: any) => {
+		console.log(value);
 		switch (value) {
 			case '1':
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: middlewareType === 'elasticsearch' ? 4 : 1,
+					memory: middlewareType === 'elasticsearch' ? 4 : 0.256,
 					specId: value
 				});
 				break;
@@ -73,7 +80,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: middlewareType === 'elasticsearch' ? 8 : 2,
+					memory: middlewareType === 'elasticsearch' ? 8 : 1,
 					specId: value
 				});
 				break;
@@ -81,7 +88,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
-					memory: middlewareType === 'elasticsearch' ? 8 : 4,
+					memory: middlewareType === 'elasticsearch' ? 8 : 2,
 					specId: value
 				});
 				break;
@@ -179,7 +186,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 										dataList={
 											middlewareType === 'elasticsearch'
 												? esDataList
-												: redisDataList
+												: redisSentinelDataList
 										}
 									/>
 								</div>
@@ -257,61 +264,62 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 						</div>
 					</li>
 					{type !== 'kibana' && type !== 'sentinel' && (
-						<li className="display-flex mt-8">
-							<label className="form-name">
-								<span className="ne-required">存储配额</span>
-							</label>
-							<div className={`form-content display-flex`}>
-								<FormItem
-									rules={[
-										{
-											required: true,
-											message: '请选择存储类型'
-										}
-									]}
-									name="storageClass"
-								>
-									<Select
-										placeholder="请选择"
-										style={{
-											marginRight: 8,
-											width: 150
-										}}
-									>
-										{storageClassList.map((item, index) => {
-											return (
-												<Select.Option
-													key={index}
-													value={item.name}
-												>
-													{item.name}
-												</Select.Option>
-											);
-										})}
-									</Select>
-								</FormItem>
-								<FormItem
-									rules={[
-										{
-											required: true,
-											message: '请输入存储配额大小（GB）'
-										},
-										{
-											pattern: new RegExp(pattern.posInt),
-											message: '请输入小于21位的正整数'
-										}
-									]}
-									name="storageQuota"
-									initialValue={5}
-								>
-									<Input
-										min={1}
-										placeholder="请输入存储配额大小"
-										addonAfter="GB"
-									/>
-								</FormItem>
-							</div>
-						</li>
+						<StorageQuota clusterId={clusterId} />
+						// <li className="display-flex mt-8">
+						// 	<label className="form-name">
+						// 		<span className="ne-required">存储配额</span>
+						// 	</label>
+						// 	<div className={`form-content display-flex`}>
+						// 		<FormItem
+						// 			rules={[
+						// 				{
+						// 					required: true,
+						// 					message: '请选择存储类型'
+						// 				}
+						// 			]}
+						// 			name="storageClass"
+						// 		>
+						// 			<Select
+						// 				placeholder="请选择"
+						// 				style={{
+						// 					marginRight: 8,
+						// 					width: 150
+						// 				}}
+						// 			>
+						// 				{storageClassList.map((item, index) => {
+						// 					return (
+						// 						<Select.Option
+						// 							key={index}
+						// 							value={item.name}
+						// 						>
+						// 							{item.name}
+						// 						</Select.Option>
+						// 					);
+						// 				})}
+						// 			</Select>
+						// 		</FormItem>
+						// 		<FormItem
+						// 			rules={[
+						// 				{
+						// 					required: true,
+						// 					message: '请输入存储配额大小（GB）'
+						// 				},
+						// 				{
+						// 					pattern: new RegExp(pattern.posInt),
+						// 					message: '请输入小于21位的正整数'
+						// 				}
+						// 			]}
+						// 			name="storageQuota"
+						// 			initialValue={5}
+						// 		>
+						// 			<Input
+						// 				min={1}
+						// 				placeholder="请输入存储配额大小"
+						// 				addonAfter="GB"
+						// 			/>
+						// 		</FormItem>
+						// 	</div>
+						// </li>
 					)}
 				</ul>
 			</Form>

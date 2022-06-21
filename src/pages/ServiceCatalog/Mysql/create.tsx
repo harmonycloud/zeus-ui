@@ -291,7 +291,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				stdoutEnabled: standardLog,
 				quota: {
 					mysql: {
-						storageClassName: values.storageClass,
+						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -431,7 +431,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					tolerations: sendData.tolerations,
 					quota: {
 						mysql: {
-							storageClassName: values.storageClass,
+							storageClassName: values.storageClass.split('/')[0],
 							storageClassQuota: values.storageQuota
 						}
 					}
@@ -517,7 +517,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							mysql: {
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
-								storageClassName: values.storageClass,
+								storageClassName:
+									values.storageClass.split('/')[0],
 								storageClassQuota: values.storageQuota
 							}
 						}

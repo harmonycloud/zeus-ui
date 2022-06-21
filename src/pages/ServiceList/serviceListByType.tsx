@@ -57,16 +57,15 @@ const ServiceListByType = (props: serviceListProps) => {
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
-	const [selectedKeys, setSelectKeys] = useState<string[]>([]);
 	const [cantRelease, setCantRelease] = useState<boolean>(false);
 	const history = useHistory();
 	const params: ListParamsProps = useParams();
 	const { name, aliasName } = params;
-	// const [lock, setLock] = useState<any>({ lock: 'right' });
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
 	// * 角色权限
 	const [role] = useState<User>(JSON.parse(storage.getLocal('role')));
+	// ! true 为当前用户具有该操作的权限 false 为当前用户不具有该操作的权限
 	const [roleFlag, setRoleFlag] = useState({
 		getFlag: false,
 		createFlag: false,
@@ -253,19 +252,6 @@ const ServiceListByType = (props: serviceListProps) => {
 	const handleFilterBackup = (e: CheckboxChangeEvent) => {
 		setBackupCheck(e.target.checked);
 		let list = dataSource?.serviceList || [];
-		if (selectedKeys.length > 0) {
-			if (selectedKeys[0] !== 'Other') {
-				list = list.filter((item) => {
-					return item.status === selectedKeys[0];
-				});
-			} else if (selectedKeys[0] === 'Other') {
-				list = list.filter((item) => {
-					return (
-						item.status !== 'Running' && item.status !== 'Creating'
-					);
-				});
-			}
-		}
 		if (e.target.checked) {
 			list = showDataSource.filter(
 				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
@@ -391,26 +377,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
-		// const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		// let getFlag = false;
-		// let createFlag = false;
-		// if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
-		// 	getFlag = true;
-		// 	createFlag = true;
-		// } else {
-		// 	getFlag =
-		// 		jsonRole.userRoleList.find(
-		// 			(item) => item.projectId === project.projectId
-		// 		)?.power[name][0] === '1'
-		// 			? true
-		// 			: false;
-		// 	createFlag =
-		// 		jsonRole.userRoleList.find(
-		// 			(item) => item.projectId === project.projectId
-		// 		)?.power[name][2] === '1'
-		// 			? true
-		// 			: false;
-		// }
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
 			if (name === 'mysql') {
 				return {
@@ -544,27 +510,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps,
 		index: number
 	) => {
-		// const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		// console.log(jsonRole);
-		// let deleteFlag = false;
-		// let operateFlag = false;
-		// if (jsonRole.userRoleList[0].roleId === 1) {
-		// 	deleteFlag = true;
-		// 	operateFlag = true;
-		// } else {
-		// 	deleteFlag =
-		// 		jsonRole.userRoleList.find(
-		// 			(item) => item.projectId === project.projectId
-		// 		)?.power[record.type][3] === '1'
-		// 			? true
-		// 			: false;
-		// 	operateFlag =
-		// 		jsonRole.userRoleList.find(
-		// 			(item) => item.projectId === project.projectId
-		// 		)?.power[record.type][1] === '1'
-		// 			? true
-		// 			: false;
-		// }
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>
@@ -909,23 +854,12 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const podRender = (value: string, record: serviceProps, index: number) => {
-		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		let operateFlag = false;
-		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
-			operateFlag = true;
-		} else {
-			operateFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[record.type][1] === '1'
-					? true
-					: false;
-		}
+		if (record.status === 'Deleted') return '--';
 		return (
 			<span
-				className={operateFlag ? 'name-link' : ''}
+				className={roleFlag.operateFlag ? 'name-link' : ''}
 				onClick={() => {
-					if (operateFlag) {
+					if (roleFlag.operateFlag) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
 						);

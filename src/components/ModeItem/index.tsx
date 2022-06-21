@@ -98,7 +98,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						</li>
 						{data.storageClass && data.storageClass !== '' && (
 							<li>
-								<span>{data.storageClass}：</span>
+								<span>{data.storageClass.split('/')[1]}：</span>
 								<span>{data.storageQuota} GB</span>
 							</li>
 						)}
