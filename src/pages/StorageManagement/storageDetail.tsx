@@ -24,6 +24,7 @@ export default function StorageDetail(): JSX.Element {
 	const [middlewares, setMiddlewares] = useState<StorageMiddlewareParams[]>(
 		[]
 	);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [visible, setVisible] = useState<boolean>(false);
 	const [current, setCurrent] = useState<StorageMiddlewareParams>();
 	const usedRender = (value: any, record: StorageMiddlewareParams) => {
@@ -43,9 +44,13 @@ export default function StorageDetail(): JSX.Element {
 	};
 	const belongRender = (value: any, record: StorageMiddlewareParams) => {
 		return (
-			<div>
-				<div>项目：{record.projectAliasName || '-'}</div>
-				<div>命名空间：{record.namespace || '-'}</div>
+			<div style={{ width: '200px' }}>
+				<div className="text-overflow">
+					项目：{record.projectAliasName || '-'}
+				</div>
+				<div className="text-overflow">
+					命名空间：{record.namespace || '-'}
+				</div>
 			</div>
 		);
 	};
@@ -54,7 +59,7 @@ export default function StorageDetail(): JSX.Element {
 		record: StorageMiddlewareParams
 	) => {
 		return (
-			<div className="icon-type-content">
+			<div className="icon-type-content" style={{ width: '180px' }}>
 				<img
 					width={28}
 					height={28}
@@ -63,20 +68,26 @@ export default function StorageDetail(): JSX.Element {
 							? `${api}/images/middleware/${record.imagePath}`
 							: nodata
 					}
-					style={{ filter: 'grayscale(100%)' }}
+					// style={{ filter: 'grayscale(100%)' }}
 					alt={record.chartName}
 				/>
-				<div style={{ marginLeft: 8 }}>
+				<div style={{ marginLeft: 8, width: 'calc(180px - 36px)' }}>
 					<div
-						className="name-link"
+						className="name-link text-overflow"
 						onClick={() => {
 							setCurrent(record);
 							setVisible(true);
 						}}
+						title={record.middlewareName}
 					>
 						{record.middlewareName}
 					</div>
-					<div>{record.middlewareAliasName}</div>
+					<div
+						className="text-overflow"
+						title={record.middlewareAliasName}
+					>
+						{record.middlewareAliasName}
+					</div>
 				</div>
 			</div>
 		);
@@ -129,10 +140,13 @@ export default function StorageDetail(): JSX.Element {
 						rowKey="name"
 						dataSource={middlewares}
 						style={{ width: '100%' }}
+						loading={loading}
 					>
 						<Table.Column
 							dataIndex="aliasName"
 							title="服务名称/中文名称"
+							width={180}
+							fixed="left"
 							render={nameAndAliasNameWithIcon}
 						/>
 						<Table.Column
@@ -152,6 +166,7 @@ export default function StorageDetail(): JSX.Element {
 						<Table.Column
 							dataIndex="belong"
 							title="所属"
+							width={200}
 							render={belongRender}
 						/>
 						<Table.Column
@@ -190,16 +205,20 @@ export default function StorageDetail(): JSX.Element {
 				});
 			}
 		});
-		getStorageMiddleware(sendData).then((res) => {
-			if (res.success) {
-				setMiddlewares(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
-		});
+		getStorageMiddleware(sendData)
+			.then((res) => {
+				if (res.success) {
+					setMiddlewares(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 	}, []);
 	const memoryUsedRender = (value: any, record: StorageMiddlewareParams) => {
 		return `${record.monitorResourceQuota.storage.used || 0}GB`;

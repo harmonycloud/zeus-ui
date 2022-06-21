@@ -60,6 +60,8 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 			return ['systemManagement/resourcePoolManagement'];
 		else if (pathArray.includes('projectManagement'))
 			return ['systemManagement/projectManagement'];
+		else if (pathArray.includes('storageManagement'))
+			return ['storageManagement'];
 		else if (pathArray.includes('myProject')) return ['myProject'];
 		else if (pathArray.includes('serviceList'))
 			return [storage.getSession('menuPath')];
