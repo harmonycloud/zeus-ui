@@ -38,10 +38,11 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 			// onClose={onCancel}
 			// footerAlign="right"
 		>
-			<Form form={form} {...formItemLayout}>
+			<Form form={form} {...formItemLayout} labelAlign="left">
 				<Alert
 					message="修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。"
 					type="warning"
+					style={{ marginBottom: 16 }}
 				/>
 				<FormItem label="CPU (Core)">
 					<InputNumber
@@ -59,7 +60,7 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 						name="memory"
 						min={0}
 						defaultValue={Number(
-							memory.substring(0, memory.length - 2)
+							memory?.substring(0, memory.length - 2)
 						)}
 					/>
 				</FormItem>
