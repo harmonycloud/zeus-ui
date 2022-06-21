@@ -48,14 +48,12 @@ export default function StorageManagement(): JSX.Element {
 		getData(key);
 	}, [selectedClusterId, selectedType]);
 	const getData = (keyword: string) => {
-		console.log(keyword);
 		const sendData: GetParams = {
 			all: false,
 			clusterId: selectedClusterId || '*',
 			type: selectedType || '',
 			key: keyword || ''
 		};
-		console.log(sendData);
 		getLists(sendData).then((res) => {
 			if (res.success) {
 				setStorages(res.data);

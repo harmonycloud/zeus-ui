@@ -8,7 +8,6 @@ import {
 	notification,
 	RadioChangeEvent
 } from 'antd';
-import storage from '@/utils/storage';
 import { connect } from 'react-redux';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { createNamespace } from '@/services/common';
@@ -16,7 +15,6 @@ import { bingNamespace, getAllocatableNamespace } from '@/services/project';
 import { formItemLayout618 } from '@/utils/const';
 import { clusterType } from '@/types';
 import { AddNamespaceProps } from './projectDetail';
-import { ProjectItem } from '../ProjectManage/project';
 
 const list = [
 	{
@@ -32,14 +30,18 @@ const FormItem = Form.Item;
 const { Group: RadioGroup } = Radio;
 const Option = Select.Option;
 function AddNamespace(props: AddNamespaceProps): JSX.Element {
-	const { visible, onCancel, onRefresh, setRefreshCluster } = props;
+	const {
+		visible,
+		onCancel,
+		onRefresh,
+		setRefreshCluster,
+		projectId,
+		projectAliasName
+	} = props;
 	const [source, setSource] = useState<string>('create');
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [currentCluster, setCurrentCluster] = useState<string>('');
 	const [namespaceList, setNamespaceList] = useState([]);
-	const [project] = useState<ProjectItem>(
-		JSON.parse(storage.getLocal('project'))
-	);
 	const [form] = Form.useForm();
 	useEffect(() => {
 		getAllocatableNamespace().then((res) => {
@@ -219,16 +221,10 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 				<FormItem
 					label="绑定项目"
 					name="projectId"
-					initialValue={project.projectId}
+					initialValue={projectId}
 				>
-					<Select
-						// value={project.projectId}
-						disabled={true}
-						style={{ width: '100%' }}
-					>
-						<Option value={project.projectId}>
-							{project.aliasName}
-						</Option>
+					<Select disabled={true} style={{ width: '100%' }}>
+						<Option value={projectId}>{projectAliasName}</Option>
 					</Select>
 				</FormItem>
 				<FormItem
