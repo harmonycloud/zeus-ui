@@ -56,7 +56,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	useEffect(() => {
 		const lt = clusterList.map((item: clusterType) => {
 			return {
-				text: item.name,
+				text: item.nickname,
 				value: item.id
 			};
 		});
@@ -223,7 +223,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 					filterMultiple={false}
 					filters={filters}
 					onFilter={(value, record: any) =>
-						record.clusterAliasName.includes(value)
+						record.clusterId === value
 					}
 				/>
 				<Table.Column

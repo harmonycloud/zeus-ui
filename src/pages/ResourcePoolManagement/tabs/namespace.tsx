@@ -277,7 +277,6 @@ const Namespace = (props: NamespaceProps) => {
 		<div>
 			<ProTable
 				dataSource={dataSource}
-				// exact
 				rowKey="name"
 				operation={Operation}
 				showColumnSetting
@@ -334,7 +333,6 @@ const Namespace = (props: NamespaceProps) => {
 						moment(a.createTime).unix() -
 						moment(b.createTime).unix()
 					}
-					// sortable
 				/>
 				<ProTable.Column
 					title="启用"
