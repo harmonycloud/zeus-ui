@@ -40,6 +40,7 @@ export default function CustomEditNodeSpe(props: NodeSpeProps): JSX.Element {
 				<Alert
 					message="修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。"
 					type="warning"
+					style={{ marginBottom: 16 }}
 				/>
 				<FormItem label="CPU" name="cpu">
 					<Input style={{ width: '140px' }} defaultValue={cpu} />

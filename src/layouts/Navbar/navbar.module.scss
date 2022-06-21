@@ -1,14 +1,14 @@
 .middleware-navbar {
 	width: 100%;
 	height: 50px;
-	z-index: 999;
+	z-index: 800;
 	position: fixed;
 	top: 0;
 	background-color: $black-10;
 }
 
 .nav {
-	z-index: 999;
+	z-index: 800;
 	height: 100%;
 	line-height: 48px;
 	display: flex;

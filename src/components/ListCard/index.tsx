@@ -8,7 +8,11 @@ export const ListCardItem = (props: ListCardItemProps) => {
 	const { width, label, value, render, style } = props;
 	const upValue = () => {
 		if (value as string) {
-			return <div className="zeus-list-card-item-value">{value}</div>;
+			return (
+				<div className="zeus-list-card-item-value" title={value}>
+					{value}
+				</div>
+			);
 		} else {
 			return value;
 		}

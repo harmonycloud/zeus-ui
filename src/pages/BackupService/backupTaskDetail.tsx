@@ -10,11 +10,12 @@ import moment from 'moment';
 import { getBackups, applyBackup, deleteBackups } from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
+import { statusBackupRender, nullRender } from '@/utils/utils';
 import { getCanReleaseMiddleware } from '@/services/middleware';
+import { weekMap } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { notification } from 'antd';
-import { nullRender } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
 
@@ -39,14 +40,15 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'phrase',
-		label: '状态情况'
+		label: '状态情况',
+		render: statusBackupRender
 	},
 	{
 		dataIndex: 'sourceName',
 		label: '备份源名称',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
-				{val}
+				{val || '/'}
 			</div>
 		)
 	},
@@ -56,19 +58,21 @@ const InfoConfig = [
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val ? '周期' : '单次'}
-				{/* {val.split('* *')} */}
-				{/* {val
-					? val
-							.split('* *')
-							.map((item: string) => weekMap[item])
-							.join('、')
-					: '/'} */}
-				{/* {val
-					? moment(formData.time).get('hour') +
-					  ':' +
-					  moment(formData.time).get('minute')
+				{val
+					? val.indexOf('? ?') !== -1
+						? `（每周${val
+								.split('? ?')[1]
+								.split(',')
+								.map((item) => weekMap[item.trim()])}${
+								val.split('? ?')[0].split(' ')[1]
+						  }:${val.split('? ?')[0].split(' ')[0]}）`
+						: `（每周${val
+								.split('* *')[1]
+								.split(',')
+								.map((item) => weekMap[item.trim()])}${
+								val.split('* *')[0].split(' ')[1]
+						  }:${val.split('* *')[0].split(' ')[0]}）`
 					: ''}
-				） } */}
 			</div>
 		)
 	},
@@ -265,7 +269,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 					dataSource={data}
 					showRefresh
 					onRefresh={getData}
-					rowKey="key"
+					rowKey="taskName"
 				>
 					<ProTable.Column title="备份记录" dataIndex="taskName" />
 					<ProTable.Column

@@ -88,8 +88,6 @@ export default function List(props: any): JSX.Element {
 									addressName: record.addressName,
 									backupFileName: record.backupFileName || ''
 								};
-								console.log(sendData);
-
 								deleteBackupTasks(sendData)
 									.then((res) => {
 										if (res.success) {
@@ -203,7 +201,7 @@ export default function List(props: any): JSX.Element {
 				dataSource={backups}
 				showRefresh
 				onRefresh={() => getData('')}
-				rowKey="key"
+				rowKey="backupName"
 				operation={Operation}
 				showColumnSetting
 				search={{

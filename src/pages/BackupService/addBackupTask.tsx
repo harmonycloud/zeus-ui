@@ -558,17 +558,17 @@ function AddBackupTask(props: StoreState): JSX.Element {
 														)
 														.join('、')
 												: '/'}
-											（
 											{formData.rule !== 'now'
-												? moment(formData.time).get(
+												? '（' +
+												  moment(formData.time).get(
 														'hour'
 												  ) +
 												  ':' +
 												  moment(formData.time).get(
 														'minute'
-												  )
+												  ) +
+												  '）'
 												: ''}
-											）
 										</p>
 										<Button
 											type="primary"
