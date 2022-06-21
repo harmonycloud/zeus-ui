@@ -127,7 +127,15 @@ export default function List(props: any): JSX.Element {
 							description: '当前集群下没有服务，没有备份对象'
 						});
 					} else {
-						history.push('/backupService/backupTask/AddBackupTask');
+						if (params.type) {
+							history.push(
+								`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
+							);
+						} else {
+							history.push(
+								'/backupService/backupTask/addBackupTask'
+							);
+						}
 					}
 				}}
 				type="primary"
@@ -189,23 +197,6 @@ export default function List(props: any): JSX.Element {
 		}
 	};
 
-	const sourceNameRender = (
-		value: string,
-		record: BackupRecordItem,
-		index: number
-	) => {
-		if (record.backupType !== 'Cluster') {
-			return value;
-		} else {
-			return (
-				<div>
-					<p>{value}</p>
-					<p>{record.aliasName}</p>
-				</div>
-			);
-		}
-	};
-
 	return (
 		<div>
 			<ProTable
@@ -251,15 +242,12 @@ export default function List(props: any): JSX.Element {
 					width={120}
 					filterMultiple={false}
 					filters={backupTaskStatus}
-					onFilter={(value, record: any) => {
-						console.log(record.phrase, value);
-						return record.phrase === value;
-					}}
+					onFilter={(value, record: any) => record.phrase === value}
 				/>
 				<ProTable.Column
 					title="备份源名称"
 					dataIndex="sourceName"
-					// render={addressListRender}
+					filterMultiple={false}
 					filters={[{ text: '11', value: '11' }]}
 					width={160}
 				/>
@@ -268,9 +256,10 @@ export default function List(props: any): JSX.Element {
 					dataIndex="phrase"
 					render={() => '单次备份'}
 					width={120}
+					filterMultiple={false}
 					filters={[
-						{ text: '周期备份', value: '' },
-						{ text: '单次备份', value: '' }
+						{ text: '周期备份', value: '1' },
+						{ text: '单次备份', value: '2' }
 					]}
 				/>
 				<ProTable.Column title="备份位置" dataIndex="position" />

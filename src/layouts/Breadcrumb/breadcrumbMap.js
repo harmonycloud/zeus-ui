@@ -49,5 +49,10 @@ export default {
 	projectDetail: '项目详情',
 	my: '我的项目',
 	myProject: '我的项目',
-	allotRole: '分配角色权限'
+	allotRole: '分配角色权限',
+	backupService: '备份服务',
+	backupTask: '备份任务',
+	addBackupTask: '新增',
+	detail: '备份任务详情',
+	backupPosition: '备份位置'
 };

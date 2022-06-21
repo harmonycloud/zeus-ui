@@ -463,7 +463,10 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						</TabPane>
 					)}
 					{operateFlag &&
-					(type === 'mysql' || type === 'elasticsearch') ? (
+					(type === 'mysql' ||
+						type === 'elasticsearch' ||
+						type === 'redis' ||
+						type === 'rocketmq') ? (
 						<TabPane tab="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</TabPane>

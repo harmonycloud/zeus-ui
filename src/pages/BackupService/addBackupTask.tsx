@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import {
 	Button,
@@ -36,6 +36,7 @@ import { weekMap } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import './index.scss';
+import { middlewareName } from '@/services/middleware.constants';
 
 const { Step } = Steps;
 const { Group: CheckboxGroup } = Checkbox;
@@ -79,6 +80,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const {
 		globalVar: { cluster, namespace }
 	} = props;
+	const params: any = useParams();
 	const [form] = Form.useForm();
 	const [formWay] = Form.useForm();
 	const history = useHistory();
@@ -87,7 +89,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [isStep, setIsStep] = useState(false);
 	const [current, setCurrent] = useState<number>(0);
 	const [selectedRow, setSelectedRow] = useState<any>();
-	const [selectedRowKeys, setSelectedRowKeys] = useState<string>();
+	const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>();
 	const [searchText, setSearchText] = useState<string>('');
 	const [selectText, setSelectText] = useState<string>('');
 	// const [backupType, setBackupType] = useState<string>('service');
@@ -125,32 +127,56 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	};
 
 	useEffect(() => {
-		getServiceList({ type: selectText, keyword: searchText }).then(
-			(res) => {
-				setTableData(res.data);
-				setSelectedRow(res.data[0]);
-				// setSelectedRowKeys(res.data[0]?.name);
-			}
-		);
-	}, [searchText, selectText]);
+		if (params.type) {
+			setSelectText(params.name);
+			setCurrent(1);
+			setIsStep(true);
+		}
+	}, []);
 
 	useEffect(() => {
-		getMiddlewares().then((res) => {
-			const data = res.data.filter(
-				(item: any) =>
-					item.name === 'redis' ||
-					item.name === 'rocketmq' ||
-					item.name === 'elasticsearch' ||
-					item.name === 'mysql'
-			);
-			serMiddleware(data);
-			setSelect(data[0].name);
-			setSelectText(data[0].name);
-		});
+		if (params.type) {
+			setSelectedRowKeys(params.middlewareName);
+			setSelectText(params.name);
+			setCurrent(1);
+			setIsStep(true);
+		} else {
+			getMiddlewares().then((res) => {
+				const data = res.data.filter(
+					(item: any) =>
+						item.name === 'redis' ||
+						item.name === 'rocketmq' ||
+						item.name === 'elasticsearch' ||
+						item.name === 'mysql'
+				);
+				serMiddleware(data);
+				setSelect(data[0].name);
+				setSelectText(data[0].name);
+			});
+		}
 		getBackupAddress({ keyword: '' }).then((res) => {
 			setAddressList(res.data);
 		});
 	}, []);
+
+	useEffect(() => {
+		getServiceList({
+			type: params.name || selectText,
+			keyword: searchText
+		}).then((res) => {
+			setTableData(res.data);
+			params.type
+				? setSelectedRowKeys([params.middlewareName])
+				: setSelectedRowKeys([res.data[0]?.name]);
+			params.type
+				? setSelectedRow(
+						res.data.map(
+							(item: any) => item.name === middlewareName
+						)
+				  )
+				: setSelectedRow(res.data[0]);
+		});
+	}, [searchText, selectText]);
 
 	useEffect(() => {
 		if (current === 1) {
@@ -650,7 +676,13 @@ function AddBackupTask(props: StoreState): JSX.Element {
 					size: 48,
 					style: { background: '#f5f5f5' }
 				}}
-				onBack={() => history.goBack()}
+				onBack={() => {
+					if (params.type) {
+						history.goBack();
+					} else {
+						!isStep ? history.goBack() : setIsStep(false);
+					}
+				}}
 			/>
 			<ProContent>
 				<h2>数据源类型</h2>
@@ -726,7 +758,15 @@ function AddBackupTask(props: StoreState): JSX.Element {
 						)}
 						<Button
 							style={{ marginLeft: '8px' }}
-							onClick={() => history.goBack()}
+							onClick={() => {
+								if (params.type) {
+									history.goBack();
+								} else {
+									!isStep
+										? history.goBack()
+										: setIsStep(false);
+								}
+							}}
 						>
 							取消
 						</Button>
