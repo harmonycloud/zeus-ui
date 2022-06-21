@@ -30,8 +30,14 @@ export default function Log(props: LogProps): JSX.Element {
 				key: 'realtime'
 			}
 		];
-		!customMid && items.push({ label: '标准日志', key: 'standard' });
-		!customMid && items.push({ label: '日志文件', key: 'file' });
+		!customMid &&
+			type !== 'postgresql' &&
+			type !== 'zookeeper' &&
+			items.push({ label: '标准日志', key: 'standard' });
+		!customMid &&
+			type !== 'postgresql' &&
+			type !== 'zookeeper' &&
+			items.push({ label: '日志文件', key: 'file' });
 		type === 'mysql' && items.push({ label: '慢日志查看', key: 'slow' });
 		return (
 			<ProMenu
