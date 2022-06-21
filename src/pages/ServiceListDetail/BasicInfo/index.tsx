@@ -128,6 +128,7 @@ const runStatus: runParams = {
 	createTime: '',
 	model: '',
 	namespace: '',
+	storageClassName: '',
 	storageType: '',
 	hostNetwork: ''
 };
@@ -141,6 +142,7 @@ const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
 	'1m-ns': '一主多从',
+	'1m': '单实例',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
 	'complex-cold': 'N主N数据N冷',
@@ -186,6 +188,10 @@ const modelConfig = {
 const namespaceConfig = {
 	dataIndex: 'namespace',
 	label: '所在分区'
+};
+const storageClassNameConfig = {
+	dataIndex: 'storageClassName',
+	label: '存储名称'
 };
 const storageTypeConfig = {
 	dataIndex: 'storageType',
@@ -234,6 +240,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					createTimeConfig,
 					modelConfig,
 					namespaceConfig,
+					storageClassNameConfig,
 					storageTypeConfig
 			  ]
 			: [
@@ -243,6 +250,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					modelConfig,
 					namespaceConfig,
 					storageTypeConfig,
+					storageClassNameConfig,
 					hostNetworkConfig
 			  ]
 	);
@@ -471,6 +479,10 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						? '三主三从'
 						: '五主五从' || '',
 				namespace: data.namespace || '',
+				storageClassName:
+					data.quota && data.quota[data.type]
+						? data.quota[data.type].storageClassAliasName || ''
+						: '',
 				storageType:
 					data.quota && data.quota[data.type]
 						? data.quota[data.type].storageClassName || ''
@@ -724,6 +736,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					middlewareName={middlewareName}
 					eventType={eventType}
 					kind={kind}
+					namespace={namespace}
 				></EventsList>
 			),
 			span: 24

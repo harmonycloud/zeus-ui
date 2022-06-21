@@ -848,7 +848,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 								</li>
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>postgre密码</span>
+										<span>postgres密码</span>
 									</label>
 									<div className="form-content">
 										<Tooltip

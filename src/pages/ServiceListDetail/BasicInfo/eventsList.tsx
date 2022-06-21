@@ -15,7 +15,8 @@ const successTip = <div className={styles['success-tip']}>正常</div>;
 const errorTip = <div className={styles['error-tip']}>异常</div>;
 
 const EventsList = (props: EventsListProps) => {
-	const { type, middlewareName, eventType, kind, globalVar } = props;
+	const { type, middlewareName, eventType, kind, globalVar, namespace } =
+		props;
 	const [eventList, setEventList] = useState<EventItem[]>([]);
 	const [originEventList, setOriginEventList] = useState<EventItem[]>([]);
 
@@ -62,7 +63,7 @@ const EventsList = (props: EventsListProps) => {
 			JSON.stringify(globalVar.cluster) !== '{}' &&
 			JSON.stringify(globalVar.namespace) !== '{}'
 		) {
-			getEventsData(globalVar.cluster.id, globalVar.namespace.name, kind);
+			getEventsData(globalVar.cluster.id, namespace, kind);
 		}
 	}, [globalVar, kind]);
 
@@ -103,16 +104,6 @@ const EventsList = (props: EventsListProps) => {
 										onClick={() => eventHander(item, index)}
 									>
 										<div className={styles['event-name']}>
-											{/* <Icon
-												type="angle-right"
-												size="xs"
-												className={`${
-													item.show
-														? styles['active']
-														: null
-												}`}
-												style={{ marginRight: 18 }}
-											/> */}
 											<RightOutlined
 												className={`${
 													item.show

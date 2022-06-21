@@ -119,6 +119,7 @@ export interface EventsListProps {
 	middlewareName: string;
 	eventType: string;
 	kind: string;
+	namespace: string;
 	globalVar?: globalVarProps;
 }
 export interface EventItem {
@@ -191,6 +192,7 @@ export interface runParams {
 	createTime: string;
 	model: string;
 	namespace: string;
+	storageClassName: string;
 	storageType: string;
 	hostNetwork?: any;
 }
