@@ -5,24 +5,18 @@ import { getProjectMember } from '@/services/project';
 import { getRoleList } from '@/services/role';
 import { bindProjectMember } from '@/services/project';
 import { nullRender } from '@/utils/utils';
-import storage from '@/utils/storage';
 
 import { roleProps } from '../RoleManage/role';
 import { userProps } from '../UserManage/user';
 import { AddMemberProps } from './projectDetail';
-import { ProjectItem } from '../ProjectManage/project';
 
 const Option = Select.Option;
 export default function AddMember(props: AddMemberProps): JSX.Element {
-	const { visible, onCancel, onRefresh } = props;
+	const { visible, onCancel, onRefresh, projectId } = props;
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
 	const [showDataSource, setShowDataSource] = useState<userProps[]>([]);
-	const [key, setKey] = useState<string>('');
 	const [primaryKeys, setPrimaryKeys] = useState<string[]>([]);
 	const [roles, setRoles] = useState<roleProps[]>([]);
-	const [project] = useState<ProjectItem>(
-		JSON.parse(storage.getLocal('project'))
-	);
 	useEffect(() => {
 		getData();
 		getRoleList({ key: '' }).then((res) => {
@@ -38,7 +32,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 	}, []);
 	const getData = () => {
 		getProjectMember({
-			projectId: project.projectId,
+			projectId: projectId,
 			allocatable: true
 		}).then((res) => {
 			if (res.success) {
@@ -90,7 +84,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			return;
 		}
 		const sendData = {
-			projectId: project.projectId,
+			projectId: projectId,
 			userDtoList: list
 		};
 		onCancel();

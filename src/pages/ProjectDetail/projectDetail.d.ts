@@ -2,9 +2,12 @@ import { ProjectItem } from '../ProjectManage/project';
 
 export interface DetailParams {
 	id: string;
+	name: string;
 }
 export interface AddNamespaceProps {
 	visible: boolean;
+	projectId: string;
+	projectAliasName: string;
 	onCancel: () => void;
 	onRefresh: () => void;
 	setRefreshCluster: (flag: boolean) => void;
@@ -31,6 +34,7 @@ export interface NamespaceItem {
 }
 export interface AddMemberProps {
 	visible: boolean;
+	projectId: string;
 	onCancel: () => void;
 	onRefresh: () => void;
 }

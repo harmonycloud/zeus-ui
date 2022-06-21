@@ -21,7 +21,7 @@ const LinkButton = Actions.LinkButton;
 function Namespace(props: NamespaceProps): JSX.Element {
 	const { clusterList, setRefreshCluster } = props;
 	const params: DetailParams = useParams();
-	const { id } = params;
+	const { id, name } = params;
 	const [dataSource, setDataSource] = useState<NamespaceItem[]>([]);
 	const [showDataSource, setShowDataSource] = useState<NamespaceItem[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -234,6 +234,8 @@ function Namespace(props: NamespaceProps): JSX.Element {
 			</Table>
 			{visible && (
 				<AddNamespace
+					projectId={id}
+					projectAliasName={name}
 					visible={visible}
 					onCancel={() => setVisible(false)}
 					onRefresh={getData}

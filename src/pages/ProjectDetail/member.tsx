@@ -147,6 +147,7 @@ export default function Member(): JSX.Element {
 			</ProTable>
 			{addVisible && (
 				<AddMember
+					projectId={id}
 					visible={addVisible}
 					onCancel={() => setAddVisible(false)}
 					onRefresh={getData}

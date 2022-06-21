@@ -92,7 +92,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 					className="name-link"
 					onClick={() => {
 						history.push(
-							`/myProject/projectDetail/${record.projectId}`
+							`/myProject/projectDetail/${record.projectId}/${record.aliasName}`
 						);
 					}}
 					style={{ marginLeft: 8, verticalAlign: 'middle' }}

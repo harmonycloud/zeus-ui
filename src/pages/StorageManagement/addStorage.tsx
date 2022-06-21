@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import {
-	Button,
-	Space,
-	Form,
-	notification,
-	Input,
-	Select,
-	InputNumber
-} from 'antd';
+import { Button, Space, Form, notification, Input, Select } from 'antd';
 import storageIcon from '@/assets/images/storage-manage.svg';
 import FormBlock from '@/components/FormBlock';
 import { ProHeader, ProPage, ProContent } from '@/components/ProPage';
@@ -26,6 +18,8 @@ import {
 	updateStorage
 } from '@/services/storage';
 import { formItemLayout614 } from '@/utils/const';
+import { getClusters } from '@/services/common';
+import { clusterType } from '@/types';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -33,11 +27,21 @@ export default function AddStorage(): JSX.Element {
 	const params: EditStorageParams = useParams();
 	const history = useHistory();
 	const [form] = Form.useForm();
+	const [clusterList, setClusterList] = useState<clusterType[]>([]);
+	const [curClusterId, setCurClusterId] = useState<string>();
 	const [storages, setStorages] = useState<StorageItem[]>([]);
-	// const [curStorage, setCurStorage] = useState<StorageItem>();
 	const [volumeType, setVolumeType] = useState<string>('');
-	// const [requestQuota, setRequestQuota] = useState<number>();
 	useEffect(() => {
+		getClusters({ detail: true }).then((res) => {
+			if (res.success) {
+				setClusterList(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
 		if (params.name) {
 			const sendData: GetDetailParams = {
 				clusterId: params.clusterId,
@@ -60,23 +64,29 @@ export default function AddStorage(): JSX.Element {
 					});
 				}
 			});
-		} else {
-			const sendData: GetParams = {
-				all: true,
-				clusterId: '*'
-			};
-			getLists(sendData).then((res) => {
-				if (res.success) {
-					setStorages(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
-			});
 		}
 	}, []);
+	useEffect(() => {
+		if (curClusterId) {
+			getData(curClusterId);
+		}
+	}, [curClusterId]);
+	const getData = (clusterId: string) => {
+		const sendData: GetParams = {
+			all: true,
+			clusterId: clusterId
+		};
+		getLists(sendData).then((res) => {
+			if (res.success) {
+				setStorages(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
 			const sendData: AddParams = {
@@ -130,7 +140,6 @@ export default function AddStorage(): JSX.Element {
 			requestQuota: cur?.requestQuota
 		});
 		setVolumeType(cur?.volumeType || '');
-		// setRequestQuota(cur?.requestQuota);
 	};
 	return (
 		<ProPage>
@@ -154,6 +163,31 @@ export default function AddStorage(): JSX.Element {
 						labelAlign="left"
 						style={{ width: '50%' }}
 					>
+						<FormItem
+							label="集群"
+							required
+							name="clusterId"
+							rules={[{ required: true, message: '请选择集群' }]}
+						>
+							<Select
+								value={curClusterId}
+								onChange={(value: string) =>
+									setCurClusterId(value)
+								}
+								disabled={params.name ? true : false}
+							>
+								{clusterList.map((item: clusterType) => {
+									return (
+										<Select.Option
+											key={item.id}
+											value={item.id}
+										>
+											{item.nickname}
+										</Select.Option>
+									);
+								})}
+							</Select>
+						</FormItem>
 						<FormItem
 							label="英文名称"
 							required
@@ -192,9 +226,6 @@ export default function AddStorage(): JSX.Element {
 						>
 							<Input />
 						</FormItem>
-						<FormItem label="集群" required name="clusterId">
-							<Input disabled />
-						</FormItem>
 						<FormItem label="类型" required name="volumeType">
 							<Input disabled />
 						</FormItem>
@@ -213,29 +244,6 @@ export default function AddStorage(): JSX.Element {
 								<Input disabled />
 							</FormItem>
 						)}
-						{/* {volumeType !== 'LocalPath' && (
-							<FormItem
-								label="配额"
-								required
-								rules={[
-									{
-										required: true,
-										message: '请填写中文名称'
-									}
-								]}
-								name="requestQuota"
-							>
-								<InputNumber
-									style={{ width: '100%' }}
-									addonAfter="GB"
-									value={requestQuota}
-									onChange={(value: number) => {
-										setRequestQuota(value);
-									}}
-									disabled={requestQuota ? true : false}
-								/>
-							</FormItem>
-						)} */}
 					</Form>
 				</FormBlock>
 				<Space>

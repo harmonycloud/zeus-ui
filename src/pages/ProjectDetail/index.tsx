@@ -6,15 +6,14 @@ import { connect } from 'react-redux';
 import Namespace from './namespace';
 import Member from './member';
 import { StoreState } from '@/types';
-import { DetailParams, ProjectDetailProps } from './projectDetail';
+import { DetailParams } from './projectDetail';
 import ServiceList from './serviceList';
 import { roleProps } from '../RoleManage/role';
 import storage from '@/utils/storage';
 
 const { TabPane } = Tabs;
 // ! 我的项目的项目详情和项目管理的项目详情共用一个页面
-function ProjectDetail(props: ProjectDetailProps): JSX.Element {
-	const { project } = props;
+function ProjectDetail(): JSX.Element {
 	const [activeKey, setActiveKey] = useState<string>('service');
 	const location = useLocation();
 	const history = useHistory();
@@ -37,11 +36,6 @@ function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 	const onChange = (key: string | number) => {
 		setActiveKey(key as string);
 	};
-	useEffect(() => {
-		if (location.pathname.includes('my')) {
-			history.push(`/myProject/projectDetail/${project.projectId}`);
-		}
-	}, [project]);
 
 	return (
 		<ProPage>

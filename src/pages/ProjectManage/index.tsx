@@ -69,7 +69,7 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 				onClick={() => {
 					// storage.setLocal('project', JSON.stringify(record));
 					history.push(
-						`/systemManagement/projectManagement/projectDetail/${record.projectId}`
+						`/systemManagement/projectManagement/projectDetail/${record.projectId}/${record.aliasName}`
 					);
 				}}
 			>

@@ -83,12 +83,12 @@ const Routes = withRouter((props) => {
 				{/* 我的项目 */}
 				<Route path="/myProject" component={MyProject} exact />
 				<Route
-					path="/myProject/projectDetail/:id"
+					path="/myProject/projectDetail/:id/:name"
 					component={ProjectDetail}
 					exact
 				/>
 				<Route
-					path="/systemManagement/projectManagement/projectDetail/:id"
+					path="/systemManagement/projectManagement/projectDetail/:id/:name"
 					component={ProjectDetail}
 					exact
 				/>
