@@ -57,6 +57,7 @@ import {
 } from '@ant-design/icons';
 import styles from '../Kafka/kafka.module.scss';
 import ModePost from '../components/ModePost';
+import StorageQuota from '@/components/StorageQuota';
 
 const FormItem = Form.Item;
 
@@ -293,7 +294,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 				quota: {
 					zookeeper: {
 						num: customCluster,
-						storageClassName: values.storageClass,
+						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -654,156 +655,6 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								{/* <li className="display-flex form-li flex-align">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
-											<QuestionCircleOutlined />
-										</Tooltip>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														allowClear={true}
-														options={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-													>
-														<PlusOutlined
-															style={{
-																color: '#005AA5'
-															}}
-														/>
-													</Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'checked'
-															)
-														}
-													>
-														强制亲和
-													</Checkbox>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<CloseCircleFilled
-														className={
-															styles['tag-close']
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-																changeAffinity(
-																	'',
-																	'label'
-																);
-															}
-														}}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null} */}
 								<Affinity
 									flag={affinityFlag}
 									flagChange={setAffinityFlag}
@@ -1229,73 +1080,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 										) : null}
 									</div>
 								</li>
-								<li className="display-flex">
-									<label className="form-name">
-										<span className="ne-required">
-											存储配额
-										</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<FormItem
-											name="storageClass"
-											required
-											rules={[
-												{
-													required: true,
-													message: '请选择存储类型'
-												}
-											]}
-										>
-											<Select
-												style={{
-													marginRight: 8,
-													width: 150
-												}}
-											>
-												{storageClassList.map(
-													(item, index) => {
-														return (
-															<Select.Option
-																key={index}
-																value={
-																	item.name
-																}
-															>
-																{item.name}
-															</Select.Option>
-														);
-													}
-												)}
-											</Select>
-										</FormItem>
-										<FormItem
-											name="storageQuota"
-											rules={[
-												{
-													pattern: new RegExp(
-														pattern.posInt
-													),
-													message:
-														'请输入小于21位的正整数'
-												},
-												{
-													required: true,
-													message:
-														'请输入存储配额大小（GB）'
-												}
-											]}
-											required
-											initialValue={5}
-										>
-											<InputNumber
-												placeholder="请输入存储配额大小"
-												addonAfter="GB"
-											/>
-										</FormItem>
-									</div>
-								</li>
+								<StorageQuota clusterId={globalCluster.id} />
 							</ul>
 						</div>
 					</FormBlock>
