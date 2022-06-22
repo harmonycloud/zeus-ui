@@ -150,7 +150,7 @@ export default function StorageDetail(): JSX.Element {
 							render={nameAndAliasNameWithIcon}
 						/>
 						<Table.Column
-							dataIndex="aliasName"
+							dataIndex="status"
 							title="状态"
 							render={serviceListStatusRender}
 							filters={states}
