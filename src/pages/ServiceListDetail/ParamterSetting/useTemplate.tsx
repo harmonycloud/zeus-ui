@@ -116,7 +116,10 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		}
 	}, [dataSource]);
 	const handleSearch = (value: string) => {
-		const list = dataSource.filter((item) => item.name.includes(value));
+		let list = dataSource.filter((item) => item.name.includes(value));
+		if (checked) {
+			list = list.filter((item) => item[temp?.name || ''] !== item.value);
+		}
 		setShowDataSource(list);
 		setSearchText(value);
 	};
