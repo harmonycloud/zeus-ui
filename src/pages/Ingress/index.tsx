@@ -91,25 +91,20 @@ function IngressList(props: ingressProps) {
 
 	const nameRender = (value: string, record: ingressProps, index: number) => {
 		return (
-			<>
-				<div>{record.name}</div>
-				<div>{record.middlewareNickName}</div>
-			</>
+			<div style={{ width: 200 }}>
+				<div className="text-overflow" title={record.name}>
+					{record.name}
+				</div>
+				<div
+					className="text-overflow"
+					title={record.middlewareNickName}
+				>
+					{record.middlewareNickName}
+				</div>
+			</div>
 		);
 	};
 
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = dataSource.filter(
-				(item) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setShowDataSource(list);
-		} else {
-			setShowDataSource(dataSource);
-		}
-	};
 	const handleDelete = (record: ingressProps) => {
 		Modal.confirm({
 			title: '操作确认',
@@ -372,46 +367,12 @@ function IngressList(props: ingressProps) {
 			}
 		});
 	};
-	// const exposeTypeRender = (value: string, index: number, record: any) => {
-	// 	if (record.exposeType === 'NodePort') return value;
-	// 	return `${record.exposeType}/${record.ingressClassName || '-'}`;
-	// };
-	// const onSort = (dataIndex: string, order: string) => {
-	// 	if (dataIndex === 'createTime') {
-	// 		const tempDataSource = showDataSource.sort((a, b) => {
-	// 			const result = a['createTimeNum'] - b['createTimeNum'];
-	// 			return order === 'asc'
-	// 				? result > 0
-	// 					? 1
-	// 					: -1
-	// 				: result > 0
-	// 				? -1
-	// 				: 1;
-	// 		});
-	// 		setShowDataSource([...tempDataSource]);
-	// 	} else if (dataIndex === 'exposeType') {
-	// 		const tempDataSource = showDataSource.sort((a, b) => {
-	// 			const result = a['exposeType'].length - b['exposeType'].length;
-	// 			return order === 'asc'
-	// 				? result > 0
-	// 					? 1
-	// 					: -1
-	// 				: result > 0
-	// 				? -1
-	// 				: 1;
-	// 		});
-	// 		setShowDataSource([...tempDataSource]);
-	// 	}
-	// };
 
 	return (
 		<ProPage>
 			<ProContent style={{ padding: '0 0', margin: 0 }}>
 				<ProTable
 					dataSource={showDataSource}
-					// exact
-					// fixedBarExpandWidth={[24]}
-					// affixActionBar
 					showColumnSetting
 					showRefresh
 					onRefresh={() =>
@@ -422,10 +383,8 @@ function IngressList(props: ingressProps) {
 							middlewareName
 						)
 					}
-					rowKey="name"
+					rowKey="ingressName"
 					operation={Operation}
-					// onSort={onSort}
-					// onFilter={onFilter}
 				>
 					<ProTable.Column
 						title="被暴露服务名"
@@ -443,7 +402,6 @@ function IngressList(props: ingressProps) {
 						title="暴露方式"
 						dataIndex="exposeType"
 						width={100}
-						// sortable={true}
 						sorter={(a: any, b: any) =>
 							a.exposeType.length - b.exposeType.length
 						}
@@ -457,7 +415,6 @@ function IngressList(props: ingressProps) {
 						title="创建时间"
 						width={160}
 						dataIndex="createTime"
-						// sortable={true}
 						sorter={(a: any, b: any) =>
 							new Date(a.createTime).getTime() -
 							new Date(b.createTime).getTime()

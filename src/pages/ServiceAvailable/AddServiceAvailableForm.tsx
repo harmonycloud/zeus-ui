@@ -38,7 +38,7 @@ interface stateProps {
 }
 function AddServiceAvailableForm(props: any): JSX.Element {
 	const { cluster, namespace, project } = props.globalVar;
-
+	console.log(cluster);
 	const [exposedWay, setExposedWay] = useState('Ingress');
 	const [protocol, setProtocol] = useState(
 		exposedWay === 'Ingress' ? 'HTTP' : 'TCP'
@@ -684,7 +684,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									value={selectedService.serviceName}
 									placeholder="请选择Service"
 									disabled={
-										cluster.ingress === null ||
+										cluster.ingressList === null ||
 										selectedService.serviceName?.includes(
 											`${selectedInstance.name}-kafka-external-svc`
 										) ||
@@ -785,23 +785,24 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												style={{ width: '200px' }}
 												placeholder="请选择Service"
 												disabled={
-													cluster.ingress === null ||
-													selectedService.serviceName.includes(
+													cluster?.ingressList ===
+														null ||
+													selectedService?.serviceName?.includes(
 														`${selectedInstance.name}-kafka-external-svc`
 													) ||
 													(exposedWay === 'Ingress' &&
 														record &&
-														initService.includes(
+														initService?.includes(
 															record
-																.serviceList[0]
-																.serviceName
+																?.serviceList?.[0]
+																?.serviceName
 														)) ||
 													(exposedWay ===
 														'NodePort' &&
 														record &&
 														initService.some(
 															(item) =>
-																record.serviceList[0].serviceName.includes(
+																record?.serviceList?.[0]?.serviceName.includes(
 																	item
 																)
 														))

@@ -20,7 +20,6 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 		onCancel,
 		quota: { cpu, memory, storageClassQuota }
 	} = props;
-	// const field = Field.useField();
 	const [form] = Form.useForm();
 
 	const onOk = () => {
@@ -35,8 +34,6 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			// onClose={onCancel}
-			// footerAlign="right"
 		>
 			<Form form={form} {...formItemLayout} labelAlign="left">
 				<Alert
@@ -44,39 +41,33 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 					type="warning"
 					style={{ marginBottom: 16 }}
 				/>
-				<FormItem label="CPU (Core)">
-					<InputNumber
-						type="inline"
-						step="0.1"
-						name="cpu"
-						min={0}
-						defaultValue={Number(cpu)}
-					/>
+				<FormItem
+					label="CPU (Core)"
+					name="cpu"
+					initialValue={Number(cpu)}
+				>
+					<InputNumber type="inline" step="0.1" min={0} />
 				</FormItem>
-				<FormItem label="内存 (GB)">
-					<InputNumber
-						type="inline"
-						step="0.1"
-						name="memory"
-						min={0}
-						defaultValue={Number(
-							memory?.substring(0, memory.length - 2)
-						)}
-					/>
+				<FormItem
+					label="内存 (GB)"
+					name="memory"
+					initialValue={Number(
+						memory?.substring(0, memory.length - 2)
+					)}
+				>
+					<InputNumber type="inline" step="0.1" min={0} />
 				</FormItem>
-				<FormItem label="存储 (GB)">
-					<InputNumber
-						disabled
-						type="inline"
-						step="0.1"
-						name="storage"
-						defaultValue={Number(
-							storageClassQuota?.substring(
-								0,
-								storageClassQuota.length - 2
-							)
-						)}
-					/>
+				<FormItem
+					label="存储 (GB)"
+					name="storage"
+					initialValue={Number(
+						storageClassQuota?.substring(
+							0,
+							storageClassQuota.length - 2
+						)
+					)}
+				>
+					<InputNumber disabled type="inline" step="0.1" />
 				</FormItem>
 			</Form>
 		</Modal>

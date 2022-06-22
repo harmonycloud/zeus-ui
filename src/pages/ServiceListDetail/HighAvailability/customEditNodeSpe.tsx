@@ -19,7 +19,6 @@ export default function CustomEditNodeSpe(props: NodeSpeProps): JSX.Element {
 		onCancel,
 		quota: { cpu, memory }
 	} = props;
-	// const field = Field.useField();
 	const [form] = Form.useForm();
 	const onOk = () => {
 		form.validateFields().then((values) => {
@@ -33,8 +32,6 @@ export default function CustomEditNodeSpe(props: NodeSpeProps): JSX.Element {
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			// onClose={onCancel}
-			// footerAlign="right"
 		>
 			<Form form={form} {...formItemLayout}>
 				<Alert
@@ -42,11 +39,11 @@ export default function CustomEditNodeSpe(props: NodeSpeProps): JSX.Element {
 					type="warning"
 					style={{ marginBottom: 16 }}
 				/>
-				<FormItem label="CPU" name="cpu">
-					<Input style={{ width: '140px' }} defaultValue={cpu} />
+				<FormItem label="CPU" name="cpu" initialValue={cpu}>
+					<Input style={{ width: '140px' }} />
 				</FormItem>
-				<FormItem label="内存" name="memory">
-					<Input style={{ width: '140px' }} defaultValue={memory} />
+				<FormItem label="内存" name="memory" initialValue={memory}>
+					<Input style={{ width: '140px' }} />
 				</FormItem>
 			</Form>
 		</Modal>
