@@ -255,7 +255,7 @@ export default function StorageDetail(): JSX.Element {
 									alt={current.chartName}
 								/>
 								<div style={{ marginLeft: 8 }}>
-									{current.aliasName}详情
+									{current.middlewareAliasName}详情
 								</div>
 							</div>
 						}
