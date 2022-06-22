@@ -15,7 +15,7 @@ import { getCanReleaseMiddleware } from '@/services/middleware';
 import { weekMap } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
-import { notification } from 'antd';
+import { notification, Modal } from 'antd';
 
 const LinkButton = Actions.LinkButton;
 
@@ -228,25 +228,31 @@ function BackupTaskDetail(props: any): JSX.Element {
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
-						const result = {
-							clusterId: cluster.id,
-							namespace: namespace.name,
-							type: record.sourceType,
-							backupName: record.backupName,
-							backupFileName: record.backupFileName || '',
-							addressName: record.addressName
-						};
-						deleteBackups(result).then((res) => {
-							if (res.success) {
-								notification.success({
-									message: '成功',
-									description: '删除成功'
-								});
-								getData();
-							} else {
-								notification.error({
-									message: '失败',
-									description: res.errorMsg
+						Modal.confirm({
+							title: '操作确认',
+							content: '删除后将无法恢复，请确认执行',
+							onOk: () => {
+								const result = {
+									clusterId: cluster.id,
+									namespace: namespace.name,
+									type: record.sourceType,
+									backupName: record.backupName,
+									backupFileName: record.backupFileName || '',
+									addressName: record.addressName
+								};
+								deleteBackups(result).then((res) => {
+									if (res.success) {
+										notification.success({
+											message: '成功',
+											description: '删除成功'
+										});
+										getData();
+									} else {
+										notification.error({
+											message: '失败',
+											description: res.errorMsg
+										});
+									}
 								});
 							}
 						});

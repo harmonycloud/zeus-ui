@@ -785,7 +785,7 @@ function CreateAlarm(): JSX.Element {
 													marginRight: 8,
 													width: '100%'
 												}}
-												// autoWidth={false}
+												dropdownMatchSelectWidth={false}
 												value={
 													alarmType === 'system'
 														? item.alert?.split(
