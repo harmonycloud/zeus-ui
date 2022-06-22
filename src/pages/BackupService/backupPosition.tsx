@@ -46,26 +46,43 @@ export default function BackupPosition(): JSX.Element {
 	};
 
 	const handleDelete = (id: number, clusterId?: string) => {
-		Modal.confirm({
-			title: '操作确认',
-			content: '备份位置删除后将无法恢复，请确认执行',
-			onOk: () => {
-				deleteBackupAddress({ id, clusterId }).then((res) => {
-					if (res.success) {
-						notification.success({
-							message: '成功',
-							description: '删除成功'
-						});
-						getData(keyword);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
-				});
-			}
-		});
+		if (clusterId) {
+			deleteBackupAddress({ id, clusterId }).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '删除成功'
+					});
+					getData(keyword);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		} else {
+			Modal.confirm({
+				title: '操作确认',
+				content: '备份位置删除后将无法恢复，请确认执行',
+				onOk: () => {
+					deleteBackupAddress({ id, clusterId }).then((res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '删除成功'
+							});
+							getData(keyword);
+						} else {
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
+						}
+					});
+				}
+			});
+		}
 	};
 
 	const handleAdd = (item: any) => {
@@ -75,6 +92,7 @@ export default function BackupPosition(): JSX.Element {
 				: [...['xx', 'xx'], 'xx']
 		);
 		const sendData = {
+			id: item.id,
 			clusterIds: item.clusterIds.find(
 				(item: string) => item === selectService
 			)
@@ -228,6 +246,7 @@ export default function BackupPosition(): JSX.Element {
 															closable={
 																arr.length !== 1
 															}
+															visible={true}
 															style={{
 																padding:
 																	'4px 10px'

@@ -116,7 +116,10 @@ export default function AddBackupPosition(): JSX.Element {
 					});
 				} else {
 					if (params.id) {
-						editBackupAddress(sendData).then((res) => {
+						editBackupAddress({
+							...sendData,
+							id: Number(params.id)
+						}).then((res) => {
 							if (res.success) {
 								notification.success({
 									message: '成功',
@@ -155,7 +158,7 @@ export default function AddBackupPosition(): JSX.Element {
 		<ProPage className="add-backup-position">
 			<ProHeader
 				onBack={() => history.goBack()}
-				title="新增备份位置"
+				title={params.id ? '编辑备份位置' : '新增备份位置'}
 				avatar={{
 					children: <img src={Backup} />,
 					shape: 'square',
