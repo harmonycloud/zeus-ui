@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { Select, Button, Tag, Input, notification, Empty } from 'antd';
+import { Select, Button, Tag, Input, notification, Empty, Modal } from 'antd';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import Backup from '@/assets/images/backup.svg';
 
@@ -46,17 +46,23 @@ export default function BackupPosition(): JSX.Element {
 	};
 
 	const handleDelete = (id: number, clusterId?: string) => {
-		deleteBackupAddress({ id, clusterId }).then((res) => {
-			if (res.success) {
-				notification.success({
-					message: '成功',
-					description: '删除成功'
-				});
-				getData(keyword);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
+		Modal.confirm({
+			title: '操作确认',
+			content: '备份位置删除后将无法恢复，请确认执行',
+			onOk: () => {
+				deleteBackupAddress({ id, clusterId }).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '删除成功'
+						});
+						getData(keyword);
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
 				});
 			}
 		});
@@ -200,7 +206,13 @@ export default function BackupPosition(): JSX.Element {
 										<Button
 											icon={<PlusOutlined />}
 											style={{ marginLeft: 16 }}
-											disabled={!selectService}
+											disabled={
+												!selectService ||
+												!!item.clusterIds.find(
+													(res: any) =>
+														res === selectService
+												)
+											}
 											onClick={() => handleAdd(item)}
 										></Button>
 										<div style={{ marginTop: 16 }}>

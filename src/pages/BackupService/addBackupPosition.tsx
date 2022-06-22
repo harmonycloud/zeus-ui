@@ -234,7 +234,11 @@ export default function AddBackupPosition(): JSX.Element {
 											)
 										}
 									>
-										{item}
+										{
+											poolList.find(
+												(res) => res.id === item
+											)?.name
+										}
 									</Tag>
 								);
 							})}
