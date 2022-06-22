@@ -132,28 +132,6 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		setSearchText('');
 		setChecked(e.target.checked);
 	};
-	const onFilter = (filterParams: any) => {
-		const {
-			restart: { selectedKeys }
-		} = filterParams;
-		let list = dataSource;
-		if (selectedKeys.length === 0) {
-			if (checked)
-				list = list.filter(
-					(item) => item[temp?.name || ''] !== item.value
-				);
-			setShowDataSource(list);
-		} else {
-			let tempData = dataSource.filter(
-				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
-			);
-			if (checked)
-				tempData = tempData.filter(
-					(item) => item[temp?.name || ''] !== item.value
-				);
-			setShowDataSource(tempData);
-		}
-	};
 	const isRestartRender = (value: boolean) => {
 		return value ? '是' : '否';
 	};
@@ -416,9 +394,12 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						render={isRestartRender}
 						filterMultiple={false}
 						filters={[
-							{ value: 'true', text: '是' },
-							{ value: 'false', text: '否' }
+							{ value: true, text: '是' },
+							{ value: false, text: '否' }
 						]}
+						onFilter={(value, record: ConfigItem) =>
+							record.restart === value
+						}
 						width={120}
 					/>
 					<ProTable.Column
