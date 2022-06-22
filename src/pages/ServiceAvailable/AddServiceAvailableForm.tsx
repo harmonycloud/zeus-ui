@@ -120,9 +120,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				});
 			JSON.stringify(namespace) !== '{}' &&
 				getExposedService(
-					record.middlewareNickName
-						? record.middlewareNickName
-						: record.middlewareName,
+					record.middlewareName,
 					record.middlewareType,
 					record.namespace
 				);
