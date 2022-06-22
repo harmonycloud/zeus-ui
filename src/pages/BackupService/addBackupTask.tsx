@@ -36,7 +36,6 @@ import { weekMap } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import './index.scss';
-import { middlewareName } from '@/services/middleware.constants';
 
 const { Step } = Steps;
 const { Group: CheckboxGroup } = Checkbox;
@@ -99,6 +98,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [allChecked, setAllChecked] = useState<boolean>();
 	const [dataSelect, setDataSelect] = useState<string>('天');
 	const [formData, setFormData] = useState<any>();
+	const [formWayData, setFormWayData] = useState<any>();
 	const [tableData, setTableData] = useState<any[]>([]);
 	const [addressList, setAddressList] = useState<any>();
 	const [selectAddress, setSelectAddress] = useState<any>();
@@ -124,6 +124,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 
 	const prev = () => {
 		setCurrent(current - 1);
+		if (current === 2) {
+			setFormWayData(formWay.getFieldsValue());
+		}
 	};
 
 	useEffect(() => {
@@ -165,22 +168,17 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			keyword: searchText
 		}).then((res) => {
 			setTableData(res.data);
-			params.type
-				? setSelectedRowKeys([params.middlewareName])
-				: setSelectedRowKeys([res.data[0]?.name]);
-			params.type
-				? setSelectedRow(
-						res.data.map(
-							(item: any) => item.name === middlewareName
-						)
-				  )
-				: setSelectedRow(res.data[0]);
+			setSelectedRowKeys([res.data[0]?.name]);
+			setSelectedRow(res.data[0]);
 		});
 	}, [searchText, selectText]);
 
 	useEffect(() => {
 		if (current === 1) {
 			form.setFieldsValue(formData);
+		}
+		if (current === 2) {
+			formWay.setFieldsValue(formWayData);
 		}
 	}, [current]);
 
@@ -521,15 +519,29 @@ function AddBackupTask(props: StoreState): JSX.Element {
 											</div>
 										}
 									>
-										<p>数据源类型：{selectedRow.type}</p>
-										<p>数据源名称：{selectedRow.name}</p>
-										<Button
-											type="primary"
-											style={{ marginTop: '24px' }}
-											onClick={() => setCurrent(0)}
-										>
-											修改
-										</Button>
+										<p>
+											数据源类型：
+											{params.type || selectedRow.type}
+										</p>
+										<p>
+											数据源名称：
+											{params.middlewareName ||
+												selectedRow.name}
+										</p>
+										{!params.type ? (
+											<Button
+												type="primary"
+												style={{ marginTop: '24px' }}
+												onClick={() => {
+													setCurrent(0);
+													setFormWayData(
+														formWay.getFieldsValue()
+													);
+												}}
+											>
+												修改
+											</Button>
+										) : null}
 									</Card>
 									<Card
 										title={
@@ -573,7 +585,12 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										<Button
 											type="primary"
 											style={{ marginTop: '24px' }}
-											onClick={() => setCurrent(1)}
+											onClick={() => {
+												setCurrent(1);
+												setFormWayData(
+													formWay.getFieldsValue()
+												);
+											}}
 										>
 											修改
 										</Button>
@@ -637,8 +654,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			const sendData = {
 				...values,
 				clusterId: cluster.id,
-				namespace: selectedRow.namespace,
-				middlewareName: selectedRow.name,
+				namespace: params.namespace || selectedRow.namespace,
+				middlewareName: params.middlewareName || selectedRow.name,
 				type: selectedRow.type,
 				// cron:
 				// 	typeof formData.time !== 'string'
@@ -721,6 +738,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 						<div className="steps-content">{renderStep()}</div>
 					</>
 				)}
+				{console.log(formWayData)}
 				<Divider
 					style={{ marginTop: '40px', display: 'inline-block' }}
 				></Divider>
@@ -738,7 +756,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 					</div>
 				) : (
 					<div className="steps-action">
-						{current > 0 && (
+						{(current > 1 || (!params.type && current > 0)) && (
 							<Button
 								style={{ margin: '0 8px' }}
 								onClick={() => prev()}
