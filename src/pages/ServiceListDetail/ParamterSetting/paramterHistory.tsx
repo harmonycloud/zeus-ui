@@ -56,23 +56,6 @@ export default function ParamterHistory(
 			}
 		});
 	};
-
-	const onOk = (val: any) => {
-		console.log(val);
-		// setStartTime(val[0]);
-		// setEndTime(val[1]);
-		// const start = moment(val[0]).format('YYYY-MM-DDTHH:mm:ss[Z]');
-		// const end = moment(val[1]).format('YYYY-MM-DDTHH:mm:ss[Z]');
-		// getData(
-		// 	clusterId,
-		// 	namespace,
-		// 	middlewareName,
-		// 	type,
-		// 	searchText,
-		// 	start,
-		// 	end
-		// );
-	};
 	const onChange = (val: any) => {
 		if (val) {
 			setStartTime(val[0]);
@@ -121,10 +104,7 @@ export default function ParamterHistory(
 			<ProContent style={{ padding: '0 0' }}>
 				<ProTable
 					dataSource={dataSource}
-					// exact
-					// fixedBarExpandWidth={[24]}
-					// affixActionBar
-					rowKey="item"
+					rowKey="id"
 					operation={Operation}
 					showRefresh
 					onRefresh={() =>

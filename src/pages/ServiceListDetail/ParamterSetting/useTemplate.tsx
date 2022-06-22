@@ -116,7 +116,10 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		}
 	}, [dataSource]);
 	const handleSearch = (value: string) => {
-		const list = dataSource.filter((item) => item.name.includes(value));
+		let list = dataSource.filter((item) => item.name.includes(value));
+		if (checked) {
+			list = list.filter((item) => item[temp?.name || ''] !== item.value);
+		}
 		setShowDataSource(list);
 		setSearchText(value);
 	};
@@ -131,28 +134,6 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 		}
 		setSearchText('');
 		setChecked(e.target.checked);
-	};
-	const onFilter = (filterParams: any) => {
-		const {
-			restart: { selectedKeys }
-		} = filterParams;
-		let list = dataSource;
-		if (selectedKeys.length === 0) {
-			if (checked)
-				list = list.filter(
-					(item) => item[temp?.name || ''] !== item.value
-				);
-			setShowDataSource(list);
-		} else {
-			let tempData = dataSource.filter(
-				(item: ConfigItem) => item.restart + '' === selectedKeys[0]
-			);
-			if (checked)
-				tempData = tempData.filter(
-					(item) => item[temp?.name || ''] !== item.value
-				);
-			setShowDataSource(tempData);
-		}
 	};
 	const isRestartRender = (value: boolean) => {
 		return value ? '是' : '否';
@@ -213,6 +194,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 								message: '输入的值不在参数范围中'
 							}
 						]}
+						noStyle
 					>
 						<Input
 							placeholder="请输入"
@@ -225,7 +207,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				);
 			case 'select':
 				return (
-					<FormItem name={record.name}>
+					<FormItem name={record.name} noStyle>
 						<Select
 							style={{ width: '100%' }}
 							defaultValue={record[temp?.name || '']}
@@ -246,7 +228,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 				);
 			case 'multiSelect':
 				return (
-					<FormItem name={record.name}>
+					<FormItem name={record.name} noStyle>
 						<Select
 							defaultValue={defaultSelects}
 							mode="multiple"
@@ -275,6 +257,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 								message: '输入的值不在参数范围中'
 							}
 						]}
+						noStyle
 					>
 						<Input
 							placeholder="请输入"
@@ -355,6 +338,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 			/>
 			<ProContent>
 				<Alert
+					showIcon
 					message="使用前模板需要修改当前运行值，可直接修改应用当前模板，并确认应用后仅本次生效！"
 					type="warning"
 				/>
@@ -380,24 +364,19 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							</Checkbox>
 						)
 					}}
+					style={{ marginBottom: 64 }}
 				>
 					<ProTable.Column
 						title="参数名"
 						dataIndex="name"
 						width={210}
 						ellipsis={true}
-						// render={(
-						// 	value: string,
-						// 	index: number,
-						// 	record: ConfigItem
-						// ) => tooltipRender(value, index, record, 210)}
 						fixed="left"
 					/>
 					<ProTable.Column
 						title="当前运行值"
 						dataIndex="value"
 						ellipsis={true}
-						// cell={defaultValueRender}
 						width={180}
 					/>
 					<ProTable.Column
@@ -410,7 +389,6 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						title="默认值"
 						dataIndex="defaultValue"
 						ellipsis={true}
-						// render={defaultValueRender}
 						width={180}
 					/>
 					<ProTable.Column
@@ -418,11 +396,13 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 						dataIndex="restart"
 						render={isRestartRender}
 						filterMultiple={false}
-						// filterMode="single"
 						filters={[
-							{ value: 'true', text: '是' },
-							{ value: 'false', text: '否' }
+							{ value: true, text: '是' },
+							{ value: false, text: '否' }
 						]}
+						onFilter={(value, record: ConfigItem) =>
+							record.restart === value
+						}
 						width={120}
 					/>
 					<ProTable.Column

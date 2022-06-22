@@ -20,6 +20,7 @@ import {
 import { formItemLayout614 } from '@/utils/const';
 import { getClusters } from '@/services/common';
 import { clusterType } from '@/types';
+import pattern from '@/utils/pattern';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -161,7 +162,7 @@ export default function AddStorage(): JSX.Element {
 						{...formItemLayout614}
 						form={form}
 						labelAlign="left"
-						style={{ width: '50%' }}
+						style={{ width: '60%' }}
 					>
 						<FormItem
 							label="集群"
@@ -171,9 +172,15 @@ export default function AddStorage(): JSX.Element {
 						>
 							<Select
 								value={curClusterId}
-								onChange={(value: string) =>
-									setCurClusterId(value)
-								}
+								onChange={(value: string) => {
+									setCurClusterId(value);
+									form.setFieldsValue({
+										name: '',
+										aliasName: '',
+										volumeType: '',
+										vgName: ''
+									});
+								}}
 								disabled={params.name ? true : false}
 							>
 								{clusterList.map((item: clusterType) => {
@@ -218,8 +225,9 @@ export default function AddStorage(): JSX.Element {
 							rules={[
 								{ required: true, message: '请填写中文名称' },
 								{
-									max: 10,
-									message: '中文名称长度不超过10个字符'
+									pattern: new RegExp(pattern.storageName),
+									message:
+										'存储中文名称由中文、大写字母、小写字母和数字组成，长度不超过10个字符'
 								}
 							]}
 							name="aliasName"

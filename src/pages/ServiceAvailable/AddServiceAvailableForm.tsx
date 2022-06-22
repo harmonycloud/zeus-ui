@@ -120,9 +120,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 				});
 			JSON.stringify(namespace) !== '{}' &&
 				getExposedService(
-					record.middlewareNickName
-						? record.middlewareNickName
-						: record.middlewareName,
+					record.middlewareName,
 					record.middlewareType,
 					record.namespace
 				);
@@ -279,7 +277,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 
 	const addHttpList = () => {
 		setHttpList([...httpList, { id: Math.random() }]);
-		console.log([...httpList]);
 	};
 	const copyHttpList = (index: number) => {
 		const addItem = httpList[index];

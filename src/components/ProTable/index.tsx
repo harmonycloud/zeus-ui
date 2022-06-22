@@ -39,6 +39,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 			console.log('');
 		},
 		search,
+		style,
 		...tableProps
 	} = props;
 	const [showColumnDialog, setShowColumnDialog] = useState<boolean>(false); // 展示column列表
@@ -68,7 +69,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 		));
 	};
 	return (
-		<div className="zeus-pro-table">
+		<div className="zeus-pro-table" style={style}>
 			{operatorVisible && (
 				<div className="zeus-pro-table-operator-content">
 					<div className="zeus-pro-table-operator-left">

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import { Button, notification, Modal, Select, Alert } from 'antd';
-// import { Button, Dialog, Message, Select } from '@alicloud/console-components';
 import { useParams } from 'react-router';
 import {
 	getConfigMapList,
@@ -9,7 +8,6 @@ import {
 	updateConfig,
 	verificationYaml
 } from '@/services/configmap';
-// import messageConfig from '@/components/messageConfig';
 import yaml from 'js-yaml';
 import 'codemirror/addon/selection/active-line';
 
@@ -194,6 +192,7 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 			<Alert
 				message="此处修改可能导致参数列表与实际参数内容不匹配，请谨慎操作！"
 				type="warning"
+				showIcon
 				style={{ marginBottom: 16 }}
 			/>
 			<div className="yaml-edit-btn-content">
