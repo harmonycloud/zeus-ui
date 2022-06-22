@@ -171,9 +171,14 @@ export default function AddStorage(): JSX.Element {
 						>
 							<Select
 								value={curClusterId}
-								onChange={(value: string) =>
-									setCurClusterId(value)
-								}
+								onChange={(value: string) => {
+									setCurClusterId(value);
+									form.setFieldsValue({
+										name: '',
+										aliasName: '',
+										volumeType: ''
+									});
+								}}
 								disabled={params.name ? true : false}
 							>
 								{clusterList.map((item: clusterType) => {
