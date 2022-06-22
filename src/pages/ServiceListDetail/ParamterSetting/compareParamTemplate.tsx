@@ -92,7 +92,12 @@ export default function CompareParamTemplate(): JSX.Element {
 	}, [temp1, temp2]);
 
 	const handleSearch = (value: string) => {
-		const list = dataSource.filter((item) => item.name.includes(value));
+		let list = dataSource.filter((item) => item.name.includes(value));
+		if (checked) {
+			list = list.filter(
+				(item) => item[temp1?.name || ''] !== item[temp2?.name || '']
+			);
+		}
 		setShowDataSource(list);
 		setSearchText(value);
 	};
