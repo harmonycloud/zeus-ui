@@ -58,6 +58,7 @@ export default function StorageManagement(): JSX.Element {
 			if (res.success) {
 				setStorages(res.data);
 			} else {
+				setStorages([]);
 				notification.error({
 					message: '失败',
 					description: res.errorMsg
@@ -69,6 +70,7 @@ export default function StorageManagement(): JSX.Element {
 		getData(e.target.value);
 	};
 	const handleChange = (value: string, type: string) => {
+		setStorages([]);
 		if (type === 'cluster') {
 			setSelectedClusterId(value);
 		} else {
