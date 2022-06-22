@@ -59,15 +59,12 @@ export default function RocketAclEditForm(props: aclEditProps): JSX.Element {
 	};
 	return (
 		<Modal
-			style={{ width: '1000px' }}
+			width={1000}
 			title="修改访问权限控制认证"
 			visible={visible}
 			// footerAlign="right"
 			onOk={onOk}
 			onCancel={() => onCancel(false)}
-			// onClose={() => onCancel(false)}
-			// shouldUpdatePosition={true}
-			// isFullScreen={true}
 		>
 			<Form form={form}>
 				<RocketACLForm form={form} data={data} />
