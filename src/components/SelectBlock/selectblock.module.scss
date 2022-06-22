@@ -13,43 +13,20 @@
 		// align-items: center;
 		// justify-content: center;
 		text-align: center;
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 		padding: 8px;
-		&:hover{
+		&:hover {
 			color: $primary-color;
-			border: 1px solid #B2D4EF;
+			border: 1px solid #b2d4ef;
 		}
-	}
-	.select-box-item:last-child {
-		margin-right: 0;
-	}
-	.select-box-item.active {
-		background: #DEE9F6;
-		border: 1px solid #B2D4EF;
-	}
-}
-.select-box-disabled{
-	.select-box-item {
-		cursor: not-allowed;
-		width: 182px;
-		height: 32px;
-		line-height: 14px;
-		color: #D2D2D2;
-		font-weight: $font-weight;
-		margin-right: 8px;
-		border: 1px solid $border-color;
-		// display: flex;
-		// align-items: center;
-		// justify-content: center;
-		text-align: center;
-		overflow:hidden;
-		white-space:nowrap;
-		text-overflow:ellipsis;
-		padding: 8px;
-		&:hover{
-			color: #D2D2D2;
+		&.disabled {
+			color: #d2d2d2;
+			cursor: not-allowed;
+		}
+		&.disabled:hover {
+			color: #d2d2d2;
 			border: 1px solid $border-color;
 		}
 	}
@@ -57,8 +34,43 @@
 		margin-right: 0;
 	}
 	.select-box-item.active {
-		background: #D1D5D9;
-		border: 1px dashed #D1D5D9;
+		background: #dee9f6;
+		border: 1px solid #b2d4ef;
+	}
+	.select-box-item.active.disabled {
+		background: #fff;
+		border: 1px solid $border-color;
+	}
+}
+.select-box-disabled {
+	.select-box-item {
+		cursor: not-allowed;
+		width: 182px;
+		height: 32px;
+		line-height: 14px;
+		color: #d2d2d2;
+		font-weight: $font-weight;
+		margin-right: 8px;
+		border: 1px solid $border-color;
+		// display: flex;
+		// align-items: center;
+		// justify-content: center;
+		text-align: center;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		padding: 8px;
+		&:hover {
+			color: #d2d2d2;
+			border: 1px solid $border-color;
+		}
+	}
+	.select-box-item:last-child {
+		margin-right: 0;
+	}
+	.select-box-item.active {
+		background: #f3f3f3;
+		border: 1px dashed #d1d5d9;
 		color: $white;
 	}
 }

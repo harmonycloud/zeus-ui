@@ -78,7 +78,11 @@ export const statusBackupRender: (value: string) => JSX.Element = (
 		case 'Running':
 			return <Badge status="warning" text="进行中" />;
 		case 'Failed':
-			return <Badge status="error" text="失败" />;
+			return (
+				<Tooltip title="运行异常">
+					<Badge status="error" text="失败" />
+				</Tooltip>
+			);
 		case 'Success':
 			return <Badge status="success" text="成功" />;
 		default:
@@ -396,30 +400,27 @@ export const judgeObjArrayHeavyByAttr: (arr: any[], attr: string) => boolean = (
 	return values.length !== t.length;
 };
 // * 调换对象属性位置
-export const changeObjectIndex: (
-	obj: any,
-	prop: string,
-	index: number
-) => any = (obj: any, prop: string, index: number) => {
-	const keyArr = Object.keys(obj);
-	if (keyArr.length > 1) {
-		const propIndex = keyArr.indexOf(prop);
-		console.log(propIndex);
-		if (propIndex > 0) {
-			keyArr.splice(propIndex, 0);
-			keyArr.splice(index, 0, prop);
-			const result = {};
-			for (let i = 0; i < keyArr.length; i++) {
-				result[keyArr[i]] = obj[keyArr[i]];
+export const changeObjectIndex: (obj: any, prop: string, index: number) => any =
+	(obj: any, prop: string, index: number) => {
+		const keyArr = Object.keys(obj);
+		if (keyArr.length > 1) {
+			const propIndex = keyArr.indexOf(prop);
+			console.log(propIndex);
+			if (propIndex > 0) {
+				keyArr.splice(propIndex, 0);
+				keyArr.splice(index, 0, prop);
+				const result = {};
+				for (let i = 0; i < keyArr.length; i++) {
+					result[keyArr[i]] = obj[keyArr[i]];
+				}
+				return result;
+			} else {
+				return obj;
 			}
-			return result;
 		} else {
 			return obj;
 		}
-	} else {
-		return obj;
-	}
-};
+	};
 
 // * 获取customForm中的所有variable-递归
 export const getCustomFormKeys: (value: any) => string[] = (value: any) => {

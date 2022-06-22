@@ -12,6 +12,7 @@ import {
 	Tag,
 	notification
 } from 'antd';
+import SelectBlock from '@/components/SelectBlock';
 import { getClusters } from '@/services/common';
 import {
 	addBackupAddress,
@@ -40,6 +41,24 @@ export default function AddBackupPosition(): JSX.Element {
 	const [poolList, setPoolList] = useState<poolListItem[]>([]);
 	const [selectClusterId, setSelectClusterId] = useState<string>();
 	const [selectClusterIds, setSelectClusterIds] = useState<string[]>([]);
+	const [type, setType] = useState<string>('V3');
+	const addressType = [
+		{
+			label: 'V3',
+			value: 'V3'
+		},
+		{
+			label: 'Ftp',
+			value: 'Ftp',
+			disabled: true
+		},
+
+		{
+			label: '服务器',
+			value: '服务器',
+			disabled: true
+		}
+	];
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -168,85 +187,6 @@ export default function AddBackupPosition(): JSX.Element {
 			/>
 			<ProContent>
 				<Form form={form} {...formItemLayout} labelAlign="left">
-					<h2 style={{ marginBottom: 8 }}>绑定集群</h2>
-					<div>
-						<Form.Item
-							label="集群选择"
-							name="clusterId"
-							rules={[
-								{
-									required: true,
-									message: '请选择集群'
-								}
-							]}
-						>
-							<div style={{ position: 'relative' }}>
-								<Select
-									placeholder="请选择集群"
-									value={selectClusterId}
-									style={{ width: '100%', flex: 1 }}
-									onChange={(value) => {
-										setSelectClusterId(value);
-										form.setFieldsValue({
-											clusterId: value
-										});
-									}}
-								>
-									{poolList.map((item: poolListItem) => {
-										return (
-											<Select.Option
-												value={item.id}
-												key={item.id}
-											>
-												{item.name}
-											</Select.Option>
-										);
-									})}
-								</Select>
-								<Button
-									icon={<PlusOutlined />}
-									style={{ position: 'absolute', right: -48 }}
-									disabled={!selectClusterId}
-									onClick={() =>
-										selectClusterId &&
-										!selectClusterIds.find(
-											(item) => item === selectClusterId
-										) &&
-										setSelectClusterIds([
-											...selectClusterIds,
-											selectClusterId
-										])
-									}
-								></Button>
-							</div>
-						</Form.Item>
-					</div>
-					{selectClusterIds?.length ? (
-						<div style={{ marginBottom: 24 }} className="tags">
-							{selectClusterIds.map((item: string) => {
-								return (
-									<Tag
-										key={item}
-										closable
-										style={{ padding: '4px 10px' }}
-										onClose={() =>
-											setSelectClusterIds(
-												selectClusterIds.filter(
-													(str) => str !== item
-												)
-											)
-										}
-									>
-										{
-											poolList.find(
-												(res) => res.id === item
-											)?.name
-										}
-									</Tag>
-								);
-							})}
-						</div>
-					) : null}
 					<h2 style={{ marginBottom: 8 }}>基础信息</h2>
 					<Form.Item
 						label="中文名称"
@@ -281,8 +221,9 @@ export default function AddBackupPosition(): JSX.Element {
 							}
 						]}
 						name="type"
+						initialValue={type}
 					>
-						<Select placeholder="请选择类型" disabled={!!params.id}>
+						{/* <Select placeholder="请选择类型" disabled={!!params.id}>
 							<Select.Option key="S3" value="S3">
 								S3
 							</Select.Option>
@@ -292,7 +233,16 @@ export default function AddBackupPosition(): JSX.Element {
 							<Select.Option key="服务器" value="服务器" disabled>
 								服务器
 							</Select.Option>
-						</Select>
+						</Select> */}
+						<SelectBlock
+							options={addressType}
+							currentValue={type}
+							disabled={!!params.id}
+							onCallBack={(value: any) => {
+								setType(value);
+								form.setFieldsValue({ type: value });
+							}}
+						/>
 					</Form.Item>
 					<Form.Item label="备份地址" required className="flex-form">
 						<Form.Item
@@ -380,7 +330,7 @@ export default function AddBackupPosition(): JSX.Element {
 					>
 						<Input placeholder="密码" />
 					</Form.Item>
-					<Form.Item
+					{/* <Form.Item
 						name="capacity"
 						label="配额"
 						rules={[
@@ -395,7 +345,86 @@ export default function AddBackupPosition(): JSX.Element {
 							addonAfter="GB"
 							style={{ width: 150 }}
 						/>
-					</Form.Item>
+					</Form.Item> */}
+					<h2 style={{ marginBottom: 8 }}>绑定集群</h2>
+					<div>
+						<Form.Item
+							label="集群选择"
+							name="clusterId"
+							rules={[
+								{
+									required: true,
+									message: '请选择集群'
+								}
+							]}
+						>
+							<div style={{ position: 'relative' }}>
+								<Select
+									placeholder="请选择集群"
+									value={selectClusterId}
+									style={{ width: '100%', flex: 1 }}
+									onChange={(value) => {
+										setSelectClusterId(value);
+										form.setFieldsValue({
+											clusterId: value
+										});
+									}}
+								>
+									{poolList.map((item: poolListItem) => {
+										return (
+											<Select.Option
+												value={item.id}
+												key={item.id}
+											>
+												{item.name}
+											</Select.Option>
+										);
+									})}
+								</Select>
+								<Button
+									icon={<PlusOutlined />}
+									style={{ position: 'absolute', right: -48 }}
+									disabled={!selectClusterId}
+									onClick={() =>
+										selectClusterId &&
+										!selectClusterIds.find(
+											(item) => item === selectClusterId
+										) &&
+										setSelectClusterIds([
+											...selectClusterIds,
+											selectClusterId
+										])
+									}
+								></Button>
+							</div>
+						</Form.Item>
+					</div>
+					{selectClusterIds?.length ? (
+						<div style={{ marginBottom: 24 }} className="tags">
+							{selectClusterIds.map((item: string) => {
+								return (
+									<Tag
+										key={item}
+										closable
+										style={{ padding: '4px 10px' }}
+										onClose={() =>
+											setSelectClusterIds(
+												selectClusterIds.filter(
+													(str) => str !== item
+												)
+											)
+										}
+									>
+										{
+											poolList.find(
+												(res) => res.id === item
+											)?.name
+										}
+									</Tag>
+								);
+							})}
+						</div>
+					) : null}
 				</Form>
 				<Divider />
 				<Button

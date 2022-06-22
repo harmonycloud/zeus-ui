@@ -244,6 +244,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
+			width={1100}
 			// onClose={onCancel}
 			// isFullScreen={true}
 			// footerAlign="right"
