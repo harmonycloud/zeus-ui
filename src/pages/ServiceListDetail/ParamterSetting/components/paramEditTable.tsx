@@ -121,7 +121,6 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			});
 			confirm({
 				title: '操作确认',
-				// content: '修改后可能导致服务重启，是否继续',
 				content: restartFlag
 					? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
 					: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
@@ -247,6 +246,8 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									message: '输入的值不在参数范围中。'
 								}
 							]}
+							noStyle
+							// initialValue={record.modifiedValue}
 						>
 							<Input
 								placeholder="请输入"
@@ -259,7 +260,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					);
 				case 'select':
 					return (
-						<FormItem name={record.name}>
+						<FormItem
+							name={record.name}
+							noStyle
+							// initialValue={record.modifiedValue}
+						>
 							<Select
 								style={{ width: '100%' }}
 								defaultValue={record.modifiedValue}
@@ -280,7 +285,11 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 					);
 				case 'multiSelect':
 					return (
-						<FormItem name={record.name}>
+						<FormItem
+							name={record.name}
+							noStyle
+							// initialValue={defaultSelects}
+						>
 							<Select
 								defaultValue={defaultSelects}
 								mode="multiple"
@@ -309,6 +318,8 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									message: '输入的值不在参数范围中。'
 								}
 							]}
+							noStyle
+							// initialValue={record.modifiedValue}
 						>
 							<Input
 								placeholder="请输入"

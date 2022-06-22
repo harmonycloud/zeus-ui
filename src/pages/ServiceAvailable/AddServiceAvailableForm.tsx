@@ -279,7 +279,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 
 	const addHttpList = () => {
 		setHttpList([...httpList, { id: Math.random() }]);
-		console.log([...httpList]);
 	};
 	const copyHttpList = (index: number) => {
 		const addItem = httpList[index];

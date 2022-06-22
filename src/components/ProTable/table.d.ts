@@ -14,6 +14,7 @@ export interface ProTableProps<RecordType> extends TableProps<RecordType> {
 	};
 	search?: SearchProps | null;
 	children: React.ReactNode[];
+	style?: React.CSSProperties;
 }
 
 export interface ColumnsModalProps<T> {
