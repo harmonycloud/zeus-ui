@@ -176,7 +176,8 @@ export default function AddStorage(): JSX.Element {
 									form.setFieldsValue({
 										name: '',
 										aliasName: '',
-										volumeType: ''
+										volumeType: '',
+										vgName: ''
 									});
 								}}
 								disabled={params.name ? true : false}
