@@ -46,7 +46,7 @@ export default function TableRadio(props: any): JSX.Element {
 				</div>
 			) : null}
 			<Table
-				rowKey="name"
+				rowKey={(record) => record.name + record.clusterId}
 				rowSelection={{
 					type: 'radio',
 					...rowSelection

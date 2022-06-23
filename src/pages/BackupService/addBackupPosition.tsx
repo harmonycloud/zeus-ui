@@ -41,11 +41,11 @@ export default function AddBackupPosition(): JSX.Element {
 	const [poolList, setPoolList] = useState<poolListItem[]>([]);
 	const [selectClusterId, setSelectClusterId] = useState<string>();
 	const [selectClusterIds, setSelectClusterIds] = useState<string[]>([]);
-	const [type, setType] = useState<string>('V3');
+	const [type, setType] = useState<string>('S3');
 	const addressType = [
 		{
-			label: 'V3',
-			value: 'V3'
+			label: 'S3',
+			value: 'S3'
 		},
 		{
 			label: 'Ftp',
