@@ -124,6 +124,9 @@ export default function StorageManagement(): JSX.Element {
 	const quotaRender = (record: StorageItem) => {
 		return `${Number(record.monitorResourceQuota.storage.used)}GB`;
 	};
+	const applyRender = (record: StorageItem) => {
+		return `${Number(record.monitorResourceQuota.storage.request)}GB`;
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -146,7 +149,10 @@ export default function StorageManagement(): JSX.Element {
 						placeholder: '请输入存储服务名称搜索'
 					}}
 					showRefresh
-					onRefresh={() => getData(key)}
+					onRefresh={() => {
+						setStorages([]);
+						getData(key);
+					}}
 				>
 					{storages.map((item: StorageItem, index: number) => {
 						return (
@@ -235,13 +241,17 @@ export default function StorageManagement(): JSX.Element {
 									label="所属集群"
 									value={item.clusterAliasName}
 								/>
-								<ListCardItem
+								{/* <ListCardItem
 									label="类型"
 									value={item.volumeType}
-								/>
+								/> */}
 								<ListCardItem
 									label="存储使用量"
 									value={quotaRender(item)}
+								/>
+								<ListCardItem
+									label="存储申请量"
+									value={applyRender(item)}
 								/>
 							</ListCard>
 						);

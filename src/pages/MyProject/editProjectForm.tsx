@@ -78,7 +78,7 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 						},
 						{
 							pattern: new RegExp(pattern.projectAliasName),
-							message: '请输入名称，且最大长度不超过80个字符'
+							message: '请输入名称，且最大长度不超过20个字符'
 						}
 					]}
 					required
