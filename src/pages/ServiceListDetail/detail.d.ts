@@ -121,6 +121,7 @@ export interface EventsListProps {
 	kind: string;
 	namespace: string;
 	globalVar?: globalVarProps;
+	namespace: string;
 }
 export interface EventItem {
 	chartName: null;

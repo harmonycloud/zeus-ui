@@ -276,13 +276,13 @@ export default function BackupPosition(): JSX.Element {
 								<ListCardItem
 									label="备份地址"
 									value={item.endpoint}
-									width={200}
+									width={260}
 								/>
-								<ListCardItem
+								{/* <ListCardItem
 									label="容量"
 									value={item.capacity + 'G'}
 									width={100}
-								/>
+								/> */}
 								<ListCardItem
 									label="所引用备份数"
 									value={item.relevanceNum}
