@@ -62,7 +62,6 @@ export default function RocketAclEditForm(props: aclEditProps): JSX.Element {
 			width={1000}
 			title="修改访问权限控制认证"
 			visible={visible}
-			// footerAlign="right"
 			onOk={onOk}
 			onCancel={() => onCancel(false)}
 		>
