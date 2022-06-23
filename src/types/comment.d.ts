@@ -65,6 +65,7 @@ export interface middlewareDetailProps {
 	reason: any | null;
 	relationMiddleware: any | null;
 	rocketMQParam: any | null;
+	namespaceAliasName: string;
 	status: string;
 	stdoutEnabled: any | null;
 	type: string;
