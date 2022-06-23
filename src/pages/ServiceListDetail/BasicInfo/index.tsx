@@ -231,7 +231,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const [basicData, setBasicData] = useState(info);
 	const [infoConfig, setInfoConfig] = useState(InfoConfig);
 	// * 运行状态
-	const [runData, setRunData] = useState(runStatus);
+	const [runData, setRunData] = useState<any>(runStatus);
 	const [runConfig, setRunConfig] = useState(
 		type !== 'rocketmq'
 			? [

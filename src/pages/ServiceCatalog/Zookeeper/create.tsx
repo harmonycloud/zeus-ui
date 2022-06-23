@@ -782,7 +782,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 							</ul>
 						</div>
 					</FormBlock>
-					<FormBlock title="日志收集">
+					{/* <FormBlock title="日志收集">
 						<div className={styles['log-collection-content']}>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
@@ -851,7 +851,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 								</ul>
 							</div>
 						</div>
-					</FormBlock>
+					</FormBlock> */}
 					<FormBlock title="Zookeeper配置">
 						{/* <div className={styles['mysql-config']}> */}
 						<div>
