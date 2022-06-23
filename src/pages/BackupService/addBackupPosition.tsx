@@ -80,9 +80,7 @@ export default function AddBackupPosition(): JSX.Element {
 						serverPort: res.data.endpoint
 							.split(':')[2]
 							.split('/')[0],
-						bucketName: res.data.endpoint
-							.split(':')[2]
-							.split('/')[1]
+						bucketName: res.data.bucketName
 					});
 				} else {
 					notification.error({
@@ -109,14 +107,13 @@ export default function AddBackupPosition(): JSX.Element {
 					name: values.name,
 					secretAccessKey: values.secretAccessKey,
 					type: values.type,
+					bucketName: values.bucketName,
 					endpoint:
 						values.http +
 						'://' +
 						values.serverHost +
 						':' +
-						values.serverPort +
-						'/' +
-						values.bucketName
+						values.serverPort
 				};
 
 				if (isCheck) {
