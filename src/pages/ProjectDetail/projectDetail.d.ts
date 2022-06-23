@@ -75,3 +75,10 @@ export interface NamespaceProps {
 	clusterList: clusterType[];
 	setRefreshCluster: (flag: boolean) => void;
 }
+export interface ServiceListProps {
+	globalVar: globalVarProps;
+	setCluster: (value: any) => void;
+	setNamespace: (value: any) => void;
+	setRefreshCluster: (flag: boolean) => void;
+	setProject: (value: any) => void;
+}
