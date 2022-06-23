@@ -121,7 +121,7 @@ export default function AddBackupPosition(): JSX.Element {
 						if (res.success) {
 							notification.success({
 								message: '成功',
-								description: '测试成功'
+								description: '连接成功'
 							});
 						} else {
 							notification.error({
