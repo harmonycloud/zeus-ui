@@ -168,8 +168,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			keyword: searchText
 		}).then((res) => {
 			setTableData(res.data);
-			setSelectedRowKeys([res.data[0]?.name]);
-			setSelectedRow(res.data[0]);
+			// setSelectedRowKeys([res.data[0]?.name]);
+			// setSelectedRow(res.data[0]);
 		});
 	}, [searchText, selectText]);
 

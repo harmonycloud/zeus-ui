@@ -1541,16 +1541,16 @@ function Visualization(props) {
 				position: 'fixed',
 				top: 0,
 				left: 0,
-				zIndex: 999
+				zIndex: 1000
 			});
 			window.graph.changeSize(window.innerWidth, window.innerHeight);
-			window.graph.fitCenter();
+			window.graph.fitView();
 		} else {
 			window.graph.changeSize(1180, 480);
 			setOption({
 				position: 'static'
 			});
-			window.graph.fitCenter();
+			window.graph.fitView();
 		}
 	};
 
@@ -1577,12 +1577,13 @@ function Visualization(props) {
 									? '全屏'
 									: '退出全屏'
 							}
+							placement="bottom"
 						>
 							<Button onClick={scale}>
 								<FullscreenOutlined />
 							</Button>
 						</Tooltip>
-						<Tooltip title="横向排列">
+						<Tooltip title="横向排列" placement="bottom">
 							<Button onClick={() => changeTree('LR')}>
 								<IconFont
 									type="icon-shuxiangjiegou"
@@ -1595,7 +1596,7 @@ function Visualization(props) {
 								/>
 							</Button>
 						</Tooltip>
-						<Tooltip title="竖向排列">
+						<Tooltip title="竖向排列" placement="bottom">
 							<Button onClick={() => changeTree('TB')}>
 								<IconFont
 									type="icon-shuxiangjiegou"
@@ -1607,17 +1608,17 @@ function Visualization(props) {
 								/>
 							</Button>
 						</Tooltip>
-						<Tooltip title="放大">
+						<Tooltip title="放大" placement="bottom">
 							<Button onClick={bingger}>
 								<PlusOutlined />
 							</Button>
 						</Tooltip>
-						<Tooltip title="缩小">
+						<Tooltip title="缩小" placement="bottom">
 							<Button onClick={smaller}>
 								<MinusOutlined />
 							</Button>
 						</Tooltip>
-						<Tooltip title="回到原点">
+						<Tooltip title="回到原点" placement="bottom">
 							<Button onClick={reset}>
 								<IconFont
 									type="icon-double-circle"

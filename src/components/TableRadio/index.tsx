@@ -51,14 +51,14 @@ export default function TableRadio(props: any): JSX.Element {
 					type: 'radio',
 					...rowSelection
 				}}
-				onRow={(record: any) => {
-					return {
-						onClick: () => {
-							setSelectedRow(record);
-							setSelectedRowKeys([record.name]);
-						}
-					};
-				}}
+				// onRow={(record: any) => {
+				// 	return {
+				// 		onClick: () => {
+				// 			setSelectedRow(record);
+				// 			setSelectedRowKeys([record.name]);
+				// 		}
+				// 	};
+				// }}
 				size="middle"
 				pagination={false}
 				{...option}
