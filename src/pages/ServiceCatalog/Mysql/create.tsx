@@ -158,12 +158,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			value: 'latin1'
 		}
 	];
-	const [mode, setMode] = useState<string>('1m-0s');
+	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
-		{
-			label: '单实例',
-			value: '1m-0s'
-		},
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -171,6 +167,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '一主多从（beta版）',
 			value: '1m-ns'
+		},
+		{
+			label: '单实例',
+			value: '1m-0s'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
