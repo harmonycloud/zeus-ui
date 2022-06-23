@@ -67,8 +67,6 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [status, setStatus] = useState<string>('');
 	const [customMid, setCustomMid] = useState<boolean>(false); // * 判断是否是自定义中间件
-	const [visible, setVisible] = useState<boolean>(false);
-	const [waringVisible, setWaringVisible] = useState<boolean>(true);
 	const [reason, setReason] = useState<string>('');
 	const [activeKey, setActiveKey] = useState<string>(
 		currentTab || 'basicInfo'
@@ -506,10 +504,6 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					) : null}
 				</Tabs>
 			</ProContent>
-			{/* <SecondConfirm
-				visible={visible}
-				onCancel={() => setVisible(false)}
-			/> */}
 		</ProPage>
 	);
 };

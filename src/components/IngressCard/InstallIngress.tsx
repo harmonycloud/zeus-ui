@@ -38,7 +38,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
-						description: '负载均衡成功'
+						description: '负载均衡安装成功'
 					});
 					onRefresh();
 				} else {

@@ -8,6 +8,7 @@ import {
 	Space
 } from 'antd';
 import { useHistory, useParams } from 'react-router';
+import { connect } from 'react-redux';
 import ProTable from '@/components/ProTable';
 import { nullRender } from '@/utils/utils';
 import {
@@ -16,13 +17,33 @@ import {
 } from '../MyProject/myProject';
 import storage from '@/utils/storage';
 import { getProjectMiddleware } from '@/services/project';
-import { DetailParams } from './projectDetail';
+import { DetailParams, ServiceListProps } from './projectDetail';
 import { AutoCompleteOptionItem } from '@/types/comment';
+import {
+	setCluster,
+	setNamespace,
+	setRefreshCluster,
+	setProject
+} from '@/redux/globalVar/var';
+import { StoreState } from '@/types';
 
 const Search = Input.Search;
 const RadioGroup = Radio.Group;
 type SelectOption = AutoCompleteOptionItem;
-export default function ServiceList(): JSX.Element {
+function ServiceList(props: ServiceListProps): JSX.Element {
+	const {
+		globalVar,
+		setCluster,
+		setNamespace,
+		setRefreshCluster,
+		setProject
+	} = props;
+	const {
+		clusterList: globalClusterList,
+		namespaceList: globalNamespaceList,
+		project,
+		namespace: globalNamespace
+	} = globalVar;
 	const history = useHistory();
 	const [tableDataSource, setTableDataSource] = useState<
 		MiddlewareTableItem[]
@@ -152,6 +173,11 @@ export default function ServiceList(): JSX.Element {
 								)[0].label
 							}`
 						);
+						const cc = globalClusterList.filter(
+							(item: any) => item.id === record.clusterId
+						);
+						setCluster(cc[0]);
+						storage.setLocal('cluster', JSON.stringify(cc[0]));
 						history.push(
 							`/serviceList/${selectType}/${
 								typeOptions.filter(
@@ -296,3 +322,12 @@ export default function ServiceList(): JSX.Element {
 		</ProTable>
 	);
 }
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {
+	setCluster,
+	setNamespace,
+	setRefreshCluster,
+	setProject
+})(ServiceList);

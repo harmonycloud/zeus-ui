@@ -4,10 +4,8 @@ import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { notification } from 'antd';
 import { getProjects, getProjectMiddlewareCount } from '@/services/project';
-import { setMenuRefresh } from '@/redux/menu/menu';
-import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
+import { setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
-import storage from '@/utils/storage';
 import { MyProjectProps } from './myProject';
 import { StoreState } from '@/types';
 import { ProjectItem } from '../ProjectManage/project';
@@ -17,6 +15,7 @@ import Actions from '@/components/Actions';
 import { nullRender } from '@/utils/utils';
 import projectIcon from '@/assets/images/project.svg';
 import './index.scss';
+import { getIsAccessGYT } from '@/services/common';
 
 const LinkButton = Actions.LinkButton;
 function MyProject(props: MyProjectProps): JSX.Element {
@@ -30,11 +29,14 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	const [projectMiddlewareCount, setProjectMiddleware] = useState<
 		ProjectItem[]
 	>([]);
-	// useEffect(() => {
-	// 	if (storage.getLocal('role')) {
-	// 		setRole(JSON.parse(storage.getLocal('role')));
-	// 	}
-	// }, [storage.getLocal('role')]);
+	const [isAccess, setIsAccess] = useState<boolean>(false);
+	useEffect(() => {
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
+		});
+	}, []);
 	useEffect(() => {
 		// if (role) {
 		// if (role.userRoleList.some((i: any) => i.roleId) === 1) {
@@ -125,9 +127,11 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						setEditData(record);
 						setEditVisible(true);
 					}}
-					disabled={record.roleId !== 2}
+					disabled={record.roleId !== 2 || isAccess}
 					title={
-						record.roleId !== 2
+						isAccess
+							? '平台已接入观云台，请联系观云台管理员'
+							: record.roleId !== 2
 							? '当前用户不具有该操作权限，请联系项目管理员'
 							: ''
 					}

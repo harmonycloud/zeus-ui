@@ -23,8 +23,12 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 
 	// 获取当前级整路由
 	const getPath = (route: string, i: number) => {
+		console.log(route);
 		if (route === 'serviceList') {
 			return '/' + storage.getSession('menuPath') || '/';
+		}
+		if (route === 'myProject') {
+			return '/' + route;
 		}
 		if (route.includes('middlewareRepository')) {
 			return '/middlewareRepository';
