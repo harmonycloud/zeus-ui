@@ -16,6 +16,8 @@ import { weekMap } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { notification, Modal } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import EditTime from './editTime';
 
 const LinkButton = Actions.LinkButton;
 
@@ -27,74 +29,6 @@ const info = {
 	backupTime: '',
 	cron: ''
 };
-const InfoConfig = [
-	{
-		dataIndex: 'title',
-		render: (val: string) => (
-			<div className="title-content">
-				<div className="blue-line"></div>
-				<div className="detail-title">{val}</div>
-			</div>
-		),
-		span: 24
-	},
-	{
-		dataIndex: 'phrase',
-		label: '状态情况',
-		render: statusBackupRender
-	},
-	{
-		dataIndex: 'sourceName',
-		label: '备份源名称',
-		render: (val: string) => (
-			<div className="text-overflow-one" title={val}>
-				{val || '/'}
-			</div>
-		)
-	},
-	{
-		dataIndex: 'cron',
-		label: '备份方式',
-		render: (val: string) => (
-			<div className="text-overflow-one" title={val}>
-				{val ? '周期' : '单次'}
-				{val
-					? val.indexOf('? ?') !== -1
-						? `（每周${val
-								.split('? ?')[1]
-								.split(',')
-								.map((item) => weekMap[item.trim()])}${
-								val.split('? ?')[0].split(' ')[1]
-						  }:${val.split('? ?')[0].split(' ')[0]}）`
-						: `（每周${val
-								.split('* *')[1]
-								.split(',')
-								.map((item) => weekMap[item.trim()])}${
-								val.split('* *')[0].split(' ')[1]
-						  }:${val.split('* *')[0].split(' ')[0]}）`
-					: ''}
-			</div>
-		)
-	},
-	{
-		dataIndex: 'position',
-		label: '备份位置',
-		render: (val: string) => (
-			<div className="text-overflow-one" title={val}>
-				{val}
-			</div>
-		)
-	},
-	{
-		dataIndex: 'backupTime',
-		label: '创建时间',
-		render: (val: string) => (
-			<div className="text-overflow-one" title={val}>
-				{val}
-			</div>
-		)
-	}
-];
 
 function BackupTaskDetail(props: any): JSX.Element {
 	const {
@@ -103,8 +37,81 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const history = useHistory();
 	const params: any = useParams();
 	const [data, setData] = useState();
+	const [visible, setVisible] = useState<boolean>(false);
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
+	const InfoConfig = [
+		{
+			dataIndex: 'title',
+			render: (val: string) => (
+				<div className="title-content">
+					<div className="blue-line"></div>
+					<div className="detail-title">{val}</div>
+				</div>
+			),
+			span: 24
+		},
+		{
+			dataIndex: 'phrase',
+			label: '状态情况',
+			render: statusBackupRender
+		},
+		{
+			dataIndex: 'sourceName',
+			label: '备份源名称',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val || '/'}
+				</div>
+			)
+		},
+		{
+			dataIndex: 'cron',
+			label: '备份方式',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val ? '周期' : '单次'}
+					{val
+						? val.indexOf('? ?') !== -1
+							? `（每周${val
+									.split('? ?')[1]
+									.split(',')
+									.map((item) => weekMap[item.trim()])}${
+									val.split('? ?')[0].split(' ')[1]
+							  }:${val.split('? ?')[0].split(' ')[0]}）`
+							: `（每周${val
+									.split('* *')[1]
+									.split(',')
+									.map((item) => weekMap[item.trim()])}${
+									val.split('* *')[0].split(' ')[1]
+							  }:${val.split('* *')[0].split(' ')[0]}）`
+						: ''}
+					<EditOutlined
+						style={{ marginLeft: 8, color: '#226EE7' }}
+						onClick={() => setVisible(true)}
+					/>
+				</div>
+			)
+		},
+		{
+			dataIndex: 'position',
+			label: '备份位置',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val}
+				</div>
+			)
+		},
+		{
+			dataIndex: 'backupTime',
+			label: '创建时间',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val}
+				</div>
+			)
+		}
+	];
 
 	useEffect(() => {
 		storage.getLocal('backupDetail') &&
@@ -293,6 +300,12 @@ function BackupTaskDetail(props: any): JSX.Element {
 					/>
 					<ProTable.Column title="操作" render={actionRender} />
 				</ProTable>
+				<EditTime
+					data={storage.getLocal('backupDetail')}
+					visible={visible}
+					onCreate={() => setVisible(false)}
+					onCancel={() => setVisible(false)}
+				/>
 			</ProContent>
 		</ProPage>
 	);

@@ -163,14 +163,16 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	}, []);
 
 	useEffect(() => {
-		getServiceList({
-			type: params.name || selectText,
-			keyword: searchText
-		}).then((res) => {
-			setTableData(res.data);
-			// setSelectedRowKeys([res.data[0]?.name]);
-			// setSelectedRow(res.data[0]);
-		});
+		if (selectText) {
+			getServiceList({
+				type: params.name || selectText,
+				keyword: searchText
+			}).then((res) => {
+				setTableData(res.data);
+				// setSelectedRowKeys([res.data[0]?.name]);
+				// setSelectedRow(res.data[0]);
+			});
+		}
 	}, [searchText, selectText]);
 
 	useEffect(() => {
