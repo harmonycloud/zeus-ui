@@ -68,7 +68,6 @@ export default function StorageDetail(): JSX.Element {
 							? `${api}/images/middleware/${record.imagePath}`
 							: nodata
 					}
-					// style={{ filter: 'grayscale(100%)' }}
 					alt={record.chartName}
 				/>
 				<div style={{ marginLeft: 8, width: 'calc(180px - 36px)' }}>
@@ -115,6 +114,30 @@ export default function StorageDetail(): JSX.Element {
 			dataIndex: 'vgName',
 			label: 'VG名称',
 			render: (val: string) => val || '/'
+		},
+		{
+			dataIndex: 'createTime',
+			label: '创建时间'
+		}
+	];
+	const localPathItem = [
+		{
+			dataIndex: 'title',
+			render: () => (
+				<div className="title-content">
+					<div className="blue-line"></div>
+					<div className="detail-title">基本信息</div>
+				</div>
+			),
+			span: 24
+		},
+		{
+			dataIndex: 'clusterAliasName',
+			label: '所属集群'
+		},
+		{
+			dataIndex: 'volumeType',
+			label: '存储类型'
 		},
 		{
 			dataIndex: 'createTime',
@@ -236,7 +259,14 @@ export default function StorageDetail(): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				<DataFields dataSource={dataSource || {}} items={item} />
+				<DataFields
+					dataSource={dataSource || {}}
+					items={
+						dataSource?.volumeType === 'LocalPath'
+							? localPathItem
+							: item
+					}
+				/>
 				<div className="detail-divider" />
 				<DataFields dataSource={{}} items={item2} />
 				{visible && current && (
@@ -268,12 +298,20 @@ export default function StorageDetail(): JSX.Element {
 							<Table.Column
 								dataIndex="podName"
 								title="节点名称"
+								ellipsis={true}
+								width={250}
 							/>
-							<Table.Column dataIndex="role" title="节点类型" />
+							<Table.Column
+								width={100}
+								dataIndex="role"
+								title="节点类型"
+								ellipsis={true}
+							/>
 							<Table.Column
 								dataIndex="memoryUsed"
 								title="存储使用量(GB)"
 								render={memoryUsedRender}
+								ellipsis={true}
 							/>
 							<Table.Column
 								dataIndex="createTime"
@@ -281,6 +319,7 @@ export default function StorageDetail(): JSX.Element {
 								render={(value) =>
 									moment(value).format('YYYY-MM-DD HH:mm:ss')
 								}
+								ellipsis={true}
 							/>
 						</Table>
 					</Drawer>
