@@ -63,18 +63,18 @@ function ProjectManage(props: ProjectManageProps): JSX.Element {
 	};
 	const nameRender = (value: string, record: ProjectItem, index: number) => {
 		return (
-			<span
+			<div
+				style={{ width: 250 }}
 				className="text-overflow name-link"
 				title={value}
 				onClick={() => {
-					// storage.setLocal('project', JSON.stringify(record));
 					history.push(
 						`/systemManagement/projectManagement/projectDetail/${record.projectId}/${record.aliasName}`
 					);
 				}}
 			>
 				{value}
-			</span>
+			</div>
 		);
 	};
 	const nullToZeroRender = (value: string) => {
