@@ -26,6 +26,9 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 		if (route === 'serviceList') {
 			return '/' + storage.getSession('menuPath') || '/';
 		}
+		if (route === 'myProject') {
+			return '/' + route;
+		}
 		if (route.includes('middlewareRepository')) {
 			return '/middlewareRepository';
 		}
