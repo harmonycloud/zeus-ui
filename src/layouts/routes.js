@@ -131,6 +131,12 @@ const Routes = withRouter((props) => {
 					component={ElasticsearchCreate}
 					exact
 				/>
+				{/* elasticsearch备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/elasticsearchCreate/:chartVersion/:middlewareName/backup/:namespace"
+					component={ElasticsearchCreate}
+					exact
+				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion"
 					component={RocketMQCreate}
@@ -148,12 +154,6 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion"
 					component={zookeeperCreate}
-				/>
-				{/* zookeeper备份跳转使用 */}
-				<Route
-					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion/:middlewareName/backup/:namespace"
-					component={zookeeperCreate}
-					exact
 				/>
 				{/* pgsql备份跳转使用 */}
 				<Route
