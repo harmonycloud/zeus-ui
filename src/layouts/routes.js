@@ -123,7 +123,7 @@ const Routes = withRouter((props) => {
 				{/* redis备份跳转使用 */}
 				<Route
 					path="/serviceList/:chartName/:aliasName/redisCreate/:chartVersion/:middlewareName/backup/:namespace"
-					component={MysqlCreate}
+					component={RedisCreate}
 					exact
 				/>
 				<Route
@@ -138,7 +138,7 @@ const Routes = withRouter((props) => {
 				{/* rocketmq备份跳转使用 */}
 				<Route
 					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion/:middlewareName/backup/:namespace"
-					component={MysqlCreate}
+					component={RocketMQCreate}
 					exact
 				/>
 				<Route
@@ -152,7 +152,7 @@ const Routes = withRouter((props) => {
 				{/* zookeeper备份跳转使用 */}
 				<Route
 					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion/:middlewareName/backup/:namespace"
-					component={MysqlCreate}
+					component={zookeeperCreate}
 					exact
 				/>
 				{/* pgsql备份跳转使用 */}

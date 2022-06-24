@@ -25,6 +25,7 @@ import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
+	getMiddlewareDetail,
 	postMiddleware
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
@@ -36,6 +37,7 @@ import {
 	TolerationsProps,
 	RMQSendDataParams
 } from '../catalog';
+import { applyBackup } from '@/services/backup';
 import Affinity from '@/components/Affinity';
 import { StoreState } from '@/types';
 import {
@@ -59,6 +61,8 @@ import {
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import ModePost from '../components/ModePost';
 import StorageQuota from '@/components/StorageQuota';
+import storage from '@/utils/storage';
+import transUnit from '@/utils/transUnit';
 
 const { Item: FormItem } = Form;
 
@@ -71,7 +75,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	const { chartName, chartVersion, aliasName } = params;
+	const { chartName, chartVersion, aliasName, middlewareName, namespace } =
+		params;
 	const [form] = Form.useForm();
 	// const field = Field.useField();
 	const history = useHistory();
@@ -343,6 +348,31 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				sendData.ingresses = values.ingresses;
 			}
 			// console.log(sendData);
+			// 克隆服务
+			if (middlewareName) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					type: storage.getLocal('backupDetail').sourceType,
+					cron: storage.getLocal('backupDetail').cron,
+					backupName: storage.getLocal('backupDetail').backupName,
+					addressName: storage.getLocal('backupDetail').addressName
+				};
+				applyBackup(result).then((res) => {
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
+				});
+			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -416,6 +446,75 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 	}, [globalCluster, globalNamespace]);
+
+	// 全局分区更新
+	useEffect(() => {
+		if (JSON.stringify(globalNamespace) !== '{}') {
+			// 克隆服务
+			if (middlewareName) {
+				getMiddlewareDetailAndSetForm(middlewareName);
+			}
+		}
+	}, [globalNamespace]);
+
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		getMiddlewareDetail({
+			clusterId: globalCluster.id,
+			namespace: namespace || globalNamespace.name,
+			middlewareName: middlewareName,
+			type: 'redis'
+		}).then((res) => {
+			if (!res.data) return;
+			setInstanceSpec('Customize');
+			if (res.data.nodeAffinity) {
+				setAffinity({
+					flag: true,
+					label: '',
+					checked: false
+				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item: string) => {
+						return { label: item };
+					}) || []
+				);
+			}
+			if (res.data.mode) {
+				setMode(res.data.mode);
+			}
+			if (res.data.version) {
+				setVersion(res.data.version);
+			}
+			form.setFieldsValue({
+				name: res.data.name + '-backup',
+				labels: res.data.labels,
+				annotations: res.data.annotations,
+				description: res.data.description,
+				password: res.data.password,
+				cpu: res.data.quota.rockermq.cpu,
+				memory: transUnit.removeUnit(
+					res.data.quota.rockermq.memory,
+					'Gi'
+				),
+				storageClass: res.data.quota.rockermq.storageClassName,
+				storageQuota: transUnit.removeUnit(
+					res.data.quota.rockermq.storageClassQuota,
+					'Gi'
+				)
+			});
+			if (res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
+					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
+				}
+			}
+		});
+	};
 
 	// * 结果页相关
 	if (commitFlag) {
@@ -524,7 +623,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{globalNamespace.name === '*' && (
+					{globalNamespace.name === '*' && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">
@@ -1104,6 +1203,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																required
 															>
 																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
@@ -1140,6 +1242,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																required
 															>
 																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																/>

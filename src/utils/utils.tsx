@@ -71,15 +71,17 @@ export const statusRender: (value: string) => JSX.Element = (value: string) => {
 };
 
 // * 备份列表状态
-export const statusBackupRender: (value: string) => JSX.Element = (
-	value: string
-) => {
+export const statusBackupRender: (
+	value: string,
+	index: number,
+	record: any
+) => JSX.Element = (value: string, index: number, record: any) => {
 	switch (value) {
 		case 'Running':
 			return <Badge status="warning" text="进行中" />;
 		case 'Failed':
 			return (
-				<Tooltip title="运行异常">
+				<Tooltip title={record?.reason}>
 					<Badge status="error" text="失败" />
 				</Tooltip>
 			);

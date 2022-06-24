@@ -402,10 +402,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData.backupFileName = backupFileName;
 				const result = {
 					clusterId: globalCluster.id,
-					namespace:
-						globalNamespace.name === '*'
-							? values.namespace
-							: globalNamespace.name,
+					namespace: namespace,
 					middlewareName: middlewareName,
 					type: storage.getLocal('backupDetail').sourceType,
 					cron: storage.getLocal('backupDetail').cron,
@@ -413,17 +410,17 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					addressName: storage.getLocal('backupDetail').addressName
 				};
 				applyBackup(result).then((res) => {
-					if (res.success) {
-						notification.success({
-							message: '成功',
-							description: '恢复成功'
-						});
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
 				});
 			}
 			// 灾备服务-源服务和备服务同时创建
