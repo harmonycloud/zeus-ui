@@ -114,10 +114,10 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 							setCurrent('⽆服务');
 							onChange(
 								null,
-								list[0].value,
-								list[0].children[0].namespace,
+								list?.[0]?.value,
+								list?.[0]?.children[0].namespace,
 								cluster,
-								list[0].aliasName
+								list?.[0]?.aliasName
 							);
 						}
 					}
@@ -143,59 +143,23 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 			setCurrent(value);
 			onChange(value[1], value[0], selectedOptions[1].namespace, cluster);
 		}
-		// if (data.isLeaf) {
-		// // * 如果选的是叶⼦结点的话
-		// setCurrent(value as string);
-		// onChange(
-		// value as string,
-		// extra.selectedPath[0].value,
-		// data.namespace,
-		// cluster
-		// );
-		// } else {
-		// * 如果选择的是⽗节点，那么就默认勾选叶⼦结点，如果没有叶⼦结点，则传参告诉选择的是服务类
-		// 型，且⽆服务。
-		// if (data.children && data.children.length > 0) {
-		// setCurrent(data.children[0].value as string);
-		// onChange(
-		// data.children[0].value as string,
-		// extra.selectedPath[0].value,
-		// data.children[0].namespace,
-		// cluster
-		// );
-		// } else {
-		// setCurrent('⽆服务');
-		// onChange(
-		// null,
-		// extra.selectedPath[0].value,
-		// namespace.name,
-		// cluster
-		// );
-		// }
-		// }
 	};
 	return (
 		<ProPage>
 			<ProHeader
 				title={title}
 				subTitle={subTitle}
-				// hasBackArrow={
-				// location?.state?.middlewareName ? hasBackArrow : false
-				// }
 				backIcon={
 					location?.state?.middlewareName ? hasBackArrow : false
 				}
 				onBack={onBackArrowClick}
-				// childrenAlign={childrenAlign}
 				extra={
 					<Cascader
 						allowClear={false}
-						// listStyle={{ width: '166px' }}
 						dropdownMenuColumnStyle={{ width: '166px' }}
 						style={{ width: '332px' }}
 						options={data}
 						onChange={handleChange}
-						// expandTriggerType="hover"
 						expandTrigger="hover"
 						value={current}
 						changeOnSelect={true}
