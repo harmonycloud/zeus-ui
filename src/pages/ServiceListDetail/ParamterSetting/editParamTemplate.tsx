@@ -71,20 +71,22 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	}, []);
 	useEffect(() => {
 		let timer: any = null;
-		if (countdown !== -1) {
-			let count = countdown;
-			timer = setInterval(() => {
-				if (count === -1) {
-					clearInterval(timer);
-					timer = null;
-					history.push(
-						`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-					);
-					console.log('倒计时结束');
-				} else {
-					setCountDown(count--);
-				}
-			}, 1000);
+		if (current === 2 || current === 3) {
+			if (countdown !== -1) {
+				let count = countdown;
+				timer = setInterval(() => {
+					if (count === -1) {
+						clearInterval(timer);
+						timer = null;
+						history.push(
+							`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+						);
+						console.log('倒计时结束');
+					} else {
+						setCountDown(count--);
+					}
+				}, 1000);
+			}
 		}
 		return () => {
 			clearInterval(timer);
