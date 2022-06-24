@@ -110,7 +110,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: `组件${msg}成功`
+							description: `组件${msg}操作成功`
 						});
 						onRefresh();
 						setRefreshCluster(true);
