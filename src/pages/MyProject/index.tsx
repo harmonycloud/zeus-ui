@@ -88,19 +88,19 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		index: number
 	) => {
 		return (
-			<div>
+			<div className="display-flex flex-align" style={{ width: '240px' }}>
 				<img src={projectIcon} alt="项目" />
-				<span
-					className="name-link"
+				<div
+					className="name-link text-overflow"
 					onClick={() => {
 						history.push(
 							`/myProject/projectDetail/${record.projectId}/${record.aliasName}`
 						);
 					}}
-					style={{ marginLeft: 8, verticalAlign: 'middle' }}
+					style={{ marginLeft: 8 }}
 				>
 					{text}
-				</span>
+				</div>
 			</div>
 		);
 	};
@@ -162,6 +162,7 @@ function MyProject(props: MyProjectProps): JSX.Element {
 					<ProTable.Column
 						title="项目名称"
 						dataIndex="aliasName"
+						width={250}
 						render={aliasNameRender}
 					/>
 					<ProTable.Column
