@@ -125,6 +125,18 @@ const ComponentCard = (props: ComponentCardProps) => {
 			onCancel: () => console.log('弹窗取消')
 		});
 	};
+	const actionRender = (title: string) => {
+		if (
+			title !== 'middleware-controller' &&
+			title !== 'lvm' &&
+			title !== 'local-path' &&
+			title !== 'minio'
+		) {
+			return 2;
+		} else {
+			return 1;
+		}
+	};
 	const cardRender = () => {
 		switch (status) {
 			case 0:
@@ -134,7 +146,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={title !== 'middleware-controller' ? 2 : 1}
+						actionCount={actionRender(title)}
 						leftText="安装"
 						rightText="接入"
 						leftClass="link"
@@ -200,7 +212,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={title !== 'middleware-controller' ? 2 : 1}
+						actionCount={actionRender(title)}
 						leftText="卸载"
 						leftClass="danger"
 						rightText="编辑"
@@ -221,7 +233,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={title !== 'middleware-controller' ? 2 : 1}
+						actionCount={actionRender(title)}
 						leftText="卸载"
 						leftClass="danger"
 						rightClass="link"
@@ -260,7 +272,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 						icon={icon[title]}
 						title={name[title]}
 						status={status}
-						actionCount={title !== 'middleware-controller' ? 2 : 1}
+						actionCount={actionRender(title)}
 						leftText="卸载"
 						leftClass="danger"
 						rightText="编辑"
