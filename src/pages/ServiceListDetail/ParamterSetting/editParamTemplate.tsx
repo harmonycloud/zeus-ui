@@ -57,12 +57,11 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		setParamTemplateBasicClear,
 		setParamTemplateConfigClear
 	} = props;
-	console.log(param);
 	const [current, setCurrent] = useState<number>(0);
 	const [btnDisable, setBtnDisable] = useState<boolean>(false);
 	const [fixFlag, setFixFlag] = useState<boolean>(false);
+	const [countdown, setCountDown] = useState<number>(5);
 	const [form] = Form.useForm();
-	// const field = Field.useField();
 	const history = useHistory();
 	useEffect(() => {
 		return () => {
@@ -71,6 +70,27 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		};
 	}, []);
 	useEffect(() => {
+		let timer: any = null;
+		if (countdown !== -1) {
+			let count = countdown;
+			timer = setInterval(() => {
+				if (count === -1) {
+					clearInterval(timer);
+					timer = null;
+					history.push(
+						`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+					);
+					console.log('倒计时结束');
+				} else {
+					setCountDown(count--);
+				}
+			}, 1000);
+		}
+		return () => {
+			clearInterval(timer);
+		};
+	}, [current]);
+	useEffect(() => {
 		if (uid) {
 			const sendData = {
 				uid,
@@ -78,7 +98,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				chartVersion
 			};
 			getParamsTemp(sendData).then((res) => {
-				console.log(res);
 				if (res.success) {
 					setParamTemplateBasic({
 						name: res.data.name,
@@ -217,24 +236,11 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 								label="模板名称"
 								required
 								name="name"
-								// labelTextAlign="left"
-								// asterisk={false}
-								// className="ne-required-ingress"
 								rules={[
 									{
 										pattern: new RegExp(
 											pattern.paramTemplateName
 										),
-										message:
-											'请输入由小写字母数字及“-”组成的2-30个字符'
-									},
-									{
-										max: 30,
-										message:
-											'请输入由小写字母数字及“-”组成的2-30个字符'
-									},
-									{
-										min: 2,
 										message:
 											'请输入由小写字母数字及“-”组成的2-30个字符'
 									},
@@ -282,6 +288,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 			case 2:
 				return (
 					<Result
+						className="zeus-params"
 						status="success"
 						title={
 							uid ? '恭喜，模版修改完成!' : '恭喜，模版创建完成!'
@@ -297,7 +304,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 									setParamTemplateConfigClear();
 								}}
 							>
-								返回列表
+								返回列表({countdown}s)
 							</Button>
 						}
 					>
@@ -337,7 +344,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 									setParamTemplateConfigClear();
 								}}
 							>
-								返回创建列表
+								返回创建列表({countdown}s)
 							</Button>
 						}
 					/>

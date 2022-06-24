@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
-import { Breadcrumb, Layout as AntdLayout } from 'antd';
-import Login from '@/pages/Login/index';
-import Navbar from './Navbar/index';
+import Navbar from './Navbar';
 import MyMenu from './Menu/MyMenu';
-import MidTerminal from '@/components/MidTerminal';
-
 import Routes from './routes';
-import Storage from '@/utils/storage';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import Login from '@/pages/Login';
+import MidTerminal from '@/components/MidTerminal';
+import storage from '@/utils/storage';
 import './layout.scss';
-
-const { Header, Content, Sider, Footer } = AntdLayout;
-export default function Layout(): JSX.Element {
+export default function MyLayout() {
 	const [clusterId, setClusterId] = useState<string>('');
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const redirectToLogin = () => (
@@ -25,120 +22,44 @@ export default function Layout(): JSX.Element {
 			<Route path="/terminal/:url" component={MidTerminal} exact />
 		</Router>
 	);
-	if (!Storage.getLocal('token')) {
+	const getClusterId = (value?: string) => {
+		setClusterId(value || '');
+	};
+	if (!storage.getLocal('token')) {
 		return redirectToLogin();
 	}
 	if (window.location.href.includes('terminal')) {
 		return redirectToTerminal();
 	}
 
-	const getClusterId = (value?: string) => {
-		setClusterId(value || '');
-	};
-
 	return (
-		<div className="flex-layout">
+		<div className="zeus-mid-layout">
 			<Router>
 				<Navbar getClusterId={getClusterId} />
-				<div className="flex-layout" style={{ paddingTop: 50 }}>
-					{/* <AntdLayout style={{ paddingTop: 50 }}> */}
-					<Sider
-						theme="light"
-						style={{
-							overflow: 'auto',
-							height: '100vh',
-							position: 'fixed',
-							left: 0,
-							top: 50,
-							bottom: 0
-						}}
-					>
+				<div className="zeus-mid-content">
+					<aside style={{ width: collapsed ? '0px' : '200px' }}>
+						<div className="zeus-mid-title">中间件平台</div>
 						<MyMenu clusterId={clusterId} />
-					</Sider>
+					</aside>
 					<div
+						className="zeus-mid-left-content"
 						style={{
-							marginLeft: '200px',
-							width: 'calc(100% - 200px)',
-							height: '100%'
+							marginLeft: collapsed ? '0px' : '200px',
+							minWidth: collapsed ? '100%' : 'calc(100% - 200px)'
 						}}
 					>
 						<Routes />
 					</div>
-					{/* </AntdLayout> */}
 				</div>
-				{/* <AppLayout
-					nav={<Menu clusterId={clusterId} />}
-					navCollapsible={true}
-					className={styles['middleware-layout']}
+				<div
+					className="zeus-mid-flod-content"
+					style={{
+						left: collapsed ? '0px' : '200px'
+					}}
+					onClick={() => setCollapsed(!collapsed)}
 				>
-					<Routes />
-				</AppLayout> */}
-				{/* <AntdLayout style={{ minHeight: '100vh' }}>
-					<Sider
-						theme="light"
-						collapsible
-						collapsed={collapsed}
-						onCollapse={(collapsed) => setCollapsed(collapsed)}
-					>
-						<MyMenu clusterId={clusterId} /> */}
-				{/* <Menu
-							defaultSelectedKeys={['1']}
-							mode="inline"
-							items={items}
-						/> */}
-				{/* </Sider>
-					<AntdLayout className="site-layout"> */}
-				{/* <Header
-							className="site-layout-background"
-							style={{ padding: 0 }}
-						/> */}
-				{/* <Content style={{ margin: '50px 16px 0px' }}>
-							<Routes />
-						</Content> */}
-				{/* </AntdLayout>
-				</AntdLayout> */}
-				{/* <AntdLayout style={{ minHeight: '100vh' }}>
-					<Sider
-						theme="light"
-						collapsible
-						collapsed={collapsed}
-						onCollapse={(collapsed: boolean) =>
-							setCollapsed(collapsed)
-						}
-						style={{
-							overflow: 'auto',
-							height: '100vh',
-							position: 'fixed',
-							left: 0,
-							top: 0,
-							bottom: 0
-						}}
-					>
-						<div className="logo" />
-						<MyMenu clusterId={clusterId} />
-					</Sider>
-					<AntdLayout className="site-layout">
-						<Header
-							className="site-layout-background"
-							style={{ padding: 0 }}
-						/>
-						<Content style={{ margin: '0 16px' }}>
-							<Breadcrumb style={{ margin: '16px 0' }}>
-								<Breadcrumb.Item>User</Breadcrumb.Item>
-								<Breadcrumb.Item>Bill</Breadcrumb.Item>
-							</Breadcrumb>
-							<div
-								className="site-layout-background"
-								style={{ padding: 24, minHeight: 360 }}
-							>
-								<Routes />
-							</div>
-						</Content>
-						<Footer style={{ textAlign: 'center' }}>
-							Ant Design ©2018 Created by Ant UED
-						</Footer>
-					</AntdLayout>
-				</AntdLayout> */}
+					{collapsed ? <RightOutlined /> : <LeftOutlined />}
+				</div>
 			</Router>
 		</div>
 	);
