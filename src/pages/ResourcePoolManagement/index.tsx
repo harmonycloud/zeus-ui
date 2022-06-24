@@ -11,6 +11,7 @@ import { clusterType } from '@/types';
 import transBg from '@/assets/images/trans-bg.svg';
 import storage from '@/utils/storage';
 import { setRefreshCluster } from '@/redux/globalVar/var';
+import { getIsAccessGYT } from '@/services/common';
 import './index.scss';
 
 const LinkButton = Actions.LinkButton;
@@ -24,10 +25,16 @@ function ResourcePoolManagement(
 	const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [dataSource, setDataSource] = useState<clusterType[]>([]);
-	// const [visible, setVisible] = useState<boolean>(false);
-	// const [data, setData] = useState<clusterType>();
 	const [key, setKey] = useState<string>('');
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	const history = useHistory();
+	useEffect(() => {
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let mounted = true;
 		getClusters({ detail: true, key }).then((res) => {
@@ -70,88 +77,13 @@ function ResourcePoolManagement(
 						'/systemManagement/resourcePoolManagement/addResourcePool'
 					)
 				}
+				disabled={isAccess}
+				title={isAccess ? '平台已接入观云台，请联系观云台管理员' : ''}
 				type="primary"
 			>
 				添加集群
 			</Button>
 		)
-	};
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = clusterList.filter(
-				(item: clusterType) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setDataSource(list);
-		} else {
-			setDataSource(clusterList);
-		}
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		// console.log(dataIndex, order);
-		if (dataIndex === 'attributes.createTime') {
-			const dsTemp = clusterList.sort((a, b) => {
-				const result =
-					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		} else if (dataIndex === 'attributes.nsCount') {
-			const dsTemp = clusterList.sort((a, b) => {
-				const result = a[dataIndex] - b[dataIndex];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		} else if (dataIndex === 'cpu') {
-			const dsTemp = clusterList.sort((a, b) => {
-				const aPer =
-					Number(a.clusterQuotaDTO?.usedCpu) /
-					Number(a.clusterQuotaDTO?.totalCpu);
-				const bPer =
-					Number(b.clusterQuotaDTO?.usedCpu) /
-					Number(b.clusterQuotaDTO?.totalCpu);
-				const result = aPer - bPer;
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		} else if (dataIndex === 'memory') {
-			const dsTemp = clusterList.sort((a, b) => {
-				const aPer =
-					Number(a.clusterQuotaDTO?.usedMemory) /
-					Number(a.clusterQuotaDTO?.totalMemory);
-				const bPer =
-					Number(b.clusterQuotaDTO?.usedMemory) /
-					Number(b.clusterQuotaDTO?.totalMemory);
-				const result = aPer - bPer;
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		}
 	};
 	const actionRender = (
 		value: string,
@@ -166,10 +98,18 @@ function ResourcePoolManagement(
 							`/systemManagement/resourcePoolManagement/editResourcePool/editOther/${record.id}`
 						);
 					}}
+					disabled={isAccess}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
 				>
 					编辑
 				</LinkButton>
 				<LinkButton
+					disabled={isAccess}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
 					onClick={() => {
 						if (record.removable) {
 							confirm({
