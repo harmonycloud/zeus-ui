@@ -11,6 +11,7 @@ import { clusterType } from '@/types';
 import transBg from '@/assets/images/trans-bg.svg';
 import storage from '@/utils/storage';
 import { setRefreshCluster } from '@/redux/globalVar/var';
+import { getIsAccessGYT } from '@/services/common';
 import './index.scss';
 
 const LinkButton = Actions.LinkButton;
@@ -24,10 +25,16 @@ function ResourcePoolManagement(
 	const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [dataSource, setDataSource] = useState<clusterType[]>([]);
-	// const [visible, setVisible] = useState<boolean>(false);
-	// const [data, setData] = useState<clusterType>();
 	const [key, setKey] = useState<string>('');
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	const history = useHistory();
+	useEffect(() => {
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let mounted = true;
 		getClusters({ detail: true, key }).then((res) => {
@@ -70,6 +77,8 @@ function ResourcePoolManagement(
 						'/systemManagement/resourcePoolManagement/addResourcePool'
 					)
 				}
+				disabled={isAccess}
+				title={isAccess ? '平台已接入观云台，请联系观云台管理员' : ''}
 				type="primary"
 			>
 				添加集群
@@ -89,10 +98,18 @@ function ResourcePoolManagement(
 							`/systemManagement/resourcePoolManagement/editResourcePool/editOther/${record.id}`
 						);
 					}}
+					disabled={isAccess}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
 				>
 					编辑
 				</LinkButton>
 				<LinkButton
+					disabled={isAccess}
+					title={
+						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
+					}
 					onClick={() => {
 						if (record.removable) {
 							confirm({

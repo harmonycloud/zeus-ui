@@ -196,10 +196,13 @@ export default function AddStorage(): JSX.Element {
 							</Select>
 						</FormItem>
 						<FormItem
-							label="英文名称"
+							label="StorageClass名称"
 							required
 							rules={[
-								{ required: true, message: '请选择英文名称' }
+								{
+									required: true,
+									message: '请选择StorageClass名称'
+								}
 							]}
 							name="name"
 						>

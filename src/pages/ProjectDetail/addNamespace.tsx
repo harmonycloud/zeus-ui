@@ -197,16 +197,6 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 								message: '英文简称必填'
 							},
 							{
-								max: 40,
-								message:
-									'命名空间是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-40个字符'
-							},
-							{
-								min: 2,
-								message:
-									'命名空间是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-40个字符'
-							},
-							{
 								pattern: new RegExp(
 									'^[a-z][a-z0-9-]{0,38}[a-z0-9]$'
 								),
