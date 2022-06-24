@@ -526,8 +526,8 @@ function PlatformOverview(props: any): JSX.Element {
 											<div className="dashed"></div>
 											<Table
 												dataSource={operatorList}
-												rowKey={(record: any) =>
-													record.name
+												rowKey={(record) =>
+													`${record.name}(${record.clusterName})`
 												}
 												scroll={{ y: 180 }}
 												pagination={false}
@@ -612,7 +612,7 @@ function PlatformOverview(props: any): JSX.Element {
 								>
 									<Table
 										dataSource={auditList}
-										rowKey={(record: any) => record.id}
+										rowKey="id"
 										scroll={{ y: 190 }}
 										size="small"
 										pagination={false}

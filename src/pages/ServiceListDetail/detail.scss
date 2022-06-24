@@ -334,7 +334,6 @@
 	background: rgba(245, 245, 245, 0.5);
 	border-radius: 2px;
 	padding: 22px 56px;
-	margin: 24px 0px 20px;
 	.zeus-param-display-info {
 		& li{
 			height: 18px;
@@ -360,4 +359,11 @@
 }
 .ant-popover-message-title {
 	padding-left: 0px !important;
+}
+.zeus-params {
+	.ant-result-content {
+		background-color: $white;
+		display: flex;
+		justify-content: center;
+	}
 }

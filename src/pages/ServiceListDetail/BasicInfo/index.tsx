@@ -617,31 +617,33 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							<div className="text-overflow-one" title={val}>
 								{val}
 							</div>
-							<Popconfirm
-								title={
-									<Form form={form}>
-										<FormItem name="description">
-											<Input
-												placeholder="请输入"
-												defaultValue={val}
-											/>
-										</FormItem>
-									</Form>
-								}
-								icon={null}
-								onConfirm={() =>
-									editDescription(form.getFieldsValue())
-								}
-							>
-								<EditOutlined
-									style={{
-										marginLeft: 8,
-										cursor: 'pointer',
-										fontSize: 14,
-										verticalAlign: 'middle'
-									}}
-								/>
-							</Popconfirm>
+							{operateFlag ? (
+								<Popconfirm
+									title={
+										<Form form={form}>
+											<FormItem name="description">
+												<Input
+													placeholder="请输入"
+													defaultValue={val}
+												/>
+											</FormItem>
+										</Form>
+									}
+									icon={null}
+									onConfirm={() =>
+										editDescription(form.getFieldsValue())
+									}
+								>
+									<EditOutlined
+										style={{
+											marginLeft: 8,
+											cursor: 'pointer',
+											fontSize: 14,
+											verticalAlign: 'middle'
+										}}
+									/>
+								</Popconfirm>
+							) : null}
 						</div>
 					);
 				}
@@ -655,17 +657,19 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				render: (val: string) => (
 					<div title={val}>
 						{val}
-						<span
-							className="name-link"
-							style={{ marginLeft: '8px' }}
-							onClick={() =>
-								history.push(
-									`/serviceList/${params.name}/${params.aliasName}/serverVersion/${params.middlewareName}/${params.type}/${params.namespace}`
-								)
-							}
-						>
-							(版本管理)
-						</span>
+						{operateFlag && (
+							<span
+								className="name-link"
+								style={{ marginLeft: '8px' }}
+								onClick={() =>
+									history.push(
+										`/serviceList/${params.name}/${params.aliasName}/serverVersion/${params.middlewareName}/${params.type}/${params.namespace}`
+									)
+								}
+							>
+								(版本管理)
+							</span>
+						)}
 					</div>
 				)
 			};

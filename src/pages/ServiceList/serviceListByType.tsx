@@ -293,11 +293,11 @@ const ServiceListByType = (props: serviceListProps) => {
 						`/serviceList/${name}/${aliasName}/zookeeperCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
-				case 'postgresql':
-					history.push(
-						`/serviceList/${name}/${aliasName}/postgresqlCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
+				// case 'postgresql':
+				// 	history.push(
+				// 		`/serviceList/${name}/${aliasName}/postgresqlCreate/${middlewareInfo?.chartVersion}`
+				// 	);
+				// 	break;
 				default:
 					history.push(
 						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`

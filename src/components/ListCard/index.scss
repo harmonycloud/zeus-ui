@@ -20,11 +20,11 @@
 				font-size: $font-1;
 				font-weight: $font-weight-sm;
 				line-height: $line-height-1;
+				@include text-ellipsis;
 				cursor: pointer;
 				& .active {
 					color: $primary-color;
 				}
-				@include text-ellipsis;
 			}
 			.zeus-list-card-subTitle {
 				width: 100%;
