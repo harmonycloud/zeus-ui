@@ -77,19 +77,37 @@ function BackupTaskDetail(props: any): JSX.Element {
 									.split('? ?')[1]
 									.split(',')
 									.map((item) => weekMap[item.trim()])}${
-									val.split('? ?')[0].split(' ')[1]
-							  }:${val.split('? ?')[0].split(' ')[0]}）`
+									Number(val.split('* *')[0].split(' ')[1]) >=
+									10
+										? val.split('* *')[0].split(' ')[1]
+										: '0' +
+										  val.split('* *')[0].split(' ')[1]
+							  }:${
+									val.split('* *')[0].split(' ')[0] === '0'
+										? '00'
+										: '30'
+							  }）`
 							: `（每周${val
 									.split('* *')[1]
 									.split(',')
-									.map((item) => weekMap[item.trim()])}${
-									val.split('* *')[0].split(' ')[1]
-							  }:${val.split('* *')[0].split(' ')[0]}）`
+									.map((item) => weekMap[item.trim()])} ${
+									Number(val.split('* *')[0].split(' ')[1]) >=
+									10
+										? val.split('* *')[0].split(' ')[1]
+										: '0' +
+										  val.split('* *')[0].split(' ')[1]
+							  }:${
+									val.split('* *')[0].split(' ')[0] === '0'
+										? '00'
+										: '30'
+							  }）`
 						: ''}
-					<EditOutlined
-						style={{ marginLeft: 8, color: '#226EE7' }}
-						onClick={() => setVisible(true)}
-					/>
+					{val ? (
+						<EditOutlined
+							style={{ marginLeft: 8, color: '#226EE7' }}
+							onClick={() => setVisible(true)}
+						/>
+					) : null}
 				</div>
 			)
 		},
@@ -162,26 +180,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 		});
 	};
 
-	const releaseMiddleware = (chartName: string) => {
-		switch (chartName) {
+	const releaseMiddleware = (record: any) => {
+		switch (record.sourceType) {
 			case 'mysql':
 				history.push(
-					`/serviceList/${chartName}/MySql/mysqlCreate/${middlewareInfo?.chartVersion}`
+					`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/zeus-dev`
 				);
 				break;
 			case 'redis':
 				history.push(
-					`/serviceList/${chartName}Redis/redisCreate/${middlewareInfo?.chartVersion}`
+					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/backup/zeus-dev`
 				);
 				break;
 			case 'elasticsearch':
 				history.push(
-					`/serviceList/${chartName}/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}`
+					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/backup/zeus-dev`
 				);
 				break;
 			case 'rocketmq':
 				history.push(
-					`/serviceList/${chartName}/Rocketmq/rocketmqCreate/${middlewareInfo?.chartVersion}`
+					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/backup/zeus-dev`
 				);
 				break;
 		}
@@ -191,45 +209,41 @@ function BackupTaskDetail(props: any): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					// onClick={() => releaseMiddleware(record.sourceType)}
-					onClick={() => {
-						if (record.sourceType === 'mysql') {
-							history.push(
-								`/serviceList/mysql/MySQL/mysqlCreate/${
-									middlewareInfo?.chartVersion
-								}/${record.sourceName}/${
-									record.backupFileName || 1
-								}`
-							);
-						} else {
-							const result = {
-								clusterId: cluster.id,
-								namespace: namespace.name,
-								middlewareName:
-									storage.getLocal('backupDetail').sourceName,
-								type: storage.getLocal('backupDetail')
-									.sourceType,
-								cron: storage.getLocal('backupDetail').cron,
-								backupName:
-									storage.getLocal('backupDetail').backupName,
-								addressName:
-									storage.getLocal('backupDetail').addressName
-							};
-							applyBackup(result).then((res) => {
-								if (res.success) {
-									notification.success({
-										message: '成功',
-										description: '恢复成功'
-									});
-								} else {
-									notification.error({
-										message: '失败',
-										description: res.errorMsg
-									});
-								}
-							});
-						}
-					}}
+					onClick={() => releaseMiddleware(record.sourceType)}
+					// onClick={() => {
+					// 	if (record.sourceType === 'mysql') {
+					// 		history.push(
+					// 			`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/zeus-dev`
+					// 		);
+					// 	} else {
+					// 		const result = {
+					// 			clusterId: cluster.id,
+					// 			namespace: namespace.name,
+					// 			middlewareName:
+					// 				storage.getLocal('backupDetail').sourceName,
+					// 			type: storage.getLocal('backupDetail')
+					// 				.sourceType,
+					// 			cron: storage.getLocal('backupDetail').cron,
+					// 			backupName:
+					// 				storage.getLocal('backupDetail').backupName,
+					// 			addressName:
+					// 				storage.getLocal('backupDetail').addressName
+					// 		};
+					// 		applyBackup(result).then((res) => {
+					// 			if (res.success) {
+					// 				notification.success({
+					// 					message: '成功',
+					// 					description: '恢复成功'
+					// 				});
+					// 			} else {
+					// 				notification.error({
+					// 					message: '失败',
+					// 					description: res.errorMsg
+					// 				});
+					// 			}
+					// 		});
+					// 	}
+					// }}
 				>
 					克隆服务
 				</LinkButton>

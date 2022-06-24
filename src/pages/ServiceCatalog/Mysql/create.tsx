@@ -32,6 +32,7 @@ import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import { getProjectNamespace } from '@/services/project';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
 import transUnit from '@/utils/transUnit';
+import { applyBackup } from '@/services/backup';
 import pattern from '@/utils/pattern';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
@@ -64,6 +65,7 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
+import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -398,6 +400,31 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
+				const result = {
+					clusterId: globalCluster.id,
+					namespace:
+						globalNamespace.name === '*'
+							? values.namespace
+							: globalNamespace.name,
+					middlewareName: middlewareName,
+					type: storage.getLocal('backupDetail').sourceType,
+					cron: storage.getLocal('backupDetail').cron,
+					backupName: storage.getLocal('backupDetail').backupName,
+					addressName: storage.getLocal('backupDetail').addressName
+				};
+				applyBackup(result).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '恢复成功'
+						});
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				});
 			}
 			// 灾备服务-源服务和备服务同时创建
 			if (backupFlag) {
@@ -660,10 +687,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
-			namespace: globalNamespace.name,
+			namespace: namespace || globalNamespace.name,
 			middlewareName: middlewareName,
 			type: 'mysql'
 		}).then((res) => {
+			if (!res.data) return;
 			setOriginData(res.data);
 			setInstanceSpec('Customize');
 			if (res.data.nodeAffinity) {
@@ -1059,7 +1087,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</FormBlock>
 						</>
 					) : null}
-					{globalNamespace.name === '*' && !state && (
+					{globalNamespace.name === '*' && !state && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">

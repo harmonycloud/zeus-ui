@@ -20,11 +20,13 @@ import {
 } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
+import transUnit from '@/utils/transUnit';
 import styles from './redis.module.scss';
 import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
+	getMiddlewareDetail,
 	postMiddleware
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
@@ -456,6 +458,76 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 	}, [globalCluster, globalNamespace]);
+
+	// 全局分区更新
+	useEffect(() => {
+		if (JSON.stringify(globalNamespace) !== '{}') {
+			// 克隆服务
+			// if (backupFileName) {
+			// 	getMiddlewareDetailAndSetForm(middlewareName);
+			// }
+		}
+	}, [globalNamespace]);
+
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		getMiddlewareDetail({
+			clusterId: globalCluster.id,
+			namespace: globalNamespace.name,
+			middlewareName: middlewareName,
+			type: 'redis'
+		}).then((res) => {
+			if (!res.data) return;
+			setInstanceSpec('Customize');
+			if (res.data.nodeAffinity) {
+				setAffinity({
+					flag: true,
+					label: '',
+					checked: false
+				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item: string) => {
+						return { label: item };
+					}) || []
+				);
+			}
+			if (res.data.mode) {
+				setMode(res.data.mode);
+			}
+			// if (res.data.charSet) {
+			// 	setCharSet(res.data.charSet);
+			// }
+			if (res.data.version) {
+				setVersion(res.data.version);
+			}
+			form.setFieldsValue({
+				name: res.data.name + '-backup',
+				labels: res.data.labels,
+				annotations: res.data.annotations,
+				description: res.data.description,
+				mysqlPort: res.data.port,
+				mysqlPwd: res.data.password,
+				cpu: res.data.quota.mysql.cpu,
+				memory: transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi'),
+				storageClass: res.data.quota.mysql.storageClassName,
+				storageQuota: transUnit.removeUnit(
+					res.data.quota.mysql.storageClassQuota,
+					'Gi'
+				)
+			});
+			if (res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
+					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
+				}
+			}
+		});
+	};
 	// * 结果页相关
 	if (commitFlag) {
 		return (
