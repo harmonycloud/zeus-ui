@@ -478,7 +478,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						: data.quota.redis.num === 6
 						? '三主三从'
 						: '五主五从' || '',
-				namespace: data.namespace || '',
+				namespace: data.namespaceAliasName || '',
 				storageClassName:
 					data.quota && data.quota[data.type]
 						? data.quota[data.type].storageClassAliasName || ''
