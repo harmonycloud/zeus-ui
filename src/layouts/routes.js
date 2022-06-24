@@ -105,7 +105,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* mysql备份跳转使用 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/:backupFileName"
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
 					component={MysqlCreate}
 					exact
 				/>
@@ -120,6 +120,12 @@ const Routes = withRouter((props) => {
 					component={RedisCreate}
 					exact
 				/>
+				{/* redis备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/redisCreate/:chartVersion/:middlewareName/backup/:namespace"
+					component={MysqlCreate}
+					exact
+				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/elasticsearchCreate/:chartVersion"
 					component={ElasticsearchCreate}
@@ -129,6 +135,12 @@ const Routes = withRouter((props) => {
 					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion"
 					component={RocketMQCreate}
 				/>
+				{/* rocketmq备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion/:middlewareName/backup/:namespace"
+					component={MysqlCreate}
+					exact
+				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/kafkaCreate/:chartVersion"
 					component={KafkaCreate}
@@ -136,6 +148,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion"
 					component={zookeeperCreate}
+				/>
+				{/* zookeeper备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion/:middlewareName/backup/:namespace"
+					component={MysqlCreate}
+					exact
 				/>
 				{/* pgsql备份跳转使用 */}
 				<Route

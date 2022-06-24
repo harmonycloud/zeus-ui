@@ -22,32 +22,38 @@ function EditTime(props: editTimeProps): JSX.Element {
 	const [allChecked, setAllChecked] = useState<boolean>();
 
 	useEffect(() => {
-		const cron =
-			data.cron.indexOf('? ?') !== -1
-				? data.cron.split(' ? ? ')
-				: data.cron.split(' * * ');
-		data &&
-			setChecks(cron[1].split(',').map((item: string) => Number(item)));
-		data &&
-			cron[1]
-				.split(',')
-				.map((item: string) => Number(item))
-				.join(',') === '0,1,2,3,4,5,6' &&
-			setAllChecked(true);
-		data &&
-			form.setFieldsValue({
-				cycle: cron[1].split(',').map((item: string) => Number(item)),
-				time: moment(
-					cron[0]
-						.split(' ')
-						.reverse()
-						.map((item: string) =>
-							item.length === 1 ? '0' + item : item
-						)
-						.join(':'),
-					'HH:mm'
-				)
-			});
+		if (data.cron) {
+			const cron =
+				data.cron.indexOf('? ?') !== -1
+					? data.cron.split(' ? ? ')
+					: data.cron.split(' * * ');
+			data &&
+				setChecks(
+					cron[1].split(',').map((item: string) => Number(item))
+				);
+			data &&
+				cron[1]
+					.split(',')
+					.map((item: string) => Number(item))
+					.join(',') === '0,1,2,3,4,5,6' &&
+				setAllChecked(true);
+			data &&
+				form.setFieldsValue({
+					cycle: cron[1]
+						.split(',')
+						.map((item: string) => Number(item)),
+					time: moment(
+						cron[0]
+							.split(' ')
+							.reverse()
+							.map((item: string) =>
+								item.length === 1 ? '0' + item : item
+							)
+							.join(':'),
+						'HH:mm'
+					)
+				});
+		}
 	}, []);
 
 	return (

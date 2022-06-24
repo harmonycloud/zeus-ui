@@ -186,26 +186,22 @@ export default function AddBackupPosition(): JSX.Element {
 				<Form form={form} {...formItemLayout} labelAlign="left">
 					<h2 style={{ marginBottom: 8 }}>基础信息</h2>
 					<Form.Item
-						label="中文名称"
+						label="任务名称"
 						rules={[
 							{
 								required: true,
-								message: '请输入中文名称'
+								message: '请输入任务名称'
 							},
 							{
-								pattern: new RegExp(pattern.backupAliasName),
-								message: '输入不符合要求'
-							},
-							{
-								max: 15,
-								type: 'string',
-								message: '不能超过15个字'
+								pattern: new RegExp(pattern.storageName),
+								message:
+									'任务名称由中文、大写字母、小写字母和数字组成，长度不超过15个字符'
 							}
 						]}
 						name="name"
 					>
 						<Input
-							placeholder="请输入中文名称"
+							placeholder="请输入任务名称"
 							disabled={!!params.id}
 						/>
 					</Form.Item>
@@ -279,7 +275,7 @@ export default function AddBackupPosition(): JSX.Element {
 							rules={[
 								{
 									required: true,
-									message: '请输入端口'
+									message: '端口'
 								}
 							]}
 						>
@@ -293,12 +289,12 @@ export default function AddBackupPosition(): JSX.Element {
 							rules={[
 								{
 									required: true,
-									message: '请输入项目名'
+									message: '路径'
 								}
 							]}
 						>
 							<Input
-								placeholder="请输入项目名"
+								placeholder="请输入路径"
 								disabled={!!params.id}
 							/>
 						</Form.Item>
@@ -325,7 +321,7 @@ export default function AddBackupPosition(): JSX.Element {
 							}
 						]}
 					>
-						<Input placeholder="密码" />
+						<Input.Password placeholder="密码" />
 					</Form.Item>
 					{/* <Form.Item
 						name="capacity"
