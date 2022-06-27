@@ -23,6 +23,14 @@ import { getClusters } from '@/services/common';
 
 import './index.scss';
 
+export enum MiddlewareType {
+	db = '数据库',
+	mq = '消息队列',
+	mse = '微服务引擎',
+	storage = '存储',
+	'null' = '其他'
+}
+
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
@@ -79,20 +87,22 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
 				list.forEach((item) => {
-					if (item === null) {
+					if (item === null || item === '') {
 						obj['其他'] = originData.filter((i) => i.type === item);
 					} else {
-						obj[item] = originData.filter((i) => i.type === item);
+						obj[MiddlewareType[item]] = originData.filter(
+							(i) => i.type === item
+						);
 					}
 				});
 			} else {
 				list.forEach((item) => {
-					if (item === null) {
+					if (item === null || item === '') {
 						obj['其他'] = originData.filter(
 							(i) => i.type === item && i.status === 1
 						);
 					} else {
-						obj[item] = originData.filter(
+						obj[MiddlewareType[item]] = originData.filter(
 							(i) => i.type === item && i.status === 1
 						);
 					}

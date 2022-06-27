@@ -153,7 +153,6 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 							</FormItem>
 						</Col>
 					</Row>
-					{/* </FormItem> */}
 				</div>
 				<FormItem
 					label="镜像仓库项目"
