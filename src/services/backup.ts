@@ -85,6 +85,9 @@ export const getServiceList = (params?: {
 export const getBackupTasks = (params: any) => {
 	return Axios.get(BACKUP.backupTask, params);
 };
+export const editBackupTasks = (params: any) => {
+	return Axios.json(BACKUP.backupTask, params, {}, 'PUT');
+};
 export const deleteBackupTasks = (params: any) => {
 	return Axios.delete(BACKUP.backupTask, params);
 };

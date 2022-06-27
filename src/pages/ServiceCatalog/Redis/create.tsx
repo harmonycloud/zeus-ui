@@ -52,6 +52,7 @@ import {
 	MirrorItem,
 	AutoCompleteOptionItem
 } from '@/types/comment';
+import { applyBackup } from '@/services/backup';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
@@ -59,6 +60,7 @@ import { getAspectFrom } from '@/services/common';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import StorageQuota from '@/components/StorageQuota';
+import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
@@ -70,7 +72,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	const { chartName, chartVersion, aliasName } = params;
+	const { chartName, chartVersion, aliasName, namespace, middlewareName } =
+		params;
 	const [form] = Form.useForm();
 	const history = useHistory();
 
@@ -385,6 +388,31 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			}
+			// 克隆服务
+			if (middlewareName) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					type: storage.getLocal('backupDetail').sourceType,
+					cron: storage.getLocal('backupDetail').cron,
+					backupName: storage.getLocal('backupDetail').backupName,
+					addressName: storage.getLocal('backupDetail').addressName
+				};
+				applyBackup(result).then((res) => {
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
+				});
+			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -463,16 +491,16 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	useEffect(() => {
 		if (JSON.stringify(globalNamespace) !== '{}') {
 			// 克隆服务
-			// if (backupFileName) {
-			// 	getMiddlewareDetailAndSetForm(middlewareName);
-			// }
+			if (middlewareName) {
+				getMiddlewareDetailAndSetForm(middlewareName);
+			}
 		}
 	}, [globalNamespace]);
 
 	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
-			namespace: globalNamespace.name,
+			namespace: namespace || globalNamespace.name,
 			middlewareName: middlewareName,
 			type: 'redis'
 		}).then((res) => {
@@ -500,9 +528,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.mode) {
 				setMode(res.data.mode);
 			}
-			// if (res.data.charSet) {
-			// 	setCharSet(res.data.charSet);
-			// }
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
@@ -511,15 +536,44 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
-				mysqlPort: res.data.port,
-				mysqlPwd: res.data.password,
-				cpu: res.data.quota.mysql.cpu,
-				memory: transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi'),
-				storageClass: res.data.quota.mysql.storageClassName,
+				mirrorImage: res.data.mirrorImage,
+				password: res.data.password,
+				cpu: res.data.quota.redis.cpu,
+				memory: transUnit.removeUnit(res.data.quota.redis.memory, 'Gi'),
+				storageClass: res.data.quota.redis.storageClassName,
 				storageQuota: transUnit.removeUnit(
-					res.data.quota.mysql.storageClassQuota,
+					res.data.quota.redis.storageClassQuota,
 					'Gi'
 				)
+			});
+			setNodeObj({
+				redis: {
+					disabled: false,
+					title: 'Redis 节点',
+					num: res.data.quota.redis.num,
+					specId: '1',
+					cpu: res.data.quota.redis.cpu,
+					memory: Number(
+						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+					),
+					storageClass: res.data.quota.redis.storageClassName,
+					storageQuota: Number(
+						transUnit.removeUnit(
+							res.data.quota.redis.storageClassQuota,
+							'Gi'
+						)
+					)
+				},
+				sentinel: {
+					disabled: false,
+					title: '哨兵节点',
+					num: res.data.quota.redis.num,
+					specId: '1',
+					cpu: res.data.quota.redis.cpu,
+					memory: Number(
+						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+					)
+				}
 			});
 			if (res.data.dynamicValues) {
 				for (const i in res.data.dynamicValues) {
@@ -627,7 +681,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{globalNamespace.name === '*' && (
+					{globalNamespace.name === '*' && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">
@@ -1148,6 +1202,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											<div
 												className={`display-flex ${styles['mode-content']}`}
 											>
+												{console.log(nodeObj)}
 												{Object.keys(nodeObj).map(
 													(key) => (
 														<ModeItem

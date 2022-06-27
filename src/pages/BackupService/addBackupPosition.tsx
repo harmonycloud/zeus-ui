@@ -228,6 +228,7 @@ export default function AddBackupPosition(): JSX.Element {
 							</Select.Option>
 						</Select> */}
 						<SelectBlock
+							itemStyle={{ width: 'calc((100% - 16px) / 3)' }}
 							options={addressType}
 							currentValue={type}
 							disabled={!!params.id}
@@ -275,12 +276,13 @@ export default function AddBackupPosition(): JSX.Element {
 							rules={[
 								{
 									required: true,
-									message: '端口'
+									message: '请输入端口'
 								}
 							]}
 						>
 							<InputNumber
-								placeholder="请输入端口"
+								style={{ width: '100%' }}
+								placeholder="端口"
 								disabled={!!params.id}
 							/>
 						</Form.Item>
@@ -289,14 +291,11 @@ export default function AddBackupPosition(): JSX.Element {
 							rules={[
 								{
 									required: true,
-									message: '路径'
+									message: '请输入路径'
 								}
 							]}
 						>
-							<Input
-								placeholder="请输入路径"
-								disabled={!!params.id}
-							/>
+							<Input placeholder="路径" disabled={!!params.id} />
 						</Form.Item>
 					</Form.Item>
 					<Form.Item

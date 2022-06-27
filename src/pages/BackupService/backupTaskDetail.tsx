@@ -7,7 +7,12 @@ import DataFields from '@/components/DataFields';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import moment from 'moment';
-import { getBackups, applyBackup, deleteBackups } from '@/services/backup';
+import {
+	getBackups,
+	editBackupTasks,
+	deleteBackups,
+	getBackupTasks
+} from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
 import { statusBackupRender, nullRender } from '@/utils/utils';
@@ -54,7 +59,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 		{
 			dataIndex: 'phrase',
 			label: '状态情况',
-			render: statusBackupRender
+			render: (val: string) =>
+				statusBackupRender(val, 0, storage.getLocal('backupDetail'))
 		},
 		{
 			dataIndex: 'sourceName',
@@ -184,22 +190,38 @@ function BackupTaskDetail(props: any): JSX.Element {
 		switch (record.sourceType) {
 			case 'mysql':
 				history.push(
-					`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/zeus-dev`
+					`/serviceList/mysql/MySQL/mysqlCreate/${
+						middlewareInfo?.chartVersion
+					}/${record.sourceName}/${record.backupFileName}/${
+						storage.getLocal('backupDetail').namespace
+					}`
 				);
 				break;
 			case 'redis':
 				history.push(
-					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/backup/zeus-dev`
+					`/serviceList/redis/Redis/redisCreate/${
+						middlewareInfo?.chartVersion
+					}/${record.sourceName}/backup/${
+						storage.getLocal('backupDetail').namespace
+					}`
 				);
 				break;
 			case 'elasticsearch':
 				history.push(
-					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/backup/zeus-dev`
+					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${
+						middlewareInfo?.chartVersion
+					}/${record.sourceName}/backup/${
+						storage.getLocal('backupDetail').namespace
+					}`
 				);
 				break;
 			case 'rocketmq':
 				history.push(
-					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/backup/zeus-dev`
+					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${
+						middlewareInfo?.chartVersion
+					}/${record.sourceName}/backup/${
+						storage.getLocal('backupDetail').namespace
+					}`
 				);
 				break;
 		}
@@ -209,11 +231,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					onClick={() => releaseMiddleware(record.sourceType)}
+					onClick={() => releaseMiddleware(record)}
 					// onClick={() => {
 					// 	if (record.sourceType === 'mysql') {
 					// 		history.push(
-					// 			`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/zeus-dev`
+					// 			`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/${record.namespace}`
 					// 		);
 					// 	} else {
 					// 		const result = {
@@ -255,7 +277,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 							onOk: () => {
 								const result = {
 									clusterId: cluster.id,
-									namespace: namespace.name,
+									namespace:
+										storage.getLocal('backupDetail')
+											.namespace || namespace.name,
 									type: record.sourceType,
 									backupName: record.backupName,
 									backupFileName: record.backupFileName || '',
@@ -284,6 +308,45 @@ function BackupTaskDetail(props: any): JSX.Element {
 			</Actions>
 		);
 	};
+	const getBasicInfo = () => {
+		const sendData = {
+			keyword: params.backupName,
+			clusterId: cluster.id,
+			namespace,
+			middlewareName: params?.name || '',
+			type: params?.type || ''
+		};
+		getBackupTasks(sendData).then((res) => {
+			if (res.success) {
+				setBasicData({
+					title: '基础信息',
+					cron: res.data[0].cron,
+					phrase: res.data[0].phrase,
+					sourceName: res.data[0].sourceName,
+					position: res.data[0].position,
+					backupTime: res.data[0].backupTime
+				});
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+	const onCreate = () => {
+		const sendData = {
+			backupName: params.backupName,
+			clusterId: cluster.id,
+			namespace: namespace.name,
+			cron: storage.getLocal('backupDetail').cron,
+			type: params.type
+		};
+		editBackupTasks(sendData).then((res) => {
+			console.log(res);
+			getBasicInfo();
+		});
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -296,9 +359,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 					dataSource={data}
 					showRefresh
 					onRefresh={getData}
-					rowKey="taskName"
+					rowKey="recordName"
 				>
-					<ProTable.Column title="备份记录" dataIndex="taskName" />
+					<ProTable.Column title="备份记录" dataIndex="recordName" />
 					<ProTable.Column
 						title="备份使用量(GB)"
 						dataIndex="percent"
@@ -317,7 +380,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				<EditTime
 					data={storage.getLocal('backupDetail')}
 					visible={visible}
-					onCreate={() => setVisible(false)}
+					onCreate={onCreate}
 					onCancel={() => setVisible(false)}
 				/>
 			</ProContent>

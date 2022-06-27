@@ -3,4 +3,5 @@ export interface SelectBlockProps {
 	currentValue: string | number;
 	onCallBack?: (value: any) => void;
 	disabled?: boolean;
+	itemStyle?: any;
 }
