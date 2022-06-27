@@ -96,7 +96,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [backupTime, setBackupTime] = useState<string>('time');
 	const [checks, setChecks] = useState<number[]>();
 	const [allChecked, setAllChecked] = useState<boolean>();
-	const [dataSelect, setDataSelect] = useState<string>('天');
+	const [dataSelect, setDataSelect] = useState<string>('day');
 	const [formData, setFormData] = useState<any>();
 	const [formWayData, setFormWayData] = useState<any>();
 	const [tableData, setTableData] = useState<any[]>([]);
@@ -319,10 +319,10 @@ function AddBackupTask(props: StoreState): JSX.Element {
 							{backupWay === 'time' ? (
 								<Form.Item
 									label="备份保留时间"
-									name="count"
+									name="retentionTime"
 									rules={[
 										{
-											required: false,
+											required: true,
 											message: '备份保留时间不能为空'
 										},
 										{
@@ -337,15 +337,15 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								>
 									<InputNumber
 										type="inline"
-										disabled
+										// disabled
 										addonAfter={
 											<Select
-												disabled
+												// disabled
 												value={dataSelect}
 												onChange={(value) => {
 													setDataSelect(value);
 													form.validateFields([
-														'count'
+														'dateUnit'
 													]);
 												}}
 											>
@@ -637,7 +637,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 															<Select.Option
 																key={item.name}
 																value={
-																	item.name
+																	item.addressId
 																}
 															>
 																{item.name}
@@ -675,8 +675,12 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				// 				3,
 				// 				5
 				// 		  )} ${formData.time.substring(0, 2)} ? ? ${week}`
-				cron: formData.rule !== 'now' ? cron : ''
+				cron: formData.rule !== 'now' ? cron : '',
+				retentionTime: formData.retentionTime
 			};
+			if (formData.retentionTime) {
+				sendData.dateUnit = dataSelect;
+			}
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
@@ -749,7 +753,6 @@ function AddBackupTask(props: StoreState): JSX.Element {
 						<div className="steps-content">{renderStep()}</div>
 					</>
 				)}
-				{console.log(formWayData)}
 				<Divider
 					style={{ marginTop: '40px', display: 'inline-block' }}
 				></Divider>

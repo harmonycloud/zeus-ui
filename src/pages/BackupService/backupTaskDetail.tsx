@@ -282,6 +282,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 											.namespace || namespace.name,
 									type: record.sourceType,
 									backupName: record.backupName,
+									backupId: record.backupId,
 									backupFileName: record.backupFileName || '',
 									addressName: record.addressName
 								};

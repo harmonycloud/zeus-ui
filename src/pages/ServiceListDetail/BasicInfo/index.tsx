@@ -571,15 +571,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		setRunConfig(listRunConfigTemp);
 	}, [props]);
 	useEffect(() => {
-		let infoConfigTemp = [...infoConfig];
+		const infoConfigTemp = [...infoConfig];
 		const dataIndexList = infoConfigTemp.map((item) => item.dataIndex);
-		if (type === 'zookeeper') {
-			if (dataIndexList.includes('tolerations')) {
-				infoConfigTemp = infoConfigTemp.filter(
-					(item) => item.dataIndex !== 'tolerations'
-				);
-			}
-		}
+		// if (type === 'zookeeper') {
+		// 	if (dataIndexList.includes('tolerations')) {
+		// 		infoConfigTemp = infoConfigTemp.filter(
+		// 			(item) => item.dataIndex !== 'tolerations'
+		// 		);
+		// 	}
+		// }
 		if (
 			data?.mysqlDTO?.openDisasterRecoveryMode &&
 			data?.mysqlDTO?.isSource &&

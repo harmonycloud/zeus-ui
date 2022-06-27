@@ -186,11 +186,11 @@ export default function AddBackupPosition(): JSX.Element {
 				<Form form={form} {...formItemLayout} labelAlign="left">
 					<h2 style={{ marginBottom: 8 }}>基础信息</h2>
 					<Form.Item
-						label="任务名称"
+						label="位置名称"
 						rules={[
 							{
 								required: true,
-								message: '请输入任务名称'
+								message: '请输入位置名称'
 							},
 							{
 								pattern: new RegExp(pattern.storageName),
@@ -201,7 +201,7 @@ export default function AddBackupPosition(): JSX.Element {
 						name="name"
 					>
 						<Input
-							placeholder="请输入任务名称"
+							placeholder="请输入位置名称"
 							disabled={!!params.id}
 						/>
 					</Form.Item>
