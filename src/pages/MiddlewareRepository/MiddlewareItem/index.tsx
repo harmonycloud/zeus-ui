@@ -18,6 +18,7 @@ import otherColor from '@/assets/images/nodata.svg';
 import { StoreState } from '@/types/index';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import OperatorInstallForm from '@/components/OperatorInstallForm/index';
+import { MiddlewareType } from '../index';
 
 import './index.scss';
 
@@ -26,11 +27,6 @@ const statusIconRender = (value: number) => {
 		case 0:
 			return (
 				<Popover content="安装中" placement="bottom">
-					{/* <Icon
-						type="loading1"
-						size="small"
-						style={{ color: '#D1D5D9', marginLeft: '6px' }}
-					/> */}
 					<LoadingOutlined
 						style={{
 							color: '#D1D5D9',
@@ -44,11 +40,6 @@ const statusIconRender = (value: number) => {
 		case 1:
 			return (
 				<Popover content="运行正常" placement="bottom">
-					{/* <Icon
-						type="success"
-						size="small"
-						style={{ color: '#1DC11D', marginLeft: '6px' }}
-					/> */}
 					<CheckCircleFilled
 						style={{
 							color: '#1DC11D',
@@ -62,11 +53,6 @@ const statusIconRender = (value: number) => {
 		case 2:
 			return (
 				<Popover content="待安装" placement="bottom">
-					{/* <Icon
-						type="minus-circle-fill"
-						size="small"
-						style={{ color: '#FAC800', marginLeft: '6px' }}
-					/> */}
 					<MinusCircleFilled
 						style={{
 							color: '#FAC800',
@@ -80,11 +66,6 @@ const statusIconRender = (value: number) => {
 		case 3:
 			return (
 				<Popover content="运行异常" placement="bottom">
-					{/* <Icon
-						type="warning"
-						size="small"
-						style={{ color: '#D93026', marginLeft: '6px' }}
-					/> */}
 					<ExclamationCircleOutlined
 						style={{
 							color: '#D93026',
@@ -98,11 +79,6 @@ const statusIconRender = (value: number) => {
 		case 4:
 			return (
 				<Popover content="运行正常" placement="bottom">
-					{/* <Icon
-						type="success"
-						size="small"
-						style={{ color: '#1DC11D', marginLeft: '6px' }}
-					/> */}
 					<CheckCircleFilled
 						style={{
 							color: '#1DC11D',
@@ -130,6 +106,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 		clusterId,
 		onRefresh,
 		version,
+		type,
 		setMenuRefresh,
 		replicas
 	} = props;
@@ -334,9 +311,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 				className="middleware-item-status"
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
-				{name === 'kafka' || name === 'rocketmq'
-					? '消息类型'
-					: '数据库类型'}
+				{`${MiddlewareType[type || 'null']}类型`}
 				&nbsp;&nbsp;
 				<Popover content="谐云官方认证" placement="bottom">
 					<IconFont
