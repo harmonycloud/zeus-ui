@@ -21,7 +21,6 @@ const LinkButton = Actions.LinkButton;
 function MyProject(props: MyProjectProps): JSX.Element {
 	const { setRefreshCluster } = props;
 	const history = useHistory();
-	const [role, setRole] = useState<roleProps>();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
 	const [editData, setEditData] = useState<ProjectItem>();
@@ -29,7 +28,10 @@ function MyProject(props: MyProjectProps): JSX.Element {
 	const [projectMiddlewareCount, setProjectMiddleware] = useState<
 		ProjectItem[]
 	>([]);
+	// * 判断观云台是否接入 false-未接入 true-已接入
 	const [isAccess, setIsAccess] = useState<boolean>(false);
+	// * 判断操作列是否显示 false-不显示 true-显示
+	const [isActionShow, setIsActionShow] = useState<boolean>(false);
 	useEffect(() => {
 		getIsAccessGYT().then((res) => {
 			if (res.success) {
@@ -38,20 +40,8 @@ function MyProject(props: MyProjectProps): JSX.Element {
 		});
 	}, []);
 	useEffect(() => {
-		// if (role) {
-		// if (role.userRoleList.some((i: any) => i.roleId) === 1) {
-		// 	if (
-		// 		JSON.stringify(currentProject) !== '{}' &&
-		// 		currentProject !== undefined
-		// 	) {
-		// 		getData();
-		// 		getCount();
-		// 	}
-		// } else {
 		getData();
 		getCount();
-		// }
-		// }
 	}, []);
 	const getCount = () => {
 		getProjectMiddlewareCount().then((res) => {
@@ -71,6 +61,13 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			.then((res) => {
 				if (res.success) {
 					setDataSource(res.data);
+					if (
+						res.data.some((item: ProjectItem) => item.roleId === 2)
+					) {
+						setIsActionShow(true);
+					} else {
+						setIsActionShow(false);
+					}
 				} else {
 					notification.error({
 						message: '失败',
@@ -191,11 +188,13 @@ function MyProject(props: MyProjectProps): JSX.Element {
 						render={nullRender}
 						ellipsis={true}
 					/>
-					<ProTable.Column
-						title="操作"
-						dataIndex="action"
-						render={actionRender}
-					/>
+					{isActionShow && (
+						<ProTable.Column
+							title="操作"
+							dataIndex="action"
+							render={actionRender}
+						/>
+					)}
 				</ProTable>
 			</ProContent>
 			{editVisible && editData && (
