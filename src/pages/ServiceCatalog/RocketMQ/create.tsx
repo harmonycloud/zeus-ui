@@ -1104,6 +1104,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																required
 															>
 																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
@@ -1140,6 +1143,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																required
 															>
 																<InputNumber
+																	style={{
+																		width: '100%'
+																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																/>
