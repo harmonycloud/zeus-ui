@@ -259,7 +259,7 @@ const Namespace = (props: NamespaceProps) => {
 			<span
 				className={record.phase !== 'Active' ? 'delete-disabled' : ''}
 			>
-				{record.aliasName || value}
+				{record.aliasName || record.name}
 			</span>
 		);
 	};
@@ -279,8 +279,14 @@ const Namespace = (props: NamespaceProps) => {
 			>
 				<ProTable.Column
 					title="命名空间"
-					dataIndex="name"
+					dataIndex="aliasName"
 					render={nameRender}
+				/>
+				<ProTable.Column
+					title="命名空间英文名"
+					dataIndex="name"
+					ellipsis={true}
+					// render={nameRender}
 				/>
 				<ProTable.Column
 					title="CPU配额（核）"
@@ -316,6 +322,7 @@ const Namespace = (props: NamespaceProps) => {
 				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
+					width={180}
 					sorter={(
 						a: NamespaceResourceProps,
 						b: NamespaceResourceProps
@@ -327,11 +334,13 @@ const Namespace = (props: NamespaceProps) => {
 				<ProTable.Column
 					title="启用"
 					dataIndex="registered"
+					width={80}
 					render={registeredRender}
 				/>
 				<ProTable.Column
 					title="操作"
 					dataIndex="action"
+					width={80}
 					render={actionRender}
 				/>
 			</ProTable>

@@ -209,17 +209,21 @@ export default function AddStorage(): JSX.Element {
 							<Select
 								disabled={params.name ? true : false}
 								onChange={handleChange}
+								defaultValue={
+									storages.length === 0 && '无未接入的存储'
+								}
 							>
-								{storages.map((item: StorageItem) => {
-									return (
-										<Option
-											key={item.name}
-											value={item.name}
-										>
-											{item.name}
-										</Option>
-									);
-								})}
+								{storages.length > 0 &&
+									storages.map((item: StorageItem) => {
+										return (
+											<Option
+												key={item.name}
+												value={item.name}
+											>
+												{item.name}
+											</Option>
+										);
+									})}
 							</Select>
 						</FormItem>
 						<FormItem

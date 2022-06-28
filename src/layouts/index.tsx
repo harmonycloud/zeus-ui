@@ -8,7 +8,7 @@ import Login from '@/pages/Login';
 import MidTerminal from '@/components/MidTerminal';
 import storage from '@/utils/storage';
 import './layout.scss';
-export default function MyLayout() {
+export default function MyLayout(): JSX.Element {
 	const [clusterId, setClusterId] = useState<string>('');
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const redirectToLogin = () => (
