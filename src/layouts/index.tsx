@@ -17,7 +17,7 @@ import { getProjects } from '@/services/project';
 import { getClusters, getNamespaces } from '@/services/common';
 import { ProjectItem } from '@/pages/ProjectManage/project';
 import { getUserInformation } from '@/services/user';
-import { clusterType, StoreState, User } from '@/types';
+import { clusterType, globalVarProps, StoreState, User } from '@/types';
 import {
 	setCluster,
 	setNamespace,
@@ -47,6 +47,7 @@ function getItem(
 	} as MenuItem;
 }
 interface MyLayoutProps {
+	globalVar: globalVarProps;
 	setCluster: (cluster: any) => void;
 	setNamespace: (namespace: any) => void;
 	setProject: (project: any) => void;
@@ -65,6 +66,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		setGlobalNamespaceList,
 		setMenuRefresh
 	} = props;
+	const { flag } = props.globalVar;
 	const [collapsed, setCollapsed] = useState<boolean>(false); // * 是否收起侧边栏
 	const [items, setItems] = useState<MenuItem[]>([]); // * 菜单
 	const [projectList, setProjectList] = useState<ProjectItem[]>([]); // * 项目列表
@@ -94,6 +96,12 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			getNamespaceList(currentProject.projectId, currentCluster.id);
 		}
 	}, [currentCluster]);
+	useEffect(() => {
+		if (flag) {
+			getProjectList();
+			setRefreshCluster(false);
+		}
+	}, [flag]);
 	const getUserInfo = async () => {
 		const res: { aliasName?: string; [propsName: string]: any } =
 			await getUserInformation();
