@@ -10,7 +10,7 @@ const CheckboxGroup = Checkbox.Group;
 
 interface editTimeProps {
 	visible: boolean;
-	onCreate: () => void;
+	onCreate: (cron: string) => void;
 	onCancel: () => void;
 	data: any;
 }
@@ -60,7 +60,13 @@ function EditTime(props: editTimeProps): JSX.Element {
 		<Modal
 			title={'修改时间'}
 			visible={visible}
-			onOk={onCreate}
+			onOk={() => {
+				const minute = moment(form.getFieldsValue().time).get('minute');
+				const hour = moment(form.getFieldsValue().time).get('hour');
+				const week = form.getFieldsValue().cycle?.join(',');
+				const cron = `${minute} ${hour} ? ? ${week}`;
+				onCreate(cron);
+			}}
 			onCancel={onCancel}
 			width={720}
 		>

@@ -17,7 +17,7 @@ import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
 import { statusBackupRender, nullRender } from '@/utils/utils';
 import { getCanReleaseMiddleware } from '@/services/middleware';
-import { weekMap } from '@/utils/const';
+import { weekMap, backupTaskStatus } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { notification, Modal } from 'antd';
@@ -76,7 +76,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 			label: '备份方式',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
-					{val ? '周期' : '单次'}
+					{storage.getLocal('backupDetail').backupMode !== 'single'
+						? '周期'
+						: '单次'}
 					{val
 						? val.indexOf('? ?') !== -1
 							? `（每周${val
@@ -311,9 +313,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 	const getBasicInfo = () => {
 		const sendData = {
-			keyword: params.backupName,
+			keyword: storage.getLocal('backupDetail').taskName,
 			clusterId: cluster.id,
-			namespace,
+			namespace: storage.getLocal('backupDetail').namespace,
 			middlewareName: params?.name || '',
 			type: params?.type || ''
 		};
@@ -321,12 +323,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 			if (res.success) {
 				setBasicData({
 					title: '基础信息',
-					cron: res.data[0].cron,
-					phrase: res.data[0].phrase,
+					cron: res.data[0]?.cron,
+					phrase: res.data[0]?.phrase,
 					sourceName: res.data[0].sourceName,
 					position: res.data[0].position,
 					backupTime: res.data[0].backupTime
 				});
+				setVisible(false);
 			} else {
 				notification.error({
 					message: '失败',
@@ -335,23 +338,29 @@ function BackupTaskDetail(props: any): JSX.Element {
 			}
 		});
 	};
-	const onCreate = () => {
+	const onCreate = (cron: string) => {
 		const sendData = {
 			backupName: params.backupName,
 			clusterId: cluster.id,
-			namespace: namespace.name,
-			cron: storage.getLocal('backupDetail').cron,
+			namespace:
+				storage.getLocal('backupDetail').namespace || namespace.name,
+			cron: cron,
 			type: params.type
 		};
 		editBackupTasks(sendData).then((res) => {
-			console.log(res);
 			getBasicInfo();
 		});
 	};
 	return (
 		<ProPage>
 			<ProHeader
-				title="定时备份任务1（正常）"
+				title={`${storage.getLocal('backupDetail').taskName}（${
+					backupTaskStatus.find(
+						(item) =>
+							item.value ===
+							storage.getLocal('backupDetail').phrase
+					)?.text
+				}）`}
 				onBack={() => history.goBack()}
 			/>
 			<ProContent>

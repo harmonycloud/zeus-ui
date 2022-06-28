@@ -141,8 +141,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		},
 		{
 			label: '8.0(beta)版',
-			value: '8.0',
-			disabled: true
+			value: '8.0'
 		}
 	];
 	const [charSet, setCharSet] = useState<string>('utf8mb4');

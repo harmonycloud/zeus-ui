@@ -412,11 +412,13 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalNamespace]);
 
 	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		const { master, kibana, data, client, cold } = nodeObj;
+
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
 			namespace: namespace || globalNamespace.name,
 			middlewareName: middlewareName,
-			type: 'redis'
+			type: 'elasticsearch'
 		}).then((res) => {
 			if (!res.data) return;
 			// setInstanceSpec('Customize');
@@ -440,6 +442,101 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				);
 			}
 			if (res.data.mode) {
+				setNodeObj({
+					master: {
+						disabled: false,
+						title: '主节点',
+						num: res.data.quota.master.num,
+						specId: '1',
+						cpu: res.data.quota.master.cpu,
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.master.memory,
+								'Gi'
+							)
+						),
+						storageClass: res.data.quota.master.storageClassName,
+						storageQuota: Number(
+							transUnit.removeUnit(
+								res.data.quota.master.storageClassQuota,
+								'Gi'
+							)
+						)
+					},
+					kibana: {
+						disabled: false,
+						title: 'Kibana节点',
+						num: res.data.quota.kibana.num,
+						specId: '1',
+						cpu: res.data.quota.kibana.cpu,
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.kibana.memory,
+								'Gi'
+							)
+						)
+					},
+					data: {
+						disabled: true,
+						title: '数据节点',
+						num: res.data.quota.data.num,
+						specId: '1',
+						cpu: res.data.quota.data.cpu,
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.data.memory,
+								'Gi'
+							)
+						),
+						storageClass: res.data.quota.data.storageClassName,
+						storageQuota: Number(
+							transUnit.removeUnit(
+								res.data.quota.data.storageClassQuota,
+								'Gi'
+							)
+						)
+					},
+					client: {
+						disabled: true,
+						title: '协调节点',
+						num: res.data.quota.client.num,
+						specId: '1',
+						cpu: res.data.quota.client.cpu,
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.client.memory,
+								'Gi'
+							)
+						),
+						storageClass: res.data.quota.client.storageClassName,
+						storageQuota: Number(
+							transUnit.removeUnit(
+								res.data.quota.client.storageClassQuota,
+								'Gi'
+							)
+						)
+					},
+					cold: {
+						disabled: true,
+						title: '冷数据节点',
+						num: res.data.quota.cold.num,
+						specId: '1',
+						cpu: res.data.quota.cold.cpu,
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.cold.memory,
+								'Gi'
+							)
+						),
+						storageClass: res.data.quota.cold.storageClassName,
+						storageQuota: Number(
+							transUnit.removeUnit(
+								res.data.quota.cold.storageClassQuota,
+								'Gi'
+							)
+						)
+					}
+				});
 				setMode(res.data.mode);
 			}
 			if (res.data.version) {
@@ -451,14 +548,14 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 				annotations: res.data.annotations,
 				description: res.data.description,
 				password: res.data.password,
-				cpu: res.data.quota.zookeeper.cpu,
+				cpu: res.data.quota.master.cpu,
 				memory: transUnit.removeUnit(
-					res.data.quota.zookeeper.memory,
+					res.data.quota.master.memory,
 					'Gi'
 				),
-				storageClass: res.data.quota.zookeeper.storageClassName,
+				storageClass: res.data.quota.master.storageClassName,
 				storageQuota: transUnit.removeUnit(
-					res.data.quota.zookeeper.storageClassQuota,
+					res.data.quota.master.storageClassQuota,
 					'Gi'
 				)
 			});
