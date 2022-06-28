@@ -36,6 +36,18 @@ export interface namespaceType {
 	clusterId: string;
 	[propsName: string]: any;
 }
+export interface NavbarNamespaceItem {
+	aliasName: string;
+	clusterAliasName?: string;
+	clusterId?: string;
+	createTime?: null;
+	middlewareReplicas?: null;
+	name: string;
+	phase?: null;
+	projectId?: string;
+	quotas?: null;
+	registered?: boolean;
+}
 
 export interface globalVarProps {
 	cluster: clusterType;

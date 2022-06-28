@@ -60,7 +60,10 @@ function ServiceAvailable(props: serviceAvailableProps) {
 
 	useEffect(() => {
 		let mounted = true;
-		if (JSON.stringify(namespace) !== '{}') {
+		if (
+			JSON.stringify(cluster) !== '{}' &&
+			JSON.stringify(namespace) !== '{}'
+		) {
 			if (mounted) {
 				getIngresses({
 					clusterId: cluster.id,
@@ -122,7 +125,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		return () => {
 			mounted = false;
 		};
-	}, [namespace]);
+	}, [cluster, namespace]);
 	useEffect(() => {
 		window.onresize = function () {
 			document.body.clientWidth >= 2300

@@ -17,7 +17,13 @@ import { getProjects } from '@/services/project';
 import { getClusters, getNamespaces } from '@/services/common';
 import { ProjectItem } from '@/pages/ProjectManage/project';
 import { getUserInformation } from '@/services/user';
-import { clusterType, globalVarProps, StoreState, User } from '@/types';
+import {
+	clusterType,
+	globalVarProps,
+	NavbarNamespaceItem,
+	StoreState,
+	User
+} from '@/types';
 import {
 	setCluster,
 	setNamespace,
@@ -73,8 +79,11 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	const [currentProject, setCurrentProject] = useState<ProjectItem>(); // * 当前项目的信息
 	const [clusterList, setClusterList] = useState<clusterType[]>([]); // * 集群列表
 	const [currentCluster, setCurrentCluster] = useState<clusterType>(); // * 当前集群的id
-	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]); // * 分区列表
-	const [currentNamespace, setCurrentNamespace] = useState<NamespaceItem>(); // * 当前命名分区 name
+	const [namespaceList, setNamespaceList] = useState<NavbarNamespaceItem[]>(
+		[]
+	); // * 分区列表
+	const [currentNamespace, setCurrentNamespace] =
+		useState<NavbarNamespaceItem>(); // * 当前命名分区 name
 	// * 用户信息
 	const [nickName, setNickName] = useState<string>('');
 	const [role, setRole] = useState<User>();
@@ -85,15 +94,19 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			!window.location.href.includes('terminal')
 		) {
 			getUserInfo().then(() => {
-				getMenus();
-				getProjectList();
+				getMenus().then(() => {
+					getProjectList();
+				});
 			});
 		}
 	}, []);
 	useEffect(() => {
-		if (currentCluster && currentProject) {
-			getMenuMid(currentProject, currentCluster);
-			getNamespaceList(currentProject.projectId, currentCluster.id);
+		console.log(currentCluster);
+		console.log(currentProject);
+		if (currentProject && currentCluster) {
+			getMenuMid(currentProject.projectId, currentCluster.id);
+		} else if (currentProject) {
+			getMenuMid(currentProject.projectId);
 		}
 	}, [currentCluster]);
 	useEffect(() => {
@@ -141,6 +154,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				} else {
 					setCurrentProject(res.data[0]);
 					setProject(res.data[0]); // * 将当前的项目详情设置到redux中
+					getClusterList(res.data[0].projectId);
 					storage.setLocal('project', JSON.stringify(res.data[0]));
 				}
 			} else {
@@ -168,15 +182,20 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					);
 					setCurrentCluster(localClusterTemp);
 					setCluster(localClusterTemp); // * 将当前集群信息设置到redux中
+					getNamespaceList(projectId, localClusterTemp.id);
 				} else {
 					setCurrentCluster(res.data[0]);
 					setCluster(res.data[0]); // * 将当前集群信息设置到redux中
 					storage.setLocal('cluster', JSON.stringify(res.data[0]));
+					getNamespaceList(projectId, res.data[0].id);
 				}
 			} else {
 				setCurrentCluster(undefined);
 				setCluster({}); // * 将当前集群信息设置到redux中
 				storage.setLocal('cluster', '{}');
+				setCurrentNamespace(undefined);
+				setNamespace({ name: '*', aliasName: '全部' });
+				setNamespaceList([{ name: '*', aliasName: '全部' }]);
 			}
 			setClusterList(res.data);
 			setGlobalClusterList(res.data); // * 将当前集群列表信息设置到redux中
@@ -190,7 +209,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		});
 		if (res.success) {
 			const list = [{ name: '*', aliasName: '全部' }, ...res.data];
-			console.log(list);
 			const jsonLocalNamespace = storage.getLocal('namespace');
 			if (
 				jsonLocalNamespace &&
@@ -257,31 +275,41 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			setItems(its);
 		}
 	};
-	const getMenuMid = async (
-		currentProject: ProjectItem,
-		currentCluster: clusterType
-	) => {
-		const res = await getServiceListChildMenu({
-			projectId: currentProject.projectId,
-			clusterId: currentCluster.id
-		});
-		if (res.success) {
-			const child = res.data.map((i: ResMenuItem) =>
-				getItem(i.aliasName, i.url)
-			);
-			const itemsT = items.map((item: any) => {
-				if (item?.key === 'serviceList') {
-					item.children = child;
+	const getMenuMid = async (projectId?: string, clusterId?: string) => {
+		if (clusterId && projectId) {
+			const res = await getServiceListChildMenu({
+				projectId: projectId,
+				clusterId: clusterId
+			});
+			if (res.success) {
+				const child = res.data.map((i: ResMenuItem) =>
+					getItem(i.aliasName, i.url)
+				);
+				console.log(items);
+				const itemsT = items.map((item: any) => {
+					if (item?.key === 'serviceList') {
+						item.children = child;
+					}
+					return item;
+				});
+				console.log(itemsT);
+				setItems(itemsT);
+			}
+		} else {
+			console.log(items);
+			const itemT = items.map((item: any) => {
+				if (item.key === 'serviceList') {
+					item.children = [];
 				}
 				return item;
 			});
-			setItems(itemsT);
+			setItems(itemT);
 		}
 	};
 	// * 命名分区切换
 	const namespaceHandle = (value: string) => {
 		const curns = namespaceList.find(
-			(i: NamespaceItem) => i.name === value
+			(i: NavbarNamespaceItem) => i.name === value
 		);
 		setCurrentNamespace(curns);
 		setNamespace(curns);
@@ -293,6 +321,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		setCurrentCluster(curcl);
 		setCluster(curcl);
 		storage.setLocal('cluster', JSON.stringify(curcl));
+		currentProject && getNamespaceList(currentProject?.projectId, value);
 	};
 	// * 项目切换
 	const projectHandle = (value: string) => {
@@ -302,6 +331,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		setCurrentProject(curpj);
 		setProject(curpj);
 		storage.setLocal('project', JSON.stringify(curpj));
+		getClusterList(value);
 	};
 
 	// * 跳转到登陆页

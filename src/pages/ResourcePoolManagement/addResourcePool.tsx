@@ -255,7 +255,6 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 							>
 								<FormItem
 									style={{ width: '50%', marginLeft: 12 }}
-									{...formItemLayout}
 									label="英文简称"
 									rules={[
 										{

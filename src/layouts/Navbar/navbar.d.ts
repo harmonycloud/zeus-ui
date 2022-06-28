@@ -17,8 +17,8 @@ export interface NavbarProps {
 	projects: ProjectItem[];
 	currentCluster: clusterType | undefined;
 	clusters: clusterType[];
-	currentNamespace: NamespaceItem;
-	namespaces: NamespaceItem[];
+	currentNamespace: NavbarNamespaceItem;
+	namespaces: NavbarNamespaceItem[];
 	user: User | undefined;
 	nickName: string;
 	namespaceHandle: (value: string) => void;

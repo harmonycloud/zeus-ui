@@ -53,6 +53,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
+	console.log(props.globalVar);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
@@ -117,7 +118,10 @@ const ServiceListByType = (props: serviceListProps) => {
 	}, []);
 	useEffect(() => {
 		let mounted = true;
-		if (JSON.stringify(namespace) !== '{}') {
+		if (
+			JSON.stringify(cluster) !== '{}' &&
+			JSON.stringify(namespace) !== '{}'
+		) {
 			if (mounted) {
 				setLoadingVisible(true);
 				getList({
@@ -183,7 +187,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			setShowDataSource([]);
 			mounted = false;
 		};
-	}, [namespace, params]);
+	}, [cluster, namespace, params]);
 	const getData = () => {
 		setLoadingVisible(true);
 		getList({

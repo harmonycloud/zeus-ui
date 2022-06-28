@@ -29,14 +29,14 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const {
 		// user,
 		style,
-		setCluster,
-		setNamespace,
-		setProject,
-		setRefreshCluster,
-		setGlobalClusterList,
-		setGlobalNamespaceList,
+		// setCluster,
+		// setNamespace,
+		// setProject,
+		// setRefreshCluster,
+		// setGlobalClusterList,
+		// setGlobalNamespaceList,
 		// getClusterId,
-		setMenuRefresh,
+		// setMenuRefresh,
 		currentProject,
 		projects,
 		currentCluster,
@@ -49,7 +49,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		clusterHandle,
 		projectHandle
 	} = props;
-	const { flag, namespace } = props.globalVar;
+	// const { flag, namespace } = props.globalVar;
 	const location = useLocation();
 	// const [currentCluster, setCurrentCluster] = useState<{
 	// 	id?: number | null;
