@@ -22,6 +22,7 @@ export default function List(props: any): JSX.Element {
 	const params: any = useParams();
 	const [disabled, setDisabled] = useState<boolean>(false);
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
+	const [serviceList, setServiceList] = useState<any>([]);
 	const history = useHistory();
 
 	useEffect(() => {
@@ -29,6 +30,14 @@ export default function List(props: any): JSX.Element {
 			getData('');
 			getServiceList().then((res) => {
 				res.data?.length ? setDisabled(false) : setDisabled(true);
+				setServiceList(
+					res.data.map((item: any) => {
+						return {
+							text: item.name,
+							value: item.name
+						};
+					})
+				);
 			});
 		}
 	}, [clusterId, namespace]);
@@ -81,10 +90,11 @@ export default function List(props: any): JSX.Element {
 							onOk: () => {
 								const sendData = {
 									clusterId,
-									namespace,
+									namespace: record.namespace,
 									type: record.sourceType,
 									cron: record.cron || '',
 									backupName: record.backupName,
+									backupId: record.backupId,
 									addressName: record.addressName,
 									backupFileName: record.backupFileName || ''
 								};
@@ -142,58 +152,6 @@ export default function List(props: any): JSX.Element {
 			</Button>
 		)
 	};
-	const addressListRender = (value: string[]) => {
-		if (value) {
-			return (
-				<Tooltip
-					title={value.map((item, index) => (
-						<p key={index} style={{ margin: '3px 0' }}>
-							{item}
-						</p>
-					))}
-				>
-					<div
-						style={{
-							overflow: 'hidden',
-							textOverflow: 'ellipsis',
-							whiteSpace: 'nowrap',
-							width: '250px'
-						}}
-					>
-						{value.join(';')}
-					</div>
-				</Tooltip>
-			);
-		} else {
-			return <div></div>;
-		}
-	};
-
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'backupTime') {
-			const tempDataSource = backups.sort((a, b) => {
-				const result =
-					moment(a['backupTime']).valueOf() -
-					moment(b['backupTime']).valueOf();
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setBackups([...tempDataSource]);
-		} else if (dataIndex === 'phrase') {
-			const tempDataSource = backups.sort((a, b) => {
-				if (a['phrase'] === 'Failed') return 2;
-				if (a['phrase'] === 'Running') return 1;
-				if (a['phrase'] === 'Success') return -1;
-				return 0;
-			});
-			setBackups([...tempDataSource]);
-		}
-	};
 
 	return (
 		<div>
@@ -246,19 +204,27 @@ export default function List(props: any): JSX.Element {
 					title="备份源名称"
 					dataIndex="sourceName"
 					filterMultiple={false}
-					filters={[{ text: '11', value: '11' }]}
+					filters={serviceList}
+					onFilter={(value, record: any) =>
+						record.sourceName === value
+					}
 					width={160}
 				/>
 				<ProTable.Column
 					title="备份方式"
-					dataIndex="phrase"
-					render={() => '单次备份'}
+					dataIndex="backupMode"
+					render={(value) =>
+						value === 'single' ? '单次备份' : '周期备份'
+					}
 					width={120}
 					filterMultiple={false}
 					filters={[
-						{ text: '周期备份', value: '1' },
-						{ text: '单次备份', value: '2' }
+						{ text: '周期备份', value: 'period' },
+						{ text: '单次备份', value: 'single' }
 					]}
+					onFilter={(value, record: any) =>
+						record.backupMode === value
+					}
 				/>
 				<ProTable.Column title="备份位置" dataIndex="position" />
 				<ProTable.Column

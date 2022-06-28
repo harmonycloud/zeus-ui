@@ -51,56 +51,74 @@ export default function Console(props: consoleProps): JSX.Element {
 		if (source === 'database') {
 			if (data.type === 'mysql') {
 				return (
-					<Select
-						style={{ width: '100%' }}
-						value={mysqlDatabaseContainer[0]}
-						onChange={(value: any) => setContainer(value)}
+					<FormItem
+						label="选择容器"
+						name="container"
+						initialValue={mysqlDatabaseContainer[0]}
 					>
-						{mysqlDatabaseContainer.map(
-							(item: string, index: number) => {
-								return (
-									<Option key={index} value={item}>
-										{item}
-									</Option>
-								);
-							}
-						)}
-					</Select>
+						<Select
+							style={{ width: '100%' }}
+							value={mysqlDatabaseContainer[0]}
+							onChange={(value: any) => setContainer(value)}
+						>
+							{mysqlDatabaseContainer.map(
+								(item: string, index: number) => {
+									return (
+										<Option key={index} value={item}>
+											{item}
+										</Option>
+									);
+								}
+							)}
+						</Select>
+					</FormItem>
 				);
 			} else if (data.type === 'redis') {
 				return (
-					<Select
-						style={{ width: '100%' }}
-						value={redisDatabaseContainer[0]}
-						onChange={(value: any) => setContainer(value)}
+					<FormItem
+						label="选择容器"
+						name="container"
+						initialValue={redisDatabaseContainer[0]}
 					>
-						{redisDatabaseContainer.map(
-							(item: string, index: number) => {
-								return (
-									<Option key={index} value={item}>
-										{item}
-									</Option>
-								);
-							}
-						)}
-					</Select>
+						<Select
+							style={{ width: '100%' }}
+							value={redisDatabaseContainer[0]}
+							onChange={(value: any) => setContainer(value)}
+						>
+							{redisDatabaseContainer.map(
+								(item: string, index: number) => {
+									return (
+										<Option key={index} value={item}>
+											{item}
+										</Option>
+									);
+								}
+							)}
+						</Select>
+					</FormItem>
 				);
 			}
 		} else {
 			return (
-				<Select
-					style={{ width: '100%' }}
-					value={container}
-					onChange={(value: any) => setContainer(value)}
+				<FormItem
+					label="选择容器"
+					name="container"
+					initialValue={container}
 				>
-					{containers.map((item: string, index: number) => {
-						return (
-							<Option key={index} value={item}>
-								{item}
-							</Option>
-						);
-					})}
-				</Select>
+					<Select
+						style={{ width: '100%' }}
+						value={container}
+						onChange={(value: any) => setContainer(value)}
+					>
+						{containers.map((item: string, index: number) => {
+							return (
+								<Option key={index} value={item}>
+									{item}
+								</Option>
+							);
+						})}
+					</Select>
+				</FormItem>
 			);
 		}
 	};
@@ -117,7 +135,7 @@ export default function Console(props: consoleProps): JSX.Element {
 		>
 			<Form labelAlign="left" {...formItemLayout} form={form}>
 				{(data.type === 'mysql' || data.type === 'redis') && (
-					<FormItem name="source">
+					<FormItem name="source" initialValue={'container'}>
 						<RadioGroup
 							options={list}
 							value={source}
@@ -130,9 +148,7 @@ export default function Console(props: consoleProps): JSX.Element {
 						/>
 					</FormItem>
 				)}
-				<FormItem label="选择容器" name="container">
-					{selectRender()}
-				</FormItem>
+				{selectRender()}
 				<FormItem label="shell类型" name="scriptType">
 					<Select style={{ width: '100%' }} defaultValue="sh">
 						<Option value="sh">sh</Option>
