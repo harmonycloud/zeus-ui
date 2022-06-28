@@ -59,7 +59,7 @@ function User(props: userProps): JSX.Element {
 				<li className={styles['nav-user-container-item']}>
 					<p>{nickName}</p>
 					<span className={styles['nav-user-role-p']}>
-						{role.userName}
+						{role?.userName}
 					</span>
 				</li>
 				{Storage.getLocal('userName') === 'admin' && (

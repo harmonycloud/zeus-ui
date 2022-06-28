@@ -20,8 +20,15 @@ export const getUserInfo = (params: any) => {
 	return Axios.get(USER.userInfoApi, params);
 };
 // * 根据用户权限获取菜单
-export const getMenu = (params: any) => {
+export const getMenu = (params?: any) => {
 	return Axios.get(USER.getMenus, params);
+};
+// * 根据项目和集群获取服务列表子菜单
+export const getServiceListChildMenu = (params: {
+	projectId: string;
+	clusterId: string;
+}) => {
+	return Axios.get(USER.getChildMenu, params);
 };
 
 export const getLicense = () => {
@@ -36,10 +43,11 @@ export const getRsaKey = () => {
 	return Axios.get(USER.getRsaKey);
 };
 // * 获取用户列表
-export const getUserList: (params: { keyword: string }) => Promise<usersProps> =
-	(params: { keyword: string }) => {
-		return Axios.get(USER.getUserList, params);
-	};
+export const getUserList: (params: {
+	keyword: string;
+}) => Promise<usersProps> = (params: { keyword: string }) => {
+	return Axios.get(USER.getUserList, params);
+};
 // * 删除用户
 export const deleteUser: (params: {
 	userName: string;

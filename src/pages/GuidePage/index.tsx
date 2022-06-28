@@ -29,64 +29,64 @@ const GuidePage = (props: GuideProps) => {
 			)
 		);
 	}, [JSON.parse(storage.getLocal('role'))]);
-	useEffect(() => {
-		getClusters({ detail: true }).then((res) => {
-			if (res.success) {
-				if (res.data.length > 0) {
-					setCurrent('2');
-				} else {
-					setCurrent('1');
-				}
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
-		});
-		if (globalClusterList.length === 0) {
-			setCurrent('1');
-		} else {
-			getComponents({ clusterId: cluster.id })
-				.then((res) => {
-					if (res.success) {
-						const middlewareControllerStatus = res.data.find(
-							(item: ComponentProp) =>
-								item.component === 'middleware-controller'
-						).status;
-						if (middlewareControllerStatus === 3) {
-							setCurrent('2');
-						} else {
-							setCurrent('1');
-						}
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-						setCurrent('2');
-					}
-				})
-				.finally(() => {
-					getProjects({ key: '' }).then((res) => {
-						console.log(res);
-						if (res.success) {
-							if (res.data.length > 0) {
-								setCurrent('3');
-							} else {
-								setCurrent('2');
-							}
-						} else {
-							notification.error({
-								message: '失败',
-								description: res.errorMsg
-							});
-							setCurrent('2');
-						}
-					});
-				});
-		}
-	}, [props]);
+	// useEffect(() => {
+	// 	getClusters({ detail: true }).then((res) => {
+	// 		if (res.success) {
+	// 			if (res.data.length > 0) {
+	// 				setCurrent('2');
+	// 			} else {
+	// 				setCurrent('1');
+	// 			}
+	// 		} else {
+	// 			notification.error({
+	// 				message: '失败',
+	// 				description: res.errorMsg
+	// 			});
+	// 		}
+	// 	});
+	// 	if (globalClusterList.length === 0) {
+	// 		setCurrent('1');
+	// 	} else {
+	// 		getComponents({ clusterId: cluster.id })
+	// 			.then((res) => {
+	// 				if (res.success) {
+	// 					const middlewareControllerStatus = res.data.find(
+	// 						(item: ComponentProp) =>
+	// 							item.component === 'middleware-controller'
+	// 					).status;
+	// 					if (middlewareControllerStatus === 3) {
+	// 						setCurrent('2');
+	// 					} else {
+	// 						setCurrent('1');
+	// 					}
+	// 				} else {
+	// 					notification.error({
+	// 						message: '失败',
+	// 						description: res.errorMsg
+	// 					});
+	// 					setCurrent('2');
+	// 				}
+	// 			})
+	// 			.finally(() => {
+	// 				getProjects({ key: '' }).then((res) => {
+	// 					console.log(res);
+	// 					if (res.success) {
+	// 						if (res.data.length > 0) {
+	// 							setCurrent('3');
+	// 						} else {
+	// 							setCurrent('2');
+	// 						}
+	// 					} else {
+	// 						notification.error({
+	// 							message: '失败',
+	// 							description: res.errorMsg
+	// 						});
+	// 						setCurrent('2');
+	// 					}
+	// 				});
+	// 			});
+	// 	}
+	// }, [props]);
 	return (
 		<ProPage>
 			<ProHeader title="初始化操作引导" />
