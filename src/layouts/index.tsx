@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
-import Navbar from './Navbar';
-import MyMenu from './Menu/MyMenu';
 import Routes from './routes';
 import { connect } from 'react-redux';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { MenuProps, notification } from 'antd';
+import Navbar from './Navbar';
+import MyMenu from './Menu/MyMenu';
 import Login from '@/pages/Login';
 import MidTerminal from '@/components/MidTerminal';
 import storage from '@/utils/storage';
@@ -35,7 +35,6 @@ import {
 import { setMenuRefresh } from '@/redux/menu/menu';
 import backupService from '@/assets/images/backupService.svg';
 import myProject from '@/assets/images/myProject.svg';
-import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -87,7 +86,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	// * 用户信息
 	const [nickName, setNickName] = useState<string>('');
 	const [role, setRole] = useState<User>();
-
 	useEffect(() => {
 		if (
 			storage.getLocal('token') &&
@@ -101,8 +99,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		}
 	}, []);
 	useEffect(() => {
-		console.log(currentCluster);
-		console.log(currentProject);
 		if (currentProject && currentCluster) {
 			getMenuMid(currentProject.projectId, currentCluster.id);
 		} else if (currentProject) {
@@ -285,21 +281,23 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				const child = res.data.map((i: ResMenuItem) =>
 					getItem(i.aliasName, i.url)
 				);
-				console.log(items);
 				const itemsT = items.map((item: any) => {
 					if (item?.key === 'serviceList') {
 						item.children = child;
 					}
 					return item;
 				});
-				console.log(itemsT);
 				setItems(itemsT);
+				if (window.location.hash === '#/serviceList') {
+					window.location.href =
+						window.location.origin + '/#/' + res.data[0].url;
+					storage.setSession('menuPath', res.data[0].url);
+				}
 			}
 		} else {
-			console.log(items);
 			const itemT = items.map((item: any) => {
 				if (item.key === 'serviceList') {
-					item.children = [];
+					item.children = undefined;
 				}
 				return item;
 			});
