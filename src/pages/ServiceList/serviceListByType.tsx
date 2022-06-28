@@ -53,7 +53,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
-	console.log(props.globalVar);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
@@ -117,6 +116,41 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	}, []);
 	useEffect(() => {
+		if (JSON.stringify(cluster) !== '{}') {
+			getComponents({ clusterId: cluster.id }).then((res) => {
+				if (res.success) {
+					const temp = res.data.find(
+						(item: any) =>
+							item.component === 'middleware-controller'
+					);
+					if (temp.status === 3) {
+						setCantRelease(false);
+					} else {
+						setCantRelease(true);
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+			getCanReleaseMiddleware({
+				clusterId: cluster.id,
+				type: name
+			}).then((res) => {
+				if (res.success) {
+					setMiddlewareInfo(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [cluster]);
+	useEffect(() => {
 		let mounted = true;
 		if (
 			JSON.stringify(cluster) !== '{}' &&
@@ -150,44 +184,13 @@ const ServiceListByType = (props: serviceListProps) => {
 					.finally(() => {
 						setLoadingVisible(false);
 					});
-				getComponents({ clusterId: cluster.id }).then((res) => {
-					if (res.success) {
-						const temp = res.data.find(
-							(item: any) =>
-								item.component === 'middleware-controller'
-						);
-						if (temp.status === 3) {
-							setCantRelease(false);
-						} else {
-							setCantRelease(true);
-						}
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
-				});
-				getCanReleaseMiddleware({
-					clusterId: cluster.id,
-					type: name
-				}).then((res) => {
-					if (res.success) {
-						setMiddlewareInfo(res.data);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
-				});
 			}
 		}
 		return () => {
 			setShowDataSource([]);
 			mounted = false;
 		};
-	}, [cluster, namespace, params]);
+	}, [cluster, namespace, name]);
 	const getData = () => {
 		setLoadingVisible(true);
 		getList({
