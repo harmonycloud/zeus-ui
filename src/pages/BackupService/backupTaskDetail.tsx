@@ -311,9 +311,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 	const getBasicInfo = () => {
 		const sendData = {
-			keyword: params.backupName,
+			keyword: storage.getLocal('backupDetail').taskName,
 			clusterId: cluster.id,
-			namespace,
+			namespace: storage.getLocal('backupDetail').namespace,
 			middlewareName: params?.name || '',
 			type: params?.type || ''
 		};
@@ -321,12 +321,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 			if (res.success) {
 				setBasicData({
 					title: '基础信息',
-					cron: res.data[0].cron,
-					phrase: res.data[0].phrase,
+					cron: res.data[0]?.cron,
+					phrase: res.data[0]?.phrase,
 					sourceName: res.data[0].sourceName,
 					position: res.data[0].position,
 					backupTime: res.data[0].backupTime
 				});
+				setVisible(false);
 			} else {
 				notification.error({
 					message: '失败',
@@ -335,16 +336,15 @@ function BackupTaskDetail(props: any): JSX.Element {
 			}
 		});
 	};
-	const onCreate = () => {
+	const onCreate = (cron: string) => {
 		const sendData = {
 			backupName: params.backupName,
 			clusterId: cluster.id,
 			namespace: namespace.name,
-			cron: storage.getLocal('backupDetail').cron,
+			cron: cron,
 			type: params.type
 		};
 		editBackupTasks(sendData).then((res) => {
-			console.log(res);
 			getBasicInfo();
 		});
 	};

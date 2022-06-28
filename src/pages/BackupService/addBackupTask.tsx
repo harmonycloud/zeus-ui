@@ -664,10 +664,10 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
 				...values,
-				clusterId: selectedRow.clusterId || cluster.id,
+				clusterId: selectedRow?.clusterId || cluster.id,
 				namespace: params.namespace || selectedRow.namespace,
 				middlewareName: params.middlewareName || selectedRow.name,
-				type: selectedRow.type,
+				type: selectedRow?.type || params.type,
 				// cron:
 				// 	typeof formData.time !== 'string'
 				// 		? cron
