@@ -203,11 +203,11 @@ export default function List(props: any): JSX.Element {
 				<ProTable.Column
 					title="备份源名称"
 					dataIndex="sourceName"
-					filterMultiple={false}
-					filters={serviceList}
-					onFilter={(value, record: any) =>
-						record.sourceName === value
-					}
+					// filterMultiple={false}
+					// filters={serviceList}
+					// onFilter={(value, record: any) =>
+					// 	record.sourceName === value
+					// }
 					width={160}
 				/>
 				<ProTable.Column
