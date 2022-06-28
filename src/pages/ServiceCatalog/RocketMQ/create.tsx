@@ -462,7 +462,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			clusterId: globalCluster.id,
 			namespace: namespace || globalNamespace.name,
 			middlewareName: middlewareName,
-			type: 'redis'
+			type: 'rocketmq'
 		}).then((res) => {
 			if (!res.data) return;
 			setInstanceSpec('Customize');
@@ -497,14 +497,14 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				annotations: res.data.annotations,
 				description: res.data.description,
 				password: res.data.password,
-				cpu: res.data.quota.rockermq.cpu,
+				cpu: res.data.quota.rocketmq.cpu,
 				memory: transUnit.removeUnit(
-					res.data.quota.rockermq.memory,
+					res.data.quota.rocketmq.memory,
 					'Gi'
 				),
-				storageClass: res.data.quota.rockermq.storageClassName,
+				storageClass: res.data.quota.rocketmq.storageClassName,
 				storageQuota: transUnit.removeUnit(
-					res.data.quota.rockermq.storageClassQuota,
+					res.data.quota.rocketmq.storageClassQuota,
 					'Gi'
 				)
 			});
