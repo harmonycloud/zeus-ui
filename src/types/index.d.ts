@@ -74,6 +74,7 @@ export interface User {
 	createTime: string;
 	email: null | string;
 	id: number | string;
+	isAdmin: boolean;
 	password: string;
 	passwordTime: string;
 	phone: string;
