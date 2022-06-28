@@ -11,7 +11,10 @@ function DataFields(props: DataFieldsProps): JSX.Element {
 			title={
 				title ||
 				(items[0].render &&
-					items[0].render(dataSource[items[0].dataIndex || '']))
+					items[0].render(
+						dataSource[items[0].dataIndex || ''],
+						dataSource
+					))
 			}
 			labelStyle={labelStyle || { width: '160px' }}
 			{...config}
@@ -27,7 +30,10 @@ function DataFields(props: DataFieldsProps): JSX.Element {
 							span={1}
 						>
 							{item.render ? (
-								item.render(dataSource[item.dataIndex || ''])
+								item.render(
+									dataSource[item.dataIndex || ''],
+									dataSource
+								)
 							) : (
 								<div
 									className="text-overflow-one"

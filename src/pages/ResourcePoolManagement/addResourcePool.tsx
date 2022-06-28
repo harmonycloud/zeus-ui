@@ -284,7 +284,10 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								>
 									<Row>
 										<Col span={6}>
-											<FormItem name="protocolHarbor">
+											<FormItem
+												name="protocolHarbor"
+												initialValue={'https'}
+											>
 												<Select
 													style={{ width: '100%' }}
 												>
@@ -540,7 +543,10 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								>
 									<Row>
 										<Col span={6}>
-											<FormItem name="protocolHarbor">
+											<FormItem
+												name="protocolHarbor"
+												initialValue={'https'}
+											>
 												<Select
 													style={{ width: '100%' }}
 												>

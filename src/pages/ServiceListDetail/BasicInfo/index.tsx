@@ -186,17 +186,20 @@ const modelConfig = {
 	label: '模式'
 };
 const namespaceConfig = {
-	dataIndex: 'namespace',
-	label: '所在分区'
+	dataIndex: 'namespaceAliasName',
+	label: '所在分区',
+	render: (val: string, dataSource: any) => `${val}(${dataSource.namespace})`
 };
 const storageClassNameConfig = {
 	dataIndex: 'storageClassName',
-	label: '存储名称'
+	label: '存储名称',
+	render: (val: string, dataSource: any) =>
+		`${val}(${dataSource.storageType})`
 };
-const storageTypeConfig = {
-	dataIndex: 'storageType',
-	label: '存储类型'
-};
+// const storageTypeConfig = {
+// 	dataIndex: 'storageType',
+// 	label: '存储类型'
+// };
 const hostNetworkConfig = {
 	dataIndex: 'hostNetwork',
 	label: '主机网络',
@@ -240,8 +243,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					createTimeConfig,
 					modelConfig,
 					namespaceConfig,
-					storageClassNameConfig,
-					storageTypeConfig
+					storageClassNameConfig
 			  ]
 			: [
 					titleConfig,
@@ -249,7 +251,6 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					createTimeConfig,
 					modelConfig,
 					namespaceConfig,
-					storageTypeConfig,
 					storageClassNameConfig,
 					hostNetworkConfig
 			  ]
@@ -478,7 +479,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						: data.quota.redis.num === 6
 						? '三主三从'
 						: '五主五从' || '',
-				namespace: data.namespaceAliasName || '',
+				namespace: data.namespace || '',
+				namespaceAliasName: data.namespaceAliasName,
 				storageClassName:
 					data.quota && data.quota[data.type]
 						? data.quota[data.type].storageClassAliasName || ''

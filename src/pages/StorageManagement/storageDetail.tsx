@@ -107,6 +107,10 @@ export default function StorageDetail(): JSX.Element {
 			label: '所属集群'
 		},
 		{
+			dataIndex: 'name',
+			label: 'StorageClass名称'
+		},
+		{
 			dataIndex: 'volumeType',
 			label: '存储类型'
 		},
@@ -134,6 +138,10 @@ export default function StorageDetail(): JSX.Element {
 		{
 			dataIndex: 'clusterAliasName',
 			label: '所属集群'
+		},
+		{
+			dataIndex: 'name',
+			label: 'StorageClass名称'
 		},
 		{
 			dataIndex: 'volumeType',
@@ -185,7 +193,11 @@ export default function StorageDetail(): JSX.Element {
 								return record.status === value;
 							}}
 						/>
-						<Table.Column dataIndex="podNum" title="实例数" />
+						<Table.Column
+							dataIndex="podNum"
+							title="实例数"
+							width={80}
+						/>
 						<Table.Column
 							dataIndex="belong"
 							title="所属"
@@ -207,6 +219,7 @@ export default function StorageDetail(): JSX.Element {
 								moment(a.createTime).unix() -
 								moment(b.createTime).unix()
 							}
+							width={180}
 						/>
 					</Table>
 				);
