@@ -17,7 +17,7 @@ import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
 import { statusBackupRender, nullRender } from '@/utils/utils';
 import { getCanReleaseMiddleware } from '@/services/middleware';
-import { weekMap } from '@/utils/const';
+import { weekMap, backupTaskStatus } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { notification, Modal } from 'antd';
@@ -76,7 +76,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 			label: '备份方式',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
-					{val ? '周期' : '单次'}
+					{storage.getLocal('backupDetail').backupMode !== 'single'
+						? '周期'
+						: '单次'}
 					{val
 						? val.indexOf('? ?') !== -1
 							? `（每周${val
@@ -340,7 +342,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 		const sendData = {
 			backupName: params.backupName,
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace:
+				storage.getLocal('backupDetail').namespace || namespace.name,
 			cron: cron,
 			type: params.type
 		};
@@ -351,7 +354,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				title="定时备份任务1（正常）"
+				title={`${storage.getLocal('backupDetail').taskName}（${
+					backupTaskStatus.find(
+						(item) =>
+							item.value ===
+							storage.getLocal('backupDetail').phrase
+					)?.text
+				}）`}
 				onBack={() => history.goBack()}
 			/>
 			<ProContent>
