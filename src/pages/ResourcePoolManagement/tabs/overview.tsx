@@ -46,9 +46,6 @@ const Overview = () => {
 	const [tableType, setTableType] = useState<string>('cpu');
 	const [originData, setOriginData] = useState<MiddlewareResourceProps[]>([]);
 	const [dataSource, setDataSource] = useState<MiddlewareResourceProps[]>([]);
-	const [nodeOriginData, setNodeOriginData] = useState<NodeResourceProps[]>(
-		[]
-	);
 	const [nodeDataSource, setNodeDataSource] = useState<NodeResourceProps[]>(
 		[]
 	);
@@ -94,7 +91,6 @@ const Overview = () => {
 		getNodeResource({ clusterId: id }).then((res) => {
 			if (res.success) {
 				if (mounted) {
-					setNodeOriginData(res.data);
 					setNodeDataSource(res.data);
 				}
 			} else {
@@ -305,7 +301,6 @@ const Overview = () => {
 				onChange={(e: RadioChangeEvent) =>
 					onViewChange(e.target.value, 'view')
 				}
-				// style={{ width: '140px' }}
 			>
 				<Radio.Button id="service" value="service">
 					<Tooltip title="服务视角">
@@ -409,7 +404,9 @@ const Overview = () => {
 				<div className="resource-pool-table-content">
 					<ProTable
 						dataSource={dataSource}
-						rowKey="name"
+						rowKey={(record) =>
+							`${record.name}/${record.namespace}`
+						}
 						operation={Operation}
 						scroll={{
 							y: '280px'
