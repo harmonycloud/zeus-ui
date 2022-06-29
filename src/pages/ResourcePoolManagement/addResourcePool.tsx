@@ -255,7 +255,6 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 							>
 								<FormItem
 									style={{ width: '50%', marginLeft: 12 }}
-									{...formItemLayout}
 									label="英文简称"
 									rules={[
 										{
@@ -440,6 +439,7 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 									label="Apiserver地址"
 									style={{ marginBottom: 0 }}
 									name="apiserver"
+									required
 								>
 									<Row>
 										<Col span={6}>
@@ -505,6 +505,7 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								<FormItem
 									label="AdminConfig"
 									style={{ marginBottom: 0 }}
+									required
 								>
 									<FormItem
 										name="cert"

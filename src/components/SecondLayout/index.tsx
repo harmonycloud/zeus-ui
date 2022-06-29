@@ -49,7 +49,10 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 	const [current, setCurrent] = useState<any>();
 	const location: Location<stateProps> = useLocation();
 	useEffect(() => {
-		if (JSON.stringify(namespace) !== '{}') {
+		if (
+			JSON.stringify(cluster) !== '{}' &&
+			JSON.stringify(namespace) !== '{}'
+		) {
 			getList({
 				projectId: project.projectId,
 				clusterId: cluster.id,
@@ -123,6 +126,10 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 					}
 				}
 			});
+		} else {
+			setData([]);
+			setCurrent('⽆服务');
+			onChange(null, '', '', cluster, '');
 		}
 	}, [namespace, cluster]);
 	const handleChange = (value: any, selectedOptions: any) => {

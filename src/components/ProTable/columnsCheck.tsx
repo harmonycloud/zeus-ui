@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Checkbox } from 'antd';
+import { Checkbox, Row, Col } from 'antd';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { ColumnsCheckProps } from './table';
 import { ColumnsType, ColumnType } from 'antd/lib/table/interface';
@@ -18,13 +18,15 @@ function ColumnsCheck<T>(props: ColumnsCheckProps<T>): JSX.Element {
 	};
 	return (
 		<Checkbox.Group defaultValue={defaultValue} onChange={handleChange}>
-			{columns.map((item: any, index: number) => {
-				return (
-					<Checkbox value={item.title} key={index}>
-						{item.title}
-					</Checkbox>
-				);
-			})}
+			<Row>
+				{columns.map((item: any, index: number) => {
+					return (
+						<Col span={8} key={index}>
+							<Checkbox value={item.title}>{item.title}</Checkbox>
+						</Col>
+					);
+				})}
+			</Row>
 		</Checkbox.Group>
 	);
 }

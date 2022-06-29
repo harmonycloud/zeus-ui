@@ -91,7 +91,8 @@ export const hideRoute = [
 	'/myProject',
 	'/projectDetail',
 	'/middlewareRepository',
-	'/storageManagement'
+	'/storageManagement',
+	'/backupService'
 ];
 // * 项目不显示路由名单
 export const projectHideRoute = [
@@ -107,7 +108,8 @@ export const projectHideRoute = [
 	'/terminal',
 	'/middlewareRepository',
 	'/myProject',
-	'/storageManagement'
+	'/storageManagement',
+	'/backupService'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },
