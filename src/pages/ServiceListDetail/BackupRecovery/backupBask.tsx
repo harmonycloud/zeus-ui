@@ -86,7 +86,7 @@ export default function List(props: any): JSX.Element {
 						e.stopPropagation();
 						confirm({
 							title: '操作确认',
-							content: '备份删除后将无法恢复，请确认执行',
+							content: '备份任务删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const sendData = {
 									clusterId,
@@ -103,7 +103,7 @@ export default function List(props: any): JSX.Element {
 										if (res.success) {
 											notification.success({
 												message: '成功',
-												description: '备份删除成功'
+												description: '备份任务删除成功'
 											});
 										} else {
 											notification.error({
