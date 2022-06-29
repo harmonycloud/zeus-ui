@@ -91,9 +91,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 										: '0' +
 										  val.split('* *')[0].split(' ')[1]
 							  }:${
-									val.split('* *')[0].split(' ')[0] === '0'
-										? '00'
-										: '30'
+									Number(val.split('* *')[0].split(' ')[0]) <=
+									10
+										? '0' +
+										  val.split('* *')[0].split(' ')[0]
+										: val.split('* *')[0].split(' ')[0]
 							  }）`
 							: `（每周${val
 									.split('* *')[1]

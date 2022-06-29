@@ -140,6 +140,7 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion"
 					component={RocketMQCreate}
+					exact
 				/>
 				{/* rocketmq备份跳转使用 */}
 				<Route

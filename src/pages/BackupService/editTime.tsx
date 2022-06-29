@@ -129,7 +129,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 				>
 					<TimePicker
 						showNow={false}
-						minuteStep={30}
+						// minuteStep={30}
 						format="HH:mm"
 					/>
 				</Form.Item>
