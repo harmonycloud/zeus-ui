@@ -213,6 +213,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
 
 	const handleSubmit = () => {
+		console.log(globalNamespace.name);
+
 		form.validateFields().then((values: EsCreateValuesParams) => {
 			const sendData: EsSendDataParams = {
 				chartName: chartName,
@@ -303,6 +305,9 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						};
 					}
 				}
+			}
+			if (namespace) {
+				sendData.namespace = namespace;
 			}
 			if (middlewareName) {
 				const result = {
@@ -412,8 +417,6 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalNamespace]);
 
 	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
-		const { master, kibana, data, client, cold } = nodeObj;
-
 		getMiddlewareDetail({
 			clusterId: globalCluster.id,
 			namespace: namespace || globalNamespace.name,

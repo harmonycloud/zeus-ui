@@ -47,7 +47,7 @@ export default function List(props: any): JSX.Element {
 			keyword,
 			clusterId,
 			namespace,
-			middlewareName: params?.name || '',
+			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
 		};
 		getBackupTasks(sendData).then((res) => {
