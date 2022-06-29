@@ -347,7 +347,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			if (hostNetwork) {
 				sendData.ingresses = values.ingresses;
 			}
-			// console.log(sendData);
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			// 克隆服务
 			if (middlewareName) {
 				const result = {

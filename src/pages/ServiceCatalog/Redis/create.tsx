@@ -388,6 +388,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			}
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			// 克隆服务
 			if (middlewareName) {
 				const result = {
