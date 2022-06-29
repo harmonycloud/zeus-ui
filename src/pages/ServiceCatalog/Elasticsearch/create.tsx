@@ -451,7 +451,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						title: '主节点',
 						num: res.data.quota.master.num,
 						specId: '1',
-						cpu: res.data.quota.master.cpu,
+						cpu: Number(res.data.quota.master.cpu),
 						memory: Number(
 							transUnit.removeUnit(
 								res.data.quota.master.memory,
@@ -469,7 +469,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					kibana: {
 						disabled: false,
 						title: 'Kibana节点',
-						num: res.data.quota.kibana.num,
+						num: Number(res.data.quota.kibana.num),
 						specId: '1',
 						cpu: res.data.quota.kibana.cpu,
 						memory: Number(
@@ -484,7 +484,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						title: '数据节点',
 						num: res.data.quota.data.num,
 						specId: '1',
-						cpu: res.data.quota.data.cpu,
+						cpu: Number(res.data.quota.data.cpu),
 						memory: Number(
 							transUnit.removeUnit(
 								res.data.quota.data.memory,
@@ -504,7 +504,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 						title: '协调节点',
 						num: res.data.quota.client.num,
 						specId: '1',
-						cpu: res.data.quota.client.cpu,
+						cpu: Number(res.data.quota.client.cpu),
 						memory: Number(
 							transUnit.removeUnit(
 								res.data.quota.client.memory,
@@ -522,7 +522,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					cold: {
 						disabled: true,
 						title: '冷数据节点',
-						num: res.data.quota.cold.num,
+						num: Number(res.data.quota.cold.num),
 						specId: '1',
 						cpu: res.data.quota.cold.cpu,
 						memory: Number(

@@ -541,8 +541,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				description: res.data.description,
 				mirrorImage: res.data.mirrorImage,
 				password: res.data.password,
-				cpu: res.data.quota.redis.cpu,
-				memory: transUnit.removeUnit(res.data.quota.redis.memory, 'Gi'),
+				cpu: Number(res.data.quota.redis.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+				),
 				storageClass: res.data.quota.redis.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.redis.storageClassQuota,
@@ -555,7 +557,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					title: 'Redis 节点',
 					num: res.data.quota.redis.num,
 					specId: '1',
-					cpu: res.data.quota.redis.cpu,
+					cpu: Number(res.data.quota.redis.cpu),
 					memory: Number(
 						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 					),
@@ -572,7 +574,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					title: '哨兵节点',
 					num: res.data.quota.redis.num,
 					specId: '1',
-					cpu: res.data.quota.redis.cpu,
+					cpu: Number(res.data.quota.redis.cpu),
 					memory: Number(
 						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 					)
@@ -1300,6 +1302,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																					'请输入自定义CPU配额，单位为Core'
 																			},
 																			{
+																				type: 'number',
 																				min: 0.1,
 																				...maxCpu,
 																				message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
@@ -1338,6 +1341,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																					'请输入自定义内存配额，单位为Gi'
 																			},
 																			{
+																				type: 'number',
 																				min: 0.1,
 																				...maxMemory,
 																				message: `最小为0.1,不能超过当前分区配额剩余的最大值（${

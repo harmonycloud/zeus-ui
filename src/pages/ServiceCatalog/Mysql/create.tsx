@@ -728,8 +728,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				description: res.data.description,
 				mysqlPort: res.data.port,
 				mysqlPwd: res.data.password,
-				cpu: res.data.quota.mysql.cpu,
-				memory: transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi'),
+				cpu: Number(res.data.quota.mysql.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
+				),
 				storageClass: res.data.quota.mysql.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
@@ -1490,11 +1492,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											rules={[
 												{
 													min: 1,
+													type: 'number',
 													message:
 														'端口范围为1至65535的正整数,默认为3306'
 												},
 												{
 													max: 65535,
+													type: 'number',
 													message:
 														'端口范围为1至65535的正整数,默认为3306'
 												}
@@ -1730,10 +1734,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	},
 																	{
 																		min: 0.1,
+																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
 																	},
 																	{
 																		max: maxCpu?.max,
+																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
 																	}
 																]}
@@ -1766,10 +1772,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	},
 																	{
 																		min: 0.1,
+																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi）`
 																	},
 																	{
 																		max: maxMemory?.max,
+																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi）`
 																	}
 																]}

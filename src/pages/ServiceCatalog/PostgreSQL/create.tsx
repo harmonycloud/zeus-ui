@@ -1071,6 +1071,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																			'请输入自定义CPU配额，单位为Core'
 																	},
 																	{
+																		type: 'number',
 																		min: 0.1,
 																		...maxCpu,
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
@@ -1107,6 +1108,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																			'请输入自定义内存配额，单位为Gi'
 																	},
 																	{
+																		type: 'number',
 																		min: 0.1,
 																		...maxMemory,
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
