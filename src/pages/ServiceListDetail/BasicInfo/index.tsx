@@ -749,7 +749,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	];
 	const configConfigTemp =
-		type === 'redis' || type === 'elasticsearch' || type === 'postgresql'
+		type === 'redis' || type === 'elasticsearch'
 			? [
 					...configConfig,
 					{
