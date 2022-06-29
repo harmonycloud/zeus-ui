@@ -474,7 +474,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									>
 										<TimePicker
 											showNow={false}
-											minuteStep={30}
+											// minuteStep={30}
 											format="HH:mm"
 										/>
 									</Form.Item>
