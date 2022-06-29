@@ -1057,7 +1057,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																rules={[
 																	{
 																		min: 0.1,
-																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
 																	},
 																	{
@@ -1068,7 +1067,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																	},
 																	{
 																		max: maxCpu?.max,
-																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
 																	}
 																]}
@@ -1097,7 +1095,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																rules={[
 																	{
 																		min: 0.1,
-																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
 																	},
 																	{
@@ -1108,7 +1105,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																	},
 																	{
 																		max: maxMemory?.max,
-																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
 																	}
 																]}
