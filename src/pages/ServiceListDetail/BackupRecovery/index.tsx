@@ -11,7 +11,7 @@ export default function BackupRecovery(
 	const params: DetailParams = useParams();
 	const [customMid, setCustomMid] = useState<boolean>(false);
 	const [capabilities, setCapabilities] = useState<string[]>([]);
-	const { storage, clusterId, namespace } = props;
+	const { storage, clusterId, namespace, data } = props;
 	useEffect(() => {
 		setCustomMid(props.customMid);
 		setCapabilities(props.capabilities || []);
@@ -28,5 +28,7 @@ export default function BackupRecovery(
 	if (customMid && !capabilities.includes('backup')) {
 		return <DefaultPicture />;
 	}
-	return <BackupTask clusterId={clusterId} namespace={namespace} />;
+	return (
+		<BackupTask clusterId={clusterId} namespace={namespace} data={data} />
+	);
 }

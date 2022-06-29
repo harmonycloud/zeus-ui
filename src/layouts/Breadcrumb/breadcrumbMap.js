@@ -54,5 +54,6 @@ export default {
 	backupTask: '备份任务',
 	addBackupTask: '新增',
 	detail: '备份任务详情',
+	backupTaskDetail: '备份任务详情',
 	backupPosition: '备份位置'
 };

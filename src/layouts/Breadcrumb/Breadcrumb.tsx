@@ -35,10 +35,14 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 		}
 		if (
 			pathname.includes('externalAccess/addExternalAccess') ||
-			pathname.includes('backupRecovery/addBackupTask')
+			pathname.includes('backupRecovery/addBackupTask') ||
+			pathname.includes('backupRecovery/backupTaskDetail')
 		) {
 			const arr = pathname.split('/');
 			arr.splice(5, 1);
+			if (pathname.includes('backupRecovery/backupTaskDetail')) {
+				arr.splice(arr.length - 1, 1);
+			}
 			const result = arr.join('/');
 			return result;
 		}
