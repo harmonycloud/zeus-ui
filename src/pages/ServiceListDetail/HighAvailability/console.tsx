@@ -149,8 +149,8 @@ export default function Console(props: consoleProps): JSX.Element {
 					</FormItem>
 				)}
 				{selectRender()}
-				<FormItem label="shell类型" name="scriptType">
-					<Select style={{ width: '100%' }} defaultValue="sh">
+				<FormItem label="shell类型" name="scriptType" initialValue="sh">
+					<Select style={{ width: '100%' }}>
 						<Option value="sh">sh</Option>
 						<Option value="bash">bash</Option>
 					</Select>

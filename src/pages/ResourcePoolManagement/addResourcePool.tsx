@@ -97,29 +97,31 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 	};
 	// * 浏览器复制到剪切板方法
 	const copyValue = () => {
-		const input = document.createElement('input');
-		document.body.appendChild(input);
-		input.style.position = 'absolute';
-		input.style.top = '0px';
-		input.style.opacity = '0';
-		input.value = command;
-		input.focus();
-		input.select();
-		if (document.execCommand('copy')) {
-			document.execCommand('copy');
-		}
-		input.blur();
-		document.body.removeChild(input);
-		confirm({
-			title: '复制成功',
-			icon: <ExclamationCircleOutlined />,
-			content: '集群接入指令已完成生成，是否已运行代码？',
-			okText: '已运行',
-			cancelText: '未运行',
-			onOk: () => {
-				history.push('/systemManagement/resourcePoolManagement');
+		if (command) {
+			const input = document.createElement('input');
+			document.body.appendChild(input);
+			input.style.position = 'absolute';
+			input.style.top = '0px';
+			input.style.opacity = '0';
+			input.value = command;
+			input.focus();
+			input.select();
+			if (document.execCommand('copy')) {
+				document.execCommand('copy');
 			}
-		});
+			input.blur();
+			document.body.removeChild(input);
+			confirm({
+				title: '复制成功',
+				icon: <ExclamationCircleOutlined />,
+				content: '集群接入指令已完成生成，是否已运行代码？',
+				okText: '已运行',
+				cancelText: '未运行',
+				onOk: () => {
+					history.push('/systemManagement/resourcePoolManagement');
+				}
+			});
+		}
 	};
 	const uploadConf = (e: any) => {
 		const reader = new window.FileReader();
