@@ -332,15 +332,18 @@ function AddBackupTask(props: StoreState): JSX.Element {
 											)?.max,
 											type: 'number',
 											message: '保留时间最长为10年'
+										},
+										{
+											min: 0,
+											type: 'number',
+											message: '保留时间不能小于0'
 										}
 									]}
 								>
 									<InputNumber
 										type="inline"
-										// disabled
 										addonAfter={
 											<Select
-												// disabled
 												value={dataSelect}
 												onChange={(value) => {
 													setDataSelect(value);
@@ -474,7 +477,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									>
 										<TimePicker
 											showNow={false}
-											minuteStep={30}
+											// minuteStep={30}
 											format="HH:mm"
 										/>
 									</Form.Item>

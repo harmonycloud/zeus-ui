@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { notification } from 'antd';
+import { notification, TablePaginationConfig } from 'antd';
 import ProTable from '@/components/ProTable';
 
 import moment from 'moment';
@@ -12,7 +12,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
-	const [current, setCurrent] = useState<number>(1); // * 页码
+	const [current, setCurrent] = useState<number | undefined>(1); // * 页码
 	const [pageSize, setPageSize] = useState<number>(); // * 每页条数
 	const [total, setTotal] = useState<number | undefined>(10); // * 总数
 
@@ -85,15 +85,15 @@ function SqlAudit(props: ManageProps): JSX.Element {
 		return moment(value).format('YYYY-MM-DD HH:mm:ss');
 	};
 
-	const pageChange = (current: number) => {
-		setCurrent(current);
+	const pageChange = (pagination: TablePaginationConfig) => {
+		setCurrent(pagination.current);
 		queryAuditSql({
 			searchWord: keyword,
 			clusterId,
 			namespace,
 			middlewareName,
-			current: current,
-			size: pageSize || 10
+			current: pagination.current,
+			size: pagination.pageSize || 10
 		}).then((res) => {
 			if (res.success) {
 				res.data && setDataSource(res.data.data);
@@ -128,12 +128,12 @@ function SqlAudit(props: ManageProps): JSX.Element {
 			<ProTable
 				dataSource={dataSource}
 				rowKey="key"
-				// bordered={false}
-				// pagination={{
-				// 	total: total,
-				// 	current: current,
-				// 	pageSize: pageSize
-				// }}
+				bordered={false}
+				pagination={{
+					total: total,
+					current: current,
+					pageSize: pageSize
+				}}
 				showRefresh
 				search={{
 					onSearch: handleChange,
@@ -141,7 +141,7 @@ function SqlAudit(props: ManageProps): JSX.Element {
 					style: { width: '360px' }
 				}}
 				onRefresh={onRefresh}
-				// onSort={onSort}
+				onChange={pageChange}
 			>
 				<ProTable.Column title="操作ip" dataIndex="ip" width={100} />
 				<ProTable.Column

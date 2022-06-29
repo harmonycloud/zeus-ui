@@ -388,6 +388,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			}
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			// 克隆服务
 			if (middlewareName) {
 				const result = {
@@ -538,8 +541,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				description: res.data.description,
 				mirrorImage: res.data.mirrorImage,
 				password: res.data.password,
-				cpu: res.data.quota.redis.cpu,
-				memory: transUnit.removeUnit(res.data.quota.redis.memory, 'Gi'),
+				cpu: Number(res.data.quota.redis.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+				),
 				storageClass: res.data.quota.redis.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.redis.storageClassQuota,
@@ -552,7 +557,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					title: 'Redis 节点',
 					num: res.data.quota.redis.num,
 					specId: '1',
-					cpu: res.data.quota.redis.cpu,
+					cpu: Number(res.data.quota.redis.cpu),
 					memory: Number(
 						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 					),
@@ -569,7 +574,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					title: '哨兵节点',
 					num: res.data.quota.redis.num,
 					specId: '1',
-					cpu: res.data.quota.redis.cpu,
+					cpu: Number(res.data.quota.redis.cpu),
 					memory: Number(
 						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 					)

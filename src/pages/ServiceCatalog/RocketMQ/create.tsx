@@ -347,7 +347,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			if (hostNetwork) {
 				sendData.ingresses = values.ingresses;
 			}
-			// console.log(sendData);
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			// 克隆服务
 			if (middlewareName) {
 				const result = {
@@ -499,10 +501,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				annotations: res.data.annotations,
 				description: res.data.description,
 				password: res.data.password,
-				cpu: res.data.quota.rocketmq.cpu,
-				memory: transUnit.removeUnit(
-					res.data.quota.rocketmq.memory,
-					'Gi'
+				cpu: Number(res.data.quota.rocketmq.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.rocketmq.memory, 'Gi')
 				),
 				storageClass: res.data.quota.rocketmq.storageClassName,
 				storageQuota: transUnit.removeUnit(

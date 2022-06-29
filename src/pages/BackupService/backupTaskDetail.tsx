@@ -277,7 +277,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 					onClick={() => {
 						Modal.confirm({
 							title: '操作确认',
-							content: '删除后将无法恢复，请确认执行',
+							content: '备份记录删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const result = {
 									clusterId: cluster.id,
@@ -294,7 +294,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 									if (res.success) {
 										notification.success({
 											message: '成功',
-											description: '删除成功'
+											description: '备份记录删除成功'
 										});
 										getData();
 									} else {

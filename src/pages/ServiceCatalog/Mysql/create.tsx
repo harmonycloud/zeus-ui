@@ -395,6 +395,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData.quota.mysql.cpu = values.cpu;
 				sendData.quota.mysql.memory = values.memory + 'Gi';
 			}
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			// 克隆服务
 			if (backupFileName) {
 				sendData.middlewareName = middlewareName;
@@ -725,8 +728,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				description: res.data.description,
 				mysqlPort: res.data.port,
 				mysqlPwd: res.data.password,
-				cpu: res.data.quota.mysql.cpu,
-				memory: transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi'),
+				cpu: Number(res.data.quota.mysql.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
+				),
 				storageClass: res.data.quota.mysql.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
