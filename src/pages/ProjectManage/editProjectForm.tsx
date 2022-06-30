@@ -95,6 +95,10 @@ export default function EditProjectForm(
 	}, [clusters]);
 	const onOk = () => {
 		form.validateFields().then((values) => {
+			// TODO 创建项目是选择了集群，没有选择命名空间问题
+			// if (namespaces.length === 0) {
+
+			// }
 			const clusterListTemp = clusters.map((item) => {
 				const [clusterId, clusterName] = item.split('/');
 				return {
@@ -177,11 +181,6 @@ export default function EditProjectForm(
 							message: '请输入名称，且最大长度不超过20个字符'
 						}
 					]}
-					// requiredMessage="请输入项目名称"
-					// pattern={pattern.projectAliasName}
-					// maxLength={80}
-					// minmaxLengthMessage="请输入名称，且最大长度不超过80个字符"
-					// patternMessage="请输入名称，且最大长度不超过80个字符"
 				>
 					<Input />
 				</FormItem>
@@ -207,12 +206,6 @@ export default function EditProjectForm(
 						}
 					]}
 					required
-					// requiredMessage="请输入英文名称"
-					// pattern={pattern.projectName}
-					// min={2}
-					// maxLength={40}
-					// minmaxLengthMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
-					// patternMessage="由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符"
 				>
 					<Input disabled={projectId ? true : false} />
 				</FormItem>
