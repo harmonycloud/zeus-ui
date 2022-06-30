@@ -93,7 +93,12 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		) {
 			getUserInfo().then((res) => {
 				const proId = res.userRoleList[0].projectId;
-				getMenus(proId).then(() => {
+				const jsonLocalProject = storage.getLocal('project');
+				const sendProId =
+					jsonLocalProject !== ''
+						? JSON.parse(jsonLocalProject).projectId
+						: proId;
+				getMenus(sendProId).then(() => {
 					getProjectList(res);
 				});
 			});
