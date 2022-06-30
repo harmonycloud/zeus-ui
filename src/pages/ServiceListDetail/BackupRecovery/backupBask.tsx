@@ -174,9 +174,13 @@ export default function List(props: any): JSX.Element {
 					onSearch: (value: string) => getData(value),
 					style: { width: '360px' }
 				}}
+				rowClassName={(record: any) =>
+					record.status === 'Deleted' ? 'disabled' : ''
+				}
 				onRow={(record: any) => {
 					return {
 						onClick: () => {
+							if (record.status === 'Deleted') return;
 							if (params.type) {
 								history.push(
 									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
