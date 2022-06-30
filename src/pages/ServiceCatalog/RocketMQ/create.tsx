@@ -201,6 +201,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			console.log(values);
 			const sendData: RMQSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -365,6 +366,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
