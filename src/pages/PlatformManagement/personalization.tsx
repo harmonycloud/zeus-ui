@@ -279,7 +279,7 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 					label="背景"
 					labelAlign="left"
 					rules={[{ required: true, message: '请上传图片' }]}
-					name={'backgroundImage'}
+					// name={'backgroundImage'}
 					extra={
 						<>
 							<p className="upload-info">
@@ -314,7 +314,7 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 					label="登录页logo"
 					rules={[{ required: true, message: '请上传图片' }]}
 					labelAlign="left"
-					name={'loginLogo'}
+					// name={'loginLogo'}
 					extra={
 						<>
 							<p className="upload-info">
@@ -346,10 +346,7 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 					label="平台名称"
 					labelAlign="left"
 					name={'platformName'}
-					rules={[
-						{ required: true, message: '请输入平台名称' },
-						{ max: 30, message: '长度不能超过30个字符' }
-					]}
+					rules={[{ max: 30, message: '长度不能超过30个字符' }]}
 				>
 					<Input placeholder="我是平台名称，支持空格，限定在30字符内" />
 				</Form.Item>
@@ -357,21 +354,15 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 					label="Slogan"
 					labelAlign="left"
 					name={'slogan'}
-					rules={[
-						{ required: true, message: '请输入Slogan' },
-						{ max: 50, message: '长度不能超过50个字符' }
-					]}
+					rules={[{ max: 50, message: '长度不能超过50个字符' }]}
 				>
 					<Input.TextArea placeholder="产品说明，字数限定在50字符" />
 				</Form.Item>
 				<Form.Item
-					label="版本声明"
+					label="版权声明"
 					labelAlign="left"
 					name={'copyrightNotice'}
-					rules={[
-						{ required: true, message: '请输入版权声明' },
-						{ max: 60, message: '长度不能超过60个字符' }
-					]}
+					rules={[{ max: 60, message: '长度不能超过60个字符' }]}
 				>
 					<Input placeholder="我是版权声明，支持空格，限定在60字符内" />
 				</Form.Item>
@@ -379,7 +370,7 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 				<Form.Item
 					label="左上角logo"
 					labelAlign="left"
-					name={'homeLogo'}
+					// name={'homeLogo'}
 					rules={[{ required: true, message: '请上传图片' }]}
 					extra={
 						<>
@@ -414,7 +405,7 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 				<Form.Item
 					label="浏览器logo"
 					labelAlign="left"
-					name={'tabLogo'}
+					// name={'tabLogo'}
 					rules={[{ required: true, message: '请输入上传图片' }]}
 					extra={
 						<>

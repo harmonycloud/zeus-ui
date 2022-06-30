@@ -138,3 +138,10 @@ h2 {
 		width: 100px;
 	}
 }
+.ant-table-row.disabled{
+	background-color: #fafafa;
+	color: #ccc;
+	.name-link{
+		color: #ccc;
+	}
+}
