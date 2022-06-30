@@ -617,7 +617,6 @@ const Overview = () => {
 						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
 							a.memoryRate - b.memoryRate
 						}
-						// sortable
 					/>
 					<ProTable.Column
 						title="状态"
