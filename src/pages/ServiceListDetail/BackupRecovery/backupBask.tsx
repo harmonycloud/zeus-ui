@@ -18,11 +18,12 @@ import { BackupRecordItem } from './backup';
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 export default function List(props: any): JSX.Element {
-	const { clusterId, namespace } = props;
+	const { clusterId, namespace, data } = props;
 	const params: any = useParams();
 	const [disabled, setDisabled] = useState<boolean>(false);
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
 	const [serviceList, setServiceList] = useState<any>([]);
+	const [isLvm, setIsLvm] = useState<boolean>(true);
 	const history = useHistory();
 
 	useEffect(() => {
@@ -40,6 +41,7 @@ export default function List(props: any): JSX.Element {
 				);
 			});
 		}
+		params.type && !data.isAllLvmStorage && setIsLvm(false);
 	}, [clusterId, namespace]);
 
 	const getData = (keyword: string) => {
@@ -134,6 +136,11 @@ export default function List(props: any): JSX.Element {
 							message: '提示',
 							description: '当前集群下没有服务，没有备份对象'
 						});
+					} else if (!isLvm) {
+						notification.error({
+							message: '提示',
+							description: '存储不使用Lvm时，无法创建备份任务'
+						});
 					} else {
 						if (params.type) {
 							history.push(
@@ -170,9 +177,15 @@ export default function List(props: any): JSX.Element {
 				onRow={(record: any) => {
 					return {
 						onClick: () => {
-							history.push(
-								`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
-							);
+							if (params.type) {
+								history.push(
+									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
+								);
+							} else {
+								history.push(
+									`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
+								);
+							}
 							storage.setLocal('backupDetail', record);
 						}
 					};
