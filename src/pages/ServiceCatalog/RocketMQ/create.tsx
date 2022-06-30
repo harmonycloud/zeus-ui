@@ -1219,7 +1219,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		min: 0.1,
 																		max: maxMemory?.max,
 																		type: 'number',
-																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
+																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi)`
 																	},
 																	{
 																		required:

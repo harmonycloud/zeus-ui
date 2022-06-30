@@ -56,8 +56,8 @@ function UserManage(): JSX.Element {
 			mounted = false;
 		};
 	}, []);
-	const onRefresh: () => void = () => {
-		getUserList({ keyword: keyword }).then((res) => {
+	const onRefresh: (value: string) => void = (value) => {
+		getUserList({ keyword: value }).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
@@ -68,11 +68,8 @@ function UserManage(): JSX.Element {
 			}
 		});
 	};
-	const handleChange: (value: string) => void = (value: string) => {
-		setKeyword(value);
-	};
 	const handleSearch: (value: string) => void = (value: string) => {
-		onRefresh();
+		onRefresh(value);
 	};
 	const edit: (record: userProps) => void = (record: userProps) => {
 		setUpdateData(record);
@@ -100,7 +97,7 @@ function UserManage(): JSX.Element {
 							message: '成功',
 							description: '该用户删除成功'
 						});
-						onRefresh();
+						onRefresh(keyword);
 					} else {
 						notification.error({
 							message: '失败',
@@ -277,7 +274,7 @@ function UserManage(): JSX.Element {
 					dataSource={dataSource}
 					showRefresh
 					showColumnSetting
-					onRefresh={onRefresh}
+					onRefresh={() => onRefresh(keyword)}
 					rowKey="userName"
 					search={{
 						placeholder:
@@ -325,7 +322,7 @@ function UserManage(): JSX.Element {
 					visible={visible}
 					onCreate={() => {
 						setVisible(false);
-						onRefresh();
+						onRefresh(keyword);
 					}}
 					onCancel={() => setVisible(false)}
 					data={isEdit ? updateData : null}
