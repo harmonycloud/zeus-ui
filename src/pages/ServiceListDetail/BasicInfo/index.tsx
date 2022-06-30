@@ -188,7 +188,8 @@ const modelConfig = {
 const namespaceConfig = {
 	dataIndex: 'namespaceAliasName',
 	label: '所在分区',
-	render: (val: string, dataSource: any) => `${val}(${dataSource.namespace})`
+	render: (val: string, dataSource: any) =>
+		`${val || dataSource.namespace}(${dataSource.namespace})`
 };
 const storageClassNameConfig = {
 	dataIndex: 'storageClassName',
@@ -237,14 +238,22 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const [runData, setRunData] = useState<any>(runStatus);
 	const [runConfig, setRunConfig] = useState(
 		type !== 'rocketmq'
-			? [
-					titleConfig,
-					healthConfig,
-					createTimeConfig,
-					modelConfig,
-					namespaceConfig,
-					storageClassNameConfig
-			  ]
+			? type === 'postgresql'
+				? [
+						titleConfig,
+						healthConfig,
+						createTimeConfig,
+						namespaceConfig,
+						storageClassNameConfig
+				  ]
+				: [
+						titleConfig,
+						healthConfig,
+						createTimeConfig,
+						modelConfig,
+						namespaceConfig,
+						storageClassNameConfig
+				  ]
 			: [
 					titleConfig,
 					healthConfig,

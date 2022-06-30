@@ -28,7 +28,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 		project
 	} = props.globalVar;
 	const {
-		params: { chartName, chartVersion, version, aliasName }
+		params: { chartName, chartVersion, aliasName }
 	} = props.match;
 	const [dataSource, setDataSource] = useState<any>();
 	const [capabilities, setCapabilities] = useState<string[]>([]);
@@ -206,6 +206,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 							: '';
 					}
 					dynamicValues[index] = values[index];
+					if (index === 'storageClassName') {
+						dynamicValues['storageClassName'] =
+							values['storageClassName'].split('/')[0];
+					}
 				}
 			}
 			sendData.dynamicValues = dynamicValues;
