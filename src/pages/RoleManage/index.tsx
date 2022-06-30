@@ -248,6 +248,7 @@ function RoleManage(): JSX.Element {
 						title="描述"
 						dataIndex="description"
 						width="50%"
+						ellipsis={true}
 					/>
 					<ProTable.Column
 						title="创建时间"
