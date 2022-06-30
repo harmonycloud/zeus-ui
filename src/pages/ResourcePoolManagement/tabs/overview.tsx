@@ -6,7 +6,11 @@ import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import ProTable from '@/components/ProTable';
 import FormBlock from '@/components/FormBlock';
 import { IconFont } from '@/components/IconFont';
-import { iconTypeRender, nullRender } from '@/utils/utils';
+import {
+	iconTypeRender,
+	nullRender,
+	objectRemoveDuplicatesByKey
+} from '@/utils/utils';
 import {
 	getMiddlewareResource,
 	getNodeResource,
@@ -65,20 +69,26 @@ const Overview = () => {
 					setOriginData(res.data);
 					setDataSource(res.data);
 					setNamespaceFilter(
-						res.data.map((item: MiddlewareResourceProps) => {
-							return {
-								text: item.namespace,
-								value: item.namespace
-							};
-						})
+						objectRemoveDuplicatesByKey(
+							res.data.map((item: MiddlewareResourceProps) => {
+								return {
+									text: item.namespace,
+									value: item.namespace
+								};
+							}),
+							'value'
+						)
 					);
 					setTypeFilter(
-						res.data.map((item: MiddlewareResourceProps) => {
-							return {
-								text: item.type,
-								value: item.type
-							};
-						})
+						objectRemoveDuplicatesByKey(
+							res.data.map((item: MiddlewareResourceProps) => {
+								return {
+									text: item.type,
+									value: item.type
+								};
+							}),
+							'value'
+						)
 					);
 				}
 			} else {
@@ -132,12 +142,15 @@ const Overview = () => {
 				setOriginData(res.data);
 				setDataSource(res.data);
 				setNamespaceFilter(
-					res.data.map((item: MiddlewareResourceProps) => {
-						return {
-							label: item.namespace,
-							value: item.namespace
-						};
-					})
+					objectRemoveDuplicatesByKey(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.namespace,
+								value: item.namespace
+							};
+						}),
+						'value'
+					)
 				);
 			} else {
 				setDataSource([]);
@@ -166,12 +179,15 @@ const Overview = () => {
 					};
 				});
 				setNamespaceFilter(
-					res.data.map((item: MiddlewareResourceProps) => {
-						return {
-							label: item.name,
-							value: item.name
-						};
-					})
+					objectRemoveDuplicatesByKey(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.name,
+								value: item.name
+							};
+						}),
+						'value'
+					)
 				);
 				setOriginData(list);
 				setDataSource(list);
@@ -430,6 +446,12 @@ const Overview = () => {
 							filterMultiple={false}
 							width={200}
 							fixed="left"
+							onFilter={(
+								value: string | number | boolean,
+								record: MiddlewareResourceProps
+							) => {
+								return record.namespace === value;
+							}}
 						/>
 						{viewType === 'service' && (
 							<ProTable.Column
@@ -439,6 +461,12 @@ const Overview = () => {
 								filters={typeFilter}
 								filterMultiple={false}
 								width={180}
+								onFilter={(
+									value: string | number | boolean,
+									record: MiddlewareResourceProps
+								) => {
+									return record.type === value;
+								}}
 							/>
 						)}
 						{viewType === 'service' && (
@@ -589,7 +617,6 @@ const Overview = () => {
 						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
 							a.memoryRate - b.memoryRate
 						}
-						// sortable
 					/>
 					<ProTable.Column
 						title="状态"
@@ -600,6 +627,12 @@ const Overview = () => {
 							{ text: '成功', value: 'True' },
 							{ text: '失败', value: 'False' }
 						]}
+						onFilter={(
+							value: string | number | boolean,
+							record: NodeResourceProps
+						) => {
+							return record.status === value;
+						}}
 					/>
 					<ProTable.Column
 						title="创建时间"

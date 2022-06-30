@@ -12,6 +12,7 @@ import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const CheckboxGroup = Checkbox.Group;
+const { confirm } = Modal;
 export default function EditProjectForm(
 	props: EditProjectFormProps
 ): JSX.Element {
@@ -95,57 +96,114 @@ export default function EditProjectForm(
 	}, [clusters]);
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			// TODO 创建项目是选择了集群，没有选择命名空间问题
-			// if (namespaces.length === 0) {
-
-			// }
-			const clusterListTemp = clusters.map((item) => {
-				const [clusterId, clusterName] = item.split('/');
-				return {
-					id: clusterId,
-					namespaceList: namespaces
-						.filter((i) => {
-							const [name, aliasName, clusterNameTemp] =
-								i.split('/');
-							if (clusterNameTemp === clusterName) return i;
-						})
-						.map((i) => {
-							const [name, aliasName] = i.split('/');
+			if (namespaces.length === 0) {
+				confirm({
+					title: '操作确认',
+					content:
+						'请注意，当前项目没有接入命名空间，会导致无法绑定该集群！',
+					onOk: () => {
+						const clusterListTemp = clusters.map((item) => {
+							const [clusterId, clusterName] = item.split('/');
 							return {
-								name: name,
-								aliasName:
-									aliasName === 'null' ? null : aliasName
+								id: clusterId,
+								namespaceList: namespaces
+									.filter((i) => {
+										const [
+											name,
+											aliasName,
+											clusterNameTemp
+										] = i.split('/');
+										if (clusterNameTemp === clusterName)
+											return i;
+									})
+									.map((i) => {
+										const [name, aliasName] = i.split('/');
+										return {
+											name: name,
+											aliasName:
+												aliasName === 'null'
+													? null
+													: aliasName
+										};
+									})
 							};
-						})
-				};
-			});
-			const sendData: FieldValues = {
-				name: values.name,
-				aliasName: values.aliasName,
-				user: values.user || '',
-				description: values.description,
-				clusterList: clusterListTemp
-			};
-			// console.log(sendData);
-			onCancel();
-			createProject(sendData)
-				.then((res) => {
-					if (res.success) {
-						notification.success({
-							message: '成功',
-							description: '项目创建成功'
 						});
-						setRefreshCluster(true);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
+						const sendData: FieldValues = {
+							name: values.name,
+							aliasName: values.aliasName,
+							user: values.user || '',
+							description: values.description,
+							clusterList: clusterListTemp
+						};
+						onCancel();
+						createProject(sendData)
+							.then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '项目创建成功'
+									});
+									setRefreshCluster(true);
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							})
+							.finally(() => {
+								onRefresh();
+							});
 					}
-				})
-				.finally(() => {
-					onRefresh();
 				});
+			} else {
+				const clusterListTemp = clusters.map((item) => {
+					const [clusterId, clusterName] = item.split('/');
+					return {
+						id: clusterId,
+						namespaceList: namespaces
+							.filter((i) => {
+								const [name, aliasName, clusterNameTemp] =
+									i.split('/');
+								if (clusterNameTemp === clusterName) return i;
+							})
+							.map((i) => {
+								const [name, aliasName] = i.split('/');
+								return {
+									name: name,
+									aliasName:
+										aliasName === 'null' ? null : aliasName
+								};
+							})
+					};
+				});
+				const sendData: FieldValues = {
+					name: values.name,
+					aliasName: values.aliasName,
+					user: values.user || '',
+					description: values.description,
+					clusterList: clusterListTemp
+				};
+				onCancel();
+				createProject(sendData)
+					.then((res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '项目创建成功'
+							});
+							setRefreshCluster(true);
+						} else {
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
+						}
+					})
+					.finally(() => {
+						onRefresh();
+					});
+			}
 		});
 	};
 	const onChange = (selectedItems: CheckboxValueType[], type: string) => {

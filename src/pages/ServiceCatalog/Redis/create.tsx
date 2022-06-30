@@ -186,6 +186,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
+	// * 创建失败返回的失败信息
+	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	useEffect(() => {
@@ -424,6 +426,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					setErrorFlag(false);
 					setCommitFlag(false);
 				} else {
+					setErrorData(res.errorMsg);
 					setSuccessFlag(false);
 					setErrorFlag(true);
 					setCommitFlag(false);
@@ -657,6 +660,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					<Result
 						status="error"
 						title="发布失败"
+						subTitle={errorData}
 						extra={
 							<Button
 								type="primary"

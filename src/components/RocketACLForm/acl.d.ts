@@ -13,7 +13,7 @@ export interface rocketMQAccount {
 }
 export interface userConfigProps {
 	ref?: any;
-	name: string;
+	name?: string;
 	userConfig: rocketMQAccount;
 	deleteUserConfigProps: (index: number) => void;
 	setUserConfig: (values: rocketMQAccount) => void;

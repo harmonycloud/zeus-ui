@@ -105,10 +105,6 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 		deleteUserConfigProps(Number(userConfig.id));
 	};
 	const changeData = (value: string | boolean | any, key: string) => {
-		setData({
-			...data,
-			[key]: value
-		});
 		if (key === 'accessKey') {
 			if (value.length > 6 && value.length <= 20) {
 				setNameState('success');
@@ -123,6 +119,10 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 				setPasswordState('error');
 			}
 		}
+		setData({
+			...data,
+			[key]: value
+		});
 	};
 	const handleSwitch = (value: boolean, type: string) => {
 		if (type === 'topic') {
@@ -239,11 +239,12 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 										<Input
 											value={data.accessKey}
 											placeholder="请输入用户名"
-											onChange={(value) =>
-												changeData(value, 'accessKey')
+											onChange={(e) =>
+												changeData(
+													e.target.value,
+													'accessKey'
+												)
 											}
-											minLength={6}
-											maxLength={20}
 										/>
 									</FormItem>
 								</Col>
@@ -259,8 +260,11 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 										<Input.Password
 											value={data.secretKey}
 											placeholder="请输入密码"
-											onChange={(value) =>
-												changeData(value, 'secretKey')
+											onChange={(e) =>
+												changeData(
+													e.target.value,
+													'secretKey'
+												)
 											}
 											minLength={6}
 											maxLength={20}
@@ -306,8 +310,11 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								}}
 								placeholder="请输入IP白名单"
 								value={data.whiteRemoteAddress}
-								onChange={(value) =>
-									changeData(value, 'whiteRemoteAddress')
+								onChange={(e) =>
+									changeData(
+										e.target.value,
+										'whiteRemoteAddress'
+									)
 								}
 								maxLength={20}
 							/>

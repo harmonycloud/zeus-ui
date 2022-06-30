@@ -5,7 +5,6 @@ import {
 	Form,
 	Input,
 	Switch,
-	Checkbox,
 	Tooltip,
 	Select,
 	Button,
@@ -24,7 +23,6 @@ import { TolerationLabelItem } from '@/components/FormTolerations/formToleration
 import {
 	getNodePort,
 	getNodeTaint,
-	getStorageClass,
 	getMiddlewareDetail,
 	postMiddleware
 } from '@/services/middleware';
@@ -40,11 +38,7 @@ import {
 import { applyBackup } from '@/services/backup';
 import Affinity from '@/components/Affinity';
 import { StoreState } from '@/types';
-import {
-	AutoCompleteOptionItem,
-	middlewareDetailProps,
-	StorageClassProps
-} from '@/types/comment';
+import { AutoCompleteOptionItem, middlewareDetailProps } from '@/types/comment';
 import pattern from '@/utils/pattern';
 import { instanceSpecList, mqDataList } from '@/utils/const';
 // * 外接动态表单相关
@@ -53,12 +47,7 @@ import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import styles from './rocketmq.module.scss';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
-import {
-	CloseCircleFilled,
-	PlusOutlined,
-	QuestionCircleOutlined
-} from '@ant-design/icons';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import ModePost from '../components/ModePost';
 import StorageQuota from '@/components/StorageQuota';
 import storage from '@/utils/storage';
@@ -78,7 +67,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const { chartName, chartVersion, aliasName, middlewareName, namespace } =
 		params;
 	const [form] = Form.useForm();
-	// const field = Field.useField();
 	const history = useHistory();
 
 	// 主机亲和
@@ -169,6 +157,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
+	// * 创建失败返回的失败信息
+	const [errorData, setErrorData] = useState<string>('');
 	// * DLedger模式节点数量
 	const [replicaCount, setReplicaCount] = useState(1);
 
@@ -211,6 +201,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			console.log(values);
 			const sendData: RMQSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -375,6 +366,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -383,6 +375,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					setErrorFlag(false);
 					setCommitFlag(false);
 				} else {
+					setErrorData(res.errorMsg);
 					setSuccessFlag(false);
 					setErrorFlag(true);
 					setCommitFlag(false);
@@ -586,6 +579,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					<Result
 						status="error"
 						title="发布失败"
+						subTitle={errorData}
 						extra={
 							<Button
 								type="primary"
@@ -1188,6 +1182,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																rules={[
 																	{
 																		min: 0.1,
+																		max: maxCpu?.max,
 																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
 																	},
@@ -1196,11 +1191,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																			true,
 																		message:
 																			'请输入自定义CPU配额，单位为Core'
-																	},
-																	{
-																		max: maxCpu?.max,
-																		type: 'number',
-																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxCpu?.max}Core）`
 																	}
 																]}
 																required
@@ -1227,6 +1217,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																rules={[
 																	{
 																		min: 0.1,
+																		max: maxMemory?.max,
 																		type: 'number',
 																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
 																	},
@@ -1235,11 +1226,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																			true,
 																		message:
 																			'请输入自定义内存配额，单位为Gi'
-																	},
-																	{
-																		max: maxMemory?.max,
-																		type: 'number',
-																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
 																	}
 																]}
 																required

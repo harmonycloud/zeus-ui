@@ -7,7 +7,8 @@ import './index.scss';
 
 const { Item: FormItem } = Form;
 function RocketACLForm(props: any): JSX.Element {
-	const { form, data } = props;
+	const { data } = props;
+	const form = Form.useFormInstance();
 	const list =
 		data?.rocketMQAccountList.map((item: any) => {
 			return {
@@ -36,6 +37,7 @@ function RocketACLForm(props: any): JSX.Element {
 	);
 	useEffect(() => {
 		if (data) {
+			console.log(data);
 			form.setFieldsValue({
 				globalWhiteRemoteAddresses: data.globalWhiteRemoteAddresses
 			});
@@ -85,8 +87,10 @@ function RocketACLForm(props: any): JSX.Element {
 				topicPerms: item.topicPerms
 			};
 		});
-
-		// field.setValue('rocketMQAccountList', list);
+		console.log(list);
+		form.setFieldsValue({
+			rocketMQAccountList: list
+		});
 	};
 	return (
 		<ul className="form-layout">
@@ -113,8 +117,6 @@ function RocketACLForm(props: any): JSX.Element {
 								<br />
 							</span>
 						}
-						// trigger={<Icon type="question-circle" size="xs" />}
-						// closable={false}
 					>
 						<QuestionCircleOutlined />
 					</Tooltip>
@@ -127,9 +129,9 @@ function RocketACLForm(props: any): JSX.Element {
 								message: '可以输入多个IP，输入字符不能超过200个'
 							}
 						]}
+						name="globalWhiteRemoteAddresses"
 					>
 						<Input
-							name="globalWhiteRemoteAddresses"
 							style={{ width: '375px' }}
 							placeholder="请输入全局IP白名单，支持输入多个IP"
 							maxLength={200}
@@ -144,9 +146,8 @@ function RocketACLForm(props: any): JSX.Element {
 				<div className="form-content">
 					{userConfigs.map((item) => {
 						return (
-							<FormItem key={item.id}>
+							<FormItem key={item.id} name="rocketMQAccountList">
 								<UserConfig
-									name="rocketMQAccountList"
 									userConfig={item}
 									deleteUserConfigProps={deleteUserConfig}
 									setUserConfig={(value) =>

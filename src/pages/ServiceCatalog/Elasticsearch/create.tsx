@@ -16,11 +16,7 @@ import {
 	Result,
 	Tag
 } from 'antd';
-import {
-	QuestionCircleOutlined,
-	PlusOutlined,
-	CloseCircleFilled
-} from '@ant-design/icons';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
 import styles from './elasticsearch.module.scss';
 import {
@@ -211,6 +207,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
+	// * 创建失败返回的失败信息
+	const [errorData, setErrorData] = useState<string>('');
 
 	const handleSubmit = () => {
 		console.log(globalNamespace.name);
@@ -341,6 +339,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					setErrorFlag(false);
 					setCommitFlag(false);
 				} else {
+					setErrorData(res.errorMsg);
 					setSuccessFlag(false);
 					setErrorFlag(true);
 					setCommitFlag(false);
@@ -699,6 +698,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					<Result
 						status="error"
 						title="发布失败"
+						subTitle={errorData}
 						extra={
 							<Button
 								type="primary"
