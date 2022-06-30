@@ -205,7 +205,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									marginRight: '16px',
 									width: '100px'
 								},
-								options: middlewares.map((item) => {
+								options: middlewares?.map((item) => {
 									return {
 										label: item.name,
 										value: item.name
@@ -378,7 +378,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 														]);
 													}}
 												>
-													{dataType.map(
+													{dataType?.map(
 														(item: any) => {
 															return (
 																<Select.Option
@@ -602,7 +602,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 												: ''}
 											{formData.rule !== 'now'
 												? formData.cycle
-														.map(
+														?.map(
 															(item: string) =>
 																weekMap[item]
 														)
@@ -667,7 +667,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 												}}
 												style={{ width: '150px' }}
 											>
-												{addressList.map(
+												{addressList?.map(
 													(item: any) => {
 														return (
 															<Select.Option
@@ -760,7 +760,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				<h2>数据源类型</h2>
 				{!isStep ? (
 					<div className="cards">
-						{middlewares.map((item) => {
+						{middlewares?.map((item) => {
 							return (
 								<div key={item.id} className="card-box">
 									<div
@@ -786,7 +786,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				) : (
 					<>
 						<Steps current={current}>
-							{steps.map((item) => (
+							{steps?.map((item) => (
 								<Step key={item.title} title={item.title} />
 							))}
 						</Steps>
