@@ -696,7 +696,7 @@ function CreateAlarm(): JSX.Element {
 											value={item.id}
 											key={item.id}
 										>
-											{item.name}
+											{item.nickname || item.name}
 										</Select.Option>
 									);
 								})}

@@ -123,10 +123,15 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	};
 
 	const prev = () => {
-		setCurrent(current - 1);
+		if (current === 1) {
+			form.validateFields().then((values) => {
+				setFormData(values);
+			});
+		}
 		if (current === 2) {
 			setFormWayData(formWay.getFieldsValue());
 		}
+		setCurrent(current - 1);
 	};
 
 	useEffect(() => {
@@ -317,55 +322,82 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								</RadioGroup>
 							</Form.Item>
 							{backupWay === 'time' ? (
-								<Form.Item
-									label="备份保留时间"
-									name="retentionTime"
-									rules={[
-										{
-											required: true,
-											message: '备份保留时间不能为空'
-										},
-										{
-											max: dataType.find(
-												(item: any) =>
-													item.value === dataSelect
-											)?.max,
-											type: 'number',
-											message: '保留时间最长为10年'
-										},
-										{
-											min: 0,
-											type: 'number',
-											message: '保留时间不能小于0'
-										}
-									]}
-								>
-									<InputNumber
-										type="inline"
-										addonAfter={
-											<Select
-												value={dataSelect}
-												onChange={(value) => {
-													setDataSelect(value);
-													form.validateFields([
-														'dateUnit'
-													]);
-												}}
-											>
-												{dataType.map((item: any) => {
-													return (
-														<Select.Option
-															key={item.value}
-															value={item.value}
-														>
-															{item.label}
-														</Select.Option>
-													);
-												})}
-											</Select>
-										}
-									/>
-								</Form.Item>
+								selectedRow.type === 'mysql' ? (
+									<Form.Item
+										label="备份保留个数"
+										name="limitRecord"
+										rules={[
+											{
+												required: true,
+												message: '备份保留个数不能为空'
+											},
+											{
+												min: 1,
+												type: 'number',
+												message: '保留个数不能小于1'
+											}
+										]}
+									>
+										<InputNumber style={{ width: 160 }} />
+									</Form.Item>
+								) : (
+									<Form.Item
+										label="备份保留时间"
+										name="retentionTime"
+										rules={[
+											{
+												required: true,
+												message: '备份保留时间不能为空'
+											},
+											{
+												max: dataType.find(
+													(item: any) =>
+														item.value ===
+														dataSelect
+												)?.max,
+												type: 'number',
+												message: '保留时间最长为10年'
+											},
+											{
+												min: 0,
+												type: 'number',
+												message: '保留时间不能小于0'
+											}
+										]}
+									>
+										<InputNumber
+											type="inline"
+											addonAfter={
+												<Select
+													value={dataSelect}
+													onChange={(value) => {
+														setDataSelect(value);
+														form.validateFields([
+															'dateUnit'
+														]);
+													}}
+												>
+													{dataType.map(
+														(item: any) => {
+															return (
+																<Select.Option
+																	key={
+																		item.value
+																	}
+																	value={
+																		item.value
+																	}
+																>
+																	{item.label}
+																</Select.Option>
+															);
+														}
+													)}
+												</Select>
+											}
+										/>
+									</Form.Item>
+								)
 							) : (
 								<Form.Item
 									label="备份规则"
@@ -678,9 +710,13 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				// 				3,
 				// 				5
 				// 		  )} ${formData.time.substring(0, 2)} ? ? ${week}`
-				cron: formData.rule !== 'now' ? cron : '',
-				retentionTime: formData.retentionTime
+				cron: formData.rule !== 'now' ? cron : ''
 			};
+			if (selectedRow.type === 'mysql') {
+				sendData.limitRecord = formData.limitRecord;
+			} else {
+				sendData.retentionTime = formData.retentionTime;
+			}
 			if (formData.retentionTime) {
 				sendData.dateUnit = dataSelect;
 			}
