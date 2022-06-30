@@ -91,8 +91,9 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			storage.getLocal('token') &&
 			!window.location.href.includes('terminal')
 		) {
-			getUserInfo().then(() => {
-				getMenus().then(() => {
+			getUserInfo().then((res) => {
+				const proId = res.userRoleList[0].projectId;
+				getMenus(proId).then(() => {
 					getProjectList();
 				});
 			});
@@ -118,11 +119,13 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			setNickName(res.data.aliasName);
 			setRole(res.data);
 			storage.setLocal('role', JSON.stringify(res.data));
+			return res.data;
 		} else {
 			notification.error({
 				message: '失败',
 				description: res.errorMsg
 			});
+			return null;
 		}
 	};
 
@@ -224,8 +227,8 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		}
 	};
 
-	const getMenus = async () => {
-		const res = await getMenu();
+	const getMenus = async (projectId: string) => {
+		const res = await getMenu({ projectId });
 		if (res.success) {
 			const its = res.data.map((item: ResMenuItem) => {
 				if (item.subMenu) {
