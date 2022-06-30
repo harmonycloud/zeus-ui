@@ -322,7 +322,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								</RadioGroup>
 							</Form.Item>
 							{backupWay === 'time' ? (
-								selectedRow.type === 'mysql' ? (
+								params.type === 'mysql' ||
+								selectedRow?.type === 'mysql' ? (
 									<Form.Item
 										label="备份保留个数"
 										name="limitRecord"
@@ -712,7 +713,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				// 		  )} ${formData.time.substring(0, 2)} ? ? ${week}`
 				cron: formData.rule !== 'now' ? cron : ''
 			};
-			if (selectedRow.type === 'mysql') {
+			if (params.type === 'mysql' || selectedRow?.type === 'mysql') {
 				sendData.limitRecord = formData.limitRecord;
 			} else {
 				sendData.retentionTime = formData.retentionTime;
