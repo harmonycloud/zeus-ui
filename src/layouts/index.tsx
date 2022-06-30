@@ -93,12 +93,22 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		) {
 			getUserInfo().then((res) => {
 				const proId = res.userRoleList[0].projectId;
-				getMenus(proId).then(() => {
-					getProjectList();
+				const jsonLocalProject = storage.getLocal('project');
+				const sendProId =
+					jsonLocalProject !== ''
+						? JSON.parse(jsonLocalProject).projectId
+						: proId;
+				getMenus(sendProId).then(() => {
+					getProjectList(res);
 				});
 			});
 		}
 	}, []);
+	useEffect(() => {
+		if (currentProject) {
+			getMenus(currentProject.projectId);
+		}
+	}, [currentProject]);
 	useEffect(() => {
 		if (currentProject && currentCluster) {
 			getMenuMid(currentProject.projectId, currentCluster.id);
@@ -107,8 +117,8 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		}
 	}, [currentCluster]);
 	useEffect(() => {
-		if (flag) {
-			getProjectList();
+		if (flag && role) {
+			getProjectList(role);
 			setRefreshCluster(false);
 		}
 	}, [flag]);
@@ -129,7 +139,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		}
 	};
 
-	const getProjectList = async () => {
+	const getProjectList = async (role: User) => {
 		const res = await getProjects({ key: '' });
 		if (res.success) {
 			if (res.data.length > 0) {
@@ -151,10 +161,27 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					getClusterList(localProjectTemp.projectId);
 					setProject(localProjectTemp); // * 将当前的项目详情设置到redux中
 				} else {
-					setCurrentProject(res.data[0]);
-					setProject(res.data[0]); // * 将当前的项目详情设置到redux中
-					getClusterList(res.data[0].projectId);
-					storage.setLocal('project', JSON.stringify(res.data[0]));
+					if (role.isAdmin) {
+						// * 当用户为管理员时，当前项目默认选取项目列表第一个
+						setCurrentProject(res.data[0]);
+						setProject(res.data[0]); // * 将当前的项目详情设置到redux中
+						getClusterList(res.data[0].projectId);
+						storage.setLocal(
+							'project',
+							JSON.stringify(res.data[0])
+						);
+					} else {
+						// * 当用户为非管理员时，当前项目默认选择 用户信息中权限列表的第一项
+						const cup = res.data.find(
+							(item: any) =>
+								item.projectId ===
+								role.userRoleList[0].projectId
+						);
+						setCurrentProject(cup);
+						setProject(cup); // * 将当前的项目详情设置到redux中
+						getClusterList(cup.projectId);
+						storage.setLocal('project', JSON.stringify(cup));
+					}
 				}
 			} else {
 				setCurrentProject(undefined);
