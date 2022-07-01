@@ -1309,10 +1309,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																				type: 'number',
 																				min: 0.1,
 																				...maxCpu,
-																				message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
-																					maxCpu?.max ||
-																					''
-																				}Core）`
+																				message: `最小为0.1`
 																			}
 																		]}
 																		name="cpu"
