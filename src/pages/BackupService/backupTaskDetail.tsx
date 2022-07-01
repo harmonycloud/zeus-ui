@@ -196,7 +196,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				history.push(
 					`/serviceList/mysql/MySQL/mysqlCreate/${
 						middlewareInfo?.chartVersion
-					}/${record.sourceName}/${record.backupFileName}/${
+					}/${record.sourceName}/backup/${record.backupFileName}/${
 						storage.getLocal('backupDetail').namespace
 					}`
 				);
