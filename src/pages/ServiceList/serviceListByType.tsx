@@ -135,6 +135,10 @@ const ServiceListByType = (props: serviceListProps) => {
 					});
 				}
 			});
+		}
+	}, [cluster]);
+	useEffect(() => {
+		if (JSON.stringify(cluster) !== '{}') {
 			getCanReleaseMiddleware({
 				clusterId: cluster.id,
 				type: name
@@ -149,7 +153,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				}
 			});
 		}
-	}, [cluster]);
+	}, [cluster, name]);
 	useEffect(() => {
 		let mounted = true;
 		if (
