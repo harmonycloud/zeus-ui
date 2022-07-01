@@ -250,6 +250,7 @@ function AddForm(props: addFormProps): JSX.Element {
 							label="Apiserver地址"
 							style={{ marginBottom: 0 }}
 							name="apiserver"
+							required
 						>
 							<Row>
 								<Col span={6}>
@@ -317,6 +318,7 @@ function AddForm(props: addFormProps): JSX.Element {
 						</FormItem>
 						<FormItem
 							label="AdminConfig"
+							required
 							style={{ marginBottom: 0 }}
 						>
 							<FormItem
