@@ -60,21 +60,22 @@ const LvmInstallForm = (props: LvmInstallFormProps) => {
 					name="vgName"
 					label="vg名称"
 					required
+					initialValue="vg_middleware"
 					rules={[{ required: true, message: 'vg名称必填' }]}
 				>
-					<Input defaultValue="vg_middleware" />
+					<Input />
 				</Form.Item>
 				<Form.Item
 					name="size"
 					label="配额"
 					required
+					initialValue={100}
 					rules={[{ required: true, message: '配额必填' }]}
 				>
 					<InputNumber
 						type="inline"
 						style={{ width: '100%' }}
 						min={1}
-						defaultValue={100}
 					/>
 				</Form.Item>
 			</Form>
