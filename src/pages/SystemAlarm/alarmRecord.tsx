@@ -47,7 +47,7 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 			if (alarmType === 'system') {
 				setFilters(
 					res.data.map((item: poolListItem) => {
-						return { text: item.id, value: item.id };
+						return { text: item.nickname, value: item.id };
 					})
 				);
 			}
@@ -201,18 +201,20 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 				width={180}
 				render={nullRender}
 			/>
-			<ProTable.Column
-				title="告警对象"
-				dataIndex="clusterId"
-				render={nameRender}
-				filters={filters}
-				width={160}
-				// filterMode={filterMode}
-				filterMultiple={false}
-				onFilter={(value, record: ServiceRuleItem) =>
-					value === record.clusterId
-				}
-			/>
+			{alarmType === 'system' ? (
+				<ProTable.Column
+					title="告警对象"
+					dataIndex="nickname"
+					render={nameRender}
+					filters={filters}
+					width={160}
+					// filterMode={filterMode}
+					filterMultiple={false}
+					onFilter={(value, record: ServiceRuleItem) =>
+						value === record.clusterId
+					}
+				/>
+			) : null}
 			<ProTable.Column
 				title="规则描述"
 				dataIndex="expr"

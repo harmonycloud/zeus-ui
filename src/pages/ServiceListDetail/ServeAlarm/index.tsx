@@ -62,7 +62,7 @@ function Rules(props: RuleProps): JSX.Element {
 			if (!res.data) return;
 			setPoolList(
 				res.data.map((item: any) => {
-					return { text: item.id, value: item.id };
+					return { text: item.nickname, value: item.id };
 				})
 			);
 		});
@@ -237,7 +237,7 @@ function Rules(props: RuleProps): JSX.Element {
 		return (
 			<span>
 				{alarmType === 'system'
-					? record.labels?.clusterId
+					? value
 					: clusterId +
 					  '/' +
 					  namespace +
@@ -428,27 +428,30 @@ function Rules(props: RuleProps): JSX.Element {
 			// onFilter={onFilter}
 		>
 			<ProTable.Column title="规则ID" dataIndex="alertId" width={100} />
-			{alarmType === 'system' ? (
-				<ProTable.Column
-					filters={poolList}
-					// filterMode="single"
-					filterMultiple={false}
-					onFilter={(value, record: ServiceRuleItem) =>
-						value === record.name
-					}
-					render={nameRender}
-					title="告警对象"
-					ellipsis
-					dataIndex="name"
-				/>
-			) : (
-				<ProTable.Column
-					render={nameRender}
-					title="告警对象"
-					ellipsis
-					dataIndex="name"
-				/>
-			)}
+			{
+				alarmType === 'system' ? (
+					<ProTable.Column
+						filters={poolList}
+						// filterMode="single"
+						filterMultiple={false}
+						onFilter={(value, record: ServiceRuleItem) =>
+							value === record.name
+						}
+						render={nameRender}
+						title="告警对象"
+						ellipsis
+						dataIndex="nickname"
+					/>
+				) : null
+				// (
+				// 	<ProTable.Column
+				// 		render={nameRender}
+				// 		title="告警对象"
+				// 		ellipsis
+				// 		dataIndex="name"
+				// 	/>
+				// )
+			}
 			<ProTable.Column
 				title="告警规则"
 				dataIndex="threshold"

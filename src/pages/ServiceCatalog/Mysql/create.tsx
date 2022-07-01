@@ -252,6 +252,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [project, globalNamespace]);
 
 	useEffect(() => {
+		console.log(globalNamespace);
+
 		if (globalNamespace.quotas) {
 			const cpuMax =
 				Number(globalNamespace.quotas.cpu[1]) -
