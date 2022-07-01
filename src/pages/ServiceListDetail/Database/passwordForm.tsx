@@ -178,6 +178,7 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 					label="新密码二次确认"
 					labelAlign="left"
 					// asterisk={false}]
+					name="confirmPassword"
 					rules={[
 						{
 							required: true,
@@ -187,7 +188,6 @@ export default function PasswordForm(props: FormProps): JSX.Element {
 					// className="ne-required-ingress"
 				>
 					<Input.Password
-						name="confirmPassword"
 						onChange={(e) => handleChange(e.target.value, 'reNew')}
 					/>
 				</FormItem>
