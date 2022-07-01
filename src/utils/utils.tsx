@@ -88,7 +88,7 @@ export const statusBackupRender: (
 		case 'Success':
 			return <Badge status="success" text="成功" />;
 		case 'Creating':
-			return <Badge status="processing" text="成功" />;
+			return <Badge status="processing" text="创建中" />;
 		default:
 			return <Badge status="default" text="未知" />;
 	}
