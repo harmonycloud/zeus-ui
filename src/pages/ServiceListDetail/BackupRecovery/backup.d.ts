@@ -14,4 +14,5 @@ export interface BackupRecordItem {
 	phrase: string;
 	podRole: string;
 	sourceName: string;
+	index: number;
 }

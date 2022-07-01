@@ -10,7 +10,7 @@ import {
 	deleteBackupTasks,
 	getServiceList
 } from '@/services/backup';
-import { statusBackupRender, nameRender } from '@/utils/utils';
+import { statusBackupRender } from '@/utils/utils';
 import { backupTaskStatus } from '@/utils/const';
 import storage from '@/utils/storage';
 import { BackupRecordItem } from './backup';
@@ -55,11 +55,19 @@ export default function List(props: any): JSX.Element {
 		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
+					const data = res.data.map((item: any) => {
+						if (item.status === 'Deleted' || !item.status) {
+							item.index = 1;
+							return item;
+						} else {
+							item.index = 0;
+							return item;
+						}
+					});
 					setBackups(
-						res.data.sort(
+						data.sort(
 							(a: BackupRecordItem, b: BackupRecordItem) =>
-								moment(b['backupTime']).valueOf() -
-								moment(a['backupTime']).valueOf()
+								a.index - b.index
 						)
 					);
 				} else {
@@ -86,6 +94,8 @@ export default function List(props: any): JSX.Element {
 					type="link"
 					onClick={(e) => {
 						e.stopPropagation();
+						if (record.status === 'Deleted' || !record.status)
+							return;
 						confirm({
 							title: '操作确认',
 							content: '备份任务删除后将无法恢复，请确认执行',
@@ -160,6 +170,29 @@ export default function List(props: any): JSX.Element {
 		)
 	};
 
+	const taskNameRender = (value: string, record: any, index: number) => {
+		return (
+			<span
+				className="name-link"
+				onClick={() => {
+					if (record.status === 'Deleted' || !record.status) return;
+					if (params.type) {
+						history.push(
+							`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
+						);
+					} else {
+						history.push(
+							`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
+						);
+					}
+					storage.setLocal('backupDetail', record);
+				}}
+			>
+				{value}
+			</span>
+		);
+	};
+
 	return (
 		<div>
 			<ProTable
@@ -179,29 +212,29 @@ export default function List(props: any): JSX.Element {
 						? 'disabled'
 						: ''
 				}
-				onRow={(record: any) => {
-					return {
-						onClick: () => {
-							if (record.status === 'Deleted' || !record.status)
-								return;
-							if (params.type) {
-								history.push(
-									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
-								);
-							} else {
-								history.push(
-									`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
-								);
-							}
-							storage.setLocal('backupDetail', record);
-						}
-					};
-				}}
+				// onRow={(record: any) => {
+				// 	return {
+				// 		onClick: () => {
+				// 			if (record.status === 'Deleted' || !record.status)
+				// 				return;
+				// 			if (params.type) {
+				// 				history.push(
+				// 					`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
+				// 				);
+				// 			} else {
+				// 				history.push(
+				// 					`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
+				// 				);
+				// 			}
+				// 			storage.setLocal('backupDetail', record);
+				// 		}
+				// 	};
+				// }}
 			>
 				<ProTable.Column
 					title="备份任务名称"
 					dataIndex="taskName"
-					render={nameRender}
+					render={taskNameRender}
 					width={160}
 				/>
 				{/* <ProTable.Column
