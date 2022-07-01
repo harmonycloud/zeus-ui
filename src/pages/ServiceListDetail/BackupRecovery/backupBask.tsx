@@ -175,12 +175,15 @@ export default function List(props: any): JSX.Element {
 					style: { width: '360px' }
 				}}
 				rowClassName={(record: any) =>
-					record.status === 'Deleted' ? 'disabled' : ''
+					record.status === 'Deleted' || !record.status
+						? 'disabled'
+						: ''
 				}
 				onRow={(record: any) => {
 					return {
 						onClick: () => {
-							if (record.status === 'Deleted') return;
+							if (record.status === 'Deleted' || !record.status)
+								return;
 							if (params.type) {
 								history.push(
 									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
