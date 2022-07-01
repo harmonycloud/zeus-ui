@@ -208,7 +208,7 @@
 		margin-top: 16px;
 		width: 46px;
 		min-height: 113px;
-		background: #0064c8;
+		background: $primary-color;
 	}
 }
 .component-plugging-content {
@@ -282,8 +282,8 @@
 		&::before {
 			margin-right: 4px;
 			content: '*';
-			color: #c80000;
-			color: var(--form-error-color, #c80000);
+			color: #ff4d4f;
+			color: var(--form-error-color, #ff4d4f);
 		}
 		vertical-align: top;
 	}

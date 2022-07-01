@@ -141,14 +141,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 							</FormItem>
 						</Col>
 						<Col span={6}>
-							<FormItem
-								{...formItemLayout2}
-								required
-								name="port"
-								rules={[
-									{ required: true, message: '请输入端口' }
-								]}
-							>
+							<FormItem {...formItemLayout2} name="port">
 								<InputNumber placeholder="端口" />
 							</FormItem>
 						</Col>

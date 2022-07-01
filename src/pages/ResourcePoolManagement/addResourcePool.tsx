@@ -375,6 +375,11 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 									</div>
 									<div
 										className="quick-model-copy"
+										style={{
+											background: command
+												? '#226ee7'
+												: '#8a8a8a'
+										}}
 										onClick={copyValue}
 									>
 										<IconFont
