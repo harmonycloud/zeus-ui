@@ -468,6 +468,7 @@ export interface consoleProps {
 	onCancel: () => void;
 	containers: string[];
 	data: ConsoleDataProps;
+	currentContainer: string;
 }
 export interface LogFileItem {
 	logPath: string;
