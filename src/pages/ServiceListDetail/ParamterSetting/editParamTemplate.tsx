@@ -72,6 +72,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	useEffect(() => {
 		let timer: any = null;
 		if (current === 0) {
+			console.log(param);
 			console.log(form.getFieldsValue());
 		}
 		if (current === 2 || current === 3) {
@@ -173,6 +174,13 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	]);
 	const goLast = () => {
 		setCurrent(current - 1);
+		if (current - 1 === 0) {
+			console.log(param);
+			form.setFieldsValue({
+				name: param.name,
+				description: param.description
+			});
+		}
 	};
 	const goNext = () => {
 		if (current === 0) {
