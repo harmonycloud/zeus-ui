@@ -725,3 +725,6 @@ table.table-list tbody .ant-space-item label span tr span:nth-child(1) {
 	margin-top: 0px !important;
 	margin-bottom: 0px !important;
 }
+.CodeMirror-gutter-wrapper {
+	left: -32px !important;
+}

@@ -120,6 +120,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		}
 	}, [uid]);
 	useEffect(() => {
+		console.log(props.param);
 		form.setFieldsValue({
 			name: param.name,
 			description: param.description
