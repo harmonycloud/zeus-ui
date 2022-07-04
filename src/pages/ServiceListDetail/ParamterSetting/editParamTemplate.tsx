@@ -73,7 +73,10 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		let timer: any = null;
 		if (current === 0) {
 			console.log(param);
-			console.log(form.getFieldsValue());
+			form.setFieldsValue({
+				name: param.name,
+				description: param.description
+			});
 		}
 		if (current === 2 || current === 3) {
 			if (countdown !== -1) {
@@ -119,13 +122,13 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 			});
 		}
 	}, [uid]);
-	useEffect(() => {
-		console.log(props.param);
-		form.setFieldsValue({
-			name: param.name,
-			description: param.description
-		});
-	}, [props.param]);
+	// useEffect(() => {
+	// 	console.log(props.param);
+	// 	form.setFieldsValue({
+	// 		name: param.name,
+	// 		description: param.description
+	// 	});
+	// }, [props.param]);
 	useEffect(() => {
 		const content =
 			document.getElementsByClassName('windcc-app-layout__content')[0]
