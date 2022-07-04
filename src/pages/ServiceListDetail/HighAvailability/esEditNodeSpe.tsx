@@ -5,6 +5,7 @@ import TableRadio from '../../ServiceCatalog/components/TableRadio/index';
 import { EsNodeProps, EsSendDataProps } from '../detail';
 import styles from './esEdit.module.scss';
 import { ArrowUpOutlined } from '@ant-design/icons';
+import { esDataList } from '@/utils/const';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -132,21 +133,6 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 
 	const [form] = Form.useForm();
 
-	const formHandle = (obj: any, item: any) => {
-		if (
-			['cpu', 'memory', 'storageClassName', 'storageClassQuota'].indexOf(
-				item.name
-			) > -1
-		) {
-			const temp = nodeObj[nodeModify.nodeName];
-			temp[item.name] = item.value;
-			setNodeObj({
-				...nodeObj,
-				[nodeModify.nodeName]: temp
-			});
-		}
-	};
-
 	const modifyQuota = (key: string) => {
 		setNodeModify({
 			nodeName: key,
@@ -154,14 +140,14 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 		});
 		setNodeNum(nodeObj[key].num);
 		setSpecId(nodeObj[key].specId);
-		if (nodeObj[key].specId === '') {
+		if (nodeObj[key].specId) {
+			setInstanceSpec('General');
+		} else {
 			setInstanceSpec('Customize');
 			form.setFieldsValue({
 				cpu: nodeObj[key].cpu,
 				memory: nodeObj[key].memory
 			});
-		} else {
-			setInstanceSpec('General');
 		}
 		form.setFieldsValue({
 			storageClassName: nodeObj[key].storageClassName,
@@ -173,6 +159,8 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 		if (instanceSpec === 'Customize') {
 			setSpecId('');
 			const temp = nodeObj[key];
+			temp.cpu = form.getFieldsValue().cpu;
+			temp.memory = form.getFieldsValue().memory;
 			temp.specId = '';
 			setNodeObj({
 				...nodeObj,
@@ -219,20 +207,22 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 	};
 
 	const onOk = () => {
-		form.validateFields().then((values) => {
+		if (nodeModify.flag) {
+			putAway(nodeModify.nodeName);
+		}
+		form.validateFields().then(() => {
 			const sendData: EsSendDataProps = {};
 			if (nodeObj) {
 				sendData.quota = {};
 				for (const key in nodeObj) {
 					if (!nodeObj[key].disabled) {
 						sendData.quota[key] = {
-							...nodeObj[key],
-							storageClassName: nodeObj[key].storageClass,
-							storageClassQuota: nodeObj[key].storageQuota
+							...nodeObj[key]
 						};
 					}
 				}
 			}
+			// console.log(sendData);
 			onCreate(sendData);
 		});
 	};
@@ -245,7 +235,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 			onCancel={onCancel}
 			width={1100}
 		>
-			<Form {...formItemLayout} form={form} onFieldsChange={formHandle}>
+			<Form {...formItemLayout} form={form}>
 				<div className={styles['spec-config']}>
 					<ul className="form-layout">
 						<li className="display-flex form-li">
@@ -355,13 +345,16 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																	'' && (
 																	<li>
 																		<span>
-																			{
+																			{`${
+																				nodeObj[
+																					key
+																				]
+																					.storageClassAliasName ||
 																				nodeObj[
 																					key
 																				]
 																					.storageClassName
-																			}
-																			：
+																			}：`}
 																		</span>
 																		<span>
 																			{
@@ -464,6 +457,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 											>
 												<TableRadio
 													id={specId}
+													dataList={esDataList}
 													onCallBack={(value) =>
 														checkGeneral(
 															value as string
@@ -497,19 +491,19 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																			'请输入自定义CPU配额，单位为Core'
 																	}
 																]}
+																initialValue={
+																	dataes
+																		.quota[
+																		nodeModify
+																			.nodeName
+																	].cpu
+																}
 															>
 																<InputNumber
 																	style={{
 																		width: '100%'
 																	}}
 																	step={0.1}
-																	value={
-																		dataes
-																			.quota[
-																			nodeModify
-																				.nodeName
-																		].cpu
-																	}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
 															</FormItem>
@@ -533,19 +527,19 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																			'请输入自定义内存配额，单位为GB'
 																	}
 																]}
+																initialValue={
+																	dataes
+																		.quota[
+																		nodeModify
+																			.nodeName
+																	].memory
+																}
 															>
 																<InputNumber
 																	style={{
 																		width: '100%'
 																	}}
 																	step={0.1}
-																	value={
-																		dataes
-																			.quota[
-																			nodeModify
-																				.nodeName
-																		].memory
-																	}
 																	placeholder="请输入自定义内存配额，单位为GB"
 																/>
 															</FormItem>
@@ -564,45 +558,32 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 										<div
 											className={`form-content display-flex`}
 										>
-											<FormItem
-												required
-												name="storageClassName"
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择存储类型'
-													}
-												]}
+											<Select
+												style={{
+													marginRight: 8,
+													width: '120px'
+												}}
+												disabled
+												value={
+													dataes.quota[
+														nodeModify.nodeName
+													].storageClassName
+												}
 											>
-												<Select
-													style={{
-														marginRight: 8
-													}}
-													disabled
+												<Option
 													value={
 														dataes.quota[
 															nodeModify.nodeName
 														].storageClassName
 													}
 												>
-													<Option
-														value={
-															dataes.quota[
-																nodeModify
-																	.nodeName
-															].storageClassName
-														}
-													>
-														{
-															dataes.quota[
-																nodeModify
-																	.nodeName
-															].storageClassName
-														}
-													</Option>
-												</Select>
-											</FormItem>
+													{
+														dataes.quota[
+															nodeModify.nodeName
+														].storageClassName
+													}
+												</Option>
+											</Select>
 											{/* <FormItem
 												pattern={pattern.posInt}
 												patternMessage="请输入正整数"
