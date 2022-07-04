@@ -47,6 +47,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [switchValue, setSwitchValue] = useState<boolean>(true);
 	const [podVisible, setPodVisible] = useState<boolean>(false);
 	const [containers, setContainers] = useState<string[]>([]);
+	const [currentContainer, setCurrentContainer] = useState<string>('');
 	const [consoleData, setConsoleData] = useState<ConsoleDataProps>();
 	// * 其他默认中间件修改阶段规格
 	const [visible, setVisible] = useState<boolean>(false);
@@ -159,6 +160,18 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			clusterId: clusterId,
 			type: data.type
 		};
+		console.log(record);
+		if (data.type == 'mysql') {
+			setCurrentContainer('mysql');
+		} else if (data.type === 'redis') {
+			if (record.role === 'master' || record.role === 'slave') {
+				setCurrentContainer('redis-cluster');
+			} else {
+				setCurrentContainer('sentinel');
+			}
+		} else {
+			setCurrentContainer(strArr[0]);
+		}
 		setContainers(strArr);
 		setConsoleData(consoleDataTemp);
 		setPodVisible(true);
@@ -643,6 +656,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					data={consoleData}
 					onCancel={() => setPodVisible(false)}
 					containers={containers}
+					currentContainer={currentContainer}
 				/>
 			)}
 			{yamlVisible && podData && (

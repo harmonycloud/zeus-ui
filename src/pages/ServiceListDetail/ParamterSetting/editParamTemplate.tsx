@@ -71,6 +71,10 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 	}, []);
 	useEffect(() => {
 		let timer: any = null;
+		if (current === 0) {
+			console.log(param);
+			console.log(form.getFieldsValue());
+		}
 		if (current === 2 || current === 3) {
 			if (countdown !== -1) {
 				let count = countdown;
@@ -116,6 +120,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		}
 	}, [uid]);
 	useEffect(() => {
+		console.log(props.param);
 		form.setFieldsValue({
 			name: param.name,
 			description: param.description
@@ -168,6 +173,16 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		document.getElementsByClassName('param-step-one-content')[0]
 			?.clientHeight
 	]);
+	const goLast = () => {
+		setCurrent(current - 1);
+		if (current - 1 === 0) {
+			console.log(param);
+			form.setFieldsValue({
+				name: param.name,
+				description: param.description
+			});
+		}
+	};
 	const goNext = () => {
 		if (current === 0) {
 			form.validateFields().then((values) => {
@@ -229,8 +244,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						className="param-step-one-content"
 					>
 						<Form
-							{...formItemLayout614}
 							form={form}
+							{...formItemLayout614}
 							labelAlign="left"
 							style={{ paddingLeft: 8, width: '50%' }}
 						>
@@ -369,7 +384,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				<Steps
 					style={{ marginBottom: 32 }}
 					current={current}
-					// shape="circle"
 					labelPlacement="horizontal"
 				>
 					<Step key={0} title="基础信息" />
@@ -391,7 +405,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 							<Button
 								disabled={btnDisable}
 								type="default"
-								onClick={() => setCurrent(current - 1)}
+								onClick={goLast}
 							>
 								上一步
 							</Button>

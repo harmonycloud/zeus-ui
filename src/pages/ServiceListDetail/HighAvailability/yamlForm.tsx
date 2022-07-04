@@ -58,7 +58,8 @@ const YamlForm = (props: yamlFormProps) => {
 						mode: 'yaml',
 						theme: 'twilight',
 						lineNumbers: true,
-						readOnly: true
+						readOnly: true,
+						lineWrapping: true
 					}}
 					// onBeforeChange={(editor, data, value) => {
 					// 	setValue(value);

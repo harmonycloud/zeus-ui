@@ -27,15 +27,9 @@ const mysqlDatabaseContainer: string[] = ['mysql'];
 const redisDatabaseContainer: string[] = ['redis-cluster'];
 export default function Console(props: consoleProps): JSX.Element {
 	const [form] = Form.useForm();
-	const { visible, onCancel, containers, data } = props;
+	const { visible, onCancel, containers, data, currentContainer } = props;
 	const [source, setSource] = useState<string>('container');
-	const [container, setContainer] = useState<string>(
-		data.type === 'mysql'
-			? mysqlDatabaseContainer[0]
-			: data.type === 'redis'
-			? redisDatabaseContainer[0]
-			: containers[0]
-	);
+	const [container, setContainer] = useState<string>(currentContainer);
 	// const field = Field.useField();
 	const onOk = () => {
 		const values: valuesProps = form.getFieldsValue();
@@ -134,7 +128,9 @@ export default function Console(props: consoleProps): JSX.Element {
 			// style={{ width: '400px' }}
 		>
 			<Form labelAlign="left" {...formItemLayout} form={form}>
-				{(data.type === 'mysql' || data.type === 'redis') && (
+				{(data.type === 'mysql' ||
+					(data.type === 'redis' &&
+						currentContainer !== 'sentinel')) && (
 					<FormItem name="source" initialValue={'container'}>
 						<RadioGroup
 							options={list}
