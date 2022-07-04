@@ -94,8 +94,6 @@ export default function List(props: any): JSX.Element {
 					type="link"
 					onClick={(e) => {
 						e.stopPropagation();
-						if (record.status === 'Deleted' || !record.status)
-							return;
 						confirm({
 							title: '操作确认',
 							content: '备份任务删除后将无法恢复，请确认执行',

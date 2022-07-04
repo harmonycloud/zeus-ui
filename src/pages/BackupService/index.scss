@@ -141,7 +141,9 @@ h2 {
 .ant-table-row.disabled{
 	background-color: #fafafa;
 	color: #ccc;
-	.name-link{
-		color: #ccc;
+	td:first-of-type{
+		.name-link{
+			color: #ccc;
+		}
 	}
 }
