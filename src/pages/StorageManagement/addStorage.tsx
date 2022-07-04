@@ -210,7 +210,8 @@ export default function AddStorage(): JSX.Element {
 								disabled={params.name ? true : false}
 								onChange={handleChange}
 								defaultValue={
-									storages.length === 0 && '无未接入的存储'
+									storages.length === 0 &&
+									'暂不存在未接入的存储'
 								}
 							>
 								{storages.length > 0 &&
