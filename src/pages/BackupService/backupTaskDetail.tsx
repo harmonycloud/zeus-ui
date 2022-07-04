@@ -91,7 +91,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 										: '0' +
 										  val.split('* *')[0].split(' ')[1]
 							  }:${
-									Number(val.split('* *')[0].split(' ')[0]) <=
+									Number(val.split('* *')[0].split(' ')[0]) <
 									10
 										? '0' +
 										  val.split('* *')[0].split(' ')[0]
