@@ -1135,18 +1135,13 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																	{
 																		min: 0.1,
 																		type: 'number',
-																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
+																		message: `最小为0.1`
 																	},
 																	{
 																		required:
 																			true,
 																		message:
 																			'请输入自定义内存配额，单位为Gi'
-																	},
-																	{
-																		max: maxMemory?.max,
-																		type: 'number',
-																		message: `最小为0.1,不能超过当前分区配额剩余的最大值（${maxMemory?.max}Gi`
 																	}
 																]}
 																required

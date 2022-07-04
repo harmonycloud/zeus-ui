@@ -1344,11 +1344,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																			{
 																				type: 'number',
 																				min: 0.1,
-																				...maxMemory,
-																				message: `最小为0.1,不能超过当前分区配额剩余的最大值（${
-																					maxMemory?.max ||
-																					''
-																				}Gi`
+																				message: `最小为0.1`
 																			}
 																		]}
 																		name="memory"
