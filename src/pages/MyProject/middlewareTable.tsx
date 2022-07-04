@@ -52,7 +52,7 @@ export default function MiddlewareTable(
 					onClick={() => {
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${data.type}/${data.aliasName}`
+							`serviceList/${data.type}/${data.aliasName}`
 						);
 						history.push(
 							`/serviceList/${data.type}/${data.aliasName}`
@@ -104,7 +104,7 @@ export default function MiddlewareTable(
 					onClick={() => {
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${data.type}/${data.aliasName}`
+							`serviceList/${data.type}/${data.aliasName}`
 						);
 						history.push(
 							`/serviceList/${data.type}/${data.aliasName}/basicInfo/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`

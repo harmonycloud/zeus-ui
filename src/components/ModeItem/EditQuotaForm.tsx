@@ -265,61 +265,6 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 					</li>
 					{type !== 'kibana' && type !== 'sentinel' && (
 						<StorageQuota clusterId={clusterId} />
-						// <li className="display-flex mt-8">
-						// 	<label className="form-name">
-						// 		<span className="ne-required">存储配额</span>
-						// 	</label>
-						// 	<div className={`form-content display-flex`}>
-						// 		<FormItem
-						// 			rules={[
-						// 				{
-						// 					required: true,
-						// 					message: '请选择存储类型'
-						// 				}
-						// 			]}
-						// 			name="storageClass"
-						// 		>
-						// 			<Select
-						// 				placeholder="请选择"
-						// 				style={{
-						// 					marginRight: 8,
-						// 					width: 150
-						// 				}}
-						// 			>
-						// 				{storageClassList.map((item, index) => {
-						// 					return (
-						// 						<Select.Option
-						// 							key={index}
-						// 							value={item.name}
-						// 						>
-						// 							{item.name}
-						// 						</Select.Option>
-						// 					);
-						// 				})}
-						// 			</Select>
-						// 		</FormItem>
-						// 		<FormItem
-						// 			rules={[
-						// 				{
-						// 					required: true,
-						// 					message: '请输入存储配额大小（GB）'
-						// 				},
-						// 				{
-						// 					pattern: new RegExp(pattern.posInt),
-						// 					message: '请输入小于21位的正整数'
-						// 				}
-						// 			]}
-						// 			name="storageQuota"
-						// 			initialValue={5}
-						// 		>
-						// 			<Input
-						// 				min={1}
-						// 				placeholder="请输入存储配额大小"
-						// 				addonAfter="GB"
-						// 			/>
-						// 		</FormItem>
-						// 	</div>
-						// </li>
 					)}
 				</ul>
 			</Form>

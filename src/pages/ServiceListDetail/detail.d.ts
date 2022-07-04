@@ -552,3 +552,9 @@ export interface ParamterItem {
 	restart: boolean;
 	value: null | any;
 }
+export interface RedisSentinelNodeSpeProps {
+	visible: boolean;
+	onCreate: (value: any) => void;
+	onCancel: () => void;
+	data: any;
+}

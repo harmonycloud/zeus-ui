@@ -1,24 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Modal, InputNumber } from 'antd';
-import SelectBlock from '@/components/SelectBlock';
-import TableRadio from '../../ServiceCatalog/components/TableRadio/index';
-import { EsNodeProps, EsSendDataProps } from '../detail';
+import { Modal, Form, Button, InputNumber, Select } from 'antd';
+import { EsSendDataProps, RedisSentinelNodeSpeProps } from '../detail';
 import styles from './esEdit.module.scss';
+import SelectBlock from '@/components/SelectBlock';
+import { formItemLayout614, redisSentinelDataList } from '@/utils/const';
 import { ArrowUpOutlined } from '@ant-design/icons';
-
-const { Item: FormItem } = Form;
-const { Option } = Select;
-const formItemLayout = {
-	labelCol: {
-		span: 6
-	},
-	wrapperCol: {
-		span: 14
+import TableRadio from '../../ServiceCatalog/components/TableRadio/index';
+const modeList = [
+	{
+		label: '哨兵模式',
+		value: 'sentinel'
 	}
-};
+];
+const instanceSpecList = [
+	{
+		label: '通用规格',
+		value: 'General'
+	},
+	{
+		label: '自定义',
+		value: 'Customize'
+	}
+];
+const Option = Select.Option;
+const FormItem = Form.Item;
 
-export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
-	const { visible, onCreate, onCancel, data: dataes } = props;
+export default function RedisSentinelNodeSpe(props: RedisSentinelNodeSpeProps) {
+	const { visible, onCreate, onCancel, data } = props;
+	console.log(data);
+	const [mode, setMode] = useState(data.mode);
+	const [nodeObj, setNodeObj] = useState({});
 	const [nodeModify, setNodeModify] = useState({
 		nodeName: '',
 		flag: false
@@ -26,153 +37,32 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 	const [specId, setSpecId] = useState('1');
 	const [nodeNum, setNodeNum] = useState(0);
 	const [instanceSpec, setInstanceSpec] = useState('General');
-	const instanceSpecList = [
-		{
-			label: '通用规格',
-			value: 'General'
-		},
-		{
-			label: '自定义',
-			value: 'Customize'
-		}
-	];
-	const [mode, setMode] = useState(dataes.mode);
-	const [nodeObj, setNodeObj] = useState({});
-
-	useEffect(() => {
-		const { master, kibana, data, client, cold } = dataes.quota;
-		master.title = '主节点';
-		kibana.title = 'Kibana节点';
-		data.title = '数据节点';
-		client.title = '协调节点';
-		cold.title = '冷数据节点';
-		master.cpu = Number(master.cpu);
-		kibana.cpu = Number(kibana.cpu);
-		data.cpu = Number(data.cpu);
-		client.cpu = Number(client.cpu);
-		cold.cpu = Number(cold.cpu);
-		master.memory =
-			typeof master.memory === 'string'
-				? Number(master.memory.substring(0, master.memory.length - 2))
-				: master.memory;
-		kibana.memory =
-			typeof kibana.memory === 'string'
-				? Number(kibana.memory.substring(0, kibana.memory.length - 2))
-				: kibana.memory;
-		data.memory =
-			typeof data.memory === 'string'
-				? Number(data.memory.substring(0, data.memory.length - 2))
-				: data.memory;
-		client.memory =
-			typeof client.memory === 'string'
-				? Number(client.memory.substring(0, client.memory.length - 2))
-				: client.memory;
-		cold.memory =
-			typeof cold.memory === 'string'
-				? Number(cold.memory.substring(0, cold.memory.length - 2))
-				: cold.memory;
-		if (dataes.mode === 'simple') {
-			master.disabled = false;
-			kibana.disabled = false;
-			client.disabled = true;
-			data.disabled = true;
-			cold.disabled = true;
-		} else if (dataes.mode === 'regular') {
-			master.disabled = false;
-			kibana.disabled = false;
-			data.disabled = false;
-			client.disabled = true;
-			cold.disabled = true;
-			setMode('complex');
-		} else if (data.mode === 'complex') {
-			if (cold.num !== 0 && client.num === 0) {
-				setMode('complex-cold');
-				cold.disabled = false;
-				client.disabled = true;
-			}
-			if (client.num !== 0 && cold.num === 0) {
-				setMode('complex');
-				client.disabled = false;
-				cold.disabled = true;
-			}
-			if (cold.num !== 0 && client.num !== 0) {
-				setMode('cold-complex');
-				cold.disabled = false;
-				client.disabled = false;
-			}
-			master.disabled = false;
-			kibana.disabled = false;
-			data.disabled = false;
-		}
-		setNodeObj({ master, kibana, data, client, cold });
-	}, []);
-
-	const modeList = [
-		{
-			label: 'N主',
-			value: 'simple'
-		},
-		{
-			label: 'N主 N数据',
-			value: 'regular'
-		},
-		{
-			label: 'N主 N数据 N协调',
-			value: 'complex'
-		},
-		{
-			label: 'N主 N数据 N冷',
-			value: 'complex-cold'
-		},
-		{
-			label: 'N主 N数据 N冷 N协调',
-			value: 'cold-complex'
-		}
-	];
-
 	const [form] = Form.useForm();
 
-	const formHandle = (obj: any, item: any) => {
-		if (
-			['cpu', 'memory', 'storageClassName', 'storageClassQuota'].indexOf(
-				item.name
-			) > -1
-		) {
-			const temp = nodeObj[nodeModify.nodeName];
-			temp[item.name] = item.value;
-			setNodeObj({
-				...nodeObj,
-				[nodeModify.nodeName]: temp
-			});
-		}
-	};
-
-	const modifyQuota = (key: string) => {
-		setNodeModify({
-			nodeName: key,
-			flag: true
-		});
-		setNodeNum(nodeObj[key].num);
-		setSpecId(nodeObj[key].specId);
-		if (nodeObj[key].specId === '') {
-			setInstanceSpec('Customize');
-			form.setFieldsValue({
-				cpu: nodeObj[key].cpu,
-				memory: nodeObj[key].memory
-			});
-		} else {
-			setInstanceSpec('General');
-		}
-		form.setFieldsValue({
-			storageClassName: nodeObj[key].storageClassName,
-			storageClassQuota: nodeObj[key].storageClassQuota
-		});
-	};
-
+	useEffect(() => {
+		const { redis, sentinel } = data.quota;
+		redis.title = 'Redis节点';
+		sentinel.title = '哨兵节点';
+		redis.cpu = Number(redis.cpu);
+		sentinel.cpu = Number(sentinel.cpu);
+		redis.memory =
+			typeof redis.memory === 'string'
+				? Number(redis.memory.substring(0, redis.memory.length - 2))
+				: redis.memory;
+		sentinel.memory =
+			typeof sentinel.memory === 'string'
+				? Number(
+						sentinel.memory.substring(0, sentinel.memory.length - 2)
+				  )
+				: sentinel.memory;
+		setNodeObj({ redis, sentinel });
+	}, []);
 	const putAway = (key: string) => {
 		if (instanceSpec === 'Customize') {
 			setSpecId('');
 			const temp = nodeObj[key];
+			temp.cpu = form.getFieldsValue().cpu;
+			temp.memory = form.getFieldsValue().memory;
 			temp.specId = '';
 			setNodeObj({
 				...nodeObj,
@@ -184,29 +74,53 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 			flag: false
 		});
 	};
-
+	const modifyQuota = (key: string) => {
+		setNodeModify({
+			nodeName: key,
+			flag: true
+		});
+		setNodeNum(nodeObj[key].num);
+		setSpecId(nodeObj[key].specId);
+		if (nodeObj[key].specId) {
+			setInstanceSpec('General');
+		} else {
+			setInstanceSpec('Customize');
+			form.setFieldsValue({
+				cpu: nodeObj[key].cpu,
+				memory: nodeObj[key].memory
+			});
+		}
+		form.setFieldsValue({
+			storageClassName: nodeObj[key].storageClassName,
+			storageClassQuota: nodeObj[key].storageClassQuota
+		});
+	};
 	const checkGeneral = (value: string) => {
 		setSpecId(value);
 		const temp = nodeObj[nodeModify.nodeName];
 		switch (value) {
 			case '1':
 				temp.cpu = 2;
-				temp.memory = 4;
+				temp.memory = 0.256;
 				break;
 			case '2':
 				temp.cpu = 2;
-				temp.memory = 8;
+				temp.memory = 1;
 				break;
 			case '3':
-				temp.cpu = 4;
-				temp.memory = 8;
+				temp.cpu = 2;
+				temp.memory = 2;
 				break;
 			case '4':
-				temp.cpu = 4;
-				temp.memory = 16;
+				temp.cpu = 2;
+				temp.memory = 8;
 				break;
 			case '5':
-				temp.cpu = 8;
+				temp.cpu = 2;
+				temp.memory = 16;
+				break;
+			case '6':
+				temp.cpu = 2;
 				temp.memory = 32;
 				break;
 			default:
@@ -217,35 +131,28 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 			[nodeModify.nodeName]: temp
 		});
 	};
-
 	const onOk = () => {
-		form.validateFields().then((values) => {
+		if (nodeModify.flag) {
+			putAway(nodeModify.nodeName);
+		}
+		form.validateFields().then(() => {
 			const sendData: EsSendDataProps = {};
 			if (nodeObj) {
-				sendData.quota = {};
-				for (const key in nodeObj) {
-					if (!nodeObj[key].disabled) {
-						sendData.quota[key] = {
-							...nodeObj[key],
-							storageClassName: nodeObj[key].storageClass,
-							storageClassQuota: nodeObj[key].storageQuota
-						};
-					}
-				}
+				sendData.quota = nodeObj;
 			}
+			// console.log(sendData);
 			onCreate(sendData);
 		});
 	};
-
 	return (
 		<Modal
 			title="修改服务规格"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			width={1100}
+			width={900}
 		>
-			<Form {...formItemLayout} form={form} onFieldsChange={formHandle}>
+			<Form form={form}>
 				<div className={styles['spec-config']}>
 					<ul className="form-layout">
 						<li className="display-flex form-li">
@@ -355,12 +262,14 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																	'' && (
 																	<li>
 																		<span>
-																			{
+																			{nodeObj[
+																				key
+																			]
+																				.storageClassAliasName ||
 																				nodeObj[
 																					key
 																				]
-																					.storageClassName
-																			}
+																					.storageClassName}
 																			：
 																		</span>
 																		<span>
@@ -464,7 +373,10 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 											>
 												<TableRadio
 													id={specId}
-													onCallBack={(value) =>
+													dataList={
+														redisSentinelDataList
+													}
+													onCallBack={(value: any) =>
 														checkGeneral(
 															value as string
 														)
@@ -497,19 +409,18 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																			'请输入自定义CPU配额，单位为Core'
 																	}
 																]}
+																initialValue={
+																	data.quota[
+																		nodeModify
+																			.nodeName
+																	].cpu
+																}
 															>
 																<InputNumber
 																	style={{
 																		width: '100%'
 																	}}
 																	step={0.1}
-																	value={
-																		dataes
-																			.quota[
-																			nodeModify
-																				.nodeName
-																		].cpu
-																	}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																/>
 															</FormItem>
@@ -533,19 +444,18 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 																			'请输入自定义内存配额，单位为GB'
 																	}
 																]}
+																initialValue={
+																	data.quota[
+																		nodeModify
+																			.nodeName
+																	].memory
+																}
 															>
 																<InputNumber
 																	style={{
 																		width: '100%'
 																	}}
 																	step={0.1}
-																	value={
-																		dataes
-																			.quota[
-																			nodeModify
-																				.nodeName
-																		].memory
-																	}
 																	placeholder="请输入自定义内存配额，单位为GB"
 																/>
 															</FormItem>
@@ -556,7 +466,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 										) : null}
 									</div>
 								</li>
-								{nodeModify.nodeName !== 'kibana' && (
+								{nodeModify.nodeName !== 'sentinel' && (
 									<li className="display-flex mt-8">
 										<label className="form-name">
 											<span>存储配额</span>
@@ -564,76 +474,32 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 										<div
 											className={`form-content display-flex`}
 										>
-											<FormItem
-												required
-												name="storageClassName"
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择存储类型'
-													}
-												]}
+											<Select
+												style={{
+													marginRight: 8,
+													width: '120px'
+												}}
+												disabled
+												value={
+													data.quota[
+														nodeModify.nodeName
+													].storageClassAliasName
+												}
 											>
-												<Select
-													style={{
-														marginRight: 8
-													}}
-													disabled
+												<Option
 													value={
-														dataes.quota[
+														data.quota[
 															nodeModify.nodeName
-														].storageClassName
+														].storageClassAliasName
 													}
 												>
-													<Option
-														value={
-															dataes.quota[
-																nodeModify
-																	.nodeName
-															].storageClassName
-														}
-													>
-														{
-															dataes.quota[
-																nodeModify
-																	.nodeName
-															].storageClassName
-														}
-													</Option>
-												</Select>
-											</FormItem>
-											{/* <FormItem
-												pattern={pattern.posInt}
-												patternMessage="请输入正整数"
-												required
-												requiredMessage="请输入存储配额大小（GB）"
-											>
-												<Input
-													name="storageClassQuota"
-													value={
-														Number(
-															dataes.quota[
-																nodeModify
-																	.nodeName
-															].storageClassQuota?.substring(
-																0,
-																dataes.quota[
-																	nodeModify
-																		.nodeName
-																]
-																	.storageClassQuota
-																	.length - 2
-															)
-														) || 0
+													{
+														data.quota[
+															nodeModify.nodeName
+														].storageClassAliasName
 													}
-													htmlType="number"
-													min={1}
-													placeholder="请输入存储配额大小"
-													addonTextAfter="GB"
-													disabled
-												/>
-											</FormItem> */}
+												</Option>
+											</Select>
 										</div>
 									</li>
 								)}
