@@ -377,11 +377,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 					rowKey="recordName"
 				>
 					<ProTable.Column title="备份记录" dataIndex="recordName" />
-					<ProTable.Column
+					{/* <ProTable.Column
 						title="备份使用量(GB)"
 						dataIndex="percent"
 						render={nullRender}
-					/>
+					/> */}
 					<ProTable.Column
 						title="备份时间"
 						dataIndex="backupTime"

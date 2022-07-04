@@ -399,29 +399,28 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 								)
-							) : (
-								<Form.Item
-									label="备份规则"
-									name="rule"
-									rules={[
-										{
-											required: true,
-											message: '请选择备时间'
-										}
-									]}
-									initialValue="now"
-								>
-									<RadioGroup
-										value={backupTime}
-										onChange={(e) =>
-											setBackupTime(e.target.value)
-										}
-									>
-										<Radio value="now">立即备份</Radio>
-										<Radio value="onetime">定时备份</Radio>
-									</RadioGroup>
-								</Form.Item>
-							)}
+							) : // <Form.Item
+							// 	label="备份规则"
+							// 	name="rule"
+							// 	rules={[
+							// 		{
+							// 			required: true,
+							// 			message: '请选择备时间'
+							// 		}
+							// 	]}
+							// 	initialValue="now"
+							// >
+							// 	<RadioGroup
+							// 		value={backupTime}
+							// 		onChange={(e) =>
+							// 			setBackupTime(e.target.value)
+							// 		}
+							// 	>
+							// 		<Radio value="now">立即备份</Radio>
+							// 		<Radio value="onetime">定时备份</Radio>
+							// 	</RadioGroup>
+							// </Form.Item>
+							null}
 							{backupWay === 'time' ||
 							backupTime === 'onetime' ? (
 								<>
@@ -703,7 +702,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				clusterId: selectedRow?.clusterId || cluster.id,
 				namespace: params.namespace || selectedRow.namespace,
 				middlewareName: params.middlewareName || selectedRow.name,
-				type: selectedRow?.type || params.type,
+				type: selectedRow?.type || params.type
 				// cron:
 				// 	typeof formData.time !== 'string'
 				// 		? cron
@@ -711,7 +710,6 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				// 				3,
 				// 				5
 				// 		  )} ${formData.time.substring(0, 2)} ? ? ${week}`
-				cron: formData.rule !== 'now' ? cron : ''
 			};
 			if (params.type === 'mysql' || selectedRow?.type === 'mysql') {
 				sendData.limitRecord = formData.limitRecord;
@@ -720,6 +718,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			}
 			if (formData.retentionTime) {
 				sendData.dateUnit = dataSelect;
+			}
+			if (formData.way === 'time') {
+				sendData.cron = cron;
 			}
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
