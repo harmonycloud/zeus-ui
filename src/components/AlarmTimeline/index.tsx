@@ -63,7 +63,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 						setRefreshCluster(true);
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${item.type}/${item.capitalType}`
+							`serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
 							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}/${item.namespace}`
@@ -88,7 +88,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 						setRefreshCluster(true);
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${item.type}/${item.capitalType}`
+							`serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
 							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}/${item.namespace}`
@@ -163,20 +163,16 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 								</div>
 								<div className="details-msg">
 									<div className="details-summary">
-										{/* <Popover content={item.content || ''}> */}
 										<span title={item.content || ''}>
 											{item.content
 												? item.content + '；'
 												: ''}
 										</span>
-										{/* </Popover> */}
-										{/* <Popover content={item.summary || ''}> */}
 										<span title={item.summary || ''}>
 											{item.summary
 												? item.summary + '；'
 												: ''}
 										</span>
-										{/* </Popover> */}
 									</div>
 								</div>
 							</Timeline.Item>

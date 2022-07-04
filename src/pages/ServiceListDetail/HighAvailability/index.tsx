@@ -29,6 +29,7 @@ import {
 	PodSendData,
 	QuotaParams
 } from '../detail';
+import RedisSentinelNodeSpe from './redisSentinelNodeSpe';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -53,6 +54,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	// * es中间件修改节点规格
 	const [esVisible, setEsVisible] = useState<boolean>(false);
+	// * redis 哨兵模式修改节点规格
+	const [redisSentinelVisible, setRedisSentinelVisible] =
+		useState<boolean>(false);
 	// * 自定义中间件修改节点规格
 	const [customVisible, setCustomVisible] = useState<boolean>(false);
 	const [quotaValue, setQuotaValue] = useState<QuotaParams>();
@@ -92,6 +96,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		if (data.status === 'Running') {
 			if (customMid) {
 				setCustomVisible(true);
+			} else if (data.mode === 'sentinel') {
+				setRedisSentinelVisible(true);
 			} else {
 				setVisible(true);
 			}
@@ -160,7 +166,6 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			clusterId: clusterId,
 			type: data.type
 		};
-		console.log(record);
 		if (data.type == 'mysql') {
 			setCurrentContainer('mysql');
 		} else if (data.type === 'redis') {
@@ -264,6 +269,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				setVisible(false);
 				setEsVisible(false);
 				setCustomVisible(false);
+				setRedisSentinelVisible(false);
 				updateMiddleware(sendData).then((res) => {
 					if (res.success) {
 						notification.success({
@@ -619,6 +625,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								openSSL={openSSL}
 								reStart={reStart}
 								setEsVisible={() => setEsVisible(true)}
+								setRedisSentinelVisible={() =>
+									setRedisSentinelVisible(true)
+								}
 								editConfiguration={editConfiguration}
 							/>
 							<div style={{ height: '24px' }} />
@@ -639,6 +648,14 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					visible={esVisible}
 					onCreate={onEsCreate}
 					onCancel={() => setEsVisible(false)}
+					data={data}
+				/>
+			)}
+			{redisSentinelVisible && data.mode === 'sentinel' && (
+				<RedisSentinelNodeSpe
+					visible={redisSentinelVisible}
+					onCreate={onEsCreate}
+					onCancel={() => setRedisSentinelVisible(false)}
 					data={data}
 				/>
 			)}
