@@ -886,43 +886,81 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									<div
 										className={`form-content display-flex ${styles['zeus-zk-service']}`}
 									>
-										<Input
-											className={
-												styles['zeus-zk-address']
-											}
-											placeholder="请输入服务地址"
-											value={kfkDTO.zkAddress}
-											onChange={(e) =>
-												setKfkDTO({
-													...kfkDTO,
-													zkAddress: e.target.value
-												})
-											}
-										/>
-										<InputNumber
-											className={styles['zeus-zk-port']}
-											style={{ width: '95px' }}
-											value={kfkDTO.zkPort}
-											placeholder="请输入服务端口"
-											onChange={(value: number) =>
-												setKfkDTO({
-													...kfkDTO,
-													zkPort: value
-												})
-											}
-											min={0}
-										/>
-										<Input
-											className={styles['zeus-zk-path']}
-											value={kfkDTO.path}
-											placeholder="请输入服务路径"
-											onChange={(e) =>
-												setKfkDTO({
-													...kfkDTO,
-													path: e.target.value
-												})
-											}
-										/>
+										<FormItem
+											name="zkAddress"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请输入服务地址'
+												}
+											]}
+										>
+											<Input
+												className={
+													styles['zeus-zk-address']
+												}
+												placeholder="请输入服务地址"
+												value={kfkDTO.zkAddress}
+												onChange={(e) =>
+													setKfkDTO({
+														...kfkDTO,
+														zkAddress:
+															e.target.value
+													})
+												}
+											/>
+										</FormItem>
+										<FormItem
+											name="zkPort"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请输入服务端口'
+												}
+											]}
+										>
+											<InputNumber
+												className={
+													styles['zeus-zk-port']
+												}
+												style={{ width: '95px' }}
+												value={kfkDTO.zkPort}
+												placeholder="请输入服务端口"
+												onChange={(value: number) =>
+													setKfkDTO({
+														...kfkDTO,
+														zkPort: value
+													})
+												}
+												min={0}
+											/>
+										</FormItem>
+										<FormItem
+											name="path"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请输入服务路径'
+												}
+											]}
+										>
+											<Input
+												className={
+													styles['zeus-zk-path']
+												}
+												value={kfkDTO.path}
+												placeholder="请输入服务路径"
+												onChange={(e) =>
+													setKfkDTO({
+														...kfkDTO,
+														path: e.target.value
+													})
+												}
+											/>
+										</FormItem>
 									</div>
 								</li>
 								{mirrorList.length && (
