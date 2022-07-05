@@ -161,6 +161,8 @@ const ServiceListByType = (props: serviceListProps) => {
 			JSON.stringify(namespace) !== '{}'
 		) {
 			if (mounted) {
+				setDataSource(undefined);
+				setShowDataSource([]);
 				setLoadingVisible(true);
 				getList({
 					projectId: project.projectId,
@@ -197,6 +199,8 @@ const ServiceListByType = (props: serviceListProps) => {
 	}, [cluster, namespace, name]);
 	const getData = () => {
 		setLoadingVisible(true);
+		setDataSource(undefined);
+		setShowDataSource([]);
 		getList({
 			projectId: project.projectId,
 			clusterId: cluster.id,
