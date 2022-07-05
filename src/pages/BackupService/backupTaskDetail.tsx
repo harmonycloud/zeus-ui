@@ -91,7 +91,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 										: '0' +
 										  val.split('* *')[0].split(' ')[1]
 							  }:${
-									Number(val.split('* *')[0].split(' ')[0]) <=
+									Number(val.split('* *')[0].split(' ')[0]) <
 									10
 										? '0' +
 										  val.split('* *')[0].split(' ')[0]
@@ -377,11 +377,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 					rowKey="recordName"
 				>
 					<ProTable.Column title="备份记录" dataIndex="recordName" />
-					<ProTable.Column
+					{/* <ProTable.Column
 						title="备份使用量(GB)"
 						dataIndex="percent"
 						render={nullRender}
-					/>
+					/> */}
 					<ProTable.Column
 						title="备份时间"
 						dataIndex="backupTime"
