@@ -175,8 +175,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const getData = () => {
 		getBackups({
 			backupName: params.backupName,
+			taskName: storage.getLocal('backupDetail').taskName,
 			clusterId: cluster.id,
-			namespace: namespace.name,
+			namespace: storage.getLocal('backupDetail').namespace,
 			type: params.type
 		}).then((res) => {
 			if (res.success) {
