@@ -623,9 +623,14 @@ function AddBackupTask(props: StoreState): JSX.Element {
 												  }:${
 														moment(
 															formData.time
-														).get('minute') === 0
-															? '00'
-															: '30'
+														).get('minute') >= 10
+															? moment(
+																	formData.time
+															  ).get('minute')
+															: '0' +
+															  moment(
+																	formData.time
+															  ).get('minute')
 												  }）`
 												: ''}
 										</p>
