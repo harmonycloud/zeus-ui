@@ -67,6 +67,7 @@ const columns = [
 	{ title: '数据源名称', dataIndex: 'name' },
 	{ title: '类型', dataIndex: 'type' },
 	{ title: '实例数', dataIndex: 'podNum' },
+	{ title: '所属命名空间', dataIndex: 'namespace' },
 	{ title: '所属集群', dataIndex: 'clusterId' }
 ];
 const dataType = [
