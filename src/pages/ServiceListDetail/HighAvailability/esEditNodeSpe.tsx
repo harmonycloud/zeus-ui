@@ -217,12 +217,15 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 				for (const key in nodeObj) {
 					if (!nodeObj[key].disabled) {
 						sendData.quota[key] = {
-							...nodeObj[key]
+							...nodeObj[key],
+							limitCpu: nodeObj[key].cpu,
+							limitMemory: nodeObj[key].memory + 'Gi'
 						};
 					}
 				}
 			}
-			// console.log(sendData);
+			console.log(sendData);
+			return;
 			onCreate(sendData);
 		});
 	};
