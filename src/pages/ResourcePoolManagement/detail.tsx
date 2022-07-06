@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Page, Header, Content } from '@alicloud/console-components-page';
-import { Tab } from '@alicloud/console-components';
+import { Tabs } from 'antd';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import Overview from './tabs/overview';
 import Namespace from './tabs/namespace';
 import Component from './tabs/component';
@@ -15,6 +15,7 @@ export interface paramsProps {
 	id: string;
 	nickname: string;
 }
+const { TabPane } = Tabs;
 const ResourcePoolDetail = () => {
 	const [activeKey, setActiveKey] = useState<string>(
 		storage.getLocal('cluster-detail-current-tab') === ''
@@ -33,32 +34,28 @@ const ResourcePoolDetail = () => {
 	});
 
 	return (
-		<Page>
-			<Header
-				title={nickname}
-				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
-			/>
-			<Content>
-				<Tab activeKey={activeKey} onChange={onChange}>
-					<Tab.Item title="概览" key="overview">
+		<ProPage>
+			<ProHeader title={nickname} onBack={() => window.history.back()} />
+			<ProContent>
+				<Tabs activeKey={activeKey} onChange={onChange}>
+					<TabPane tab="概览" key="overview">
 						<Overview />
-					</Tab.Item>
-					<Tab.Item title="命名空间" key="namespace">
+					</TabPane>
+					<TabPane tab="命名空间" key="namespace">
 						<Namespace />
-					</Tab.Item>
-					<Tab.Item title="负载均衡" key="ingress">
+					</TabPane>
+					<TabPane tab="负载均衡" key="ingress">
 						<Ingress />
-					</Tab.Item>
-					<Tab.Item title="镜像仓库" key="mirror">
+					</TabPane>
+					<TabPane tab="镜像仓库" key="mirror">
 						<MirrorWarehouse />
-					</Tab.Item>
-					<Tab.Item title="平台组件" key="component">
+					</TabPane>
+					<TabPane tab="平台组件" key="component">
 						<Component />
-					</Tab.Item>
-				</Tab>
-			</Content>
-		</Page>
+					</TabPane>
+				</Tabs>
+			</ProContent>
+		</ProPage>
 	);
 };
 

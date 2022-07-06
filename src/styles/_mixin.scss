@@ -29,34 +29,34 @@
     transition: $time;
 }
 
-@mixin ulList($liHeight, $liPadding) {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    li {
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: $liPadding;
-        height: $liHeight;
-        line-height: $liHeight;
-        list-style-image: none;
-        list-style-type: none;
-    }
-}
+// @mixin ulList($liHeight, $liPadding) {
+//     list-style: none;
+//     margin: 0;
+//     padding: 0;
+//     li {
+//         width: 100%;
+//         overflow: hidden;
+//         text-overflow: ellipsis;
+//         padding: $liPadding;
+//         height: $liHeight;
+//         line-height: $liHeight;
+//         list-style-image: none;
+//         list-style-type: none;
+//     }
+// }
 
-@mixin boxSet($bHeight, $bBorder,$bBackground){
-    height: $bHeight;
-    background-color: $bBackground;
-    border-radius:$bBorder;
-}
-@mixin overviewCardSet($oWidth,$oHeight) {
-	width: $oWidth;
-	height: $oHeight;
-	border: 1px solid #D1D5D9;
-	border-radius: $border-radius-lg;
-	background: $white;
-}
+// @mixin boxSet($bHeight, $bBorder,$bBackground){
+//     height: $bHeight;
+//     background-color: $bBackground;
+//     border-radius:$bBorder;
+// }
+// @mixin overviewCardSet($oWidth,$oHeight) {
+// 	width: $oWidth;
+// 	height: $oHeight;
+// 	border: 1px solid #D1D5D9;
+// 	border-radius: $border-radius-lg;
+// 	background: $white;
+// }
 @mixin text-ellipsis {
 	overflow: hidden;
 	white-space: nowrap;
@@ -66,6 +66,6 @@
 	width: 40px;
 	border-radius: $border-radius;
 	font-weight: $font-weight-sm;
-	font-size: $font-size;
+	font-size: $font-1;
 	@include lineHeight(22px);
 }

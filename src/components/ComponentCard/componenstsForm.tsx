@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-	Form,
-	Input,
-	Select,
-	Grid,
-	Switch
-} from '@alicloud/console-components';
+import { Form, Input, Select, Switch, Row, Col } from 'antd';
 const formItemLayout = {
 	labelCol: {
 		span: 5
@@ -16,7 +10,7 @@ const formItemLayout = {
 };
 const formItemLayout2 = {
 	labelCol: {
-		fixedSpan: 8
+		span: 8
 	},
 	wrapperCol: {
 		span: 16
@@ -24,20 +18,17 @@ const formItemLayout2 = {
 };
 const FormItem = Form.Item;
 const Option = Select.Option;
-const { Row, Col } = Grid;
 export const PrometheusRender = () => (
 	<FormItem
 		{...formItemLayout}
-		className="ne-required-ingress"
-		labelTextAlign="left"
+		labelAlign="left"
 		label="prometheus地址"
 		style={{ marginBottom: 0 }}
 	>
 		<Row>
 			<Col span={6}>
-				<FormItem>
+				<FormItem name="protocolPrometheus">
 					<Select
-						name="protocolPrometheus"
 						style={{
 							width: '100%'
 						}}
@@ -50,35 +41,25 @@ export const PrometheusRender = () => (
 			<Col span={12}>
 				<FormItem
 					required
-					requiredMessage="请输入ip地址"
-					// pattern={pattern.ip}
-					// patternMessage="请输入正确的ip地址！"
+					rules={[{ required: true, message: '请输入ip地址' }]}
 					style={{
 						marginLeft: -2
 					}}
+					name="hostPrometheus"
 				>
-					<Input
-						htmlType="text"
-						name="hostPrometheus"
-						trim={true}
-						placeholder="请输入主机地址"
-					/>
+					<Input type="text" placeholder="请输入主机地址" />
 				</FormItem>
 			</Col>
 			<Col span={6}>
 				<FormItem
 					required
-					requiredMessage="请输入端口"
+					rules={[{ required: true, message: '请输入端口' }]}
 					style={{
 						marginLeft: -2
 					}}
+					name="portPrometheus"
 				>
-					<Input
-						htmlType="number"
-						name="portPrometheus"
-						trim={true}
-						placeholder="端口"
-					/>
+					<Input type="number" placeholder="端口" />
 				</FormItem>
 			</Col>
 		</Row>
@@ -90,15 +71,12 @@ export const IngressRender = () => (
 			{...formItemLayout}
 			label="Ingress名称"
 			required
-			requiredMessage="请输入Ingress名称"
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			rules={[{ required: true, message: '请输入Ingress名称' }]}
+			name="ingressClassName"
+			labelAlign="left"
 		>
 			<Input
-				htmlType="text"
-				name="ingressClassName"
-				trim={true}
+				type="text"
 				defaultValue="nginx-ingress-controller"
 				placeholder="请输入Ingress名称"
 			/>
@@ -107,49 +85,31 @@ export const IngressRender = () => (
 			{...formItemLayout}
 			label="Ingress地址"
 			required
-			requiredMessage="请输入Ingress地址"
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			rules={[{ required: true, message: '请输入Ingress地址' }]}
+			labelAlign="left"
+			name="ingressAddress"
 		>
-			<Input
-				htmlType="text"
-				name="ingressAddress"
-				trim={true}
-				placeholder="请输入主机地址"
-			/>
+			<Input type="text" placeholder="请输入主机地址" />
 		</FormItem>
 		<FormItem
 			{...formItemLayout}
 			label="ConfigMap分区"
 			required
-			requiredMessage="请输入分区"
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			rules={[{ required: true, message: '请输入分区' }]}
+			name="namespace"
+			labelAlign="left"
 		>
-			<Input
-				htmlType="text"
-				name="namespace"
-				trim={true}
-				placeholder="请输入分区"
-			/>
+			<Input type="text" placeholder="请输入分区" />
 		</FormItem>
 		<FormItem
 			{...formItemLayout}
 			label="ConfigMap名称"
 			required
-			requiredMessage="请输入ConfigMap名称"
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			name="configMapName"
+			rules={[{ required: true, message: '请输入ConfigMap名称' }]}
+			labelAlign="left"
 		>
-			<Input
-				htmlType="text"
-				name="configMapName"
-				trim={true}
-				placeholder="请输入ConfigMap名称"
-			/>
+			<Input type="text" placeholder="请输入ConfigMap名称" />
 		</FormItem>
 	</>
 );
@@ -157,17 +117,14 @@ export const LoggingRender = () => (
 	<>
 		<FormItem
 			{...formItemLayout}
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			labelAlign="left"
 			label="ES地址"
 			style={{ marginBottom: 0 }}
 		>
 			<Row>
 				<Col span={6}>
-					<FormItem>
+					<FormItem name="protocolEs">
 						<Select
-							name="protocolEs"
 							style={{
 								width: '100%'
 							}}
@@ -180,97 +137,70 @@ export const LoggingRender = () => (
 				<Col span={12}>
 					<FormItem
 						required
-						requiredMessage="请输入ip地址"
-						// pattern={pattern.ip}
-						// patternMessage="请输入正确的ip地址！"
+						rules={[{ required: true, message: '请输入ip地址' }]}
 						style={{
 							marginLeft: -2
 						}}
+						name="hostEs"
 					>
-						<Input
-							htmlType="text"
-							name="hostEs"
-							trim={true}
-							placeholder="请输入主机地址"
-						/>
+						<Input type="text" placeholder="请输入主机地址" />
 					</FormItem>
 				</Col>
 				<Col span={6}>
 					<FormItem
 						required
-						requiredMessage="请输入端口"
+						rules={[{ required: true, message: '请输入端口' }]}
 						style={{
 							marginLeft: -2
 						}}
+						name="portEs"
 					>
-						<Input
-							htmlType="number"
-							name="portEs"
-							trim={true}
-							placeholder="端口"
-						/>
+						<Input type="number" placeholder="端口" />
 					</FormItem>
 				</Col>
 			</Row>
 		</FormItem>
 		<FormItem
 			{...formItemLayout}
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			labelAlign="left"
 			label="ES鉴权"
 			style={{ marginBottom: 0 }}
 		>
 			<Row gutter={4}>
 				<Col>
-					<FormItem>
-						<Input
-							name="userEs"
-							trim={true}
-							placeholder="请输入用户名"
-						/>
+					<FormItem name="userEs">
+						<Input placeholder="请输入用户名" />
 					</FormItem>
 				</Col>
 				<Col>
-					<FormItem>
-						<Input.Password
-							name="passwordEs"
-							trim={true}
-							placeholder="请输入密码"
-						/>
+					<FormItem name="passwordEs">
+						<Input.Password placeholder="请输入密码" />
 					</FormItem>
 				</Col>
 			</Row>
 		</FormItem>
 		<FormItem
 			{...formItemLayout}
-			className="ne-required-ingress"
-			labelTextAlign="left"
-			asterisk={false}
+			labelAlign="left"
 			label="ES日志采集工具"
 			style={{ marginBottom: 0 }}
+			name="logCollect"
 		>
-			<Switch
-				name="logCollect"
-				// checked={logCollect}
-				// onChange={(value) => setLogCollect(value)}
-			/>
+			<Switch />
 		</FormItem>
 	</>
 );
 export const GrafanaRender = () => (
 	<FormItem
 		{...formItemLayout}
-		className="ne-required-ingress"
-		labelTextAlign="left"
+		labelAlign="left"
 		label="grafana地址"
 		style={{ marginBottom: 0 }}
 	>
 		<Row>
 			<Col span={6}>
-				<FormItem>
+				<FormItem name="protocolGrafana">
 					<Select
-						name="protocolGrafana"
 						style={{
 							width: '100%'
 						}}
@@ -283,35 +213,25 @@ export const GrafanaRender = () => (
 			<Col span={12}>
 				<FormItem
 					required
-					requiredMessage="请输入ip地址"
-					// pattern={pattern.ip}
-					// patternMessage="请输入正确的ip地址！"
+					rules={[{ required: true, message: '请输入ip地址' }]}
 					style={{
 						marginLeft: -2
 					}}
+					name="hostGrafana"
 				>
-					<Input
-						htmlType="text"
-						name="hostGrafana"
-						trim={true}
-						placeholder="请输入主机地址"
-					/>
+					<Input type="text" placeholder="请输入主机地址" />
 				</FormItem>
 			</Col>
 			<Col span={6}>
 				<FormItem
 					required
-					requiredMessage="请输入端口"
+					rules={[{ required: true, message: '请输入端口' }]}
 					style={{
 						marginLeft: -2
 					}}
+					name="portGrafana"
 				>
-					<Input
-						htmlType="number"
-						name="portGrafana"
-						trim={true}
-						placeholder="端口"
-					/>
+					<Input type="number" placeholder="端口" />
 				</FormItem>
 			</Col>
 		</Row>
@@ -320,16 +240,14 @@ export const GrafanaRender = () => (
 export const AlertRender = () => (
 	<FormItem
 		{...formItemLayout}
-		className="ne-required-ingress"
-		labelTextAlign="left"
+		labelAlign="left"
 		label="监控告警地址"
 		style={{ marginBottom: 0 }}
 	>
 		<Row>
 			<Col span={6}>
-				<FormItem>
+				<FormItem name="protocolAlert">
 					<Select
-						name="protocolAlert"
 						style={{
 							width: '100%'
 						}}
@@ -342,19 +260,13 @@ export const AlertRender = () => (
 			<Col span={12}>
 				<FormItem
 					required
-					requiredMessage="请输入ip地址"
-					// pattern={pattern.ip}
-					// patternMessage="请输入正确的ip地址！"
+					rules={[{ required: true, message: '请输入ip地址' }]}
 					style={{
 						marginLeft: -2
 					}}
+					name="hostAlert"
 				>
-					<Input
-						htmlType="text"
-						name="hostAlert"
-						trim={true}
-						placeholder="请输入主机地址"
-					/>
+					<Input type="text" placeholder="请输入主机地址" />
 				</FormItem>
 			</Col>
 			<Col span={6}>
@@ -363,27 +275,25 @@ export const AlertRender = () => (
 						marginLeft: -2
 					}}
 					required
-					requiredMessage="请输入端口"
+					rules={[{ required: true, message: '请输入端口' }]}
+					name="portAlert"
 				>
-					<Input
-						htmlType="number"
-						name="portAlert"
-						trim={true}
-						placeholder="端口"
-					/>
+					<Input type="number" placeholder="端口" />
 				</FormItem>
 			</Col>
 		</Row>
 	</FormItem>
 );
 export const MinioRender = (props: any) => {
-	const { field, data } = props;
+	const { form, data } = props;
 	const [head, setHead] = useState<string>('http://');
 	const [mid, setMid] = useState<string>();
 	const [tail, setTail] = useState<number>();
 	const { endpoint } = data;
 	useEffect(() => {
-		field.setValue('endpoint', head + mid + ':' + tail + '');
+		form.setFieldsValue({
+			endpoint: head + mid + ':' + tail + ''
+		});
 	}, [head, mid, tail]);
 	useEffect(() => {
 		if (endpoint) {
@@ -420,7 +330,7 @@ export const MinioRender = (props: any) => {
 	);
 	const input = (
 		<Input
-			htmlType="number"
+			type="number"
 			onChange={(value) => handleChange(value, 'tail')}
 			style={{ width: '80px' }}
 			value={tail}
@@ -432,57 +342,77 @@ export const MinioRender = (props: any) => {
 				{...formItemLayout2}
 				label="Access Key ID"
 				required
-				labelTextAlign="left"
-				asterisk={false}
-				className="ne-required-ingress"
+				labelAlign="left"
+				name="accessKeyId"
 			>
-				<Input name="accessKeyId" />
+				<Input />
 			</FormItem>
 			<FormItem
 				{...formItemLayout2}
 				label="Bucket名称"
 				required
-				labelTextAlign="left"
-				asterisk={false}
-				className="ne-required-ingress"
+				labelAlign="left"
+				name="bucketName"
 			>
-				<Input name="bucketName" />
+				<Input />
 			</FormItem>
 			<FormItem
 				{...formItemLayout2}
 				label="Minio名称"
 				required
-				labelTextAlign="left"
-				asterisk={false}
-				className="ne-required-ingress"
+				labelAlign="left"
+				name="minioName"
 			>
-				<Input name="minioName" />
+				<Input />
 			</FormItem>
 			<FormItem
 				{...formItemLayout2}
 				label="Minio地址"
 				required
-				labelTextAlign="left"
-				asterisk={false}
-				className="ne-required-ingress"
+				labelAlign="left"
 			>
-				<Input.Group addonBefore={select} addonAfter={input}>
-					<Input
-						style={{ width: '100%' }}
-						value={mid}
-						onChange={(value) => handleChange(value, 'mid')}
-					/>
+				<Input.Group>
+					<Row>
+						<Col span={6}>
+							<Select
+								onChange={(value) =>
+									handleChange(value, 'head')
+								}
+								value={head}
+								style={{ width: '100%' }}
+							>
+								<Option value="https://">https://</Option>
+								<Option value="http://">http://</Option>
+							</Select>
+						</Col>
+						<Col span={12}>
+							<Input
+								style={{ width: '100%' }}
+								value={mid}
+								onChange={(value) => handleChange(value, 'mid')}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								type="number"
+								onChange={(value) =>
+									handleChange(value, 'tail')
+								}
+								style={{ width: '100%' }}
+								value={tail}
+							/>
+						</Col>
+					</Row>
 				</Input.Group>
 			</FormItem>
 			<FormItem
 				{...formItemLayout2}
 				label="Access Key Secret"
 				required
-				labelTextAlign="left"
-				asterisk={false}
-				className="ne-required-ingress"
+				labelAlign="left"
+				name="secretAccessKey"
 			>
-				<Input name="secretAccessKey" />
+				<Input />
 			</FormItem>
 		</>
 	);
@@ -494,33 +424,20 @@ export const LvmRender = () => {
 				{...formItemLayout}
 				label="名称"
 				required
-				requiredMessage="请输入名称"
-				className="ne-required-ingress"
-				labelTextAlign="left"
-				asterisk={false}
+				rules={[{ required: true, message: '请输入名称' }]}
+				name="lvmName"
+				labelAlign="left"
 			>
-				<Input
-					htmlType="text"
-					name="lvmName"
-					trim={true}
-					placeholder="请输入名称"
-				/>
+				<Input type="text" placeholder="请输入名称" />
 			</FormItem>
 			<FormItem
 				{...formItemLayout}
 				label="分区"
 				required
-				requiredMessage="请输入分区"
-				className="ne-required-ingress"
-				labelTextAlign="left"
-				asterisk={false}
+				rules={[{ required: true, message: '请输入分区' }]}
+				name="lvmNamespace"
 			>
-				<Input
-					htmlType="text"
-					name="lvmNamespace"
-					trim={true}
-					placeholder="请输入分区"
-				/>
+				<Input type="text" placeholder="请输入分区" />
 			</FormItem>
 		</>
 	);
@@ -532,33 +449,19 @@ export const LocalPathRender = () => {
 				{...formItemLayout}
 				label="名称"
 				required
-				requiredMessage="请输入名称"
-				className="ne-required-ingress"
-				labelTextAlign="left"
-				asterisk={false}
+				rules={[{ required: true, message: '请输入名称' }]}
+				name="localPathName"
 			>
-				<Input
-					htmlType="text"
-					name="localPathName"
-					trim={true}
-					placeholder="请输入名称"
-				/>
+				<Input type="text" placeholder="请输入名称" />
 			</FormItem>
 			<FormItem
 				{...formItemLayout}
 				label="分区"
 				required
-				requiredMessage="请输入分区"
-				className="ne-required-ingress"
-				labelTextAlign="left"
-				asterisk={false}
+				rules={[{ required: true, message: '请输入分区' }]}
+				name="localPathNamespace"
 			>
-				<Input
-					htmlType="text"
-					name="localPathNamespace"
-					trim={true}
-					placeholder="请输入分区"
-				/>
+				<Input type="text" placeholder="请输入分区" />
 			</FormItem>
 		</>
 	);

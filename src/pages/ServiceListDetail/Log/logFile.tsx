@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import {
 	Select,
-	Grid,
 	Input,
 	Button,
-	Message,
-	Balloon,
-	Switch
-} from '@alicloud/console-components';
+	Popover,
+	Switch,
+	Row,
+	Col,
+	notification
+} from 'antd';
+import {
+	ArrowsAltOutlined,
+	ShrinkOutlined,
+	DownloadOutlined,
+	QuestionCircleOutlined
+} from '@ant-design/icons';
 import { useParams } from 'react-router';
-import { Icon } from '@alifd/next';
 import moment, { Moment } from 'moment';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import TimeSelect from '@/components/TimeSelect';
 import transTime from '@/utils/transTime';
-import messageConfig from '@/components/messageConfig';
 import ComponentsNull from '@/components/ComponentsNull';
 import SwitchForm from './SwitchForm';
 import { searchTypes } from '@/utils/const';
@@ -36,9 +41,7 @@ import {
 	LogFileItem,
 	PodItem
 } from '../detail';
-import { Editor } from 'codemirror';
 
-const { Row, Col } = Grid;
 const { Option } = Select;
 const options = {
 	mode: 'xml',
@@ -176,8 +179,8 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 	const changeSearchType = (value: string) => {
 		setSearchType(value);
 	};
-	const handleChange = (value: string) => {
-		setKeyword(value);
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setKeyword(e.target.value);
 	};
 
 	const logFilesClick = (value: LogFileItem) => {
@@ -215,18 +218,18 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 					setLogPaths(res.data);
 					setLogPath(res.data[0]);
 				} else {
-					Message.show(
-						messageConfig(
-							'error',
-							'失败',
-							'根据当前查询条件未查询到任何日志文件。'
-						)
-					);
+					notification.error({
+						message: '失败',
+						description: '根据当前查询条件未查询到任何日志文件。'
+					});
 					setLogPaths([]);
 					setLogPath(undefined);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -236,13 +239,10 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 			if (res.success) {
 				if (sendData.scrollId) {
 					if (res.data.log.length === 0) {
-						Message.show(
-							messageConfig(
-								'error',
-								'失败',
-								'当前日志文件已经查询结束。'
-							)
-						);
+						notification.error({
+							message: '失败',
+							description: '当前日志文件已经查询结束。'
+						});
 					} else {
 						const logs = res.data.log.map(
 							(item: LogDetailItem) => item.msg
@@ -251,13 +251,10 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 					}
 				} else {
 					if (res.data.log.length === 0) {
-						Message.show(
-							messageConfig(
-								'error',
-								'失败',
-								'当前日志文件没有信息。'
-							)
-						);
+						notification.error({
+							message: '失败',
+							description: '当前日志文件没有信息。'
+						});
 						setLogList([]);
 					} else {
 						const log = res.data.log.map(
@@ -269,7 +266,10 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 					}
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -354,18 +354,19 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 				<li className="display-flex form-li">
 					<label className="form-name">
 						<span style={{ marginRight: 8 }}>文件日志收集</span>
-						<Balloon
-							trigger={<Icon type="question-circle" size="xs" />}
-							closable={false}
+						<Popover
+							content={
+								<span
+									style={{
+										lineHeight: '18px'
+									}}
+								>
+									安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+								</span>
+							}
 						>
-							<span
-								style={{
-									lineHeight: '18px'
-								}}
-							>
-								安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-							</span>
-						</Balloon>
+							<QuestionCircleOutlined />
+						</Popover>
 					</label>
 					<div
 						className={`form-content display-flex flex-align ${styles['standard-log']}`}
@@ -396,7 +397,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 				></div>
 				<div className={`display-flex ${styles['filter-wrapper']}`}>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col span={5}>
 								<label>实例列表</label>
 							</Col>
@@ -421,7 +422,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col offset={2} span={3}>
 								<label>容器列表</label>
 							</Col>
@@ -443,7 +444,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col span={5}>
 								<label>搜索类型</label>
 							</Col>
@@ -467,7 +468,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<Col offset={2} span={3}>
 								<label>关键字</label>
 							</Col>
@@ -481,7 +482,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						</Row>
 					</div>
 					<div className={styles['filter-item-standard']}>
-						<Row>
+						<Row align="middle">
 							<TimeSelect
 								source="log"
 								timeSelect={onTimeChange}
@@ -532,21 +533,13 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 								className={`display-inline-block ${styles['btn']}`}
 								onClick={downloadLog}
 							>
-								日志导出 <Icon size="xs" type="download1" />
+								日志导出 <DownloadOutlined />
 							</div>
 							{!isFullscreen && (
-								<Icon
-									type="expand-alt"
-									size="xs"
-									onClick={screenExtend}
-								/>
+								<ArrowsAltOutlined onClick={screenExtend} />
 							)}
 							{isFullscreen && (
-								<Icon
-									type="compress-alt"
-									size="xs"
-									onClick={screenShrink}
-								/>
+								<ShrinkOutlined onClick={screenShrink} />
 							)}
 						</div>
 					</div>

@@ -94,14 +94,8 @@ export interface ParamterHistorySendData {
 	startTime?: string;
 	endTime?: string;
 }
-export interface ParamterTemplateFormProps {
-	visible: boolean;
-	onCreate: (values: any) => void;
-	onCancel: () => void;
-	type: string;
-	chartVersion: string;
-}
 export interface ParamterTemplateItem {
+	createTime: string;
 	customConfigList: null | ConfigItem[];
 	description: string;
 	name: string;
@@ -125,6 +119,7 @@ export interface EventsListProps {
 	middlewareName: string;
 	eventType: string;
 	kind: string;
+	namespace: string;
 	globalVar?: globalVarProps;
 	namespace: string;
 }
@@ -198,6 +193,7 @@ export interface runParams {
 	createTime: string;
 	model: string;
 	namespace: string;
+	storageClassName: string;
 	storageType: string;
 	hostNetwork?: any;
 }
@@ -407,13 +403,14 @@ export interface ServiceRuleItem {
 	middlewareName?: string;
 	name?: string;
 	namespace?: string;
-	silence?: null;
+	silence?: null | string;
 	status?: null | string;
 	symbol?: string;
 	threshold?: string;
 	time?: string;
 	type?: string;
 	unit?: string;
+	level?: string;
 	severity?: string;
 }
 
@@ -432,7 +429,7 @@ export interface AlarmItem {
 
 export interface AlarmSendData {
 	url: {
-		clusterId: string;
+		clusterId: string | undefined;
 		middlewareName?: string;
 		namespace?: string;
 	};
@@ -471,7 +468,7 @@ export interface consoleProps {
 	onCancel: () => void;
 	containers: string[];
 	data: ConsoleDataProps;
-	middlewareName: string;
+	currentContainer: string;
 }
 export interface LogFileItem {
 	logPath: string;
@@ -554,4 +551,10 @@ export interface ParamterItem {
 	ranges: string;
 	restart: boolean;
 	value: null | any;
+}
+export interface RedisSentinelNodeSpeProps {
+	visible: boolean;
+	onCreate: (value: any) => void;
+	onCancel: () => void;
+	data: any;
 }

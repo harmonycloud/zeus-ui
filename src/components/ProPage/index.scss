@@ -1,0 +1,74 @@
+.page {
+	order: 1;
+	flex: 1 1 auto;
+}
+.pro-page {
+	display: flex;
+	flex-flow: column nowrap;
+	-webkit-box-pack: start;
+	place-content: stretch flex-start;
+	-webkit-box-align: stretch;
+	align-items: stretch;
+	box-sizing: border-box;
+	min-height: 100%;
+	.page-container {
+		order: 0;
+		-webkit-box-flex: 0;
+		flex: 0 1 auto;
+		align-self: auto;
+		box-sizing: border-box;
+		width: 100%;
+		font-size: $font-1;
+		line-height: $line-height-1;
+		.ant-page-header-back {
+			font-size: $font-5;
+		}
+		.ant-page-header-heading-title {
+			font-size: $font-5;
+			line-height: $line-height-5;
+		}
+		.pro-content {
+			order: 0;
+			-webkit-box-flex: 1;
+			flex: 1 1 auto;
+			align-self: auto;
+			padding-bottom: 40px;
+			width: 100%;
+			height: 100%;
+			min-width: 0px;
+			overflow: visible;
+			box-sizing: border-box;
+			padding: 0 24px 40px 24px;
+		}
+		.pro-menu-content {
+			display: flex;
+			height: 100%;
+			.ant-menu {
+				order: 0;
+				height: calc(100vh + 200px) !important;
+				-webkit-box-flex: 0;
+				flex: 0 0 auto;
+				align-self: auto;
+				position: relative;
+				min-width: 180px;
+				margin-right: 20px;
+				.ant-menu-item-selected::after {
+					transform: scaleY(1);
+					opacity: 1;
+					transition: transform 0.15s
+							cubic-bezier(0.645, 0.045, 0.355, 1),
+						opacity 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+				}
+			}
+			.content {
+				order: 0;
+				-webkit-box-flex: 1;
+				flex: 1 1 auto;
+				align-self: auto;
+				width: 100%;
+				min-width: 0px;
+				overflow: visible;
+			}
+		}
+	}
+}

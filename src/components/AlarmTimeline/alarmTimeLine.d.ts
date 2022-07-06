@@ -1,6 +1,6 @@
 export interface alarmTimeLineProps {
 	type: string;
-	style: any;
+	style?: any;
 	list: any[];
 	clusters?: string[];
 	setCluster: (value: string) => void;

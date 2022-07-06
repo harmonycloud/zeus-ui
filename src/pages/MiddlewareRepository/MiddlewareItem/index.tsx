@@ -1,96 +1,94 @@
 import React, { useState } from 'react';
-import { Icon, Balloon, Message, Dialog } from '@alicloud/console-components';
+import { Popover, Modal, notification } from 'antd';
+import {
+	LoadingOutlined,
+	CheckCircleFilled,
+	MinusCircleFilled,
+	ExclamationCircleOutlined
+} from '@ant-design/icons';
+import { IconFont } from '@/components/IconFont';
+
 import { useHistory } from 'react-router-dom';
 import { api } from '@/api.json';
 import { connect } from 'react-redux';
 import { middlewareItemProps } from '../middleware';
-import CustomIcon from '@/components/CustomIcon';
+
 import { installMiddleware, unInstallMiddleware } from '@/services/repository';
-import messageConfig from '@/components/messageConfig';
 import otherColor from '@/assets/images/nodata.svg';
 import { StoreState } from '@/types/index';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import OperatorInstallForm from '@/components/OperatorInstallForm/index';
+import { MiddlewareType } from '../index';
+
 import './index.scss';
 import { log } from 'console';
 
-const Tooltip = Balloon.Tooltip;
 const statusIconRender = (value: number) => {
 	switch (value) {
 		case 0:
 			return (
-				<Tooltip
-					trigger={
-						<Icon
-							type="loading1"
-							size="small"
-							style={{ color: '#D1D5D9', marginLeft: '6px' }}
-						/>
-					}
-					align="b"
-				>
-					安装中
-				</Tooltip>
+				<Popover content="安装中" placement="bottom">
+					<LoadingOutlined
+						style={{
+							color: '#D1D5D9',
+							marginLeft: '6px',
+							fontSize: '16px',
+							verticalAlign: 'middle'
+						}}
+					/>
+				</Popover>
 			);
 		case 1:
 			return (
-				<Tooltip
-					trigger={
-						<Icon
-							type="success"
-							size="small"
-							style={{ color: '#1DC11D', marginLeft: '6px' }}
-						/>
-					}
-					align="b"
-				>
-					运行正常
-				</Tooltip>
+				<Popover content="运行正常" placement="bottom">
+					<CheckCircleFilled
+						style={{
+							color: '#1DC11D',
+							marginLeft: '6px',
+							fontSize: '16px',
+							verticalAlign: 'middle'
+						}}
+					/>
+				</Popover>
 			);
 		case 2:
 			return (
-				<Tooltip
-					trigger={
-						<Icon
-							type="minus-circle-fill"
-							size="small"
-							style={{ color: '#FAC800', marginLeft: '6px' }}
-						/>
-					}
-					align="b"
-				>
-					待安装
-				</Tooltip>
+				<Popover content="待安装" placement="bottom">
+					<MinusCircleFilled
+						style={{
+							color: '#FAC800',
+							marginLeft: '6px',
+							fontSize: '16px',
+							verticalAlign: 'middle'
+						}}
+					/>
+				</Popover>
 			);
 		case 3:
 			return (
-				<Tooltip
-					trigger={
-						<Icon
-							type="warning"
-							size="small"
-							style={{ color: '#D93026', marginLeft: '6px' }}
-						/>
-					}
-					align="b"
-				>
-					运行异常
-				</Tooltip>
+				<Popover content="运行异常" placement="bottom">
+					<ExclamationCircleOutlined
+						style={{
+							color: '#D93026',
+							marginLeft: '6px',
+							fontSize: '16px',
+							verticalAlign: 'middle'
+						}}
+					/>
+				</Popover>
 			);
 		case 4:
 			return (
-				<Tooltip
-					trigger={
-						<Icon
-							type="success"
-							size="small"
-							style={{ color: '#1DC11D', marginLeft: '6px' }}
-						/>
-					}
-					align="b"
-				>
-					运行正常
-				</Tooltip>
+				<Popover content="运行正常" placement="bottom">
+					<CheckCircleFilled
+						style={{
+							color: '#1DC11D',
+							marginLeft: '6px',
+							fontSize: '16px',
+							verticalAlign: 'middle'
+						}}
+					/>
+				</Popover>
 			);
 		default:
 			break;
@@ -109,6 +107,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 		clusterId,
 		onRefresh,
 		version,
+		type,
 		setMenuRefresh,
 		replicas
 	} = props;
@@ -123,18 +122,18 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 	const install = (sendData: any) => {
 		installMiddleware(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig(
-						'success',
-						'成功',
-						'中间件安装成功，5秒后刷新数据'
-					)
-				);
+				notification.success({
+					message: '成功',
+					description: '中间件安装成功，5秒后刷新数据'
+				});
 				setMenuRefresh(true);
 				setVisible(false);
 				onRefresh();
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -144,23 +143,25 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			chartVersion,
 			clusterId
 		};
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content: '请确认是否卸载该中间件？',
+			okText: '确认',
+			cancelText: '取消',
 			onOk: () => {
 				unInstallMiddleware(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
-								'中间件卸载成功，5秒后刷新数据'
-							)
-						);
+						notification.success({
+							message: '成功',
+							description: '中间件卸载成功，5秒后刷新数据'
+						});
 						setMenuRefresh(true);
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -225,9 +226,12 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 									className="middleware-item-action-item-two"
 									onClick={toVersion}
 								>
-									<CustomIcon
+									<IconFont
 										type="icon-banben"
-										style={{ color: 'white' }}
+										style={{
+											color: 'white',
+											fontSize: '22px'
+										}}
 									/>
 									版本
 								</div>
@@ -235,9 +239,12 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 									className="middleware-item-action-item-two"
 									onClick={() => setVisible(true)}
 								>
-									<CustomIcon
+									<IconFont
 										type="icon-anzhuang"
-										style={{ color: 'white' }}
+										style={{
+											color: 'white',
+											fontSize: '22px'
+										}}
 									/>
 									安装
 								</div>
@@ -248,9 +255,12 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 									className="middleware-item-action-item-two"
 									onClick={toVersion}
 								>
-									<CustomIcon
+									<IconFont
 										type="icon-banben"
-										style={{ color: 'white' }}
+										style={{
+											color: 'white',
+											fontSize: '22px'
+										}}
 									/>
 									版本
 								</div>
@@ -258,9 +268,12 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 									className="middleware-item-action-item-two"
 									onClick={unInstall}
 								>
-									<CustomIcon
+									<IconFont
 										type="icon-xiezai1"
-										style={{ color: 'white' }}
+										style={{
+											color: 'white',
+											fontSize: '22px'
+										}}
 									/>
 									卸载
 								</div>
@@ -274,9 +287,9 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 								className="middleware-item-action-item-one"
 								onClick={releaseMiddleware}
 							>
-								<CustomIcon
+								<IconFont
 									type="icon-fabu"
-									style={{ color: 'white' }}
+									style={{ color: 'white', fontSize: '22px' }}
 								/>
 								发布
 							</div>
@@ -301,25 +314,19 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 				className="middleware-item-status"
 				style={{ color: status === 2 ? '#CCCCCC' : '#333333' }}
 			>
-				{name === 'kafka' || name === 'rocketmq'
-					? '消息类型'
-					: '数据库类型'}
+				{`${MiddlewareType[type || 'null']}类型`}
 				&nbsp;&nbsp;
-				<Tooltip
-					trigger={
-						<CustomIcon
-							style={{
-								color: '#0070cc',
-								// marginLeft: '6px',
-								visibility: official ? 'initial' : 'hidden'
-							}}
-							type="icon-guanfangrenzheng"
-						/>
-					}
-					align="b"
-				>
-					谐云官方认证
-				</Tooltip>
+				<Popover content="谐云官方认证" placement="bottom">
+					<IconFont
+						style={{
+							color: '#0070cc',
+							visibility: official ? 'initial' : 'hidden',
+							fontSize: '20px',
+							verticalAlign: 'middle'
+						}}
+						type="icon-guanfangrenzheng"
+					/>
+				</Popover>
 				{statusIconRender(status)}
 			</div>
 			<div className="middleware-item-description" title={description}>

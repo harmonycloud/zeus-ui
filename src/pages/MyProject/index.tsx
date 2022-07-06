@@ -1,76 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import {
-	getProjects,
-	getProjectMiddleware,
-	getProjectMiddlewareCount
-} from '@/services/project';
-import { setMenuRefresh } from '@/redux/menu/menu';
-import { setProject, setRefreshCluster } from '@/redux/globalVar/var';
+import { notification } from 'antd';
+import { getProjects, getProjectMiddlewareCount } from '@/services/project';
+import { setRefreshCluster } from '@/redux/globalVar/var';
 import EditProjectForm from './editProjectForm';
-import MiddlewareTable from './middlewareTable';
-import { ProjectItem } from '../ProjectManage/project';
-import { Message, Loading } from '@alicloud/console-components';
-import messageConfig from '@/components/messageConfig';
-import imgNone from '@/assets/images/nodata.svg';
-import storage from '@/utils/storage';
-import { MiddlewareTableItem, MyProjectProps } from './myProject';
+import { MyProjectProps } from './myProject';
 import { StoreState } from '@/types';
-import './index.scss';
+import { ProjectItem } from '../ProjectManage/project';
 import { roleProps } from '../RoleManage/role';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+import { nullRender } from '@/utils/utils';
+import projectIcon from '@/assets/images/project.svg';
+import './index.scss';
+import { getIsAccessGYT } from '@/services/common';
 
+const LinkButton = Actions.LinkButton;
 function MyProject(props: MyProjectProps): JSX.Element {
-	const { setProject, setRefreshCluster, project, setMenuRefresh } = props;
+	const { setRefreshCluster } = props;
 	const history = useHistory();
-	const [role, setRole] = useState<roleProps>();
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<ProjectItem[]>([]);
-	const [currentProject, setCurrentProject] = useState<ProjectItem>(project);
+	const [editData, setEditData] = useState<ProjectItem>();
 	const [projectLoading, setProjectLoading] = useState<boolean>(false);
-	const [middlewareLoading, setMiddlewareLoading] = useState<boolean>(false);
-	const [tableDataSource, setTableDataSource] = useState<
-		MiddlewareTableItem[]
-	>([]);
 	const [projectMiddlewareCount, setProjectMiddleware] = useState<
 		ProjectItem[]
 	>([]);
+	// * 判断观云台是否接入 false-未接入 true-已接入
+	const [isAccess, setIsAccess] = useState<boolean>(false);
+	// * 判断操作列是否显示 false-不显示 true-显示
+	const [isActionShow, setIsActionShow] = useState<boolean>(false);
 	useEffect(() => {
-		if (storage.getLocal('role')) {
-			setRole(JSON.parse(storage.getLocal('role')));
-		}
-	}, [storage.getLocal('role')]);
-	useEffect(() => {
-		if (role) {
-			if (role.userRoleList.some((i: any) => i.roleId) === 1) {
-				if (
-					JSON.stringify(currentProject) !== '{}' &&
-					currentProject !== undefined
-				) {
-					getData();
-					getCount();
-				}
-			} else {
-				getData();
-				getCount();
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
 			}
-		}
-	}, [role]);
+		});
+	}, []);
 	useEffect(() => {
-		if (
-			JSON.stringify(currentProject) !== '{}' &&
-			currentProject !== undefined
-		) {
-			getMiddlewareData(currentProject.projectId);
-		}
-	}, [currentProject]);
+		getData();
+		getCount();
+	}, []);
 	const getCount = () => {
 		getProjectMiddlewareCount().then((res) => {
 			if (res.success) {
 				setProjectMiddleware(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -80,191 +61,157 @@ function MyProject(props: MyProjectProps): JSX.Element {
 			.then((res) => {
 				if (res.success) {
 					setDataSource(res.data);
-					if (!currentProject) setCurrentProject(res.data[0]);
 					if (
-						!res.data.find(
-							(item: ProjectItem) =>
-								item.projectId === currentProject?.projectId
-						)
-					)
-						setCurrentProject(res.data[0]);
-					storage.setLocal('project', JSON.stringify(res.data[0]));
+						res.data.some((item: ProjectItem) => item.roleId === 2)
+					) {
+						setIsActionShow(true);
+					} else {
+						setIsActionShow(false);
+					}
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			})
 			.finally(() => {
 				setProjectLoading(false);
 			});
 	};
-	const getMiddlewareData = (projectId: string) => {
-		setMiddlewareLoading(true);
-		getProjectMiddleware({ projectId })
-			.then((res) => {
-				if (res.success) {
-					setTableDataSource(res.data);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
+	const aliasNameRender = (
+		text: string,
+		record: ProjectItem,
+		index: number
+	) => {
+		return (
+			<div className="display-flex flex-align" style={{ width: '240px' }}>
+				<img src={projectIcon} alt="项目" />
+				<div
+					className="name-link text-overflow"
+					onClick={() => {
+						history.push(
+							`/myProject/projectDetail/${record.projectId}/${record.aliasName}`
+						);
+					}}
+					style={{ marginLeft: 8 }}
+				>
+					{text}
+				</div>
+			</div>
+		);
+	};
+	const middlewareCountRender = (
+		text: string,
+		record: ProjectItem,
+		index: number
+	) => {
+		return (
+			<span>
+				{
+					projectMiddlewareCount?.find(
+						(mid: ProjectItem) => mid.projectId === record.projectId
+					)?.middlewareCount
 				}
-			})
-			.finally(() => {
-				setMiddlewareLoading(false);
-			});
+			</span>
+		);
+	};
+	const actionRender = (text: string, record: ProjectItem, index: number) => {
+		return (
+			<Actions>
+				<LinkButton
+					onClick={() => {
+						setEditData(record);
+						setEditVisible(true);
+					}}
+					disabled={record.roleId !== 2 || isAccess}
+					title={
+						isAccess
+							? '平台已接入观云台，请联系观云台管理员'
+							: record.roleId !== 2
+							? '当前用户不具有该操作权限，请联系项目管理员'
+							: ''
+					}
+				>
+					编辑信息
+				</LinkButton>
+			</Actions>
+		);
 	};
 	return (
-		<Page>
-			<Header title="我的项目" subTitle="管理用户自己的项目" />
-			<Content style={{ width: '100%' }}>
-				<Loading
-					visible={projectLoading}
-					tip="加载中，请稍后"
-					size="medium"
-					style={{ display: 'block' }}
+		<ProPage>
+			<ProHeader
+				avatar={{
+					children: <img src={projectIcon} />,
+					shape: 'square',
+					size: 48,
+					style: { background: '#F5F5F5' }
+				}}
+				title="我的项目"
+				subTitle="管理用户自己的项目"
+			/>
+			<ProContent style={{ width: '100%' }}>
+				<ProTable
+					dataSource={dataSource}
+					rowKey="projectId"
+					loading={projectLoading}
 				>
-					<div className="zeus-my-project-card-list-content">
-						{dataSource.map((item: ProjectItem) => {
-							return (
-								<div
-									key={item.projectId}
-									className={`zeus-my-project-card-item ${
-										currentProject?.projectId ===
-										item.projectId
-											? 'my-project-active'
-											: ''
-									}`}
-									onClick={() => {
-										setCurrentProject(item);
-										setProject(item);
-										setRefreshCluster(true);
-										setMenuRefresh(true);
-										storage.setLocal(
-											'project',
-											JSON.stringify(item)
-										);
-									}}
-								>
-									<div className="zeus-my-project-card-title-content">
-										<div className="zeus-my-project-card-h2">
-											{item.aliasName}
-										</div>
-										<div
-											className="zeus-my-project-card-action"
-											style={{
-												visibility:
-													item.roleId === 2
-														? 'visible'
-														: 'hidden'
-											}}
-										>
-											<div
-												className="name-link"
-												onClick={() => {
-													storage.setLocal(
-														'project',
-														JSON.stringify(item)
-													);
-													setEditVisible(true);
-													setProject(item);
-													setMenuRefresh(true);
-													setRefreshCluster(true);
-												}}
-											>
-												编辑
-											</div>
-											<div
-												className="name-link"
-												onClick={() => {
-													history.push(
-														`/myProject/projectDetail/${item.projectId}`
-													);
-													storage.setLocal(
-														'project',
-														JSON.stringify(item)
-													);
-													setRefreshCluster(true);
-													setProject(item);
-													setMenuRefresh(true);
-												}}
-											>
-												管理
-											</div>
-										</div>
-									</div>
-									<div className="red-tip">
-										{item.roleName}
-									</div>
-									<div className="zeus-my-project-card-ul">
-										<ul>
-											<li>英文简称：{item.name}</li>
-											<li>创建时间：{item.createTime}</li>
-											<li>
-												命名空间数：
-												{item.namespaceCount}
-											</li>
-											<li>成员数：{item.memberCount}</li>
-											<li>
-												服务数：
-												{
-													projectMiddlewareCount?.find(
-														(mid: ProjectItem) =>
-															mid.projectId ===
-															item.projectId
-													)?.middlewareCount
-												}
-											</li>
-											<li>备注：{item.description}</li>
-										</ul>
-									</div>
-								</div>
-							);
-						})}
-					</div>
-				</Loading>
-				<Loading
-					visible={middlewareLoading}
-					tip="加载中，请稍后"
-					size="medium"
-					style={{ display: 'block' }}
-				>
-					<div className="zeus-my-project-table-list-content">
-						{tableDataSource &&
-							tableDataSource.map((item: MiddlewareTableItem) => {
-								return (
-									<MiddlewareTable
-										key={item.type}
-										data={item}
-									/>
-								);
-							})}
-						{tableDataSource.length === 0 && (
-							<div className="display-flex flex-column flex-center">
-								<img
-									width={140}
-									height={140}
-									src={imgNone}
-									alt=""
-								/>
-								<p>暂时没有数据</p>
-							</div>
-						)}
-					</div>
-				</Loading>
-			</Content>
-			{editVisible && (
+					<ProTable.Column
+						title="项目名称"
+						dataIndex="aliasName"
+						width={250}
+						render={aliasNameRender}
+					/>
+					<ProTable.Column
+						title="项目角色"
+						dataIndex="roleName"
+						ellipsis={true}
+					/>
+					<ProTable.Column
+						title="英文简称"
+						dataIndex="name"
+						ellipsis={true}
+					/>
+					<ProTable.Column
+						title="命名空间"
+						dataIndex="namespaceCount"
+					/>
+					<ProTable.Column title="成员数" dataIndex="memberCount" />
+					<ProTable.Column
+						title="服务数"
+						dataIndex="middlewareCount"
+						render={middlewareCountRender}
+					/>
+					<ProTable.Column
+						title="备注"
+						dataIndex="description"
+						render={nullRender}
+						ellipsis={true}
+					/>
+					{isActionShow && (
+						<ProTable.Column
+							title="操作"
+							dataIndex="action"
+							render={actionRender}
+						/>
+					)}
+				</ProTable>
+			</ProContent>
+			{editVisible && editData && (
 				<EditProjectForm
 					visible={editVisible}
 					onCancel={() => setEditVisible(false)}
 					onRefresh={getData}
+					project={editData}
+					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
-		</Page>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
 	project: state.globalVar.project
 });
 export default connect(mapStateToProps, {
-	setProject,
-	setRefreshCluster,
-	setMenuRefresh
+	setRefreshCluster
 })(MyProject);

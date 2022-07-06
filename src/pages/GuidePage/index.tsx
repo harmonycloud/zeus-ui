@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { notification } from 'antd';
+
 import { useHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { Message } from '@alicloud/console-components';
 import step1 from '@/assets/images/step1.svg';
 import step2 from '@/assets/images/step2.svg';
 import step3 from '@/assets/images/step3.svg';
 import { getClusters, getComponents } from '@/services/common';
 import { getProjects } from '@/services/project';
 import { StoreState, globalVarProps } from '@/types/index';
-import messageConfig from '@/components/messageConfig';
 import { ComponentProp } from '@/pages/ResourcePoolManagement/resource.pool';
 
 import './index.scss';
@@ -29,59 +29,68 @@ const GuidePage = (props: GuideProps) => {
 			)
 		);
 	}, [JSON.parse(storage.getLocal('role'))]);
-	useEffect(() => {
-		getClusters({ detail: true }).then((res) => {
-			if (res.success) {
-				if (res.data.length > 0) {
-					setCurrent('2');
-				} else {
-					setCurrent('1');
-				}
-			} else {
-				Message.show(messageConfig('error', '失败', res));
-			}
-		});
-		if (globalClusterList.length === 0) {
-			setCurrent('1');
-		} else {
-			getComponents({ clusterId: cluster.id })
-				.then((res) => {
-					if (res.success) {
-						const middlewareControllerStatus = res.data.find(
-							(item: ComponentProp) =>
-								item.component === 'middleware-controller'
-						).status;
-						if (middlewareControllerStatus === 3) {
-							setCurrent('2');
-						} else {
-							setCurrent('1');
-						}
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-						setCurrent('2');
-					}
-				})
-				.finally(() => {
-					getProjects({ key: '' }).then((res) => {
-						console.log(res);
-						if (res.success) {
-							if (res.data.length > 0) {
-								setCurrent('3');
-							} else {
-								setCurrent('2');
-							}
-						} else {
-							Message.show(messageConfig('error', '失败', res));
-							setCurrent('2');
-						}
-					});
-				});
-		}
-	}, [props]);
+	// useEffect(() => {
+	// 	getClusters({ detail: true }).then((res) => {
+	// 		if (res.success) {
+	// 			if (res.data.length > 0) {
+	// 				setCurrent('2');
+	// 			} else {
+	// 				setCurrent('1');
+	// 			}
+	// 		} else {
+	// 			notification.error({
+	// 				message: '失败',
+	// 				description: res.errorMsg
+	// 			});
+	// 		}
+	// 	});
+	// 	if (globalClusterList.length === 0) {
+	// 		setCurrent('1');
+	// 	} else {
+	// 		getComponents({ clusterId: cluster.id })
+	// 			.then((res) => {
+	// 				if (res.success) {
+	// 					const middlewareControllerStatus = res.data.find(
+	// 						(item: ComponentProp) =>
+	// 							item.component === 'middleware-controller'
+	// 					).status;
+	// 					if (middlewareControllerStatus === 3) {
+	// 						setCurrent('2');
+	// 					} else {
+	// 						setCurrent('1');
+	// 					}
+	// 				} else {
+	// 					notification.error({
+	// 						message: '失败',
+	// 						description: res.errorMsg
+	// 					});
+	// 					setCurrent('2');
+	// 				}
+	// 			})
+	// 			.finally(() => {
+	// 				getProjects({ key: '' }).then((res) => {
+	// 					console.log(res);
+	// 					if (res.success) {
+	// 						if (res.data.length > 0) {
+	// 							setCurrent('3');
+	// 						} else {
+	// 							setCurrent('2');
+	// 						}
+	// 					} else {
+	// 						notification.error({
+	// 							message: '失败',
+	// 							description: res.errorMsg
+	// 						});
+	// 						setCurrent('2');
+	// 					}
+	// 				});
+	// 			});
+	// 	}
+	// }, [props]);
 	return (
-		<Page>
-			<Header title="初始化操作引导" />
-			<Content>
+		<ProPage>
+			<ProHeader title="初始化操作引导" />
+			<ProContent>
 				<div className="guide-page-content">
 					<div className="guide-page-img-content">
 						<div className="guide-page-img-item">
@@ -243,8 +252,8 @@ const GuidePage = (props: GuideProps) => {
 						</div>
 					</div>
 				</div>
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

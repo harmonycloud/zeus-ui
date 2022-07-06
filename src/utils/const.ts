@@ -1,11 +1,11 @@
-import { filtersProps } from '@/types/comment';
+import { filtersProps, FiltersProps } from '@/types/comment';
 
-export const states: filtersProps[] = [
-	{ value: 'Creating', label: '启动中', color: '#0091FF' },
-	{ value: 'Running', label: '运行正常', color: '#1E8E3E' },
-	{ value: 'Other', label: '运行异常', color: '#DA372E' },
-	{ value: 'Preparing', label: '创建中', color: '#0091FF' },
-	{ value: 'failed', label: '创建失败', color: '#DA372E' }
+export const states: FiltersProps[] = [
+	{ value: 'Creating', text: '启动中', color: '#0091FF' },
+	{ value: 'Running', text: '运行正常', color: '#1E8E3E' },
+	{ value: 'Other', text: '运行异常', color: '#DA372E' },
+	{ value: 'Preparing', text: '创建中', color: '#0091FF' },
+	{ value: 'failed', text: '创建失败', color: '#DA372E' }
 ];
 export const podStatus: filtersProps[] = [
 	{
@@ -55,6 +55,9 @@ export const disabledRoute = [
 	'/redisCreat',
 	'/elasticsearchCreate',
 	'/rocketmqCreate',
+	'/postgresqlCreate',
+	'/zookeeperCreate',
+	'kafkaCreate',
 	'/dynamicForm',
 	'/serviceList/versionManagement',
 	'/instanceList/detail',
@@ -87,7 +90,9 @@ export const hideRoute = [
 	'/terminal',
 	'/myProject',
 	'/projectDetail',
-	'/middlewareRepository'
+	'/middlewareRepository',
+	'/storageManagement',
+	'/backupService'
 ];
 // * 项目不显示路由名单
 export const projectHideRoute = [
@@ -101,7 +106,10 @@ export const projectHideRoute = [
 	'/dataOverview',
 	'/systemManagement',
 	'/terminal',
-	'/middlewareRepository'
+	'/middlewareRepository',
+	'/myProject',
+	'/storageManagement',
+	'/backupService'
 ];
 export const list = [
 	{ value: 1, label: '星期一' },
@@ -113,13 +121,13 @@ export const list = [
 	{ value: 0, label: '星期日' }
 ];
 export const weekMap = {
-	1: '星期一',
-	2: '星期二',
-	3: '星期三',
-	4: '星期四',
-	5: '星期五',
-	6: '星期六',
-	0: '星期日'
+	1: '一',
+	2: '二',
+	3: '三',
+	4: '四',
+	5: '五',
+	6: '六',
+	0: '日'
 };
 export const esMap = {
 	master: '主节点',
@@ -178,28 +186,28 @@ export const symbols = [
 export const alarmWarn: any[] = [
 	{
 		value: 'info',
-		label: '一般'
+		text: '一般'
 	},
 	{
 		value: 'warning',
-		label: '重要'
+		text: '重要'
 	},
 	{
 		value: 'critical',
-		label: '严重'
+		text: '严重'
 	}
 ];
 export const silences = [
-	{ value: '5m', label: '5分钟' },
-	{ value: '10m', label: '10分钟' },
-	{ value: '15m', label: '15分钟' },
-	{ value: '30m', label: '30分钟' },
-	{ value: '1h', label: '1小时' },
-	{ value: '2h', label: '2小时' },
-	{ value: '3h', label: '3小时' },
-	{ value: '6h', label: '6小时' },
-	{ value: '12h', label: '12小时' },
-	{ value: '24h', label: '24小时' }
+	{ value: '5m', text: '5分钟' },
+	{ value: '10m', text: '10分钟' },
+	{ value: '15m', text: '15分钟' },
+	{ value: '30m', text: '30分钟' },
+	{ value: '1h', text: '1小时' },
+	{ value: '2h', text: '2小时' },
+	{ value: '3h', text: '3小时' },
+	{ value: '6h', text: '6小时' },
+	{ value: '12h', text: '12小时' },
+	{ value: '24h', text: '24小时' }
 ];
 export const initMenu = [
 	{
@@ -271,13 +279,9 @@ export const initMenu = [
 		own: false
 	}
 ];
-export const BalloonFormFormItemLayout = {
-	labelCol: { fixedSpan: 0 },
-	wrapperCol: { span: 24 }
-};
 export const formItemLayout614 = {
 	labelCol: {
-		fixedSpan: 6
+		span: 6
 	},
 	wrapperCol: {
 		span: 14
@@ -387,4 +391,223 @@ export const authorityList = [
 		authority: 4,
 		value: '仅DML'
 	}
+];
+// mysql版本
+export const mysqlDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '4 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '4',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '5',
+		cpu: '8 Core',
+		memory: '32 Gi'
+	},
+	{
+		id: '6',
+		cpu: '16 Core',
+		memory: '64 Gi'
+	}
+];
+// * redis 哨兵版本
+export const redisSentinelDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '0.256 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '1 Gi'
+	},
+	{
+		id: '3',
+		cpu: '2 Core',
+		memory: '2 Gi'
+	},
+	{
+		id: '4',
+		cpu: '2 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '5',
+		cpu: '2 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '6',
+		cpu: '2 Core',
+		memory: '32 Gi'
+	}
+];
+
+//* redis
+export const redisDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '1 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '2 Gi'
+	},
+	{
+		id: '3',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '4',
+		cpu: '2 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '5',
+		cpu: '2 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '6',
+		cpu: '2 Core',
+		memory: '32 Gi'
+	}
+];
+// * es
+export const esDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '4',
+		cpu: '4 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '5',
+		cpu: '8 Core',
+		memory: '32 Gi'
+	}
+];
+// * mq
+export const mqDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '4',
+		cpu: '12 Core',
+		memory: '24 Gi'
+	},
+	{
+		id: '5',
+		cpu: '16 Core',
+		memory: '32 Gi'
+	}
+];
+// * kafka
+export const kafkaDataList = [
+	{
+		id: '1',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '2',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '3',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '4',
+		cpu: '12 Core',
+		memory: '24 Gi'
+	},
+	{
+		id: '5',
+		cpu: '16 Core',
+		memory: '32 Gi'
+	}
+];
+// * zkp
+export const zkpDataList = [
+	{
+		id: '1',
+		cpu: '1 Core',
+		memory: '2 Gi'
+	},
+	{
+		id: '2',
+		cpu: '2 Core',
+		memory: '4 Gi'
+	},
+	{
+		id: '3',
+		cpu: '4 Core',
+		memory: '8 Gi'
+	},
+	{
+		id: '4',
+		cpu: '8 Core',
+		memory: '16 Gi'
+	},
+	{
+		id: '5',
+		cpu: '16 Core',
+		memory: '32 Gi'
+	}
+];
+export const backupTaskStatus = [
+	{ value: 'Running', text: '进行中', color: '#faad14' },
+	{ value: 'Success', text: '成功', color: '#52c41a' },
+	{ value: 'Failed', text: '失败', color: '#ff4d4f' },
+	{ value: 'Creating', text: '创建中', color: '#18900f' },
+	{ value: 'Unknown', text: '未知', color: '#d7d7d7' }
 ];

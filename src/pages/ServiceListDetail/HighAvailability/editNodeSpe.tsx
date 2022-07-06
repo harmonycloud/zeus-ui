@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-	Form,
-	Dialog,
-	Field,
-	Message,
-	NumberPicker
-} from '@alicloud/console-components';
+import { Form, Modal, InputNumber, Alert } from 'antd';
 import { NodeSpeProps } from '../detail';
 
 const formItemLayout = {
 	labelCol: {
-		fixedSpan: 10
+		span: 10
 	},
 	wrapperCol: {
 		span: 14,
@@ -26,62 +20,56 @@ export default function EditNodeSpe(props: NodeSpeProps): JSX.Element {
 		onCancel,
 		quota: { cpu, memory, storageClassQuota }
 	} = props;
-	const field = Field.useField();
+	const [form] = Form.useForm();
 
 	const onOk = () => {
-		field.validate((err, value) => {
-			onCreate(value);
+		form.validateFields().then((values) => {
+			onCreate(values);
 		});
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title="修改节点规格"
 			visible={visible}
 			onOk={onOk}
 			onCancel={onCancel}
-			onClose={onCancel}
-			footerAlign="right"
 		>
-			<Form field={field} {...formItemLayout}>
-				<Message style={{ marginBottom: 24 }} type="warning">
-					修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。
-				</Message>
-				<FormItem label="CPU (Core)">
-					<NumberPicker
-						type="inline"
-						step="0.1"
-						name="cpu"
-						min={0}
-						defaultValue={Number(cpu)}
-					/>
+			<Form form={form} {...formItemLayout} labelAlign="left">
+				<Alert
+					message="修改节点规格需要节点重启后生效，由此可能导致服务短暂中断，请谨慎操作。"
+					type="warning"
+					style={{ marginBottom: 16 }}
+				/>
+				<FormItem
+					label="CPU (Core)"
+					name="cpu"
+					initialValue={Number(cpu)}
+				>
+					<InputNumber type="inline" step="0.1" min={0} />
 				</FormItem>
-				<FormItem label="内存 (GB)">
-					<NumberPicker
-						type="inline"
-						step="0.1"
-						name="memory"
-						min={0}
-						defaultValue={Number(
-							memory.substring(0, memory.length - 2)
-						)}
-					/>
+				<FormItem
+					label="内存 (GB)"
+					name="memory"
+					initialValue={Number(
+						memory?.substring(0, memory.length - 2)
+					)}
+				>
+					<InputNumber type="inline" step="0.1" min={0} />
 				</FormItem>
-				<FormItem label="存储 (GB)">
-					<NumberPicker
-						disabled
-						type="inline"
-						step="0.1"
-						name="storage"
-						defaultValue={Number(
-							storageClassQuota?.substring(
-								0,
-								storageClassQuota.length - 2
-							)
-						)}
-					/>
+				<FormItem
+					label="存储 (GB)"
+					name="storage"
+					initialValue={Number(
+						storageClassQuota?.substring(
+							0,
+							storageClassQuota.length - 2
+						)
+					)}
+				>
+					<InputNumber disabled type="inline" step="0.1" />
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

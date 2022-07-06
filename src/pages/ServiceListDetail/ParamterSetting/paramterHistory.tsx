@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Content } from '@alicloud/console-components-page';
-import { DatePicker } from '@alicloud/console-components';
-import moment, { Moment } from 'moment';
-
-import Table from '@/components/MidTable';
+import { ProPage, ProContent } from '@/components/ProPage';
+import { DatePicker } from 'antd';
+import moment from 'moment';
+import ProTable from '@/components/ProTable';
 import { getConfigHistory } from '@/services/middleware';
 import transTime from '@/utils/transTime';
 import {
@@ -57,34 +56,28 @@ export default function ParamterHistory(
 			}
 		});
 	};
-
-	const onOk = (val: any[]) => {
-		console.log(val);
-		setStartTime(val[0]);
-		setEndTime(val[1]);
-		const start = moment(val[0]).format('YYYY-MM-DDTHH:mm:ss[Z]');
-		const end = moment(val[1]).format('YYYY-MM-DDTHH:mm:ss[Z]');
-		getData(
-			clusterId,
-			namespace,
-			middlewareName,
-			type,
-			searchText,
-			start,
-			end
-		);
-	};
-	const onChange = (val: any[]) => {
-		if (val.length === 0) {
+	const onChange = (val: any) => {
+		if (val) {
+			setStartTime(val[0]);
+			setEndTime(val[1]);
+			const start = moment(val[0]).format('YYYY-MM-DDTHH:mm:ss[Z]');
+			const end = moment(val[1]).format('YYYY-MM-DDTHH:mm:ss[Z]');
+			getData(
+				clusterId,
+				namespace,
+				middlewareName,
+				type,
+				searchText,
+				start,
+				end
+			);
+		} else {
 			getData(clusterId, namespace, middlewareName, type, searchText);
 		}
 	};
 
 	const Operation = {
-		primary: <RangePicker onChange={onChange} onOk={onOk} />
-	};
-	const handleChange = (value: string) => {
-		setSearchText(value);
+		primary: <RangePicker onChange={onChange} />
 	};
 	const handleSearch = (value: string) => {
 		getData(
@@ -107,14 +100,11 @@ export default function ParamterHistory(
 	};
 
 	return (
-		<Page>
-			<Content style={{ padding: '0 0' }}>
-				<Table
+		<ProPage>
+			<ProContent style={{ padding: '0 0' }}>
+				<ProTable
 					dataSource={dataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
-					primaryKey="key"
+					rowKey="id"
 					operation={Operation}
 					showRefresh
 					onRefresh={() =>
@@ -131,38 +121,38 @@ export default function ParamterHistory(
 					search={{
 						value: searchText,
 						onSearch: handleSearch,
-						onChange: handleChange,
+						onChange: (value) => setSearchText(value.target.value),
 						placeholder: '请输入关键词搜索'
 					}}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="参数名"
 						dataIndex="item"
 						width={210}
-						lock="left"
+						fixed="left"
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="变更前的参数值"
 						dataIndex="last"
 						width={210}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="变更后的参数值"
 						dataIndex="after"
 						width={210}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="是否生效"
 						dataIndex="status"
-						cell={statusRender}
+						render={statusRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="变更时间"
 						dataIndex="date"
-						cell={dateRender}
+						render={dateRender}
 					/>
-				</Table>
-			</Content>
-		</Page>
+				</ProTable>
+			</ProContent>
+		</ProPage>
 	);
 }

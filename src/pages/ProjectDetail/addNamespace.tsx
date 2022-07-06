@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
-	Dialog,
+	Modal,
 	Form,
-	Field,
 	Input,
 	Radio,
 	Select,
-	Message
-} from '@alicloud/console-components';
-
-import messageConfig from '@/components/messageConfig';
-import storage from '@/utils/storage';
+	notification,
+	RadioChangeEvent
+} from 'antd';
 import { connect } from 'react-redux';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { createNamespace } from '@/services/common';
 import { bingNamespace, getAllocatableNamespace } from '@/services/project';
 import { formItemLayout618 } from '@/utils/const';
 import { clusterType } from '@/types';
-import { AddNamespaceFieldValues, AddNamespaceProps } from './projectDetail';
-import { ProjectItem } from '../ProjectManage/project';
+import { AddNamespaceProps } from './projectDetail';
 
 const list = [
 	{
@@ -34,15 +30,19 @@ const FormItem = Form.Item;
 const { Group: RadioGroup } = Radio;
 const Option = Select.Option;
 function AddNamespace(props: AddNamespaceProps): JSX.Element {
-	const { visible, onCancel, onRefresh, setRefreshCluster } = props;
+	const {
+		visible,
+		onCancel,
+		onRefresh,
+		setRefreshCluster,
+		projectId,
+		projectAliasName
+	} = props;
 	const [source, setSource] = useState<string>('create');
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
 	const [currentCluster, setCurrentCluster] = useState<clusterType>();
 	const [namespaceList, setNamespaceList] = useState([]);
-	const [project] = useState<ProjectItem>(
-		JSON.parse(storage.getLocal('project'))
-	);
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	useEffect(() => {
 		getAllocatableNamespace().then((res) => {
 			if (res.success) {
@@ -57,7 +57,10 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 			} else {
 				setClusterList([]);
 				setNamespaceList([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
@@ -65,14 +68,14 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 		clusterList.map((item: clusterType) => {
 			if (item.id === currentCluster?.id) {
 				setNamespaceList(item.namespaceList || []);
-				field.setValues({ namespace: '' });
+				form.setFieldsValue({
+					namespace: ''
+				});
 			}
 		});
 	}, [currentCluster]);
 	const onOk = () => {
-		field.validate((errors) => {
-			if (errors) return;
-			const values: AddNamespaceFieldValues = field.getValues();
+		form.validateFields().then((values) => {
 			onCancel();
 			if (source === 'access') {
 				const currentNamespace: any = namespaceList.find(
@@ -87,16 +90,16 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 				bingNamespace(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'命名空间接入成功'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '命名空间接入成功'
+							});
 							setRefreshCluster(true);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -112,16 +115,16 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 				createNamespace(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'命名空间新建成功'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '命名空间新建成功'
+							});
 							setRefreshCluster(true);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -136,75 +139,98 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 		setCurrentCluster(t);
 	};
 	return (
-		<Dialog
+		<Modal
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
 			title="新增/接入"
-			style={{ width: '550px' }}
+			width={550}
+			okText="确定"
+			cancelText="取消"
 		>
-			<Form {...formItemLayout618} field={field}>
+			<Form {...formItemLayout618} labelAlign="left" form={form}>
 				<FormItem
 					label="选择操作:"
 					required
-					requiredMessage="选择操作必填"
+					name="source"
+					rules={[
+						{
+							required: true,
+							message: '选择操作必填'
+						}
+					]}
+					initialValue={'create'}
 				>
 					<RadioGroup
-						name="source"
-						dataSource={list}
+						options={list}
 						value={source}
-						onChange={(value: string | number | boolean) => {
-							setSource(value as string);
+						onChange={(e: RadioChangeEvent) => {
+							setSource(e.target.value as string);
 						}}
 					/>
 				</FormItem>
 				{source === 'create' && (
 					<FormItem
 						label="命名空间名称:"
+						name="aliasName"
 						required
-						requiredMessage="命名空间名称必填"
-						maxLength={64}
-						minmaxLengthMessage="请输入名称，且最大长度不超过64个字符"
+						rules={[
+							{
+								required: true,
+								message: '命名空间名称必填'
+							},
+							{
+								max: 64,
+								message: '请输入名称，且最大长度不超过64个字符'
+							}
+						]}
 					>
-						<Input id="aliasName" name="aliasName" />
+						<Input id="aliasName" />
 					</FormItem>
 				)}
 				{source === 'create' && (
 					<FormItem
 						label="英文简称:"
 						required
-						requiredMessage="英文简称必填"
-						maxLength={63}
-						minLength={2}
-						minmaxLengthMessage="命名空间是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-40个字符"
-						pattern={'^[a-z][a-z0-9-]{0,38}[a-z0-9]$'}
-						patternMessage={
-							'命名空间是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-40个字符'
-						}
+						name="name"
+						rules={[
+							{
+								required: true,
+								message: '英文简称必填'
+							},
+							{
+								pattern: new RegExp(
+									'^[a-z][a-z0-9-]{0,38}[a-z0-9]$'
+								),
+								message:
+									'命名空间是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-40个字符'
+							}
+						]}
 					>
-						<Input id="name" name="name" />
+						<Input id="name" />
 					</FormItem>
 				)}
-				<FormItem label="绑定项目">
-					<Select
-						name="projectId"
-						value={project.projectId}
-						disabled={true}
-						style={{ width: '100%' }}
-					>
-						<Option value={project.projectId}>
-							{project.aliasName}
-						</Option>
+				<FormItem
+					label="绑定项目"
+					name="projectId"
+					initialValue={projectId}
+				>
+					<Select disabled={true} style={{ width: '100%' }}>
+						<Option value={projectId}>{projectAliasName}</Option>
 					</Select>
 				</FormItem>
 				<FormItem
 					label="绑定集群"
 					required
-					requiredMessage="英文简称必填"
+					name="clusterId"
+					rules={[
+						{
+							required: true,
+							message: '英文简称必填'
+						}
+					]}
 				>
 					<Select
-						name="clusterId"
 						value={currentCluster?.id}
 						onChange={handleChange}
 						style={{ width: '100%' }}
@@ -221,10 +247,16 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 				{source === 'access' && (
 					<FormItem
 						label="选择命名空间"
+						name="namespace"
 						required
-						requiredMessage="请选择命名空间"
+						rules={[
+							{
+								required: true,
+								message: '请选择命名空间'
+							}
+						]}
 					>
-						<Select name="namespace" style={{ width: '100%' }}>
+						<Select style={{ width: '100%' }}>
 							{namespaceList?.map((item: any) => {
 								return (
 									<Option key={item.name} value={item.name}>
@@ -236,7 +268,7 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 					</FormItem>
 				)}
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
 const mapStateToProps = () => ({});

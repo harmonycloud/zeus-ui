@@ -1,6 +1,7 @@
 .platform_overview-content {
 	height: 100%;
 	width: 100%;
+	margin-top: 16px;
 	min-height: 630px;
 	.header {
 		width: 100%;
@@ -53,7 +54,6 @@
 				}
 				&:nth-of-type(4) {
 					background: #ff9861;
-					// margin-right: 0;
 				}
 				.part-detail {
 					width: 100%;
@@ -67,44 +67,38 @@
 						background: $white;
 						border-radius: 30px;
 						opacity: 0.96;
-						line-height: $line-height-sm * 6;
-						text-align: center;
+						display: flex;
+						justify-content: center;
+						align-items: center;
 					}
 					.value {
+						width: 140px;
 						& > span {
 							width: 15px;
 							height: 20px;
-							font-size: $font-h2;
+							font-size: $font-2;
 							font-family: PingFangSC-Regular, PingFang SC;
 							font-weight: $font-weight-sm;
 							color: $white;
-							line-height: $line-height-xxl;
+							line-height: $line-height-4;
 						}
 						&.percent > span {
 							width: 26px;
 							height: 20px;
-							font-size: $font-size;
+							font-size: $font-1;
 							font-family: PingFangSC-Regular, PingFang SC;
 							font-weight: $font-weight-sm;
 							color: $white;
-							line-height: $line-height-xxl;
+							line-height: $line-height-4;
 						}
-						.next-progress-line {
-							display: block;
-							width: auto;
-							.next-progress-line-text {
-								display: none;
-							}
-						}
-						.next-progress-line-underlay {
+						.ant-progress-inner {
 							width: 140px;
 							height: 12px;
 							border-radius: $border-radius-xl;
 							background: rgba(255, 255, 255, 0.4);
 						}
-						.next-progress-line-overlay-normal {
-							margin-top: -6px;
-							height: 12px;
+						.ant-progress-bg {
+							height: 12px !important;
 							background: $white;
 						}
 						.num {
@@ -119,11 +113,11 @@
 				}
 				.type {
 					height: 20px;
-					font-size: $font-h2;
+					font-size: $font-2;
 					font-family: PingFangSC-Regular, PingFang SC;
 					font-weight: $font-weight-sm;
 					color: $white;
-					line-height: $line-height-xxl;
+					line-height: $line-height-4;
 				}
 			}
 		}
@@ -153,7 +147,7 @@
 						top: 0;
 						right: 0;
 						display: block;
-						content: "";
+						content: '';
 						width: 1px;
 						height: 46px;
 						background-color: #e3e4e6;
@@ -170,10 +164,10 @@
 							width: 18px;
 							height: 18px;
 							line-height: 14px;
-							font-size: $font-size;
+							font-size: $font-1;
 							font-family: PingFangSC-Medium, PingFang SC;
 							font-weight: $font-weight;
-							color:$white;
+							color: $white;
 							text-align: center;
 							background: #c80000;
 							border-radius: 50%;
@@ -182,18 +176,18 @@
 					}
 					.info-name {
 						height: 18px;
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: $font-weight-sm;
 						color: #1a1a1a;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 					}
 					.info-count {
-						font-size: $font-size;
+						font-size: $font-1;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: $font-weight-sm;
 						color: $text-color-title;
-						line-height: $line-height-xl;
+						line-height: $line-height-3;
 						margin-top: 20px;
 					}
 				}
@@ -230,13 +224,13 @@
 						font-size: 20px;
 						font-family: PingFangSC-Medium, PingFang SC;
 						font-weight: $font-weight;
-						color:$primary-color ;
+						color: $primary-color;
 						line-height: 28px;
 						margin: 20px auto 10px;
 					}
 				}
 				.next-pagination-total {
-					font-size: $font-size;
+					font-size: $font-1;
 				}
 			}
 		}

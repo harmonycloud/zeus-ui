@@ -2,9 +2,12 @@ import { ProjectItem } from '../ProjectManage/project';
 
 export interface DetailParams {
 	id: string;
+	name: string;
 }
 export interface AddNamespaceProps {
 	visible: boolean;
+	projectId: string;
+	projectAliasName: string;
 	onCancel: () => void;
 	onRefresh: () => void;
 	setRefreshCluster: (flag: boolean) => void;
@@ -31,6 +34,7 @@ export interface NamespaceItem {
 }
 export interface AddMemberProps {
 	visible: boolean;
+	projectId: string;
 	onCancel: () => void;
 	onRefresh: () => void;
 }
@@ -70,4 +74,11 @@ export interface ProjectDetailProps {
 export interface NamespaceProps {
 	clusterList: clusterType[];
 	setRefreshCluster: (flag: boolean) => void;
+}
+export interface ServiceListProps {
+	globalVar: globalVarProps;
+	setCluster: (value: any) => void;
+	setNamespace: (value: any) => void;
+	setRefreshCluster: (flag: boolean) => void;
+	setProject: (value: any) => void;
 }

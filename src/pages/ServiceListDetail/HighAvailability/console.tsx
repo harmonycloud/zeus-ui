@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Select,
-	Radio
-} from '@alicloud/console-components';
+import { Modal, Form, Select, Radio, RadioChangeEvent } from 'antd';
 import { valuesProps, consoleProps } from '../detail';
 
 const { Group: RadioGroup } = Radio;
@@ -33,20 +27,12 @@ const mysqlDatabaseContainer: string[] = ['mysql'];
 const redisDatabaseContainer: string[] = ['redis-cluster'];
 const redisSentinelDBContainer: string[] = ['sentinel'];
 export default function Console(props: consoleProps): JSX.Element {
-	const { visible, onCancel, containers, data, middlewareName } = props;
+	const [form] = Form.useForm();
+	const { visible, onCancel, containers, data, currentContainer } = props;
 	const [source, setSource] = useState<string>('container');
-	const [container, setContainer] = useState<string>(
-		data.type === 'mysql'
-			? mysqlDatabaseContainer[0]
-			: data.type === 'redis'
-			? data.podName.includes(`${middlewareName}-sentinel`)
-				? redisSentinelDBContainer[0]
-				: redisDatabaseContainer[0]
-			: containers[0]
-	);
-	const field = Field.useField();
+	const [container, setContainer] = useState<string>(currentContainer);
 	const onOk = () => {
-		const values: valuesProps = field.getValues();
+		const values: valuesProps = form.getFieldsValue();
 		const url = `middlewareName=${data.name}&middlewareType=${data.type}&source=${source}&terminalType=console&scriptType=${values.scriptType}&container=${values.container}&pod=${data.podName}&namespace=${data.namespace}&clusterId=${data.clusterId}`;
 		window.open(
 			`#/terminal/${url}`,
@@ -59,33 +45,17 @@ export default function Console(props: consoleProps): JSX.Element {
 		if (source === 'database') {
 			if (data.type === 'mysql') {
 				return (
-					<Select
+					<FormItem
+						label="选择容器"
 						name="container"
-						style={{ width: '100%' }}
-						value={mysqlDatabaseContainer[0]}
-						onChange={(value: any) => setContainer(value)}
+						initialValue={mysqlDatabaseContainer[0]}
 					>
-						{mysqlDatabaseContainer.map(
-							(item: string, index: number) => {
-								return (
-									<Option key={index} value={item}>
-										{item}
-									</Option>
-								);
-							}
-						)}
-					</Select>
-				);
-			} else if (data.type === 'redis') {
-				if (data.podName.includes(`${middlewareName}-sentinel`)) {
-					return (
 						<Select
-							name="container"
 							style={{ width: '100%' }}
-							value={redisSentinelDBContainer[0]}
+							value={mysqlDatabaseContainer[0]}
 							onChange={(value: any) => setContainer(value)}
 						>
-							{redisSentinelDBContainer.map(
+							{mysqlDatabaseContainer.map(
 								(item: string, index: number) => {
 									return (
 										<Option key={index} value={item}>
@@ -95,11 +65,16 @@ export default function Console(props: consoleProps): JSX.Element {
 								}
 							)}
 						</Select>
-					);
-				} else {
-					return (
+					</FormItem>
+				);
+			} else if (data.type === 'redis') {
+				return (
+					<FormItem
+						label="选择容器"
+						name="container"
+						initialValue={redisDatabaseContainer[0]}
+					>
 						<Select
-							name="container"
 							style={{ width: '100%' }}
 							value={redisDatabaseContainer[0]}
 							onChange={(value: any) => setContainer(value)}
@@ -114,70 +89,69 @@ export default function Console(props: consoleProps): JSX.Element {
 								}
 							)}
 						</Select>
-					);
-				}
+					</FormItem>
+				);
 			}
 		} else {
 			return (
-				<Select
+				<FormItem
+					label="选择容器"
 					name="container"
-					style={{ width: '100%' }}
-					value={container}
-					onChange={(value: any) => setContainer(value)}
+					initialValue={container}
 				>
-					{containers.map((item: string, index: number) => {
-						return (
-							<Option key={index} value={item}>
-								{item}
-							</Option>
-						);
-					})}
-				</Select>
+					<Select
+						style={{ width: '100%' }}
+						value={container}
+						onChange={(value: any) => setContainer(value)}
+					>
+						{containers.map((item: string, index: number) => {
+							return (
+								<Option key={index} value={item}>
+									{item}
+								</Option>
+							);
+						})}
+					</Select>
+				</FormItem>
 			);
 		}
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title="实例控制台"
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
+			// onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '400px' }}
+			width={400}
+			// style={{ width: '400px' }}
 		>
-			<Form {...formItemLayout} field={field}>
-				{(data.type === 'mysql' || data.type === 'redis') && (
-					<FormItem>
+			<Form labelAlign="left" {...formItemLayout} form={form}>
+				{(data.type === 'mysql' ||
+					(data.type === 'redis' &&
+						currentContainer !== 'sentinel')) && (
+					<FormItem name="source" initialValue={'container'}>
 						<RadioGroup
-							name="source"
-							dataSource={list}
+							options={list}
 							value={source}
-							onChange={(value: string | number | boolean) => {
-								setSource(value as string);
+							onChange={(e: RadioChangeEvent) => {
+								setSource(e.target.value);
 								data.type === 'mysql'
 									? setContainer(mysqlDatabaseContainer[0])
-									: data.podName.includes(
-											`${middlewareName}-sentinel`
-									  )
-									? setContainer(redisSentinelDBContainer[0])
 									: setContainer(redisDatabaseContainer[0]);
 							}}
 						/>
 					</FormItem>
 				)}
-				<FormItem label="选择容器">{selectRender()}</FormItem>
-				<FormItem label="shell类型">
-					<Select
-						name="scriptType"
-						style={{ width: '100%' }}
-						defaultValue="sh"
-					>
+				{selectRender()}
+				<FormItem label="shell类型" name="scriptType" initialValue="sh">
+					<Select style={{ width: '100%' }}>
 						<Option value="sh">sh</Option>
 						<Option value="bash">bash</Option>
 					</Select>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

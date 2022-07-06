@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Page, { Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {
-	Form,
-	Field,
-	Button,
-	Message,
-	Input,
-	Select
-} from '@alicloud/console-components';
+import { Input, Select, Button, Form, Result, notification } from 'antd';
 import FormBlock from '@/components/FormBlock';
 import { renderFormItem } from '@/components/renderFormItem';
-// * 结果页相关-start
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-// * 结果页相关-end
 import { getDynamicFormData } from '@/services/middleware';
 import { postMiddleware } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
 import { getMirror } from '@/services/common';
 
@@ -34,15 +21,6 @@ import { getProjectNamespace } from '@/services/project';
 import { middlewareDetailProps } from '@/types/comment';
 const { Item: FormItem } = Form;
 
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
-
 function DynamicForm(props: CreateProps): JSX.Element {
 	const {
 		cluster: globalCluster,
@@ -50,7 +28,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 		project
 	} = props.globalVar;
 	const {
-		params: { chartName, chartVersion, version, aliasName }
+		params: { chartName, chartVersion, aliasName }
 	} = props.match;
 	const [dataSource, setDataSource] = useState<any>();
 	const [capabilities, setCapabilities] = useState<string[]>([]);
@@ -62,11 +40,13 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
+	// * 创建失败返回的失败信息
+	const [errorData, setErrorData] = useState<string>('');
 	const [mirrorList, setMirrorList] = useState<any[]>([]);
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	const history = useHistory();
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	useEffect(() => {
 		if (
 			JSON.stringify(props.globalVar.cluster) !== '{}' &&
@@ -83,7 +63,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					setDataSource(formatData);
 					setCapabilities(res.data.capabilities);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getMirror({
@@ -108,7 +91,10 @@ function DynamicForm(props: CreateProps): JSX.Element {
 						);
 						setNamespaceList(list);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
@@ -145,7 +131,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 												>
 													{renderFormItem(
 														formItem,
-														field,
+														form,
 														globalCluster,
 														globalNamespace
 													)}
@@ -163,9 +149,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	};
 
 	const handleSubmit = () => {
-		field.validate((err) => {
-			if (err) return;
-			const values: DynamicCreateValueParams = field.getValues();
+		form.validateFields().then((values: DynamicCreateValueParams) => {
 			const sendData: DynamicSendDataParams = {
 				clusterId: globalCluster.id,
 				namespace:
@@ -184,22 +168,19 @@ function DynamicForm(props: CreateProps): JSX.Element {
 			};
 			// * 主机亲和特殊处理
 			if (values.nodeAffinity) {
-				if (values.nodeAffinityLabel) {
-					sendData.nodeAffinity = values.nodeAffinityLabel.map(
-						(item) => {
-							return {
-								label: item.label,
-								required: values.nodeAffinityForce
-									? values.nodeAffinityForce
-									: false,
-								namespace: globalNamespace.name
-							};
-						}
-					);
+				if (values.nodeAffinity.length) {
+					sendData.nodeAffinity = values.nodeAffinity.map((item) => {
+						return {
+							label: item.label,
+							required: item.required,
+							namespace: globalNamespace.name
+						};
+					});
 				} else {
-					Message.show(
-						messageConfig('error', '失败', '请选择主机亲和。')
-					);
+					notification.error({
+						message: '失败',
+						description: '请选择主机亲和。'
+					});
 				}
 			}
 			// * 删除动态表单中多余的主机亲和相关的值
@@ -227,21 +208,24 @@ function DynamicForm(props: CreateProps): JSX.Element {
 							: '';
 					}
 					dynamicValues[index] = values[index];
+					if (index === 'storageClassName') {
+						dynamicValues['storageClassName'] =
+							values['storageClassName'].split('/')[0];
+					}
 				}
 			}
 			sendData.dynamicValues = dynamicValues;
 			// * 主机容忍特殊处理
 			if (values.tolerations) {
-				if (values.tolerationsLabels) {
-					sendData.tolerations = values.tolerationsLabels.map(
-						(item) => {
-							return item.label;
-						}
-					);
+				if (values.tolerations.length) {
+					sendData.tolerations = values.tolerations.map((item) => {
+						return item.label;
+					});
 				} else {
-					Message.show(
-						messageConfig('error', '失败', '请选择主机容忍。')
-					);
+					notification.error({
+						message: '失败',
+						description: '请选择主机容忍。'
+					});
 					return;
 				}
 			}
@@ -253,6 +237,7 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					setErrorFlag(false);
 					setCommitFlag(false);
 				} else {
+					setErrorData(res.errorMsg);
 					setSuccessFlag(false);
 					setErrorFlag(true);
 					setCommitFlag(false);
@@ -263,98 +248,99 @@ function DynamicForm(props: CreateProps): JSX.Element {
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	if (successFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						status="error"
+						title="发布失败"
+						subTitle={errorData}
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	return (
-		<Page>
-			<Page.Header
+		<ProPage>
+			<ProHeader
 				title={`发布${chartName}服务`}
-				hasBackArrow
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Page.Content>
-				<Form {...formItemLayout} field={field}>
+			<ProContent>
+				<Form form={form}>
 					{globalNamespace.name === '*' && (
 						<FormBlock title="选择命名空间">
 							<div className="w-50">
@@ -370,11 +356,16 @@ function DynamicForm(props: CreateProps): JSX.Element {
 										</label>
 										<div className="form-content">
 											<FormItem
-												required
-												requiredMessage="请选择命名空间"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入命名空间'
+													}
+												]}
+												name="namespace"
 											>
 												<Select
-													name="namespace"
 													style={{ width: '390px' }}
 												>
 													{namespaceList.map(
@@ -417,16 +408,24 @@ function DynamicForm(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											required
-											requiredMessage="请输入服务名称"
-											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											rules={[
+												{
+													required: true,
+													message: '请输入服务名称'
+												},
+												{
+													pattern: new RegExp(
+														pattern.name
+													),
+													message:
+														'请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符'
+												}
+											]}
+											name="name"
 										>
 											<Input
 												style={{ width: '390px' }}
-												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
-												trim
+												placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符"
 											/>
 										</FormItem>
 									</div>
@@ -437,15 +436,26 @@ function DynamicForm(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											minLength={2}
-											maxLength={80}
-											minmaxLengthMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											pattern={pattern.nickname}
-											patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+											rules={[
+												{
+													type: 'string',
+													min: 2,
+													max: 80,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													pattern: new RegExp(
+														pattern.nickname
+													),
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												}
+											]}
+											name="aliasName"
 										>
 											<Input
 												style={{ width: '390px' }}
-												name="aliasName"
 												placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
 											/>
 										</FormItem>
@@ -457,12 +467,19 @@ function DynamicForm(props: CreateProps): JSX.Element {
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的标签，多个标签以英文逗号分隔"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
+											name="labels"
 										>
 											<Input
 												style={{ width: '390px' }}
-												name="labels"
 												placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔"
 											/>
 										</FormItem>
@@ -487,24 +504,20 @@ function DynamicForm(props: CreateProps): JSX.Element {
 					</FormBlock>
 					{childrenRender(dataSource)}
 					<div className="dynamic-summit-box">
-						<Form.Submit
+						<Button
 							type="primary"
-							validate
 							style={{ marginRight: 8 }}
 							onClick={handleSubmit}
 						>
 							提交
-						</Form.Submit>
-						<Button
-							type="normal"
-							onClick={() => window.history.back()}
-						>
+						</Button>
+						<Button onClick={() => window.history.back()}>
 							取消
 						</Button>
 					</div>
 				</Form>
-			</Page.Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

@@ -7,16 +7,17 @@
 	width: 656px;
 	padding: 8px 0 16px 0;
 	.host-affinity {
+		align-items: center;
 		.switch {
 			width: 120px;
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 		}
 		.input {
 			width: 260px;
 		}
 		.check {
 			width: 120px;
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 			padding-left: 16px;
 		}
 	}
@@ -75,7 +76,7 @@
 
 .summit-box {
 	position: fixed;
-	z-index: 999;
+	z-index: 799;
 	bottom: 0;
 	width: calc(100% - 256px);
 	padding: 16px 16px 16px 0px;
@@ -87,9 +88,10 @@
 	.log-collection {
 		padding: 8px 0 8px 0;
 		.file-log, .standard-log {
+			align-items: center;
 			.switch {
 				width: 120px;
-				line-height: $line-height-lg * 2;
+				line-height: $line-height-2 * 2;
 			}
 		}
 	}
@@ -106,12 +108,12 @@
 	display: flex;
 	flex-wrap: wrap;
 	.tag{
-		font-size: $font-size;
+		font-size: $font-1;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: $font-weight;
 		color: $text-color-title;
 		padding: 6px;
-		line-height: $line-height-xl;
+		line-height: $line-height-3;
 		margin: 0 6px 6px 0;
 		border-radius: 12px;
 		border: 1px solid #C0C6CC;

@@ -20,7 +20,7 @@
 		.component-card-title{
 			width: 100px;
 			height: 60px;
-			font-size: $font-h2;
+			font-size: $font-2;
 			font-weight: $font-weight-sm;
 			color: rgba(0, 0, 0, 0.85);
 			margin-left: 12px;
@@ -31,8 +31,8 @@
 				text-align: left;
 				width: 100px;
 				height: 18px;
-				line-height: $line-height-xl;
-				font-size: $font-size;
+				line-height: $line-height-3;
+				font-size: $font-1;
 				margin-top: 4px;
 			}
 		}
@@ -52,7 +52,7 @@
 			color: #878787;
 			border-right: 1px solid #E8E8E8;
 			height: 16px;
-			line-height: $line-height-lg;
+			line-height: $line-height-2;
 			text-align: center;
 			margin-top: 8px;
 			cursor: pointer;
@@ -61,7 +61,7 @@
 			width: 100%;
 			color: #878787;
 			height: 16px;
-			line-height: $line-height-lg;
+			line-height: $line-height-2;
 			text-align: center;
 			margin-top: 8px;
 			cursor: pointer;
@@ -71,7 +71,7 @@
 			width: 49%;
 			color: #878787;
 			height: 16px;
-			line-height: $line-height-lg;
+			line-height: $line-height-2;
 			text-align: center;
 			margin-top: 8px;
 			cursor: pointer;
@@ -84,7 +84,7 @@
 		border-radius: 0px 0px $border-radius $border-radius;
 		color: $white;
 		text-align: center;
-		line-height: $line-height-lg * 2;
+		line-height: $line-height-2 * 2;
 	}
 	.component-card-uninstalling{
 		width: 240px;
@@ -93,7 +93,7 @@
 		border-radius: 0px 0px $border-radius $border-radius;
 		color: $white;
 		text-align: center;
-		line-height: $line-height-lg * 2;
+		line-height: $line-height-2 * 2;
 	}
 }
 .access-title-content,
@@ -102,7 +102,7 @@
 	align-items: center;
 	.access-title-name,
 	.install-title-name{
-		font-size: $font-h2;
+		font-size: $font-2;
 		font-weight: $font-weight;
 		color: $text-color-title;
 		line-height: 22px;
@@ -114,18 +114,18 @@
 .access-subtitle,
 .install-subtitle{
 	height: 18px;
-	font-size: $font-size;
+	font-size: $font-1;
 	font-family: PingFangSC-Regular, PingFang SC;
 	font-weight: $font-weight-sm;
 	color: #666666;
-	line-height: $line-height-xl;
+	line-height: $line-height-3;
 }
 .access-form-content{
 	margin-top: 24px;
 	padding-left: 15px;
 }
 .install-item{
-	width: 424px;
+	width: 450px;
 	height: 120px;
 	border: 1px dashed #888888;
 	display: flex;
@@ -138,20 +138,20 @@
 		margin-left: 20px;
 		h2{
 			height: 24px;
-			font-size: $font-h1;
+			font-size: $font-3;
 			font-family: PingFangSC-Medium, PingFang SC;
 			font-weight: $font-weight;
 			color: #40454A;
-			line-height: $line-height * 2;
+			line-height: $line-height-1 * 2;
 		}
 		p{
-			width: 276px;
+			width: 300px;
 			height: 36px;
-			font-size: $font-size;
+			font-size: $font-1;
 			font-family: PingFangSC-Regular, PingFang SC;
 			font-weight: $font-weight-sm;
 			color: #666666;
-			line-height: $line-height-xl;
+			line-height: $line-height-3;
 			margin-top: 10px;
 		}
 	}

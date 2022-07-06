@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Content, Menu } from '@alicloud/console-components-page';
 import { useParams } from 'react-router';
+import { ProPage, ProContent, ProMenu } from '@/components/ProPage';
 import ParamterList from './paramerListVersiontwo';
 import ParamterHistory from './paramterHistory';
 import ParamterTemplate from './paramterTemplate';
@@ -8,6 +8,7 @@ import ConfigMapEdit from './configMapEdit';
 import DefaultPicture from '@/components/DefaultPicture';
 import storage from '@/utils/storage';
 import { ParamterSettingProps, DetailParams } from '../detail';
+import { MenuInfo } from '@/types/comment';
 
 export default function ParamterSetting(
 	props: ParamterSettingProps
@@ -20,32 +21,33 @@ export default function ParamterSetting(
 		customMid,
 		capabilities
 	} = props;
-	const [selectedKey, setSelectedKey] = useState(
+	const [selectedKey, setSelectedKey] = useState<string[]>([
 		storage.getSession('paramsTab') || 'list'
-	);
+	]);
 	const params: DetailParams = useParams();
 	const { currentTab, chartVersion } = params;
-	const menuSelect = (selectedKey: string) => {
-		setSelectedKey(selectedKey);
-		storage.setSession('paramsTab', selectedKey);
+	const menuSelect = (info: MenuInfo) => {
+		setSelectedKey(info.keyPath);
+		storage.setSession('paramsTab', info.key);
 	};
 	useEffect(() => {
 		currentTab &&
 			currentTab !== 'paramterSetting' &&
-			setSelectedKey('list');
+			setSelectedKey(['list']);
 	}, [currentTab]);
 
 	const ConsoleMenu = () => (
-		<Menu
+		<ProMenu
 			selectedKeys={selectedKey}
-			onItemClick={menuSelect}
+			onClick={menuSelect}
 			style={{ height: '100%' }}
-		>
-			<Menu.Item key="list">参数列表</Menu.Item>
-			<Menu.Item key="template">参数模板</Menu.Item>
-			<Menu.Item key="config">参数修改历史</Menu.Item>
-			<Menu.Item key="configMap">ConfigMap编辑</Menu.Item>
-		</Menu>
+			items={[
+				{ label: '参数列表', key: 'list' },
+				{ label: '参数模板', key: 'template' },
+				{ label: '参数修改历史', key: 'config' },
+				{ label: 'ConfigMap编辑', key: 'configMap' }
+			]}
+		/>
 	);
 	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {
@@ -90,10 +92,10 @@ export default function ParamterSetting(
 		return <DefaultPicture />;
 	}
 	return (
-		<Page>
-			<Content menu={<ConsoleMenu />} style={{ margin: 0 }}>
-				{childrenRender(selectedKey)}
-			</Content>
-		</Page>
+		<ProPage>
+			<ProContent menu={<ConsoleMenu />} style={{ margin: 0 }}>
+				{childrenRender(selectedKey[0])}
+			</ProContent>
+		</ProPage>
 	);
 }

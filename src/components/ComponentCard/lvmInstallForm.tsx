@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-	Dialog,
-	Field,
-	Form,
-	Message,
-	Input,
-	NumberPicker
-} from '@alicloud/console-components';
+import { Modal, Form, Input, InputNumber } from 'antd';
 import { SendDataProps } from './index';
 
 interface LvmInstallFormProps {
@@ -36,11 +29,10 @@ const LvmInstallForm = (props: LvmInstallFormProps) => {
 		setRefreshCluster,
 		onRefresh
 	} = props;
-	const field = Field.useField();
+	// const field = Field.useField();
+	const [form] = Form.useForm();
 	const onOk = () => {
-		field.validate((errors, values) => {
-			// console.log(values);
-			if (errors) return;
+		form.validateFields().then((values) => {
 			const sendData = {
 				clusterId,
 				componentName: title,
@@ -52,29 +44,42 @@ const LvmInstallForm = (props: LvmInstallFormProps) => {
 		});
 	};
 	return (
-		<Dialog
+		<Modal
 			title="工具安装"
 			visible={visible}
-			onClose={onCancel}
+			// onClose={onCancel}
 			onCancel={onCancel}
 			onOk={onOk}
-			style={{ width: '380px' }}
+			width={380}
+			okText="确定"
+			cancelText="取消"
+			// style={{ width: '380px' }}
 		>
-			<Form field={field} {...formItemLayout}>
-				<Form.Item label="vg名称" required requiredMessage="vg名称必填">
-					<Input name="vgName" defaultValue="vg_middleware" />
+			<Form form={form} {...formItemLayout}>
+				<Form.Item
+					name="vgName"
+					label="vg名称"
+					required
+					initialValue="vg_middleware"
+					rules={[{ required: true, message: 'vg名称必填' }]}
+				>
+					<Input />
 				</Form.Item>
-				<Form.Item label="配额" required requiredMessage="配额必填">
-					<NumberPicker
+				<Form.Item
+					name="size"
+					label="配额"
+					required
+					initialValue={100}
+					rules={[{ required: true, message: '配额必填' }]}
+				>
+					<InputNumber
 						type="inline"
-						name="size"
 						style={{ width: '100%' }}
 						min={1}
-						defaultValue={100}
 					/>
 				</Form.Item>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 };
 

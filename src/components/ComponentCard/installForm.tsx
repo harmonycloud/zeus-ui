@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Dialog } from '@alicloud/console-components';
-import CustomIcon from '../CustomIcon';
+import { Modal } from 'antd';
+import { IconFont } from '../IconFont';
 import { SendDataProps } from './index';
 import { labelHigh, labelSimple } from '@/utils/enum';
 import './index.scss';
@@ -32,13 +32,14 @@ const InstallForm = (props: installFormProps) => {
 		onCancel();
 	};
 	return (
-		<Dialog
+		<Modal
 			title="工具安装"
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '474px' }}
+			width={500}
+			okText="确定"
+			cancelText="取消"
 		>
 			<div className="install-title-content">
 				<div className="install-title-name">选择安装规格</div>
@@ -52,7 +53,7 @@ const InstallForm = (props: installFormProps) => {
 				onClick={() => setType('simple')}
 			>
 				<div>
-					<CustomIcon
+					<IconFont
 						type="icon-renwushili"
 						style={
 							type === 'simple'
@@ -67,7 +68,7 @@ const InstallForm = (props: installFormProps) => {
 						资源占用少，保证安装后，该工具可用，但是不稳定
 						所需资源约CPU：{labelSimple[title]}
 					</p>
-					<CustomIcon
+					<IconFont
 						type="icon-xuanzhong"
 						style={
 							type === 'simple'
@@ -83,7 +84,7 @@ const InstallForm = (props: installFormProps) => {
 				onClick={() => setType('high')}
 			>
 				<div>
-					<CustomIcon
+					<IconFont
 						type="icon-gaokeyong"
 						style={
 							type === 'high'
@@ -98,7 +99,7 @@ const InstallForm = (props: installFormProps) => {
 						资源占用相对多，保证安装后，该工具可用，且稳定
 						所需资源约CPU：{labelHigh[title]}
 					</p>
-					<CustomIcon
+					<IconFont
 						type="icon-xuanzhong"
 						style={
 							type === 'high'
@@ -108,7 +109,7 @@ const InstallForm = (props: installFormProps) => {
 					/>
 				</div>
 			</div>
-		</Dialog>
+		</Modal>
 	);
 };
 export default InstallForm;

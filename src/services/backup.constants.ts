@@ -9,3 +9,9 @@ export const useBackup = `${api}/clusters/{clusterId}/namespaces/{namespace}/bac
 
 // // * 使用备份
 // export const useBackup = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/backups/restore`;
+export const backupAddress = `${api}/backup/address`;
+export const backupAddressDetail = `${api}/backup/address/detail`;
+export const backupAddressCheck = `${api}/backup/address/check`;
+export const middlewares = `${api}/middlewares/info/middleware`;
+export const serviceList = `${api}/middlewares/info/list`;
+export const backupTask = `${api}/clusters/{clusterId}/namespaces/{namespace}/backup`;

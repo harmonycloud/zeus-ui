@@ -1,20 +1,16 @@
 .kv-manage {
 	display: flex;
-	.next-tree {
+	.ant-tree {
 		margin-right: 24px;
 	}
-	.istio-table {
+	.zeus-pro-table {
 		width: 100%;
 	}
 	td {
-		.next-row {
+		.zeus-pro-table-operator-content {
+			width: 0;
 			height: 0;
-			min-height: 0;
-		}
-	}
-	.next-table-expanded-row {
-		td {
-			background: #fff;
+			margin: 0;
 		}
 	}
 	.key-render {
@@ -25,3 +21,4 @@
 		display: inline-block;
 	}
 }
+

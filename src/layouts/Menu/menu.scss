@@ -1,3 +1,7 @@
+.zeus-mid-title {
+	border-bottom: 1px solid #f0f0f0;
+}
+
 .nav-item-select-custom > .next-menu-sub-menu > .next-selected a {
 	color: $primary-color !important;
 }
@@ -5,10 +9,10 @@
 .nav-item-select-custom > .next-child-selected i {
 	color: $primary-color;
 }
-.next-nav-item.next-menu-item.next-selected.next-selected{
-	background-color: #E6EEF5 !important;
+.next-nav-item.next-menu-item.next-selected.next-selected {
+	background-color: #e6eef5 !important;
 	color: $primary-color !important;
 }
-.next-nav-item.next-menu-item.next-selected.next-selected a{
+.next-nav-item.next-menu-item.next-selected.next-selected a {
 	color: $primary-color !important;
 }

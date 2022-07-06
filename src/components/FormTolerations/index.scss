@@ -1,8 +1,12 @@
 .form-tolerations {
-	.next-form-item-control {
+	.ant-form-item-control-input{
+		display: block;
+	}
+	.ant-form-item-control-input-content {
 		display: flex;
 		width: 700px;
 		align-items: center;
+		max-width: auto !important;
 	}
 	.tags {
 		padding: 10px 24px;
@@ -10,12 +14,12 @@
 		display: flex;
 		flex-wrap: wrap;
 		.tag {
-			font-size: $font-size;
+			font-size: $font-1;
 			font-family: PingFangSC-Medium, PingFang SC;
 			font-weight: $font-weight;
 			color: $text-color-title;
 			padding: 6px;
-			line-height: $line-height-xl;
+			line-height: $line-height-3;
 			margin: 0 6px 6px 0;
 			border-radius: $border-radius-xxl;
 			border: 1px solid #c0c6cc;

@@ -1,33 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useHistory } from 'react-router';
-import { Page, Header, Content } from '@alicloud/console-components-page';
+import { useLocation, useHistory, useParams } from 'react-router';
+import { ProHeader, ProContent, ProPage } from '@/components/ProPage';
+import { Tabs } from 'antd';
 import { connect } from 'react-redux';
-import { Tab } from '@alicloud/console-components';
 import Namespace from './namespace';
 import Member from './member';
 import { StoreState } from '@/types';
-import { ProjectDetailProps } from './projectDetail';
+import { DetailParams } from './projectDetail';
+import ServiceList from './serviceList';
+import { roleProps } from '../RoleManage/role';
+import storage from '@/utils/storage';
 
-function ProjectDetail(props: ProjectDetailProps): JSX.Element {
-	const { project } = props;
-	const [activeKey, setActiveKey] = useState<string>('namespace');
+const { TabPane } = Tabs;
+// ! 我的项目的项目详情和项目管理的项目详情共用一个页面
+function ProjectDetail(): JSX.Element {
+	const [activeKey, setActiveKey] = useState<string>('service');
 	const location = useLocation();
 	const history = useHistory();
+	const params: DetailParams = useParams();
+	const [role] = useState<roleProps>(JSON.parse(storage.getLocal('role')));
+	const [disabledFlag, setDisabledFlag] = useState<boolean>(true);
+	useEffect(() => {
+		if (role.isAdmin) {
+			setDisabledFlag(false);
+		} else {
+			if (
+				role.userRoleList.find(
+					(item: any) => item.projectId === params.id
+				).roleId === 2
+			) {
+				setDisabledFlag(false);
+			}
+		}
+	}, [role]);
 	const onChange = (key: string | number) => {
 		setActiveKey(key as string);
 	};
-	useEffect(() => {
-		if (location.pathname.includes('my')) {
-			history.push(`/myProject/projectDetail/${project.projectId}`);
-		}
-	}, [project]);
+
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title="项目详情"
 				subTitle="管理用户自己的项目"
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					if (location.pathname.includes('my')) {
 						history.push('/myProject');
 					} else {
@@ -35,17 +50,24 @@ function ProjectDetail(props: ProjectDetailProps): JSX.Element {
 					}
 				}}
 			/>
-			<Content>
-				<Tab activeKey={activeKey} onChange={onChange}>
-					<Tab.Item title="命名空间" key="namespace">
-						<Namespace />
-					</Tab.Item>
-					<Tab.Item title="成员管理" key="member">
-						<Member />
-					</Tab.Item>
-				</Tab>
-			</Content>
-		</Page>
+			<ProContent>
+				<Tabs activeKey={activeKey} onChange={onChange}>
+					<TabPane tab="服务列表" key="service">
+						<ServiceList />
+					</TabPane>
+					{!disabledFlag && (
+						<TabPane tab="命名空间" key="namespace">
+							<Namespace />
+						</TabPane>
+					)}
+					{!disabledFlag && (
+						<TabPane tab="成员管理" key="member">
+							<Member />
+						</TabPane>
+					)}
+				</Tabs>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

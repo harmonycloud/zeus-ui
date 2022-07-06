@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Controlled as CodeMirror } from 'react-codemirror2';
-import { Button, Dialog, Message, Select } from '@alicloud/console-components';
+import { Button, notification, Modal, Select, Alert } from 'antd';
 import { useParams } from 'react-router';
 import {
 	getConfigMapList,
@@ -8,10 +8,10 @@ import {
 	updateConfig,
 	verificationYaml
 } from '@/services/configmap';
-import messageConfig from '@/components/messageConfig';
 import yaml from 'js-yaml';
 import 'codemirror/addon/selection/active-line';
 
+const { confirm } = Modal;
 const msgColor = {
 	1: '#f9a144',
 	2: '#EF595C',
@@ -78,7 +78,10 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 						setCurrentConfig(res.data[0]);
 					}
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 					setList([]);
 				}
 			});
@@ -100,7 +103,10 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 				setOriginValue(res.data);
 				setValue(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -108,7 +114,7 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 		setCurrentConfig(value);
 	};
 	const onSave = () => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '修改ConfigMap存在危险性，是否继续？',
 			onOk: () => {
@@ -120,18 +126,19 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 				};
 				return updateConfig(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig(
-								'success',
-								'成功',
+						notification.success({
+							message: '成功',
+							description:
 								'ConfigMap修改成功，需要前往高可用性页面重启服务。'
-							)
-						);
+						});
 						setSaveFlag(true);
 						setReturnFlag(true);
 						getCurrentConfig(currentConfig);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 						setSaveFlag(true);
 						setReturnFlag(false);
 					}
@@ -182,15 +189,18 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 
 	return (
 		<div style={{ height: '100%' }}>
-			<Message type="warning" style={{ marginBottom: 16 }}>
-				此处修改可能导致参数列表与实际参数内容不匹配，请谨慎操作！
-			</Message>
+			<Alert
+				message="此处修改可能导致参数列表与实际参数内容不匹配，请谨慎操作！"
+				type="warning"
+				showIcon
+				style={{ marginBottom: 16 }}
+			/>
 			<div className="yaml-edit-btn-content">
 				<div style={{ marginRight: 8 }}>
 					<Select
 						onChange={handleChange}
 						value={currentConfig}
-						autoWidth={false}
+						// autoWidth={false}
 					>
 						{list.map((item: string) => {
 							return (
@@ -211,7 +221,7 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 				</Button>
 				<Button
 					className="yaml-btn"
-					type="secondary"
+					type="default"
 					onClick={() => {
 						setSaveFlag(true);
 						setReturnFlag(true);
@@ -223,7 +233,7 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 				</Button>
 				<Button
 					className="yaml-btn"
-					type="normal"
+					type="default"
 					onClick={correctYaml}
 				>
 					校准

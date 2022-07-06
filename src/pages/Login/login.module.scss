@@ -1,184 +1,182 @@
 /* 主版本 */
 .login {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: transparent url('../../assets/images/login_bg.svg') no-repeat center center;
-    background-size: cover;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: transparent url('../../assets/images/login_bg.svg') no-repeat
+		center center;
+	background-size: cover;
 }
 
-.header{
-    padding: 24px;
-    .logo{
-        vertical-align: top;
-        width: 146px;
-        height: 32px;
-        margin-right: 24px;
-    }
-    .info{
-        font-size: 24px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        font-weight: $font-weight-sm;
-        color: $white;
-        line-height: 33px;
-    }
+.header {
+	padding: 24px;
+	.logo {
+		vertical-align: top;
+		width: 146px;
+		height: 32px;
+		margin-right: 24px;
+	}
+	.info {
+		font-size: 24px;
+		font-family: PingFangSC-Regular, PingFang SC;
+		font-weight: $font-weight-sm;
+		color: $white;
+		line-height: 33px;
+	}
 }
 
-.slogan{
-    position: absolute;
-    top: 77%;
-    left: 5%;
-    width: 50%;
-    text-align: center;
-    font-size: 24px;
-    font-family: PingFangSC-Medium, PingFang SC;
-    font-weight: $font-weight;
-    color: #D8D8D8;
-    line-height: 33px;
-    background: linear-gradient(180deg, #35F5FD 0%, rgba(35, 73, 224, 0) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.slogan {
+	position: absolute;
+	top: 77%;
+	left: 5%;
+	width: 50%;
+	text-align: center;
+	font-size: 24px;
+	font-family: PingFangSC-Medium, PingFang SC;
+	font-weight: $font-weight;
+	color: #d8d8d8;
+	line-height: 33px;
+	background: linear-gradient(180deg, #35f5fd 0%, rgba(35, 73, 224, 0) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
 }
 
 .login-form {
-    position: absolute;
-    left: 70%;
-    top: 50%;
-    width: 420px;
-    padding: 20px 30px 55px;
-    box-sizing: border-box;
-    border-radius: $border-radius-lg;
-    background: $white;
-    transform: translate(-50%, -50%);
+	position: absolute;
+	left: 70%;
+	top: 50%;
+	width: 420px;
+	padding: 20px 30px 55px;
+	box-sizing: border-box;
+	border-radius: $border-radius-lg;
+	background: $white;
+	transform: translate(-50%, -50%);
 	overflow: hidden;
 }
 
-.form{
-    width: 306px;
-    margin: 0 auto;
+.form {
+	width: 306px;
+	margin: 0 auto !important;
 }
 
-.account{
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-left: 10px;
-    background: url('../../assets/images/account.svg') no-repeat center center;
+.account {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	background: url('../../assets/images/account.svg') no-repeat center center;
 }
-.password{
-    display: inline-block;
-    width: 14px;
-    height: 17px;
-    margin-left: 10px;
-    background: url('../../assets/images/password.svg') no-repeat center center;
+.password {
+	display: inline-block;
+	width: 14px;
+	height: 17px;
+	background: url('../../assets/images/password.svg') no-repeat center center;
 }
 
 .login-header {
-    height: 70px;
-    padding-bottom: 16px;
+	height: 70px;
+	padding-bottom: 16px;
 	text-align: center;
-    line-height: $line-height-sm * 7;
-    font-size: 24px;
-    font-weight: $font-weight;
+	line-height: 70px;
+	font-size: 24px;
+	font-weight: $font-weight;
 }
 
 .login-input-item {
 	width: 85%;
 	margin: 0 auto;
-    padding: 10px;
+	padding: 10px;
 }
 
-.label{
-    font-size: $font-size;
-    font-family: PingFangSC-Regular, PingFang SC;
-    font-weight: $font-weight-sm;
-    color: $text-color-title;
-    line-height: $line-height-xl;
+.label {
+	font-size: $font-1;
+	font-family: PingFangSC-Regular, PingFang SC;
+	font-weight: $font-weight-sm;
+	color: $text-color-title;
+	line-height: $line-height-3;
 }
 
 .login-input {
-    width: 280px;
-    height: 32px;
-    background: $white;
-    border-radius: $border-radius;
-    border: 1px solid #C0C6CC;
-    text-indent: 26px;
-    font-size: $font-h2;
-    color: #54565E;
+	width: 280px;
+	height: 32px;
+	background: $white;
+	border-radius: $border-radius;
+	border: 1px solid #c0c6cc;
+	text-indent: 26px;
+	font-size: $font-2;
+	color: #54565e;
 }
 
 .login-message {
-    line-height: 120%;
-    color: #f26d6d;
-    font-size: $font-h2;
+	line-height: 120%;
+	color: #f26d6d;
+	font-size: $font-2;
 }
 
 .login-submit {
 	width: 85%;
 	margin: 0 auto;
-    margin-top: 24px;
+	margin-top: 24px;
 }
 
 .login-button {
-    display: inline-block;
-    width: 48%;
-    height: 40px;
-    line-height: $line-height-sm * 4;
-    border-radius: $border-radius-lg;
-    text-align: center;
-    font-size: $font-h1;
-    color: $white;
-    border: 1px solid $primary-color;
-    background-color: $primary-color;
-    outline: none;
-    cursor: pointer;
-    transition: all .15s ease-in-out;
+	display: inline-block;
+	width: 48%;
+	height: 40px;
+	line-height: 40px;
+	border-radius: $border-radius-lg;
+	text-align: center;
+	font-size: $font-3;
+	color: $white;
+	border: 1px solid $primary-color;
+	background-color: $primary-color;
+	outline: none;
+	cursor: pointer;
+	transition: all 0.15s ease-in-out;
 }
 
 .login-button:hover {
-    background-color: rgba(0, 100, 200, 0.8);
+	background-color: rgba(0, 100, 200, 0.8);
 }
 
 .shake {
-    animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    perspective: 1000px;
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
 }
 
-.copy{
-    bottom: 5%;
-    left: 0;
-    width: 100%;
-    position: absolute;
-    text-align: center;
-    font-size: 16px;
-    font-family: PingFangSC-Regular, PingFang SC;
-    font-weight: $font-weight-sm;
-    color: $white;
-    line-height: 22px;
+.copy {
+	bottom: 5%;
+	left: 0;
+	width: 100%;
+	position: absolute;
+	text-align: center;
+	font-size: 16px;
+	font-family: PingFangSC-Regular, PingFang SC;
+	font-weight: $font-weight-sm;
+	color: $white;
+	line-height: 22px;
 }
 
 @keyframes shake {
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
 
-    10%,
-    90% {
-        transform: translate3d(-1px, 0, 0);
-    }
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
 
-    20%,
-    80% {
-        transform: translate3d(2px, 0, 0);
-    }
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
 
-    30%,
-    50%,
-    70% {
-        transform: translate3d(-4px, 0, 0);
-    }
-
-    40%,
-    60% {
-        transform: translate3d(4px, 0, 0);
-    }
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
 }

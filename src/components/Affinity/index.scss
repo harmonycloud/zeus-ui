@@ -1,0 +1,36 @@
+.host-affinity {
+	align-items: center;
+}
+
+.tags {
+	// margin-left: 120px;
+	padding: 10px 24px;
+	background: #f1f1f2;
+	display: flex;
+	flex-wrap: wrap;
+	.tag {
+		font-size: $font-1;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: $font-weight;
+		color: $text-color-title;
+		padding: 0 8px;
+		height: 32px;
+		line-height: 32px;
+		margin: 0 6px 6px 0;
+		border-radius: 12px;
+		border: 1px solid #c0c6cc;
+	}
+	.tag-close {
+		margin-left: 6px;
+		color: #666666;
+		cursor: pointer;
+	}
+}
+.host-affinity{
+	.switch{
+		width: 120px;
+	}
+	.add {
+		margin-right: 4px;
+	}
+}

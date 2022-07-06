@@ -1,29 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import {
-	Button,
-	Radio,
-	Message,
-	Icon,
-	Select
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { Button, Radio, RadioChangeEvent, Select, notification } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+
 import { useLocation } from 'react-router';
 import { getMiddlewareRepository } from '@/services/repository';
-import messageConfig from '@/components/messageConfig';
 import MiddlewareItem from './MiddlewareItem';
 import UploadMiddlewareForm from '../ServiceCatalog/components/UploadMiddlewareForm';
 import GuidePage from '../GuidePage';
+
 import { clusterType, StoreState } from '@/types/index';
 import {
 	middlewareProps,
 	middlewareListProps,
 	middlewareRepositoryProps
 } from './middleware';
+
 import { changeObjectIndex } from '@/utils/utils';
 import timerClass from '@/utils/timerClass';
-import './index.scss';
 import { getClusters } from '@/services/common';
+
+import './index.scss';
+
+export enum MiddlewareType {
+	db = '数据库',
+	mq = '消息队列',
+	mse = '微服务引擎',
+	storage = '存储',
+	'null' = '其他'
+}
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -42,7 +48,10 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 				setClusterList(res.data);
 				setCurrentCluster(res.data[0]);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
@@ -58,7 +67,10 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 						setRule('type');
 					}
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
@@ -75,27 +87,29 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
 				list.forEach((item) => {
-					if (item === null) {
+					if (item === null || item === '') {
 						obj['其他'] = originData.filter((i) => i.type === item);
 					} else {
-						obj[item] = originData.filter((i) => i.type === item);
+						obj[MiddlewareType[item]] = originData.filter(
+							(i) => i.type === item
+						);
 					}
 				});
 			} else {
 				list.forEach((item) => {
-					if (item === null) {
+					if (item === null || item === '') {
 						obj['其他'] = originData.filter(
 							(i) => i.type === item && i.status === 1
 						);
 					} else {
-						obj[item] = originData.filter(
+						obj[MiddlewareType[item]] = originData.filter(
 							(i) => i.type === item && i.status === 1
 						);
 					}
 				});
 			}
-
-			setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
+			if (!list.includes(null)) setDataSource(obj);
+			else setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
 		} else if (rule === 'source') {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
@@ -119,7 +133,10 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			if (res.success) {
 				setOriginData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -137,13 +154,12 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 		const ct = clusterList.find((item) => item.id === value);
 		setCurrentCluster(ct);
 	};
-	console.log(currentCluster);
 	if (JSON.stringify(currentCluster) === '{}') {
 		return <GuidePage />;
 	}
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={
 					location.pathname === '/middlewareRepository'
 						? '中间件市场'
@@ -154,12 +170,12 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 						? '不同类型中间件上/下架、升级管理等'
 						: '不同类型中间件发布服务'
 				}
-				hasBackArrow={
+				backIcon={
 					location.pathname === '/middlewareRepository' ? false : true
 				}
-				onBackArrowClick={() => window.history.back()}
+				onBack={() => window.history.back()}
 			/>
-			<Content>
+			<ProContent>
 				{location.pathname === '/middlewareRepository' ? (
 					<div className="middleware-repository-tips">
 						自定义上架中间件，请参考
@@ -188,7 +204,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							<span style={{ marginLeft: 16 }}>集群：</span>
 							<Select
 								onChange={onChange}
-								autoWidth={false}
 								value={currentCluster?.id}
 							>
 								{clusterList.map((item: clusterType) => {
@@ -205,13 +220,15 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					)}
 					<div className="middleware-repository-right-layout">
 						<RadioGroup
-							dataSource={[
+							options={[
 								{ value: 'type', label: '类型' },
 								{ value: 'source', label: '来源' }
 							]}
-							shape="button"
+							optionType="button"
 							value={rule}
-							onChange={(value) => setRule(value as string)}
+							onChange={(e: RadioChangeEvent) =>
+								setRule(e.target.value)
+							}
 						/>
 						<div
 							className="middleware-repository-refresh-btn"
@@ -221,7 +238,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								}
 							}}
 						>
-							<Icon type="refresh" size="xs" color="#333333" />
+							<ReloadOutlined style={{ color: '#252525' }} />
 						</div>
 					</div>
 				</div>
@@ -236,7 +253,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 								>
 									<p>{key}</p>
 									<div className="middleware-repository-list-content">
-										{dataSource[key].map((item) => {
+										{dataSource[key]?.map((item) => {
 											return (
 												<MiddlewareItem
 													key={item.id}
@@ -266,7 +283,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							);
 						})}
 				</div>
-			</Content>
+			</ProContent>
 			{visible && (
 				<UploadMiddlewareForm
 					visible={visible}
@@ -274,7 +291,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					onCreate={onCreate}
 				/>
 			)}
-		</Page>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

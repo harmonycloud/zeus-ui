@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Switch, Balloon, Icon } from '@alicloud/console-components';
+import { Switch, Form, Popover } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { renderFormItem } from '@/components/renderFormItem';
 import { FormSwitchProps } from './formSwitch';
 
@@ -38,37 +39,33 @@ export default function FormSwitch(props: FormSwitchProps): JSX.Element {
 					{props.label}
 				</span>
 				{keys.includes('description') ? (
-					<Balloon
-						offset={[0, 15]}
-						align="t"
-						trigger={
-							<Icon
-								type="question-circle"
-								size="xs"
-								style={{ marginLeft: 8 }}
-							/>
-						}
-						closable={false}
+					<Popover
+						// offset={[0, 15]}
+						content={props.description}
 					>
-						{props.description}
-					</Balloon>
+						<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+					</Popover>
 				) : null}
 			</label>
 			<div className="form-content">
 				<FormItem
-					required={keys.includes('required') && props.required}
-					requiredMessage={
-						keys.includes('required') && props.required
-							? `请输入${props.label}`
-							: ''
-					}
+					rules={[
+						{
+							required:
+								keys.includes('required') && props.required,
+							message:
+								keys.includes('required') && props.required
+									? `请输入${props.label}`
+									: ''
+						}
+					]}
+					name={props.variable}
 				>
 					<label className="dynamic-switch-label">
 						{currentValue ? '已开启' : '已关闭 '}
 					</label>
 					<Switch
 						checked={currentValue}
-						name={props.variable}
 						onChange={onChange}
 						size="small"
 						style={{

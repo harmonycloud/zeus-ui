@@ -6,7 +6,7 @@
 		overflow-y: auto;
 		padding: 0px 24px 16px 24px !important;
 		& > p {
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 		}
 	}
 }
@@ -16,7 +16,7 @@
 		max-height: 200px;
 		overflow-y: auto;
 		& > p {
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-2 * 2;
 		}
 	}
 }
@@ -34,7 +34,7 @@
 		border-right: none;
 		.role-management-title {
 			height: 32px;
-			line-height: $line-height-lg * 2;
+			line-height: $line-height-5;
 			padding-left: 8px;
 			border-bottom: 1px solid #dedede;
 		}

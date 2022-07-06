@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Radio, Balloon, Message, Icon } from '@alicloud/console-components';
 import { useParams } from 'react-router';
-import Table from '@/components/MidTable';
+import moment from 'moment';
+import { Radio, notification, Tooltip, RadioChangeEvent } from 'antd';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import ProTable from '@/components/ProTable';
 import FormBlock from '@/components/FormBlock';
-import CustomIcon from '@/components/CustomIcon';
-import { iconTypeRender, nullRender } from '@/utils/utils';
-import { paramsProps } from '../detail';
+import { IconFont } from '@/components/IconFont';
+import {
+	iconTypeRender,
+	nullRender,
+	objectRemoveDuplicatesByKey
+} from '@/utils/utils';
 import {
 	getMiddlewareResource,
 	getNodeResource,
 	getNamespaceResource,
 	getCluster
 } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import transBg from '@/assets/images/trans-bg.svg';
+import { paramsProps } from '../detail';
 import {
 	NodeResourceProps,
 	MiddlewareResourceProps,
 	ClusterQuotaDTO
 } from '../resource.pool';
-import { filtersProps } from '@/types/comment';
+import { FiltersProps } from '@/types/comment';
 // * E charts v5
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
@@ -40,24 +45,19 @@ echarts.use([
 	GaugeChart,
 	CanvasRenderer
 ]);
-const RadioGroup = Radio.Group;
-const Tooltip = Balloon.Tooltip;
 const Overview = () => {
 	const [viewType, setViewType] = useState<string>('service');
 	const [tableType, setTableType] = useState<string>('cpu');
 	const [originData, setOriginData] = useState<MiddlewareResourceProps[]>([]);
 	const [dataSource, setDataSource] = useState<MiddlewareResourceProps[]>([]);
-	const [nodeOriginData, setNodeOriginData] = useState<NodeResourceProps[]>(
-		[]
-	);
 	const [nodeDataSource, setNodeDataSource] = useState<NodeResourceProps[]>(
 		[]
 	);
 	const [clusterQuota, setClusterQuota] = useState<ClusterQuotaDTO>();
 	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
 	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
-	const [namespaceFilter, setNamespaceFilter] = useState<filtersProps[]>([]);
-	const [typeFilter, setTypeFilter] = useState<filtersProps[]>([]);
+	const [namespaceFilter, setNamespaceFilter] = useState<FiltersProps[]>([]);
+	const [typeFilter, setTypeFilter] = useState<FiltersProps[]>([]);
 
 	const params: paramsProps = useParams();
 	const { id } = params;
@@ -69,34 +69,45 @@ const Overview = () => {
 					setOriginData(res.data);
 					setDataSource(res.data);
 					setNamespaceFilter(
-						res.data.map((item: MiddlewareResourceProps) => {
-							return {
-								label: item.namespace,
-								value: item.namespace
-							};
-						})
+						objectRemoveDuplicatesByKey(
+							res.data.map((item: MiddlewareResourceProps) => {
+								return {
+									text: item.namespace,
+									value: item.namespace
+								};
+							}),
+							'value'
+						)
 					);
 					setTypeFilter(
-						res.data.map((item: MiddlewareResourceProps) => {
-							return {
-								label: item.type,
-								value: item.type
-							};
-						})
+						objectRemoveDuplicatesByKey(
+							res.data.map((item: MiddlewareResourceProps) => {
+								return {
+									text: item.type,
+									value: item.type
+								};
+							}),
+							'value'
+						)
 					);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		getNodeResource({ clusterId: id }).then((res) => {
 			if (res.success) {
 				if (mounted) {
-					setNodeOriginData(res.data);
 					setNodeDataSource(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		getCluster({ clusterId: id, detail: true }).then((res) => {
@@ -115,7 +126,10 @@ const Overview = () => {
 				const option2Temp = getGaugeOption(memoryRate, '内存(GB)');
 				setOption2(option2Temp);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -128,16 +142,22 @@ const Overview = () => {
 				setOriginData(res.data);
 				setDataSource(res.data);
 				setNamespaceFilter(
-					res.data.map((item: MiddlewareResourceProps) => {
-						return {
-							label: item.namespace,
-							value: item.namespace
-						};
-					})
+					objectRemoveDuplicatesByKey(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.namespace,
+								value: item.namespace
+							};
+						}),
+						'value'
+					)
 				);
 			} else {
 				setDataSource([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -159,18 +179,24 @@ const Overview = () => {
 					};
 				});
 				setNamespaceFilter(
-					res.data.map((item: MiddlewareResourceProps) => {
-						return {
-							label: item.name,
-							value: item.name
-						};
-					})
+					objectRemoveDuplicatesByKey(
+						res.data.map((item: MiddlewareResourceProps) => {
+							return {
+								label: item.name,
+								value: item.name
+							};
+						}),
+						'value'
+					)
 				);
 				setOriginData(list);
 				setDataSource(list);
 			} else {
 				setDataSource([]);
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -188,8 +214,8 @@ const Overview = () => {
 	};
 	const nameRender = (
 		value: string,
-		index: number,
-		record: MiddlewareResourceProps
+		record: MiddlewareResourceProps,
+		index: number
 	) => {
 		return (
 			<div style={{ maxWidth: '160px' }}>
@@ -202,39 +228,25 @@ const Overview = () => {
 			</div>
 		);
 	};
-	const statusRender = (
-		value: string,
-		index: number,
-		record: NodeResourceProps
-	) => {
+	const statusRender = (value: string) => {
 		if (value === 'True') {
 			return (
 				<>
-					<Icon
-						type="success1"
-						size="xs"
-						style={{ color: '#00A700' }}
-					/>{' '}
-					成功
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 成功
 				</>
 			);
 		} else {
 			return (
 				<>
-					<Icon
-						type="warning1"
-						size="xs"
-						style={{ color: '#C80000' }}
-					/>{' '}
-					失败
+					<CloseCircleFilled style={{ color: '#C80000' }} /> 失败
 				</>
 			);
 		}
 	};
 	const cpuRender = (
 		value: string,
-		index: number,
-		record: NodeResourceProps
+		record: NodeResourceProps,
+		index: number
 	) => {
 		const percentage = record.cpuRate ? Number(record.cpuRate) : 0;
 		return (
@@ -264,8 +276,8 @@ const Overview = () => {
 	};
 	const memoryRender = (
 		value: string,
-		index: number,
-		record: NodeResourceProps
+		record: NodeResourceProps,
+		index: number
 	) => {
 		const percentage = record.memoryRate ? Number(record.memoryRate) : 0;
 		return (
@@ -300,56 +312,41 @@ const Overview = () => {
 	};
 	const Operation = {
 		primary: (
-			<RadioGroup
-				shape="button"
+			<Radio.Group
 				value={viewType}
-				onChange={(value: string | number | boolean) =>
-					onViewChange(value, 'view')
+				onChange={(e: RadioChangeEvent) =>
+					onViewChange(e.target.value, 'view')
 				}
 			>
-				<Tooltip
-					trigger={
-						<Radio id="service" value="service">
-							<CustomIcon type="icon-shili1" size="small" />
-						</Radio>
-					}
-					align="t"
-				>
-					服务视角
-				</Tooltip>
-				<Tooltip
-					trigger={
-						<Radio id="namespace" value="namespace">
-							<CustomIcon
-								type="icon-mingmingkongjian"
-								size="small"
-							/>
-						</Radio>
-					}
-					align="t"
-				>
-					命名空间视角
-				</Tooltip>
-			</RadioGroup>
+				<Radio.Button id="service" value="service">
+					<Tooltip title="服务视角">
+						<IconFont type="icon-shili1" />
+					</Tooltip>
+				</Radio.Button>
+				<Radio.Button id="namespace" value="namespace">
+					<Tooltip title="命名空间视角">
+						<IconFont type="icon-mingmingkongjian" />
+					</Tooltip>
+				</Radio.Button>
+			</Radio.Group>
 		),
 		secondary: (
-			<RadioGroup
-				shape="button"
+			<Radio.Group
 				value={tableType}
-				onChange={(value: string | number | boolean) =>
-					onViewChange(value, 'table')
+				onChange={(e: RadioChangeEvent) =>
+					onViewChange(e.target.value, 'table')
 				}
 			>
-				<Radio id="cpu" value="cpu">
+				<Radio.Button id="cpu" value="cpu">
 					CPU
-				</Radio>
-				<Radio id="memory" value="memory">
+				</Radio.Button>
+				<Radio.Button id="memory" value="memory">
 					内存
-				</Radio>
-				<Radio id="storage" value="storage">
+				</Radio.Button>
+				<Radio.Button id="storage" value="storage">
 					存储
-				</Radio>
-			</RadioGroup>
+				</Radio.Button>
+			</Radio.Group>
 		)
 	};
 	const NodeOperation = {
@@ -358,62 +355,6 @@ const Overview = () => {
 				<div className="node-title-name">节点信息</div>
 			</div>
 		)
-	};
-	const onNodeSort = (dataIndex: string, order: string) => {
-		const temp = nodeDataSource.sort(function (
-			a: NodeResourceProps,
-			b: NodeResourceProps
-		) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setNodeDataSource([...temp]);
-	};
-	const onNodeFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = nodeOriginData.filter(
-				(item: NodeResourceProps) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setNodeDataSource(list);
-		} else {
-			setNodeDataSource(nodeOriginData);
-		}
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		const temp = dataSource.sort(function (
-			a: MiddlewareResourceProps,
-			b: MiddlewareResourceProps
-		) {
-			const result = a[dataIndex] - b[dataIndex];
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setDataSource([...temp]);
-	};
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = originData.filter(
-				(item: MiddlewareResourceProps) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setDataSource(list);
-		} else {
-			setDataSource(originData);
-		}
 	};
 	const handleSearch = (value: string) => {
 		const list = originData.filter((item: MiddlewareResourceProps) =>
@@ -477,13 +418,15 @@ const Overview = () => {
 					</div>
 				</div>
 				<div className="resource-pool-table-content">
-					<Table
+					<ProTable
 						dataSource={dataSource}
-						exact
-						primaryKey="key"
+						rowKey={(record) =>
+							`${record.name}/${record.namespace}`
+						}
 						operation={Operation}
-						fixedHeader={true}
-						maxBodyHeight="280px"
+						scroll={{
+							y: '280px'
+						}}
 						search={
 							viewType === 'service'
 								? {
@@ -492,157 +435,214 @@ const Overview = () => {
 								  }
 								: null
 						}
-						onSort={onSort}
-						onFilter={onFilter}
+						pagination={{
+							hideOnSinglePage: true
+						}}
 					>
-						<Table.Column
+						<ProTable.Column
 							title="命名空间"
 							dataIndex="namespace"
 							filters={namespaceFilter}
-							filterMode="single"
+							filterMultiple={false}
 							width={200}
-							lock="left"
+							fixed="left"
+							onFilter={(
+								value: string | number | boolean,
+								record: MiddlewareResourceProps
+							) => {
+								return record.namespace === value;
+							}}
 						/>
 						{viewType === 'service' && (
-							<Table.Column
+							<ProTable.Column
 								title="类型"
 								dataIndex="type"
-								cell={iconTypeRender}
+								render={iconTypeRender}
 								filters={typeFilter}
-								filterMode="single"
+								filterMultiple={false}
 								width={180}
+								onFilter={(
+									value: string | number | boolean,
+									record: MiddlewareResourceProps
+								) => {
+									return record.type === value;
+								}}
 							/>
 						)}
 						{viewType === 'service' && (
-							<Table.Column
+							<ProTable.Column
 								title="服务名称/中文别名"
 								dataIndex="name"
-								cell={nameRender}
+								render={nameRender}
 								width={180}
 							/>
 						)}
 						{tableType === 'cpu' && (
-							<Table.Column
+							<ProTable.Column
 								title="CPU配额（核）"
 								dataIndex="requestCpu"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => (a.requestCpu || 0) - (b.requestCpu || 0)}
 							/>
 						)}
 						{tableType === 'cpu' && (
-							<Table.Column
+							<ProTable.Column
 								title="近5min平均使用额（核）"
 								dataIndex="per5MinCpu"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.per5MinCpu - b.per5MinCpu}
 							/>
 						)}
 						{tableType === 'cpu' && (
-							<Table.Column
+							<ProTable.Column
 								title="CPU使用率（%）"
 								dataIndex="cpuRate"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.cpuRate - b.cpuRate}
 							/>
 						)}
 						{tableType === 'memory' && (
-							<Table.Column
+							<ProTable.Column
 								title="内存配额（GB）"
 								dataIndex="requestMemory"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) =>
+									(a.requestMemory || 0) -
+									(b.requestMemory || 0)
+								}
 							/>
 						)}
 						{tableType === 'memory' && (
-							<Table.Column
+							<ProTable.Column
 								title="近5min平均使用额（GB）"
 								dataIndex="per5MinMemory"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.per5MinMemory - b.per5MinMemory}
 							/>
 						)}
 						{tableType === 'memory' && (
-							<Table.Column
+							<ProTable.Column
 								title="内存使用率（%）"
 								dataIndex="memoryRate"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.memoryRate - b.memoryRate}
 							/>
 						)}
 						{tableType === 'storage' && (
-							<Table.Column
+							<ProTable.Column
 								title="存储配额（G）"
 								dataIndex="requestStorage"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) =>
+									(a.requestStorage || 0) -
+									(b.requestStorage || 0)
+								}
+								// sortable
 							/>
 						)}
 						{tableType === 'storage' && (
-							<Table.Column
+							<ProTable.Column
 								title="近5min平均使用额（%）"
 								dataIndex="per5MinStorage"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.per5MinStorage - b.per5MinStorage}
 							/>
 						)}
 						{tableType === 'storage' && (
-							<Table.Column
+							<ProTable.Column
 								title="存储使用率（%）"
 								dataIndex="storageRate"
-								cell={nullRender}
+								render={nullRender}
 								width={200}
-								sortable
+								sorter={(
+									a: MiddlewareResourceProps,
+									b: MiddlewareResourceProps
+								) => a.storageRate - b.storageRate}
 							/>
 						)}
-					</Table>
+					</ProTable>
 				</div>
 			</FormBlock>
 			<div>
-				<Table
+				<ProTable
 					dataSource={nodeDataSource}
-					exact
-					primaryKey="key"
+					rowKey="ip"
 					operation={NodeOperation}
-					onSort={onNodeSort}
-					onFilter={onNodeFilter}
 				>
-					<Table.Column title="节点IP" dataIndex="ip" />
-					<Table.Column
+					<ProTable.Column title="节点IP" dataIndex="ip" />
+					<ProTable.Column
 						title="CPU(核)"
 						dataIndex="cpuRate"
-						cell={cpuRender}
-						sortable
+						render={cpuRender}
+						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
+							(a.cpuRate || 0) - (b.cpuRate || 0)
+						}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="内存(GB)"
 						dataIndex="memoryRate"
-						cell={memoryRender}
-						sortable
+						render={memoryRender}
+						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
+							a.memoryRate - b.memoryRate
+						}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="状态"
 						dataIndex="status"
-						cell={statusRender}
-						filterMode="single"
+						render={statusRender}
+						filterMultiple={false}
 						filters={[
-							{ label: '成功', value: 'True' },
-							{ label: '失败', value: 'False' }
+							{ text: '成功', value: 'True' },
+							{ text: '失败', value: 'False' }
 						]}
+						onFilter={(
+							value: string | number | boolean,
+							record: NodeResourceProps
+						) => {
+							return record.status === value;
+						}}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
-						sortable
+						sorter={(a: NodeResourceProps, b: NodeResourceProps) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
 					/>
-				</Table>
+				</ProTable>
 			</div>
 		</div>
 	);

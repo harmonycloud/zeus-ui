@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Message, Dialog } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import { useHistory, useParams } from 'react-router';
-import Table from '@/components/MidTable';
-import { getParamsTemps, deleteParamsTemp } from '@/services/template';
-import messageConfig from '@/components/messageConfig';
 import moment from 'moment';
-import { defaultValueRender } from '@/utils/utils';
+import { Button, notification, Modal } from 'antd';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
+import { useHistory, useParams } from 'react-router';
+import { getParamsTemps, deleteParamsTemp } from '@/services/template';
+import { ParamterTemplateItem } from '../detail';
+import { Key } from 'antd/lib/table/interface';
 
 interface ParamterTemplateProps {
 	type: string;
@@ -18,11 +18,13 @@ interface paramsProps {
 	aliasName: string;
 	namespace: string;
 }
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 const ParamterTemplate = (props: ParamterTemplateProps) => {
 	const { type, chartVersion, middlewareName } = props;
 	const [originData, setOriginData] = useState([]);
 	const [dataSource, setDataSource] = useState([]);
-	const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+	const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
 	const history = useHistory();
 	const params: paramsProps = useParams();
 	useEffect(() => {
@@ -35,7 +37,10 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				setOriginData(res.data);
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -59,7 +64,7 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 								`/serviceList/${params.name}/${params.aliasName}/paramterSetting/compareTemplate/${type}/${chartVersion}/${selectedRowKeys[0]}/${selectedRowKeys[1]}/${params.namespace}/compare`
 							);
 						}}
-						type="secondary"
+						type="default"
 					>
 						对比
 					</Button>
@@ -74,14 +79,14 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 							deleteTemp(sendData);
 						}}
 						type="primary"
-						warning
+						danger
 					>
 						删除
 					</Button>
 				)}
 				{selectedRowKeys.length > 0 && (
 					<Button
-						type="normal"
+						type="default"
 						onClick={() => {
 							setSelectedRowKeys([]);
 						}}
@@ -93,24 +98,32 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 		)
 	};
 	const deleteTemp = (sendData: { type: string; uids: string }) => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '请确认是否删除所选择自定义参数模板',
 			onOk: () => {
 				return deleteParamsTemp(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '模板删除成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '模板删除成功'
+						});
 						getData();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
 		});
 	};
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (
+		value: string,
+		record: ParamterTemplateItem,
+		index: number
+	) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -172,31 +185,13 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 		);
 		setDataSource(list);
 	};
-	const onChange = (selectedRowKeys: string[], record: any) => {
+	const onChange = (selectedRowKeys: Key[]) => {
 		setSelectedRowKeys(selectedRowKeys);
 	};
-	const onSort = (dataIndex: string, order: string) => {
-		const tempDataSource = dataSource.sort((a, b) => {
-			const result =
-				moment(a['createTime']).valueOf() -
-				moment(b['createTime']).valueOf();
-			return order === 'asc'
-				? result > 0
-					? 1
-					: -1
-				: result > 0
-				? -1
-				: 1;
-		});
-		setDataSource([...tempDataSource]);
-	};
 	return (
-		<Table
+		<ProTable
 			dataSource={dataSource}
-			exact
-			fixedBarExpandWidth={[24]}
-			affixActionBar
-			primaryKey="uid"
+			rowKey="uid"
 			operation={Operation}
 			search={{
 				onSearch: handleSearch,
@@ -206,34 +201,34 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 				onChange: onChange,
 				selectedRowKeys: selectedRowKeys
 			}}
-			onSort={onSort}
 		>
-			<Table.Column
+			<ProTable.Column
 				title="模板名称"
 				dataIndex="name"
-				cell={defaultValueRender}
-				lock="left"
+				ellipsis={true}
+				fixed="left"
 				width={150}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="模板描述"
 				dataIndex="description"
-				cell={defaultValueRender}
-				// width={300}
+				ellipsis={true}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="创建时间"
 				dataIndex="createTime"
 				width={180}
-				sortable
+				sorter={(a: ParamterTemplateItem, b: ParamterTemplateItem) =>
+					moment(a.createTime).unix() - moment(b.createTime).unix()
+				}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="操作"
 				dataIndex="action"
 				width={180}
-				cell={actionRender}
+				render={actionRender}
 			/>
-		</Table>
+		</ProTable>
 	);
 };
 export default ParamterTemplate;

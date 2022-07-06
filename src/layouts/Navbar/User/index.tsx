@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Icon } from '@alifd/next';
-import { Message, Balloon } from '@alicloud/console-components';
-import CustomIcon from '@/components/CustomIcon';
+import { EditOutlined } from '@ant-design/icons';
+import { IconFont } from '@/components/IconFont';
+import { notification } from 'antd';
 
 import { postLogout } from '@/services/user';
-import messageConfig from '@/components/messageConfig';
 import EditPasswordForm from './EditPasswordForm';
 import { userProps } from './user';
 import { getLDAP } from '@/services/user';
@@ -15,11 +14,9 @@ import logoutSvg from '@/assets/images/navbar/logout.svg';
 
 import styles from './user.module.scss';
 
-const Tooltip = Balloon.Tooltip;
-
 function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
-	const [visible, setVisible] = useState(false);
+	const [visible, setVisible] = useState<boolean>(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
 	const history = useHistory();
 
@@ -29,11 +26,13 @@ function User(props: userProps): JSX.Element {
 				Storage.removeLocal('token', true);
 				Storage.removeSession('service-available-current', true);
 				Storage.removeLocal('firstAlert', true);
-				// Storage.removeLocal('role', true);
 				history.push('/login');
 				window.location.reload();
 			} else {
-				Message.show(messageConfig('error', '错误', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -42,20 +41,25 @@ function User(props: userProps): JSX.Element {
 	};
 
 	useEffect(() => {
-		getLDAP().then((res) => {
+		getLDAP().then((res: any) => {
 			res.success && setIsLDAP(res.data.isOn);
 		});
 	}, []);
 
 	return (
 		<div className={`${styles['nav-user-container']} ${className}`}>
-			<Icon type="user-circle" />
-			{/* <span style={{ marginLeft: '5px' }}>{nickName}</span> */}
+			<IconFont
+				type="icon-user-circle"
+				style={{
+					fontSize: '20px',
+					verticalAlign: 'middle'
+				}}
+			/>
 			<ul className={styles['nav-user-operator']}>
 				<li className={styles['nav-user-container-item']}>
 					<p>{nickName}</p>
 					<span className={styles['nav-user-role-p']}>
-						{role.userName}
+						{role?.userName}
 					</span>
 				</li>
 				{Storage.getLocal('userName') === 'admin' && (
@@ -65,8 +69,14 @@ function User(props: userProps): JSX.Element {
 							history.push('/dataOverview/personlization')
 						}
 					>
-						<CustomIcon type="icon-gexinghua" size={15} />
-						<span style={{ marginLeft: '5px' }}>平台管理</span>
+						<IconFont
+							type="icon-gexinghua"
+							style={{
+								fontSize: '14px',
+								marginRight: '4px'
+							}}
+						/>
+						<span>平台管理</span>
 					</li>
 				)}
 				{Storage.getLocal('userName') !== 'admin' && isLDAP ? null : (
@@ -74,10 +84,8 @@ function User(props: userProps): JSX.Element {
 						className={styles['nav-user-container-item']}
 						onClick={editPassword}
 					>
-						<Icon
-							type="edit"
-							size="small"
-							style={{ marginRight: 4, color: '#686A7B' }}
+						<EditOutlined
+							style={{ fontSize: '14px', marginRight: '4px' }}
 						/>
 						修改密码
 					</li>

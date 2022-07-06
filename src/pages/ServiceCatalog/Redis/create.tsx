@@ -1,39 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Page, { Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import FormBlock from '@/components/FormBlock';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '../components/TableRadio/index';
 import {
-	Form,
-	Field,
 	Input,
 	Switch,
-	Checkbox,
-	Balloon,
-	Icon,
 	Select,
+	AutoComplete,
 	Button,
-	Message
-} from '@alicloud/console-components';
+	Popover,
+	Form,
+	notification,
+	Result,
+	InputNumber,
+	Tag
+} from 'antd';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
+import transUnit from '@/utils/transUnit';
 import styles from './redis.module.scss';
 import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
+	getMiddlewareDetail,
 	postMiddleware
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import ModeItem from '@/components/ModeItem';
-// * 结果页相关-start
-import SuccessPage from '@/components/ResultPage/SuccessPage';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-import LoadingPage from '@/components/ResultPage/LoadingPage';
-// * 结果页相关-end
-import { instanceSpecList } from '@/utils/const';
+import { instanceSpecList, redisDataList } from '@/utils/const';
 import {
 	CreateProps,
 	CreateParams,
@@ -45,15 +43,24 @@ import {
 	NodeModifyParams,
 	NodeObjParams
 } from '../catalog';
+import Affinity from '@/components/Affinity';
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import { TolerationLabelItem } from '@/components/FormTolerations/formTolerations';
-import { middlewareDetailProps, StorageClassProps } from '@/types/comment';
+import {
+	middlewareDetailProps,
+	StorageClassProps,
+	MirrorItem,
+	AutoCompleteOptionItem
+} from '@/types/comment';
+import { applyBackup } from '@/services/backup';
 import { StoreState } from '@/types';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
-import { formItemLayout614 } from '@/utils/const';
+
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
+import StorageQuota from '@/components/StorageQuota';
+import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
@@ -65,8 +72,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	const { chartName, chartVersion, aliasName } = params;
-	const field = Field.useField();
+	const { chartName, chartVersion, aliasName, namespace, middlewareName } =
+		params;
+	const [form] = Form.useForm();
 	const history = useHistory();
 
 	// 主机亲和
@@ -75,8 +83,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		label: '',
 		checked: false
 	});
-	const [labelList, setLabelList] = useState<string[]>([]);
-	const [mirrorList, setMirrorList] = useState<any[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
+	const [mirrorList, setMirrorList] = useState<MirrorItem[]>([]);
 	const changeAffinity = (value: any, key: string) => {
 		setAffinity({
 			...affinity,
@@ -86,12 +94,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
 		[]
 	);
+	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
 		label: ''
 	});
-	const [tolerationList, setTolerationList] = useState<string[]>([]);
+	const [tolerationList, setTolerationList] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
 	const changeTolerations = (value: any, key: string) => {
 		setTolerations({
 			...tolerations,
@@ -142,8 +153,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: 'Redis 节点',
 			num: 3,
 			specId: '1',
-			cpu: 1,
-			memory: 2,
+			cpu: 2,
+			memory: 0.256,
 			storageClass: '',
 			storageQuota: 0
 		},
@@ -152,8 +163,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: '哨兵节点',
 			num: 3,
 			specId: '1',
-			cpu: 1,
-			memory: 2
+			cpu: 2,
+			memory: 0.256
 		}
 	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
@@ -162,9 +173,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
-	const [storageClassList, setStorageClassList] = useState<
-		StorageClassProps[]
-	>([]);
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * 外接的动态表单
@@ -178,6 +186,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorFlag, setErrorFlag] = useState<boolean>(false);
 	// * 创建返回的服务名称
 	const [createData, setCreateData] = useState<middlewareDetailProps>();
+	// * 创建失败返回的失败信息
+	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	useEffect(() => {
@@ -201,7 +211,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
 			getProjectNamespace({ projectId: project.projectId }).then(
 				(res) => {
-					console.log(res);
 					if (res.success) {
 						const list = res.data.filter(
 							(item: NamespaceItem) =>
@@ -209,28 +218,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 						);
 						setNamespaceList(list);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				}
 			);
 		}
 	}, [project, globalNamespace]);
-
-	const formHandle = (obj: any, item: any) => {
-		if (
-			['cpu', 'memory', 'storageClass', 'storageQuota'].indexOf(
-				item.name
-			) > -1 &&
-			mode === 'sentinel'
-		) {
-			const temp = nodeObj[nodeModify.nodeName];
-			temp[item.name] = item.value;
-			setNodeObj({
-				...nodeObj,
-				[nodeModify.nodeName]: temp
-			});
-		}
-	};
 
 	const modifyQuota = (key: string) => {
 		setNodeModify({
@@ -240,14 +236,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		setSpecId(nodeObj[key].specId);
 		if (nodeObj[key].specId === '') {
 			setInstanceSpec('Customize');
-			field.setValues({
+			form.setFieldsValue({
 				cpu: nodeObj[key].cpu,
 				memory: nodeObj[key].memory
 			});
 		} else {
 			setInstanceSpec('General');
 		}
-		field.setValues({
+		form.setFieldsValue({
 			storageClass: nodeObj[key].storageClass,
 			storageQuota: nodeObj[key].storageQuota
 		});
@@ -255,193 +251,187 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 
 	const checkGeneral = (value: any) => {
 		setSpecId(value);
-		const temp = nodeObj[nodeModify.nodeName];
-		switch (value) {
-			case '1':
-				temp.cpu = 1;
-				temp.memory = 2;
-				break;
-			case '2':
-				temp.cpu = 2;
-				temp.memory = 8;
-				break;
-			case '3':
-				temp.cpu = 4;
-				temp.memory = 16;
-				break;
-			case '4':
-				temp.cpu = 8;
-				temp.memory = 32;
-				break;
-			case '5':
-				temp.cpu = 16;
-				temp.memory = 64;
-				break;
-			default:
-				break;
-		}
-		setNodeObj({
-			...nodeObj,
-			[nodeModify.nodeName]: temp
-		});
 	};
 
 	const handleSubmit = () => {
-		field.validate((err, value) => {
-			const values: RedisCreateValuesParams = field.getValues();
-			if (!err) {
-				const sendData: RedisSendDataParams = {
-					chartName: chartName,
-					chartVersion: chartVersion,
-					clusterId: globalCluster.id,
-					namespace:
-						globalNamespace.name === '*'
-							? values.namespace
-							: globalNamespace.name,
-					type: 'redis',
-					name: values.name,
-					aliasName: values.aliasName,
-					labels: values.labels,
-					annotations: values.annotations,
-					description: values.description,
-					version: version,
-					password: values.pwd,
-					mode: mode,
-					filelogEnabled: fileLog,
-					stdoutEnabled: standardLog,
-					quota: { redis: {} },
-					mirrorImageId: mirrorList.find(
-						(item) => item.address === values['mirrorImageId']
-					)
-						? mirrorList
-								.find(
-									(item) =>
-										item.address === values['mirrorImageId']
-								)
-								.id.toString()
-						: ''
-				};
-				// * 动态表单相关
-				if (customForm) {
-					const dynamicValues = {};
-					let keys: string[] = [];
-					for (const i in customForm) {
-						const list = getCustomFormKeys(customForm[i]);
-						keys = [...list, ...keys];
-					}
-					keys.forEach((item) => {
-						dynamicValues[item] = values[item];
+		form.validateFields().then((values: RedisCreateValuesParams) => {
+			const sendData: RedisSendDataParams = {
+				chartName: chartName,
+				chartVersion: chartVersion,
+				clusterId: globalCluster.id,
+				namespace:
+					globalNamespace.name === '*'
+						? values.namespace
+						: globalNamespace.name,
+				type: 'redis',
+				name: values.name,
+				aliasName: values.aliasName,
+				labels: values.labels,
+				annotations: values.annotations,
+				description: values.description,
+				version: version,
+				password: values.pwd,
+				mode: mode,
+				filelogEnabled: fileLog,
+				stdoutEnabled: standardLog,
+				quota: { redis: {} },
+				mirrorImageId:
+					mirrorList
+						.find(
+							(item: MirrorItem) =>
+								item.address === values.mirrorImageId
+						)
+						?.id.toString() || ''
+			};
+			// * 动态表单相关
+			if (customForm) {
+				const dynamicValues = {};
+				let keys: string[] = [];
+				for (const i in customForm) {
+					const list = getCustomFormKeys(customForm[i]);
+					keys = [...list, ...keys];
+				}
+				keys.forEach((item) => {
+					dynamicValues[item] = values[item];
+				});
+				sendData.dynamicValues = dynamicValues;
+			}
+			if (affinityFlag) {
+				if (!affinityLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机亲和。'
 					});
-					sendData.dynamicValues = dynamicValues;
-				}
-				if (affinity.flag) {
-					if (!affinityLabels.length) {
-						Message.show(
-							messageConfig('error', '错误', '请选择主机亲和。')
-						);
-						return;
-					} else {
-						sendData.nodeAffinity = affinityLabels.map((item) => {
-							return {
-								label: item.label,
-								required: affinity.checked,
-								namespace: globalNamespace.name
-							};
-						});
-					}
-				}
-				if (tolerations.flag) {
-					if (!tolerationsLabels.length) {
-						Message.show(
-							messageConfig('error', '错误', '请选择主机容忍。')
-						);
-						return;
-					} else {
-						sendData.tolerations = tolerationsLabels.map(
-							(item) => item.label
-						);
-					}
-				}
-				if (mode === 'cluster') {
-					sendData.quota = {
-						redis: {
-							num: clusterMode === '3s-3m' ? 6 : 10,
-							storageClassName: values.storageClass,
-							storageClassQuota: values.storageQuota
-						}
-					};
-					if (instanceSpec === 'General') {
-						switch (specId) {
-							case '1':
-								sendData.quota.redis.cpu = 1;
-								sendData.quota.redis.memory = '2Gi';
-								break;
-							case '2':
-								sendData.quota.redis.cpu = 2;
-								sendData.quota.redis.memory = '8Gi';
-								break;
-							case '3':
-								sendData.quota.redis.cpu = 4;
-								sendData.quota.redis.memory = '16Gi';
-								break;
-							case '4':
-								sendData.quota.redis.cpu = 8;
-								sendData.quota.redis.memory = '32Gi';
-								break;
-							case '5':
-								sendData.quota.redis.cpu = 16;
-								sendData.quota.redis.memory = '64Gi';
-								break;
-							default:
-								break;
-						}
-					} else if (instanceSpec === 'Customize') {
-						sendData.quota.redis.cpu = values.cpu;
-						sendData.quota.redis.memory = values.memory + 'Gi';
-					}
+					return;
 				} else {
-					if (nodeObj) {
-						sendData.quota = { redis: {} };
-						for (const key in nodeObj) {
-							if (!nodeObj[key].disabled) {
-								if (nodeObj[key].storageClass === '') {
-									modifyQuota(key);
-									return;
-								}
-								if (nodeObj[key].storageQuota === 0) {
-									Message.show(
-										messageConfig(
-											'error',
-											'失败',
-											`${key}节点存储配额不能为0`
-										)
-									);
-									modifyQuota(key);
-									return;
-								}
-								sendData.quota[key] = {
-									...nodeObj[key],
-									storageClassName: nodeObj[key].storageClass,
-									storageClassQuota: nodeObj[key].storageQuota
-								};
+					sendData.nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: affinity.checked,
+							namespace: globalNamespace.name
+						};
+					});
+				}
+			}
+			if (tolerations.flag) {
+				if (!tolerationsLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机容忍。'
+					});
+					return;
+				} else {
+					sendData.tolerations = tolerationsLabels.map(
+						(item) => item.label
+					);
+				}
+			}
+			if (mode === 'cluster') {
+				sendData.quota = {
+					redis: {
+						num: clusterMode === '3s-3m' ? 6 : 10,
+						storageClassName: values.storageClass.split('/')[0],
+						storageClassQuota: values.storageQuota
+					}
+				};
+				if (instanceSpec === 'General') {
+					switch (specId) {
+						case '1':
+							sendData.quota.redis.cpu = 1;
+							sendData.quota.redis.memory = '2Gi';
+							break;
+						case '2':
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '8Gi';
+							break;
+						case '3':
+							sendData.quota.redis.cpu = 4;
+							sendData.quota.redis.memory = '16Gi';
+							break;
+						case '4':
+							sendData.quota.redis.cpu = 8;
+							sendData.quota.redis.memory = '32Gi';
+							break;
+						case '5':
+							sendData.quota.redis.cpu = 16;
+							sendData.quota.redis.memory = '64Gi';
+							break;
+						default:
+							break;
+					}
+				} else if (instanceSpec === 'Customize') {
+					sendData.quota.redis.cpu = values.cpu;
+					sendData.quota.redis.memory = values.memory + 'Gi';
+				}
+			} else {
+				if (nodeObj) {
+					sendData.quota = { redis: {} };
+					for (const key in nodeObj) {
+						if (!nodeObj[key].disabled) {
+							if (nodeObj[key].storageClass === '') {
+								modifyQuota(key);
+								return;
 							}
+							if (nodeObj[key].storageQuota === 0) {
+								notification.error({
+									message: '失败',
+									description: `${key}节点存储配额不能为0`
+								});
+								modifyQuota(key);
+								return;
+							}
+							sendData.quota[key] = {
+								...nodeObj[key],
+								storageClassName:
+									nodeObj[key].storageClass?.split('/')[0],
+								storageClassQuota: nodeObj[key].storageQuota
+							};
 						}
 					}
 				}
-				setCommitFlag(true);
-				postMiddleware(sendData).then((res) => {
-					if (res.success) {
-						setCreateData(res.data);
-						setSuccessFlag(true);
-						setErrorFlag(false);
-						setCommitFlag(false);
-					} else {
-						setSuccessFlag(false);
-						setErrorFlag(true);
-						setCommitFlag(false);
-					}
+			}
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
+			// 克隆服务
+			if (middlewareName) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					type: storage.getLocal('backupDetail').sourceType,
+					cron: storage.getLocal('backupDetail').cron,
+					backupName: storage.getLocal('backupDetail').backupName,
+					addressName: storage.getLocal('backupDetail').addressName
+				};
+				applyBackup(result).then((res) => {
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
 				});
 			}
+			setCommitFlag(true);
+			postMiddleware(sendData).then((res) => {
+				if (res.success) {
+					setCreateData(res.data);
+					setSuccessFlag(true);
+					setErrorFlag(false);
+					setCommitFlag(false);
+				} else {
+					setErrorData(res.errorMsg);
+					setSuccessFlag(false);
+					setErrorFlag(true);
+					setCommitFlag(false);
+				}
+			});
 		});
 	};
 
@@ -453,23 +443,44 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			getNodePort({ clusterId: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getNodeTaint({ clusterid: globalCluster.id }).then((res) => {
 				if (res.success) {
-					setTolerationList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setTolerationList(list);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getAspectFrom().then((res) => {
 				if (res.success) {
 					setCustomForm(res.data);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 			getMirror({
@@ -479,122 +490,207 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					setMirrorList(res.data.list);
 				}
 			});
-			getStorageClass({
-				clusterId: globalCluster.id,
-				namespace: globalNamespace.name
-			}).then((res) => {
-				if (res.success) {
-					setStorageClassList(res.data);
-				} else {
-					Message.show(messageConfig('error', '失败', res));
-				}
-			});
 		}
 	}, [globalCluster, globalNamespace]);
+
+	// 全局分区更新
+	useEffect(() => {
+		if (JSON.stringify(globalNamespace) !== '{}') {
+			// 克隆服务
+			if (middlewareName) {
+				getMiddlewareDetailAndSetForm(middlewareName);
+			}
+		}
+	}, [globalNamespace]);
+
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		getMiddlewareDetail({
+			clusterId: globalCluster.id,
+			namespace: namespace || globalNamespace.name,
+			middlewareName: middlewareName,
+			type: 'redis'
+		}).then((res) => {
+			if (!res.data) return;
+			setInstanceSpec('Customize');
+			if (res.data.nodeAffinity) {
+				setAffinity({
+					flag: true,
+					label: '',
+					checked: false
+				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item: string) => {
+						return { label: item };
+					}) || []
+				);
+			}
+			if (res.data.mode) {
+				setMode(res.data.mode);
+			}
+			if (res.data.version) {
+				setVersion(res.data.version);
+			}
+			form.setFieldsValue({
+				name: res.data.name + '-backup',
+				labels: res.data.labels,
+				annotations: res.data.annotations,
+				description: res.data.description,
+				mirrorImage: res.data.mirrorImage,
+				password: res.data.password,
+				cpu: Number(res.data.quota.redis.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+				),
+				storageClass: res.data.quota.redis.storageClassName,
+				storageQuota: transUnit.removeUnit(
+					res.data.quota.redis.storageClassQuota,
+					'Gi'
+				)
+			});
+			setNodeObj({
+				redis: {
+					disabled: false,
+					title: 'Redis 节点',
+					num: res.data.quota.redis.num,
+					specId: '1',
+					cpu: Number(res.data.quota.redis.cpu),
+					memory: Number(
+						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+					),
+					storageClass: res.data.quota.redis.storageClassName,
+					storageQuota: Number(
+						transUnit.removeUnit(
+							res.data.quota.redis.storageClassQuota,
+							'Gi'
+						)
+					)
+				},
+				sentinel: {
+					disabled: false,
+					title: '哨兵节点',
+					num: res.data.quota.redis.num,
+					specId: '1',
+					cpu: Number(res.data.quota.redis.cpu),
+					memory: Number(
+						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+					)
+				}
+			});
+			if (res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
+					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
+				}
+			}
+		});
+	};
 	// * 结果页相关
 	if (commitFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<LoadingPage
-							title="发布中"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						title="发布中"
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 	if (successFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<SuccessPage
-							title="发布成功"
-							leftText="返回列表"
-							rightText="查看详情"
-							leftHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							rightHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
-								});
-							}}
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						status="success"
+						title="发布成功"
+						extra={[
+							<Button
+								key="list"
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>,
+							<Button
+								key="detail"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}/basicInfo/${createData?.name}/${chartName}/${chartVersion}/${createData?.namespace}`
+									});
+								}}
+							>
+								查看详情
+							</Button>
+						]}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	if (errorFlag) {
 		return (
-			<Page>
-				<Header />
-				<Content>
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 46
-						}}
-					>
-						<ErrorPage
-							title="发布失败"
-							btnHandle={() => {
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								});
-							}}
-							btnText="返回列表"
-						/>
-					</div>
-				</Content>
-			</Page>
+			<ProPage>
+				<ProHeader />
+				<ProContent>
+					<Result
+						status="error"
+						title="发布失败"
+						subTitle={errorData}
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push({
+										pathname: `/serviceList/${chartName}/${aliasName}`
+									});
+								}}
+							>
+								返回列表
+							</Button>
+						}
+					/>
+				</ProContent>
+			</ProPage>
 		);
 	}
 
 	return (
-		<Page>
-			<Page.Header
+		<ProPage>
+			<ProHeader
 				title="发布Redis服务"
 				className="page-header"
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					window.history.back();
 				}}
 			/>
-			<Page.Content>
-				<Form
-					{...formItemLayout614}
-					field={field}
-					onChange={formHandle}
-				>
-					{globalNamespace.name === '*' && (
+			<ProContent>
+				<Form form={form}>
+					{globalNamespace.name === '*' && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">
@@ -606,11 +702,16 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<FormItem
-												required
-												requiredMessage="请选择命名空间"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入命名空间'
+													}
+												]}
+												name="namespace"
 											>
 												<Select
-													name="namespace"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -650,16 +751,22 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											required
-											requiredMessage="请输入服务名称"
-											pattern={pattern.name}
-											patternMessage="请输入由小写字母数字及“-”组成的2-24个字符"
+											rules={[
+												{
+													required: true,
+													message: '请输入服务名称'
+												},
+												{
+													pattern: new RegExp(
+														pattern.name
+													),
+													message:
+														'请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符'
+												}
+											]}
+											name="name"
 										>
-											<Input
-												name="name"
-												placeholder="请输入由小写字母数字及“-”组成的2-24个字符"
-												trim
-											/>
+											<Input placeholder="请输入以小写字母开头，小写字母数字及“-”组成的2-24个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -669,16 +776,25 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											minLength={2}
-											maxLength={80}
-											minmaxLengthMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											pattern={pattern.nickname}
-											patternMessage="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
+											rules={[
+												{
+													type: 'string',
+													min: 2,
+													max: 80,
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												},
+												{
+													pattern: new RegExp(
+														pattern.nickname
+													),
+													message:
+														'请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符'
+												}
+											]}
+											name="aliasName"
 										>
-											<Input
-												name="aliasName"
-												placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符"
-											/>
+											<Input placeholder="请输入由汉字、字母、数字及“-”或“.”或“_”组成的2-80个字符" />
 										</FormItem>
 									</div>
 								</li>
@@ -688,13 +804,18 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的标签，多个标签以英文逗号分隔"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的标签，多个标签以英文逗号分隔'
+												}
+											]}
+											name="labels"
 										>
-											<Input
-												name="labels"
-												placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的标签，多个标签以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -704,13 +825,18 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className="form-content">
 										<FormItem
-											pattern={pattern.labels}
-											patternMessage="请输入key=value格式的注解，多个注解以英文逗号分隔"
+											rules={[
+												{
+													pattern: new RegExp(
+														pattern.labels
+													),
+													message:
+														'请输入key=value格式的注解，多个注解以英文逗号分隔'
+												}
+											]}
+											name="annotations"
 										>
-											<Input
-												name="annotations"
-												placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔"
-											/>
+											<Input placeholder="请输入key=value格式的注解，多个注解以英文逗号分隔" />
 										</FormItem>
 									</div>
 								</li>
@@ -719,11 +845,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										<span>备注</span>
 									</label>
 									<div className="form-content">
-										<FormItem>
-											<Input.TextArea
-												name="description"
-												placeholder="请输入备注信息"
-											/>
+										<FormItem name="description">
+											<Input.TextArea placeholder="请输入备注信息" />
 										</FormItem>
 									</div>
 								</li>
@@ -733,153 +856,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="调度策略">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span style={{ marginRight: 8 }}>
-											主机亲和
-										</span>
-										<Balloon
-											trigger={
-												<Icon
-													type="question-circle"
-													size="xs"
-												/>
-											}
-											closable={false}
-										>
-											勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
-										</Balloon>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['host-affinity']}`}
-									>
-										<div className={styles['switch']}>
-											{affinity.flag ? '已开启' : '关闭'}
-											<Switch
-												checked={affinity.flag}
-												onChange={(value) =>
-													changeAffinity(
-														value,
-														'flag'
-													)
-												}
-												size="small"
-												style={{
-													marginLeft: 16,
-													verticalAlign: 'middle'
-												}}
-											/>
-										</div>
-										{affinity.flag ? (
-											<>
-												<div
-													className={styles['input']}
-												>
-													<Select.AutoComplete
-														value={affinity.label}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'label'
-															)
-														}
-														hasClear={true}
-														dataSource={labelList}
-														style={{
-															width: '100%'
-														}}
-													/>
-												</div>
-												<div className={styles['add']}>
-													<Button
-														style={{
-															marginLeft: '4px',
-															padding: '0 9px'
-														}}
-														disabled={
-															affinity.label
-																? false
-																: true
-														}
-														onClick={() => {
-															if (
-																!affinityLabels.find(
-																	(item) =>
-																		item.label ===
-																		affinity.label
-																)
-															) {
-																setAffinityLabels(
-																	[
-																		...affinityLabels,
-																		{
-																			label: affinity.label,
-																			id: Math.random()
-																		}
-																	]
-																);
-															}
-														}}
-													>
-														<Icon
-															style={{
-																color: '#005AA5'
-															}}
-															type="add"
-														/>
-													</Button>
-												</div>
-												<div
-													className={styles['check']}
-												>
-													<Checkbox
-														checked={
-															affinity.checked
-														}
-														onChange={(value) =>
-															changeAffinity(
-																value,
-																'checked'
-															)
-														}
-														label="强制亲和"
-													/>
-												</div>
-											</>
-										) : null}
-									</div>
-								</li>
-								{affinity.flag && affinityLabels.length ? (
-									<div className={styles['tags']}>
-										{affinityLabels.map((item) => {
-											return (
-												<p
-													className={styles['tag']}
-													key={item.label}
-												>
-													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setAffinityLabels(
-																affinityLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
-															)
-														}
-													/>
-												</p>
-											);
-										})}
-									</div>
-								) : null}
-								<li className="display-flex form-li">
+								<Affinity
+									flag={affinityFlag}
+									flagChange={setAffinityFlag}
+									values={affinityLabels}
+									onChange={setAffinityLabels}
+									cluster={globalCluster}
+								/>
+								<li className="display-flex flex-center form-li">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
 									</label>
@@ -910,7 +894,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												<div
 													className={styles['input']}
 												>
-													<Select.AutoComplete
+													<AutoComplete
 														value={
 															tolerations.label
 														}
@@ -920,7 +904,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
-														hasClear={true}
+														allowClear={true}
 														dataSource={
 															tolerationList
 														}
@@ -963,14 +947,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																// );
 															}
 														}}
-													>
-														<Icon
-															style={{
-																color: '#005AA5'
-															}}
-															type="add"
-														/>
-													</Button>
+														icon={
+															<PlusOutlined
+																style={{
+																	color: '#005AA5'
+																}}
+															/>
+														}
+													></Button>
 												</div>
 											</>
 										) : null}
@@ -981,28 +965,24 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									<div className={styles['tags']}>
 										{tolerationsLabels.map((item) => {
 											return (
-												<p
-													className={styles['tag']}
+												<Tag
 													key={item.label}
-												>
-													<span>{item.label}</span>
-													<Icon
-														type="error"
-														size="xs"
-														className={
-															styles['tag-close']
-														}
-														onClick={() =>
-															setTolerationsLabels(
-																tolerationsLabels.filter(
-																	(arr) =>
-																		arr.id !==
-																		item.id
-																)
+													closable
+													style={{
+														padding: '4px 10px'
+													}}
+													onClose={() =>
+														setTolerationsLabels(
+															tolerationsLabels.filter(
+																(arr) =>
+																	arr.id !==
+																	item.id
 															)
-														}
-													/>
-												</p>
+														)
+													}
+												>
+													{item.label}
+												</Tag>
 											);
 										})}
 									</div>
@@ -1014,28 +994,24 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 						<div className={styles['log-collection-content']}>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex flex-center form-li">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												文件日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
+											<Popover
+												content={
+													<span
+														style={{
+															lineHeight: '18px'
+														}}
+													>
+														安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+													</span>
 												}
-												closable={false}
 											>
-												<span
-													style={{
-														lineHeight: '18px'
-													}}
-												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-												</span>
-											</Balloon>
+												<QuestionCircleOutlined />
+											</Popover>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['file-log']}`}
@@ -1060,28 +1036,24 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 							<div className={styles['log-collection']}>
 								<ul className="form-layout">
-									<li className="display-flex form-li">
+									<li className="display-flex flex-center form-li">
 										<label className="form-name">
 											<span style={{ marginRight: 8 }}>
 												标准日志收集
 											</span>
-											<Balloon
-												trigger={
-													<Icon
-														type="question-circle"
-														size="xs"
-													/>
+											<Popover
+												content={
+													<span
+														style={{
+															lineHeight: '18px'
+														}}
+													>
+														安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+													</span>
 												}
-												closable={false}
 											>
-												<span
-													style={{
-														lineHeight: '18px'
-													}}
-												>
-													安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
-												</span>
-											</Balloon>
+												<QuestionCircleOutlined />
+											</Popover>
 										</label>
 										<div
 											className={`form-content display-flex ${styles['standard-log']}`}
@@ -1137,10 +1109,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									>
 										<FormItem>
 											<Input
-												htmlType="password"
+												type="password"
 												name="pwd"
 												placeholder="请输入初始密码，输入空则由平台随机生成"
-												trim
 											/>
 										</FormItem>
 									</div>
@@ -1154,30 +1125,42 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									<div
-										className="form-content"
-										style={{ flex: '0 0 376px' }}
-									>
-										<FormItem
-											required
-											requiredMessage="请选择镜像仓库"
+									{mirrorList.length && (
+										<div
+											className="form-content"
+											style={{ flex: '0 0 376px' }}
 										>
-											<Select.AutoComplete
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择镜像仓库'
+													}
+												]}
 												name="mirrorImageId"
-												placeholder="请选择"
-												hasClear={true}
-												defaultValue={
-													mirrorList[0]?.address
+												initialValue={
+													mirrorList[0].address
 												}
-												dataSource={mirrorList.map(
-													(item: any) => item.address
-												)}
-												style={{
-													width: '100%'
-												}}
-											/>
-										</FormItem>
-									</div>
+											>
+												<AutoComplete
+													placeholder="请选择"
+													allowClear={true}
+													options={mirrorList.map(
+														(item: any) => {
+															return {
+																label: item.address,
+																value: item.address
+															};
+														}
+													)}
+													style={{
+														width: '100%'
+													}}
+												/>
+											</FormItem>
+										</div>
+									)}
 								</li>
 							</ul>
 						</div>
@@ -1187,7 +1170,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							<ul className="form-layout">
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>高可用模式</span>
+										<span>模式</span>
 									</label>
 									<div
 										className={`form-content display-flex ${styles['redis-mode']}`}
@@ -1228,9 +1211,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											<div
 												className={`display-flex ${styles['mode-content']}`}
 											>
+												{console.log(nodeObj)}
 												{Object.keys(nodeObj).map(
 													(key) => (
 														<ModeItem
+															middlewareType={
+																chartName
+															}
 															key={key}
 															type={key}
 															data={nodeObj[key]}
@@ -1287,6 +1274,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	value
 																)
 															}
+															dataList={
+																redisDataList
+															}
 														/>
 													</div>
 												) : null}
@@ -1308,28 +1298,30 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																</label>
 																<div className="form-content">
 																	<FormItem
-																		min={
-																			0.1
-																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${
-																			maxCpu?.max ||
-																			''
-																		}Core）`}
-																		required
-																		requiredMessage="请输入自定义CPU配额，单位为Core"
-																		{...maxCpu}
-																	>
-																		<Input
-																			name="cpu"
-																			htmlType="number"
-																			min={
-																				0.1
+																		rules={[
+																			{
+																				required:
+																					true,
+																				message:
+																					'请输入自定义CPU配额，单位为Core'
+																			},
+																			{
+																				type: 'number',
+																				min: 0.1,
+																				...maxCpu,
+																				message: `最小为0.1`
 																			}
+																		]}
+																		name="cpu"
+																	>
+																		<InputNumber
 																			step={
 																				0.1
 																			}
+																			style={{
+																				width: '100%'
+																			}}
 																			placeholder="请输入自定义CPU配额，单位为Core"
-																			trim
 																		/>
 																	</FormItem>
 																</div>
@@ -1342,28 +1334,29 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																</label>
 																<div className="form-content">
 																	<FormItem
-																		min={
-																			0.1
-																		}
-																		minmaxMessage={`最小为0.1,不能超过当前分区配额剩余的最大值（${
-																			maxMemory?.max ||
-																			''
-																		}Gi`}
-																		required
-																		requiredMessage="请输入自定义内存配额，单位为Gi"
-																		{...maxMemory}
-																	>
-																		<Input
-																			name="memory"
-																			htmlType="number"
-																			min={
-																				0.1
+																		rules={[
+																			{
+																				required:
+																					true,
+																				message:
+																					'请输入自定义内存配额，单位为Gi'
+																			},
+																			{
+																				type: 'number',
+																				min: 0.1,
+																				message: `最小为0.1`
 																			}
+																		]}
+																		name="memory"
+																	>
+																		<InputNumber
 																			step={
 																				0.1
 																			}
+																			style={{
+																				width: '100%'
+																			}}
 																			placeholder="请输入自定义内存配额，单位为Gi"
-																			trim
 																		/>
 																	</FormItem>
 																</div>
@@ -1374,66 +1367,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											</div>
 										</li>
 										{nodeModify.nodeName !== 'sentinel' && (
-											<li className="display-flex">
-												<label className="form-name">
-													<span className="ne-required">
-														存储配额
-													</span>
-												</label>
-												<div
-													className={`form-content display-flex`}
-												>
-													<FormItem
-														required
-														requiredMessage="请选择存储类型"
-													>
-														<Select
-															name="storageClass"
-															style={{
-																marginRight: 8
-															}}
-															autoWidth={false}
-														>
-															{storageClassList.map(
-																(
-																	item,
-																	index
-																) => {
-																	return (
-																		<Select.Option
-																			key={
-																				index
-																			}
-																			value={
-																				item.name
-																			}
-																		>
-																			{
-																				item.name
-																			}
-																		</Select.Option>
-																	);
-																}
-															)}
-														</Select>
-													</FormItem>
-													<FormItem
-														pattern={pattern.posInt}
-														patternMessage="请输入小于21位的正整数"
-														required
-														requiredMessage="请输入存储配额大小（GB）"
-													>
-														<Input
-															name="storageQuota"
-															htmlType="number"
-															defaultValue={5}
-															min={1}
-															placeholder="请输入存储配额大小"
-															addonTextAfter="GB"
-														/>
-													</FormItem>
-												</div>
-											</li>
+											<StorageQuota
+												clusterId={globalCluster.id}
+											/>
 										)}
 									</>
 								)}
@@ -1442,29 +1378,25 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					</FormBlock>
 					{childrenRender(
 						customForm,
-						field,
+						form,
 						globalCluster,
 						globalNamespace
 					)}
 					<div className={styles['summit-box']}>
-						<Form.Submit
+						<Button
 							type="primary"
-							validate
 							style={{ marginRight: 8 }}
 							onClick={handleSubmit}
 						>
 							提交
-						</Form.Submit>
-						<Button
-							type="normal"
-							onClick={() => window.history.back()}
-						>
+						</Button>
+						<Button onClick={() => window.history.back()}>
 							取消
 						</Button>
 					</div>
 				</Form>
-			</Page.Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

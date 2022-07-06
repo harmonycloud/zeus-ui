@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Input,
-	Select,
-	Message,
-	NumberPicker
-} from '@alicloud/console-components';
+import { Modal, Input, Select, Form, notification, InputNumber } from 'antd';
 import SelectBlock from '@/components/SelectBlock';
 import TableRadio from '@/pages/ServiceCatalog/components/TableRadio';
+
 import pattern from '@/utils/pattern';
 import { getStorageClass } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
-import { instanceSpecList } from '@/utils/const';
+import {
+	esDataList,
+	instanceSpecList,
+	redisSentinelDataList
+} from '@/utils/const';
 import { modeItemProps } from './index';
+import StorageQuota from '../StorageQuota';
 
 interface EditQuotaFormProps extends modeItemProps {
 	visible: boolean;
@@ -27,14 +24,6 @@ interface storageClassListItem {
 	[propName: string]: any;
 }
 
-const formItemLayout = {
-	labelCol: {
-		fixedSpan: 6
-	},
-	wrapperCol: {
-		span: 14
-	}
-};
 const FormItem = Form.Item;
 const EditQuotaForm = (props: EditQuotaFormProps) => {
 	const {
@@ -45,14 +34,15 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		clusterId,
 		namespace,
 		type,
-		inputChange
+		inputChange,
+		middlewareType
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [storageClassList, setStorageClassList] = useState<
 		storageClassListItem[]
 	>([]);
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	useEffect(() => {
 		getStorageClass({
 			clusterId: clusterId,
@@ -61,24 +51,28 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 			if (res.success) {
 				setStorageClassList(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
 	const onOk = () => {
-		field.validate((errors, values) => {
-			if (errors) return;
+		form.validateFields().then((values) => {
+			console.log(values);
 			const value = { ...modifyData, ...values };
 			onCreate(value);
 		});
 	};
 	const checkGeneral = (value: any) => {
+		console.log(value);
 		switch (value) {
 			case '1':
 				setModifyData({
 					...modifyData,
-					cpu: 1,
-					memory: 2,
+					cpu: 2,
+					memory: middlewareType === 'elasticsearch' ? 4 : 0.256,
 					specId: value
 				});
 				break;
@@ -86,31 +80,39 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: 8,
+					memory: middlewareType === 'elasticsearch' ? 8 : 1,
 					specId: value
 				});
 				break;
 			case '3':
 				setModifyData({
 					...modifyData,
-					cpu: 4,
-					memory: 16,
+					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
+					memory: middlewareType === 'elasticsearch' ? 8 : 2,
 					specId: value
 				});
 				break;
 			case '4':
 				setModifyData({
 					...modifyData,
-					cpu: 8,
-					memory: 32,
+					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
+					memory: middlewareType === 'elasticsearch' ? 16 : 8,
 					specId: value
 				});
 				break;
 			case '5':
 				setModifyData({
 					...modifyData,
-					cpu: 16,
-					memory: 64,
+					cpu: middlewareType === 'elasticsearch' ? 8 : 2,
+					memory: middlewareType === 'elasticsearch' ? 32 : 16,
+					specId: value
+				});
+				break;
+			case '6':
+				setModifyData({
+					...modifyData,
+					cpu: 2,
+					memory: 32,
 					specId: value
 				});
 				break;
@@ -119,30 +121,40 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		}
 	};
 	return (
-		<Dialog
+		<Modal
 			title="实例配置"
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
+			width={820}
+			centered
 		>
-			<Form {...formItemLayout} field={field}>
-				<FormItem min={1} minmaxLengthMessage="数据节点数量最小值为1">
-					<label
-						className="form-name"
-						style={{ marginRight: '20px' }}
-					>
-						<span>数据节点数量</span>
-					</label>
-					<NumberPicker
-						min={
-							data.title === '主节点' || data.title === '数据节点'
-								? 3
-								: 1
+			<Form form={form}>
+				<FormItem
+					label="数据节点数量"
+					labelAlign="left"
+					rules={[
+						{
+							type: 'number',
+							min:
+								data.title === '主节点' ||
+								data.title === '数据节点'
+									? 3
+									: 1,
+							message:
+								data.title === '主节点' ||
+								data.title === '数据节点'
+									? '数据节点数量最小值为3'
+									: '数据节点数量最小值为1'
 						}
+					]}
+					name="num"
+					className="ant-form-name"
+					initialValue={data.num}
+				>
+					<InputNumber
 						value={data.num}
-						type="inline"
-						name="num"
+						style={{ width: '150px' }}
 						onChange={inputChange}
 					/>
 				</FormItem>
@@ -171,6 +183,11 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 										onCallBack={(value: any) =>
 											checkGeneral(value)
 										}
+										dataList={
+											middlewareType === 'elasticsearch'
+												? esDataList
+												: redisSentinelDataList
+										}
 									/>
 								</div>
 							) : null}
@@ -185,18 +202,26 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 											</label>
 											<div className="form-content">
 												<FormItem
-													min={0.1}
-													minmaxMessage="最小为0.1"
-													required
-													requiredMessage="请输入自定义CPU配额，单位为Core"
+													rules={[
+														{
+															type: 'number',
+															min: 0.1,
+															message: '最小为0.1'
+														},
+														{
+															required: true,
+															message:
+																'请输入自定义CPU配额，单位为Core'
+														}
+													]}
+													name="cpu"
 												>
-													<Input
-														name="cpu"
-														htmlType="number"
-														min={0.1}
+													<InputNumber
 														step={0.1}
+														style={{
+															width: '100%'
+														}}
 														placeholder="请输入自定义CPU配额，单位为Core"
-														trim
 													/>
 												</FormItem>
 											</div>
@@ -209,18 +234,26 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 											</label>
 											<div className="form-content">
 												<FormItem
-													min={0.1}
-													minmaxMessage="最小为0.1"
-													required
-													requiredMessage="请输入自定义内存配额，单位为Gi"
+													rules={[
+														{
+															type: 'number',
+															min: 0.1,
+															message: '最小为0.1'
+														},
+														{
+															required: true,
+															message:
+																'请输入自定义内存配额，单位为Core'
+														}
+													]}
+													name="memory"
 												>
-													<Input
-														name="memory"
-														htmlType="number"
-														min={0.1}
+													<InputNumber
 														step={0.1}
+														style={{
+															width: '100%'
+														}}
 														placeholder="请输入自定义内存配额，单位为Gi"
-														trim
 													/>
 												</FormItem>
 											</div>
@@ -231,55 +264,11 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 						</div>
 					</li>
 					{type !== 'kibana' && type !== 'sentinel' && (
-						<li className="display-flex mt-8">
-							<label className="form-name">
-								<span className="ne-required">存储配额</span>
-							</label>
-							<div className={`form-content display-flex`}>
-								<FormItem
-									required
-									requiredMessage="请选择存储类型"
-								>
-									<Select
-										name="storageClass"
-										style={{
-											marginRight: 8
-										}}
-										autoWidth={false}
-									>
-										{storageClassList.map((item, index) => {
-											return (
-												<Select.Option
-													key={index}
-													value={item.name}
-												>
-													{item.name}
-												</Select.Option>
-											);
-										})}
-									</Select>
-								</FormItem>
-								<FormItem
-									pattern={pattern.posInt}
-									patternMessage="请输入小于21位的正整数"
-									required
-									requiredMessage="请输入存储配额大小（GB）"
-								>
-									<Input
-										name="storageQuota"
-										defaultValue={5}
-										htmlType="number"
-										min={1}
-										placeholder="请输入存储配额大小"
-										addonTextAfter="GB"
-									/>
-								</FormItem>
-							</div>
-						</li>
+						<StorageQuota clusterId={clusterId} />
 					)}
 				</ul>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 };
 export default EditQuotaForm;

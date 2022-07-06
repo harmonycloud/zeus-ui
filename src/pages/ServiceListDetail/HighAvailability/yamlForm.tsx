@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, Loading } from '@alicloud/console-components';
+import { Modal, Spin } from 'antd';
+// import { Dialog, Loading } from '@alicloud/console-components';
 // import { Controlled as CodeMirror } from 'react-codemirror2';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { getPodNameYaml } from '@/services/middleware';
@@ -39,16 +40,17 @@ const YamlForm = (props: yamlFormProps) => {
 		});
 	}, [data]);
 	return (
-		<Dialog
+		<Modal
 			visible={visible}
 			title="查看yaml"
 			onCancel={onCancel}
 			onOk={onCancel}
-			onClose={onCancel}
-			style={{ width: '955px' }}
-			footer={<></>}
+			// onClose={onCancel}
+			width={955}
+			// style={{ width: '955px' }}
+			footer={null}
 		>
-			<Loading visible={loading}>
+			<Spin spinning={loading}>
 				<CodeMirror
 					className="mid-codemirror"
 					value={value}
@@ -56,7 +58,8 @@ const YamlForm = (props: yamlFormProps) => {
 						mode: 'yaml',
 						theme: 'twilight',
 						lineNumbers: true,
-						readOnly: true
+						readOnly: true,
+						lineWrapping: true
 					}}
 					// onBeforeChange={(editor, data, value) => {
 					// 	setValue(value);
@@ -65,8 +68,8 @@ const YamlForm = (props: yamlFormProps) => {
 					// 	setValue(value);
 					// }}
 				/>
-			</Loading>
-		</Dialog>
+			</Spin>
+		</Modal>
 	);
 };
 export default YamlForm;

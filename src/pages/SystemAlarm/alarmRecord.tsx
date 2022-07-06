@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Table from '@/components/MidTable';
+import ProTable from '@/components/ProTable';
 import ComponentsNull from '@/components/ComponentsNull';
 import DefaultPicture from '@/components/DefaultPicture';
 
@@ -11,10 +11,11 @@ import { getClusters } from '@/services/common';
 import { alarmWarn } from '@/utils/const';
 
 import { alarmRecordProps } from './systemAlarm';
+import { ServiceRuleItem } from '../ServiceListDetail/detail';
 import { poolListItem, evevtDataProps } from '@/types/comment';
 import storage from '@/utils/storage';
 
-function AlarmRecord(props: alarmRecordProps) {
+function AlarmRecord(props: alarmRecordProps): JSX.Element {
 	const {
 		middlewareName,
 		clusterId,
@@ -30,10 +31,6 @@ function AlarmRecord(props: alarmRecordProps) {
 	const [keyword, setKeyword] = useState<string>('');
 	const [filters, setFilters] = useState<any[] | undefined>();
 	const systemTab = storage.getLocal('systemTab');
-	const [filterMode, setFilterMode] = useState<
-		'single' | 'multiple' | undefined
-	>();
-
 	const onRefresh = () => {
 		getData();
 	};
@@ -50,17 +47,16 @@ function AlarmRecord(props: alarmRecordProps) {
 			if (alarmType === 'system') {
 				setFilters(
 					res.data.map((item: poolListItem) => {
-						return { label: item.id, value: item.id };
+						return { text: item.nickname, value: item.id };
 					})
 				);
-				setFilterMode('single');
 			}
 		});
 	}, [middlewareName]);
 
 	useEffect(() => {
 		getData();
-	}, [systemTab]);
+	}, [systemTab, keyword]);
 
 	const getData = () => {
 		if (alarmType === 'system') {
@@ -92,7 +88,7 @@ function AlarmRecord(props: alarmRecordProps) {
 		return (
 			<span className={value + ' level'}>
 				{value && alarmWarn.find((item) => item.value === value)
-					? alarmWarn.find((item) => item.value === value).label
+					? alarmWarn.find((item) => item.value === value).text
 					: ''}
 			</span>
 		);
@@ -162,74 +158,85 @@ function AlarmRecord(props: alarmRecordProps) {
 	}
 
 	return (
-		<Table
+		<ProTable
 			dataSource={eventData}
-			exact
-			fixedBarExpandWidth={[24]}
-			affixActionBar
+			// exact
+			// fixedBarExpandWidth={[24]}
+			// affixActionBar
 			showRefresh
 			showColumnSetting
 			onRefresh={onRefresh}
-			primaryKey="key"
+			rowKey="alertId"
 			search={{
 				placeholder: '请输入告警ID、告警内容、规则描述、实际监测搜索',
-				onSearch: onRefresh,
-				onChange: (value: string) => setKeyword(value),
-				value: keyword
+				onSearch: (value: string) => setKeyword(value),
+				style: {
+					width: '360px'
+				}
 			}}
-			searchStyle={{
-				width: '360px'
-			}}
-			onSort={onSort}
-			onFilter={onFilter}
+			// onSort={onSort}
+			// onFilter={onFilter}
 		>
-			<Table.Column
+			<ProTable.Column
 				title="告警ID"
 				dataIndex="alertId"
 				width={100}
-				cell={nullRender}
+				render={nullRender}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="告警等级"
 				dataIndex="level"
 				width={110}
 				filters={alarmWarn}
-				filterMode="single"
-				cell={levelRender}
+				// filterMode="single"
+				filterMultiple={false}
+				onFilter={(value, record: ServiceRuleItem) =>
+					value === record.level
+				}
+				render={levelRender}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="告警内容"
 				dataIndex="content"
 				width={180}
-				cell={nullRender}
+				render={nullRender}
 			/>
-			<Table.Column
-				title="告警对象"
-				dataIndex="clusterId"
-				cell={nameRender}
-				filters={filters}
-				width={160}
-				filterMode={filterMode}
-			/>
-			<Table.Column
+			{alarmType === 'system' ? (
+				<ProTable.Column
+					title="告警对象"
+					dataIndex="nickname"
+					render={nameRender}
+					filters={filters}
+					width={160}
+					// filterMode={filterMode}
+					filterMultiple={false}
+					onFilter={(value, record: ServiceRuleItem) =>
+						value === record.clusterId
+					}
+				/>
+			) : null}
+			<ProTable.Column
 				title="规则描述"
 				dataIndex="expr"
 				width={160}
-				cell={nullRender}
+				render={nullRender}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="实际监测"
 				dataIndex="summary"
-				cell={nullRender}
+				render={nullRender}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="告警时间"
 				dataIndex="time"
-				cell={createTimeRender}
-				sortable
+				render={createTimeRender}
+				// sortable
+				sorter={(a: any, b: any) =>
+					new Date(a.time).getTime() - new Date(b.time).getTime()
+				}
 				width={160}
 			/>
-		</Table>
+		</ProTable>
 	);
 }
 

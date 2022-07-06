@@ -1,8 +1,8 @@
-.no-shadow .next-input:hover {
+.no-shadow.ant-select:hover {
 	box-shadow: none !important;
 	background-color: #EEEEEE !important;
 }
-.no-shadow .next-input {
+.no-shadow.ant-select {
 	box-shadow: none !important;
-	background-color: #F4F6F7 !important;
+	background-color: $background !important;
 }

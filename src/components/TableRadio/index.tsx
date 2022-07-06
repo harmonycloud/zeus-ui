@@ -1,72 +1,70 @@
 import React from 'react';
-import { Radio } from '@alicloud/console-components';
+import { useState } from 'react';
+import { Table, Select, Input, Button } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 
-const { Group: RadioGroup } = Radio;
-/**
- *
- * @param { id, onCallBack, columns, dataList } props
- * id 一项数据的唯一id
- */
-interface tableRadioProps {
-	id: string | number | boolean;
-	onCallBack: (value: string | number | boolean) => void;
-	columns: columnProps[];
-	dataList: any[];
-}
-interface columnProps {
-	title: string;
-	dataIndex: string;
-}
-export default function TableRadio(props: tableRadioProps): JSX.Element {
-	const { id = '', onCallBack, columns = [], dataList = [] } = props;
+import './index.scss';
+
+const { Search } = Input;
+export default function TableRadio(props: any): JSX.Element {
+	const {
+		selectedRow,
+		selectedRowKeys,
+		setSelectedRowKeys,
+		setSelectedRow,
+		showHeader,
+		label,
+		select,
+		search,
+		showRefresh,
+		onRefresh,
+		...option
+	} = props;
+	const rowSelection = {
+		selectedRowKeys: selectedRowKeys,
+		onChange: (selectedRowKeys: any, selectedRows: any) => {
+			setSelectedRow(selectedRows[0]);
+			setSelectedRowKeys(selectedRowKeys);
+		}
+	};
 	return (
-		<div style={{ width: '100%' }}>
-			<RadioGroup
-				value={id}
-				onChange={(value) => onCallBack(value)}
-				style={{ width: '100%' }}
-			>
-				<table className="table-list">
-					<thead>
-						<tr>
-							{columns.map((column, index) => {
-								return <th key={index}>{column.title}</th>;
-							})}
-						</tr>
-					</thead>
-					<tbody>
-						{dataList.length > 0 &&
-							dataList.map((data, indexData) => {
-								return (
-									<tr key={indexData}>
-										{columns.map((column, indexColumn) => {
-											if (column.dataIndex === 'id') {
-												return (
-													<td key={indexColumn}>
-														<Radio
-															id={data.id}
-															value={data.id}
-														/>
-													</td>
-												);
-											} else
-												return (
-													<td key={indexColumn}>
-														{data[column.dataIndex]}
-													</td>
-												);
-										})}
-									</tr>
-								);
-							})}
-					</tbody>
-				</table>
-				{dataList.length === 0 && (
-					<div style={{ textAlign: 'center' }}>
-						暂无可选的备份数据
+		<div>
+			{showHeader ? (
+				<div className="table-radio-header">
+					<div className="header-search">
+						{label && <div className="label">{label}</div>}
+						{select && <Select {...select} />}
+						{search && <Search {...search} />}
 					</div>
-				)}
-			</RadioGroup>
+					{showRefresh && (
+						<Button
+							type="default"
+							icon={<ReloadOutlined />}
+							onClick={onRefresh}
+						/>
+					)}
+				</div>
+			) : null}
+			<Table
+				rowKey={(record) =>
+					record.name + record.clusterId + record.namespace
+				}
+				rowSelection={{
+					type: 'radio',
+					...rowSelection
+				}}
+				// onRow={(record: any) => {
+				// 	return {
+				// 		onClick: () => {
+				// 			setSelectedRow(record);
+				// 			setSelectedRowKeys([record.name]);
+				// 		}
+				// 	};
+				// }}
+				size="middle"
+				pagination={false}
+				{...option}
+			/>
 		</div>
 	);
 }

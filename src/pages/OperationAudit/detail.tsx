@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Input } from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import moment from 'moment';
+import { Input } from 'antd';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { useHistory } from 'react-router-dom';
-import DataFields, {
-	IDataFieldsProps
-} from '@alicloud/console-components-data-fields';
+import DataFields from '@/components/DataFields';
 import Storage from '@/utils/storage';
 import { auditProps } from './audit';
-import moment from 'moment';
 
-const items: IDataFieldsProps['items'] = [
+const items = [
 	{
 		dataIndex: 'title',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="title-content">
 				<div className="blue-line"></div>
 				<div className="detail-title">{val}</div>
@@ -63,13 +61,13 @@ const items: IDataFieldsProps['items'] = [
 	{
 		dataIndex: 'beginTime',
 		label: '操作时间',
-		render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+		render: (val: string) => moment(val).format('YYYY-MM-DD HH:mm:ss')
 	}
 ];
-const items2: IDataFieldsProps['items'] = [
+const items2 = [
 	{
 		dataIndex: 'title',
-		render: (val) => (
+		render: (val: string) => (
 			<div className="title-content">
 				<div className="blue-line"></div>
 				<div className="detail-title">{val}</div>
@@ -80,11 +78,11 @@ const items2: IDataFieldsProps['items'] = [
 	{
 		dataIndex: 'requestParams',
 		label: '请求数据',
-		render: (val) => (
+		render: (val: string) => (
 			<Input.TextArea
 				value={val}
 				readOnly={true}
-				autoHeight={true}
+				autoSize={true}
 				size="large"
 				style={{ width: '100%' }}
 			/>
@@ -94,11 +92,11 @@ const items2: IDataFieldsProps['items'] = [
 	{
 		dataIndex: 'response',
 		label: '返回数据',
-		render: (val) => (
+		render: (val: string) => (
 			<Input.TextArea
 				value={val}
 				readOnly={true}
-				autoHeight={true}
+				autoSize={true}
 				size="large"
 				style={{ width: '100%' }}
 			/>
@@ -108,17 +106,12 @@ const items2: IDataFieldsProps['items'] = [
 ];
 export default function OperationAuditDetail(): JSX.Element {
 	const history = useHistory();
-	// console.log(history);
 	const {
 		location: { state }
 	} = history;
 	const [data, setData] = useState<auditProps>();
-	const [basicSource, setBasicSource] = useState<
-		IDataFieldsProps['dataSource']
-	>({});
-	const [dataSource, setDataSource] = useState<
-		IDataFieldsProps['dataSource']
-	>({});
+	const [basicSource, setBasicSource] = useState({});
+	const [dataSource, setDataSource] = useState({});
 	useEffect(() => {
 		if (history.location.state === undefined) {
 			setData(Storage.getSession('audit'));
@@ -151,20 +144,19 @@ export default function OperationAuditDetail(): JSX.Element {
 		});
 	}, [data]);
 	return (
-		<Page>
-			<Header
-				hasBackArrow={true}
-				onBackArrowClick={() => {
+		<ProPage>
+			<ProHeader
+				onBack={() => {
 					history.goBack();
 					Storage.removeSession('audit');
 				}}
 				title={`${data?.actionChDesc}（${data?.status}）`}
-			></Header>
-			<Content>
+			/>
+			<ProContent>
 				<DataFields dataSource={basicSource} items={items} />
 				<div className="detail-divider" />
 				<DataFields dataSource={dataSource} items={items2} />
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Icon } from '@alicloud/console-components';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import Tag from './tag';
 import './index.scss';
 
@@ -56,11 +56,12 @@ export default function RapidScreening(props: rapidProps): JSX.Element {
 					style={{ marginTop: action ? 0 : 4 }}
 				>
 					{action ? '更多' : '收起'}
-					<Icon
+					{action ? <DownOutlined /> : <UpOutlined />}
+					{/* <Icon
 						type={action ? 'angle-double-down' : 'angle-double-up'}
 						size="xs"
 						style={{ marginLeft: 4 }}
-					/>
+					/> */}
 				</div>
 			)}
 		</div>

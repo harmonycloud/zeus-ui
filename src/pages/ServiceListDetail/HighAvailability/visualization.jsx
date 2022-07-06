@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import styles from './esEdit.module.scss';
 import G6 from '@antv/g6';
 import { useParams } from 'react-router';
-import { Button, Icon, Balloon } from '@alicloud/console-components';
-import CustomIcon from '@/components/CustomIcon';
+import { useLocation } from 'react-router';
+import { notification, Button, Tooltip } from 'antd';
+import {
+	FullscreenOutlined,
+	PlusOutlined,
+	MinusOutlined
+} from '@ant-design/icons';
+import { IconFont } from '@/components/IconFont';
 import { api } from '@/api.json';
 import Restart from '@/assets/images/restart.svg';
 import RestartHover from '@/assets/images/restart_hover.svg';
@@ -11,10 +17,7 @@ import Edit from '@/assets/images/edit.svg';
 import EditHover from '@/assets/images/edit_hover.svg';
 import Control from '@/assets/images/control.svg';
 import ControlHover from '@/assets/images/control_hover.svg';
-import { useLocation } from 'react-router';
-import { Message } from '@alicloud/console-components';
-import messageConfig from '@/components/messageConfig';
-import { initMenu, modelMap } from '@/utils/const';
+import { modelMap } from '@/utils/const';
 import { states, podStatus } from '@/utils/const';
 import insertCss from 'insert-css';
 
@@ -43,7 +46,7 @@ insertCss(`
 }
 `);
 
-const { Tooltip } = Balloon;
+// const { Tooltip } = Balloon;
 
 function Visualization(props) {
 	const {
@@ -347,7 +350,7 @@ function Visualization(props) {
 							group.addShape('text', {
 								attrs: {
 									text: serviceStatus
-										? '(' + serviceStatus.label + ')'
+										? '(' + serviceStatus.text + ')'
 										: '(运行异常)',
 									x: typeWidth + nameWidth + 32,
 									y: 15,
@@ -1092,21 +1095,19 @@ function Visualization(props) {
 			if (evt.target.cfg.modelId) return;
 			if (serverData.type === 'mysql') {
 				if (item._cfg.model.depth) {
-					Message.show(
-						messageConfig('warning', '提示', 'mysql只支持服务备份')
-					);
+					notification.warning({
+						message: '提示',
+						description: 'mysql只支持服务备份'
+					});
 					return;
 				}
 			}
 			if (item._cfg.model.depth) {
 				if (!item._cfg.model.resources.isLvmStorage) {
-					Message.show(
-						messageConfig(
-							'warning',
-							'提示',
-							'存储不使用lvm时，不支持备份设置功能'
-						)
-					);
+					notification.warning({
+						message: '提示',
+						description: '存储不使用lvm时，不支持备份设置功能'
+					});
 					return;
 				}
 			}
@@ -1540,16 +1541,16 @@ function Visualization(props) {
 				position: 'fixed',
 				top: 0,
 				left: 0,
-				zIndex: 999
+				zIndex: 1000
 			});
 			window.graph.changeSize(window.innerWidth, window.innerHeight);
-			window.graph.fitCenter();
+			window.graph.fitView();
 		} else {
 			window.graph.changeSize(1180, 480);
 			setOption({
 				position: 'static'
 			});
-			window.graph.fitCenter();
+			window.graph.fitView();
 		}
 	};
 
@@ -1570,80 +1571,64 @@ function Visualization(props) {
 				<div className={styles['tools']}>
 					<div>
 						<Tooltip
-							trigger={
-								<Button onClick={scale} iconSize="xs">
-									<Icon type="arrows-alt" />
-								</Button>
+							title={
+								window.graph &&
+								window.graph.getWidth() !== window.innerWidth
+									? '全屏'
+									: '退出全屏'
 							}
-							align="b"
+							placement="bottom"
 						>
-							{window.graph &&
-							window.graph.getWidth() !== window.innerWidth
-								? '全屏'
-								: '退出全屏'}
+							<Button onClick={scale}>
+								<FullscreenOutlined />
+							</Button>
 						</Tooltip>
-						<Tooltip
-							trigger={
-								<Button onClick={() => changeTree('LR')}>
-									<CustomIcon
-										type="icon-shuxiangjiegou"
-										size={12}
-										style={{ color: '#000000' }}
-										className={styles['rotate']}
-									/>
-								</Button>
-							}
-							align="b"
-						>
-							横向排列
+						<Tooltip title="横向排列" placement="bottom">
+							<Button onClick={() => changeTree('LR')}>
+								<IconFont
+									type="icon-shuxiangjiegou"
+									// size={12}
+									style={{
+										color: '#000000',
+										fontSize: 12
+									}}
+									className={styles['rotate']}
+								/>
+							</Button>
 						</Tooltip>
-						<Tooltip
-							trigger={
-								<Button onClick={() => changeTree('TB')}>
-									<CustomIcon
-										type="icon-shuxiangjiegou"
-										size={12}
-										style={{ color: '#000000' }}
-									/>
-								</Button>
-							}
-							align="b"
-						>
-							竖向排列
+						<Tooltip title="竖向排列" placement="bottom">
+							<Button onClick={() => changeTree('TB')}>
+								<IconFont
+									type="icon-shuxiangjiegou"
+									// size={12}
+									style={{
+										color: '#000000',
+										fontSize: 12
+									}}
+								/>
+							</Button>
 						</Tooltip>
-						<Tooltip
-							trigger={
-								<Button onClick={bingger}>
-									<Icon type="add" />
-								</Button>
-							}
-							align="b"
-						>
-							放大
+						<Tooltip title="放大" placement="bottom">
+							<Button onClick={bingger}>
+								<PlusOutlined />
+							</Button>
 						</Tooltip>
-						<Tooltip
-							trigger={
-								<Button onClick={smaller}>
-									<Icon type="minus" />
-								</Button>
-							}
-							align="b"
-						>
-							缩小
+						<Tooltip title="缩小" placement="bottom">
+							<Button onClick={smaller}>
+								<MinusOutlined />
+							</Button>
 						</Tooltip>
-						<Tooltip
-							trigger={
-								<Button onClick={reset}>
-									<CustomIcon
-										type="icon-double-circle"
-										size={12}
-										style={{ color: '#000000' }}
-									/>
-								</Button>
-							}
-							align="b"
-						>
-							回到原点
+						<Tooltip title="回到原点" placement="bottom">
+							<Button onClick={reset}>
+								<IconFont
+									type="icon-double-circle"
+									// size={12}
+									style={{
+										color: '#000000',
+										fontSize: 12
+									}}
+								/>
+							</Button>
 						</Tooltip>
 					</div>
 				</div>

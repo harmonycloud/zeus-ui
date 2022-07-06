@@ -24,7 +24,7 @@
 				height: 30px;
 				border-bottom: 1px solid #b2d4ef;
 				text-align: center;
-				line-height: $line-height-sm * 3;
+				line-height: 30px;
 				.circle {
 					padding: 0 4px;
 					background-color: #c3d6f0;
@@ -57,7 +57,7 @@
 .visualization {
 	position: relative;
 	h2 {
-		font-size: $font-h2;
+		font-size: $font-2;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: $font-weight;
 		color: $text-color-title;
@@ -70,7 +70,7 @@
 			display: inline-block;
 			width: 1px;
 			height: 14px;
-			border: 1px solid #0064c8;
+			border: 1px solid $primary-color;
 			margin-right: 5px;
 		}
 	}

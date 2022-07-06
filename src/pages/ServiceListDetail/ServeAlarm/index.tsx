@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import Table from '@/components/MidTable';
-import moment from 'moment';
-import { LinkButton, Actions } from '@alicloud/console-components-actions';
-import { Button, Switch } from '@alifd/next';
+import { Button, Switch, Modal, notification } from 'antd';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+
 import { useHistory } from 'react-router';
 import { getClusters } from '@/services/common';
-import { Message, Dialog } from '@alicloud/console-components';
 import ComponentsNull from '@/components/ComponentsNull';
 import DefaultPicture from '@/components/DefaultPicture';
-import messageConfig from '@/components/messageConfig';
 import { nullRender } from '@/utils/utils';
 import { alarmWarn, silences } from '@/utils/const';
+import moment from 'moment';
+
 import {
 	deleteAlarm,
 	deleteAlarms,
@@ -23,6 +23,7 @@ import {
 import storage from '@/utils/storage';
 import { DetailParams, RuleProps, ServiceRuleItem } from '../detail';
 
+const LinkButton = Actions.LinkButton;
 function Rules(props: RuleProps): JSX.Element {
 	const history = useHistory();
 	const {
@@ -53,7 +54,7 @@ function Rules(props: RuleProps): JSX.Element {
 
 	useEffect(() => {
 		getData(clusterId, middlewareName, namespace, searchText);
-	}, []);
+	}, [searchText]);
 
 	useEffect(() => {
 		getData(clusterId, middlewareName, namespace, searchText);
@@ -61,7 +62,7 @@ function Rules(props: RuleProps): JSX.Element {
 			if (!res.data) return;
 			setPoolList(
 				res.data.map((item: any) => {
-					return { label: item.id, value: item.id };
+					return { text: item.nickname, value: item.id };
 				})
 			);
 		});
@@ -84,7 +85,10 @@ function Rules(props: RuleProps): JSX.Element {
 					setDataSource(res.data.list);
 					setOriginData(res.data.list);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		} else {
@@ -100,7 +104,10 @@ function Rules(props: RuleProps): JSX.Element {
 					setDataSource(res.data.list);
 					setOriginData(res.data.list);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
@@ -113,18 +120,22 @@ function Rules(props: RuleProps): JSX.Element {
 				alert: record.alert,
 				alertRuleId: record.alertId
 			};
-			Dialog.show({
+			Modal.confirm({
 				title: '操作确认',
 				content: '是否确认删除?',
 				onOk: () => {
 					deleteAlarm(sendData).then((res) => {
 						if (res.success) {
 							getData(clusterId, middlewareName, namespace, '');
-							Message.show(
-								messageConfig('success', '成功', '删除成功')
-							);
+							notification.success({
+								message: '成功',
+								description: '删除成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					});
 				}
@@ -137,18 +148,22 @@ function Rules(props: RuleProps): JSX.Element {
 				alert: record.alert,
 				alertRuleId: record.alertId
 			};
-			Dialog.show({
+			Modal.confirm({
 				title: '操作确认',
 				content: '是否确认删除?',
 				onOk: () => {
 					deleteAlarms(sendData).then((res) => {
 						if (res.success) {
 							getData(clusterId, middlewareName, namespace, '');
-							Message.show(
-								messageConfig('success', '成功', '删除成功')
-							);
+							notification.success({
+								message: '成功',
+								description: '删除成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					});
 				}
@@ -158,8 +173,8 @@ function Rules(props: RuleProps): JSX.Element {
 
 	const actionRender = (
 		value: any,
-		index: number,
-		record: ServiceRuleItem
+		record: ServiceRuleItem,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -204,7 +219,7 @@ function Rules(props: RuleProps): JSX.Element {
 		)
 	};
 
-	const ruleRender = (value: any, index: number, record: ServiceRuleItem) =>
+	const ruleRender = (value: any, record: ServiceRuleItem, index: number) =>
 		`${record.description}${record.symbol}${record.threshold}%且${
 			record.alertTime || ''
 		}分钟内触发${record.alertTimes || ''}次`;
@@ -213,21 +228,31 @@ function Rules(props: RuleProps): JSX.Element {
 		const temp = alarmWarn.find((item) => item.value === value.severity);
 		return (
 			<span className={value?.severity + ' level'}>
-				{value && temp ? temp?.label : ''}
+				{value && temp ? temp?.text : ''}
 			</span>
 		);
 	};
 
-	const nameRender = (value: any, index: number, record: ServiceRuleItem) => {
-		return alarmType === 'system'
-			? record.labels?.clusterId
-			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
+	const nameRender = (value: any, record: ServiceRuleItem, index: number) => {
+		return (
+			<span>
+				{alarmType === 'system'
+					? value
+					: clusterId +
+					  '/' +
+					  namespace +
+					  '/' +
+					  type +
+					  '/' +
+					  middlewareName}
+			</span>
+		);
 	};
 
 	const enableRender = (
 		value: string,
-		index: number,
-		record: ServiceRuleItem
+		record: ServiceRuleItem,
+		index: number
 	) => {
 		return (
 			<Switch
@@ -256,17 +281,15 @@ function Rules(props: RuleProps): JSX.Element {
 									namespace,
 									''
 								);
-								Message.show(
-									messageConfig('success', '成功', '修改成功')
-								);
+								notification.success({
+									message: '成功',
+									description: '修改成功'
+								});
 							} else {
-								Message.show(
-									messageConfig(
-										'error',
-										'失败',
-										res.errorMsg || '修改失败'
-									)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					} else {
@@ -294,17 +317,15 @@ function Rules(props: RuleProps): JSX.Element {
 									namespace,
 									''
 								);
-								Message.show(
-									messageConfig('success', '成功', '修改成功')
-								);
+								notification.success({
+									message: '成功',
+									description: '修改成功'
+								});
 							} else {
-								Message.show(
-									messageConfig(
-										'error',
-										'失败',
-										res.errorMsg || '修改失败'
-									)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					}
@@ -385,91 +406,111 @@ function Rules(props: RuleProps): JSX.Element {
 	}
 
 	return (
-		<Table
+		<ProTable
 			dataSource={dataSource}
-			exact
-			fixedBarExpandWidth={[24]}
-			affixActionBar
+			// exact
+			// fixedBarExpandWidth={[24]}
+			// affixActionBar
 			showRefresh
 			showColumnSetting
 			onRefresh={onRefresh}
-			primaryKey="key"
+			rowKey="key"
 			search={{
 				placeholder: '请输入规则ID、告警规则、告警内容进行搜索',
-				onSearch: () => onRefresh(),
-				onChange: (value: string) => setSearchText(value),
-				value: searchText
-			}}
-			searchStyle={{
-				width: '360px'
+				// onSearch: () => onRefresh(),
+				onSearch: (value: string) => setSearchText(value),
+				style: {
+					width: '360px'
+				}
 			}}
 			operation={Operation}
-			onSort={onSort}
-			onFilter={onFilter}
+			// onSort={onSort}
+			// onFilter={onFilter}
 		>
-			<Table.Column title="规则ID" dataIndex="alertId" />
-			{alarmType === 'system' ? (
-				<Table.Column
-					filters={poolList}
-					filterMode="single"
-					cell={nameRender}
-					title="告警对象"
-					dataIndex="name"
-				/>
-			) : (
-				<Table.Column
-					cell={nameRender}
-					title="告警对象"
-					dataIndex="name"
-				/>
-			)}
-			<Table.Column
+			<ProTable.Column title="规则ID" dataIndex="alertId" width={100} />
+			{
+				alarmType === 'system' ? (
+					<ProTable.Column
+						filters={poolList}
+						// filterMode="single"
+						filterMultiple={false}
+						onFilter={(value, record: ServiceRuleItem) =>
+							value === record.name
+						}
+						render={nameRender}
+						title="告警对象"
+						ellipsis
+						dataIndex="nickname"
+					/>
+				) : null
+				// (
+				// 	<ProTable.Column
+				// 		render={nameRender}
+				// 		title="告警对象"
+				// 		ellipsis
+				// 		dataIndex="name"
+				// 	/>
+				// )
+			}
+			<ProTable.Column
 				title="告警规则"
 				dataIndex="threshold"
-				cell={ruleRender}
+				render={ruleRender}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="告警等级"
 				dataIndex="labels"
 				filters={alarmWarn}
-				filterMode="single"
-				cell={levelRender}
-				width={120}
+				// filterMode="single"
+				filterMultiple={false}
+				onFilter={(value, record: ServiceRuleItem) =>
+					value === record.labels?.severity
+				}
+				render={levelRender}
+				width={100}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="告警间隔"
 				dataIndex="silence"
 				filters={silences}
-				filterMode="single"
-				cell={nullRender}
-				width={120}
+				// filterMode="single"
+				filterMultiple={false}
+				onFilter={(value, record: ServiceRuleItem) =>
+					value === record.silence
+				}
+				render={nullRender}
+				width={100}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="告警内容"
 				dataIndex="content"
 				width={110}
-				cell={nullRender}
+				render={nullRender}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="创建时间"
 				dataIndex="createTime"
-				cell={createTimeRender}
-				sortable
+				render={createTimeRender}
+				// sortable
+				sorter={(a: any, b: any) =>
+					new Date(a.createTime).getTime() -
+					new Date(b.createTime).getTime()
+				}
 				width={160}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="启用"
 				dataIndex="enable"
-				cell={enableRender}
+				render={enableRender}
 				width={100}
 			/>
-			<Table.Column
+			<ProTable.Column
 				title="操作"
 				dataIndex="option"
-				cell={actionRender}
+				render={actionRender}
 				width={100}
 			/>
-		</Table>
+		</ProTable>
 	);
 }
 

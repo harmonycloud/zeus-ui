@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import {
-	Dialog,
-	Button,
-	Icon,
-	Form,
-	Input
-} from '@alicloud/console-components';
+import { Modal, Button, Input, Form } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import EditPasswordForm from '@/layouts/Navbar/User/EditPasswordForm';
 
@@ -112,7 +107,7 @@ export default function Login() {
 						setUserName(res.data.userName);
 						return;
 					}
-					if (res.isAdmin) {
+					if (res.data.isAdmin) {
 						history.push('/dataOverview');
 					} else {
 						history.push('/myProject');
@@ -161,18 +156,18 @@ export default function Login() {
 					中间件平台登录
 				</header>
 				<div className={styles['login-form-box']}>
-					<Form className={styles['form']}>
+					<Form className={styles['form']} layout="vertical">
 						<Form.Item label="登录账户">
 							<Input
-								innerBefore={
+								addonBefore={
 									<span className={styles['account']}></span>
 								}
 								placeholder="请输入登录账户"
 								value={account.username}
-								onChange={(value) =>
+								onChange={(e) =>
 									setAccount({
 										...account,
-										username: value
+										username: e.target.value
 									})
 								}
 								onKeyPress={(event) => {
@@ -182,17 +177,17 @@ export default function Login() {
 								}}
 							/>
 						</Form.Item>
-						<Form.Item label="密码" asterisk={false}>
+						<Form.Item label="密码">
 							<Input.Password
-								innerBefore={
+								addonBefore={
 									<span className={styles['password']}></span>
 								}
 								placeholder="请输入密码"
 								value={account.password}
-								onChange={(value) =>
+								onChange={(e) =>
 									setAccount({
 										...account,
-										password: value
+										password: e.target.value
 									})
 								}
 								onKeyPress={(event) => {
@@ -221,25 +216,25 @@ export default function Login() {
 				</div>
 			</form>
 
-			<Dialog
+			<Modal
 				visible={visible}
-				onClose={() => setVisible(false)}
+				onCancel={() => setVisible(false)}
 				title="改密提示"
-				style={{ width: '480px' }}
 				footer={
 					<div>
-						<Button type="primary" onClick={onOk}>
+						<Button
+							type="primary"
+							onClick={onOk}
+							style={{ marginRight: '16px' }}
+						>
 							现在就改
 						</Button>
-						<Button type="normal" onClick={onCancel}>
-							下次再说
-						</Button>
+						<Button onClick={onCancel}>下次再说</Button>
 					</div>
 				}
 			>
 				<div style={{ display: 'flex' }}>
-					<Icon
-						type="warning"
+					<ExclamationCircleOutlined
 						style={{ color: '#faa700', margin: '5px 5px 0 0' }}
 					/>
 					<div>
@@ -260,7 +255,7 @@ export default function Login() {
 						</div>
 					</div>
 				</div>
-			</Dialog>
+			</Modal>
 			{editVisible && (
 				<EditPasswordForm
 					visible={editVisible}

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
-	Balloon,
-	Icon,
 	Form,
-	Select,
+	AutoComplete,
 	Checkbox,
+	Button,
 	Switch,
-	Button
-} from '@alicloud/console-components';
+	Popover,
+	Tag,
+	Input
+} from 'antd';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { getNodePort } from '@/services/middleware';
+import { AutoCompleteOptionItem } from '@/types/comment';
 import {
 	FormNodeAffinityProps,
 	NodeAffinityProps,
@@ -34,7 +37,7 @@ export default function FormNodeAffinity(
 		nodeAffinityLabel: '',
 		nodeAffinityForce: false
 	});
-	const [labelList, setLabelList] = useState<any[]>([]);
+	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [affinityLabels, setAffinityLabels] = useState<
 		NodeAffinityLabelItem[]
 	>([]);
@@ -43,7 +46,13 @@ export default function FormNodeAffinity(
 		if (JSON.stringify(cluster) !== '{}') {
 			getNodePort({ clusterId: cluster.id }).then((res) => {
 				if (res.success) {
-					setLabelList(res.data);
+					const list = res.data.map((item: string) => {
+						return {
+							value: item,
+							label: item
+						};
+					});
+					setLabelList(list);
 				}
 			});
 		}
@@ -54,9 +63,22 @@ export default function FormNodeAffinity(
 			...affinity,
 			[key]: value
 		});
-		props.field.setValues({
-			[key]: value
-		});
+		if (
+			key === 'nodeAffinityForce' &&
+			typeof props.form.getFieldValue('nodeAffinity') === 'object'
+		) {
+			const data = props.form
+				.getFieldValue('nodeAffinity')
+				.map((item: any) => {
+					return {
+						...item,
+						required: value
+					};
+				});
+			props.form.setFieldsValue({
+				nodeAffinity: data
+			});
+		}
 	};
 
 	const addAffinityLabels = () => {
@@ -67,12 +89,19 @@ export default function FormNodeAffinity(
 		) {
 			setAffinityLabels([
 				...affinityLabels,
-				{ label: affinity.nodeAffinityLabel, id: Math.random() }
+				{
+					label: affinity.nodeAffinityLabel,
+					id: Math.random(),
+					required: affinity.nodeAffinityForce
+				}
 			]);
-			props.field.setValues({
-				nodeAffinityLabel: [
+			props.form.setFieldsValue({
+				nodeAffinity: [
 					...affinityLabels,
-					{ label: affinity.nodeAffinityLabel, id: Math.random() }
+					{
+						label: affinity.nodeAffinityLabel,
+						required: affinity.nodeAffinityForce
+					}
 				]
 			});
 		}
@@ -82,8 +111,8 @@ export default function FormNodeAffinity(
 		setAffinityLabels(
 			affinityLabels.filter((arr: any) => arr.id !== item.id)
 		);
-		props.field.setValues({
-			affinityLabels: affinityLabels.filter(
+		props.form.setFieldsValue({
+			nodeAffinity: affinityLabels.filter(
 				(arr: any) => arr.id !== item.id
 			)
 		});
@@ -109,49 +138,52 @@ export default function FormNodeAffinity(
 					{props.label}
 				</span>
 				{keys.includes('description') ? (
-					<Balloon
-						offset={[0, 15]}
-						trigger={
-							<Icon
-								type="question-circle"
-								size="xs"
-								style={{ marginLeft: 8 }}
-							/>
-						}
-						closable={false}
+					<Popover
+						// offset={[0, 15]}
+						content={props.description}
 					>
-						勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败
-					</Balloon>
+						<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+					</Popover>
 				) : null}
 			</label>
 			<div className="form-content">
-				<FormItem
-					required={keys.includes('required') && props.required}
-					requiredMessage={
-						keys.includes('required') && props.required
-							? `请输入${props.label}`
-							: ''
-					}
-				>
-					<label className="dynamic-switch-label">
-						{affinity.nodeAffinity ? '已开启' : '已关闭 '}
-					</label>
-					<Switch
-						checked={affinity.nodeAffinity}
-						name={props.variable}
-						onChange={(value) =>
-							changeAffinity(value, 'nodeAffinity')
-						}
-						size="small"
-						style={{
-							marginLeft: 24,
-							verticalAlign: 'middle'
-						}}
-					/>
-					{affinity.nodeAffinity ? (
-						<>
-							<div className="dynamic-form-node-affinity-content">
-								<Select.AutoComplete
+				<label className="dynamic-switch-label">
+					{affinity.nodeAffinity ? '已开启' : '已关闭 '}
+				</label>
+				<Switch
+					checked={affinity.nodeAffinity}
+					onChange={(value) => changeAffinity(value, 'nodeAffinity')}
+					size="small"
+					style={{
+						marginLeft: 24,
+						verticalAlign: 'middle'
+					}}
+				/>
+				{affinity.nodeAffinity ? (
+					<>
+						<div className="dynamic-form-node-affinity-content">
+							<FormItem
+								rules={[
+									{
+										required:
+											keys.includes('required') &&
+											props.required,
+										message:
+											keys.includes('required') &&
+											props.required
+												? `请输入${props.label}`
+												: ''
+									},
+									{
+										pattern:
+											/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/,
+										message: '请输入key=value格式的内容'
+									}
+								]}
+								name={props.variable}
+								initialValue={props.nodeAffinity}
+							>
+								<AutoComplete
 									value={affinity.nodeAffinityLabel}
 									onChange={(value) =>
 										changeAffinity(
@@ -159,62 +191,68 @@ export default function FormNodeAffinity(
 											'nodeAffinityLabel'
 										)
 									}
-									hasClear={true}
-									dataSource={labelList}
+									allowClear={true}
+									options={labelList}
 									style={{
 										width: '100%'
 									}}
 								/>
-							</div>
-							<div className={'add'}>
-								<Button
-									style={{
-										marginLeft: '4px',
-										padding: '0 9px'
-									}}
-									disabled={
+							</FormItem>
+						</div>
+						<div className={'add'}>
+							<Button
+								style={{
+									marginLeft: '4px',
+									padding: '0 9px'
+								}}
+								disabled={
+									!affinity.nodeAffinityLabel ||
+									!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
 										affinity.nodeAffinityLabel
-											? false
-											: true
-									}
-									onClick={addAffinityLabels}
-								>
-									<Icon
+									)
+										? true
+										: false
+								}
+								onClick={addAffinityLabels}
+								icon={
+									<PlusOutlined
 										style={{ color: '#005AA5' }}
-										type="add"
 									/>
-								</Button>
-							</div>
-							<div className="dynamic-form-node-affinity-check">
-								<Checkbox
-									checked={affinity.nodeAffinityForce}
-									onChange={(value) =>
-										changeAffinity(
-											value,
-											'nodeAffinityForce'
-										)
-									}
-									label="强制亲和"
-								/>
-							</div>
-						</>
-					) : null}
-				</FormItem>
+								}
+							></Button>
+						</div>
+						<div className="dynamic-form-node-affinity-check">
+							<Checkbox
+								checked={affinity.nodeAffinityForce}
+								onChange={(e) =>
+									changeAffinity(
+										e.target.checked,
+										'nodeAffinityForce'
+									)
+								}
+							>
+								强制亲和
+							</Checkbox>
+						</div>
+					</>
+				) : null}
 				{affinity.nodeAffinity && affinityLabels.length ? (
 					<div className={'tags'}>
 						{affinityLabels.map((item: any) => {
 							return (
-								<p className={'tag'} key={item.id}>
-									<span>{item.label}</span>
-									<Icon
-										type="error"
-										size="xs"
-										className={'tag-close'}
-										onClick={() =>
-											reduceAffinityLabels(item)
-										}
-									/>
-								</p>
+								<Tag
+									key={item.label}
+									closable
+									style={{ padding: '4px 10px' }}
+									onClose={(
+										e: React.MouseEvent<HTMLElement>
+									) => {
+										e.preventDefault();
+										reduceAffinityLabels(item);
+									}}
+								>
+									{item.label}
+								</Tag>
 							);
 						})}
 					</div>

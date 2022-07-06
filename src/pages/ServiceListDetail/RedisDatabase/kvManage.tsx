@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, Message, Tree } from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-import moment from 'moment';
-import Table from '@/components/MidTable';
-import { getKv, deleteKv } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
-import { nullRender } from '@/utils/utils';
+import { Button, Modal, Tree, notification } from 'antd';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import KvForm from './kvForm';
 
+import moment from 'moment';
+import { getKv, deleteKv } from '@/services/middleware';
+import { nullRender } from '@/utils/utils';
+
+const LinkButton = Actions.LinkButton;
 function KvManage(props: any): JSX.Element {
 	const { clusterId, namespace, middlewareName } = props;
 	const [dataSource, setDataSource] = useState<any[]>([]);
@@ -15,7 +16,7 @@ function KvManage(props: any): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<any>();
 	const [isEdit, setIsEdit] = useState(true);
-	const [db, setDb] = useState<string[]>(['0']);
+	const [db, setDb] = useState<any[]>(['0']);
 
 	useEffect(() => {
 		getKv({
@@ -32,10 +33,13 @@ function KvManage(props: any): JSX.Element {
 					})
 				);
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
-	}, [db]);
+	}, [db, keyword]);
 	const onRefresh: () => void = () => {
 		getKv({
 			clusterId,
@@ -51,7 +55,10 @@ function KvManage(props: any): JSX.Element {
 					})
 				);
 			} else {
-				Message.show(messageConfig('error', '失败', res.errorMsg));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -66,7 +73,7 @@ function KvManage(props: any): JSX.Element {
 		setVisible(true);
 	};
 	const deleteUserHandle: (record: any) => void = (record: any) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
 			onOk: () => {
@@ -110,12 +117,16 @@ function KvManage(props: any): JSX.Element {
 
 				deleteKv(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '数据库删除成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '数据库删除成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -138,9 +149,9 @@ function KvManage(props: any): JSX.Element {
 		}
 	};
 
-	const actionRender = (value: string, index: number, record: any) => {
+	const actionRender = (value: string, record: any, index: number) => {
 		return (
-			<Actions>
+			<Actions threshold={4}>
 				{record.type === 'list' && (
 					<LinkButton
 						onClick={() => {
@@ -182,7 +193,7 @@ function KvManage(props: any): JSX.Element {
 		);
 	};
 
-	const detailActionRender = (value: string, index: number, record: any) => {
+	const detailActionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -208,7 +219,7 @@ function KvManage(props: any): JSX.Element {
 		if (value === -1) return '/';
 		return value;
 	};
-	const keyRender = (value: any, index: number, record: any) => {
+	const keyRender = (value: any, record: any, index: number) => {
 		return (
 			<span
 				className="key-render"
@@ -262,125 +273,184 @@ function KvManage(props: any): JSX.Element {
 			</Button>
 		)
 	};
+
+	const TreeData = [
+		{
+			title: 'Redis实例',
+			key: 'all',
+			selectable: false,
+			children: [
+				{
+					title: 'DB_0',
+					key: '0'
+				},
+				{
+					title: 'DB_1',
+					key: '1'
+				},
+				{
+					title: 'DB_2',
+					key: '2'
+				},
+				{
+					title: 'DB_3',
+					key: '3'
+				},
+				{
+					title: 'DB_4',
+					key: '4'
+				},
+				{
+					title: 'DB_5',
+					key: '5'
+				},
+				{
+					title: 'DB_6',
+					key: '6'
+				},
+				{
+					title: 'DB_7',
+					key: '7'
+				},
+				{
+					title: 'DB_8',
+					key: '8'
+				},
+				{
+					title: 'DB_9',
+					key: '9'
+				},
+				{
+					title: 'DB_10',
+					key: '10'
+				},
+				{
+					title: 'DB_11',
+					key: '11'
+				},
+				{
+					title: 'DB_12',
+					key: '12'
+				},
+				{
+					title: 'DB_13',
+					key: '13'
+				},
+				{
+					title: 'DB_14',
+					key: '14'
+				},
+				{
+					title: 'DB_15',
+					key: '15'
+				}
+			]
+		}
+	];
 	return (
 		<>
 			<div className="kv-manage">
 				<Tree
 					defaultExpandAll
 					selectedKeys={db}
-					onSelect={(value) => {
-						setDb(value);
-					}}
-				>
-					<Tree.Node key="all" label="Redis实例" selectable={false}>
-						<Tree.Node key="0" label="DB_0" />
-						<Tree.Node key="1" label="DB_1" />
-						<Tree.Node key="2" label="DB_2" />
-						<Tree.Node key="3" label="DB_3" />
-						<Tree.Node key="4" label="DB_4" />
-						<Tree.Node key="5" label="DB_5" />
-						<Tree.Node key="6" label="DB_6" />
-						<Tree.Node key="7" label="DB_7" />
-						<Tree.Node key="8" label="DB_8" />
-						<Tree.Node key="9" label="DB_9" />
-						<Tree.Node key="10" label="DB_10" />
-						<Tree.Node key="11" label="DB_11" />
-						<Tree.Node key="12" label="DB_12" />
-						<Tree.Node key="13" label="DB_13" />
-						<Tree.Node key="14" label="DB_14" />
-						<Tree.Node key="15" label="DB_15" />
-					</Tree.Node>
-				</Tree>
-				<Table
+					onSelect={(value) => setDb(value)}
+					treeData={TreeData}
+				></Tree>
+				<ProTable
 					dataSource={dataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
+					// exact
+					// fixedBarExpandWidth={[24]}
+					// affixActionBar
 					showRefresh
 					onRefresh={onRefresh}
 					search={{
 						placeholder: '请输入键名',
-						onSearch: handleSearch,
-						onChange: handleChange,
-						value: keyword
-					}}
-					searchStyle={{
-						width: '360px'
+						onSearch: handleChange,
+						// onChange: handleChange,
+						// value: keyword,
+						style: {
+							width: '360px'
+						}
 					}}
 					operation={Operation}
-					onSort={onSort}
+					// onSort={onSort}
 					expandedRowRender={(record: any) => {
 						const list = newDatasource(record);
 						return (
-							<Table dataSource={list} primaryKey={record.key}>
-								{/* <Table.Column
+							<ProTable
+								dataSource={list}
+								rowKey="key"
+								pagination={false}
+							>
+								{/* <ProTable.Column
 									title="序号"
 									dataIndex="id"
 									width={120}
-									cell={nullRender}
+									render={nullRender}
 								/> */}
 								{record.type === 'hash' && (
-									<Table.Column
+									<ProTable.Column
 										dataIndex="newKey"
 										title="字段"
 										width={120}
-										cell={nullRender}
+										render={nullRender}
 									/>
 								)}
-								<Table.Column
+								<ProTable.Column
 									title="键值"
 									dataIndex="newValue"
-									cell={nullRender}
+									render={nullRender}
 									width={120}
 								/>
 								{record.type === 'zset' && (
-									<Table.Column
+									<ProTable.Column
 										title="分数"
 										dataIndex="newKey"
 										width={120}
 									/>
 								)}
-								<Table.Column
+								<ProTable.Column
 									title="操作"
 									dataIndex="action"
-									cell={detailActionRender}
+									render={detailActionRender}
 									width={100}
 								/>
-							</Table>
+							</ProTable>
 						);
 					}}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="键名"
 						dataIndex="key"
 						width={120}
-						cell={nullRender}
+						render={nullRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="类型"
 						dataIndex="type"
-						cell={nullRender}
+						render={nullRender}
 						width={100}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="超出时间"
 						dataIndex="timeOut"
-						cell={createTimeRender}
-						sortable
+						render={createTimeRender}
+						// sortable
+						sorter={(a: any, b: any) => a.timeOut - b.timeOut}
 						width={160}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="键值"
 						dataIndex="value"
-						cell={keyRender}
+						render={keyRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 						width={200}
 					/>
-				</Table>
+				</ProTable>
 				{visible && (
 					<KvForm
 						visible={visible}

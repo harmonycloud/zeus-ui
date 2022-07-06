@@ -7,16 +7,20 @@
 	padding: 0 2px;
 	border-radius: 50%;
 	border: 1px solid #49a9e1;
-	font-size: $font-size;
+	font-size: $font-1;
 	color: #49a9e1;
 }
 .nav-user-operator {
 	display: none;
 	position: absolute;
-    top: 50px;
+	top: 50px;
 	right: 0;
 	z-index: 100;
-	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.08), 0px 1px 0px 0px rgba(0, 0, 0, 0.02);
+	box-shadow: $shadow-base;
+	transition: all 0.1s ease 0s;
+	-moz-transition: all 0.1s ease 0s;
+	-webkit-transition: all 0.1s ease 0s;
+	-o-transition: all 0.1s ease 0s;
 }
 .nav-user-container:hover .nav-user-operator {
 	display: block;
@@ -24,27 +28,27 @@
 .nav-user-container-item {
 	padding-left: 20px;
 	line-height: 36px;
-    background: $white;
+	background: $white;
 	width: 150px;
-	border-bottom: 1px solid #edf0f5;
+	border-bottom: 1px solid $border-color;
 	text-align: left;
+	&:hover {
+		background-color: $background;
+	}
 }
 .nav-user-role-p {
 	padding: 2px 6px;
-    line-height: $line-height-xxl;
-    font-size: $font-size;
-    border: 1px solid #49a9e1;
-    color: #49a9e1;
+	line-height: $line-height-4;
+	font-size: $font-1;
+	border: 1px solid $primary-color;
+	color: $primary-color;
 }
 .nav-user-container-item img {
 	margin-right: 6px;
 	vertical-align: middle;
 }
-.nav-user-container-item:hover {
-	background-color: #edf0f5;
-}
-.edit-form-icon-style{
-    line-height: $line-height * 2;
+.edit-form-icon-style {
+	line-height: $line-height-1;
 	display: flex;
 	align-content: center;
 }

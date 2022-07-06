@@ -7,7 +7,13 @@ import styles from './selectblock.module.scss';
  * @param { options current disabled } props 选项 当前项 是否是禁用状态
  */
 export default function SelectBlock(props: SelectBlockProps): JSX.Element {
-	const { options = [], currentValue = '', onCallBack, disabled } = props;
+	const {
+		options = [],
+		currentValue = '',
+		onCallBack,
+		disabled,
+		itemStyle
+	} = props;
 
 	return (
 		<div
@@ -19,13 +25,17 @@ export default function SelectBlock(props: SelectBlockProps): JSX.Element {
 				return (
 					<div
 						key={index}
+						style={itemStyle}
 						className={`${styles['select-box-item']} ${
 							currentValue === option.value
 								? styles['active']
 								: ''
-						}`}
+						} ${option.disabled ? styles['disabled'] : ''}`}
 						onClick={() =>
-							!disabled && onCallBack && onCallBack(option.value)
+							!disabled &&
+							!option.disabled &&
+							onCallBack &&
+							onCallBack(option.value)
 						}
 						title={option.label}
 					>

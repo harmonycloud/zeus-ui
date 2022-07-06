@@ -1,37 +1,24 @@
 import React, { useEffect } from 'react';
-import {
-	Dialog,
-	Field,
-	Form,
-	Input,
-	Message
-} from '@alicloud/console-components';
-import { connect } from 'react-redux';
+import { Input, Modal, Form, notification } from 'antd';
 import { formItemLayout618 } from '@/utils/const';
 import pattern from '@/utils/pattern';
-import { StoreState } from '@/types';
 import { updateProject } from '@/services/project';
 import { ProjectItem } from '../ProjectManage/project';
-import messageConfig from '@/components/messageConfig';
 
 interface EditProjectFormProps {
 	visible: boolean;
 	onCancel: () => void;
 	project: ProjectItem;
 	onRefresh: () => void;
-}
-interface UpdateProjectValuesFields {
-	name: string;
-	aliasName: string;
-	description: string;
+	setRefreshCluster: (value: boolean) => void;
 }
 const FormItem = Form.Item;
 function EditProjectForm(props: EditProjectFormProps): JSX.Element {
-	const { visible, onCancel, project, onRefresh } = props;
-	const field = Field.useField();
+	const { visible, onCancel, project, onRefresh, setRefreshCluster } = props;
+	const [form] = Form.useForm();
 	useEffect(() => {
 		if (project) {
-			field.setValues({
+			form.setFieldsValue({
 				aliasName: project.aliasName,
 				name: project.name,
 				description: project.description
@@ -39,25 +26,31 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 		}
 	}, [project]);
 	const onOk = () => {
-		field.validate((errors) => {
-			if (errors) return;
-			const values: UpdateProjectValuesFields = field.getValues();
+		form.validateFields().then((values) => {
+			onCancel();
 			const sendData = {
 				projectId: project.projectId,
 				name: values.name,
 				aliasName: values.aliasName,
 				description: values.description
 			};
-			onCancel();
 			updateProject(sendData)
 				.then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '项目修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '项目修改成功'
+						});
+						setRefreshCluster(true);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
+				})
+				.catch((info) => {
+					console.log('Validate Failed:', info);
 				})
 				.finally(() => {
 					onRefresh();
@@ -65,46 +58,42 @@ function EditProjectForm(props: EditProjectFormProps): JSX.Element {
 		});
 	};
 	return (
-		<Dialog
+		<Modal
 			title="编辑"
 			visible={visible}
 			onCancel={onCancel}
 			onOk={onOk}
-			onClose={onCancel}
-			style={{ width: '470px' }}
+			okText="确定"
+			cancelText="取消"
+			width={470}
 		>
-			<Form {...formItemLayout618} field={field}>
+			<Form form={form} {...formItemLayout618} labelAlign="left">
 				<FormItem
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
 					label="项目名称"
+					rules={[
+						{ required: true, message: '请输入项目名称' },
+						{
+							max: 80,
+							message: '输入名称，且最大长度不超过80个字符'
+						},
+						{
+							pattern: new RegExp(pattern.projectAliasName),
+							message: '请输入名称，且最大长度不超过20个字符'
+						}
+					]}
 					required
-					requiredMessage="请输入项目名称"
-					maxLength={80}
-					minmaxLengthMessage="输入名称，且最大长度不超过80个字符"
-					pattern={pattern.projectAliasName}
-					patternMessage="请输入名称，且最大长度不超过80个字符"
+					name="aliasName"
 				>
-					<Input name="aliasName" />
+					<Input />
 				</FormItem>
-				<FormItem
-					label="英文简称"
-					required
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-				>
-					<Input disabled name="name" />
+				<FormItem label="英文简称" required name="name">
+					<Input disabled />
 				</FormItem>
-				<FormItem label="备注">
-					<Input name="description" />
+				<FormItem label="备注" name="description">
+					<Input />
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
-const mapStateToProps = (state: StoreState) => ({
-	project: state.globalVar.project
-});
-export default connect(mapStateToProps)(EditProjectForm);
+export default EditProjectForm;

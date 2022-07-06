@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
 import { Location } from 'history';
-import { CascaderSelect } from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { ProPage, ProContent, ProHeader } from '../ProPage';
+import { Cascader } from 'antd';
+
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
 import { filtersProps } from '@/types/comment';
 import { StoreState, globalVarProps, clusterType } from '@/types/index';
 import './index.scss';
-
 interface stateProps {
 	middlewareName: string;
 	middlewareType: string;
@@ -46,17 +46,19 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 	} = props;
 	const { cluster, namespace, project } = props.globalVar;
 	const [data, setData] = useState([]);
-	const [current, setCurrent] = useState<string>();
+	const [current, setCurrent] = useState<any>();
 	const location: Location<stateProps> = useLocation();
 	useEffect(() => {
-		if (JSON.stringify(namespace) !== '{}') {
+		if (
+			JSON.stringify(cluster) !== '{}' &&
+			JSON.stringify(namespace) !== '{}'
+		) {
 			getList({
 				projectId: project.projectId,
 				clusterId: cluster.id,
 				namespace: namespace.name,
 				keyword: ''
 			}).then((res) => {
-				console.log(res);
 				if (res.success) {
 					const list = res.data.map((item: serviceListItemProps) => {
 						const result: filtersProps = {
@@ -79,7 +81,10 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						location.state?.middlewareName &&
 						location.state?.middlewareType
 					) {
-						setCurrent(location.state.middlewareName);
+						setCurrent([
+							location.state?.middlewareType,
+							location.state.middlewareName
+						]);
 						const temp = list.filter(
 							(item: filtersProps) =>
 								item.value === location.state.middlewareType
@@ -98,7 +103,10 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 						);
 					} else {
 						if (list.length > 0 && list[0].children.length > 0) {
-							setCurrent(list[0].children[0].value);
+							setCurrent([
+								list[0].value,
+								list[0].children[0].value
+							]);
 							onChange(
 								list[0].children[0].value,
 								list[0].value,
@@ -106,71 +114,70 @@ function SecondLayout(props: secondLayoutProps): JSX.Element {
 								cluster
 							);
 						} else {
-							setCurrent('无服务');
-							onChange(null, '', '', cluster, '');
+							setCurrent('⽆服务');
+							onChange(
+								null,
+								list?.[0]?.value,
+								list?.[0]?.children[0].namespace,
+								cluster,
+								list?.[0]?.aliasName
+							);
 						}
 					}
 				}
 			});
+		} else {
+			setData([]);
+			setCurrent('⽆服务');
+			onChange(null, '', '', cluster, '');
 		}
 	}, [namespace, cluster]);
-	const handleChange = (value: string | string[], data: any, extra: any) => {
-		if (data.isLeaf) {
-			// * 如果选的是叶子结点的话
-			setCurrent(value as string);
-			onChange(
-				value as string,
-				extra.selectedPath[0].value,
-				data.namespace,
-				cluster
-			);
-		} else {
-			// * 如果选择的是父节点，那么就默认勾选叶子结点，如果没有叶子结点，则传参告诉选择的是服务类型，且无服务。
-			if (data.children && data.children.length > 0) {
-				setCurrent(data.children[0].value as string);
+	const handleChange = (value: any, selectedOptions: any) => {
+		if (value.length === 1) {
+			if (selectedOptions[0].children?.length) {
+				setCurrent([...value, selectedOptions[0].children[0].value]);
 				onChange(
-					data.children[0].value as string,
-					extra.selectedPath[0].value,
-					data.children[0].namespace,
+					selectedOptions[0].children[0].value,
+					value[0],
+					selectedOptions[0].children[0].namespace,
 					cluster
 				);
 			} else {
 				setCurrent('无服务');
-				onChange(
-					null,
-					extra.selectedPath[0].value,
-					namespace.name,
-					cluster
-				);
+				onChange(null, value[0], namespace.name, cluster);
 			}
+		} else {
+			setCurrent(value);
+			onChange(value[1], value[0], selectedOptions[1].namespace, cluster);
 		}
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={title}
 				subTitle={subTitle}
-				hasBackArrow={
+				backIcon={
 					location?.state?.middlewareName ? hasBackArrow : false
 				}
-				onBackArrowClick={onBackArrowClick}
-				childrenAlign={childrenAlign}
+				onBack={onBackArrowClick}
+				extra={
+					<Cascader
+						allowClear={false}
+						dropdownMenuColumnStyle={{ width: '166px' }}
+						style={{ width: '332px' }}
+						options={data}
+						onChange={handleChange}
+						expandTrigger="hover"
+						value={current}
+						changeOnSelect={true}
+						popupClassName="cascader-select"
+					/>
+				}
 				className={className}
 				style={style}
-			>
-				<CascaderSelect
-					listStyle={{ width: '166px' }}
-					style={{ width: '333px' }}
-					dataSource={data}
-					onChange={handleChange}
-					expandTriggerType="hover"
-					value={current}
-					changeOnSelect={true}
-					popupClassName="cascader-select"
-				/>
-			</Header>
-			<Content>{children}</Content>
-		</Page>
+			></ProHeader>
+			<ProContent>{children}</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

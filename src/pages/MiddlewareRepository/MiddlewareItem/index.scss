@@ -111,7 +111,7 @@
 	}
 	.middleware-item-title{
 		margin-top: 16px;
-		font-size: $font-h1;
+		font-size: $font-3;
 		font-family: PingFangSC-Semibold, PingFang SC;
 		font-weight: $font-weight-lg;
 		color: $text-color-title;
@@ -122,15 +122,15 @@
 	}
 	.middleware-item-status{
 		margin-top: 8px;
-		font-size: $font-size;
-		line-height: $line-height-xxl;
+		font-size: $font-1;
+		line-height: $line-height-4;
 		vertical-align: middle;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: $font-weight;
 		color: $text-color-title;
 	}
 	.middleware-item-description{
-		font-size: $font-size;
+		font-size: $font-1;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: $font-weight-sm;
 		color: #666666;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Select, Balloon, Icon } from '@alicloud/console-components';
+import { Select, Form, Popover } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import SelectBlock from '../SelectBlock';
 import { renderFormItem } from '@/components/renderFormItem';
 import { FormSelectOrRadiosProps } from './formSelectOrRadios';
@@ -17,22 +18,22 @@ export default function FormSelectOrRadios(
 	const keys = Object.keys(props);
 	const [value, setValue] = useState<string>(props.defaultValue);
 	useEffect(() => {
-		const filedValue = props.field.getValues();
+		const filedValue = props.form.getFieldsValue();
 		const keys = Object.keys(filedValue);
 		if (props.defaultValue !== '' && !keys.includes(props.variable)) {
-			props.field.setValues({
+			props.form.setFieldsValue({
 				[`${props.variable}`]: props.defaultValue
 			});
 		}
 	}, []);
 	const handleChange: (value: any) => void = (value) => {
-		props.field.setValues({
+		props.form.setFieldsValue({
 			[`${props.variable}`]: value
 		});
 	};
 	const handleSelectBlock: (value: any) => void = (value: any) => {
 		setValue(value);
-		props.field.setValues({
+		props.form.setFieldsValue({
 			[`${props.variable}`]: value
 		});
 	};
@@ -58,37 +59,30 @@ export default function FormSelectOrRadios(
 						{props.label}
 					</span>
 					{keys.includes('description') ? (
-						<Balloon
-							offset={[0, 15]}
-							align="t"
-							trigger={
-								<Icon
-									type="question-circle"
-									size="xs"
-									style={{ marginLeft: 8 }}
-								/>
-							}
-							closable={false}
+						<Popover
+							// offset={[0, 15]}
+							content={props.description}
 						>
-							{props.description}
-						</Balloon>
+							<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+						</Popover>
 					) : null}
 				</label>
 				<div className="form-content">
 					<FormItem
-						required={keys.includes('required') && props.required}
-						requiredMessage={
-							keys.includes('required') && props.required
-								? `请选择${props.label}`
-								: ''
-						}
+						rules={[
+							{
+								required:
+									keys.includes('required') && props.required,
+								message:
+									keys.includes('required') && props.required
+										? `请输入${props.label}`
+										: ''
+							}
+						]}
+						name={props.variable}
+						initialValue={props.defaultValue}
 					>
-						<Select
-							onChange={handleChange}
-							name={props.variable}
-							defaultValue={props.defaultValue}
-							autoWidth={false}
-						>
+						<Select onChange={handleChange}>
 							{props.options?.map((item) => (
 								<Option key={item} value={item}>
 									{item}
@@ -138,20 +132,12 @@ export default function FormSelectOrRadios(
 						{props.label}
 					</span>
 					{keys.includes('description') ? (
-						<Balloon
-							offset={[0, 15]}
-							align="t"
-							trigger={
-								<Icon
-									type="question-circle"
-									size="xs"
-									style={{ marginLeft: 8 }}
-								/>
-							}
-							closable={false}
+						<Popover
+							// offset={[0, 15]}
+							content={props.description}
 						>
-							{props.description}
-						</Balloon>
+							<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+						</Popover>
 					) : null}
 				</label>
 				<div className={`form-content`}>

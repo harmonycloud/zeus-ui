@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Breadcrumb } from '@alicloud/console-components';
+import { Breadcrumb } from 'antd';
+// import { Breadcrumb } from '@alicloud/console-components';
 import storage from '@/utils/storage';
 import './breadcrumb.scss';
 import breadcrumbMap from './breadcrumbMap';
@@ -22,22 +23,26 @@ export default function MdBreadcrumb(props: BreadcrumbProps): JSX.Element {
 
 	// 获取当前级整路由
 	const getPath = (route: string, i: number) => {
+		console.log(route);
 		if (route === 'serviceList') {
-			return storage.getSession('menuPath') || '/';
+			return '/' + storage.getSession('menuPath') || '/';
+		}
+		if (route === 'myProject') {
+			return '/' + route;
 		}
 		if (route.includes('middlewareRepository')) {
 			return '/middlewareRepository';
 		}
-		if (pathname.includes('alarm/createAlarm')) {
+		if (
+			pathname.includes('externalAccess/addExternalAccess') ||
+			pathname.includes('backupRecovery/addBackupTask') ||
+			pathname.includes('backupRecovery/backupTaskDetail')
+		) {
 			const arr = pathname.split('/');
 			arr.splice(5, 1);
-			arr.splice(8, 1);
-			const result = arr.join('/');
-			return result;
-		}
-		if (pathname.includes('externalAccess/addExternalAccess')) {
-			const arr = pathname.split('/');
-			arr.splice(5, 1);
+			if (pathname.includes('backupRecovery/backupTaskDetail')) {
+				arr.splice(arr.length - 1, 1);
+			}
 			const result = arr.join('/');
 			return result;
 		}

@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-	Dialog,
-	Form,
-	Field,
-	Input,
-	Select,
-	Message
-} from '@alicloud/console-components';
+import { Modal, Input, Select, Form, notification } from 'antd';
 import { getRoleList } from '@/services/role';
-import messageConfig from '@/components/messageConfig';
 import { updateProjectMember } from '@/services/project';
 import storage from '@/utils/storage';
-import { EditMemberFieldValues, EditMemberProps } from './projectDetail';
+import { EditMemberProps } from './projectDetail';
 import { formItemLayout618 } from '@/utils/const';
 import { roleProps } from '../RoleManage/role';
 import { ProjectItem } from '../ProjectManage/project';
@@ -20,32 +12,32 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 export default function EditMember(props: EditMemberProps): JSX.Element {
 	const { visible, onCancel, onRefresh, data } = props;
-	console.log(data);
+	const [form] = Form.useForm();
 	const [roles, setRoles] = useState<roleProps[]>([]);
 	const [project] = useState<ProjectItem>(
 		JSON.parse(storage.getLocal('project'))
 	);
-	const field = Field.useField();
 	useEffect(() => {
 		getRoleList({ key: '' }).then((res) => {
 			if (res.success) {
 				setRoles(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
 	useEffect(() => {
-		field.setValues({
+		form.setFieldsValue({
 			userName: data.userName,
 			aliasName: data.aliasName,
 			roleId: data.roleId
 		});
 	}, [data]);
 	const onOk = () => {
-		field.validate((errors) => {
-			if (errors) return;
-			const values: EditMemberFieldValues = field.getValues();
+		form.validateFields().then((values) => {
 			const sendData = {
 				projectId: project.projectId,
 				userName: data.userName,
@@ -56,11 +48,15 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 			updateProjectMember(sendData)
 				.then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '成员修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '成员修改成功'
+						});
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				})
 				.finally(() => {
@@ -69,23 +65,24 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 		});
 	};
 	return (
-		<Dialog
+		<Modal
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
 			title="编辑"
-			style={{ width: 550 }}
+			width={550}
+			okText="确定"
+			cancelText="取消"
 		>
-			<Form {...formItemLayout618} field={field}>
-				<FormItem label="登录账户">
-					<Input disabled name="userName" />
+			<Form {...formItemLayout618} form={form} labelAlign="left">
+				<FormItem label="登录账户" name="userName">
+					<Input disabled />
 				</FormItem>
-				<FormItem label="用户名">
-					<Input disabled name="aliasName" />
+				<FormItem label="用户名" name="aliasName">
+					<Input disabled />
 				</FormItem>
-				<FormItem label="选择角色" required>
-					<Select name="roleId" style={{ width: '100%' }}>
+				<FormItem name="roleId" label="选择角色" required>
+					<Select style={{ width: '100%' }}>
 						{roles.map((item: roleProps) => {
 							if (item.id !== 1) {
 								return (
@@ -98,6 +95,6 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 					</Select>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }

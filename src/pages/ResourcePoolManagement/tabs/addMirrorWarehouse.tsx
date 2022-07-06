@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
 import {
-	Dialog,
+	Modal,
 	Form,
-	Field,
+	Select,
 	Input,
-	Message,
-	Select
-} from '@alicloud/console-components';
+	notification,
+	Space,
+	Row,
+	Col,
+	InputNumber
+} from 'antd';
 import { addMirror, updateMirror } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import { address } from '@/utils/const';
 import { AddMirrorWarehouseProps } from '../resource.pool';
 import pattern from '@/utils/pattern';
@@ -23,158 +25,180 @@ const formItemLayout = {
 		span: 18
 	}
 };
+const formItemLayout2 = {
+	labelCol: {
+		span: 0
+	},
+	wrapperCol: {
+		span: 24
+	}
+};
 
 const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 	const { visible, onCancel, clusterId, onRefresh, data } = props;
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	const onOk = () => {
 		if (!data) {
-			field.validate((errors, values) => {
-				if (errors) return;
+			form.validateFields().then((values) => {
 				addMirror({
 					clusterId,
 					...values
 				}).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '镜像仓库创建成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '镜像仓库创建成功'
+						});
 						onCancel();
 						onRefresh();
 					} else {
-						Message.show(
-							messageConfig('error', '失败', res.errorMsg)
-						);
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			});
 		} else {
-			field.validate((errors, values) => {
-				if (errors) return;
+			form.validateFields().then((values) => {
 				updateMirror({
 					clusterId,
 					...values,
 					id: data.id
 				}).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '镜像仓库修改成功'
+						});
 						onCancel();
 						onRefresh();
 					} else {
-						Message.show(
-							messageConfig('error', '失败', res.errorMsg)
-						);
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			});
 		}
 	};
 	useEffect(() => {
-		data && field.setValues(data);
+		data && form.setFieldsValue(data);
 	}, [data]);
 
 	return (
-		<Dialog
-			title="新增镜像仓库"
+		<Modal
+			title={data ? '编辑镜像仓库' : '新增镜像仓库'}
 			visible={visible}
 			onCancel={onCancel}
 			onOk={onOk}
-			onClose={onCancel}
+			okText="确定"
+			cancelText="取消"
 		>
-			<Form field={field} {...formItemLayout}>
+			<Form labelAlign="left" form={form} {...formItemLayout}>
 				<div className="display-form">
 					<label className="label">镜像仓库地址</label>
-					<FormItem required requiredMessage="请选择">
-						<Select name="protocol">
-							{address.map((item: any) => {
-								return (
-									<Option key={item.key} value={item.value}>
-										{item.value}
-									</Option>
-								);
-							})}
-						</Select>
-					</FormItem>
-					<FormItem
-						required
-						style={{ width: '40%' }}
-						requiredMessage="请输入主机地址"
-						maxLength={32}
-						minmaxLengthMessage="主机地址不能超过32位"
-					>
-						<Input
-							id="name"
-							name="hostAddress"
-							placeholder="请输入harbor主机地址"
-						/>
-					</FormItem>
-					<FormItem
-						required
-						style={{ width: '20%' }}
-						requiredMessage="请输入端口"
-						maxLength={16}
-						minmaxLengthMessage="端口不能超过16位"
-					>
-						<Input
-							htmlType="number"
-							id="name"
-							name="port"
-							placeholder="端口"
-						/>
-					</FormItem>
+					<Row>
+						<Col span={8} style={{ marginRight: 7 }}>
+							<FormItem
+								{...formItemLayout2}
+								name="protocol"
+								required
+								rules={[{ required: true, message: '请选择' }]}
+							>
+								<Select
+									placeholder="请选择镜像地址"
+									style={{ width: '120px' }}
+								>
+									{address.map((item: any) => {
+										return (
+											<Option
+												key={item.key}
+												value={item.value}
+											>
+												{item.value}
+											</Option>
+										);
+									})}
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span={9} style={{ marginRight: 6 }}>
+							<FormItem
+								{...formItemLayout2}
+								required
+								name="hostAddress"
+								rules={[
+									{
+										required: true,
+										message: '请输入主机地址'
+									},
+									{ max: 32, message: '主机地址不能超过32位' }
+								]}
+							>
+								<Input placeholder="请输入harbor主机地址" />
+							</FormItem>
+						</Col>
+						<Col span={6}>
+							<FormItem {...formItemLayout2} name="port">
+								<InputNumber placeholder="端口" />
+							</FormItem>
+						</Col>
+					</Row>
 				</div>
 				<FormItem
 					label="镜像仓库项目"
 					required
-					requiredMessage="请输入镜像仓库项目"
-					maxLength={50}
-					minmaxLengthMessage="镜像仓库项目不能超过50位"
+					rules={[
+						{ required: true, message: '请输入镜像仓库项目' },
+						{ max: 50, message: '镜像仓库项目不能超过50位' }
+					]}
+					name="project"
 				>
-					<Input
-						id="name"
-						name="project"
-						placeholder="请输入镜像仓库项目"
-					/>
+					<Input placeholder="请输入镜像仓库项目" />
 				</FormItem>
 				<div className="display-form user">
 					<label className="label">镜像仓库鉴权</label>
 					<FormItem
+						{...formItemLayout2}
 						required
-						requiredMessage="请输入用户名"
-						pattern={pattern.aliasName}
-						patternMessage="用户名长度不可超过18字符"
+						rules={[
+							{ required: true, message: '请输入用户名' },
+							{
+								pattern: new RegExp(pattern.aliasName),
+								message: '用户名长度不可超过18字符'
+							}
+						]}
+						style={{ width: '36%', marginRight: 8 }}
+						name="username"
 					>
-						<Input
-							id="name"
-							name="username"
-							placeholder="请输入用户名"
-						/>
+						<Input placeholder="请输入用户名" />
 					</FormItem>
 					<FormItem
+						{...formItemLayout2}
 						required
-						requiredMessage="请输入密码"
-						pattern={'^[A-Za-z0-9_.-]{8,16}$'}
-						patternMessage={'密码长度为8-16位数字或字母'}
+						name="password"
+						rules={[
+							{ required: true, message: '请输入密码' },
+							{
+								pattern: new RegExp('^[A-Za-z0-9_.-]{8,16}$'),
+								message: '密码长度为8-16位数字或字母'
+							}
+						]}
+						style={{ width: '37%' }}
 					>
-						<Input.Password
-							id="name"
-							name="password"
-							placeholder="请输入密码"
-						/>
+						<Input.Password placeholder="请输入密码" />
 					</FormItem>
 				</div>
-				<FormItem label="描述" className="ne-require">
+				<FormItem label="描述" name="description">
 					<Input.TextArea
-						id="name"
-						name="description"
 						maxLength={300}
 						placeholder="请输入描述信息，限定300字符串"
 					/>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 };
 export default AddMirrorWarehouse;

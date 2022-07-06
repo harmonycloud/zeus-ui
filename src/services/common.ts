@@ -1,6 +1,7 @@
 import Axios from './request';
 import * as COMMON from './common.constants';
 import { MirrorParams } from '@/pages/ResourcePoolManagement/resource.pool';
+import { judgeResProps } from '@/types/comment';
 
 // * 获取集群列表
 export const getClusters = (params?: any) => {
@@ -125,4 +126,8 @@ export const updateIngress = (params: any) => {
 // * 获取外接动态表单
 export const getAspectFrom = () => {
 	return Axios.get(COMMON.getAspectFrom);
+};
+// * 查询是否接入观云台
+export const getIsAccessGYT: () => Promise<judgeResProps> = () => {
+	return Axios.get(COMMON.isAccessGYT);
 };

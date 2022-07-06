@@ -1,27 +1,25 @@
-import { Button, Dialog, Message, Balloon } from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Table from '@/components/MidTable';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
-import { roleProps } from './role';
-import { Actions, LinkButton } from '@alicloud/console-components-actions';
+import { Button, Modal, notification } from 'antd';
+import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
 import RoleForm from './RoleForm';
-import RolePermissions from './RolePermissions';
 import { getRoleList, deleteRole } from '@/services/role';
-import messageConfig from '@/components/messageConfig';
 import { getUserInformation } from '@/services/user';
 import storage from '@/utils/storage';
+import { roleProps } from './role';
 import './index.scss';
 
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 function RoleManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<roleProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
-	const [permissionVisible, setPermissionVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<roleProps>();
-	const [permissionData, setPermissionData] = useState<roleProps>();
 	const [isEdit, setIsEdit] = useState<boolean>(true);
 	const [roleId, setRoleId] = useState<string>('');
 	const history = useHistory();
@@ -35,7 +33,10 @@ function RoleManage(): JSX.Element {
 					setDataSource(res.data);
 				}
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		return () => {
@@ -51,7 +52,10 @@ function RoleManage(): JSX.Element {
 		if (res.success) {
 			res.data && setRoleId(res.data.roleId);
 		} else {
-			Message.show(messageConfig('error', '失败', res));
+			notification.error({
+				message: '失败',
+				description: res.errorMsg
+			});
 		}
 	};
 	const handleSearch: (value: string) => void = (value: string) => {
@@ -59,7 +63,10 @@ function RoleManage(): JSX.Element {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -68,7 +75,10 @@ function RoleManage(): JSX.Element {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -82,30 +92,34 @@ function RoleManage(): JSX.Element {
 		record: roleProps
 	) => {
 		if (record.id === 1 || Number(roleId) === record.id) return;
-
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '删除将无法找回，是否继续?',
+			okText: '确定',
+			cancelText: '取消',
 			onOk: () => {
-				deleteRole({ roleId: record.id }).then((res) => {
+				return deleteRole({ roleId: record.id }).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '该用户删除成功')
-						);
+						notification.error({
+							message: '成功',
+							description: '该用户删除成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
 		});
 	};
 	const permissionEdit: (record: roleProps) => void = (record: roleProps) => {
-		// if (record.id === 1 || Number(roleId) === record.id) return;
 		storage.setSession('rolePower', JSON.stringify(record));
 		history.push('/systemManagement/roleManagement/allotRole');
 	};
-	const actionRender = (value: string, index: number, record: roleProps) => {
+	const actionRender = (value: string, record: roleProps, index: number) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -174,128 +188,6 @@ function RoleManage(): JSX.Element {
 						分配角色权限
 					</span>
 				</LinkButton>
-				{/* {record.id === 1 ? (
-					<Balloon
-						trigger={
-							<LinkButton
-								style={{
-									color: record.id === 1 ? '#ddd' : '#0070cc',
-									cursor:
-										record.id === 1
-											? 'not-allowed'
-											: 'pointer'
-								}}
-								onClick={() => edit(record)}
-							>
-								编辑
-							</LinkButton>
-						}
-						closable={false}
-					>
-						系统初始化最高权限角色，不可操作
-					</Balloon>
-				) : (
-					<LinkButton
-						style={{
-							color: record.id === 1 ? '#ddd' : '#0070cc',
-							cursor: record.id === 1 ? 'not-allowed' : 'pointer'
-						}}
-						onClick={() => edit(record)}
-					>
-						编辑
-					</LinkButton>
-				)}
-				{Number(roleId) === record.id ? (
-					<Balloon
-						trigger={
-							<LinkButton
-								style={{
-									color:
-										record.id === 1 ||
-										Number(roleId) === record.id
-											? '#ddd'
-											: '#0070cc',
-									cursor:
-										record.id === 1 ||
-										Number(roleId) === record.id
-											? 'not-allowed'
-											: 'pointer'
-								}}
-								onClick={() => deleteRoleHandle(record)}
-							>
-								删除
-							</LinkButton>
-						}
-						closable={false}
-					>
-						{record.id === 1
-							? '系统初始化最高权限角色，不可操作'
-							: '不能删除自己的角色'}
-					</Balloon>
-				) : (
-					<LinkButton
-						style={{
-							color:
-								record.id === 1 || Number(roleId) === record.id
-									? '#ddd'
-									: '#0070cc',
-							cursor:
-								record.id === 1 || Number(roleId) === record.id
-									? 'not-allowed'
-									: 'pointer'
-						}}
-						onClick={() => deleteRoleHandle(record)}
-					>
-						删除
-					</LinkButton>
-				)}
-				{Number(roleId) === record.id ? (
-					<Balloon
-						trigger={
-							<LinkButton
-								style={{
-									color:
-										record.id === 1 ||
-										Number(roleId) === record.id ||
-										Number(roleId) === record.id
-											? '#ddd'
-											: '#0070cc',
-									cursor:
-										record.id === 1 ||
-										Number(roleId) === record.id
-											? 'not-allowed'
-											: 'pointer'
-								}}
-								onClick={() => permissionEdit(record)}
-							>
-								分配角色权限
-							</LinkButton>
-						}
-						closable={false}
-					>
-						{record.id === 1
-							? '系统初始化最高权限角色，不可操作'
-							: '不能改自己的角色权限'}
-					</Balloon>
-				) : (
-					<LinkButton
-						style={{
-							color:
-								record.id === 1 ||
-								Number(roleId) === record.id ||
-								Number(roleId) === record.id
-									? '#ddd'
-									: '#0070cc',
-							cursor:
-								record.id === 1 || Number(roleId) === record.id
-									? 'not-allowed'
-									: 'pointer'
-						}}
-						onClick={() => permissionEdit(record)}
-					>
-						分配角色权限
-					</LinkButton>
-				)} */}
 			</Actions>
 		);
 	};
@@ -333,44 +225,47 @@ function RoleManage(): JSX.Element {
 		)
 	};
 	return (
-		<Page className="role-manege">
-			<Header
+		<ProPage className="role-manege">
+			<ProHeader
 				title="角色管理"
 				subTitle="创建具有不同系统权限的平台角色"
 			/>
-			<Content>
-				<Table
+			<ProContent>
+				<ProTable
 					dataSource={dataSource}
 					search={{
-						value: keyword,
-						onChange: handleChange,
 						placeholder: '请输入角色名称、描述搜索',
-						onSearch: handleSearch
+						onSearch: handleSearch,
+						style: { width: '220px' }
 					}}
+					rowKey="id"
 					showRefresh
 					onRefresh={onRefresh}
 					operation={Operation}
-					onSort={onSort}
 				>
-					<Table.Column title="角色名称" dataIndex="name" />
-					<Table.Column
+					<ProTable.Column title="角色名称" dataIndex="name" />
+					<ProTable.Column
 						title="描述"
 						dataIndex="description"
 						width="50%"
+						ellipsis={true}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
-						sortable
-						cell={createTimeRender}
+						sorter={(a: roleProps, b: roleProps) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
+						render={createTimeRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 					/>
-				</Table>
-			</Content>
+				</ProTable>
+			</ProContent>
 			{visible && (
 				<RoleForm
 					visible={visible}
@@ -382,18 +277,7 @@ function RoleManage(): JSX.Element {
 					}}
 				/>
 			)}
-			{permissionVisible && (
-				<RolePermissions
-					visible={permissionVisible}
-					onCancel={() => setPermissionVisible(false)}
-					data={permissionData}
-					onCreate={() => {
-						setPermissionVisible(false);
-						onRefresh();
-					}}
-				/>
-			)}
-		</Page>
+		</ProPage>
 	);
 }
 

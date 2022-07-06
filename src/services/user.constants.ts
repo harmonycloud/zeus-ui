@@ -40,3 +40,5 @@ export const enable = `${api}/ldap/enable`;
 export const detail = `${api}/ldap/detail`;
 // * 关闭LDAP
 export const disable = `${api}/ldap/disable`;
+// * 获取服务列表子菜单
+export const getChildMenu = `${api}/user/menu/middlewares`;

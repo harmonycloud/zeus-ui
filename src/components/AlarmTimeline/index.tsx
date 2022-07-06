@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timeline, Balloon } from '@alicloud/console-components';
+import { Timeline } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -17,7 +17,6 @@ import { alarmTimeLineProps } from './alarmTimeLine';
 
 import './index.scss';
 
-const Tooltip = Balloon.Tooltip;
 function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 	const {
 		style = {},
@@ -64,7 +63,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 						setRefreshCluster(true);
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${item.type}/${item.capitalType}`
+							`serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
 							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}/${item.namespace}`
@@ -89,7 +88,7 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 						setRefreshCluster(true);
 						storage.setSession(
 							'menuPath',
-							`/serviceList/${item.type}/${item.capitalType}`
+							`serviceList/${item.type}/${item.capitalType}`
 						);
 						history.push({
 							pathname: `/serviceList/${item.type}/${item.capitalType}/basicInfo/${item.name}/${item.type}/${item.chartVersion}/${item.namespace}`
@@ -137,66 +136,46 @@ function AlarmTimeLine(props: alarmTimeLineProps): JSX.Element {
 						return (
 							<Timeline.Item
 								key={index}
-								title={
-									<p>
-										<span>
-											{item.lay === 'system'
-												? '(系统级) '
-												: '(服务级) '}
-										</span>
-										<span
-											className={`time-line-title ${
-												!item.chartVersion ||
-												!item.type ||
-												!item.clusterId ||
-												!item.namespace
-													? ''
-													: 'active'
-											}`}
-											onClick={() => toDetail(item)}
-										>
-											{item.name}
-										</span>
-									</p>
-								}
 								dot={dotRender(item.level)}
-								content={
-									<>
-										<div className="time-line-time">
-											{transTime.gmt2local(item.time)}
-										</div>
-										<div className="details-msg">
-											<div className="details-summary">
-												<Tooltip
-													trigger={
-														<span
-															title={item.summary}
-														>
-															{item.content
-																? item.content +
-																  '；'
-																: ''}
-														</span>
-													}
-													align="t"
-												>
-													{item.content || ''}
-												</Tooltip>
-												<Tooltip
-													trigger={
-														<span>
-															{item.summary || ''}
-														</span>
-													}
-													align="t"
-												>
-													{item.summary || ''}
-												</Tooltip>
-											</div>
-										</div>
-									</>
-								}
-							/>
+							>
+								<p>
+									<span className="time-line-title">
+										{item.lay === 'system'
+											? '(系统级) '
+											: '(服务级) '}
+									</span>
+									<span
+										className={`time-line-title ${
+											!item.chartVersion ||
+											!item.type ||
+											!item.clusterId ||
+											!item.namespace
+												? ''
+												: 'active'
+										}`}
+										onClick={() => toDetail(item)}
+									>
+										{item.name}
+									</span>
+								</p>
+								<div className="time-line-time">
+									{transTime.gmt2local(item.time)}
+								</div>
+								<div className="details-msg">
+									<div className="details-summary">
+										<span title={item.content || ''}>
+											{item.content
+												? item.content + '；'
+												: ''}
+										</span>
+										<span title={item.summary || ''}>
+											{item.summary
+												? item.summary + '；'
+												: ''}
+										</span>
+									</div>
+								</div>
+							</Timeline.Item>
 						);
 					})}
 			</Timeline>

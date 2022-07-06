@@ -1,65 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, Message, Select } from '@alicloud/console-components';
-import MidTable from '@/components/MidTable';
-import messageConfig from '@/components/messageConfig';
-
+import { Modal, Select, notification } from 'antd';
+import ProTable from '@/components/ProTable';
 import { getProjectMember } from '@/services/project';
-// import { getUserList } from '@/services/user';
 import { getRoleList } from '@/services/role';
 import { bindProjectMember } from '@/services/project';
 import { nullRender } from '@/utils/utils';
-import storage from '@/utils/storage';
 
 import { roleProps } from '../RoleManage/role';
 import { userProps } from '../UserManage/user';
 import { AddMemberProps } from './projectDetail';
-import { ProjectItem } from '../ProjectManage/project';
 
 const Option = Select.Option;
 export default function AddMember(props: AddMemberProps): JSX.Element {
-	const { visible, onCancel, onRefresh } = props;
+	const { visible, onCancel, onRefresh, projectId } = props;
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
 	const [showDataSource, setShowDataSource] = useState<userProps[]>([]);
-	const [key, setKey] = useState<string>('');
 	const [primaryKeys, setPrimaryKeys] = useState<string[]>([]);
 	const [roles, setRoles] = useState<roleProps[]>([]);
-	const [project] = useState<ProjectItem>(
-		JSON.parse(storage.getLocal('project'))
-	);
 	useEffect(() => {
 		getData();
 		getRoleList({ key: '' }).then((res) => {
 			if (res.success) {
 				setRoles(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	}, []);
 	const getData = () => {
 		getProjectMember({
-			projectId: project.projectId,
+			projectId: projectId,
 			allocatable: true
 		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
 				setShowDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
-	const handleChange = (value: string) => {
-		setKey(value);
-	};
 	const handleSearch = (value: string) => {
-		// getData();
 		const list = dataSource.filter((item: userProps) =>
 			item.userName.includes(value)
 		);
 		setShowDataSource(list);
 	};
 	const onChange = (selectedRowKeys: any) => {
+		console.log(selectedRowKeys);
 		setPrimaryKeys(selectedRowKeys);
 	};
 	const roleChange = (value: number, record: userProps) => {
@@ -67,9 +61,13 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 	};
 	const onOk = () => {
 		if (primaryKeys.length === 0) {
-			Message.show(messageConfig('error', '失败', '请选择新增的成员'));
+			notification.error({
+				message: '失败',
+				description: '请选择新增的成员'
+			});
 			return;
 		}
+		console.log(primaryKeys);
 		const list: userProps[] = [];
 		primaryKeys.forEach((item: any) => {
 			dataSource.forEach((i: userProps) => {
@@ -78,33 +76,37 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 				}
 			});
 		});
-		// console.log(list);
 		if (list.some((item: userProps) => item.roleId === null)) {
-			Message.show(
-				messageConfig('error', '失败', '请选择成员的角色权限')
-			);
+			notification.error({
+				message: '失败',
+				description: '请选择成员的角色权限'
+			});
 			return;
 		}
 		const sendData = {
-			projectId: project.projectId,
+			projectId: projectId,
 			userDtoList: list
 		};
 		onCancel();
 		bindProjectMember(sendData)
 			.then((res) => {
 				if (res.success) {
-					Message.show(
-						messageConfig('success', '成功', '成员新增成功')
-					);
+					notification.success({
+						message: '成功',
+						description: '成员新增成功'
+					});
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			})
 			.finally(() => {
 				onRefresh();
 			});
 	};
-	const roleRender = (value: string, index: number, record: userProps) => {
+	const roleRender = (value: string, record: userProps, index: number) => {
 		return (
 			<Select
 				onChange={(value: any) => roleChange(value, record)}
@@ -123,20 +125,18 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 		);
 	};
 	return (
-		<Dialog
+		<Modal
 			title="新增"
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: 840 }}
+			width={840}
+			okText="确定"
+			cancelText="取消"
 		>
-			<MidTable
+			<ProTable
 				dataSource={showDataSource}
-				exact
 				search={{
-					value: key,
-					onChange: handleChange,
 					onSearch: handleSearch,
 					placeholder: '请输入关键字搜索'
 				}}
@@ -144,26 +144,36 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 					onChange,
 					selectedRowKeys: primaryKeys
 				}}
-				showJump={false}
+				rowKey="id"
 			>
-				<MidTable.Column title="登录账户" dataIndex="userName" />
-				<MidTable.Column title="用户名" dataIndex="aliasName" />
-				<MidTable.Column
+				<ProTable.Column
+					title="登录账户"
+					dataIndex="userName"
+					ellipsis={true}
+				/>
+				<ProTable.Column
+					title="用户名"
+					dataIndex="aliasName"
+					ellipsis={true}
+				/>
+				<ProTable.Column
 					title="邮箱"
 					dataIndex="email"
-					cell={nullRender}
+					render={nullRender}
+					ellipsis={true}
 				/>
-				<MidTable.Column
+				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
-					cell={nullRender}
+					render={nullRender}
 				/>
-				<MidTable.Column
+				<ProTable.Column
 					title="角色"
 					dataIndex="role"
-					cell={roleRender}
+					width={200}
+					render={roleRender}
 				/>
-			</MidTable>
-		</Dialog>
+			</ProTable>
+		</Modal>
 	);
 }

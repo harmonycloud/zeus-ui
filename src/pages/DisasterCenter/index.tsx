@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import SecondLayout from '@/components/SecondLayout';
 import Disaster from '@/pages/ServiceListDetail/Disaster';
-import { Message, Dialog, Button } from '@alicloud/console-components';
-import { getMiddlewareDetail } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
+import { Button, Modal, notification } from 'antd';
 import NoService from '@/components/NoService';
+import { getMiddlewareDetail } from '@/services/middleware';
 import storage from '@/utils/storage';
 import { getNamespaces } from '@/services/common';
 import { middlewareDetailProps, basicDataProps } from '@/types/comment';
-import { clusterType, StoreState, globalVarProps, User } from '@/types';
+import { clusterType, StoreState, globalVarProps } from '@/types';
 import {
 	setCluster,
 	setNamespace,
@@ -29,13 +28,11 @@ function DisasterCenter(props: disasterCenterProps) {
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
-	const [operateFlag, setOperateFlag] = useState<boolean>(false);
 
 	const {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList,
-		namespace: globalNamespace,
-		project
+		namespace: globalNamespace
 	} = props.globalVar;
 	const history = useHistory();
 	const onChange = (
@@ -52,37 +49,23 @@ function DisasterCenter(props: disasterCenterProps) {
 				clusterId: cluster.id,
 				namespace
 			});
-			const jsonRole: User = JSON.parse(storage.getLocal('role'));
-			let operateFlagTemp = false;
-			if (jsonRole.userRoleList.some((item) => item.roleId === 1)) {
-				operateFlagTemp = true;
-			} else {
-				operateFlagTemp =
-					jsonRole.userRoleList.find(
-						(item) => item.projectId === project.projectId
-					)?.power[type][1] === '1'
-						? true
-						: false;
-			}
-			if (operateFlagTemp) {
-				setOperateFlag(true);
-				getMiddlewareDetail({
-					clusterId: cluster.id,
-					namespace,
-					type,
-					middlewareName: name
-				}).then((res) => {
-					if (res.success) {
-						setIsService(true);
-						setData(res.data);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
-			} else {
-				setIsService(false);
-				setOperateFlag(false);
-			}
+			getMiddlewareDetail({
+				clusterId: cluster.id,
+				namespace,
+				type,
+				middlewareName: name
+			}).then((res) => {
+				if (res.success) {
+					setIsService(true);
+					setData(res.data);
+				} else {
+					setIsService(false);
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
 		} else {
 			setIsService(false);
 		}
@@ -97,7 +80,10 @@ function DisasterCenter(props: disasterCenterProps) {
 			if (res.success) {
 				setData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -119,7 +105,7 @@ function DisasterCenter(props: disasterCenterProps) {
 			storage.setLocal('namespace', JSON.stringify(ns[0]));
 		}
 		setRefreshCluster(true);
-		storage.setSession('menuPath', '/serviceList/mysql/MySQL');
+		storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 		history.push({
 			pathname: `/serviceList/mysql/MySQL/basicInfo/${
 				(data as middlewareDetailProps).mysqlDTO.relationName
@@ -156,7 +142,7 @@ function DisasterCenter(props: disasterCenterProps) {
 						storage.setLocal('namespace', JSON.stringify(ns[0]));
 					}
 					setRefreshCluster(true);
-					storage.setSession('menuPath', '/serviceList/mysql/MySQL');
+					storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 					history.push({
 						pathname: `/serviceList/mysql/MySQL/basicInfo/${
 							(data as middlewareDetailProps).mysqlDTO
@@ -190,24 +176,20 @@ function DisasterCenter(props: disasterCenterProps) {
 			acrossCluster();
 		};
 		return (
-			<Dialog
+			<Modal
 				title="操作确认"
 				visible={visible}
-				onClose={onCancel}
-				footerAlign="right"
 				footer={
 					<div>
 						<Button type="primary" onClick={onOk}>
 							好的，下次不在提醒
 						</Button>
-						<Button type="normal" onClick={onConfirm}>
-							确认
-						</Button>
+						<Button onClick={onConfirm}>确认</Button>
 					</div>
 				}
 			>
 				该备用服务不在当前集群命名空间，返回源服务页面请点击右上角“返回源服务”按钮
-			</Dialog>
+			</Modal>
 		);
 	};
 	const toDetail = () => {
@@ -228,7 +210,7 @@ function DisasterCenter(props: disasterCenterProps) {
 				}
 			}
 		} else {
-			storage.setSession('menuPath', '/serviceList/mysql/MySQL');
+			storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 			history.push({
 				pathname: `/serviceList/mysql/MySQL/basicInfo/${
 					(data as middlewareDetailProps).name
@@ -244,7 +226,7 @@ function DisasterCenter(props: disasterCenterProps) {
 			(data as middlewareDetailProps).mysqlDTO.relationClusterId ===
 			basicData?.clusterId
 		) {
-			storage.setSession('menuPath', '/serviceList/mysql/MySQL');
+			storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 			history.push({
 				pathname: `/serviceList/mysql/MySQL/basicInfo/${
 					(data as middlewareDetailProps).name
@@ -315,11 +297,6 @@ function DisasterCenter(props: disasterCenterProps) {
 			该中间件类型不支持该功能，请选择mysql类型的中间件
 		</h3>
 	);
-	const NotAuth = () => {
-		setData(undefined);
-		setIsService(true);
-		return <h3 style={{ textAlign: 'center' }}>当前用户无该操作权限！</h3>;
-	};
 	return (
 		<SecondLayout
 			title="灾备中心"
@@ -327,12 +304,9 @@ function DisasterCenter(props: disasterCenterProps) {
 			hasBackArrow={true}
 			onChange={onChange}
 		>
-			{basicData?.type !== 'mysql' && isService && operateFlag && (
-				<NotSupport />
-			)}
+			{basicData?.type !== 'mysql' && isService && <NotSupport />}
 			{basicData?.type === 'mysql' &&
 				isService &&
-				operateFlag &&
 				JSON.stringify(data) !== '{}' && (
 					<Disaster
 						chartName={basicData?.type || ''}
@@ -346,8 +320,7 @@ function DisasterCenter(props: disasterCenterProps) {
 						toDetail={toDetail}
 					/>
 				)}
-			{!isService && operateFlag && <NoService />}
-			{!operateFlag && <NotAuth />}
+			{!isService && <NoService />}
 			<SecondConfirm
 				visible={visible}
 				onCancel={() => setVisible(false)}

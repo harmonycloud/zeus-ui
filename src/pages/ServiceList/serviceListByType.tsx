@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import { useHistory, useParams } from 'react-router-dom';
-import {
-	Button,
-	Message,
-	Dialog,
-	Checkbox,
-	Balloon,
-	Loading
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import { Button, notification, Modal, Checkbox, Tooltip } from 'antd';
 // --- 自定义组件
-import Table from '@/components/MidTable';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import ProTable from '@/components/ProTable';
+import Actions from '@/components/Actions';
+import GuidePage from '../GuidePage';
 // --- 方法
 import {
 	getList,
@@ -25,7 +20,6 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import { getComponents } from '@/services/common';
 import {
 	setCluster,
@@ -44,24 +38,11 @@ import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
-import GuidePage from '../GuidePage';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 // --- css样式
 
-const tabJudge: (record: serviceProps, tab: string) => boolean = (
-	record: serviceProps,
-	tab: string
-) => {
-	if (record.capabilities === null) {
-		return false;
-	} else {
-		if (record.capabilities.includes(tab)) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-};
-const Tooltip = Balloon.Tooltip;
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 
 const ServiceListByType = (props: serviceListProps) => {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
@@ -76,26 +57,112 @@ const ServiceListByType = (props: serviceListProps) => {
 	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
-	const [selectedKeys, setSelectKeys] = useState<string[]>([]);
 	const [cantRelease, setCantRelease] = useState<boolean>(false);
 	const history = useHistory();
 	const params: ListParamsProps = useParams();
 	const { name, aliasName } = params;
-	const [lock, setLock] = useState<any>({ lock: 'right' });
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
-
+	// * 角色权限
+	const [role] = useState<User>(JSON.parse(storage.getLocal('role')));
+	// ! true 为当前用户具有该操作的权限 false 为当前用户不具有该操作的权限
+	const [roleFlag, setRoleFlag] = useState({
+		getFlag: false,
+		createFlag: false,
+		operateFlag: false,
+		deleteFlag: false
+	});
 	useEffect(() => {
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
+		let getFlag = false;
+		let createFlag = false;
+		let operateFlag = false;
+		let deleteFlag = false;
+		if (role.userRoleList.some((i: any) => i.roleId === 1)) {
+			getFlag = true;
+			createFlag = true;
+			operateFlag = true;
+			deleteFlag = true;
+		} else {
+			getFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][0] === '1'
+					? true
+					: false;
+			createFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][2] === '1'
+					? true
+					: false;
+			deleteFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][3] === '1'
+					? true
+					: false;
+			operateFlag =
+				role.userRoleList.find(
+					(item) => item.projectId === project.projectId
+				)?.power[name][1] === '1'
+					? true
+					: false;
+		}
+		setRoleFlag({
+			getFlag,
+			createFlag,
+			operateFlag,
+			deleteFlag
+		});
 	}, []);
 	useEffect(() => {
+		if (JSON.stringify(cluster) !== '{}') {
+			getComponents({ clusterId: cluster.id }).then((res) => {
+				if (res.success) {
+					const temp = res.data.find(
+						(item: any) =>
+							item.component === 'middleware-controller'
+					);
+					if (temp.status === 3) {
+						setCantRelease(false);
+					} else {
+						setCantRelease(true);
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [cluster]);
+	useEffect(() => {
+		if (JSON.stringify(cluster) !== '{}') {
+			getCanReleaseMiddleware({
+				clusterId: cluster.id,
+				type: name
+			}).then((res) => {
+				if (res.success) {
+					setMiddlewareInfo(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [cluster, name]);
+	useEffect(() => {
 		let mounted = true;
-		if (JSON.stringify(namespace) !== '{}') {
+		if (
+			JSON.stringify(cluster) !== '{}' &&
+			JSON.stringify(namespace) !== '{}'
+		) {
 			if (mounted) {
+				setDataSource(undefined);
+				setShowDataSource([]);
 				setLoadingVisible(true);
 				getList({
 					projectId: project.projectId,
@@ -114,46 +181,26 @@ const ServiceListByType = (props: serviceListProps) => {
 								setShowDataSource([]);
 							}
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
 						setLoadingVisible(false);
 					});
-				getComponents({ clusterId: cluster.id }).then((res) => {
-					if (res.success) {
-						const temp = res.data.find(
-							(item: any) =>
-								item.component === 'middleware-controller'
-						);
-						if (temp.status === 3) {
-							setCantRelease(false);
-						} else {
-							setCantRelease(true);
-						}
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
-				getCanReleaseMiddleware({
-					clusterId: cluster.id,
-					type: name
-				}).then((res) => {
-					if (res.success) {
-						setMiddlewareInfo(res.data);
-					} else {
-						Message.show(messageConfig('error', '失败', res));
-					}
-				});
 			}
 		}
 		return () => {
 			setShowDataSource([]);
 			mounted = false;
 		};
-	}, [namespace, params]);
+	}, [cluster, namespace, name]);
 	const getData = () => {
 		setLoadingVisible(true);
+		setDataSource(undefined);
+		setShowDataSource([]);
 		getList({
 			projectId: project.projectId,
 			clusterId: cluster.id,
@@ -171,21 +218,24 @@ const ServiceListByType = (props: serviceListProps) => {
 						setShowDataSource([]);
 					}
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			})
 			.finally(() => {
 				setLoadingVisible(false);
 			});
 	};
-	const handleChange: (value: string) => void = (value: string) => {
-		setKeyword(value);
+	const handleChange: (e: any) => void = (e: any) => {
+		setKeyword(e.target.value);
 	};
 	const handleSearch = () => {
 		getData();
 	};
 	const deleteFn = (record: serviceProps) => {
-		Dialog.show({
+		confirm({
 			title: '提示',
 			content: '确定删除该服务？',
 			onOk: () => {
@@ -197,11 +247,15 @@ const ServiceListByType = (props: serviceListProps) => {
 				})
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig('success', '成功', '删除成功')
-							);
+							notification.success({
+								message: '成功',
+								description: '删除成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -210,71 +264,10 @@ const ServiceListByType = (props: serviceListProps) => {
 			}
 		});
 	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['createTimeNum'] - b['createTimeNum'];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		}
-	};
-	const onFilter = (filterParams: any) => {
-		const {
-			status: { selectedKeys }
-		} = filterParams;
-		setSelectKeys(selectedKeys);
-		if (selectedKeys.length === 0) {
-			setShowDataSource(dataSource?.serviceList || []);
-		} else {
-			let tempData: serviceProps[] | undefined = [];
-			if (selectedKeys[0] !== 'Other') {
-				tempData = dataSource?.serviceList.filter((item) => {
-					return item.status === selectedKeys[0];
-				});
-			} else if (selectedKeys[0] === 'Other') {
-				tempData = dataSource?.serviceList.filter((item) => {
-					return (
-						item.status !== 'Running' && item.status !== 'Creating'
-					);
-				});
-			}
-			if (backupCheck) {
-				tempData = tempData?.filter(
-					(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
-				);
-			}
-			setShowDataSource(tempData || []);
-		}
-	};
-	const onRowProps = (record: serviceProps) => {
-		if (record.status === 'deleted') {
-			return { style: { background: '#F8F8F9', color: '#CCCCCC' } };
-		}
-	};
-	const handleFilterBackup = (checked: boolean) => {
-		setBackupCheck(checked);
+	const handleFilterBackup = (e: CheckboxChangeEvent) => {
+		setBackupCheck(e.target.checked);
 		let list = dataSource?.serviceList || [];
-		if (selectedKeys.length > 0) {
-			if (selectedKeys[0] !== 'Other') {
-				list = list.filter((item) => {
-					return item.status === selectedKeys[0];
-				});
-			} else if (selectedKeys[0] === 'Other') {
-				list = list.filter((item) => {
-					return (
-						item.status !== 'Running' && item.status !== 'Creating'
-					);
-				});
-			}
-		}
-		if (checked) {
+		if (e.target.checked) {
 			list = showDataSource.filter(
 				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
 			);
@@ -310,6 +303,16 @@ const ServiceListByType = (props: serviceListProps) => {
 						`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
 					);
 					break;
+				case 'zookeeper':
+					history.push(
+						`/serviceList/${name}/${aliasName}/zookeeperCreate/${middlewareInfo?.chartVersion}`
+					);
+					break;
+				// case 'postgresql':
+				// 	history.push(
+				// 		`/serviceList/${name}/${aliasName}/postgresqlCreate/${middlewareInfo?.chartVersion}`
+				// 	);
+				// 	break;
 				default:
 					history.push(
 						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
@@ -331,22 +334,22 @@ const ServiceListByType = (props: serviceListProps) => {
 			middlewareName: record.name,
 			type: record.type
 		};
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '请确认是否恢复该服务！',
 			onOk: () => {
 				return recoveryMiddleware(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'该服务已恢复,3秒后刷新'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '该服务已恢复,3秒后刷新'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -364,22 +367,22 @@ const ServiceListByType = (props: serviceListProps) => {
 			middlewareName: record.name,
 			type: record.type
 		};
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '删除后无法恢复该服务，请谨慎操作！',
 			onOk: () => {
 				return deleteMiddlewareStorage(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'该服务已彻底删除'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '该服务已彻底删除'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -389,44 +392,9 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
-		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		console.log(jsonRole);
-		let getFlag = false;
-		let createFlag = false;
-		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
-			getFlag = true;
-			createFlag = true;
-		} else {
-			getFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[name][0] === '1'
-					? true
-					: false;
-			createFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[name][2] === '1'
-					? true
-					: false;
-		}
-		if (!createFlag || !getFlag) {
+		if (!roleFlag.createFlag || !roleFlag.getFlag) {
 			if (name === 'mysql') {
 				return {
-					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									type="primary"
-									disabled={!createFlag || !getFlag}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							当前用户无该操作的权限!
-						</Tooltip>
-					),
 					secondary: (
 						<Checkbox
 							checked={backupCheck}
@@ -437,40 +405,21 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			} else {
-				return {
-					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									type="primary"
-									disabled={!createFlag || !getFlag}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							当前用户无该操作的权限!
-						</Tooltip>
-					)
-				};
+				return {};
 			}
 		}
 		if (cantRelease) {
 			if (name === 'mysql') {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={cantRelease}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							请前往平台组件界面安装中间件管理组件！
+						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={cantRelease}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					),
 					secondary: (
@@ -485,18 +434,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			} else {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={cantRelease}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							请前往平台组件界面安装中间件管理组件！
+						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={cantRelease}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					)
 				};
@@ -505,18 +450,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			if (name === 'mysql') {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={!middlewareInfo}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							数据加载中，请稍后...
+						<Tooltip title="数据加载中，请稍后...">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					),
 					secondary: (
@@ -531,18 +472,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			} else {
 				return {
 					primary: (
-						<Tooltip
-							trigger={
-								<Button
-									onClick={releaseMiddleware}
-									type="primary"
-									disabled={!middlewareInfo}
-								>
-									发布服务
-								</Button>
-							}
-						>
-							数据加载中，请稍后...
+						<Tooltip title="数据加载中，请稍后...">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
 						</Tooltip>
 					)
 				};
@@ -585,35 +522,14 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: serviceProps
+		record: serviceProps,
+		index: number
 	) => {
-		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		console.log(jsonRole);
-		let deleteFlag = false;
-		let operateFlag = false;
-		if (jsonRole.userRoleList[0].roleId === 1) {
-			deleteFlag = true;
-			operateFlag = true;
-		} else {
-			deleteFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[record.type][3] === '1'
-					? true
-					: false;
-			operateFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[record.type][1] === '1'
-					? true
-					: false;
-		}
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!deleteFlag}
+						disabled={!roleFlag.deleteFlag}
 						onClick={() => deleteFn(record)}
 					>
 						删除
@@ -625,13 +541,13 @@ const ServiceListByType = (props: serviceListProps) => {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!operateFlag}
+						disabled={!roleFlag.operateFlag}
 						onClick={() => recoveryService(record)}
 					>
 						恢复服务
 					</LinkButton>
 					<LinkButton
-						disabled={!deleteFlag}
+						disabled={!roleFlag.deleteFlag}
 						onClick={() => deleteStorage(record)}
 					>
 						彻底删除
@@ -639,10 +555,75 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
+		if (!roleFlag.operateFlag && roleFlag.deleteFlag) {
+			return (
+				<Actions>
+					<LinkButton onClick={() => deleteFn(record)}>
+						<span>删除</span>
+					</LinkButton>
+				</Actions>
+			);
+		}
+		if (roleFlag.operateFlag && !roleFlag.deleteFlag) {
+			return (
+				<Actions>
+					<LinkButton
+						onClick={() => {
+							const sendData = {
+								clusterId: cluster.id,
+								namespace: record.namespace,
+								middlewareName: record.name,
+								type: record.type
+							};
+							getPlatformAdd(sendData).then((res) => {
+								if (res.success) {
+									console.log(res);
+									if (res.data) {
+										window.open(
+											`${window.location.protocol.toLowerCase()}//${
+												res.data
+											}`,
+											'_blank'
+										);
+									} else {
+										const sn =
+											record.type === 'elasticsearch'
+												? `${record.name}-kibana`
+												: record.type === 'rocketmq'
+												? `${record.name}-console-svc`
+												: `${record.name}-manager-svc`;
+										notification.error({
+											message: '失败',
+											description: `请先前往“服务暴露”暴露该服务的${sn}服务`
+										});
+									}
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						}}
+					>
+						<span>服务控制台</span>
+					</LinkButton>
+					<LinkButton
+						onClick={() =>
+							history.push(
+								`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
+							)
+						}
+					>
+						<span>版本管理</span>
+					</LinkButton>
+				</Actions>
+			);
+		}
 		return (
 			<Actions>
 				<LinkButton
-					disabled={!operateFlag}
+					disabled={!roleFlag.operateFlag}
 					onClick={() => {
 						const sendData = {
 							clusterId: cluster.id,
@@ -667,43 +648,57 @@ const ServiceListByType = (props: serviceListProps) => {
 											: record.type === 'rocketmq'
 											? `${record.name}-console-svc`
 											: `${record.name}-manager-svc`;
-									Message.show(
-										messageConfig(
-											'error',
-											'失败',
-											`请先前往“服务暴露”暴露该服务的${sn}服务`
-										)
-									);
+									notification.error({
+										message: '失败',
+										description: `请先前往“服务暴露”暴露该服务的${sn}服务`
+									});
 								}
 							} else {
-								Message.show(
-									messageConfig('error', '失败', res)
-								);
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 							}
 						});
 					}}
 				>
-					<span title={operateFlag ? '当前用户无改操作的权限' : ''}>
+					<span
+						title={
+							!roleFlag.operateFlag
+								? '当前用户无改操作的权限'
+								: ''
+						}
+					>
 						服务控制台
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={!operateFlag}
+					disabled={!roleFlag.operateFlag}
 					onClick={() =>
 						history.push(
 							`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
 						)
 					}
 				>
-					<span title={!operateFlag ? '当前用户无改操作的权限' : ''}>
+					<span
+						title={
+							!roleFlag.operateFlag
+								? '当前用户无改操作的权限'
+								: ''
+						}
+					>
 						版本管理
 					</span>
 				</LinkButton>
 				<LinkButton
-					disabled={!deleteFlag}
+					disabled={!roleFlag.deleteFlag}
 					onClick={() => deleteFn(record)}
 				>
-					<span title={!deleteFlag ? '当前用户无改操作的权限' : ''}>
+					<span
+						title={
+							!roleFlag.deleteFlag ? '当前用户无改操作的权限' : ''
+						}
+					>
 						删除
 					</span>
 				</LinkButton>
@@ -712,9 +707,10 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const toDetail = (record: any) => {
 		if (!record.mysqlDTO.relationExist) {
-			Message.show(
-				messageConfig('error', '失败', '该关联实例不存在，无法进行跳转')
-			);
+			notification.error({
+				message: '失败',
+				description: '该关联实例不存在，无法进行跳转'
+			});
 			return;
 		}
 		const cs = globalClusterList.filter(
@@ -741,9 +737,10 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const associatedRender = (
 		value: string,
-		index: number,
-		record: serviceProps
+		record: serviceProps,
+		index: number
 	) => {
+		if (name !== 'mysql') return '--';
 		return (
 			<div className="display-flex flex-align">
 				{/* 主备标识符 */}
@@ -788,7 +785,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			</div>
 		);
 	};
-	const nameRender = (value: string, index: number, record: serviceProps) => {
+	const nameRender = (value: string, record: serviceProps, index: number) => {
 		if (record.status === 'Deleted') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
@@ -871,24 +868,13 @@ const ServiceListByType = (props: serviceListProps) => {
 			</div>
 		);
 	};
-	const podRender = (value: string, index: number, record: serviceProps) => {
-		const jsonRole: User = JSON.parse(storage.getLocal('role'));
-		let operateFlag = false;
-		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
-			operateFlag = true;
-		} else {
-			operateFlag =
-				jsonRole.userRoleList.find(
-					(item) => item.projectId === project.projectId
-				)?.power[record.type][1] === '1'
-					? true
-					: false;
-		}
+	const podRender = (value: string, record: serviceProps, index: number) => {
+		if (record.status === 'Deleted') return '--';
 		return (
 			<span
-				className={operateFlag ? 'name-link' : ''}
+				className={roleFlag.operateFlag ? 'name-link' : ''}
 				onClick={() => {
-					if (operateFlag) {
+					if (roleFlag.operateFlag) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/highAvailability/${record.name}/${record.type}/${record.chartVersion}/${record.namespace}`
 						);
@@ -904,21 +890,18 @@ const ServiceListByType = (props: serviceListProps) => {
 		return <GuidePage />;
 	}
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={`${aliasName || ''}服务列表`}
 				subTitle="已发布中间件服务管理列表"
 			/>
-			<Content>
-				<Table
+			<ProContent>
+				<ProTable
 					dataSource={showDataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}
-					primaryKey="name"
+					rowKey="name"
 					operation={operation()}
 					loading={loadingVisible}
 					search={{
@@ -927,59 +910,74 @@ const ServiceListByType = (props: serviceListProps) => {
 						onSearch: handleSearch,
 						placeholder: '请输入搜索内容'
 					}}
-					onSort={onSort}
-					onFilter={onFilter}
-					rowProps={onRowProps}
+					rowClassName={(record) => {
+						if (record.status === 'Deleted') {
+							return 'table-row-delete';
+						}
+						return '';
+					}}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="服务名称/中文别名"
 						dataIndex="name"
 						width={180}
-						cell={nameRender}
-						lock="left"
+						render={nameRender}
+						fixed="left"
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="状态"
 						dataIndex="status"
 						width={150}
-						cell={serviceListStatusRender}
+						render={serviceListStatusRender}
 						filters={states}
-						filterMode="single"
+						filterMultiple={false}
+						onFilter={(
+							value: string | number | boolean,
+							record: serviceProps
+						) => {
+							return record.status === value;
+						}}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="实例数"
 						dataIndex="podNum"
-						cell={podRender}
+						render={podRender}
 						width={80}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="备注"
 						dataIndex="description"
-						cell={nullRender}
+						render={nullRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="关联服务名称/中文别名"
 						dataIndex="associated"
 						width={180}
-						cell={associatedRender}
+						render={associatedRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
 						width={180}
-						sortable={true}
-						cell={timeRender}
+						sorter={(a: serviceProps, b: serviceProps) =>
+							moment(a.createTime).unix() -
+							moment(b.createTime).unix()
+						}
+						render={timeRender}
 					/>
-					<Table.Column
-						title="操作"
-						dataIndex="action"
-						cell={actionRender}
-						width={300}
-						{...lock}
-					/>
-				</Table>
-			</Content>
-		</Page>
+					{roleFlag.createFlag !== false ||
+					roleFlag.operateFlag !== false ||
+					roleFlag.deleteFlag !== false ? (
+						<ProTable.Column
+							title="操作"
+							dataIndex="action"
+							render={actionRender}
+							width={300}
+						/>
+					) : null}
+				</ProTable>
+			</ProContent>
+		</ProPage>
 	);
 };
 const mapStateToProps = (state: StoreState) => ({

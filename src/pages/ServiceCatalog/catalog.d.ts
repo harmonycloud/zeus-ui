@@ -11,11 +11,12 @@ export interface CreateParams {
 	middlewareName: string;
 	backupFileName: string;
 	aliasName: string;
+	backup: string;
 	namespace?: string;
 }
 export interface AffinityItem {
 	label: string;
-	namespace: string;
+	namespace?: string;
 	required: boolean;
 }
 export interface AffinityProps {
@@ -26,6 +27,7 @@ export interface AffinityProps {
 export interface AffinityLabelsItem {
 	label: string;
 	id: number;
+	checked: boolean;
 }
 export interface TolerationsProps {
 	flag: boolean;
@@ -142,6 +144,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
+	mirrorImageId?: any;
 }
 export interface KafkaDTO {
 	custom?: boolean;
@@ -162,6 +165,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
 	kafkaDTO: KafkaDTO;
+	hostNetwork: boolean;
 	quota: {
 		kafka: {
 			num?: number;
@@ -173,7 +177,41 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	};
 	mirrorImageId?: any;
 	ingresses?: any;
-	hostNetwork: boolean;
+}
+export interface PostgresqlCreateValuesParams extends CreateValuesParams {
+	replicaCount: number;
+	pgsqlPwd: string;
+}
+export interface PostgresqlSendDataParams {
+	chartName: string;
+	chartVersion: string;
+	type: string;
+	labels: string;
+	annotations: string;
+	password: string;
+	description: string;
+	version: string;
+	clusterId: string;
+	namespace: string;
+	name: string;
+	aliasName: string;
+	nodeAffinity?: AffinityItem[];
+	tolerations?: string[];
+	dynamicValues?: any;
+	mode: string;
+	// replicaCount?: number;
+	quota: {
+		postgresql: {
+			cpu?: number;
+			memory?: string;
+			storageClassName?: string;
+			storageClassQuota?: string;
+			num?: number;
+		};
+	};
+	middlewareName?: string;
+	backupFileName?: string;
+	mirrorImageId?: any;
 }
 export interface NodeModifyParams {
 	nodeName: string;
@@ -247,6 +285,7 @@ export interface EsSendDataParams extends CommonSendDataParams {
 export interface EsCreateValuesParams extends CreateValuesParams {
 	pwd: string;
 	namespace: string;
+	mirrorImageId?: any;
 }
 export interface DynamicSendDataParams {
 	chartName: string;
@@ -269,11 +308,9 @@ export interface DynamicCreateValueParams {
 	aliasName: string;
 	labels: string;
 	description: string;
-	tolerations: boolean;
+	tolerations: any[];
 	tolerationsLabels: TolerationLabelItem[];
-	nodeAffinity: boolean;
-	nodeAffinityLabel: any[];
-	nodeAffinityForce: boolean;
+	nodeAffinity?: AffinityItem[];
 	version: string;
 	namespace: string;
 }

@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { Page, Header, Content } from '@alicloud/console-components-page';
-import {
-	Step,
-	Button,
-	Form,
-	Input,
-	Field,
-	Message
-} from '@alicloud/console-components';
 import { connect } from 'react-redux';
+import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
+import { Button, Form, Input, notification, Steps, Result } from 'antd';
 import FormBlock from '@/components/FormBlock';
 import ParamEditTable from './components/paramEditTable';
-import ErrorPage from '@/components/ResultPage/ErrorPage';
-
 import {
 	setParamTemplateBasic,
 	setParamTemplateConfig,
@@ -29,10 +20,9 @@ import {
 import pattern from '@/utils/pattern';
 import { formItemLayout614 } from '@/utils/const';
 import { StoreState } from '@/types';
-import { EditParamTemplateProps, ParamterTemplateItem } from '../detail';
-import messageConfig from '@/components/messageConfig';
-import SuccessPage from '@/components/ResultPage/SuccessPage';
+import { EditParamTemplateProps } from '../detail';
 
+const { Step } = Steps;
 export interface ParamsProps {
 	type: string;
 	chartVersion: string;
@@ -67,11 +57,11 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		setParamTemplateBasicClear,
 		setParamTemplateConfigClear
 	} = props;
-	console.log(param);
 	const [current, setCurrent] = useState<number>(0);
 	const [btnDisable, setBtnDisable] = useState<boolean>(false);
 	const [fixFlag, setFixFlag] = useState<boolean>(false);
-	const field = Field.useField();
+	const [countdown, setCountDown] = useState<number>(5);
+	const [form] = Form.useForm();
 	const history = useHistory();
 	useEffect(() => {
 		return () => {
@@ -80,6 +70,36 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		};
 	}, []);
 	useEffect(() => {
+		let timer: any = null;
+		if (current === 0) {
+			console.log(param);
+			form.setFieldsValue({
+				name: param.name,
+				description: param.description
+			});
+		}
+		if (current === 2 || current === 3) {
+			if (countdown !== -1) {
+				let count = countdown;
+				timer = setInterval(() => {
+					if (count === -1) {
+						clearInterval(timer);
+						timer = null;
+						history.push(
+							`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+						);
+						console.log('倒计时结束');
+					} else {
+						setCountDown(count--);
+					}
+				}, 1000);
+			}
+		}
+		return () => {
+			clearInterval(timer);
+		};
+	}, [current]);
+	useEffect(() => {
 		if (uid) {
 			const sendData = {
 				uid,
@@ -87,7 +107,6 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				chartVersion
 			};
 			getParamsTemp(sendData).then((res) => {
-				console.log(res);
 				if (res.success) {
 					setParamTemplateBasic({
 						name: res.data.name,
@@ -95,14 +114,21 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 					});
 					setParamTemplateConfig(res.data.customConfigList);
 				} else {
-					Message.show(messageConfig('error', '失败', res));
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
 	}, [uid]);
-	useEffect(() => {
-		field.setValues({ name: param.name, description: param.description });
-	}, [props.param]);
+	// useEffect(() => {
+	// 	console.log(props.param);
+	// 	form.setFieldsValue({
+	// 		name: param.name,
+	// 		description: param.description
+	// 	});
+	// }, [props.param]);
 	useEffect(() => {
 		const content =
 			document.getElementsByClassName('windcc-app-layout__content')[0]
@@ -150,11 +176,20 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 		document.getElementsByClassName('param-step-one-content')[0]
 			?.clientHeight
 	]);
+	const goLast = () => {
+		setCurrent(current - 1);
+		if (current - 1 === 0) {
+			console.log(param);
+			form.setFieldsValue({
+				name: param.name,
+				description: param.description
+			});
+		}
+	};
 	const goNext = () => {
 		if (current === 0) {
-			field.validate((error) => {
-				if (error) return;
-				setParamTemplateBasic(field.getValues());
+			form.validateFields().then((values) => {
+				setParamTemplateBasic(values);
 				setCurrent(current + 1);
 			});
 		}
@@ -212,41 +247,49 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						className="param-step-one-content"
 					>
 						<Form
+							form={form}
 							{...formItemLayout614}
-							field={field}
+							labelAlign="left"
 							style={{ paddingLeft: 8, width: '50%' }}
 						>
 							<FormItem
 								label="模板名称"
 								required
-								labelTextAlign="left"
-								asterisk={false}
-								className="ne-required-ingress"
-								pattern={pattern.paramTemplateName}
-								maxLength={30}
-								minmaxLengthMessage="请输入由小写字母数字及“-”组成的2-30个字符"
-								min={2}
-								patternMessage="请输入由小写字母数字及“-”组成的2-30个字符"
-								requiredMessage="请输入模板名称"
+								name="name"
+								rules={[
+									{
+										pattern: new RegExp(
+											pattern.paramTemplateName
+										),
+										message:
+											'请输入由小写字母数字及“-”组成的2-30个字符'
+									},
+									{
+										required: true,
+										message: '请输入模板名称'
+									}
+								]}
 							>
 								<Input
 									minLength={2}
 									maxLength={30}
-									name="name"
 									placeholder="请输入由小写字母数字及“-”组成的2-30个字符"
 								/>
 							</FormItem>
 							<FormItem
 								label="模板描述"
-								labelTextAlign="left"
-								minmaxLengthMessage="模板描述长度不可超过100字符"
-								maxLength={100}
+								name="description"
+								rules={[
+									{
+										max: 100,
+										message: '模板描述长度不可超过100字符'
+									}
+								]}
 							>
 								<Input.TextArea
 									placeholder="请输入模板描述"
-									name="description"
 									maxLength={100}
-									showLimitHint
+									showCount
 								/>
 							</FormItem>
 						</Form>
@@ -264,100 +307,92 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 				);
 			case 2:
 				return (
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 54
-						}}
+					<Result
+						className="zeus-params"
+						status="success"
+						title={
+							uid ? '恭喜，模版修改完成!' : '恭喜，模版创建完成!'
+						}
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push(
+										`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+									);
+									setParamTemplateBasicClear();
+									setParamTemplateConfigClear();
+								}}
+							>
+								返回列表({countdown}s)
+							</Button>
+						}
 					>
-						<SuccessPage
-							title={
-								uid
-									? '恭喜，模版修改完成!'
-									: '恭喜，模版创建完成!'
-							}
-							leftText={`返回列表`}
-							countDown={5}
-							leftHandle={() => {
-								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-								);
-								setParamTemplateBasicClear();
-								setParamTemplateConfigClear();
-							}}
-							rightBtn={false}
-						>
-							<div className="zeus-param-display-area-content">
-								<div className="title-content">
-									<div className="blue-line"></div>
-									<div className="detail-title">基础信息</div>
-								</div>
-								<ul className="zeus-param-display-info">
-									<li>
-										<label>模版名称</label>
-										<span>{param.name}</span>
-									</li>
-									<li>
-										<label>描述</label>
-										<span title={param.description}>
-											{param.description}
-										</span>
-									</li>
-								</ul>
+						<div className="zeus-param-display-area-content">
+							<div className="title-content">
+								<div className="blue-line"></div>
+								<div className="detail-title">基础信息</div>
 							</div>
-						</SuccessPage>
-					</div>
+							<ul className="zeus-param-display-info">
+								<li>
+									<label>模版名称</label>
+									<span>{param.name}</span>
+								</li>
+								<li>
+									<label>描述</label>
+									<span title={param.description}>
+										{param.description}
+									</span>
+								</li>
+							</ul>
+						</div>
+					</Result>
 				);
 			case 3:
 				return (
-					<div
-						style={{
-							height: '100%',
-							textAlign: 'center',
-							marginTop: 54
-						}}
-					>
-						<ErrorPage
-							title={uid ? '模版修改失败' : '模版创建失败'}
-							btnText={`返回创建列表`}
-							countDown={5}
-							btnHandle={() => {
-								history.push(
-									`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
-								);
-								setParamTemplateBasicClear();
-								setParamTemplateConfigClear();
-							}}
-						/>
-					</div>
+					<Result
+						status="error"
+						title={uid ? '模版修改失败' : '模版创建失败'}
+						extra={
+							<Button
+								type="primary"
+								onClick={() => {
+									history.push(
+										`/serviceList/${name}/${aliasName}/paramterSetting/${middlewareName}/${type}/${chartVersion}/${namespace}`
+									);
+									setParamTemplateBasicClear();
+									setParamTemplateConfigClear();
+								}}
+							>
+								返回创建列表({countdown}s)
+							</Button>
+						}
+					/>
 				);
 			default:
 				break;
 		}
 	};
 	return (
-		<Page>
-			<Header
+		<ProPage>
+			<ProHeader
 				title={uid ? '修改参数模版' : '新建参数模版'}
-				hasBackArrow
-				onBackArrowClick={() => {
+				onBack={() => {
 					window.history.back();
 					setParamTemplateBasicClear();
 					setParamTemplateConfigClear();
 				}}
 			/>
-			<Content className="param-content">
-				<Step
+			<ProContent className="param-content">
+				<Steps
 					style={{ marginBottom: 32 }}
 					current={current}
-					shape="circle"
-					labelPlacement="hoz"
+					labelPlacement="horizontal"
 				>
-					<Step.Item key={0} title="基础信息" />
-					<Step.Item key={1} title="自定义参数" />
-					<Step.Item key={2} title="完成" />
-				</Step>
+					<Step key={0} title="基础信息" />
+					<Step key={1} title="自定义参数" />
+					<Step key={2} title="完成" />
+				</Steps>
 				{childrenRender(current)}
 				{(current === 0 || current === 1) && (
 					<div
@@ -372,8 +407,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						{current === 1 && (
 							<Button
 								disabled={btnDisable}
-								type="normal"
-								onClick={() => setCurrent(current - 1)}
+								type="default"
+								onClick={goLast}
 							>
 								上一步
 							</Button>
@@ -387,7 +422,7 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						</Button>
 						<Button
 							disabled={btnDisable}
-							type="normal"
+							type="default"
 							onClick={() => {
 								window.history.back();
 								setParamTemplateBasicClear();
@@ -398,8 +433,8 @@ function EditParamTemplate(props: EditParamTemplateProps): JSX.Element {
 						</Button>
 					</div>
 				)}
-			</Content>
-		</Page>
+			</ProContent>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

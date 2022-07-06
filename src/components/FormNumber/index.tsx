@@ -1,7 +1,8 @@
 import React from 'react';
-import { Input, Balloon, Icon, Form } from '@alicloud/console-components';
+import { Input, Form, Popover } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
-import { CustomFormItemProps } from '@/types/comment'
+import { CustomFormItemProps } from '@/types/comment';
 
 const { Item: FormItem } = Form;
 
@@ -28,40 +29,34 @@ export default function FormNumber(props: CustomFormItemProps): JSX.Element {
 					{props.label}
 				</span>
 				{keys.includes('description') ? (
-					<Balloon
-						offset={[0, 15]}
-						align="t"
-						trigger={
-							<Icon
-								type="question-circle"
-								size="xs"
-								style={{ marginLeft: 8 }}
-							/>
-						}
-						closable={false}
+					<Popover
+						// offset={[0, 15]}
+						content={props.description}
 					>
-						{props.description}
-					</Balloon>
+						<QuestionCircleOutlined style={{ marginLeft: 8 }} />
+					</Popover>
 				) : null}
 			</label>
 			<div className="form-content">
 				<FormItem
-					required={keys.includes('required') && props.required}
-					requiredMessage={
-						keys.includes('required') && props.required
-							? `请输入${props.label}`
-							: ''
-					}
-					pattern={props.pattern}
-					patternMessage={props.message}
+					rules={[
+						{
+							required:
+								keys.includes('required') && props.required,
+							message:
+								keys.includes('required') && props.required
+									? `请输入${props.label}`
+									: ''
+						},
+						{
+							pattern: props.pattern,
+							message: props.message
+						}
+					]}
+					name={props.variable}
+					initialValue={props.defaultValue}
 				>
-					<Input
-						style={{ width: '390px' }}
-						htmlType="number"
-						defaultValue={props.defaultValue}
-						name={props.variable}
-						trim
-					/>
+					<Input style={{ width: '390px' }} type="number" />
 				</FormItem>
 			</div>
 		</div>

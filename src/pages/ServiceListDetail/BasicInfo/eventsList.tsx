@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Timeline } from '@alicloud/console-components';
-import { Icon } from '@alifd/next';
+import { Timeline } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 import { getMiddlewareEvents } from '@/services/middleware';
-import styles from './basicinfo.module.scss';
 import transTime from '@/utils/transTime';
 import imgNone from '@/assets/images/nodata.svg';
-import './basicinfo.scss';
 import { StoreState } from '@/types';
 import { EventItem, EventsListProps, EventsSendData } from '../detail';
+import styles from './basicinfo.module.scss';
+import './basicinfo.scss';
 
 const successTip = <div className={styles['success-tip']}>正常</div>;
 
@@ -97,72 +97,50 @@ const EventsList = (props: EventsListProps) => {
 										? successTip
 										: errorTip
 								}
-								id="basic-info-event"
-								content={
-									<div className={styles['event-content']}>
-										<div
-											className={`${styles['event-info']} display-flex`}
-											onClick={() =>
-												eventHander(item, index)
-											}
-										>
-											<div
-												className={styles['event-name']}
-											>
-												<Icon
-													type="angle-right"
-													size="xs"
-													className={`${
-														item.show
-															? styles['active']
-															: null
-													}`}
-													style={{ marginRight: 18 }}
-												/>
-												{item.involvedObject && (
-													<span>
-														{
-															item.involvedObject
-																.kind
-														}
-														:{' '}
-														{
-															item.involvedObject
-																.name
-														}
-													</span>
-												)}
-												<span
-													className={
-														styles['normal-tip']
-													}
-													style={{ marginLeft: 18 }}
-												>
-													{item.reason}
-												</span>
-											</div>
-											<div
-												className={styles['event-time']}
-											>
+							>
+								<div className={styles['event-content']}>
+									<div
+										className={`${styles['event-info']} display-flex`}
+										onClick={() => eventHander(item, index)}
+									>
+										<div className={styles['event-name']}>
+											<RightOutlined
+												className={`${
+													item.show
+														? styles['active']
+														: null
+												}`}
+											/>
+											{item.involvedObject && (
 												<span>
-													{transTime.gmt2local(
-														item.lastTimestamp
-													)}
+													{item.involvedObject.kind}:{' '}
+													{item.involvedObject.name}
 												</span>
-											</div>
-										</div>
-										{item.show ? (
-											<div
-												className={
-													styles['event-message']
-												}
+											)}
+											<span
+												className={styles['normal-tip']}
+												style={{ marginLeft: 18 }}
 											>
-												<p>{item.message}</p>
-											</div>
-										) : null}
+												{item.reason}
+											</span>
+										</div>
+										<div className={styles['event-time']}>
+											<span>
+												{transTime.gmt2local(
+													item.lastTimestamp
+												)}
+											</span>
+										</div>
 									</div>
-								}
-							/>
+									{item.show ? (
+										<div
+											className={styles['event-message']}
+										>
+											<p>{item.message}</p>
+										</div>
+									) : null}
+								</div>
+							</Timeline.Item>
 						))}
 					</Timeline>
 				)}

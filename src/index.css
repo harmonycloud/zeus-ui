@@ -1,10 +1,12 @@
+/* 全局通用样式 */
+
 html,
 body,
 #root {
-  height: 100%;
-  min-height: 100%;
-  font-size: 12px;
-  /* overflow: hidden; */
+	height: 100%;
+	min-height: 100%;
+	font-size: 12px;
+	/* overflow: hidden; */
 }
 html,
 body,
@@ -48,79 +50,79 @@ nav,
 section,
 audio,
 video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
 }
 body {
-  line-height: 1;
+	line-height: 1;
 }
 ol,
 ul {
-  list-style: none;
+	list-style: none;
 }
 a,
 a:link,
 a:visited,
 a:hover,
 a:active {
-  text-decoration: none;
+	text-decoration: none;
 }
 q {
-  quotes: none;
+	quotes: none;
 }
 q:before,
 q:after {
-  content: "";
-  content: none;
+	content: '';
+	content: none;
 }
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
 }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+		'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+		monospace;
 }
 input {
-  outline: none;
+	outline: none;
 }
 label {
-  font-weight: normal;
+	font-weight: normal;
 }
 p,
 ul,
 li {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 ::-webkit-input-placeholder {
-  color: #c6c9cd;
+	color: #c6c9cd;
 }
 ::-moz-placeholder {
-  color: #c6c9cd;
+	color: #c6c9cd;
 }
 ::-ms-input-placeholder {
-  color: #c6c9cd;
+	color: #c6c9cd;
 }
 
 .ascm-in-oneconsole .ascm-topbar {
-  z-index: 999;
+	z-index: 999;
 }
 body ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-  background-color: #eaedf0;
+	width: 4px;
+	height: 4px;
+	background-color: #eaedf0;
 }
 body ::-webkit-scrollbar-thumb {
-  background-color: rgba(171, 182, 192, 0.5);
-  border-radius: 4px;
+	background-color: rgba(171, 182, 192, 0.5);
+	border-radius: 4px;
 }
 /* body ::-webkit-scrollbar-thumb:hover {}
 body ::-webkit-scrollbar-thumb:active {}
@@ -128,24 +130,24 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 
 /** 时间轴组件样式重写 */
 .next-timeline-item-done .next-timeline-item-timeline {
-  left: 20px;
+	left: 20px;
 }
 .next-timeline-item-done .next-timeline-item-content {
-  margin-left: 55px;
+	margin-left: 55px;
 }
 .next-timeline-item-done .next-timeline-item-timeline .next-timeline-item-tail {
-  top: 35px;
-  height: 60%;
+	top: 35px;
+	height: 60%;
 }
 .next-tabs {
-    box-sizing: border-box;
-    width: 100%;
+	box-sizing: border-box;
+	width: 100%;
 	height: 100%;
 }
 .next-tabs-tabpane.active {
-    visibility: visible;
-    opacity: 1;
-    height: 100%;
+	visibility: visible;
+	opacity: 1;
+	height: 100%;
 }
 .next-tabs-content {
 	overflow: visible;
@@ -171,268 +173,308 @@ body ::-webkit-scrollbar-thumb:window-inactive {} */
 /** TimeSelect 特定样式覆盖 */
 #timepicker .next-input:hover,
 .next-input.next-focus {
-  box-shadow: none !important;
+	box-shadow: none !important;
 }
 #timepicker .next-select.next-active .next-select-inner {
-  box-shadow: none !important;
+	box-shadow: none !important;
 }
 #timepicker .next-select .next-select-inner {
-  color: #1a1a1a;
+	color: #1a1a1a;
 }
 .timepicker-filter-item {
-  width: 100%;
+	width: 100%;
 }
-.page-header .next-icon:hover {
-  color: #0070cc;
-}
+/* .page-header .next-icon:hover {
+  color: #226ee7;
+} */
 
 /** 常用显示 */
 .display-flex {
-  display: flex;
+	display: flex;
 }
 .display-inline-block {
-  display: inline-block;
+	display: inline-block;
 }
 .flex-center {
-  justify-content: center;
-  align-items: center;
+	justify-content: center;
+	align-items: center;
 }
 .flex-space-between {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 .flex-column {
-  flex-direction: column;
+	flex-direction: column;
 }
 .flex-warp {
-  flex-wrap: wrap;
+	flex-wrap: wrap;
 }
 .flex-align {
-  align-items: center;
+	align-items: center;
 }
 
 /** 常用布局 */
 .relative {
-  position: relative;
+	position: relative;
 }
 
 /** 表单布局 */
 .form-layout {
-  width: 100%;
+	width: 100%;
 }
 .form-layout .form-li {
-  padding: 8px 0;
+	padding: 12px 0;
 }
 .form-name {
-  width: 120px;
-  text-align: left;
-  font-weight: 500 !important;
-  color: #333;
-  line-height: 32px;
-  padding: 0 8px;
+	width: 120px;
+	text-align: left;
+	font-weight: 500 !important;
+	color: #333;
+	line-height: 32px;
+	padding: 0 8px;
 }
 .form-content {
-  flex: 1 1 0;
+	flex: 1 1 0;
 }
 /** 动态表单布局 */
 .w-50 {
-  width: 50%;
+	width: 50%;
 }
 .dynamic-form-name {
-  text-align: left;
-  font-weight: 500 !important;
-  color: #333;
-  line-height: 32px;
-  /* padding: 0 8px; */
+	text-align: left;
+	font-weight: 500 !important;
+	color: #252525;
+	line-height: 32px;
+	/* padding: 0 8px; */
 }
 .dynamic-summit-box {
-  position: fixed;
-  z-index: 999;
-  bottom: 0;
-  width: calc(100% - 256px);
-  padding: 16px 16px 16px 0px;
-  background: #fff;
-  border-top: 1px solid #e3e4e6;
+	position: fixed;
+	z-index: 799;
+	bottom: 0;
+	width: calc(100% - 256px);
+	padding: 16px 16px 16px 0px;
+	background: #fff;
+	border-top: 1px solid #e3e4e6;
 }
 .dynamic-second-form-box {
-  display: inline-block;
-  margin-top: 16px;
-  margin-bottom: 24px;
-  padding: 16px 24px;
-  background: #efefef;
+	display: inline-block;
+	margin-top: 16px;
+	margin-bottom: 24px;
+	padding: 16px 24px;
+	background: #efefef;
 }
 .dynamic-switch-label {
-  height: 24px;
-  line-height: 24px;
+	height: 24px;
+	line-height: 24px;
 }
 .dynamic-form-node-affinity-content {
-  display: inline-block;
-  width: 260px;
-  margin-left: 24px;
+	display: inline-block;
+	width: 260px;
+	margin-left: 24px;
 }
 .dynamic-form-node-affinity-check {
-  margin-left: 16px;
+	display: inline-block;
+	margin-left: 16px;
 }
 .dynamic-form-node-tolerations-content {
-  display: inline-block;
-  width: 260px;
-  margin-left: 24px;
+	display: inline-block;
+	width: 260px;
+	margin-left: 24px;
 }
 /* Tab */
 .next-tabs-tab-inner {
-  font-size: 12px !important;
+	font-size: 12px !important;
 }
 /** table */
 table.table-list {
-  width: 100%;
-  /* border-radius:4px 4px 0px 0px; */
+	width: 100%;
+	/* border-radius:4px 4px 0px 0px; */
 }
 table.table-list thead tr th,
 table.table-list thead tr td {
-  font-weight: normal;
-  border: none;
-  padding: 12px;
-  border-bottom: 1px solid #c0c6cc;
+	font-weight: normal;
+	border: none;
+	padding: 12px;
+	border-bottom: 1px solid #c0c6cc;
+}
+table.table-list thead tr th span,
+table.table-list thead tr td span {
+	display: inline-block;
+	width: 22.6%;
+}
+table.table-list thead tr th span:nth-child(1) {
+	width: 6%;
 }
 table.table-list thead tr th {
-  background-color: #fbfcfd;
-  color: #333;
-  font-weight: 500;
+	background-color: #fbfcfd;
+	color: #252525;
+	font-weight: 500;
 }
 table.table-list tbody tr th,
 table.table-list tbody tr td {
-  padding: 12px;
-  border: none;
-  line-height: 150%;
-  border-bottom: 1px solid #e3e4e6;
+	padding: 12px;
+	border: none;
+	line-height: 150%;
+	border-bottom: 1px solid #e3e4e6;
+	display: inline-block;
+	width: 33%;
+}
+table.table-list tbody .ant-space-item {
+	padding: 12px;
+	border: none;
+	line-height: 150%;
+	border-bottom: 1px solid #e3e4e6;
+	border-bottom: 1px solid #e3e4e6 !important;
+}
+table.table-list tbody .ant-space-item label {
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+table.table-list tbody .ant-space-item label span:nth-child(1) {
+	width: 2.6%;
+}
+table.table-list tbody .ant-space-item label span:nth-child(2) {
+	width: 97.4%;
+}
+table.table-list tbody .ant-space-item label span tr {
+	display: flex;
+	width: 100%;
+}
+table.table-list tbody .ant-space-item label span tr span {
+	display: inline-block;
+	width: 33% !important;
+}
+table.table-list tbody .ant-space-item label span tr span:nth-child(1) {
+	width: 0% !important;
 }
 
 /** 星号前缀 */
 .ne-required {
-  position: relative;
+	position: relative;
 }
 .ne-required:before {
-  content: "*";
-  position: absolute;
-  top: 9px;
-  left: -9px;
-  display: block;
-  width: 0;
-  height: 0;
-  line-height: 0;
-  color: red;
-  font-size: 14px;
+	content: '*';
+	position: absolute;
+	top: 9px;
+	left: -9px;
+	display: block;
+	width: 0;
+	height: 0;
+	line-height: 0;
+	color: #ff4d4f;
+	font-size: 14px;
 }
 /** 星号前缀 - ingress*/
 .ne-required-ingress {
-  position: relative;
+	position: relative;
 }
 .ne-required-ingress:before {
-  content: "*";
-  position: absolute;
-  top: 18px;
-  left: -9px;
-  display: block;
-  width: 0;
-  height: 0;
-  line-height: 0;
-  color: red;
-  font-size: 14px;
+	content: '*';
+	position: absolute;
+	top: 18px;
+	left: -9px;
+	display: block;
+	width: 0;
+	height: 0;
+	line-height: 0;
+	color: #ff4d4f;
+	font-size: 14px;
 }
 /** 名称连接 */
 .name-link {
-  color: #0070cc;
-  cursor: pointer;
+	color: #226ee7;
+	cursor: pointer;
 }
 .displayed-name {
-  color: #cccccc;
-  cursor: not-allowed;
+	color: #cccccc;
+	cursor: not-allowed;
 }
 .name-disabled-link {
-  color: #c0c6cc;
-  cursor: pointer;
+	color: #c0c6cc;
+	cursor: pointer;
 }
 
 /** 分割线 */
 .detail-divider {
-  width: 100%;
-  height: 1px;
-  border-top: 1px solid #e3e4e6;
-  margin: 24px 0;
+	width: 100%;
+	height: 1px;
+	border-top: 1px solid #e3e4e6;
+	margin: 24px 0;
 }
 .detail-divider-dash {
-  width: 100%;
-  height: 1px;
-  border-top: 1px dashed #e3e4e6;
-  margin: 24px 0;
+	width: 100%;
+	height: 1px;
+	border-top: 1px dashed #e3e4e6;
+	margin: 24px 0;
 }
 
 /** 竖分割线 */
 .vertical-divider {
-  width: 1px;
-  height: 100%;
-  border-left: 1px solid #e3e4e6;
+	width: 1px;
+	height: 100%;
+	border-left: 1px solid #e3e4e6;
 }
 
 /** 常用外边距 */
 .mt-8 {
-  margin-top: 8px;
+	margin-top: 8px;
 }
 .mt-16 {
-  margin-top: 16px;
+	margin-top: 16px;
 }
 .mr-8 {
-  margin-right: 8px;
+	margin-right: 8px;
 }
 .mb-8 {
-  margin-bottom: 8px;
+	margin-bottom: 8px;
 }
 .mb-24 {
-  margin-bottom: 24px;
+	margin-bottom: 24px;
 }
 .ml-12 {
-  margin-left: 12px;
+	margin-left: 12px;
 }
 .ml-24 {
-  margin-left: 24px;
+	margin-left: 24px;
 }
 /** react-codemirror2自适应高度 */
 .CodeMirror {
-  height: auto;
+	height: auto;
 }
 .log-codeMirror .CodeMirror {
-  height: 650px;
+	height: 650px;
 }
 .CodeMirror-scroll {
-  overflow: auto !important;
+	overflow: auto !important;
 }
 
 /** 服务日志全屏 */
 .log-full-screen {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 999;
-  border-radius: 0;
-  margin: 0;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1000;
+	border-radius: 0;
+	margin: 0 !important;
 }
 .log-full-screen .log-codemirror {
-  height: calc(100% - 30px);
+	height: calc(100% - 30px);
 }
 .log-full-screen .CodeMirror {
-  height: 100%;
+	height: 100%;
 }
 
 /*  */
 .middleware-line {
-  flex: 1;
-  width: 1px;
-  height: 45px;
-  border-left: 1px solid #e3e4e6;
-  margin-top: 12px;
+	flex: 1;
+	width: 1px;
+	height: 45px;
+	border-left: 1px solid #e3e4e6;
+	margin-top: 12px;
 }
 /* .next-table td .next-table-cell-wrapper {
   overflow: auto !important;
@@ -444,13 +486,13 @@ table.table-list tbody tr td {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.table-col-w146-h2{
+.table-col-w146-h2 {
 	width: 168px;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
-	-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
-	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box; /*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 2; /*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical; /*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
 }
 .hidden {
 	width: auto;
@@ -461,60 +503,60 @@ table.table-list tbody tr td {
 	opacity: 0;
 }
 .next-search.next-normal .next-after .next-btn-normal {
-  min-width: 32px !important;
+	min-width: 32px !important;
 }
 
 @font-face {
-  font-family: "iconfont"; /* Project id 989715 */
-  src: url("./assets/iconfont.ttf") format("truetype");
+	font-family: 'iconfont'; /* Project id 989715 */
+	src: url('./assets/iconfont.ttf') format('truetype');
 }
 .next-badge .next-badge-scroll-number {
-  top: 0px !important;
+	top: 0px !important;
 }
 
 /* *修改图片颜色 */
 .grey-img {
-  filter: grayscale(10);
+	filter: grayscale(10);
 }
 /* * 修改页码总数字体颜色 */
 .next-pagination-total {
-  color: #555555 !important;
+	color: #555555 !important;
 }
 #audit-cas .next-input.next-medium .next-input-label {
-  padding-left: 0px !important;
+	padding-left: 0px !important;
 }
 #audit-cas .next-select .next-select-inner {
-  background-color: #fbfcfd !important;
+	background-color: #fbfcfd !important;
 }
 #audit-cas .next-select .next-select-inner:hover {
-  box-shadow: none;
+	box-shadow: none;
 }
 #audit-cas .next-select.next-active .next-select-inner {
-  box-shadow: none;
+	box-shadow: none;
 }
 /* * 主备标识符 */
 .gray-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
-  background: #dedede;
-  color: #333333;
-  text-align: center;
-  line-height: 24px;
-  margin-right: 4px;
+	width: 24px;
+	height: 24px;
+	border-radius: 12px;
+	background: #dedede;
+	color: #333333;
+	text-align: center;
+	line-height: 24px;
+	margin-right: 4px;
 }
 .blue-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
-  background: #e1eeff;
-  color: #0668c9;
-  text-align: center;
-  line-height: 24px;
-  margin-right: 4px;
+	width: 24px;
+	height: 24px;
+	border-radius: 12px;
+	background: #e1eeff;
+	color: #0668c9;
+	text-align: center;
+	line-height: 24px;
+	margin-right: 4px;
 }
 /* 离线字体 */
-@font-face {
+/* @font-face {
   font-family: NextIcon;
   src: url("./assets/roboto-bold.woff2");
   src: url("./assets/roboto-medium.woff2");
@@ -528,44 +570,44 @@ table.table-list tbody tr td {
 	font-style: normal;
 	font-weight: normal;
 	text-transform: none;
-}
+} */
 
 .text-hidden {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 .icon-type-content {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 .icon-type-content > img {
-  margin-right: 4px;
+	margin-right: 4px;
 }
 .next-table-filter-footer {
-  margin: 10px 10px 10px;
+	margin: 10px 10px 10px;
 }
 
 .text-overflow {
-	overflow:hidden;
-	white-space:nowrap;
-	text-overflow:ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 .text-overflow-2 {
-	overflow:hidden;
-	text-overflow:ellipsis;
-	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
-	-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
-	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box; /*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 2; /*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical; /*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
 }
 .text-overflow-one {
 	max-height: 20px;
 	overflow: hidden;
-	text-overflow:ellipsis;
+	text-overflow: ellipsis;
 	word-break: break-all;
-	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
-	-webkit-line-clamp: 1;/*用来限制在一个块元素显示的文本的行数。*/
-	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+	display: -webkit-box; /*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 1; /*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical; /*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
 }
 
 .mid-codemirror .CodeMirror {
@@ -585,13 +627,13 @@ table.table-list tbody tr td {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.table-col-w146-h2{
+.table-col-w146-h2 {
 	width: 168px;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	display: -webkit-box;/*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
-	-webkit-line-clamp: 2;/*用来限制在一个块元素显示的文本的行数。*/
-	-webkit-box-orient: vertical;/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box; /*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+	-webkit-line-clamp: 2; /*用来限制在一个块元素显示的文本的行数。*/
+	-webkit-box-orient: vertical; /*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
 }
 .hidden {
 	width: auto;
@@ -604,7 +646,7 @@ table.table-list tbody tr td {
 .CodeMirror-merge-r-chunk {
 	background: #444023;
 }
-.CodeMirror-merge-r-chunk-start{
+.CodeMirror-merge-r-chunk-start {
 	border-top: 1px solid #444023;
 }
 .CodeMirror-merge-r-chunk-end {
@@ -612,7 +654,7 @@ table.table-list tbody tr td {
 }
 
 /* 自定义标签样式 */
-.blue-tip{
+.blue-tip {
 	display: inline-block;
 	padding: 2px;
 	height: 20px;
@@ -621,14 +663,14 @@ table.table-list tbody tr td {
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
-	background: #C7ECFF;
-	border: 1px solid #94DBFF;
-	color: #00A7FA;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	white-space:nowrap;
+	background: #c7ecff;
+	border: 1px solid #94dbff;
+	color: #00a7fa;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
-.orange-tip{
+.orange-tip {
 	display: inline;
 	padding: 2px;
 	height: 20px;
@@ -636,11 +678,11 @@ table.table-list tbody tr td {
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
-	background: #FFECC7;
-	border: 1px solid #FFDB94;
-	color: #FAA700;
+	background: #ffecc7;
+	border: 1px solid #ffdb94;
+	color: #faa700;
 }
-.red-tip{
+.red-tip {
 	display: inline;
 	padding: 2px;
 	height: 20px;
@@ -648,16 +690,16 @@ table.table-list tbody tr td {
 	border-radius: 2px;
 	font-weight: 400;
 	font-size: 12px;
-	background: #FFF1F0;
-	border: 1px solid #FFA39E;
-	color: #FF4D4F;
+	background: #fff1f0;
+	border: 1px solid #ffa39e;
+	color: #ff4d4f;
 }
 .role-tips-more {
 	width: 12px;
 	height: 22px;
 	line-height: 22px;
 	text-align: center;
-	background-color: #F7F9FA;
+	background-color: #f7f9fa;
 	cursor: pointer;
 	margin-left: 4px;
 }
@@ -668,3 +710,25 @@ table.table-list tbody tr td {
 .next-menu-item .next-menu-item-text{
 	font-size: 12px !important;
 } */
+.table-row-delete {
+	background: #f8f8f9;
+	color: #cccccc;
+}
+.table-row-delete > .ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+	background: #f8f8f9;
+}
+.table-row-topping {
+	background: #f8f8f9;
+}
+.table-row-topping > .ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+	background: #f8f8f9;
+}
+.ant-menu-item {
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+}
+.CodeMirror-gutter-wrapper {
+	left: -32px !important;
+}

@@ -1,48 +1,48 @@
 .mode-item-box {
 	width: 182px;
 	height: 170px;
-	border-top: 1px solid #B2D4EF;
-	border-right: 1px solid #B2D4EF;
-	border-bottom: 1px solid #B2D4EF;
-	&:first-child{
-		border-left: 1px solid #B2D4EF;
+	border-top: 1px solid #b2d4ef;
+	border-right: 1px solid #b2d4ef;
+	border-bottom: 1px solid #b2d4ef;
+	&:first-child {
+		border-left: 1px solid #b2d4ef;
 	}
-	.mode-item-title{
+	.mode-item-title {
 		width: 100%;
 		height: 30px;
-		border-bottom: 1px solid #B2D4EF;
-		line-height: $line-height-sm * 3;
+		border-bottom: 1px solid #b2d4ef;
+		line-height: 30px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		.mode-item-number-input{
+		.mode-item-number-input {
 			width: 50px;
 		}
-		.mode-item-circle{
+		.mode-item-circle {
 			margin-left: 4px;
 			height: 16px;
-			line-height: $line-height-lg;
+			line-height: 16px;
 			padding: 0 4px;
-			background-color: #C3D6F0;
+			background-color: #c3d6f0;
 			border-radius: $border-radius-lg * 2;
 			cursor: text;
 		}
 	}
-	.mode-item-data{
+	.mode-item-data {
 		width: 100%;
 		height: 138px;
 		padding: 16px;
 		cursor: pointer;
 	}
-	.mode-item-data-disabled{
+	.mode-item-data-disabled {
 		width: 100%;
 		height: 138px;
 		padding: 16px;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 	}
 }
-.data-disabled{
-	background-color: #EFEFEF;
+.data-disabled {
+	background-color: #efefef;
 }
 .input-flex-length {
 	flex: 0 0 376px !important;
@@ -53,6 +53,13 @@
 		width: 562px;
 		margin-top: 8px;
 		padding: 12px 44px 0 30px;
-		background: #EFEFEF;
+		background: #efefef;
+	}
+}
+.ant-form-name {
+	label {
+		width: 120px;
+		padding: 0 8px;
+		color: #333;
 	}
 }

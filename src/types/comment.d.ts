@@ -12,6 +12,12 @@ export interface resProps {
 	count?: number | null;
 	errorStack?: StackTraceElement[] | null;
 }
+export interface updateResProps extends resProps {
+	data: null;
+}
+export interface judgeResProps extends resProps {
+	data: boolean;
+}
 export interface filtersProps {
 	label: string;
 	value: number | string;
@@ -59,6 +65,7 @@ export interface middlewareDetailProps {
 	reason: any | null;
 	relationMiddleware: any | null;
 	rocketMQParam: any | null;
+	namespaceAliasName: string;
 	status: string;
 	stdoutEnabled: any | null;
 	type: string;
@@ -208,8 +215,8 @@ export interface StorageClassProps {
 // * 集群列表
 export interface poolListItem {
 	name?: string;
-	id: number;
-	nickname: string;
+	nickname?: string;
+	id: string;
 }
 
 // * 告警记录
@@ -229,4 +236,51 @@ export interface evevtDataProps {
 	summary: string;
 	time: string;
 	type: string;
+}
+export interface ResMenuItem {
+	aliasName: string;
+	available: null;
+	iconName: string;
+	id: number;
+	module: null | string;
+	name: string;
+	own: boolean;
+	parentId: number;
+	subMenu: null | ResMenuItem[];
+	url: string;
+	weight: number;
+}
+export interface MenuInfo {
+	key: string;
+	keyPath: string[];
+	item: React.ReactInstance;
+	domEvent: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>;
+}
+export interface SelectInfo extends MenuInfo {
+	selectedKeys: string[];
+}
+export interface FiltersProps {
+	text: string;
+	value: string;
+	children?: FiltersProps[];
+	[propsName: string]: any;
+}
+export interface AutoCompleteOptionItem {
+	value: string;
+	label: string;
+}
+export interface MirrorItem {
+	address: string;
+	clusterId: string;
+	createTime: string;
+	description: null | string;
+	hostAddress: string;
+	id: number;
+	isDefault: number;
+	password: string;
+	port: number;
+	project: string;
+	protocol: string;
+	updateTime: null | string;
+	username: string;
 }

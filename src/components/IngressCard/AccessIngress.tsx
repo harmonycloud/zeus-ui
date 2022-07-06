@@ -1,13 +1,6 @@
 import React, { useEffect } from 'react';
-import {
-	Dialog,
-	Message,
-	Form,
-	Field,
-	Input
-} from '@alicloud/console-components';
+import { Modal, Form, Input, notification } from 'antd';
 import { accessIngress, updateIngress } from '@/services/common';
-import messageConfig from '@/components/messageConfig';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import pattern from '@/utils/pattern';
 
@@ -44,128 +37,111 @@ interface SendDataProps {
 }
 const AccessIngressForm = (props: AccessIngressProps) => {
 	const { visible, onCancel, clusterId, onRefresh, data } = props;
-	const field = Field.useField();
+	const [form] = Form.useForm();
 	useEffect(() => {
 		if (data) {
-			field.setValues({ ...data });
+			form.setFieldsValue({
+				...data
+			});
 		}
 	}, [data]);
 	const onOk = () => {
-		field.validate((errors, values) => {
-			if (errors) return;
-			const value: FieldProps = field.getValues();
+		form.validateFields().then((values) => {
 			const sendData: SendDataProps = {
 				clusterId,
-				...value
+				...values
 			};
 			if (data) {
 				sendData.id = data.id;
-				sendData.ingressName = value.ingressClassName;
+				sendData.ingressName = values.ingressClassName;
 			}
 			if (data) {
 				onCancel();
 				updateIngress(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '服务暴露修改成功')
-						);
-
+						notification.success({
+							message: '成功',
+							description: '负载均衡修改成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
 				onCancel();
 				accessIngress(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '服务暴露接入成功')
-						);
-
+						notification.success({
+							message: '成功',
+							description: '负载均衡接入成功'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
 		});
 	};
 	return (
-		<Dialog
-			title={data ? '编辑服务暴露' : '接入服务暴露'}
-			style={{ width: 640 }}
+		<Modal
+			title={data ? '编辑负载均衡' : '接入负载均衡'}
+			width={640}
 			visible={visible}
+			okText="确定"
+			cancelText="取消"
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
 		>
-			<Form {...formItemLayout} field={field}>
+			<Form labelAlign="left" {...formItemLayout} form={form}>
 				<FormItem
 					label="Ingress名称"
 					required
-					requiredMessage="请输入Ingress名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
-					pattern={pattern.ingressName}
-					patternMessage="请输入由小写字母数字及“-”组成的1-40个字符"
+					rules={[
+						{ required: true, message: '请输入Ingress名称' },
+						{
+							pattern: new RegExp(pattern.ingressName),
+							message: '请输入由小写字母数字及“-”组成的1-40个字符'
+						}
+					]}
+					initialValue="nginx-ingress-controller"
+					name="ingressClassName"
 				>
-					<Input
-						htmlType="text"
-						name="ingressClassName"
-						trim={true}
-						defaultValue="nginx-ingress-controller"
-						placeholder="请输入Ingress名称"
-					/>
+					<Input placeholder="请输入Ingress名称" />
 				</FormItem>
 				<FormItem
 					label="Ingress地址"
 					required
-					requiredMessage="请输入Ingress地址"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					rules={[{ required: true, message: '请输入Ingress地址' }]}
+					name="address"
 				>
-					<Input
-						htmlType="text"
-						name="address"
-						trim={true}
-						placeholder="请输入主机地址"
-					/>
+					<Input placeholder="请输入主机地址" />
 				</FormItem>
 				<FormItem
 					label="ConfigMap分区"
+					name="namespace"
 					required
-					requiredMessage="请输入分区"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					rules={[{ required: true, message: '请输入分区' }]}
 				>
-					<Input
-						htmlType="text"
-						name="namespace"
-						trim={true}
-						placeholder="请输入分区"
-					/>
+					<Input placeholder="请输入分区" />
 				</FormItem>
 				<FormItem
 					label="ConfigMap名称"
 					required
-					requiredMessage="请输入ConfigMap名称"
-					className="ne-required-ingress"
-					labelTextAlign="left"
-					asterisk={false}
+					name="configMapName"
+					rules={[{ required: true, message: '请输入ConfigMap名称' }]}
 				>
-					<Input
-						htmlType="text"
-						name="configMapName"
-						trim={true}
-						placeholder="请输入ConfigMap名称"
-					/>
+					<Input placeholder="请输入ConfigMap名称" />
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 };
 export default AccessIngressForm;

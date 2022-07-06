@@ -1,48 +1,68 @@
+@import './color.scss';
+
 // -------- Colors -----------
-$primary-color: #0070cc;
-$success-color: #68B642;
-$error-color: #Ef595C;
-$warning-color: #FFAA3A;
-$link-color: #0070cc;
+$primary-color: $blue-6;
+$success-color: $green-6;
+$error-color: $red-5;
+$warning-color: $gold-6;
+$link-color: $blue-6;
 
 // 色彩
-$black: #000000;
-$white: #ffffff;
+$black: $black-1;
+$white: $black-10;
+$background: $black-8;
 
 // * 字体
-$text-color-title: #333333;
+$text-color-title: $black-2;
+$text-color: $black-3;
+$text-color-secondary: $black-4;
 
-$font-size: 12px;
-$font-h2: 14px;
-$font-h1: 16px;
+// border颜色
+$border-color: $black-6;
+
+// 分割线
+$divider-color: $black-7;
+
+// 阴影
+$shadow-base-hover: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
+	0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+$shadow-base: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+	0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+$box-shadow-model: 0 6px 16px -8px rgba(0, 0, 0, 0.08),
+	0 9px 28px 0 rgba(0, 0, 0, 0.05), 0 12px 48px 16px rgba(0, 0, 0, 0.03);
+
+// 字体行高全局修改
+$font-1: 12px;
+$font-2: 14px;
+$font-3: 16px;
+$font-4: 20px;
+$font-5: 24px;
+
+$line-height-1: $font-1 + 8px;
+$line-height-2: $font-2 + 8px;
+$line-height-3: $font-3 + 8px;
+$line-height-4: $font-4 + 8px;
+$line-height-5: $font-5 + 8px;
 
 $font-weight-sm: 400;
 $font-weight: 500;
 $font-weight-lg: 600;
-$font-weight-xl: 700;
-
-$line-height-sm: 10px;
-$line-height: 12px;
-$line-height-lg: 16px;
-$line-height-xl: 18px;
-$line-height-xxl: 20px;
 
 // vertical paddings
+$padding-xs: 4px;
 $padding-sm: 8px;
 $padding: 12px;
+$padding-lg: 16px;
+$padding-llg: 18px;
 
 // vertical margins
+$margin-xs: 4px;
 $margin-sm: 8px;
 $margin: 12px;
-
+$margin-lg: 16px;
 
 // * border圆角
 $border-radius: 2px;
 $border-radius-lg: 4px;
 $border-radius-xl: 6px;
 $border-radius-xxl: 12px;
-
-
-// border颜色
-$border-color: #E3E4E6;
-

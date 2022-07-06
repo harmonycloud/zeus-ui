@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input } from '@alicloud/console-components';
+import { Input } from 'antd';
 import EditQuotaForm from './EditQuotaForm';
 import './index.scss';
 
@@ -18,10 +18,11 @@ export interface modeItemProps {
 	namespace: string;
 	type: string;
 	onChange: (value: modeItemProps['data']) => void;
+	middlewareType: string;
 }
-const ModeItem = (props: modeItemProps) => {
-	const { data, clusterId, namespace, type, onChange } = props;
-	console.log(data);
+const ModeItem = (props: modeItemProps): JSX.Element => {
+	const { data, clusterId, namespace, type, onChange, middlewareType } =
+		props;
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -39,7 +40,7 @@ const ModeItem = (props: modeItemProps) => {
 	const inputChange = (value: any) => {
 		setModifyData({
 			...modifyData,
-			num: Number(value)
+			num: value
 		});
 	};
 	if (data.disabled) {
@@ -60,8 +61,8 @@ const ModeItem = (props: modeItemProps) => {
 						<Input
 							size="small"
 							value={modifyData.num}
-							htmlType="number"
-							hasBorder={false}
+							type="number"
+							bordered={false}
 							onChange={inputChange}
 							onBlur={() => setIsEdit(false)}
 							autoFocus={true}
@@ -97,7 +98,11 @@ const ModeItem = (props: modeItemProps) => {
 						</li>
 						{data.storageClass && data.storageClass !== '' && (
 							<li>
-								<span>{data.storageClass}：</span>
+								<span>
+									{data.storageClass ||
+										data.storageClass.split('/')[1]}
+									：
+								</span>
 								<span>{data.storageQuota} GB</span>
 							</li>
 						)}
@@ -114,6 +119,7 @@ const ModeItem = (props: modeItemProps) => {
 				</div>
 				{visible && (
 					<EditQuotaForm
+						middlewareType={middlewareType}
 						visible={visible}
 						onCancel={() => setVisible(false)}
 						onCreate={onCreate}

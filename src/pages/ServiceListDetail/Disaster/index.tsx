@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import DataFields, {
-	IDataFieldsProps
-} from '@alicloud/console-components-data-fields';
 import { useHistory } from 'react-router-dom';
-import moment from 'moment';
-import { Icon, Dialog, Message } from '@alicloud/console-components';
+import { Modal, notification } from 'antd';
+import {
+	ReloadOutlined,
+	CheckCircleFilled,
+	CloseCircleFilled,
+	SyncOutlined
+} from '@ant-design/icons';
+import DataFields from '@/components/DataFields';
+
 import {
 	DisasterOriginCard,
 	DisasterBackupCardNone,
 	DisasterBackupCard
 } from './DisasterCard';
+import moment from 'moment';
+
 import {
 	deleteMiddleware,
 	switchDisasterIns,
 	getMysqlExternal
 } from '@/services/middleware';
-import './index.scss';
-import messageConfig from '@/components/messageConfig';
 import { status } from '@/utils/enum';
+
+import './index.scss';
 
 const clusterInfo = {
 	title: '服务详情'
@@ -110,7 +116,10 @@ export default function Disaster(props: disasterProps): JSX.Element {
 					address: res?.data?.disasterRecovery?.address || ''
 				});
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		// }
@@ -124,7 +133,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				: '--'
 		});
 	}, []);
-	const items: IDataFieldsProps['items'] = [
+	const items: any = [
 		{
 			dataIndex: 'title',
 			render: (val: string) => (
@@ -135,7 +144,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 						<span
 							className="name-link ml-12"
 							onClick={() => {
-								Dialog.show({
+								Modal.confirm({
 									title: '操作',
 									content:
 										'该操作不可逆，只允许切换一次，是否继续',
@@ -149,22 +158,18 @@ export default function Disaster(props: disasterProps): JSX.Element {
 										switchDisasterIns(sendData).then(
 											(res) => {
 												if (res.success) {
-													Message.show(
-														messageConfig(
-															'success',
-															'成功',
+													notification.success({
+														message: '失败',
+														description:
 															'服务切换成功'
-														)
-													);
+													});
 													onRefresh();
 												} else {
-													Message.show(
-														messageConfig(
-															'error',
-															'失败',
-															res
-														)
-													);
+													notification.error({
+														message: '失败',
+														description:
+															res.errorMsg
+													});
 												}
 											}
 										);
@@ -179,16 +184,14 @@ export default function Disaster(props: disasterProps): JSX.Element {
 			)
 		}
 	];
-	const runItems: IDataFieldsProps['items'] = [
+	const runItems: any = [
 		{
 			dataIndex: 'title',
 			render: (val: string) => (
 				<div className="title-content">
 					<div className="blue-line"></div>
 					<div className="detail-title">{val}</div>
-					<Icon
-						type="refresh"
-						size="xs"
+					<ReloadOutlined
 						style={{
 							color: '#0070cc',
 							marginLeft: 8,
@@ -210,39 +213,39 @@ export default function Disaster(props: disasterProps): JSX.Element {
 		{
 			dataIndex: 'status',
 			label: 'MySQL同步器状态',
-			render: (val) => {
+			render: (val: any) => {
 				if (val === 'Syncing') {
 					return (
-						<>
-							<Icon
-								type="success1"
-								size="xs"
-								style={{ color: '#00A700' }}
+						<div>
+							<CheckCircleFilled
+								style={{
+									color: '#00A700'
+								}}
 							/>{' '}
 							{status[val]}
-						</>
+						</div>
 					);
 				} else if (val === 'stopSyncing') {
 					return (
-						<>
-							<Icon
-								type="sync-alt"
-								size="xs"
-								style={{ color: '#0091FF' }}
+						<div>
+							<SyncOutlined
+								style={{
+									color: '#0091FF'
+								}}
 							/>{' '}
 							{status[val]}
-						</>
+						</div>
 					);
 				} else {
 					return (
-						<>
-							<Icon
-								type="warning1"
-								size="xs"
-								style={{ color: '#C80000' }}
+						<div>
+							<CloseCircleFilled
+								style={{
+									color: '#C80000'
+								}}
 							/>{' '}
 							错误
-						</>
+						</div>
 					);
 				}
 			}
@@ -254,12 +257,12 @@ export default function Disaster(props: disasterProps): JSX.Element {
 	];
 	const toCreateBackup: () => void = () => {
 		history.push({
-			pathname: `/serviceList/mysql/MySQL/mysqlCreate/disaster/${chartName}/${chartVersion}/${namespace}`,
+			pathname: `/serviceList/mysql/MySQL/mysqlCreate/disasterCreate/${chartName}/${chartVersion}/${namespace}`,
 			state: { disasterOriginName: middlewareName }
 		});
 	};
 	const deleteInstance: () => void = () => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作',
 			content: '删除后数据将遗失，是否继续',
 			onOk: () => {
@@ -271,11 +274,15 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				};
 				deleteMiddleware(sendData).then((res) => {
 					if (res) {
-						Message.show(
-							messageConfig('success', '成功', '删除成功')
-						);
+						notification.success({
+							message: '失败',
+							description: '删除成功'
+						});
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}

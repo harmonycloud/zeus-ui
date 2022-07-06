@@ -12,6 +12,8 @@ import RedisCreate from '@/pages/ServiceCatalog/Redis/create';
 import ElasticsearchCreate from '@/pages/ServiceCatalog/Elasticsearch/create';
 import RocketMQCreate from '@/pages/ServiceCatalog/RocketMQ/create';
 import KafkaCreate from '@/pages/ServiceCatalog/Kafka/create';
+import zookeeperCreate from '@/pages/ServiceCatalog/Zookeeper/create';
+import PostgreSQLCreate from '@/pages/ServiceCatalog/PostgreSQL/create';
 import InstanceDetails from '@/pages/ServiceListDetail/index';
 import PlatformOverview from '@/pages/PlatformOverview/index';
 import DynamicForm from '@/pages/ServiceCatalog/DynamicForm';
@@ -38,7 +40,6 @@ import ResourcePoolDetail from '@/pages/ResourcePoolManagement/detail';
 import SystemAlarm from '@/pages/SystemAlarm';
 import CreateAlarm from '@/pages/ServiceListDetail/ServeAlarm/create';
 import GuidePage from '@/pages/GuidePage';
-import BackupSetting from '@/pages/ServiceListDetail/BackupRecovery/backupSetting';
 import YamlEdit from '@/pages/ServiceListDetail/HighAvailability/yamlEdit';
 import EditParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/editParamTemplate';
 import CompareParamTemplate from '@/pages/ServiceListDetail/ParamterSetting/compareParamTemplate';
@@ -48,16 +49,19 @@ import ProjectManage from '@/pages/ProjectManage';
 import MyProject from '@/pages/MyProject';
 import ProjectDetail from '@/pages/ProjectDetail';
 import AllotRole from '@/pages/RoleManage/allotRole';
-
-// ! 已弃用
-import ParamterEdit from '@/pages/ServiceListDetail/ParamterSetting/paramterEdit';
+import BackupTask from '@/pages/BackupService/proBackupTask';
+import AddBackupTask from '@/pages/BackupService/addBackupTask';
+import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
+import BackupPosition from '@/pages/BackupService/backupPosition';
+import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
+import StorageManagement from '@/pages/StorageManagement';
+import AddStorage from '@/pages/StorageManagement/addStorage';
+import StorageDetail from '@/pages/StorageManagement/storageDetail';
 
 const Routes = withRouter((props) => {
 	return (
 		<>
-			{props.location.pathname !== '/systemManagement/operationAudit' ? (
-				<MdBreadcrumb pathname={props.location.pathname} />
-			) : null}
+			<MdBreadcrumb pathname={props.location.pathname} />
 			<Switch>
 				<Route
 					path="/"
@@ -79,12 +83,12 @@ const Routes = withRouter((props) => {
 				{/* 我的项目 */}
 				<Route path="/myProject" component={MyProject} exact />
 				<Route
-					path="/myProject/projectDetail/:id"
+					path="/myProject/projectDetail/:id/:name"
 					component={ProjectDetail}
 					exact
 				/>
 				<Route
-					path="/systemManagement/projectManagement/projectDetail/:id"
+					path="/systemManagement/projectManagement/projectDetail/:id/:name"
 					component={ProjectDetail}
 					exact
 				/>
@@ -101,13 +105,13 @@ const Routes = withRouter((props) => {
 				/>
 				{/* mysql备份跳转使用 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/:backupFileName"
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/:chartVersion/:middlewareName/backup/:backupFileName/:namespace"
 					component={MysqlCreate}
 					exact
 				/>
 				{/* mysql灾备跳转使用 - 通过state中的disasterOriginName进行判断，可优化 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/mysqlCreate/disaster/:middlewareName/:chartVersion/:namespace"
+					path="/serviceList/:chartName/:aliasName/mysqlCreate/disasterCreate/:middlewareName/:chartVersion/:namespace"
 					component={MysqlCreate}
 					exact
 				/>
@@ -116,18 +120,52 @@ const Routes = withRouter((props) => {
 					component={RedisCreate}
 					exact
 				/>
+				{/* redis备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/redisCreate/:chartVersion/:middlewareName/backup/:namespace"
+					component={RedisCreate}
+					exact
+				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/elasticsearchCreate/:chartVersion"
+					component={ElasticsearchCreate}
+					exact
+				/>
+				{/* elasticsearch备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/elasticsearchCreate/:chartVersion/:middlewareName/backup/:namespace"
 					component={ElasticsearchCreate}
 					exact
 				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion"
 					component={RocketMQCreate}
+					exact
+				/>
+				{/* rocketmq备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/rocketmqCreate/:chartVersion/:middlewareName/backup/:namespace"
+					component={RocketMQCreate}
+					exact
 				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/kafkaCreate/:chartVersion"
 					component={KafkaCreate}
+				/>
+				<Route
+					path="/serviceList/:chartName/:aliasName/zookeeperCreate/:chartVersion"
+					component={zookeeperCreate}
+				/>
+				{/* pgsql备份跳转使用 */}
+				<Route
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
+					component={PostgreSQLCreate}
+					exact
+				/>
+				<Route
+					path="/serviceList/:chartName/:aliasName/PostgreSQLCreate/:chartVersion"
+					component={PostgreSQLCreate}
+					exact
 				/>
 				<Route
 					path="/serviceList/:chartName/:aliasName/dynamicForm/:chartVersion/:version"
@@ -140,11 +178,11 @@ const Routes = withRouter((props) => {
 					component={ServiceListByType}
 					exact
 				/>
-				<Route
+				{/* <Route
 					path="/serviceList/createAlarm"
 					component={CreateAlarm}
 					exact
-				/>
+				/> */}
 				{/* 服务详情 - 版本管理*/}
 				<Route
 					path="/serviceList/:name/:aliasName/serverVersion/:middlewareName/:type/:namespace"
@@ -197,7 +235,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceList/:name/:aliasName/:currentTab/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
+					path="/serviceList/:name/:aliasName/externalAccess/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
 					component={AddServiceAvailableForm}
 					exact
 				/>
@@ -244,8 +282,64 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/disasterBackup/dataSecurity/addBackup/:middlewareName/:type/:chartVersion"
-					component={BackupSetting}
+					path="/backupService/backupTask"
+					component={BackupTask}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask/addBackupTask"
+					component={AddBackupTask}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/:currentTab/addBackupTask/:middlewareName/:type/:chartVersion/:namespace"
+					component={AddBackupTask}
+					exact
+				/>
+				<Route
+					path="/backupService/backupTask/detail/:backupName/:type"
+					component={BackupTaskDetail}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/:currentTab/backupTaskDetail/:middlewareName/:type/:chartVersion/:namespace/:backupName"
+					component={BackupTaskDetail}
+					exact
+				/>
+				<Route
+					path="/backupService/backupPosition"
+					component={BackupPosition}
+					exact
+				/>
+				<Route
+					path="/backupService/backupPosition/addBackupPosition"
+					component={AddBackupPosition}
+					exact
+				/>
+				<Route
+					path="/backupService/backupPosition/addBackupPosition/:id"
+					component={AddBackupPosition}
+					exact
+				/>
+				{/* 存储管理 */}
+				<Route
+					path="/storageManagement"
+					component={StorageManagement}
+					exact
+				/>
+				<Route
+					path="/storageManagement/create"
+					component={AddStorage}
+					exact
+				/>
+				<Route
+					path="/storageManagement/edit/:name/:clusterId/:clusterAliasName"
+					component={AddStorage}
+					exact
+				/>
+				<Route
+					path="/storageManagement/:name/:aliasName/:clusterId"
+					component={StorageDetail}
 					exact
 				/>
 				{/* 系统管理 */}
@@ -300,11 +394,11 @@ const Routes = withRouter((props) => {
 					component={AddForm}
 					exact
 				/>
-				<Route
+				{/* <Route
 					path="/systemManagement/resourcePoolManagement/addResourcePool/addOther/:clusterId"
 					component={AddForm}
 					exact
-				/>
+				/> */}
 				<Route
 					path="/systemManagement/resourcePoolManagement/editResourcePool/editOther/:clusterId"
 					component={AddForm}
@@ -330,12 +424,6 @@ const Routes = withRouter((props) => {
 					component={CreateAlarm}
 					exact
 				/>
-				{/* 项目管理 */}
-				<Route
-					path="/systemManagement/projectManagement"
-					component={ProjectManage}
-					exact
-				/>
 				<Route
 					path="/serviceList/:name/:aliasName/:currentTab/createAlarm/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
 					component={CreateAlarm}
@@ -344,6 +432,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:name/:aliasName/:currentTab/createAlarm/:middlewareName/:type/:chartVersion/:clusterId/:namespace/:ruleId"
 					component={CreateAlarm}
+					exact
+				/>
+				{/* 项目管理 */}
+				<Route
+					path="/systemManagement/projectManagement"
+					component={ProjectManage}
 					exact
 				/>
 				{/* 控制台 */}

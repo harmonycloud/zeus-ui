@@ -1,37 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router';
-import Table from '@/components/MidTable';
-import {
-	Button,
-	Dialog,
-	Message,
-	Balloon,
-	Icon
-} from '@alicloud/console-components';
-import { Page, Content, Header } from '@alicloud/console-components-page';
+import { Button, notification, Modal, Popover } from 'antd';
+import { CheckCircleFilled, EllipsisOutlined } from '@ant-design/icons';
+import ProTable from '@/components/ProTable';
+import { ProPage, ProContent } from '@/components/ProPage';
 import { useParams } from 'react-router';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
+import Actions from '@/components/Actions';
 
 import AddServiceAvailableForm from '../ServiceAvailable/AddServiceAvailableForm';
 
-import {
-	getIngresses,
-	deleteIngress,
-	addIngress,
-	getIngressMid
-} from '@/services/ingress';
-import messageConfig from '@/components/messageConfig';
-import CustomIcon from '@/components/CustomIcon';
+import { deleteIngress, addIngress, getIngressMid } from '@/services/ingress';
+import { IconFont } from '@/components/IconFont';
 
-import { instanceType, exposedWay, protocolFilter } from '@/utils/const';
 import { StoreState } from '@/types';
-import { ingressProps, filtersProps } from '@/types/comment';
+import { ingressProps } from '@/types/comment';
 import storage from '@/utils/storage';
 
 import './ingress.scss';
 import { timeRender } from '@/utils/utils';
 
+const LinkButton = Actions.LinkButton;
 function IngressList(props: ingressProps) {
 	const {
 		globalVar,
@@ -42,22 +31,9 @@ function IngressList(props: ingressProps) {
 	} = props;
 	const [dataSource, setDataSource] = useState<ingressProps[]>([]);
 	const [showDataSource, setShowDataSource] = useState<ingressProps[]>([]);
-	const [searchText, setSearchText] = useState<string>('');
 	const [active, setActive] = useState<boolean>(false); // 抽屉显示
-	const [iconVisible, setIconVisible] = useState<boolean>(false);
-	const [adress, setAdress] = useState<string>('');
-	const [lock, setLock] = useState<{ lock: string } | null>({
-		lock: 'right'
-	});
 	const history = useHistory();
 	const params: any = useParams();
-	useEffect(() => {
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
-	}, []);
 
 	useEffect(() => {
 		if (
@@ -90,7 +66,10 @@ function IngressList(props: ingressProps) {
 				setShowDataSource(res.data);
 				setDataSource(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -110,29 +89,24 @@ function IngressList(props: ingressProps) {
 		)
 	};
 
-	const nameRender = (value: string, index: number, record: ingressProps) => {
+	const nameRender = (value: string, record: ingressProps, index: number) => {
 		return (
-			<>
-				<div>{record.name}</div>
-				<div>{record.middlewareNickName}</div>
-			</>
+			<div style={{ width: 200 }}>
+				<div className="text-overflow" title={record.name}>
+					{record.name}
+				</div>
+				<div
+					className="text-overflow"
+					title={record.middlewareNickName}
+				>
+					{record.middlewareNickName}
+				</div>
+			</div>
 		);
 	};
 
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = dataSource.filter(
-				(item) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setShowDataSource(list);
-		} else {
-			setShowDataSource(dataSource);
-		}
-	};
 	const handleDelete = (record: ingressProps) => {
-		Dialog.show({
+		Modal.confirm({
 			title: '操作确认',
 			content:
 				'删除对外路由会影响当前正在通过对外地址访问中间件的服务，请确认执行',
@@ -147,15 +121,15 @@ function IngressList(props: ingressProps) {
 				deleteIngress(sendData)
 					.then((res) => {
 						if (res.success) {
-							Message.show(
-								messageConfig(
-									'success',
-									'成功',
-									'对外路由删除成功'
-								)
-							);
+							notification.success({
+								message: '成功',
+								description: '对外路由删除成功'
+							});
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					})
 					.finally(() => {
@@ -202,8 +176,8 @@ function IngressList(props: ingressProps) {
 	};
 	const actionRender = (
 		value: string,
-		index: number,
-		record: ingressProps
+		record: ingressProps,
+		index: number
 	) => {
 		return (
 			<Actions>
@@ -229,8 +203,6 @@ function IngressList(props: ingressProps) {
 	// * 浏览器复制到剪切板方法
 	const copyValue = (value: string, record: ingressProps) => {
 		const input = document.createElement('input');
-		setAdress(record.name as string);
-		setIconVisible(true);
 		document.body.appendChild(input);
 		input.style.position = 'absolute';
 		input.style.top = '0px';
@@ -243,11 +215,8 @@ function IngressList(props: ingressProps) {
 		}
 		input.blur();
 		document.body.removeChild(input);
-		setTimeout(() => {
-			setIconVisible(false);
-		}, 3000);
 	};
-	const addressRender = (value: string, index: number, record: any) => {
+	const addressRender = (value: string, record: any, index: number) => {
 		if (record.exposeType === 'Ingress') {
 			let address = '';
 			record.protocol === 'TCP'
@@ -263,61 +232,67 @@ function IngressList(props: ingressProps) {
 							}`}
 						</div>
 						<div className="address">
-							<Balloon
-								trigger={
-									<CustomIcon
-										type="icon-fuzhi"
-										size="xs"
-										style={{
-											color: '#0070CC',
-											cursor: 'pointer'
-										}}
-										onClick={() =>
-											copyValue(address, record)
-										}
-									/>
+							<Popover
+								content={
+									<div>
+										<CheckCircleFilled
+											style={{
+												color: '#00A700',
+												marginRight: '5px'
+											}}
+										/>
+										复制成功
+									</div>
 								}
-								triggerType={'click'}
-								closable={false}
+								trigger={'click'}
 							>
-								<Icon
-									type={'success'}
+								<IconFont
+									type="icon-fuzhi"
 									style={{
-										color: '#00A700',
-										marginRight: '5px'
+										color: '#0070CC',
+										cursor: 'pointer'
 									}}
-									size={'xs'}
+									onClick={() => copyValue(address, record)}
 								/>
-								复制成功
-							</Balloon>
+							</Popover>
 							<span title={address}>{address}</span>
 						</div>
 					</div>
 					{record.protocol === 'HTTP' && record.rules.length > 1 && (
-						<Balloon
-							trigger={
-								<span className="tips-more">
-									<Icon size="xs" type="ellipsis" />
-								</span>
-							}
-							closable={false}
-						>
-							{record.rules.map((item: any, index: number) => {
-								const address = `${item.domain}:${record.httpExposePort}${item.ingressHttpPaths[0].path}`;
-								return (
-									<div key={index} className="balloon-tips">
-										<div>
-											&nbsp;&nbsp;&nbsp;&nbsp;
-											{record.protocol +
-												'-' +
-												record.ingressClassName}
-										</div>
-										<div className="address">
-											<Balloon
-												trigger={
-													<CustomIcon
+						<Popover
+							content={record.rules.map(
+								(item: any, index: number) => {
+									const address = `${item.domain}:${record.httpExposePort}${item.ingressHttpPaths[0].path}`;
+									return (
+										<div
+											key={index}
+											className="balloon-tips"
+										>
+											<div>
+												&nbsp;&nbsp;&nbsp;&nbsp;
+												{record.protocol +
+													'-' +
+													record.ingressClassName}
+											</div>
+											<div className="address">
+												<Popover
+													content={
+														<div>
+															<CheckCircleFilled
+																style={{
+																	color: '#00A700',
+																	marginRight:
+																		'5px'
+																}}
+															/>
+															复制成功
+														</div>
+													}
+													trigger={'click'}
+												>
+													&nbsp;&nbsp;&nbsp;&nbsp;
+													<IconFont
 														type="icon-fuzhi"
-														size="xs"
 														style={{
 															color: '#0070CC',
 															cursor: 'pointer'
@@ -329,29 +304,20 @@ function IngressList(props: ingressProps) {
 															)
 														}
 													/>
-												}
-												triggerType={'click'}
-												closable={false}
-											>
-												&nbsp;&nbsp;&nbsp;&nbsp;
-												<Icon
-													type={'success'}
-													style={{
-														color: '#00A700',
-														marginRight: '5px'
-													}}
-													size={'xs'}
-												/>
-												复制成功
-											</Balloon>
-											<span title={address}>
-												{address}
-											</span>
+												</Popover>
+												<span title={address}>
+													{address}
+												</span>
+											</div>
 										</div>
-									</div>
-								);
-							})}
-						</Balloon>
+									);
+								}
+							)}
+						>
+							<span className="tips-more">
+								<EllipsisOutlined />
+							</span>
+						</Popover>
 					)}
 				</div>
 			);
@@ -364,7 +330,7 @@ function IngressList(props: ingressProps) {
 			);
 		}
 	};
-	const portRender = (value: string, index: number, record: any) => {
+	const portRender = (value: string, record: any, index: number) => {
 		const port =
 			record.protocol === 'HTTP'
 				? record.rules[0].ingressHttpPaths[0].servicePort
@@ -416,9 +382,10 @@ function IngressList(props: ingressProps) {
 				  };
 		addIngress(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig('success', '成功', '对外路由添加成功')
-				);
+				notification.success({
+					message: '成功',
+					description: '对外路由添加成功'
+				});
 				setActive(false);
 				getIngressByMid(
 					globalVar.cluster.id,
@@ -427,50 +394,19 @@ function IngressList(props: ingressProps) {
 					middlewareName
 				);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
-	const exposeTypeRender = (value: string, index: number, record: any) => {
-		if (record.exposeType === 'NodePort') return value;
-		return `${record.exposeType}/${record.ingressClassName || '-'}`;
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['createTimeNum'] - b['createTimeNum'];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		} else if (dataIndex === 'exposeType') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['exposeType'].length - b['exposeType'].length;
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		}
-	};
 
 	return (
-		<Page>
-			<Content style={{ padding: '0 0', margin: 0 }}>
-				<Table
+		<ProPage>
+			<ProContent style={{ padding: '0 0', margin: 0 }}>
+				<ProTable
 					dataSource={showDataSource}
-					exact
-					fixedBarExpandWidth={[24]}
-					affixActionBar
 					showColumnSetting
 					showRefresh
 					onRefresh={() =>
@@ -481,50 +417,52 @@ function IngressList(props: ingressProps) {
 							middlewareName
 						)
 					}
-					primaryKey="key"
+					rowKey="ingressName"
 					operation={Operation}
-					search={null}
-					onSort={onSort}
-					onFilter={onFilter}
 				>
-					<Table.Column
+					<ProTable.Column
 						title="被暴露服务名"
 						dataIndex="ingressName"
 						width={200}
-						cell={nameRender}
+						render={nameRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="被暴露服务端口"
 						dataIndex="httpExposePort"
-						cell={portRender}
+						render={portRender}
 						width={120}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="暴露方式"
 						dataIndex="exposeType"
 						width={100}
-						sortable={true}
+						sorter={(a: any, b: any) =>
+							a.exposeType.length - b.exposeType.length
+						}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="暴露详情"
-						cell={addressRender}
+						render={addressRender}
 						width={200}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="创建时间"
 						width={160}
 						dataIndex="createTime"
-						sortable={true}
-						cell={timeRender}
+						sorter={(a: any, b: any) =>
+							new Date(a.createTime).getTime() -
+							new Date(b.createTime).getTime()
+						}
+						render={timeRender}
 					/>
-					<Table.Column
+					<ProTable.Column
 						title="操作"
 						dataIndex="action"
-						cell={actionRender}
+						render={actionRender}
 						width={100}
 					/>
-				</Table>
-			</Content>
+				</ProTable>
+			</ProContent>
 			{active && (
 				<AddServiceAvailableForm
 					visible={active}
@@ -535,7 +473,7 @@ function IngressList(props: ingressProps) {
 					middlewareName={middlewareName}
 				/>
 			)}
-		</Page>
+		</ProPage>
 	);
 }
 const mapStateToProps = (state: StoreState) => ({

@@ -1,17 +1,9 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
-import {
-	Dialog,
-	Form,
-	Input,
-	Field,
-	Message
-} from '@alicloud/console-components';
+import { useEffect } from 'react';
+import { Modal, Form, Input, notification } from 'antd';
 import { createRole, updateRole } from '@/services/role';
 import { roleProps } from './role';
-import messageConfig from '@/components/messageConfig';
 import pattern from '@/utils/pattern';
-import { initMenu } from '@/utils/const';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -33,10 +25,11 @@ interface RoleFormProps {
 
 function RoleForm(props: RoleFormProps): JSX.Element {
 	const { visible, onCancel, onCreate, data } = props;
-	const field: Field = Field.useField();
+	const [form] = Form.useForm();
+	console.log(data);
 	useEffect(() => {
 		if (data) {
-			field.setValues({
+			form.setFieldsValue({
 				name: data.name,
 				description: data.description,
 				createTime: data.createTime,
@@ -47,35 +40,42 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 		}
 	}, [data]);
 	const onOk: () => void = () => {
-		field.validate((errors, values) => {
-			if (errors) return;
+		form.validateFields().then((values) => {
 			const sendData = {
 				...(values as unknown as roleProps)
 			};
+			console.log(sendData);
 			if (data) {
-				// * 修改用户
-				delete sendData.createTime;
+				// * 修改角色
+				sendData.roleId = data.id;
 				updateRole(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '用户修改成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '角色修改成功'
+						});
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			} else {
-				// * 创建用户
-				// sendData.menu = initMenu;
+				// * 创建角色
 				createRole(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '用户创建成功')
-						);
+						notification.success({
+							message: '成功',
+							description: '角色创建成功'
+						});
 						onCreate();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -83,40 +83,50 @@ function RoleForm(props: RoleFormProps): JSX.Element {
 	};
 
 	return (
-		<Dialog
+		<Modal
 			title={!data ? '新增角色' : '编辑角色'}
 			visible={visible}
 			onCancel={onCancel}
-			onClose={onCancel}
 			onOk={onOk}
-			style={{ width: '540px' }}
+			width={540}
+			okText="确定"
+			cancelText="取消"
 		>
-			<Form field={field} {...formItemLayout}>
+			<Form labelAlign="left" form={form} {...formItemLayout}>
 				<FormItem
 					label="角色名称"
 					required
-					requiredMessage="请输入角色名称"
-					pattern={pattern.roleName}
-					patternMessage="角色名称长度不可超过10字符"
+					rules={[
+						{ required: true, message: '请输入角色名称' },
+						{
+							pattern: new RegExp(pattern.roleName),
+							message: '角色名称长度不可超过10字符'
+						}
+					]}
+					name="name"
 				>
-					<Input placeholder="请输入角色名称" name="name" />
+					<Input placeholder="请输入角色名称" />
 				</FormItem>
 				<FormItem
 					label="角色描述"
 					required
-					requiredMessage="请输入角色描述"
-					maxLength={100}
-					minmaxLengthMessage="角色描述长度不可超过100字符"
+					name="description"
+					rules={[
+						{ required: true, message: '请输入角色描述' },
+						{
+							max: 100,
+							message: '角色描述长度不可超过100字符'
+						}
+					]}
 				>
 					<TextArea
 						placeholder="请输入角色描述"
-						name="description"
 						maxLength={100}
-						hasLimitHint
+						showCount
 					/>
 				</FormItem>
 			</Form>
-		</Dialog>
+		</Modal>
 	);
 }
 

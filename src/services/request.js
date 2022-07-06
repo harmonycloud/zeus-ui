@@ -1,11 +1,9 @@
-import React from 'react';
 import axios from 'axios';
-import { Message } from '@alicloud/console-components';
+import { notification } from 'antd';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import errorCode from './errorCode';
 import cache from '@/utils/storage';
-import messageConfig from '@/components/messageConfig';
 
 const baseURL = 'http://localhost:3000/api/';
 const TOKEN = 'token';
@@ -34,7 +32,7 @@ const removePending = (config, f) => {
 	console.log(restUrl);
 	// 每次请求存储在请求中队列的元素关键值,例如：一个地址为books/create的post请求处理之后为："books/create&post"
 	const flagUrl = arr + '&' + config.method;
-	console.log(flagUrl);
+	// console.log(flagUrl);
 	// 当前请求存在队列中，取消第二次请求
 	if (pending.indexOf(flagUrl) !== -1) {
 		if (f) {
@@ -87,7 +85,7 @@ axios.interceptors.request.use(
 		return config;
 	},
 	(err) => {
-		console.log(err);
+		// console.log(err);
 		NProgress.done();
 		return Promise.reject(err);
 	}
@@ -171,19 +169,25 @@ axios.interceptors.response.use(
 		// }
 		// token过期
 		if (response.data.code === 401) {
-			Message.show(messageConfig('error', '错误', response.data));
+			notification.error({
+				message: '错误',
+				description: response.data
+			});
 			cache.removeLocal('token', true);
 			window.location.reload();
 		}
 		if (response.data.code === 404) {
-			Message.show(messageConfig('error', '错误', '接口访问错误'));
+			notification.error({
+				message: '错误',
+				description: '接口访问错误'
+			});
 		}
 		response.headers.usertoken &&
 			cache.setLocal('token', response.headers.usertoken);
 		return response;
 	},
 	(err) => {
-		console.log(err);
+		// console.log(err);
 		NProgress.done();
 		if (err && err.response) {
 			err.message =
@@ -193,13 +197,10 @@ axios.interceptors.response.use(
 		}
 		// console.log(err.message);
 		// console.log(err.response);
-		Message.show(
-			messageConfig(
-				'error',
-				'错误',
-				err?.response?.data?.errorMsg || err.message
-			)
-		);
+		notification.error({
+			message: '错误',
+			description: err?.response?.data?.errorMsg || err.message
+		});
 		return Promise.reject(err.response);
 	}
 );
@@ -262,7 +263,7 @@ function _post(
 			},
 			...option
 		};
-		console.log(options);
+		// console.log(options);
 		axios(options)
 			.then((res) => {
 				resolve(res.data);

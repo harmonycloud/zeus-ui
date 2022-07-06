@@ -1,0 +1,68 @@
+.middleware-layout {
+	padding-top: 50px;
+	overflow: hidden;
+}
+
+
+// 重构后样式
+.zeus-mid-layout {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	.zeus-mid-content {
+		// display: flex;
+		padding-top: 50px;
+		position: absolute;
+		// top: 50;
+		// z-index: 799;
+		width: 100%;
+		height: 100%;
+		& > aside {
+			// min-width: 200px;
+			height: calc(100% - 50px);
+			position: fixed;
+			left: 0;
+			overflow-y: auto;
+			transition: all 0.1s ease 0s;
+			-moz-transition: all 0.1s ease 0s;
+			-webkit-transition: all 0.1s ease 0s;
+			-o-transition: all 0.1s ease 0s;
+			.zeus-mid-title {
+				height: 54px;
+				font-size: $font-2;
+				font-weight: $font-weight-lg;
+				color: $black-2;
+				padding: $padding-llg $padding-lg;
+				border-right: 1px solid #f0f0f0;
+			}
+		}
+		.zeus-mid-left-content {
+			min-width: calc(100% - 200px);
+			height: calc(100% - 50px);
+			transition: all 0.1s ease 0s;
+			-moz-transition: all 0.1s ease 0s;
+			-webkit-transition: all 0.1s ease 0s;
+			-o-transition: all 0.1s ease 0s;
+		}
+	}
+	.zeus-mid-flod-content {
+		position: fixed;
+		cursor: pointer;
+		top: 50%;
+		left: 200px;
+		width: 20px;
+		height: 80px;
+		text-align: center;
+		line-height: 80px;
+		background-color: $black-9;
+		z-index: 999;
+		border-radius: 0 $border-radius-xxl $border-radius-xxl 0;
+		transition: all 0.1s ease 0s;
+		-moz-transition: all 0.1s ease 0s;
+		-webkit-transition: all 0.1s ease 0s;
+		-o-transition: all 0.1s ease 0s;
+	}
+}
+.ant-menu-inline .ant-menu-item::after {
+	border-right: none !important;
+}

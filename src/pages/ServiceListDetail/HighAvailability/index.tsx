@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Dialog,
-	Message,
-	Switch,
-	Icon,
-	Balloon,
-	Button
-} from '@alicloud/console-components';
-import Actions, { LinkButton } from '@alicloud/console-components-actions';
-
-import Table from '@/components/MidTable';
+import { Modal, notification, Switch, Button, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import Visualization from './visualization';
 import DefaultPicture from '@/components/DefaultPicture';
 import EditNodeSpe from './editNodeSpe';
@@ -27,7 +20,6 @@ import {
 	rebootService,
 	storageDilatation
 } from '@/services/middleware';
-import messageConfig from '@/components/messageConfig';
 import transTime from '@/utils/transTime';
 import {
 	ConsoleDataProps,
@@ -37,7 +29,10 @@ import {
 	PodSendData,
 	QuotaParams
 } from '../detail';
+import RedisSentinelNodeSpe from './redisSentinelNodeSpe';
 
+const { confirm } = Modal;
+const LinkButton = Actions.LinkButton;
 export default function HighAvailability(props: HighProps): JSX.Element {
 	const {
 		type,
@@ -53,29 +48,22 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [switchValue, setSwitchValue] = useState<boolean>(true);
 	const [podVisible, setPodVisible] = useState<boolean>(false);
 	const [containers, setContainers] = useState<string[]>([]);
+	const [currentContainer, setCurrentContainer] = useState<string>('');
 	const [consoleData, setConsoleData] = useState<ConsoleDataProps>();
 	// * 其他默认中间件修改阶段规格
 	const [visible, setVisible] = useState<boolean>(false);
 	// * es中间件修改节点规格
 	const [esVisible, setEsVisible] = useState<boolean>(false);
+	// * redis 哨兵模式修改节点规格
+	const [redisSentinelVisible, setRedisSentinelVisible] =
+		useState<boolean>(false);
 	// * 自定义中间件修改节点规格
 	const [customVisible, setCustomVisible] = useState<boolean>(false);
 	const [quotaValue, setQuotaValue] = useState<QuotaParams>();
 	const [topoData, setTopoData] = useState();
-	const [lock, setLock] = useState<{ lock: string } | null>({
-		lock: 'right'
-	});
 	const [yamlVisible, setYamlVisible] = useState<boolean>(false);
 	const [podData, setPodData] = useState<PodItem>();
 	const [dilatationVisible, setDilationVisible] = useState<boolean>(false);
-
-	useEffect(() => {
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
-	}, []);
 
 	useEffect(() => {
 		if (data !== undefined) {
@@ -96,7 +84,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				setPods(res.data.pods);
 				setTopoData(res.data);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
@@ -105,17 +96,16 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		if (data.status === 'Running') {
 			if (customMid) {
 				setCustomVisible(true);
+			} else if (data.mode === 'sentinel') {
+				setRedisSentinelVisible(true);
 			} else {
 				setVisible(true);
 			}
 		} else {
-			Message.show(
-				messageConfig(
-					'error',
-					'失败',
-					'该服务运行异常，无法修改该服务节点规格'
-				)
-			);
+			notification.error({
+				message: '失败',
+				description: '该服务运行异常，无法修改该服务节点规格'
+			});
 		}
 	};
 
@@ -129,25 +119,16 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				type: data.type,
 				podName: record.podName
 			};
-			Dialog.show({
+			confirm({
 				title: '操作确认',
 				content:
 					'根据重启的节点角色不同，重启操作可能会导致服务中断，请谨慎操作',
 				onOk: () => {
 					restartPods(sendData).then((res) => {
 						if (res.success) {
-							Message.show({
-								type: 'success',
-								title: <div>成功</div>,
-								content: (
-									<div className="message-box">
-										<p>重启中, 3s 后获取数据</p>
-									</div>
-								),
-								duration: 3000,
-								align: 'tr tr',
-								closeable: true,
-								offset: [-24, 62]
+							notification.success({
+								message: '成功',
+								description: '重启中, 3s 后获取数据'
 							});
 							setTimeout(function () {
 								const sendData = {
@@ -159,15 +140,19 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								getPodList(sendData);
 							}, 3000);
 						} else {
-							Message.show(messageConfig('error', '失败', res));
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
 					});
 				}
 			});
 		} else {
-			Message.show(
-				messageConfig('error', '失败', '该服务运行异常，无法重启该实例')
-			);
+			notification.error({
+				message: '失败',
+				description: '该服务运行异常，无法重启该实例'
+			});
 		}
 	};
 	const openSSL = (record: PodItem) => {
@@ -182,12 +167,23 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			clusterId: clusterId,
 			type: data.type
 		};
+		if (data.type == 'mysql') {
+			setCurrentContainer('mysql');
+		} else if (data.type === 'redis') {
+			if (record.role === 'master' || record.role === 'slave') {
+				setCurrentContainer('redis-cluster');
+			} else {
+				setCurrentContainer('sentinel');
+			}
+		} else {
+			setCurrentContainer(strArr[0]);
+		}
 		setContainers(strArr);
 		setConsoleData(consoleDataTemp);
 		setPodVisible(true);
 	};
 
-	const actionRender = (value: any, index: number, record: PodItem) => {
+	const actionRender = (value: any, record: PodItem, index: number) => {
 		return (
 			<Actions>
 				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
@@ -204,7 +200,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		);
 	};
 
-	const restartRender = (value: number, index: number, record: PodItem) => {
+	const restartRender = (value: number, record: PodItem, index: number) => {
 		return `${value}(${
 			transTime.gmt2local(record.lastRestartTime) || '无'
 		})`;
@@ -215,19 +211,16 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			setSwitchValue(checked);
 			switchMiddleware(checked);
 		} else {
-			Message.show(
-				messageConfig(
-					'error',
-					'失败',
-					'该服务运行异常，无法进行主备切换'
-				)
-			);
+			notification.error({
+				message: '失败',
+				description: '该服务运行异常，无法进行主备切'
+			});
 		}
 	};
 
 	const autoSwitch = () => {
 		if (data.status === 'Running') {
-			Dialog.show({
+			confirm({
 				title: '操作确认',
 				content:
 					'主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
@@ -236,13 +229,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				}
 			});
 		} else {
-			Message.show(
-				messageConfig(
-					'error',
-					'失败',
-					'该服务运行异常，无法进行主备切换'
-				)
-			);
+			notification.error({
+				message: '失败',
+				description: '该服务运行异常，无法进行主备切换'
+			});
 		}
 	};
 
@@ -256,56 +246,45 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		};
 		switchMiddlewareMasterSlave(sendData).then((res) => {
 			if (res.success) {
-				Message.show({
-					type: 'success',
-					title: <div>成功</div>,
-					content: (
-						<div className="message-box">
-							<p>切换中, 3s 后获取数据</p>
-						</div>
-					),
-					duration: 3000,
-					align: 'tr tr',
-					closeable: true,
-					offset: [-24, 62]
+				notification.success({
+					message: '成功',
+					description: '切换中, 3s 后获取数据'
 				});
 				setTimeout(function () {
 					onRefresh('highAvailability');
 				}, 3000);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};
 	// * 修改节点规格
 	const updateMid = (sendData: any) => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '实例规格修改后将导致服务重启，是否继续？',
 			onOk: () => {
 				setVisible(false);
 				setEsVisible(false);
 				setCustomVisible(false);
+				setRedisSentinelVisible(false);
 				updateMiddleware(sendData).then((res) => {
 					if (res.success) {
-						Message.show({
-							type: 'success',
-							title: <div>成功</div>,
-							content: (
-								<div className="message-box">
-									<p>修改中, 3s 后获取数据</p>
-								</div>
-							),
-							duration: 3000,
-							align: 'tr tr',
-							closeable: true,
-							offset: [-24, 62]
+						notification.success({
+							message: '成功',
+							description: '修改中, 3s 后获取数据'
 						});
 						setTimeout(function () {
 							onRefresh('highAvailability');
 						}, 3000);
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -360,7 +339,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		updateMid(sendData);
 	};
 
-	const roleRender = (value: string, index: number, record: PodItem) => {
+	const roleRender = (value: string, record: PodItem, index: number) => {
 		if (record.podName.includes('exporter')) {
 			return 'exporter';
 		} else {
@@ -401,11 +380,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		}
 	};
 
-	const resourceRender = (value: string, index: number, record: PodItem) => {
+	const resourceRender = (value: string, record: PodItem, index: number) => {
 		return `${record.resources.cpu || 0}C/${record.resources.memory || 0}G`;
 	};
 
-	const storageRender = (value: string, index: number, record: PodItem) => {
+	const storageRender = (value: string, record: PodItem, index: number) => {
 		return `${record.resources.storageClassQuota || '无'}(${
 			record.resources.storageClassName || '无'
 		})`;
@@ -425,7 +404,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		);
 	};
 	const restartService = () => {
-		Dialog.show({
+		confirm({
 			title: '操作确认',
 			content: '请确认是否重启服务？',
 			onOk: () => {
@@ -437,12 +416,16 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				};
 				rebootService(sendData).then((res) => {
 					if (res.success) {
-						Message.show(
-							messageConfig('success', '成功', '服务重启成功！')
-						);
+						notification.success({
+							message: '成功',
+							description: '服务重启成功！'
+						});
 						onRefresh();
 					} else {
-						Message.show(messageConfig('error', '失败', res));
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
 				});
 			}
@@ -464,9 +447,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		};
 		storageDilatation(sendData).then((res) => {
 			if (res.success) {
-				Message.show(
-					messageConfig('success', '成功', '存储扩容成功！')
-				);
+				notification.success({
+					message: '成功',
+					description: '存储扩容成功！'
+				});
 				const sendData = {
 					clusterId,
 					namespace,
@@ -475,7 +459,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				};
 				getPodList(sendData);
 			} else {
-				Message.show(messageConfig('error', '失败', res));
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 		setDilationVisible(false);
@@ -537,26 +524,15 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								</div>
 							</div>
 							<div
-								className="display-flex switch-master"
+								className="display-flex switch-master flex-align"
 								style={{ marginTop: 12 }}
 							>
 								<span style={{ marginRight: 12 }}>
 									自动切换
 								</span>
-								<Balloon
-									trigger={
-										<Icon
-											type="question-circle"
-											size="xs"
-										/>
-									}
-									closable={false}
-									align={'r'}
-								>
-									<span className="balloon-text">
-										开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行集群异常的处理。
-									</span>
-								</Balloon>
+								<Tooltip title="开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行集群异常的处理。">
+									<QuestionCircleOutlined />
+								</Tooltip>
 								<Switch
 									style={{ marginLeft: 68 }}
 									checked={switchValue}
@@ -566,7 +542,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							<div className="detail-divider" />
 						</>
 					) : null}
-					<Table
+					<ProTable
 						dataSource={pods}
 						showColumnSetting
 						showRefresh
@@ -580,66 +556,66 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							getPodList(sendData);
 						}}
 						operation={Operation}
+						scroll={{ x: 1490 }}
 					>
-						<Table.Column
+						<ProTable.Column
 							title="实例名称"
 							dataIndex="podName"
-							cell={podNameRender}
+							render={podNameRender}
 							width={170}
-							lock="left"
+							fixed="left"
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="状态"
 							dataIndex="status"
 							width={120}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="实例 IP"
 							dataIndex="podIp"
 							width={150}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="所在主机"
 							dataIndex="nodeName"
 							width={150}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="节点类型"
 							dataIndex="role"
-							cell={roleRender}
+							render={roleRender}
 							width={100}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="节点资源"
 							dataIndex="resource"
-							cell={resourceRender}
+							render={resourceRender}
 							width={100}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="节点存储"
 							dataIndex="storage"
-							cell={storageRender}
+							render={storageRender}
 							width={160}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="创建时间"
 							dataIndex="createTime"
-							cell={createTimeRender}
+							render={createTimeRender}
 							width={160}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="异常重启次数(最近时间)"
 							dataIndex="restartCount"
-							cell={restartRender}
+							render={restartRender}
 							width={180}
 						/>
-						<Table.Column
+						<ProTable.Column
 							title="操作"
-							cell={actionRender}
+							render={actionRender}
 							width={200}
-							{...lock}
 						/>
-					</Table>
+					</ProTable>
 					<div style={{ marginBottom: '24px' }}></div>
 
 					{topoData && (
@@ -650,6 +626,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								openSSL={openSSL}
 								reStart={reStart}
 								setEsVisible={() => setEsVisible(true)}
+								setRedisSentinelVisible={() =>
+									setRedisSentinelVisible(true)
+								}
 								editConfiguration={editConfiguration}
 							/>
 							<div style={{ height: '24px' }} />
@@ -673,6 +652,14 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					data={data}
 				/>
 			)}
+			{redisSentinelVisible && data.mode === 'sentinel' && (
+				<RedisSentinelNodeSpe
+					visible={redisSentinelVisible}
+					onCreate={onEsCreate}
+					onCancel={() => setRedisSentinelVisible(false)}
+					data={data}
+				/>
+			)}
 			{customVisible && (
 				<CustomEditNodeSpe
 					visible={customVisible}
@@ -687,7 +674,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					data={consoleData}
 					onCancel={() => setPodVisible(false)}
 					containers={containers}
-					middlewareName={data.name}
+					currentContainer={currentContainer}
 				/>
 			)}
 			{yamlVisible && podData && (
