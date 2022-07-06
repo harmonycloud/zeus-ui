@@ -224,8 +224,6 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 					}
 				}
 			}
-			console.log(sendData);
-			return;
 			onCreate(sendData);
 		});
 	};
