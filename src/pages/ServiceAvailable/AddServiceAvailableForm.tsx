@@ -157,10 +157,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 					});
 				});
 			}
-		} else if (
-			JSON.stringify(namespace) !== '{}' &&
-			cluster.ingress !== null
-		) {
+		} else if (JSON.stringify(namespace) !== '{}') {
 			getList({
 				projectId: project.projectId,
 				clusterId: cluster.id,
@@ -547,11 +544,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							value={current}
 							options={data}
 							onChange={handleChange}
-							disabled={
-								cluster.ingress === null ||
-								!!record ||
-								params.middlewareName
-							}
+							disabled={!!record || params.middlewareName}
 						/>
 					</FormItem>
 					<h2>选择暴露方式及对象</h2>
@@ -571,7 +564,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								onChange={onChange}
 								style={{ width: '120px' }}
 								value={exposedWay}
-								disabled={cluster.ingress === null || !!record}
+								disabled={!!record}
 							>
 								<Option value="Ingress" key="Ingress">
 									Ingress
@@ -621,9 +614,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									onChange={onProtocolChange}
 									style={{ width: '120px' }}
 									value={protocol}
-									disabled={
-										cluster.ingress === null || !!record
-									}
+									disabled={!!record}
 								>
 									<Option value="HTTP">HTTP</Option>
 									<Option value="TCP">TCP</Option>
@@ -664,7 +655,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											: '端口范围：30000-32767'
 									}
 									style={{ width: '200px' }}
-									disabled={cluster.ingress === null}
 								/>
 							</FormItem>
 						)}
@@ -690,7 +680,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									value={selectedService.serviceName}
 									placeholder="请选择Service"
 									disabled={
-										cluster.ingressList === null ||
 										selectedService.serviceName?.includes(
 											`${selectedInstance.name}-kafka-external-svc`
 										) ||
@@ -743,7 +732,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									style={{ width: '100%' }}
 									placeholder="请选择端口"
 									disabled={
-										cluster.ingress === null ||
 										selectedService.serviceName.includes(
 											`${selectedInstance.name}-kafka-external-svc`
 										) ||
@@ -809,8 +797,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												style={{ width: '200px' }}
 												placeholder="请选择Service"
 												disabled={
-													cluster?.ingressList ===
-														null ||
 													selectedService?.serviceName?.includes(
 														`${selectedInstance.name}-kafka-external-svc`
 													) ||
@@ -873,9 +859,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 											<Select
 												style={{ width: '120px' }}
 												placeholder="请选择端口"
-												disabled={
-													cluster.ingress === null
-												}
 												value={item.servicePort}
 												onChange={(value) =>
 													onChangeHttp(
@@ -929,9 +912,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 										>
 											<Input
 												placeholder="请输入域名"
-												disabled={
-													cluster.ingress === null
-												}
 												value={item.domain}
 												onChange={(e) =>
 													onChangeHttp(
@@ -961,9 +941,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 										>
 											<Input
 												placeholder="请输入域名后的路径"
-												disabled={
-													cluster.ingress === null
-												}
 												value={item.path}
 												onChange={(e) =>
 													onChangeHttp(

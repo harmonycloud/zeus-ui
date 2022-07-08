@@ -139,7 +139,7 @@ export const serviceListStatusRender: (
 	value: string,
 	record: any,
 	index: number
-) => JSX.Element = (value: string, record: any, index: number) => {
+) => JSX.Element = (value: string, record: any) => {
 	switch (value) {
 		case 'Creating':
 			return (

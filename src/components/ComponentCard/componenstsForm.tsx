@@ -65,54 +65,7 @@ export const PrometheusRender = () => (
 		</Row>
 	</FormItem>
 );
-export const IngressRender = () => (
-	<>
-		<FormItem
-			{...formItemLayout}
-			label="Ingress名称"
-			required
-			rules={[{ required: true, message: '请输入Ingress名称' }]}
-			name="ingressClassName"
-			labelAlign="left"
-		>
-			<Input
-				type="text"
-				defaultValue="nginx-ingress-controller"
-				placeholder="请输入Ingress名称"
-			/>
-		</FormItem>
-		<FormItem
-			{...formItemLayout}
-			label="Ingress地址"
-			required
-			rules={[{ required: true, message: '请输入Ingress地址' }]}
-			labelAlign="left"
-			name="ingressAddress"
-		>
-			<Input type="text" placeholder="请输入主机地址" />
-		</FormItem>
-		<FormItem
-			{...formItemLayout}
-			label="ConfigMap分区"
-			required
-			rules={[{ required: true, message: '请输入分区' }]}
-			name="namespace"
-			labelAlign="left"
-		>
-			<Input type="text" placeholder="请输入分区" />
-		</FormItem>
-		<FormItem
-			{...formItemLayout}
-			label="ConfigMap名称"
-			required
-			name="configMapName"
-			rules={[{ required: true, message: '请输入ConfigMap名称' }]}
-			labelAlign="left"
-		>
-			<Input type="text" placeholder="请输入ConfigMap名称" />
-		</FormItem>
-	</>
-);
+
 export const LoggingRender = () => (
 	<>
 		<FormItem

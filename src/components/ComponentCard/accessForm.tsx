@@ -3,7 +3,6 @@ import { Modal, Form, notification } from 'antd';
 import { putComponent, cutInComponent, getCluster } from '@/services/common';
 import {
 	PrometheusRender,
-	IngressRender,
 	LoggingRender,
 	GrafanaRender,
 	AlertRender,
@@ -38,14 +37,6 @@ const AccessForm = (props: AccessFormProps) => {
 		getCluster({ clusterId: clusterId, detail: true }).then((res) => {
 			if (res.success) {
 				const cluster = res.data;
-				if (cluster.ingress) {
-					form.setFieldsValue({
-						ingressAddress: cluster.ingress.address,
-						ingressClassName: cluster.ingress.ingressClassName,
-						namespace: cluster.ingress.tcp.namespace,
-						configMapName: cluster.ingress.tcp.configMapName
-					});
-				}
 				if (cluster.logging && cluster.logging.elasticSearch) {
 					form.setFieldsValue({
 						protocolEs: cluster.logging.elasticSearch.protocol,
@@ -264,8 +255,6 @@ const AccessForm = (props: AccessFormProps) => {
 				return <GrafanaRender />;
 			case 'logging':
 				return <LoggingRender />;
-			case 'ingress':
-				return <IngressRender />;
 			case 'lvm':
 				return <LvmRender />;
 			case 'local-path':
