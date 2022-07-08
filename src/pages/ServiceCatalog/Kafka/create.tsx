@@ -922,7 +922,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												}
 												style={{ width: '95px' }}
 												value={kfkDTO.zkPort}
-												placeholder="请输入服务端口"
+												placeholder="端口"
 												onChange={(value: number) =>
 													setKfkDTO({
 														...kfkDTO,
@@ -1027,7 +1027,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												setMode(value)
 											}
 										/>
-										<label
+										{/* <label
 											className={
 												styles[
 													'custom-cluster-number-label'
@@ -1036,6 +1036,14 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										>
 											自定义集群实例数量
 										</label>
+										 */}
+									</div>
+								</li>
+								<li className="display-flex form-li">
+									<label className="form-name">
+										<span>集群实例数量</span>
+									</label>
+									<div className="form-content">
 										<InputNumber
 											min={3}
 											value={customCluster}

@@ -1110,7 +1110,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												setMode(value)
 											}
 										/>
-										<div
+										{/* <div
 											style={{
 												display:
 													mode === 'dledger'
@@ -1121,6 +1121,15 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											<label style={{ margin: '0 16px' }}>
 												自定义集群实例数量
 											</label>
+										</div> */}
+									</div>
+								</li>
+								{mode === 'dledger' && (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											从节点数
+										</label>
+										<div className="form-content">
 											<InputNumber
 												name="节点数量"
 												defaultValue={3}
@@ -1131,8 +1140,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												max={10}
 											/>
 										</div>
-									</div>
-								</li>
+									</li>
+								)}
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span>节点规格</span>
