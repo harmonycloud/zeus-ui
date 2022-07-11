@@ -16,7 +16,8 @@ import {
 	notification,
 	Result,
 	InputNumber,
-	Tag
+	Tag,
+	Checkbox
 } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
@@ -1173,12 +1174,18 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										<span>模式</span>
 									</label>
 									<div
-										className={`form-content display-flex ${styles['redis-mode']}`}
+										className={`form-content ${styles['redis-mode']}`}
 									>
+										{/* <div>
+
+										</div> */}
 										<Select
 											value={mode}
 											onChange={(value) => setMode(value)}
-											style={{ width: 150 }}
+											style={{
+												width: 182,
+												marginBottom: 12
+											}}
 										>
 											{modeList.map((item, index) => (
 												<Select.Option
@@ -1189,8 +1196,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												</Select.Option>
 											))}
 										</Select>
+										<Checkbox style={{ marginLeft: 8 }}>
+											读写分离
+										</Checkbox>
 										{mode === 'cluster' ? (
-											<div style={{ marginLeft: 16 }}>
+											<div>
 												<SelectBlock
 													options={clusterModeList}
 													currentValue={clusterMode}
