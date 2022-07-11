@@ -211,6 +211,13 @@ const hostNetworkConfig = {
 		</div>
 	)
 };
+const zookeeperConfig = {
+	dataIndex: 'kafkaDTO',
+	label: 'Zookeeper配置',
+	render: (val: any) => (
+		<div>{val ? val?.zkAddress + ':' + val?.zkPort + val?.path : '/'}</div>
+	)
+};
 function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const {
 		type,
@@ -474,7 +481,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				version: data.version || '无',
 				characterSet: data.charSet || '',
 				port: data.port || '',
-				password: data.password || ''
+				password: data.password || '',
+				kafkaDTO: data.kafkaDTO
 			});
 			setRunData({
 				title: '运行状态',
@@ -758,34 +766,40 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	];
 	const configConfigTemp =
-		type === 'redis' || type === 'elasticsearch'
-			? [
-					...configConfig,
-					{
-						dataIndex: 'password',
-						label: '密码',
-						render: (val: string) => {
-							return (
-								<div className="password-content">
-									<div className="password-display">
-										{passwordDisplay ? val : '******'}
+		type === 'redis' || type === 'elasticsearch' || type === 'kafka'
+			? type === 'kafka'
+				? [
+						...configConfig,
+						operateFlag ? yamlConfig : {},
+						zookeeperConfig
+				  ]
+				: [
+						...configConfig,
+						{
+							dataIndex: 'password',
+							label: '密码',
+							render: (val: string) => {
+								return (
+									<div className="password-content">
+										<div className="password-display">
+											{passwordDisplay ? val : '******'}
+										</div>
+										<div
+											className="name-link password-reset"
+											onClick={() => {
+												setPasswordDisplay(
+													!passwordDisplay
+												);
+											}}
+										>
+											{passwordDisplay ? '隐藏' : '查看'}
+										</div>
 									</div>
-									<div
-										className="name-link password-reset"
-										onClick={() => {
-											setPasswordDisplay(
-												!passwordDisplay
-											);
-										}}
-									>
-										{passwordDisplay ? '隐藏' : '查看'}
-									</div>
-								</div>
-							);
-						}
-					},
-					operateFlag ? yamlConfig : {}
-			  ]
+								);
+							}
+						},
+						operateFlag ? yamlConfig : {}
+				  ]
 			: [...configConfig, operateFlag ? yamlConfig : {}];
 	const onCancel = (value: boolean) => {
 		setVisible(false);
