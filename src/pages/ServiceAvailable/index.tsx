@@ -453,7 +453,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			return false;
 		}
 	};
-	const actionRender = (value: string, record: any, index: number) => {
+	const actionRender = (_: string, record: any) => {
 		return (
 			<Actions>
 				<LinkButton
