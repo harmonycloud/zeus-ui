@@ -945,15 +945,13 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 												setMode(value)
 											}
 										/>
-										<label
-											className={
-												styles[
-													'custom-cluster-number-label'
-												]
-											}
-										>
-											自定义集群实例数量
-										</label>
+									</div>
+								</li>
+								<li className="display-flex form-li">
+									<label className="form-name">
+										从节点数
+									</label>
+									<div className="form-content">
 										<InputNumber
 											min={3}
 											value={customCluster}

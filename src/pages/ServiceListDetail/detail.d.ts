@@ -186,6 +186,7 @@ export interface configParams {
 	characterSet: string;
 	port: string | number;
 	password: string;
+	kafkaDTO?: any;
 }
 export interface runParams {
 	title: string;

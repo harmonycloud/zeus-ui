@@ -169,6 +169,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	}, []);
 
 	useEffect(() => {
+		setTableData([]);
 		if (selectText) {
 			getServiceList({
 				type: params.name || selectText,
@@ -204,7 +205,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									setSelectText(value),
 								style: {
 									marginRight: '16px',
-									width: '100px'
+									width: '120px'
 								},
 								options: middlewares?.map((item) => {
 									return {

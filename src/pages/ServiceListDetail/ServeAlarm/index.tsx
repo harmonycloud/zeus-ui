@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import { Button, Switch, Modal, notification } from 'antd';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
+import AlarmSet from './alarmSet';
 
 import { useHistory } from 'react-router';
 import { getClusters } from '@/services/common';
@@ -42,6 +43,7 @@ function Rules(props: RuleProps): JSX.Element {
 	const [dataSource, setDataSource] = useState<ServiceRuleItem[]>([]);
 	const [originData, setOriginData] = useState<ServiceRuleItem[]>([]);
 	const [poolList, setPoolList] = useState([]);
+	const [visible, setVisible] = useState<boolean>(false);
 
 	const onRefresh = () => {
 		getData(clusterId, middlewareName, namespace, searchText);
@@ -201,21 +203,29 @@ function Rules(props: RuleProps): JSX.Element {
 
 	const Operation = {
 		primary: (
-			<Button
-				type="primary"
-				onClick={() => {
-					alarmType === 'system'
-						? history.push(
-								'/systemManagement/systemAlarm/createAlarm/system'
-						  )
-						: history.push(
-								`/serviceList/${name}/${aliasName}/${currentTab}/createAlarm/${middlewareName}/${type}/${chartVersion}/${clusterId}/${namespace}`
-						  );
-					storage.setSession('alarm', props);
-				}}
-			>
-				新增
-			</Button>
+			<div>
+				<Button
+					type="primary"
+					onClick={() => {
+						alarmType === 'system'
+							? history.push(
+									'/systemManagement/systemAlarm/createAlarm/system'
+							  )
+							: history.push(
+									`/serviceList/${name}/${aliasName}/${currentTab}/createAlarm/${middlewareName}/${type}/${chartVersion}/${clusterId}/${namespace}`
+							  );
+						storage.setSession('alarm', props);
+					}}
+				>
+					新增
+				</Button>
+				<Button
+					onClick={() => setVisible(true)}
+					style={{ marginLeft: 8 }}
+				>
+					告警设置
+				</Button>
+			</div>
 		)
 	};
 
@@ -406,33 +416,30 @@ function Rules(props: RuleProps): JSX.Element {
 	}
 
 	return (
-		<ProTable
-			dataSource={dataSource}
-			// exact
-			// fixedBarExpandWidth={[24]}
-			// affixActionBar
-			showRefresh
-			showColumnSetting
-			onRefresh={onRefresh}
-			rowKey="key"
-			search={{
-				placeholder: '请输入规则ID、告警规则、告警内容进行搜索',
-				// onSearch: () => onRefresh(),
-				onSearch: (value: string) => setSearchText(value),
-				style: {
-					width: '360px'
-				}
-			}}
-			operation={Operation}
-			// onSort={onSort}
-			// onFilter={onFilter}
-		>
-			<ProTable.Column title="规则ID" dataIndex="alertId" width={100} />
-			{
-				alarmType === 'system' ? (
+		<>
+			<ProTable
+				dataSource={dataSource}
+				// exact
+				// fixedBarExpandWidth={[24]}
+				// affixActionBar
+				showRefresh
+				showColumnSetting
+				onRefresh={onRefresh}
+				rowKey="alertId"
+				search={{
+					placeholder: '请输入规则ID、告警规则、告警内容进行搜索',
+					// onSearch: () => onRefresh(),
+					onSearch: (value: string) => setSearchText(value),
+					style: {
+						width: '360px'
+					}
+				}}
+				operation={Operation}
+			>
+				{/* <ProTable.Column title="规则ID" dataIndex="alertId" width={100} /> */}
+				{alarmType === 'system' ? (
 					<ProTable.Column
 						filters={poolList}
-						// filterMode="single"
 						filterMultiple={false}
 						onFilter={(value, record: ServiceRuleItem) =>
 							value === record.name
@@ -441,76 +448,73 @@ function Rules(props: RuleProps): JSX.Element {
 						title="告警对象"
 						ellipsis
 						dataIndex="nickname"
+						width={200}
 					/>
-				) : null
-				// (
-				// 	<ProTable.Column
-				// 		render={nameRender}
-				// 		title="告警对象"
-				// 		ellipsis
-				// 		dataIndex="name"
-				// 	/>
-				// )
-			}
-			<ProTable.Column
-				title="告警规则"
-				dataIndex="threshold"
-				render={ruleRender}
-			/>
-			<ProTable.Column
-				title="告警等级"
-				dataIndex="labels"
-				filters={alarmWarn}
-				// filterMode="single"
-				filterMultiple={false}
-				onFilter={(value, record: ServiceRuleItem) =>
-					value === record.labels?.severity
-				}
-				render={levelRender}
-				width={100}
-			/>
-			<ProTable.Column
-				title="告警间隔"
-				dataIndex="silence"
-				filters={silences}
-				// filterMode="single"
-				filterMultiple={false}
-				onFilter={(value, record: ServiceRuleItem) =>
-					value === record.silence
-				}
-				render={nullRender}
-				width={100}
-			/>
-			<ProTable.Column
-				title="告警内容"
-				dataIndex="content"
-				width={110}
-				render={nullRender}
-			/>
-			<ProTable.Column
-				title="创建时间"
-				dataIndex="createTime"
-				render={createTimeRender}
-				// sortable
-				sorter={(a: any, b: any) =>
-					new Date(a.createTime).getTime() -
-					new Date(b.createTime).getTime()
-				}
-				width={160}
-			/>
-			<ProTable.Column
+				) : null}
+				<ProTable.Column
+					title="告警规则"
+					dataIndex="threshold"
+					render={ruleRender}
+				/>
+				<ProTable.Column
+					title="告警等级"
+					dataIndex="labels"
+					filters={alarmWarn}
+					filterMultiple={false}
+					onFilter={(value, record: ServiceRuleItem) =>
+						value === record.labels?.severity
+					}
+					render={levelRender}
+					width={100}
+				/>
+				<ProTable.Column
+					title="告警间隔"
+					dataIndex="silence"
+					filters={silences}
+					filterMultiple={false}
+					onFilter={(value, record: ServiceRuleItem) =>
+						value === record.silence
+					}
+					render={nullRender}
+					width={100}
+				/>
+				<ProTable.Column
+					title="告警内容"
+					dataIndex="content"
+					width={110}
+					render={nullRender}
+				/>
+				<ProTable.Column
+					title="创建时间"
+					dataIndex="createTime"
+					render={createTimeRender}
+					sorter={(a: any, b: any) =>
+						new Date(a.createTime).getTime() -
+						new Date(b.createTime).getTime()
+					}
+					width={160}
+				/>
+				{/* <ProTable.Column
 				title="启用"
 				dataIndex="enable"
 				render={enableRender}
 				width={100}
-			/>
-			<ProTable.Column
-				title="操作"
-				dataIndex="option"
-				render={actionRender}
-				width={100}
-			/>
-		</ProTable>
+			/> */}
+				<ProTable.Column
+					title="操作"
+					dataIndex="option"
+					render={actionRender}
+					width={100}
+				/>
+			</ProTable>
+			{visible && (
+				<AlarmSet
+					visible={visible}
+					onOk={() => setVisible(false)}
+					onCancel={() => setVisible(false)}
+				/>
+			)}
+		</>
 	);
 }
 

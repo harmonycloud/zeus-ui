@@ -1033,7 +1033,7 @@ function CreateAlarm(): JSX.Element {
 							);
 						})}
 				</div>
-				<h2>告警通知</h2>
+				{/* <h2>告警通知</h2>
 				<div className="users">
 					<span style={{ marginLeft: '10px' }}>通知方式</span>
 					{mailDisabled ? (
@@ -1082,42 +1082,6 @@ function CreateAlarm(): JSX.Element {
 					)}
 				</div>
 				{mailChecked && isReady && (
-					// <div className="transfer">
-					// 	<div className="ne-required">邮箱通知</div>
-					// 	<div className="transfer-container">
-					// 		<div className="transfer-header">
-					// 			<p className="transfer-title left">用户通知</p>
-					// 			<p className="transfer-title">用户通知</p>
-					// 		</div>
-					// 		<Transfer
-					// 			showSearch
-					// 			searchPlaceholder="请输入登录账户、用户名、邮箱、手机号、关联角色搜索"
-					// 			defaultValue={selectUser}
-					// 			mode="simple"
-					// 			titles={[
-					// 				<div key="left">
-					// 					<span key="account">登录账户</span>
-					// 					<span key="username">用户名</span>
-					// 					<span key="email">邮箱</span>
-					// 					<span key="tel">手机号</span>
-					// 					<span key="time">创建时间</span>
-					// 					<span key="role">关联角色</span>
-					// 				</div>,
-					// 				<div key="right">
-					// 					<span key="account">登录账户</span>
-					// 					<span key="username">用户名</span>
-					// 					<span key="email">邮箱</span>
-					// 					<span key="tel">手机号</span>
-					// 					<span key="time">创建时间</span>
-					// 					<span key="role">关联角色</span>
-					// 				</div>
-					// 			]}
-					// 			dataSource={users}
-					// 			itemRender={transferRender}
-					// 			onChange={handleChange}
-					// 		/>
-					// 	</div>
-					// </div>
 					<div className="email">
 						<div className="ne-required">邮箱通知</div>
 						<div className="transfer">
@@ -1433,7 +1397,7 @@ function CreateAlarm(): JSX.Element {
 							</div>
 						</div>
 					</div>
-				)}
+				)} */}
 				<div className="alarm-bottom">
 					<Button
 						onClick={onOk}

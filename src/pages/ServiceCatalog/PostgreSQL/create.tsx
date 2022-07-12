@@ -145,16 +145,16 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
 		{
+			label: '单实例',
+			value: '1m'
+		},
+		{
 			label: '一主一从',
 			value: '1m-1s'
 		},
 		{
-			label: '一主多从（beta版）',
+			label: '一主多从',
 			value: '1m-ns'
-		},
-		{
-			label: '单实例',
-			value: '1m'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -988,31 +988,42 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											<QuestionCircleOutlined />
 										</Tooltip>
 									</label>
-									<div
-										className={`form-content display-flex ${styles['redis-mode']}`}
-									>
-										<SelectBlock
-											options={modeList}
-											currentValue={mode}
-											onCallBack={(value: any) =>
-												setMode(value)
-											}
-										/>
-										<div
+									<div className={`form-content`}>
+										<Select
+											value={'读写分离模式'}
 											style={{
-												display:
-													mode === '1m-ns'
-														? 'block'
-														: 'none'
+												marginBottom: 12,
+												width: 182
 											}}
 										>
-											<label style={{ margin: '0 16px' }}>
-												自定义从节点实例数量
-											</label>
+											<Select.Option key="1">
+												读写分离模式
+											</Select.Option>
+											<Select.Option key="2">
+												非读写分离模式
+											</Select.Option>
+										</Select>
+										<div className={`display-flex`}>
+											<SelectBlock
+												options={modeList}
+												currentValue={mode}
+												onCallBack={(value: any) =>
+													setMode(value)
+												}
+											/>
+										</div>
+									</div>
+								</li>
+								{mode === '1m-ns' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											从节点数
+										</label>
+										<div className="form-content">
 											<InputNumber
 												name="从节点数量字段"
 												defaultValue={2}
-												onChange={(value) =>
+												onChange={(value: number) =>
 													setReplicaCount(value)
 												}
 												value={replicaCount}
@@ -1020,8 +1031,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												min={2}
 											/>
 										</div>
-									</div>
-								</li>
+									</li>
+								) : null}
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span>节点规格</span>

@@ -33,6 +33,7 @@ export interface NodeAffinityItem {
 	required: boolean;
 }
 export interface middlewareDetailProps {
+	kafkaDTO: any;
 	aliasName: string;
 	annotations: string | null;
 	description: string | null;

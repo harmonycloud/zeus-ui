@@ -235,9 +235,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={
-						storage.getLocal('backupDetail').phrase !== 'Success'
-					}
+					disabled={record.phrase !== 'Success'}
 					onClick={() => releaseMiddleware(record)}
 					// onClick={() => {
 					// 	if (record.sourceType === 'mysql') {
