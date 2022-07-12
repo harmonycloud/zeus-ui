@@ -97,11 +97,15 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 	// * 日志-end
 	// * Kafka配置-start
-	const [version, setVersion] = useState<string>('2.6.0');
+	const [version, setVersion] = useState<string>('2.6');
 	const versionList = [
 		{
-			label: '2.6.0',
-			value: '2.6.0'
+			label: '2.6',
+			value: '2.6'
+		},
+		{
+			label: '3.1',
+			value: '3.1'
 		}
 	];
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
