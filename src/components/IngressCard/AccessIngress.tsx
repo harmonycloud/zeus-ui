@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Modal, Form, Input, notification } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Modal, Form, Input, notification, Switch, Space } from 'antd';
 import { accessIngress, updateIngress } from '@/services/common';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import pattern from '@/utils/pattern';
@@ -19,12 +19,7 @@ const formItemLayout = {
 		span: 19
 	}
 };
-interface FieldProps {
-	ingressClassName: string;
-	address: string;
-	namespace: string;
-	configMapName: string;
-}
+
 const FormItem = Form.Item;
 interface SendDataProps {
 	clusterId: string;
@@ -38,6 +33,7 @@ interface SendDataProps {
 const AccessIngressForm = (props: AccessIngressProps) => {
 	const { visible, onCancel, clusterId, onRefresh, data } = props;
 	const [form] = Form.useForm();
+	const [vipChecked, setVIPChecked] = useState<boolean>(false);
 	useEffect(() => {
 		if (data) {
 			form.setFieldsValue({
@@ -116,14 +112,14 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 				>
 					<Input placeholder="请输入Ingress名称" />
 				</FormItem>
-				<FormItem
+				{/* <FormItem
 					label="Ingress地址"
 					required
 					rules={[{ required: true, message: '请输入Ingress地址' }]}
 					name="address"
 				>
 					<Input placeholder="请输入主机地址" />
-				</FormItem>
+				</FormItem> */}
 				<FormItem
 					label="ConfigMap分区"
 					name="namespace"
@@ -139,6 +135,22 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					rules={[{ required: true, message: '请输入ConfigMap名称' }]}
 				>
 					<Input placeholder="请输入ConfigMap名称" />
+				</FormItem>
+				<FormItem label="VIP配置" required name="vip">
+					<div className="display-flex flex-align">
+						<Switch
+							checked={vipChecked}
+							onChange={(check: boolean) => {
+								setVIPChecked(check);
+							}}
+						/>
+						{vipChecked && (
+							<Input
+								style={{ width: '100%', marginLeft: 8 }}
+								placeholder="请输入VIP地址"
+							/>
+						)}
+					</div>
 				</FormItem>
 			</Form>
 		</Modal>
