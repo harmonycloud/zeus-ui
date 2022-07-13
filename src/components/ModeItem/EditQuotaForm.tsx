@@ -130,7 +130,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 			centered
 		>
 			<Form form={form}>
-				<FormItem
+				{/* <FormItem
 					label="数据节点数量"
 					labelAlign="left"
 					rules={[
@@ -157,7 +157,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 						style={{ width: '150px' }}
 						onChange={inputChange}
 					/>
-				</FormItem>
+				</FormItem> */}
 				<ul className="form-layout">
 					<li className="display-flex form-li">
 						<label className="form-name">

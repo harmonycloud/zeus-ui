@@ -138,14 +138,29 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		}
 	];
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
+	const [sentinelMode, setSentinelMode] = useState<string>('1s-1m');
 	const clusterModeList = [
 		{
-			label: '三主三从',
+			label: '三分片',
 			value: '3s-3m'
 		},
 		{
-			label: '五主五从',
+			label: '五分片',
 			value: '5s-5m'
+		}
+	];
+	const sentinelModeList = [
+		{
+			label: '单分片',
+			value: '1s-1m'
+		},
+		{
+			label: '二分片',
+			value: '2s-2m'
+		},
+		{
+			label: '三分片',
+			value: '3s-3m'
 		}
 	];
 	const [nodeObj, setNodeObj] = useState<NodeObjParams>({
@@ -191,6 +206,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	// * 读写分离模式
+	const [readWriteProxy, setReadWriteProxy] = useState<string>('true');
+
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -1179,7 +1197,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										{/* <div>
 
 										</div> */}
-										<Select
+										{/* <Select
 											value={mode}
 											onChange={(value) => setMode(value)}
 											style={{
@@ -1195,12 +1213,39 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													{item.label}
 												</Select.Option>
 											))}
+										</Select> */}
+										<Select
+											value={readWriteProxy}
+											onChange={(val) =>
+												setReadWriteProxy(val)
+											}
+											style={{
+												marginBottom: 12,
+												width: 182
+											}}
+										>
+											<Select.Option key="true">
+												读写分离模式
+											</Select.Option>
+											<Select.Option key="false">
+												非读写分离模式
+											</Select.Option>
 										</Select>
-										<Checkbox style={{ marginLeft: 8 }}>
-											读写分离
-										</Checkbox>
+										<div>
+											<SelectBlock
+												options={modeList}
+												currentValue={mode}
+												onCallBack={(value: any) =>
+													setMode(value)
+												}
+											/>
+										</div>
 										{mode === 'cluster' ? (
-											<div>
+											<div
+												style={{
+													marginTop: 12
+												}}
+											>
 												<SelectBlock
 													options={clusterModeList}
 													currentValue={clusterMode}
@@ -1210,18 +1255,32 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												/>
 											</div>
 										) : null}
+										{mode === 'sentinel' ? (
+											<div
+												style={{
+													marginTop: 12
+												}}
+											>
+												<SelectBlock
+													options={sentinelModeList}
+													currentValue={sentinelMode}
+													onCallBack={(value: any) =>
+														setSentinelMode(value)
+													}
+												/>
+											</div>
+										) : null}
 									</div>
 								</li>
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span></span>
-									</label>
-									<div>
-										{mode === 'sentinel' ? (
+								{mode === 'sentinel' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span></span>
+										</label>
+										<div>
 											<div
 												className={`display-flex ${styles['mode-content']}`}
 											>
-												{console.log(nodeObj)}
 												{Object.keys(nodeObj).map(
 													(key) => (
 														<ModeItem
@@ -1249,9 +1308,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													)
 												)}
 											</div>
-										) : null}
-									</div>
-								</li>
+										</div>
+									</li>
+								) : null}
 								{(mode === 'cluster' || nodeModify.flag) && (
 									<>
 										<li className="display-flex form-li">
