@@ -16,3 +16,7 @@ export const ding = `${api}/ding`;
 export const sendDing = `${api}/ding/sendDing`;
 // * 钉钉连接测试
 export const connectDing = `${api}/ding/connect`;
+// * 服务告警联系人设置
+export const alertSetting = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/rules/alertSetting`;
+// * 系统告警联系人设置
+export const systemAlertSetting = `${api}/rules/systemAlertSetting`;
