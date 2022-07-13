@@ -94,6 +94,9 @@ export interface MysqlSendDataParams extends CommonSendDataParams {
 			memory?: string;
 		};
 	};
+	readWriteProxy: {
+		enabled: boolean;
+	};
 	mysqlDTO: {
 		replicaCount: number;
 		openDisasterRecoveryMode: boolean;
