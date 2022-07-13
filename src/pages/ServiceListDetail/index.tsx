@@ -15,6 +15,7 @@ import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';
 import DataBase from './Database/index';
 import RedisDataBase from './RedisDatabase/index';
+import ServiceDetailIngress from './ServiceIngress';
 
 import { getMiddlewareDetail } from '@/services/middleware';
 import { getNamespaces } from '@/services/common';
@@ -175,15 +176,17 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						/>
 					);
 				case 'externalAccess':
-					return (
-						<ExternalAccess
-							type={type}
-							middlewareName={middlewareName}
-							namespace={namespace}
-							customMid={customMid}
-							capabilities={(data && data.capabilities) || []}
-						/>
-					);
+					return <ServiceDetailIngress />;
+				// case 'externalAccess':
+				// 	return (
+				// 		<ExternalAccess
+				// 			type={type}
+				// 			middlewareName={middlewareName}
+				// 			namespace={namespace}
+				// 			customMid={customMid}
+				// 			capabilities={(data && data.capabilities) || []}
+				// 		/>
+				// 	);
 				case 'monitor':
 					return (
 						<Monitor

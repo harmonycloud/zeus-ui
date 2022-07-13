@@ -57,6 +57,7 @@ import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
 import StorageDetail from '@/pages/StorageManagement/storageDetail';
+import ServiceIngress from '@/pages/ServiceIngress';
 
 const Routes = withRouter((props) => {
 	return (
@@ -226,10 +227,10 @@ const Routes = withRouter((props) => {
 				{/* 服务暴露 */}
 				<Route
 					path="/serviceAvailable"
-					component={ServiceAvailable}
+					component={ServiceIngress}
 					exact
 				/>
-				<Route
+				{/* <Route
 					path="/serviceAvailable/addServiceAvailable"
 					component={AddServiceAvailableForm}
 					exact
@@ -238,7 +239,8 @@ const Routes = withRouter((props) => {
 					path="/serviceList/:name/:aliasName/externalAccess/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
 					component={AddServiceAvailableForm}
 					exact
-				/>
+				/> */}
+				{/* 监控告警 */}
 				<Route
 					path="/monitorAlarm"
 					exact
