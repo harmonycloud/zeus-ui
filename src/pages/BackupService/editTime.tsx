@@ -61,9 +61,9 @@ function EditTime(props: editTimeProps): JSX.Element {
 						'HH:mm'
 					),
 					limitRecord: data.limitRecord,
-					retentionTime: data.retentionTime,
-					dateUnit: data.dateUnit
+					retentionTime: data.retentionTime
 				});
+			data && setDateUnit(data.dateUnit);
 		}
 	}, []);
 
@@ -72,24 +72,45 @@ function EditTime(props: editTimeProps): JSX.Element {
 			title={'修改备份'}
 			visible={visible}
 			onOk={() => {
-				const minute = moment(form.getFieldsValue().time).get('minute');
-				const hour = moment(form.getFieldsValue().time).get('hour');
-				const week = form.getFieldsValue().cycle?.join(',');
-				const cron = `${minute} ${hour} ? ? ${week}`;
-				if (type === 'way') {
-					onCreate({ cron });
-				} else {
-					if (data.sourceType === 'mysql') {
-						onCreate({
-							keepAlive: form.getFieldsValue().limitRecord
-						});
+				form.validateFields().then((values) => {
+					const minute = moment(values.time).get('minute');
+					const hour = moment(values.time).get('hour');
+					const week = values.cycle?.join(',');
+					const cron = `${minute} ${hour} ? ? ${week}`;
+					if (type === 'way') {
+						if (data.sourceType === 'mysql') {
+							onCreate({
+								cron,
+								keepAlive:
+									data.sourceType === 'mysql'
+										? data.limitRecord
+										: data.retentionTime
+							});
+						} else {
+							onCreate({
+								cron,
+								dateUnit: data.dateUnit,
+								keepAlive:
+									data.sourceType === 'mysql'
+										? data.limitRecord
+										: data.retentionTime
+							});
+						}
 					} else {
-						onCreate({
-							keepAlive: form.getFieldsValue().retentionTime,
-							dateUnit: form.getFieldsValue().dateUnit
-						});
+						if (data.sourceType === 'mysql') {
+							onCreate({
+								cron: data.cron,
+								keepAlive: values.limitRecord
+							});
+						} else {
+							onCreate({
+								cron: data.cron,
+								keepAlive: values.retentionTime,
+								dateUnit
+							});
+						}
 					}
-				}
+				});
 			}}
 			onCancel={onCancel}
 			width={720}
