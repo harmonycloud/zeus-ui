@@ -32,9 +32,16 @@ const info = {
 	sourceName: '',
 	position: '',
 	backupTime: '',
-	cron: ''
+	cron: '',
+	retentionTime: '',
+	limitRecord: ''
 };
-
+const dataType = [
+	{ label: '天', value: 'day', max: 3650 },
+	{ label: '周', value: 'week', max: 521 },
+	{ label: '月', value: 'month', max: 120 },
+	{ label: '年', value: 'year', max: 10 }
+];
 function BackupTaskDetail(props: any): JSX.Element {
 	const {
 		globalVar: { cluster, namespace }
@@ -43,6 +50,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const params: any = useParams();
 	const [data, setData] = useState();
 	const [visible, setVisible] = useState<boolean>(false);
+	const [modalType, setModalType] = useState<string>('');
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const InfoConfig = [
@@ -115,9 +123,41 @@ function BackupTaskDetail(props: any): JSX.Element {
 					{val ? (
 						<EditOutlined
 							style={{ marginLeft: 8, color: '#226EE7' }}
-							onClick={() => setVisible(true)}
+							onClick={() => {
+								setVisible(true);
+								setModalType('way');
+							}}
 						/>
 					) : null}
+				</div>
+			)
+		},
+		{
+			dataIndex:
+				storage.getLocal('backupDetail').sourceType === 'mysql'
+					? 'limitRecord'
+					: 'retentionTime',
+			label:
+				storage.getLocal('backupDetail').sourceType === 'mysql'
+					? '备份保留个数'
+					: '备份保留时间',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val}
+					{storage.getLocal('backupDetail').dateUnit
+						? dataType.find(
+								(item) =>
+									item.value ===
+									storage.getLocal('backupDetail').dateUnit
+						  )?.label
+						: ''}
+					<EditOutlined
+						style={{ marginLeft: 8, color: '#226EE7' }}
+						onClick={() => {
+							setVisible(true);
+							setModalType('time');
+						}}
+					/>
 				</div>
 			)
 		},
@@ -149,7 +189,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 				phrase: storage.getLocal('backupDetail').phrase,
 				sourceName: storage.getLocal('backupDetail').sourceName,
 				position: storage.getLocal('backupDetail').position,
-				backupTime: storage.getLocal('backupDetail').backupTime
+				backupTime: storage.getLocal('backupDetail').backupTime,
+				retentionTime: storage.getLocal('backupDetail').retentionTime,
+				limitRecord: storage.getLocal('backupDetail').limitRecord
 			});
 	}, []);
 
@@ -330,8 +372,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 					phrase: res.data[0]?.phrase,
 					sourceName: res.data[0].sourceName,
 					position: res.data[0].position,
-					backupTime: res.data[0].backupTime
+					backupTime: res.data[0].backupTime,
+					retentionTime: res.data[0].retentionTime,
+					limitRecord: res.data[0].limitRecord
 				});
+				storage.setLocal('backupDetail', res.data[0]);
 				setVisible(false);
 			} else {
 				notification.error({
@@ -341,14 +386,14 @@ function BackupTaskDetail(props: any): JSX.Element {
 			}
 		});
 	};
-	const onCreate = (cron: string) => {
+	const onCreate = (cron: any) => {
 		const sendData = {
 			backupName: params.backupName,
 			clusterId: cluster.id,
 			namespace:
 				storage.getLocal('backupDetail').namespace || namespace.name,
-			cron: cron,
-			type: params.type
+			type: params.type,
+			...cron
 		};
 		editBackupTasks(sendData).then((res) => {
 			getBasicInfo();
@@ -395,6 +440,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 					visible={visible}
 					onCreate={onCreate}
 					onCancel={() => setVisible(false)}
+					type={modalType}
 				/>
 			</ProContent>
 		</ProPage>
