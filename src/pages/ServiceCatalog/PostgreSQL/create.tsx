@@ -142,11 +142,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			value: '9.6'
 		}
 	];
-	const [mode, setMode] = useState<string>('1m-1s');
+	const [mode, setMode] = useState<string>('1m-0s');
 	const modeList = [
 		{
 			label: '单实例',
-			value: '1m'
+			value: '1m-0s'
 		},
 		{
 			label: '一主一从',
@@ -988,30 +988,16 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											<QuestionCircleOutlined />
 										</Tooltip>
 									</label>
-									<div className={`form-content`}>
-										<Select
-											value={'读写分离模式'}
-											style={{
-												marginBottom: 12,
-												width: 182
-											}}
-										>
-											<Select.Option key="1">
-												读写分离模式
-											</Select.Option>
-											<Select.Option key="2">
-												非读写分离模式
-											</Select.Option>
-										</Select>
-										<div className={`display-flex`}>
-											<SelectBlock
-												options={modeList}
-												currentValue={mode}
-												onCallBack={(value: any) =>
-													setMode(value)
-												}
-											/>
-										</div>
+									<div
+										className={`form-content display-flex`}
+									>
+										<SelectBlock
+											options={modeList}
+											currentValue={mode}
+											onCallBack={(value: any) =>
+												setMode(value)
+											}
+										/>
 									</div>
 								</li>
 								{mode === '1m-ns' ? (
