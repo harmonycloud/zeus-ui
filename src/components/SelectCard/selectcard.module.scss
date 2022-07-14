@@ -1,0 +1,78 @@
+.select-card {
+	.select-card-item {
+		cursor: pointer;
+		width: 160px;
+		height: 100px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		line-height: 20px;
+		color: $text-color-title;
+		font-weight: $font-weight;
+		margin-right: 8px;
+		border: 1px solid $border-color;
+		text-align: center;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		padding: 8px;
+		&:hover {
+			color: $primary-color;
+			border: 1px solid $primary-color;
+		}
+		&.disabled {
+			color: #d2d2d2;
+			cursor: not-allowed;
+		}
+		&.disabled:hover {
+			color: #d2d2d2;
+			border: 1px solid $border-color;
+		}
+	}
+	.select-card-item:last-child {
+		margin-right: 0;
+	}
+	.select-card-item.active {
+		background: #f8fbfd;
+		border: 1px solid $primary-color;
+	}
+	.select-card-item.active.disabled {
+		background: #fff;
+		border: 1px solid $border-color;
+	}
+}
+.select-card-disabled {
+	.select-card-item {
+		cursor: not-allowed;
+		width: 160px;
+		height: 100px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		font-size: 14px;
+		line-height: 20px;
+		color: #d2d2d2;
+		font-weight: $font-weight;
+		margin-right: 8px;
+		border: 1px solid $border-color;
+		text-align: center;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		padding: 8px;
+		&:hover {
+			color: #d2d2d2;
+			border: 1px solid $border-color;
+		}
+	}
+	.select-card-item:last-child {
+		margin-right: 0;
+	}
+	.select-card-item.active {
+		background: #f3f3f3;
+		border: 1px dashed #d1d5d9;
+		color: $white;
+	}
+}
