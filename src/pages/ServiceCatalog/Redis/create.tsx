@@ -135,6 +135,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '哨兵模式',
 			value: 'sentinel'
+		},
+		{
+			label: '读写分离模式',
+			value: 'readWriteProxy'
+		},
+		{
+			label: '代理模式',
+			value: 'agent'
 		}
 	];
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
@@ -152,15 +160,23 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const sentinelModeList = [
 		{
 			label: '单分片',
-			value: '1s-1m'
+			value: '1s-1m',
+			num: 2
 		},
 		{
 			label: '二分片',
-			value: '2s-2m'
+			value: '2s-2m',
+			num: 4
 		},
 		{
-			label: '三分片',
-			value: '3s-3m'
+			label: '四分片',
+			value: '4s-4m',
+			num: 8
+		},
+		{
+			label: '八分片',
+			value: '8s-8m',
+			num: 16
 		}
 	];
 	const [nodeObj, setNodeObj] = useState<NodeObjParams>({
@@ -206,8 +222,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
-	// * 读写分离模式
-	const [readWriteProxy, setReadWriteProxy] = useState<string>('true');
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -248,10 +262,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	}, [project, globalNamespace]);
 
 	const modifyQuota = (key: string) => {
-		setNodeModify({
-			nodeName: key,
-			flag: true
-		});
+		// setNodeModify({
+		// 	nodeName: key,
+		// 	flag: true
+		// });
 		setSpecId(nodeObj[key].specId);
 		if (nodeObj[key].specId === '') {
 			setInstanceSpec('Customize');
@@ -293,6 +307,12 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				mode: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
+				readWriteProxy: {
+					enabled:
+						mode === 'readWriteProxy' || mode === 'agent'
+							? true
+							: false
+				},
 				quota: { redis: {} },
 				mirrorImageId:
 					mirrorList
@@ -345,7 +365,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					);
 				}
 			}
-			if (mode === 'cluster') {
+			if (mode === 'cluster' || mode === 'agent') {
 				sendData.quota = {
 					redis: {
 						num: clusterMode === '3s-3m' ? 6 : 10,
@@ -401,6 +421,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							}
 							sendData.quota[key] = {
 								...nodeObj[key],
+								num: sentinelModeList.find(
+									(item) => item.value === sentinelMode
+								)?.num,
 								storageClassName:
 									nodeObj[key].storageClass?.split('/')[0],
 								storageClassQuota: nodeObj[key].storageQuota
@@ -1197,7 +1220,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										{/* <div>
 
 										</div> */}
-										{/* <Select
+										<Select
 											value={mode}
 											onChange={(value) => setMode(value)}
 											style={{
@@ -1213,34 +1236,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													{item.label}
 												</Select.Option>
 											))}
-										</Select> */}
-										<Select
-											value={readWriteProxy}
-											onChange={(val) =>
-												setReadWriteProxy(val)
-											}
-											style={{
-												marginBottom: 12,
-												width: 182
-											}}
-										>
-											<Select.Option key="true">
-												读写分离模式
-											</Select.Option>
-											<Select.Option key="false">
-												非读写分离模式
-											</Select.Option>
 										</Select>
-										<div>
-											<SelectBlock
-												options={modeList}
-												currentValue={mode}
-												onCallBack={(value: any) =>
-													setMode(value)
-												}
-											/>
-										</div>
-										{mode === 'cluster' ? (
+										{mode === 'cluster' ||
+										mode === 'agent' ? (
 											<div
 												style={{
 													marginTop: 12
@@ -1262,7 +1260,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												}}
 											>
 												<SelectBlock
-													options={sentinelModeList}
+													options={[
+														sentinelModeList[0]
+													]}
 													currentValue={sentinelMode}
 													onCallBack={(value: any) =>
 														setSentinelMode(value)
@@ -1272,7 +1272,39 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								{mode === 'sentinel' ? (
+								{mode === 'readWriteProxy' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span>分片数</span>
+										</label>
+										<div
+											className={`form-content ${styles['redis-mode']}`}
+										>
+											<Select
+												value={sentinelMode}
+												onChange={(value) =>
+													setSentinelMode(value)
+												}
+												style={{
+													width: 182
+												}}
+											>
+												{sentinelModeList.map(
+													(item, index) => (
+														<Select.Option
+															key={index}
+															value={item.value}
+														>
+															{item.label}
+														</Select.Option>
+													)
+												)}
+											</Select>
+										</div>
+									</li>
+								) : null}
+								{mode === 'sentinel' ||
+								mode === 'readWriteProxy' ? (
 									<li className="display-flex form-li">
 										<label className="form-name">
 											<span></span>
@@ -1311,7 +1343,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										</div>
 									</li>
 								) : null}
-								{(mode === 'cluster' || nodeModify.flag) && (
+								{(mode === 'cluster' ||
+									mode === 'agent' ||
+									nodeModify.flag) && (
 									<>
 										<li className="display-flex form-li">
 											<label className="form-name">
