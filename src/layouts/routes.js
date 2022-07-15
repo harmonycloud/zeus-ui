@@ -58,6 +58,7 @@ import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
 import StorageDetail from '@/pages/StorageManagement/storageDetail';
 import ServiceIngress from '@/pages/ServiceIngress';
+import ServiceDetailAddIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
 
 const Routes = withRouter((props) => {
 	return (
@@ -198,6 +199,13 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceList/:name/:aliasName/highAvailability/yamlDetail/:middlewareName/:type/:chartVersion/:clusterId/:namespace"
 					component={YamlEdit}
+					exact
+				/>
+				{/* 新建-服务暴露 */}
+
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/add/eskfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={ServiceDetailAddIngress}
 					exact
 				/>
 				{/* 新建模版 */}

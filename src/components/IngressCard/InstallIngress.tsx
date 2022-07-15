@@ -9,17 +9,22 @@ import {
 	AutoComplete,
 	Button,
 	Checkbox,
-	Space
+	Space,
+	Tag
 } from 'antd';
 import { installIngress } from '@/services/common';
 import pattern from '@/utils/pattern';
 import {
+	AffinityLabelsItem,
 	AffinityProps,
 	TolerationsProps
 } from '@/pages/ServiceCatalog/catalog';
 import { AutoCompleteOptionItem } from '@/types/comment';
 import { PlusOutlined } from '@ant-design/icons';
-import { getNodePort } from '@/services/middleware';
+import { getNodePort, getNodeTaint } from '@/services/middleware';
+import { TolerationLabelItem } from '../FormTolerations/formTolerations';
+import { getVIPs } from '@/services/ingress';
+import './index.scss';
 
 interface InstallIngressProps {
 	visible: boolean;
@@ -50,9 +55,20 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 		flag: false,
 		label: ''
 	});
+	const [tolerationsLabels, setTolerationsLabels] = useState<
+		TolerationLabelItem[]
+	>([]);
+	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
+		[]
+	);
 	const [label, setLabel] = useState<string>('');
 	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
+	const [taintLabel, setTaintLabel] = useState<string>('');
+	const [taintList, setTaintList] = useState<AutoCompleteOptionItem[]>([]);
 	const [checked, setChecked] = useState<boolean>(false);
+	const [address, setAddress] = useState<string>('');
+	const [vips, setVIPs] = useState<string[]>([]);
+	const [vipNoAlive, setVIPNoAlive] = useState<boolean>(false);
 
 	useEffect(() => {
 		getNodePort({ clusterId }).then((res) => {
@@ -66,6 +82,22 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				setLabelList(list);
 			}
 		});
+		getNodeTaint({ clusterid: clusterId }).then((res) => {
+			if (res.success) {
+				const list = res.data.map((item: string) => {
+					return {
+						value: item,
+						label: item
+					};
+				});
+				setTaintList(list);
+			}
+		});
+		getVIPs({ clusterId }).then((res) => {
+			if (res.success) {
+				setVIPs(res.data);
+			}
+		});
 	}, []);
 	useEffect(() => {
 		form.setFieldsValue({
@@ -76,10 +108,67 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 			defaultServerPort: 8181
 		});
 	}, []);
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setAddress(event.target.value);
+		if (event.target.value === '') {
+			setVIPNoAlive(true);
+		} else {
+			setVIPNoAlive(false);
+		}
+	};
 	const onOk = () => {
 		form.validateFields().then((values) => {
+			if (vipChecked && address === '') {
+				setVIPNoAlive(true);
+				return;
+			}
+			const sendData = {
+				clusterId,
+				...values
+			};
+			if (affinity.flag) {
+				if (!affinityLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机亲和。'
+					});
+					return;
+				} else {
+					sendData.nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked
+						};
+					});
+				}
+			}
+			if (tolerations.flag) {
+				if (!tolerationsLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机容忍。'
+					});
+					return;
+				} else {
+					sendData.tolerations = tolerationsLabels.map(
+						(item) => item.label
+					);
+				}
+			}
+			if (!portConfig) {
+				sendData.httpPort = null;
+				sendData.httpsPort = null;
+				sendData.healthzPort = null;
+				sendData.defaultServerPort = null;
+			}
+			if (!vipChecked) {
+				sendData.address = null;
+			} else {
+				sendData.address = address;
+			}
 			onCancel();
-			installIngress({ ...values, clusterId }).then((res) => {
+			console.log(sendData);
+			installIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
@@ -120,7 +209,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				>
 					<Input placeholder="请输入Ingress名称" />
 				</FormItem>
-				<FormItem label="VIP配置" required name="vip">
+				<FormItem label="VIP配置" required name="address">
 					<div className="display-flex flex-align">
 						<Switch
 							checked={vipChecked}
@@ -130,11 +219,40 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 						/>
 						{vipChecked && (
 							<Input
+								value={address}
 								style={{ width: '100%', marginLeft: 8 }}
 								placeholder="请输入VIP地址"
+								onChange={handleChange}
+								status={
+									vipNoAlive
+										? 'error'
+										: vips.find((item) => item === address)
+										? 'error'
+										: ''
+								}
 							/>
 						)}
 					</div>
+					{vips.find((item) => item === address) && (
+						<div
+							style={{
+								marginLeft: 52,
+								color: '#ff4d4f'
+							}}
+						>
+							当前VIP地址已经被配置
+						</div>
+					)}
+					{vipNoAlive && (
+						<div
+							style={{
+								marginLeft: 52,
+								color: '#ff4d4f'
+							}}
+						>
+							请输入VIP地址
+						</div>
+					)}
 				</FormItem>
 				<FormItem label="节点亲和" name="nodeAffinity">
 					<div className="display-flex flex-align">
@@ -177,20 +295,21 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 											: false
 									}
 									onClick={() => {
-										// if (
-										// 	!values.find(
-										// 		(item: any) => item.label === label
-										// 	)
-										// ) {
-										// 	onChange([
-										// 		...values,
-										// 		{
-										// 			label: label,
-										// 			checked,
-										// 			id: Math.random()
-										// 		}
-										// 	]);
-										// }
+										if (
+											!affinityLabels.find(
+												(item: any) =>
+													item.label === label
+											)
+										) {
+											setAffinityLabels([
+												...affinityLabels,
+												{
+													label: label,
+													checked,
+													id: Math.random()
+												}
+											]);
+										}
 									}}
 								>
 									<PlusOutlined
@@ -203,15 +322,15 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 									checked={checked}
 									onChange={(e) => {
 										setChecked(e.target.checked);
-										// onChange(
-										// 	values.map((item: any) => {
-										// 		return {
-										// 			label: item.label,
-										// 			id: item.id,
-										// 			checked: e.target.checked
-										// 		};
-										// 	})
-										// );
+										setAffinityLabels(
+											affinityLabels.map((item: any) => {
+												return {
+													label: item.label,
+													id: item.id,
+													checked: e.target.checked
+												};
+											})
+										);
 									}}
 								>
 									强制亲和
@@ -219,6 +338,44 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 							</Space>
 						)}
 					</div>
+					{label &&
+					!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(label) ? (
+						<div
+							style={{
+								marginLeft: 52,
+								color: '#ff4d4f'
+							}}
+						>
+							请输入key=value格式的内容
+						</div>
+					) : null}
+					{affinity.flag && affinityLabels.length > 0 && (
+						<div className="tag-box">
+							<Space wrap>
+								{affinityLabels.map((item) => {
+									return (
+										<Tag
+											key={item.label}
+											closable
+											style={{
+												padding: '4px 10px'
+											}}
+											onClose={() =>
+												setAffinityLabels(
+													affinityLabels.filter(
+														(arr) =>
+															arr.id !== item.id
+													)
+												)
+											}
+										>
+											{item.label}
+										</Tag>
+									);
+								})}
+							</Space>
+						</div>
+					)}
 				</FormItem>
 				<FormItem label="污点容忍" name="tolerations">
 					<div className="display-flex flex-align">
@@ -230,62 +387,77 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 							}
 						/>
 						{tolerations.flag && (
-							<Space>
-								<AutoComplete
-									allowClear
-									placeholder="请输入key=value格式的内容"
-									value={label}
-									style={{ width: 260 }}
-									options={labelList}
-									onChange={(value) => setLabel(value)}
-									status={
-										label &&
-										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
-											label
-										)
-											? 'error'
-											: ''
-									}
-								/>
-								<Button
-									style={{
-										marginLeft: '4px',
-										padding: '0 9px'
-									}}
-									disabled={
-										!label ||
-										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
-											label
-										)
-											? true
-											: false
-									}
-									onClick={() => {
-										// if (
-										// 	!values.find(
-										// 		(item: any) => item.label === label
-										// 	)
-										// ) {
-										// 	onChange([
-										// 		...values,
-										// 		{
-										// 			label: label,
-										// 			checked,
-										// 			id: Math.random()
-										// 		}
-										// 	]);
-										// }
-									}}
-								>
-									<PlusOutlined
-										style={{
-											color: '#005AA5'
-										}}
+							<>
+								<Space>
+									<AutoComplete
+										allowClear
+										value={taintLabel}
+										style={{ width: 372 }}
+										options={taintList}
+										onChange={(value) =>
+											setTaintLabel(value)
+										}
 									/>
-								</Button>
-							</Space>
+									<Button
+										style={{
+											marginLeft: '4px',
+											padding: '0 9px'
+										}}
+										onClick={() => {
+											if (
+												!tolerationsLabels.find(
+													(item: any) =>
+														item.label ===
+														taintLabel
+												)
+											) {
+												setTolerationsLabels([
+													...tolerationsLabels,
+													{
+														label: taintLabel,
+														id: Math.random()
+													}
+												]);
+											}
+										}}
+									>
+										<PlusOutlined
+											style={{
+												color: '#005AA5'
+											}}
+										/>
+									</Button>
+								</Space>
+							</>
 						)}
 					</div>
+					{tolerations.flag && tolerationsLabels.length > 0 && (
+						<div className="tag-box">
+							<Space wrap>
+								{tolerationsLabels.map((item) => {
+									return (
+										<Tag
+											key={item.label}
+											closable
+											style={{
+												padding: '4px 10px'
+											}}
+											onClose={() =>
+												setTolerationsLabels(
+													tolerationsLabels.filter(
+														(arr) =>
+															arr.id !== item.id
+													)
+												)
+											}
+										>
+											{item.label}
+										</Tag>
+									);
+								})}
+							</Space>
+						</div>
+					)}
 				</FormItem>
 				<FormItem label="端口配置" name="port">
 					<Switch

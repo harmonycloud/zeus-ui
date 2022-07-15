@@ -148,7 +148,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 	// * 集群外访问
-	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 是否点击提交跳转至结果页
 	const [commitFlag, setCommitFlag] = useState<boolean>(false);
 	// * 发布成功
@@ -220,7 +220,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				mode: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
-				hostNetwork: hostNetwork,
+				// hostNetwork: hostNetwork,
 				quota: {
 					rocketmq: {
 						storageClassName: values.storageClass.split('/')[0],
@@ -335,9 +335,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				});
 				return;
 			}
-			if (hostNetwork) {
-				sendData.ingresses = values.ingresses;
-			}
+			// if (hostNetwork) {
+			// 	sendData.ingresses = values.ingresses;
+			// }
 			if (namespace) {
 				sendData.namespace = namespace;
 			}
@@ -597,19 +597,19 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			</ProPage>
 		);
 	}
-	const childrenPostRender = (mode: string) => {
-		return (
-			<FormItem name="ingresses" noStyle>
-				<ModePost
-					mode={mode}
-					clusterId={globalCluster.id}
-					middlewareName={form.getFieldValue('name')}
-					form={form}
-					middlewareType={chartName}
-				/>
-			</FormItem>
-		);
-	};
+	// const childrenPostRender = (mode: string) => {
+	// 	return (
+	// 		<FormItem name="ingresses" noStyle>
+	// 			<ModePost
+	// 				mode={mode}
+	// 				clusterId={globalCluster.id}
+	// 				middlewareName={form.getFieldValue('name')}
+	// 				form={form}
+	// 				middlewareType={chartName}
+	// 			/>
+	// 		</FormItem>
+	// 	);
+	// };
 	return (
 		<ProPage>
 			<ProHeader
@@ -1253,7 +1253,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</div>
 								</li>
 								<StorageQuota clusterId={globalCluster.id} />
-								{mode !== 'dledger' && (
+								{/* {mode !== 'dledger' && (
 									<>
 										<li
 											className="display-flex form-li"
@@ -1295,7 +1295,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										{hostNetwork &&
 											childrenPostRender(mode)}
 									</>
-								)}
+								)} */}
 							</ul>
 						</div>
 					</FormBlock>

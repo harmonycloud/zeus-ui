@@ -165,7 +165,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
 	kafkaDTO: KafkaDTO;
-	hostNetwork: boolean;
+	hostNetwork?: boolean;
 	quota: {
 		kafka: {
 			num?: number;
@@ -242,7 +242,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 	namespace: string;
 	name: string;
 	aliasName: string;
-	hostNetwork: boolean;
+	hostNetwork?: boolean;
 	dynamicValues?: any;
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
