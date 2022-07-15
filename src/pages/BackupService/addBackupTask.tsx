@@ -156,7 +156,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 						item.name === 'redis' ||
 						item.name === 'rocketmq' ||
 						item.name === 'elasticsearch' ||
-						item.name === 'mysql'
+						item.name === 'mysql' ||
+						item.name === 'postgresql'
 				);
 				serMiddleware(data);
 				setSelect(data[0].name);

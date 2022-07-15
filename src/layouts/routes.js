@@ -233,13 +233,13 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceAvailable/addServiceIngress"
-					component={AddServiceIngress}
+					path="/serviceList/:name/:aliasName/externalAccess/add/eskfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddServiceDetailIngress}
 					exact
 				/>
 				<Route
-					path="/serviceList/:name/:aliasName/externalAccess/add/eskfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
-					component={AddServiceDetailIngress}
+					path="/serviceList/:name/:aliasName/externalAccess/add/msrdpgzk/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddServiceIngress}
 					exact
 				/>
 				{/* <Route

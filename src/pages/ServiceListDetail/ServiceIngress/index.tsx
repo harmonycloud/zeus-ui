@@ -39,6 +39,10 @@ export default function ServiceDetailIngress(
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/eskfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
+					} else {
+						history.push(
+							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+						);
 					}
 				}}
 			>

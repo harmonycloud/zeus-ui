@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-import { Button, Divider, Form, InputNumber, Select } from 'antd';
+import { Button, Divider, Form, InputNumber, Select, notification } from 'antd';
 import SelectCard from '@/components/SelectCard';
+import { getIngresses } from '@/services/common';
+import { ServiceIngressAddParams, ServiceNameItem } from '../detail';
+import { getMiddlewareDetail } from '@/services/middleware';
+import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 
 const ingressTypeList = [
 	{
@@ -31,7 +36,43 @@ const formItemLayout = {
 };
 
 export default function AddIngress(): JSX.Element {
+	const params: ServiceIngressAddParams = useParams();
+	const { name, namespace, middlewareName, clusterId, mode } = params;
 	const [ingressType, setIngressType] = useState<string>('read');
+	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
+	const [data, setData] = useState<any>();
+	useEffect(() => {
+		getIngresses({ clusterId: clusterId }).then((res) => {
+			if (res.success) {
+				setIngresses(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	}, []);
+
+	const getData = (clusterId: string, namespace: string) => {
+		const sendData = {
+			clusterId,
+			namespace,
+			middlewareName,
+			type: name
+		};
+		getMiddlewareDetail(sendData).then((res) => {
+			if (res.success) {
+				setData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+
 	const handleSubmit = () => {
 		window.history.back();
 	};
@@ -69,7 +110,12 @@ export default function AddIngress(): JSX.Element {
 							}
 						]}
 					>
-						<Select placeholder="请选择暴露方式" />
+						<Select placeholder="请选择暴露方式">
+							<Select.Option value="NodePort">
+								NodePort
+							</Select.Option>
+							<Select.Option value="TCP">TCP</Select.Option>
+						</Select>
 					</Form.Item>
 					<Form.Item
 						label="负载均衡选择"
@@ -80,7 +126,18 @@ export default function AddIngress(): JSX.Element {
 							}
 						]}
 					>
-						<Select placeholder="请选择负载均衡" />
+						<Select placeholder="请选择负载均衡">
+							{ingresses.map((item: IngressItemProps) => {
+								return (
+									<Select.Option
+										key={item.ingressClassName}
+										value={item.ingressClassName}
+									>
+										{item.ingressClassName}
+									</Select.Option>
+								);
+							})}
+						</Select>
 					</Form.Item>
 					<Form.Item
 						label="对外端口配置"
