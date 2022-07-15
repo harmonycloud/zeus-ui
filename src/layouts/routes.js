@@ -58,7 +58,7 @@ import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
 import StorageDetail from '@/pages/StorageManagement/storageDetail';
 import ServiceIngress from '@/pages/ServiceIngress';
-import AddIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
+import AddServiceIngress from '@/pages/ServiceListDetail/ServiceIngress/addServiceIngress';
 
 const Routes = withRouter((props) => {
 	return (
@@ -232,8 +232,8 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceAvailable/addIngress"
-					component={AddIngress}
+					path="/serviceAvailable/addServiceIngress"
+					component={AddServiceIngress}
 					exact
 				/>
 				{/* <Route

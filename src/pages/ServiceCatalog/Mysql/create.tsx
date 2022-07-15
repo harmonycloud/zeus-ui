@@ -1672,7 +1672,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												读写分离模式
 											</Select.Option>
 											<Select.Option key="false">
-												非读写分离模式
+												普通模式
 											</Select.Option>
 										</Select>
 										<div className={`display-flex`}>
