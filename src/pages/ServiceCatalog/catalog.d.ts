@@ -144,6 +144,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 		};
 	};
 	mirrorImageId?: any;
+	readWriteProxy?: any;
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;

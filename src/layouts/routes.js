@@ -59,6 +59,7 @@ import AddStorage from '@/pages/StorageManagement/addStorage';
 import StorageDetail from '@/pages/StorageManagement/storageDetail';
 import ServiceIngress from '@/pages/ServiceIngress';
 import AddServiceIngress from '@/pages/ServiceListDetail/ServiceIngress/addServiceIngress';
+import AddServiceDetailIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
 
 const Routes = withRouter((props) => {
 	return (
@@ -234,6 +235,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/serviceAvailable/addServiceIngress"
 					component={AddServiceIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/add/eskfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddServiceDetailIngress}
 					exact
 				/>
 				{/* <Route
