@@ -6,6 +6,7 @@ export interface ListCardItemProps {
 	width?: number;
 	render?: any;
 	style?: React.CSSProperties;
+	icon?: any;
 }
 export interface ListCardProps {
 	title: string;
@@ -17,4 +18,5 @@ export interface ListCardProps {
 	children: any;
 	actionRender?: any;
 	render?: JSX.Element;
+	columnGap?: string;
 }

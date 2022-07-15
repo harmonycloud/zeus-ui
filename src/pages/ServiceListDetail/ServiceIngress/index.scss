@@ -1,0 +1,20 @@
+.ingress-service-box {
+	width: 160px;
+	height: 100px;
+	background: $black-10;
+	border: 1px solid $black-5;
+	text-align: center;
+	padding: 16px;
+	cursor: pointer;
+	.ingress-service-box-label {
+		height: 20px;
+		font-size: $font-2;
+		font-weight: $font-weight;
+		color: $black-2;
+		line-height: $line-height-2;
+		margin-top: 4px;
+	}
+}
+.ingress-service-box-active{
+	border: 1px solid $blue-base;
+}

@@ -30,7 +30,7 @@ const formItemLayout = {
 	}
 };
 
-export default function AddServiceIngress(): JSX.Element {
+export default function AddIngress(): JSX.Element {
 	const [ingressType, setIngressType] = useState<string>('read');
 	const handleSubmit = () => {
 		window.history.back();

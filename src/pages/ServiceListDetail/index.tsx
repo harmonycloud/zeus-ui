@@ -176,7 +176,19 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						/>
 					);
 				case 'externalAccess':
-					return <ServiceDetailIngress />;
+					return (
+						<ServiceDetailIngress
+							name={name}
+							aliasName={aliasName}
+							middlewareName={middlewareName}
+							chartVersion={chartVersion}
+							namespace={namespace}
+							customMid={customMid}
+							clusterId={globalVar.cluster.id}
+							capabilities={(data && data.capabilities) || []}
+							mode={data.mode}
+						/>
+					);
 				// case 'externalAccess':
 				// 	return (
 				// 		<ExternalAccess

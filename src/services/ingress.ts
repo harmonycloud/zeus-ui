@@ -25,3 +25,7 @@ export const getIngressMid = async (params: any) => {
 	const result = Axios.get(Ingress.getIngressByMiddleware, params);
 	return result;
 };
+export const getVIPs = async (params: { clusterId: string }) => {
+	const result = Axios.get(Ingress.getVIPs, params);
+	return result;
+};
