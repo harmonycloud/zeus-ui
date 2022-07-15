@@ -94,6 +94,9 @@ export interface MysqlSendDataParams extends CommonSendDataParams {
 			memory?: string;
 		};
 	};
+	readWriteProxy: {
+		enabled: boolean;
+	};
 	mysqlDTO: {
 		replicaCount: number;
 		openDisasterRecoveryMode: boolean;
@@ -131,6 +134,9 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
 	password: string;
+	readWriteProxy: {
+		enabled: boolean;
+	};
 	quota: {
 		redis: {
 			num?: number;

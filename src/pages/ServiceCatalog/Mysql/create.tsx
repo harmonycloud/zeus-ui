@@ -204,6 +204,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	// * root密码
 	const [mysqlPwd, setMysqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
+	// * 读写分离模式
+	const [readWriteProxy, setReadWriteProxy] = useState<string>('true');
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -293,6 +295,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				mode: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
+				readWriteProxy: {
+					enabled: readWriteProxy === 'true' ? true : false
+				},
 				quota: {
 					mysql: {
 						storageClassName: values.storageClass.split('/')[0],
@@ -500,6 +505,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					mode: originData.mode,
 					filelogEnabled: originData.filelogEnabled,
 					stdoutEnabled: originData.stdoutEnabled,
+					readWriteProxy: {
+						enabled: readWriteProxy === 'true' ? true : false
+					},
 					quota: {
 						mysql: {
 							cpu: originData.quota.mysql.cpu,
@@ -1651,16 +1659,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									</label>
 									<div className={`form-content`}>
 										<Select
-											value={'读写分离模式'}
+											value={readWriteProxy}
+											onChange={(val) =>
+												setReadWriteProxy(val)
+											}
 											style={{
 												marginBottom: 12,
 												width: 182
 											}}
 										>
-											<Select.Option key="1">
+											<Select.Option key="true">
 												读写分离模式
 											</Select.Option>
-											<Select.Option key="2">
+											<Select.Option key="false">
 												非读写分离模式
 											</Select.Option>
 										</Select>

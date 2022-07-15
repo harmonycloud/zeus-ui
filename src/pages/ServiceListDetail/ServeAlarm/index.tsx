@@ -21,6 +21,7 @@ import {
 	updateAlarms,
 	updateAlarm
 } from '@/services/middleware';
+import { getAlarmSetting, getSystemAlarmSetting } from '@/services/alarm';
 import storage from '@/utils/storage';
 import { DetailParams, RuleProps, ServiceRuleItem } from '../detail';
 
@@ -55,6 +56,22 @@ function Rules(props: RuleProps): JSX.Element {
 	};
 
 	useEffect(() => {
+		if (alarmType === 'system') {
+			getSystemAlarmSetting().then((res) => {
+				console.log(res);
+			});
+		} else {
+			getAlarmSetting({
+				clusterId,
+				middlewareName,
+				namespace
+			}).then((res) => {
+				console.log(res);
+			});
+		}
+	}, []);
+
+	useEffect(() => {
 		getData(clusterId, middlewareName, namespace, searchText);
 	}, [searchText]);
 
@@ -68,7 +85,7 @@ function Rules(props: RuleProps): JSX.Element {
 				})
 			);
 		});
-	}, [props]);
+	}, [currentTab]);
 
 	const getData = (
 		clusterId: string,
@@ -507,13 +524,17 @@ function Rules(props: RuleProps): JSX.Element {
 					width={100}
 				/>
 			</ProTable>
-			{visible && (
+			{visible ? (
 				<AlarmSet
 					visible={visible}
+					alarmType={alarmType}
+					clusterId={clusterId}
+					namespace={namespace}
+					middlewareName={middlewareName}
 					onOk={() => setVisible(false)}
 					onCancel={() => setVisible(false)}
 				/>
-			)}
+			) : null}
 		</>
 	);
 }

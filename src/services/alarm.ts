@@ -41,3 +41,20 @@ export const sendDing = (params: any) => {
 export const connectDing = (params: any) => {
 	return Axios.json(Alarm.connectDing, params, {}, 'POST');
 };
+
+export const getAlarmSetting = (params?: any) => {
+	return Axios.get(Alarm.alertSetting, params);
+};
+
+export const postAlarmSetting = (params: any) => {
+	return Axios.json(Alarm.alertSetting, params, {}, 'POST');
+};
+
+export const getSystemAlarmSetting = (params?: any) => {
+	return Axios.get(Alarm.systemAlertSetting, params);
+};
+
+export const postSystemAlarmSetting = (params: any) => {
+	// return Axios.post(Alarm.systemAlertSetting, params);
+	return Axios.json(Alarm.systemAlertSetting, params, params, 'POST');
+};
