@@ -187,6 +187,13 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							clusterId={globalVar.cluster.id}
 							capabilities={(data && data.capabilities) || []}
 							mode={data.mode}
+							brokerNum={
+								name === 'kafka'
+									? data.kafkaDTO.brokerNum
+									: name === 'rocketmq'
+									? data.rocketMQParam.brokerNum
+									: null
+							}
 						/>
 					);
 				// case 'externalAccess':

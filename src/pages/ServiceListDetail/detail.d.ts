@@ -35,6 +35,7 @@ export interface ServiceIngressAddParams {
 	chartVersion: string;
 	namespace: string;
 	mode: string;
+	brokerNum: string;
 }
 export interface ParamterSettingProps {
 	middlewareName: string;
@@ -579,6 +580,7 @@ export interface ServiceDetailIngressProps {
 	capabilities: string[];
 	clusterId: string;
 	mode: string;
+	brokerNum: number;
 }
 
 export interface ServiceNameItem {

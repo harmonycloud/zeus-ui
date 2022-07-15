@@ -22,7 +22,8 @@ export default function ServiceDetailIngress(
 		customMid,
 		capabilities,
 		clusterId,
-		mode
+		mode,
+		brokerNum
 	} = props;
 	const history = useHistory();
 	const Operation = {
@@ -30,14 +31,10 @@ export default function ServiceDetailIngress(
 			<Button
 				type="primary"
 				onClick={() => {
-					// kfk es mq 的添加服务暴露页不同，分成了两个文件
-					if (
-						name === 'kafka' ||
-						name === 'elasticsearch' ||
-						name === 'rocketmq'
-					) {
+					// kfk mq 的添加服务暴露页不同
+					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/eskfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
 						);
 					}
 				}}
