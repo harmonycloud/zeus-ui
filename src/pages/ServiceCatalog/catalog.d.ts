@@ -134,9 +134,6 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
 	password: string;
-	readWriteProxy: {
-		enabled: boolean;
-	};
 	quota: {
 		redis: {
 			num?: number;
