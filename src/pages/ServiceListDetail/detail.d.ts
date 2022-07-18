@@ -35,6 +35,7 @@ export interface ServiceIngressAddParams {
 	chartVersion: string;
 	namespace: string;
 	mode: string;
+	brokerNum: string;
 }
 export interface ParamterSettingProps {
 	middlewareName: string;
@@ -582,11 +583,17 @@ export interface ServiceDetailIngressProps {
 	readWriteProxy?: {
 		enabled: boolean;
 	};
+	brokerNum: number;
 }
 
 export interface ServiceNameItem {
 	name: string;
 	label: string;
 	icon: string;
-	port: number | null;
+}
+export interface HttpPathItem {
+	path: string;
+	serviceName: string;
+	servicePort: number | string;
+	id: number;
 }

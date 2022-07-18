@@ -188,6 +188,13 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							capabilities={(data && data.capabilities) || []}
 							mode={data.mode}
 							readWriteProxy={data?.readWriteProxy}
+							brokerNum={
+								name === 'kafka'
+									? data.kafkaDTO.brokerNum
+									: name === 'rocketmq'
+									? data.rocketMQParam.brokerNum
+									: null
+							}
 						/>
 					);
 				// case 'externalAccess':

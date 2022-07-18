@@ -119,6 +119,12 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 			</Actions>
 		);
 	};
+	const ipRender = (value: string, record: ServiceIngressItem) => {
+		if (record.exposeType === 'NodePort') return record.exposeIP;
+		if (record.exposeType === 'HTTP') return record.exposeIP;
+		if (record.exposeType === 'Ingress')
+			return record.serviceList[0].exposePort;
+	};
 
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
 		return <GuidePage />;
@@ -168,7 +174,11 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						dataIndex="servicePurpose"
 						title="暴露服务"
 					/>
-					<ProTable.Column dataIndex="ip" title="暴露IP/域名/端口" />
+					<ProTable.Column
+						dataIndex="ip"
+						title="暴露IP/域名/端口"
+						render={ipRender}
+					/>
 					<ProTable.Column
 						dataIndex="action"
 						title="操作"

@@ -23,7 +23,8 @@ export default function ServiceDetailIngress(
 		capabilities,
 		clusterId,
 		mode,
-		readWriteProxy
+		readWriteProxy,
+		brokerNum
 	} = props;
 	const history = useHistory();
 	const Operation = {
@@ -31,14 +32,14 @@ export default function ServiceDetailIngress(
 			<Button
 				type="primary"
 				onClick={() => {
-					// kfk es mq 的添加服务暴露页不同，分成了两个文件
-					if (
-						name === 'kafka' ||
-						name === 'elasticsearch' ||
-						name === 'rocketmq'
-					) {
+					// kfk mq 的添加服务暴露页不同
+					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/eskfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+						);
+					} else if (name === 'elasticsearch') {
+						history.push(
+							`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}`
 						);
 					} else {
 						if (mode === 'cluster' && readWriteProxy?.enabled)
