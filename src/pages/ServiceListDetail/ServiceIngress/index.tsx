@@ -22,7 +22,8 @@ export default function ServiceDetailIngress(
 		customMid,
 		capabilities,
 		clusterId,
-		mode
+		mode,
+		readWriteProxy
 	} = props;
 	const history = useHistory();
 	const Operation = {
@@ -40,6 +41,8 @@ export default function ServiceDetailIngress(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/eskfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
 					} else {
+						if (mode === 'cluster' && readWriteProxy?.enabled)
+							return;
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);

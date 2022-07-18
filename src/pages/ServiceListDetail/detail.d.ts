@@ -579,6 +579,9 @@ export interface ServiceDetailIngressProps {
 	capabilities: string[];
 	clusterId: string;
 	mode: string;
+	readWriteProxy?: {
+		enabled: boolean;
+	};
 }
 
 export interface ServiceNameItem {

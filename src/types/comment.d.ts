@@ -76,6 +76,9 @@ export interface middlewareDetailProps {
 	stdoutEnabled: boolean;
 	filelogEnabled: boolean;
 	mirrorImage?: data.mirrorImage;
+	readWriteProxy: {
+		enabled: boolean;
+	};
 }
 
 export interface basicDataProps {

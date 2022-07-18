@@ -409,28 +409,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
-				const result = {
-					clusterId: globalCluster.id,
-					namespace: namespace,
-					middlewareName: middlewareName,
-					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
-				};
-				applyBackup(result).then((res) => {
-					// if (res.success) {
-					// 	notification.success({
-					// 		message: '成功',
-					// 		description: '克隆成功'
-					// 	});
-					// } else {
-					// 	notification.error({
-					// 		message: '失败',
-					// 		description: res.errorMsg
-					// 	});
-					// }
-				});
 			}
 			// 灾备服务-源服务和备服务同时创建
 			if (backupFlag) {
