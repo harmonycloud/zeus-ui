@@ -587,5 +587,10 @@ export interface ServiceNameItem {
 	name: string;
 	label: string;
 	icon: string;
-	port: number | null;
+}
+export interface HttpPathItem {
+	path: string;
+	serviceName: string;
+	servicePort: number | string;
+	id: number;
 }

@@ -8,11 +8,11 @@ import {
 	notification,
 	Space,
 	Switch,
-	Button
+	Button,
+	Divider
 } from 'antd';
 import { useParams } from 'react-router';
 import { ServiceIngressAddParams, ServiceNameItem } from '../detail';
-import FormBlock from '@/components/FormBlock';
 import { getIngresses } from '@/services/common';
 import { formItemLayout410 } from '@/utils/const';
 import { IconFont } from '@/components/IconFont';
@@ -45,14 +45,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				{
 					name: 'cluster',
 					label: '集群外访问',
-					icon: 'icon-jiqunwaifangwen',
-					port: null
+					icon: 'icon-jiqunwaifangwen'
 				},
 				{
 					name: `${middlewareName}-manager-svc`,
 					label: '管理页面',
-					icon: 'icon-yemianguanli',
-					port: 9000
+					icon: 'icon-yemianguanli'
 				}
 			];
 			const at = [];
@@ -183,19 +181,19 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					console.log(sendData);
 				}
 			}
-			// addIngress(sendData).then((res) => {
-			// 	if (res.success) {
-			// 		notification.success({
-			// 			message: '成功',
-			// 			description: '服务暴露新建成功'
-			// 		});
-			// 	} else {
-			// 		notification.error({
-			// 			message: '失败',
-			// 			description: res.errorMsg
-			// 		});
-			// 	}
-			// });
+			addIngress(sendData).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '服务暴露新建成功'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
 		});
 	};
 	return (
@@ -206,44 +204,42 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 			/>
 			<ProContent>
 				<Form {...formItemLayout410} form={form} labelAlign="left">
-					<FormBlock title="暴露服务">
-						<FormItem required name="serviceName" label="暴露服务">
-							<Space>
-								{serviceNames.map(
-									(item: ServiceNameItem, index: number) => {
-										return (
-											<div
-												key={index}
-												className={`ingress-service-box ${
-													item.name ===
-													curServiceName?.name
-														? 'ingress-service-box-active'
-														: ''
-												}`}
-												onClick={() =>
-													handleClick(item)
-												}
-											>
-												<IconFont
-													type={item.icon}
-													style={{
-														fontSize: '40px',
-														color: '#8D9299'
-													}}
-												/>
-												<div className="ingress-service-box-label">
-													{item.label}
-												</div>
+					<h2>暴露服务</h2>
+					<FormItem required name="serviceName" label="暴露服务">
+						<Space>
+							{serviceNames.map(
+								(item: ServiceNameItem, index: number) => {
+									return (
+										<div
+											key={index}
+											className={`ingress-service-box ${
+												item.name ===
+												curServiceName?.name
+													? 'ingress-service-box-active'
+													: ''
+											}`}
+											onClick={() => handleClick(item)}
+										>
+											<IconFont
+												type={item.icon}
+												style={{
+													fontSize: '40px',
+													color: '#8D9299'
+												}}
+											/>
+											<div className="ingress-service-box-label">
+												{item.label}
 											</div>
-										);
-									}
-								)}
-							</Space>
-						</FormItem>
-					</FormBlock>
+										</div>
+									);
+								}
+							)}
+						</Space>
+					</FormItem>
 					{/* 选择集群外访问 */}
 					{curServiceName?.name === 'cluster' && (
-						<FormBlock title="暴露配置">
+						<>
+							<h2>暴露配置</h2>
 							<FormItem
 								required
 								label="暴露方式"
@@ -350,14 +346,15 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									})}
 								</div>
 							)}
-						</FormBlock>
+						</>
 					)}
 					{/* 选择管理页面 */}
 					{(curServiceName?.name ===
 						`${middlewareName}-console-svc` ||
 						curServiceName?.name ===
 							`${middlewareName}-manager-svc`) && (
-						<FormBlock title="暴露配置">
+						<>
+							<h2>暴露配置</h2>
 							<FormItem
 								label="暴露方式"
 								name="networkModel"
@@ -498,9 +495,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									</FormItem>
 								</>
 							)}
-						</FormBlock>
+						</>
 					)}
 				</Form>
+				<Divider />
 				<Space>
 					<Button type="primary" onClick={handleSubmit}>
 						确定
