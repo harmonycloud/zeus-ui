@@ -580,6 +580,9 @@ export interface ServiceDetailIngressProps {
 	capabilities: string[];
 	clusterId: string;
 	mode: string;
+	readWriteProxy?: {
+		enabled: boolean;
+	};
 	brokerNum: number;
 }
 

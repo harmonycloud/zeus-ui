@@ -187,6 +187,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							clusterId={globalVar.cluster.id}
 							capabilities={(data && data.capabilities) || []}
 							mode={data.mode}
+							readWriteProxy={data?.readWriteProxy}
 							brokerNum={
 								name === 'kafka'
 									? data.kafkaDTO.brokerNum
