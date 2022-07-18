@@ -358,6 +358,22 @@ export const defaultValueRender = (value: string) => {
 		</div>
 	);
 };
+// * 浏览器复制到剪切板方法
+export const copyValue = (value: any) => {
+	const input = document.createElement('input');
+	document.body.appendChild(input);
+	input.style.position = 'absolute';
+	input.style.bottom = '0px';
+	input.style.opacity = '0';
+	input.value = value;
+	input.focus();
+	input.select();
+	if (document.execCommand('copy')) {
+		document.execCommand('copy');
+	}
+	input.blur();
+	document.body.removeChild(input);
+};
 // * 函数复用
 // * 判断两个数组中是否含有相同的元素（简单数组）
 export const judgeArrays: (

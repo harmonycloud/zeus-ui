@@ -12,7 +12,7 @@ import {
 	Space
 } from 'antd';
 import { IconFont } from '@/components/IconFont';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { getIngresses } from '@/services/common';
 import { ProHeader, ProPage, ProContent } from '@/components/ProPage';
 import {
@@ -33,8 +33,17 @@ import { addIngress } from '@/services/ingress';
 const Option = Select.Option;
 const FormItem = Form.Item;
 export default function AddEsIngress(): JSX.Element {
+	const history = useHistory();
 	const params: ServiceIngressAddParams = useParams();
-	const { name, namespace, middlewareName, clusterId, mode } = params;
+	const {
+		name,
+		aliasName,
+		namespace,
+		middlewareName,
+		clusterId,
+		mode,
+		chartVersion
+	} = params;
 	const [networkModel, setNetworkModel] = useState<number>(4);
 	const [curServiceName, setCurServiceName] = useState<ServiceNameItem>();
 	const [serviceNames, setServiceNames] = useState<ServiceNameItem[]>([]);
@@ -173,8 +182,6 @@ export default function AddEsIngress(): JSX.Element {
 	};
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
-			console.log(httpPaths);
 			let sendData = {};
 			if (networkModel === 7) {
 				sendData = {
@@ -220,6 +227,9 @@ export default function AddEsIngress(): JSX.Element {
 						message: '成功',
 						description: '服务暴露新建成功'
 					});
+					history.push(
+						`/serviceList/${name}/${aliasName}/externalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
+					);
 				} else {
 					notification.error({
 						message: '失败',

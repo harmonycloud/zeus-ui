@@ -234,7 +234,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceList/:name/:aliasName/externalAccess/add/es/:middlewareName/:clusterId/:chartVersion/:namespace"
+					path="/serviceList/:name/:aliasName/externalAccess/add/es/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
 					component={AddEsIngress}
 					exact
 				/>

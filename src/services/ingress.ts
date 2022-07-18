@@ -29,3 +29,12 @@ export const getVIPs = async (params: { clusterId: string }) => {
 	const result = Axios.get(Ingress.getVIPs, params);
 	return result;
 };
+export const getInternalServices = async (params: {
+	clusterId: string;
+	namespace: string;
+	middlewareType: string;
+	middlewareName: string;
+}) => {
+	const result = Axios.get(Ingress.getInternalServices, params);
+	return result;
+};

@@ -594,3 +594,11 @@ export interface HttpPathItem {
 	servicePort: number | string;
 	id: number;
 }
+
+export interface InternalServiceItem {
+	clusterIP: null;
+	internalAddress: string;
+	portDetailDtoList: [];
+	serviceName: string;
+	servicePurpose: string;
+}

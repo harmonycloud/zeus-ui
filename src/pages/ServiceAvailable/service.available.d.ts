@@ -14,11 +14,15 @@ export interface serviceAvailableItemProps {
 	namespace: string;
 	namespaceNickname: string | null;
 	protocol: string;
-	rules: string | null;
+	rules: any | null;
 	serviceList: any[];
 	servicePort: string;
 	imagePath?: string | null;
 	ingressClassName: string | null;
+	ingressPodList: any[] | null;
+	servicePurpose: string | null;
+	networkModel: 4 | 7;
+	address: string | null;
 }
 export interface serviceAvailablesProps {
 	chartName: string;

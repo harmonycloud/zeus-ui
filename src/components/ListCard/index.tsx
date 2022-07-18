@@ -67,6 +67,7 @@ export const ListCard = (props: ListCardProps) => {
 					}`}
 				>
 					<div
+						title={title}
 						className="zeus-list-card-title"
 						onClick={titleClick ? titleClick : undefined}
 					>

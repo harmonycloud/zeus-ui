@@ -54,3 +54,36 @@
 		color: $red-5;
 	}
 }
+.pod-card-item {
+	display: flex;
+	align-items: center;
+	width: 250px;
+	height: 52px;
+	border: 1px solid rgba(0,0,0,0.1500);
+	padding: 8px;
+	.pod-card-des {
+		width: calc(100% - 40px);
+		.pod-card-ip {
+			color: $black-2;
+			@include text-ellipsis;
+			.pod-card-ip-copy {
+				margin-left: $margin;
+				cursor: pointer;
+				&:hover{
+					color: $blue-base;
+				}
+			}
+		}
+		.pod-card-name {
+			color: $black-4;
+			@include text-ellipsis;
+		}
+	}
+}
+.card-ip-copy {
+	margin-left: $margin;
+	cursor: pointer;
+	&:hover{
+		color: $blue-base;
+	}
+}
