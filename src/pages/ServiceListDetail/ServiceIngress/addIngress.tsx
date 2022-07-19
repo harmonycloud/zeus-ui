@@ -11,7 +11,7 @@ import {
 	Button,
 	Divider
 } from 'antd';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { ServiceIngressAddParams, ServiceNameItem } from '../detail';
 import { getIngresses } from '@/services/common';
 import { formItemLayout410 } from '@/utils/const';
@@ -30,7 +30,16 @@ const fourNetworkIngress = [
 // kfk mq 的添加服务暴露页面
 export default function ServiceDetailAddIngress(): JSX.Element {
 	const params: ServiceIngressAddParams = useParams();
-	const { name, namespace, middlewareName, clusterId, brokerNum } = params;
+	const history = useHistory();
+	const {
+		name,
+		namespace,
+		middlewareName,
+		clusterId,
+		brokerNum,
+		aliasName,
+		chartVersion
+	} = params;
 	const [form] = Form.useForm();
 	const [curServiceName, setCurServiceName] = useState<ServiceNameItem>();
 	const [serviceNames, setServiceNames] = useState<ServiceNameItem[]>([]);
@@ -102,17 +111,43 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 			// * 集群外访问
 			if (curServiceName?.name === 'cluster') {
 				if (autoConfig) {
-					for (let i = 0; i < Number(brokerNum); i++) {
+					if (name === 'kafka') {
+						for (let i = 0; i < Number(brokerNum); i++) {
+							lt.push({
+								serviceName: `${middlewareName}-kafka-external-svc-${i}`,
+								exposePort: null
+							});
+						}
+					} else {
+						for (let i = 0; i < Number(brokerNum); i++) {
+							lt.push({
+								serviceName: `${middlewareName}-${i}-master`,
+								exposeType: null
+							});
+						}
 						lt.push({
-							serviceName: `${middlewareName}-kafka-external-svc-${i}`,
-							exposePort: null
+							serviceName: `${middlewareName}-nameserver-proxy-svc`,
+							exposeType: values.exposePort
 						});
 					}
 				} else {
-					for (let i = 0; i < Number(brokerNum); i++) {
+					if (name === 'kafka') {
+						for (let i = 0; i < Number(brokerNum); i++) {
+							lt.push({
+								serviceName: `${middlewareName}-kafka-external-svc-${i}`,
+								exposePort: values[`brokerPort${i}`]
+							});
+						}
+					} else {
+						for (let i = 0; i < Number(brokerNum); i++) {
+							lt.push({
+								serviceName: `${middlewareName}-${i}-master`,
+								exposeType: values[`brokerPort${i}`]
+							});
+						}
 						lt.push({
-							serviceName: `${middlewareName}-kafka-external-svc-${i}`,
-							exposePort: values[`brokerPort${i}`]
+							serviceName: `${middlewareName}-nameserver-proxy-svc`,
+							exposeType: values.exposePort
 						});
 					}
 				}
@@ -187,6 +222,9 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						message: '成功',
 						description: '服务暴露新建成功'
 					});
+					history.push(
+						`/serviceList/${name}/${aliasName}/externalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
+					);
 				} else {
 					notification.error({
 						message: '失败',
@@ -282,14 +320,18 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 							)}
 							<FormItem
 								label={`${
-									name === 'kafka' ? 'proxy' : 'NameServer'
+									name === 'kafka' ? 'NameServer' : 'proxy'
 								}端口配置`}
 								required
 								name="exposePort"
 								rules={[
 									{
 										required: true,
-										message: '请填写proxy端口'
+										message: `请填写${
+											name === 'kafka'
+												? 'NameServer'
+												: 'proxy'
+										}端口`
 									},
 									{
 										max:
