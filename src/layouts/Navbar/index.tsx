@@ -135,6 +135,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 										? currentProject.projectId
 										: '当前平台无项目'
 								}
+								optionLabelProp="label"
 								onChange={projectChange}
 								dropdownRender={(menu) => {
 									if (projects.length > 10) {
@@ -184,7 +185,32 @@ function Navbar(props: NavbarProps): JSX.Element {
 											</>
 										);
 									} else {
-										return menu;
+										return (
+											<>
+												{isAccess && (
+													<>
+														<div
+															className="flex-space-between"
+															style={{
+																padding:
+																	'5px 12px',
+																background:
+																	'#f8f8f8'
+															}}
+														>
+															<div>项目</div>
+															<div>租户</div>
+														</div>
+														<Divider
+															style={{
+																margin: '0 0 8px 0 '
+															}}
+														/>
+													</>
+												)}
+												{menu}
+											</>
+										);
 									}
 								}}
 							>
@@ -201,13 +227,18 @@ function Navbar(props: NavbarProps): JSX.Element {
 													justifyContent:
 														'space-between'
 												}}
+												label={project.aliasName}
 											>
 												<div className="flex-space-between">
 													<div>
 														{project.aliasName}
 													</div>
 													{isAccess && (
-														<div>
+														<div
+															style={{
+																marginLeft: 40
+															}}
+														>
 															{
 																project.tenantAliasName
 															}

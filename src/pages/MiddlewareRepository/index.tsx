@@ -84,7 +84,6 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const list = Array.from(
 				new Set(originData.map((item) => item.type))
 			);
-			console.log(list);
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
 				list.forEach((item) => {
