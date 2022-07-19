@@ -31,10 +31,12 @@ import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
-	postMiddleware
+	postMiddleware,
+	getMiddlewareDetail
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
+import transUnit from '@/utils/transUnit';
 import {
 	CreateProps,
 	CreateParams,
@@ -355,6 +357,75 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		});
 	};
 
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		getMiddlewareDetail({
+			clusterId: globalCluster.id,
+			namespace: namespace || globalNamespace.name,
+			middlewareName: middlewareName,
+			type: 'postgresql'
+		}).then((res) => {
+			if (!res.data) return;
+			setInstanceSpec('Customize');
+			if (res.data.nodeAffinity) {
+				setAffinity({
+					flag: true,
+					label: '',
+					checked: false
+				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item: string) => {
+						return { label: item };
+					}) || []
+				);
+			}
+			if (res.data.mode) {
+				setMode(res.data.mode);
+			}
+			if (res.data.version) {
+				setVersion(res.data.version);
+			}
+			form.setFieldsValue({
+				name: backupFileName ? res.data.name + '-backup' : '',
+				labels: res.data.labels,
+				annotations: res.data.annotations,
+				description: res.data.description,
+				mysqlPort: res.data.port,
+				mysqlPwd: res.data.password,
+				cpu: Number(res.data.quota.postgresql.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
+				),
+				storageClass: res.data.quota.postgresql.storageClassName,
+				storageQuota: transUnit.removeUnit(
+					res.data.quota.postgresql.storageClassQuota,
+					'Gi'
+				)
+			});
+			if (res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
+					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
+				}
+			}
+		});
+	};
+
+	// 全局分区更新
+	useEffect(() => {
+		if (JSON.stringify(globalNamespace) !== '{}') {
+			// 克隆服务
+			if (backupFileName) {
+				getMiddlewareDetailAndSetForm(middlewareName);
+			}
+		}
+	}, [globalNamespace]);
+
 	// 全局集群、分区更新
 	useEffect(() => {
 		if (
@@ -532,7 +603,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{globalNamespace.name === '*' && (
+					{globalNamespace.name === '*' && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">

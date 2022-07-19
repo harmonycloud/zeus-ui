@@ -243,6 +243,15 @@ function BackupTaskDetail(props: any): JSX.Element {
 					}`
 				);
 				break;
+			case 'postgresql':
+				history.push(
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${
+						middlewareInfo?.chartVersion
+					}/${record.sourceName}/backup/${record.backupFileName}/${
+						storage.getLocal('backupDetail').namespace
+					}`
+				);
+				break;
 			case 'redis':
 				history.push(
 					`/serviceList/redis/Redis/redisCreate/${

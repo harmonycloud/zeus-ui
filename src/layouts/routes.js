@@ -162,7 +162,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* pgsql备份跳转使用 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/backup/:backupFileName/:namespace"
 					component={PostgreSQLCreate}
 					exact
 				/>
