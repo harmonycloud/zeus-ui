@@ -44,7 +44,8 @@ export default function ServiceDetailIngress(
 		clusterId,
 		mode,
 		readWriteProxy,
-		brokerNum
+		brokerNum,
+		enableExternal
 	} = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
@@ -62,7 +63,7 @@ export default function ServiceDetailIngress(
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
 						);
 					} else if (name === 'elasticsearch') {
 						history.push(
@@ -161,6 +162,34 @@ export default function ServiceDetailIngress(
 			}
 		});
 	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.serviceName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+	};
 	const ipValue = (record: serviceAvailableItemProps) => {
 		if (record.protocol === 'HTTP') return record?.rules[0].domain;
 		if (record.exposeType === 'NodePort')
@@ -243,7 +272,7 @@ export default function ServiceDetailIngress(
 														item
 													);
 													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
 													);
 												} else if (
 													name === 'elasticsearch'
@@ -263,6 +292,7 @@ export default function ServiceDetailIngress(
 											编辑
 										</LinkButton>
 										<LinkButton
+											disabled={judgeInit(item)}
 											onClick={() => handleDelete(item)}
 										>
 											删除
@@ -425,6 +455,7 @@ export default function ServiceDetailIngress(
 											编辑
 										</LinkButton>
 										<LinkButton
+											disabled={judgeInit(item)}
 											onClick={() => handleDelete(item)}
 										>
 											删除

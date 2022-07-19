@@ -195,6 +195,13 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 									? data.rocketMQParam.brokerNum
 									: null
 							}
+							enableExternal={
+								name === 'kafka'
+									? data.kafkaDTO.enableExternal
+									: name === 'rocketmq'
+									? data.rocketMQParam.enableExternal
+									: null
+							}
 						/>
 					);
 				// case 'externalAccess':

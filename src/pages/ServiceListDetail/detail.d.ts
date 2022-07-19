@@ -36,6 +36,7 @@ export interface ServiceIngressAddParams {
 	namespace: string;
 	mode: string;
 	brokerNum: string;
+	enableExternal: string;
 }
 export interface ParamterSettingProps {
 	middlewareName: string;
@@ -584,6 +585,7 @@ export interface ServiceDetailIngressProps {
 		enabled: boolean;
 	};
 	brokerNum: number;
+	enableExternal: number | null;
 }
 
 export interface ServiceNameItem {

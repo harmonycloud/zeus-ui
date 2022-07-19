@@ -291,7 +291,6 @@ export default function AddEsIngress(): JSX.Element {
 					]
 				};
 			}
-			console.log(sendData);
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

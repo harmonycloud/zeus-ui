@@ -20,6 +20,8 @@ import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import './index.scss';
 import SelectBlock from '@/components/SelectBlock';
 import { addIngress } from '@/services/ingress';
+import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
+import storage from '@/utils/storage';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -38,7 +40,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 		clusterId,
 		brokerNum,
 		aliasName,
-		chartVersion
+		chartVersion,
+		enableExternal
 	} = params;
 	const [form] = Form.useForm();
 	const [curServiceName, setCurServiceName] = useState<ServiceNameItem>();
@@ -48,9 +51,41 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	const [exposeType, setExposeType] = useState<string>('TCP');
 	const [brokers, setBrokers] = useState<number[]>([]);
 	const [networkIngress, setNetworkIngress] = useState<number>(4);
+	const [serviceIngress] = useState<serviceAvailableItemProps>(
+		storage.getSession('serviceIngress')
+	);
+	useEffect(() => {
+		if (serviceIngress) {
+			setExposeType(
+				serviceIngress.exposeType === 'Ingress'
+					? 'TCP'
+					: serviceIngress.exposeType
+			);
+			setCurServiceName({
+				name: serviceIngress.serviceList?.[0]?.serviceName,
+				label: serviceIngress.servicePurpose || '管理页面',
+				icon:
+					serviceIngress.servicePurpose === '服务连接'
+						? 'icon-jiqunwaifangwen'
+						: 'icon-yemianguanli'
+			});
+			form.setFieldsValue({
+				exposeType:
+					serviceIngress.exposeType === 'Ingress'
+						? 'TCP'
+						: serviceIngress.exposeType,
+				ingressClassName: serviceIngress.ingressClassName,
+				exposePort: serviceIngress.serviceList?.[0].exposePort
+			});
+		}
+		return () => {
+			storage.getSession('serviceIngress') &&
+				storage.removeSession('serviceIngress');
+		};
+	}, []);
 	useEffect(() => {
 		if (name === 'kafka') {
-			const list = [
+			let list = [
 				{
 					name: 'cluster',
 					label: '集群外访问',
@@ -67,10 +102,13 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				at.push(i);
 			}
 			setBrokers(at);
+			if (enableExternal === 'true') {
+				list = list.filter((item) => item.name !== 'cluster');
+			}
 			setServiceNames(list);
 			setCurServiceName(list[0]);
 		} else if (name === 'rocketmq') {
-			const list = [
+			let list = [
 				{
 					name: 'cluster',
 					label: '集群外访问',
@@ -84,6 +122,9 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					port: 8080
 				}
 			];
+			if (enableExternal === 'true') {
+				list = list.filter((item) => item.name !== 'cluster');
+			}
 			setServiceNames(list);
 			setCurServiceName(list[0]);
 		}
@@ -105,9 +146,25 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	};
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
 			const lt = [];
+			let edit = {};
+			let old = {};
 			let sendData = {};
+			if (serviceIngress)
+				edit = {
+					name: serviceIngress.name
+						? serviceIngress.name
+						: serviceIngress.middlewareName
+				};
+			if (
+				serviceIngress.exposeType === 'Ingress' &&
+				serviceIngress.protocol === 'TCP'
+			)
+				old = {
+					oldServicePort: serviceIngress.serviceList[0].servicePort,
+					oldExposePort: serviceIngress.serviceList[0].exposePort,
+					oldServiceName: serviceIngress.serviceList[0].serviceName
+				};
 			// * 集群外访问
 			if (curServiceName?.name === 'cluster') {
 				if (autoConfig) {
@@ -152,6 +209,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					}
 				}
 				sendData = {
+					...edit,
 					clusterId,
 					namespace,
 					middlewareName,
@@ -164,12 +222,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					protocol: values.exposeType === 'TCP' ? 'TCP' : null,
 					serviceList: lt
 				};
-				console.log(sendData);
 			} else {
 				// * 管理页面
 				if (values.networkModel === 4) {
 					// 4层网络暴露
 					sendData = {
+						...edit,
 						clusterId,
 						namespace,
 						middlewareName,
@@ -184,14 +242,15 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								serviceName: `${middlewareName}-manager-svc`,
 								exposePort: values.exposePort,
 								servicePort: 9000,
-								targetPort: 9000
+								targetPort: 9000,
+								...old
 							}
 						]
 					};
-					console.log(sendData);
 				} else {
 					// 7层网络暴露
 					sendData = {
+						...edit,
 						clusterId,
 						namespace,
 						middlewareName,
@@ -213,14 +272,15 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 							}
 						]
 					};
-					console.log(sendData);
 				}
 			}
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
-						description: '服务暴露新建成功'
+						description: `服务暴露${
+							serviceIngress ? '编辑' : '新建'
+						}成功`
 					});
 					history.push(
 						`/serviceList/${name}/${aliasName}/externalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
@@ -237,7 +297,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				title="服务暴露新增"
+				title={`服务暴露${serviceIngress ? '编辑' : '新增'}`}
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
@@ -251,12 +311,21 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										<div
 											key={index}
 											className={`ingress-service-box ${
-												item.name ===
-												curServiceName?.name
+												curServiceName?.name.includes(
+													item.name
+												)
 													? 'ingress-service-box-active'
 													: ''
 											}`}
-											onClick={() => handleClick(item)}
+											style={{
+												background: !serviceIngress
+													? '#ffffff'
+													: '#f3f3f3'
+											}}
+											onClick={() =>
+												!serviceIngress &&
+												handleClick(item)
+											}
 										>
 											<IconFont
 												type={item.icon}
@@ -285,6 +354,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								initialValue={exposeType}
 							>
 								<Select
+									disabled={!!serviceIngress}
 									value={exposeType}
 									onChange={(value) => setExposeType(value)}
 								>
@@ -298,7 +368,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									required
 									label="负载均衡选择"
 								>
-									<Select>
+									<Select disabled={!!serviceIngress}>
 										{ingresses.map(
 											(item: IngressItemProps) => {
 												return (
@@ -346,7 +416,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									}
 								]}
 							>
-								<InputNumber style={{ width: '260px' }} />
+								<InputNumber
+									disabled={!!serviceIngress}
+									style={{ width: '260px' }}
+								/>
 							</FormItem>
 							<FormItem
 								name="brokerPort"
