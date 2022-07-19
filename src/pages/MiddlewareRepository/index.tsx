@@ -84,6 +84,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			const list = Array.from(
 				new Set(originData.map((item) => item.type))
 			);
+			console.log(list);
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
 				list.forEach((item) => {
@@ -108,8 +109,13 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 					}
 				});
 			}
-			if (!list.includes(null)) setDataSource(obj);
-			else setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
+			if (!list.includes('')) {
+				const ot = changeObjectIndex(obj, '数据库', 0);
+				setDataSource(ot);
+			} else {
+				const ot = changeObjectIndex(obj, '其他', list.length - 1);
+				setDataSource(changeObjectIndex(ot, '数据库', 0));
+			}
 		} else if (rule === 'source') {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
