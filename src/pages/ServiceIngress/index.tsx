@@ -9,6 +9,8 @@ import GuidePage from '../GuidePage';
 import Actions from '@/components/Actions';
 import { Drawer, Modal, notification, Table } from 'antd';
 import { FiltersProps } from '@/types/comment';
+import { api } from '@/api.json';
+import nodata from '@/assets/images/nodata.svg';
 
 const LinkButton = Actions.LinkButton;
 function ServiceIngress(props: ServiceIngressProps): JSX.Element {
@@ -104,14 +106,16 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 	const actionRender = (_: string, record: ServiceIngressItem) => {
 		return (
 			<Actions>
-				<LinkButton
-					onClick={() => {
-						setCurIngress(record);
-						setVisible(true);
-					}}
-				>
-					查看详情
-				</LinkButton>
+				{record.exposeType === 'Ingress' && record.protocol === 'TCP' && (
+					<LinkButton
+						onClick={() => {
+							setCurIngress(record);
+							setVisible(true);
+						}}
+					>
+						查看详情
+					</LinkButton>
+				)}
 				<LinkButton>编辑</LinkButton>
 				<LinkButton onClick={() => handleDelete(record)}>
 					删除
@@ -120,10 +124,11 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 		);
 	};
 	const ipRender = (value: string, record: ServiceIngressItem) => {
+		console.log(record);
 		if (record.exposeType === 'NodePort') return record.exposeIP;
-		if (record.exposeType === 'HTTP') return record.exposeIP;
+		if (record.protocol === 'HTTP') return record.rules?.[0].domain;
 		if (record.exposeType === 'Ingress')
-			return record.serviceList[0].exposePort;
+			return record.serviceList?.[0].exposePort;
 	};
 
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
@@ -137,6 +142,7 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 			/>
 			<ProContent>
 				<ProTable
+					rowKey="name"
 					dataSource={dataSource}
 					search={{
 						value: searchText,
@@ -186,15 +192,31 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 					/>
 				</ProTable>
 				<Drawer
-					title={curIngress?.middlewareName}
+					title={
+						<div className="icon-type-content">
+							<img
+								width={14}
+								height={14}
+								src={
+									curIngress?.imagePath
+										? `${api}/images/middleware/${curIngress?.imagePath}`
+										: nodata
+								}
+							/>
+							<div style={{ marginLeft: 8 }}>
+								{curIngress?.middlewareNickName ||
+									curIngress?.middlewareName}
+							</div>
+						</div>
+					}
 					placement="right"
 					onClose={() => setVisible(false)}
 					visible={visible}
 					width={500}
 				>
-					<Table dataSource={curIngress?.ingressComponentDtoList}>
-						<Table.Column dataIndex="" title="IP" />
-						<Table.Column dataIndex="" title="Ingress名称" />
+					<Table dataSource={curIngress?.ingressPodList || []}>
+						<Table.Column dataIndex="podIp" title="IP" />
+						<Table.Column dataIndex="podName" title="Ingress名称" />
 					</Table>
 				</Drawer>
 			</ProContent>
