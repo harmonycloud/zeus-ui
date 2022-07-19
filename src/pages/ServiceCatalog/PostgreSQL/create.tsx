@@ -307,6 +307,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					);
 				}
 			}
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			if (backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
