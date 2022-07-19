@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { Button, Divider, Form, InputNumber, Select, notification } from 'antd';
-import SelectBlock from '@/components/SelectBlock';
 import SelectCard from '@/components/SelectCard';
 import { getIngresses } from '@/services/common';
 import { addIngress } from '@/services/ingress';
 import { ServiceIngressAddParams } from '../detail';
 import { getMiddlewareDetail } from '@/services/middleware';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
+import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
+import storage from '@/utils/storage';
 
 const formItemLayout = {
 	labelCol: {
@@ -27,8 +28,10 @@ export default function AddIngress(): JSX.Element {
 		name === 'zookeeper' ? 'client' : 'read'
 	);
 	const [ingresses, setIngresses] = useState<IngressItemProps[]>([]);
-	const [exposeType, setExposeType] = useState<string>('NodePort');
-	const [networkModel, setNetworkModel] = useState<string>();
+	const [exposeType, setExposeType] = useState<string>('TCP');
+	const [serviceIngress] = useState<serviceAvailableItemProps>(
+		storage.getSession('serviceIngress')
+	);
 	const [data, setData] = useState<any>();
 
 	const ingressTypeList = [
@@ -81,6 +84,30 @@ export default function AddIngress(): JSX.Element {
 			}
 		});
 		getData(clusterId, namespace);
+	}, []);
+	useEffect(() => {
+		if (serviceIngress) {
+			const type = ingressTypeList.find(
+				(item) => item.label === serviceIngress.servicePurpose
+			)?.value;
+			type && setIngressType(type);
+			form.setFieldsValue({
+				exposeType:
+					serviceIngress.exposeType === 'Ingress'
+						? 'TCP'
+						: serviceIngress.exposeType,
+				exposePort: +serviceIngress.serviceList[0].exposePort,
+				ingressClassName: serviceIngress.ingressClassName
+			});
+			setExposeType(
+				serviceIngress.exposeType === 'Ingress'
+					? 'TCP'
+					: serviceIngress.exposeType
+			);
+		}
+		return () =>
+			storage.getSession('serviceIngress') &&
+			storage.removeSession('serviceIngress');
 	}, []);
 
 	const getData = (clusterId: string, namespace: string) => {
@@ -143,6 +170,7 @@ export default function AddIngress(): JSX.Element {
 				middlewareType: name,
 				exposeType:
 					values.exposeType === 'TCP' ? 'Ingress' : values.exposeType,
+				protocol: values.exposeType === 'TCP' ? 'TCP' : null,
 				ingressClassName: values.ingressClassName,
 				serviceList: [
 					{
@@ -153,15 +181,33 @@ export default function AddIngress(): JSX.Element {
 					}
 				]
 			};
-			if (values.exposeType === 'TCP') {
-				sendData = { ...sendData, protocol: 'TCP' };
+			if (serviceIngress) {
+				const serviceList = [
+					{
+						...sendData.serviceList[0],
+						oldServicePort:
+							serviceIngress.serviceList[0].servicePort,
+						oldExposePort: serviceIngress.serviceList[0].exposePort,
+						oldServiceName:
+							serviceIngress.serviceList[0].serviceName
+					}
+				];
+				sendData = {
+					...sendData,
+					name: serviceIngress.name
+						? serviceIngress.name
+						: serviceIngress.middlewareName
+				};
+				if (values.exposeType === 'TCP') {
+					sendData = { ...sendData, serviceList };
+				}
 			}
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
-						description: `对外路由${
-							!res.success ? '修改' : '添加'
+						description: `服务暴露${
+							serviceIngress ? '修改' : '添加'
 						}成功`
 					});
 					window.history.back();
@@ -177,7 +223,7 @@ export default function AddIngress(): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				title="服务暴露新增"
+				title={`服务暴露${serviceIngress ? '编辑' : '新增'}`}
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
@@ -194,6 +240,7 @@ export default function AddIngress(): JSX.Element {
 					>
 						<SelectCard
 							options={selectOptions()}
+							disabled={!!serviceIngress}
 							currentValue={ingressType}
 							onCallBack={(value: any) => setIngressType(value)}
 						/>
@@ -208,10 +255,12 @@ export default function AddIngress(): JSX.Element {
 								message: '请选择暴露方式'
 							}
 						]}
+						initialValue="TCP"
 					>
 						<Select
 							placeholder="请选择暴露方式"
 							value={exposeType}
+							disabled={!!serviceIngress}
 							onChange={(value) => setExposeType(value)}
 						>
 							<Select.Option value="NodePort" key="NodePort">
@@ -233,7 +282,10 @@ export default function AddIngress(): JSX.Element {
 								}
 							]}
 						>
-							<Select placeholder="请选择负载均衡">
+							<Select
+								placeholder="请选择负载均衡"
+								disabled={!!serviceIngress}
+							>
 								{ingresses.map((item: IngressItemProps) => {
 									return (
 										<Select.Option

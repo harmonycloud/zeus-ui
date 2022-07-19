@@ -256,7 +256,13 @@ export default function ServiceDetailIngress(
 														`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 													);
 												} else {
-													return;
+													storage.setSession(
+														'serviceIngress',
+														item
+													);
+													history.push(
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+													);
 												}
 											}}
 										>
@@ -418,7 +424,13 @@ export default function ServiceDetailIngress(
 														`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 													);
 												} else {
-													return;
+													storage.setSession(
+														'serviceIngress',
+														item
+													);
+													history.push(
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+													);
 												}
 											}}
 										>

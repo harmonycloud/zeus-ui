@@ -258,6 +258,11 @@ const Routes = withRouter((props) => {
 					component={AddServiceIngress}
 					exact
 				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/edit/msrdpgzk/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddServiceIngress}
+					exact
+				/>
 				{/* <Route
 					path="/serviceAvailable/addServiceAvailable"
 					component={AddServiceAvailableForm}
