@@ -27,6 +27,7 @@ import { api } from '@/api.json';
 import { copyValue } from '@/utils/utils';
 import { CheckCircleFilled } from '@ant-design/icons';
 import nodata from '@/assets/images/nodata.svg';
+import storage from '@/utils/storage';
 
 const LinkButton = Actions.LinkButton;
 export default function ServiceDetailIngress(
@@ -231,7 +232,36 @@ export default function ServiceDetailIngress(
 								}
 								actionRender={
 									<Actions>
-										<LinkButton>编辑</LinkButton>
+										<LinkButton
+											onClick={() => {
+												if (
+													name === 'kafka' ||
+													name === 'rocketmq'
+												) {
+													storage.setSession(
+														'serviceIngress',
+														item
+													);
+													history.push(
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+													);
+												} else if (
+													name === 'elasticsearch'
+												) {
+													storage.setSession(
+														'serviceIngress',
+														item
+													);
+													history.push(
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+													);
+												} else {
+													return;
+												}
+											}}
+										>
+											编辑
+										</LinkButton>
 										<LinkButton
 											onClick={() => handleDelete(item)}
 										>
@@ -364,8 +394,41 @@ export default function ServiceDetailIngress(
 								}
 								actionRender={
 									<Actions>
-										<LinkButton>编辑</LinkButton>
-										<LinkButton>删除</LinkButton>
+										<LinkButton
+											onClick={() => {
+												if (
+													name === 'kafka' ||
+													name === 'rocketmq'
+												) {
+													storage.setSession(
+														'serviceIngress',
+														item
+													);
+													history.push(
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+													);
+												} else if (
+													name === 'elasticsearch'
+												) {
+													storage.setSession(
+														'serviceIngress',
+														item
+													);
+													history.push(
+														`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+													);
+												} else {
+													return;
+												}
+											}}
+										>
+											编辑
+										</LinkButton>
+										<LinkButton
+											onClick={() => handleDelete(item)}
+										>
+											删除
+										</LinkButton>
 									</Actions>
 								}
 								columnGap="24px"

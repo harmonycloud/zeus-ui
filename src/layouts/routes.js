@@ -239,6 +239,16 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/edit/es/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddEsIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/edit/kfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:brokerNum"
+					component={AddServiceDetailIngress}
+					exact
+				/>
+				<Route
 					path="/serviceList/:name/:aliasName/externalAccess/add/kfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:brokerNum"
 					component={AddServiceDetailIngress}
 					exact

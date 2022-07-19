@@ -29,6 +29,8 @@ import {
 	PlusCircleOutlined
 } from '@ant-design/icons';
 import { addIngress } from '@/services/ingress';
+import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
+import storage from '@/utils/storage';
 
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -52,6 +54,9 @@ export default function AddEsIngress(): JSX.Element {
 	const [httpPaths, setHttpPaths] = useState<HttpPathItem[]>([
 		{ path: '', serviceName: '', servicePort: '', id: Math.random() }
 	]);
+	const [serviceIngress] = useState<serviceAvailableItemProps>(
+		storage.getSession('serviceIngress')
+	);
 	const [form] = Form.useForm();
 	useEffect(() => {
 		getIngresses({ clusterId: clusterId }).then((res) => {
@@ -64,6 +69,47 @@ export default function AddEsIngress(): JSX.Element {
 				});
 			}
 		});
+	}, []);
+	useEffect(() => {
+		if (serviceIngress) {
+			setExposeType(
+				serviceIngress.exposeType === 'Ingress'
+					? 'TCP'
+					: serviceIngress.exposeType
+			);
+			form.setFieldsValue({
+				networkModel: serviceIngress.networkModel,
+				exposeType:
+					serviceIngress.exposeType === 'Ingress'
+						? 'TCP'
+						: serviceIngress.exposeType,
+				ingressClassName: serviceIngress.ingressClassName,
+				exposePort: serviceIngress?.serviceList?.[0]?.exposePort,
+				domain: serviceIngress.rules?.[0].domain
+			});
+			if (serviceIngress.protocol === 'HTTP') {
+				setHttpPaths(
+					serviceIngress.rules[0].ingressHttpPaths.map(
+						(item: any) => {
+							item.id = Math.random();
+							return item;
+						}
+					)
+				);
+			}
+			setNetworkModel(serviceIngress.networkModel);
+			setCurServiceName({
+				name: serviceIngress.serviceList?.[0].serviceName,
+				label: serviceIngress.servicePurpose || '读写',
+				icon:
+					serviceIngress.servicePurpose === '管理页面'
+						? 'icon-yemianguanli'
+						: 'icon-duxie1'
+			});
+		}
+		return () =>
+			storage.getSession('serviceIngress') &&
+			storage.removeSession('serviceIngress');
 	}, []);
 	useEffect(() => {
 		let list = [];
@@ -82,7 +128,8 @@ export default function AddEsIngress(): JSX.Element {
 					}
 				];
 				setServiceNames(list);
-				setCurServiceName(list[0]);
+				!storage.getSession('serviceIngress') &&
+					setCurServiceName(list[0]);
 				break;
 			case 'complex':
 				list = [
@@ -98,7 +145,8 @@ export default function AddEsIngress(): JSX.Element {
 					}
 				];
 				setServiceNames(list);
-				setCurServiceName(list[0]);
+				!storage.getSession('serviceIngress') &&
+					setCurServiceName(list[0]);
 				break;
 			case 'cold-complex':
 				list = [
@@ -114,7 +162,8 @@ export default function AddEsIngress(): JSX.Element {
 					}
 				];
 				setServiceNames(list);
-				setCurServiceName(list[0]);
+				!storage.getSession('serviceIngress') &&
+					setCurServiceName(list[0]);
 				break;
 			default:
 				list = [
@@ -130,7 +179,8 @@ export default function AddEsIngress(): JSX.Element {
 					}
 				];
 				setServiceNames(list);
-				setCurServiceName(list[0]);
+				!storage.getSession('serviceIngress') &&
+					setCurServiceName(list[0]);
 				break;
 		}
 	}, []);
@@ -183,8 +233,26 @@ export default function AddEsIngress(): JSX.Element {
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
 			let sendData = {};
+			let edit = {};
+			let old = {};
+			if (serviceIngress)
+				edit = {
+					name: serviceIngress.name
+						? serviceIngress.name
+						: serviceIngress.middlewareName
+				};
+			if (
+				serviceIngress.exposeType === 'Ingress' &&
+				serviceIngress.protocol === 'TCP'
+			)
+				old = {
+					oldServicePort: serviceIngress.serviceList[0].servicePort,
+					oldExposePort: serviceIngress.serviceList[0].exposePort,
+					oldServiceName: serviceIngress.serviceList[0].serviceName
+				};
 			if (networkModel === 7) {
 				sendData = {
+					...edit,
 					clusterId,
 					namespace,
 					middlewareName,
@@ -202,6 +270,7 @@ export default function AddEsIngress(): JSX.Element {
 				};
 			} else {
 				sendData = {
+					...edit,
 					clusterId,
 					namespace,
 					middlewareName,
@@ -216,16 +285,20 @@ export default function AddEsIngress(): JSX.Element {
 							serviceName: curServiceName?.name,
 							exposePort: values.exposePort,
 							servicePort: 9200,
-							targetPort: 9200
+							targetPort: 9200,
+							...old
 						}
 					]
 				};
 			}
+			console.log(sendData);
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
-						description: '服务暴露新建成功'
+						description: `服务暴露${
+							serviceIngress ? '编辑' : '新建'
+						}成功`
 					});
 					history.push(
 						`/serviceList/${name}/${aliasName}/externalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
@@ -242,7 +315,7 @@ export default function AddEsIngress(): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				title="服务暴露新增"
+				title={`服务暴露${serviceIngress ? '编辑' : '新增'}`}
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
@@ -255,6 +328,7 @@ export default function AddEsIngress(): JSX.Element {
 						initialValue={4}
 					>
 						<Select
+							disabled={!!serviceIngress}
 							value={networkModel}
 							onChange={(value: number) => setNetworkModel(value)}
 						>
@@ -280,12 +354,20 @@ export default function AddEsIngress(): JSX.Element {
 												<div
 													key={index}
 													className={`ingress-service-box ${
-														item.name ===
-														curServiceName?.name
+														curServiceName?.name.includes(
+															item.name
+														)
 															? 'ingress-service-box-active'
 															: ''
 													}`}
+													style={{
+														background:
+															!serviceIngress
+																? '#ffffff'
+																: '#f3f3f3'
+													}}
 													onClick={() =>
+														!serviceIngress &&
 														handleClick(item)
 													}
 												>
@@ -313,6 +395,7 @@ export default function AddEsIngress(): JSX.Element {
 								initialValue={exposeType}
 							>
 								<Select
+									disabled={!!serviceIngress}
 									value={exposeType}
 									onChange={(value) => setExposeType(value)}
 								>
@@ -326,7 +409,7 @@ export default function AddEsIngress(): JSX.Element {
 									required
 									label="负载均衡选择"
 								>
-									<Select>
+									<Select disabled={!!serviceIngress}>
 										{ingresses.map(
 											(item: IngressItemProps) => {
 												return (
@@ -380,7 +463,7 @@ export default function AddEsIngress(): JSX.Element {
 								required
 								label="负载均衡选择"
 							>
-								<Select>
+								<Select disabled={!!serviceIngress}>
 									{ingresses.map((item: IngressItemProps) => {
 										return (
 											<Option
@@ -394,7 +477,10 @@ export default function AddEsIngress(): JSX.Element {
 								</Select>
 							</FormItem>
 							<FormItem name="domain" label="域名" required>
-								<Input placeholder="请输入域名" />
+								<Input
+									disabled={!!serviceIngress}
+									placeholder="请输入域名"
+								/>
 							</FormItem>
 							{httpPaths.map(
 								(item: HttpPathItem, index: number) => {
@@ -421,6 +507,9 @@ export default function AddEsIngress(): JSX.Element {
 														label="暴露服务"
 														required
 														name={`service${index}`}
+														initialValue={
+															item.serviceName
+														}
 													>
 														<Select
 															style={{
@@ -471,6 +560,7 @@ export default function AddEsIngress(): JSX.Element {
 														label="路径"
 														name={`path${index}`}
 														required
+														initialValue={item.path}
 													>
 														<Input
 															value={item.path}
