@@ -113,14 +113,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				{
 					name: 'cluster',
 					label: '集群外访问',
-					icon: 'icon-jiqunwaifangwen',
-					port: null
+					icon: 'icon-jiqunwaifangwen'
 				},
 				{
 					name: `${middlewareName}-console-svc`,
 					label: '管理页面',
-					icon: 'icon-yemianguanli',
-					port: 8080
+					icon: 'icon-yemianguanli'
 				}
 			];
 			if (enableExternal === 'true') {
@@ -244,8 +242,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									name === 'kafka' ? 'manager' : 'console'
 								}-svc`,
 								exposePort: values.exposePort,
-								servicePort: 9000,
-								targetPort: 9000,
+								servicePort: name === 'kafka' ? 9000 : 8080,
+								targetPort: name === 'kafka' ? 9000 : 8080,
 								...old
 							}
 						]
