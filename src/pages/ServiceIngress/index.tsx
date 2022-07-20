@@ -13,6 +13,7 @@ import { FiltersProps } from '@/types/comment';
 import { api } from '@/api.json';
 import nodata from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
+import { objectRemoveDuplicatesByKey } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
 function ServiceIngress(props: ServiceIngressProps): JSX.Element {
@@ -45,7 +46,10 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 								};
 							}
 						);
-						setTypeFilter(list);
+
+						setTypeFilter(
+							objectRemoveDuplicatesByKey(list, 'value')
+						);
 					}
 				});
 			}
@@ -69,7 +73,7 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 		setSearchText(event.target.value);
 	};
 	const handleSearch = (value: string) => {
-		console.log(value);
+		getData(value);
 	};
 	const handleDelete = (record: ServiceIngressItem) => {
 		Modal.confirm({
@@ -119,31 +123,6 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						查看详情
 					</LinkButton>
 				)}
-				{/* <LinkButton
-				// onClick={() => {
-				// 	if (
-				// 		record.middlewareType === 'kafka' ||
-				// 		record.middlewareType === 'rocketmq'
-				// 	) {
-				// 		storage.setSession('serviceIngress', record);
-				// 		history.push(
-				// 			`/serviceList/${record.middlewareType}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
-				// 		);
-				// 	} else if (record.middlewareType === 'elasticsearch') {
-				// 		storage.setSession('serviceIngress', record);
-				// 		history.push(
-				// 			`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-				// 		);
-				// 	} else {
-				// 		storage.setSession('serviceIngress', record);
-				// 		history.push(
-				// 			`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-				// 		);
-				// 	}
-				// }}
-				>
-					编辑
-				</LinkButton> */}
 				<LinkButton onClick={() => handleDelete(record)}>
 					删除
 				</LinkButton>
@@ -156,6 +135,10 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 		if (record.protocol === 'HTTP') return record.rules?.[0].domain;
 		if (record.exposeType === 'Ingress')
 			return record.serviceList?.[0].exposePort;
+	};
+	const exposeTypeRender = (value: string, record: ServiceIngressItem) => {
+		if (record.exposeType === 'Ingress') return record.protocol;
+		return record.exposeType;
 	};
 
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
@@ -194,14 +177,17 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 					<ProTable.Column
 						dataIndex="exposeType"
 						title="暴露方式"
+						render={exposeTypeRender}
 						filters={[
 							{ value: 'NodePort', text: 'NodePort' },
 							{ value: 'HTTP', text: 'HTTP' },
 							{ value: 'TCP', text: 'TCP' }
 						]}
-						onFilter={(value: any, record: ServiceIngressItem) =>
-							record.exposeType === value
-						}
+						onFilter={(value: any, record: ServiceIngressItem) => {
+							if (record.exposeType === 'Ingress')
+								return record.protocol === value;
+							return record.exposeType === value;
+						}}
 					/>
 					<ProTable.Column
 						dataIndex="servicePurpose"
