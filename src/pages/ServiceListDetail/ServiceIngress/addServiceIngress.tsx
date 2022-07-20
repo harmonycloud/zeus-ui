@@ -120,6 +120,9 @@ export default function AddIngress(): JSX.Element {
 		getMiddlewareDetail(sendData).then((res) => {
 			if (res.success) {
 				setData(res.data);
+				name === 'redis' &&
+					res.data.readWriteProxy?.enabled &&
+					setIngressType('rw');
 			} else {
 				notification.error({
 					message: '失败',

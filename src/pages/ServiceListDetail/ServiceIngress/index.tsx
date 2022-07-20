@@ -65,7 +65,7 @@ export default function ServiceDetailIngress(
 		primary: (
 			<Button
 				type="primary"
-				disabled={mode === 'cluster' && !readWriteProxy}
+				disabled={mode === 'cluster' && !readWriteProxy?.enabled}
 				onClick={() => {
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
@@ -76,9 +76,11 @@ export default function ServiceDetailIngress(
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
+					} else if (name === 'mysql' || name === 'redis') {
+						history.push(
+							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${readWriteProxy?.enabled}`
+						);
 					} else {
-						if (mode === 'cluster' && !readWriteProxy?.enabled)
-							return;
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
