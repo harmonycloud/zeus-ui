@@ -152,7 +152,7 @@ export default function ServiceDetailIngress(
 					...record,
 					clusterId: clusterId,
 					middlewareName: middlewareName,
-					name: name,
+					name: record.name,
 					namespace: namespace
 				};
 				return deleteIngress(sendData)
