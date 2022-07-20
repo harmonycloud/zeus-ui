@@ -13,6 +13,7 @@ import { FiltersProps } from '@/types/comment';
 import { api } from '@/api.json';
 import nodata from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
+import { objectRemoveDuplicatesByKey } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
 function ServiceIngress(props: ServiceIngressProps): JSX.Element {
@@ -45,7 +46,10 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 								};
 							}
 						);
-						setTypeFilter(list);
+
+						setTypeFilter(
+							objectRemoveDuplicatesByKey(list, 'value')
+						);
 					}
 				});
 			}
