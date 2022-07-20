@@ -82,10 +82,6 @@ export default function ServiceDetailIngress(
 						);
 					} else if (name === 'mysql' || name === 'redis') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${readWriteProxy?.enabled}`
-						);
-					} else {
-						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
 					}
