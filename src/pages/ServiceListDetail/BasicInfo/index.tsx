@@ -157,6 +157,14 @@ const modelMap = {
 	dledger: 'DLedger模式',
 	cluster: '集群模式'
 };
+const redisModelMap = {
+	2: '单分片',
+	4: '二分片',
+	6: '三分片',
+	8: '四分片',
+	10: '五分片',
+	16: '八分片'
+};
 const titleConfig = {
 	dataIndex: 'title',
 	render: (val: string) => (
@@ -422,6 +430,34 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		});
 	};
 
+	const modeText = (data: any) => {
+		if (data.type === 'redis' || data.type === 'mysql') {
+			if (type === 'mysql') {
+				return `${
+					data.readWriteProxy?.enabled ? '读写分离模式' : '普通模式'
+				}（${modelMap[data.mode]}）`;
+			} else {
+				let text = '';
+				if (data.mode === 'cluster') {
+					if (data.readWriteProxy?.enabled) {
+						text = '代理模式';
+					} else {
+						text = '集群模式';
+					}
+				} else {
+					if (data.readWriteProxy?.enabled) {
+						text = '读写分离模式';
+					} else {
+						text = '哨兵模式';
+					}
+				}
+				return `${text}（${redisModelMap[data.quota.redis.num]}）`;
+			}
+		} else {
+			return modelMap[data.mode];
+		}
+	};
+
 	useEffect(() => {
 		if (data !== undefined) {
 			if (data.mysqlDTO || data?.mysqlDTO?.openDisasterRecoveryMode) {
@@ -488,14 +524,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				title: '运行状态',
 				status: data.status || 'Failed',
 				createTime: data.createTime || '',
-				model:
-					type !== 'redis'
-						? modelMap[data.mode]
-						: data.mode === 'sentinel'
-						? '哨兵'
-						: data.quota.redis.num === 6
-						? '三主三从'
-						: '五主五从' || '',
+				model: modeText(data),
 				namespace: data.namespace || '',
 				namespaceAliasName: data.namespaceAliasName,
 				storageClassName:

@@ -65,7 +65,11 @@ export default function ServiceDetailIngress(
 		primary: (
 			<Button
 				type="primary"
-				disabled={mode === 'cluster' && !readWriteProxy?.enabled}
+				disabled={
+					name === 'redis' &&
+					mode === 'cluster' &&
+					!readWriteProxy?.enabled
+				}
 				onClick={() => {
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
