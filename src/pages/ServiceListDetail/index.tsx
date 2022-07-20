@@ -188,6 +188,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							capabilities={(data && data.capabilities) || []}
 							mode={data.mode}
 							readWriteProxy={data?.readWriteProxy}
+							imagePath={data.imagePath}
 							brokerNum={
 								name === 'kafka'
 									? data.kafkaDTO.brokerNum
@@ -487,7 +488,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					(type === 'mysql' ||
 						type === 'elasticsearch' ||
 						type === 'redis' ||
-						type === 'rocketmq') ? (
+						type === 'rocketmq' ||
+						type === 'postgresql') ? (
 						<TabPane tab="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</TabPane>

@@ -79,6 +79,7 @@ export interface middlewareDetailProps {
 	readWriteProxy: {
 		enabled: boolean;
 	};
+	imagePath: string;
 }
 
 export interface basicDataProps {
