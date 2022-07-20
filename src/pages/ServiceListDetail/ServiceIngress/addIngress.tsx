@@ -9,7 +9,8 @@ import {
 	Space,
 	Switch,
 	Button,
-	Divider
+	Divider,
+	Alert
 } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import { ServiceIngressAddParams, ServiceNameItem } from '../detail';
@@ -106,7 +107,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				list = list.filter((item) => item.name !== 'cluster');
 			}
 			setServiceNames(list);
-			setCurServiceName(list[0]);
+			!serviceIngress && setCurServiceName(list[0]);
 		} else if (name === 'rocketmq') {
 			let list = [
 				{
@@ -126,7 +127,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				list = list.filter((item) => item.name !== 'cluster');
 			}
 			setServiceNames(list);
-			setCurServiceName(list[0]);
+			!serviceIngress && setCurServiceName(list[0]);
 		}
 	}, [name]);
 	useEffect(() => {
@@ -179,12 +180,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						for (let i = 0; i < Number(brokerNum); i++) {
 							lt.push({
 								serviceName: `${middlewareName}-${i}-master`,
-								exposeType: null
+								exposePort: null
 							});
 						}
 						lt.push({
 							serviceName: `${middlewareName}-nameserver-proxy-svc`,
-							exposeType: values.exposePort
+							exposePort: values.exposePort
 						});
 					}
 				} else {
@@ -199,12 +200,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						for (let i = 0; i < Number(brokerNum); i++) {
 							lt.push({
 								serviceName: `${middlewareName}-${i}-master`,
-								exposeType: values[`brokerPort${i}`]
+								exposePort: values[`brokerPort${i}`]
 							});
 						}
 						lt.push({
 							serviceName: `${middlewareName}-nameserver-proxy-svc`,
-							exposeType: values.exposePort
+							exposePort: values.exposePort
 						});
 					}
 				}
@@ -239,7 +240,9 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						protocol: exposeType === 'TCP' ? 'TCP' : null,
 						serviceList: [
 							{
-								serviceName: `${middlewareName}-manager-svc`,
+								serviceName: `${middlewareName}-${
+									name === 'kafka' ? 'manager' : 'console'
+								}-svc`,
 								exposePort: values.exposePort,
 								servicePort: 9000,
 								targetPort: 9000,
@@ -265,8 +268,13 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								ingressHttpPaths: [
 									{
 										path: values.path,
-										serviceName: `${middlewareName}-manager-svc`,
-										servicePort: 9000
+										serviceName: `${middlewareName}-${
+											name === 'kafka'
+												? 'manager'
+												: 'console'
+										}-svc`,
+										servicePort:
+											name === 'kafka' ? 9000 : 8080
 									}
 								]
 							}
@@ -301,6 +309,14 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
+				{enableExternal === 'false' && (
+					<Alert
+						message="您好！选择集群外访问服务暴露后需要重启服务！"
+						type="info"
+						showIcon
+						style={{ marginBottom: 8 }}
+					/>
+				)}
 				<Form {...formItemLayout410} form={form} labelAlign="left">
 					<h2>暴露服务</h2>
 					<FormItem required name="serviceName" label="暴露服务">
@@ -388,39 +404,37 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									</Select>
 								</FormItem>
 							)}
-							<FormItem
-								label={`${
-									name === 'kafka' ? 'NameServer' : 'proxy'
-								}端口配置`}
-								required
-								name="exposePort"
-								rules={[
-									{
-										required: true,
-										message: `请填写${
-											name === 'kafka'
-												? 'NameServer'
-												: 'proxy'
-										}端口`
-									},
-									{
-										max:
-											exposeType === 'TCP'
-												? 65535
-												: 32767,
-										min: 30000,
-										type: 'number',
-										message: `请输入30000-${
-											exposeType === 'TCP' ? 65535 : 32767
-										}以内的端口`
-									}
-								]}
-							>
-								<InputNumber
-									disabled={!!serviceIngress}
-									style={{ width: '260px' }}
-								/>
-							</FormItem>
+							{name === 'rocketmq' && (
+								<FormItem
+									label="proxy端口配置"
+									required
+									name="exposePort"
+									rules={[
+										{
+											required: true,
+											message: '请填写proxy端口'
+										},
+										{
+											max:
+												exposeType === 'TCP'
+													? 65535
+													: 32767,
+											min: 30000,
+											type: 'number',
+											message: `请输入30000-${
+												exposeType === 'TCP'
+													? 65535
+													: 32767
+											}以内的端口`
+										}
+									]}
+								>
+									<InputNumber
+										disabled={!!serviceIngress}
+										style={{ width: '260px' }}
+									/>
+								</FormItem>
+							)}
 							<FormItem
 								name="brokerPort"
 								label="自动配置broker对外端口"
@@ -477,6 +491,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								initialValue={4}
 							>
 								<Select
+									disabled={!!serviceIngress}
 									value={networkIngress}
 									onChange={(value: number) =>
 										setNetworkIngress(value)
@@ -490,6 +505,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								<>
 									<div className="ingress-four-tcp-or-NodePort">
 										<SelectBlock
+											disabled={!!serviceIngress}
 											options={fourNetworkIngress}
 											currentValue={exposeType}
 											onCallBack={(value: any) =>
@@ -503,7 +519,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											required
 											label="负载均衡选择"
 										>
-											<Select>
+											<Select disabled={!!serviceIngress}>
 												{ingresses.map(
 													(
 														item: IngressItemProps

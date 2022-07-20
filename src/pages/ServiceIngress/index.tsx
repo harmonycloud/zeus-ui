@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { ProHeader, ProPage, ProContent } from '@/components/ProPage';
 import ProTable from '@/components/ProTable';
 import { connect } from 'react-redux';
@@ -11,10 +12,12 @@ import { Drawer, Modal, notification, Table } from 'antd';
 import { FiltersProps } from '@/types/comment';
 import { api } from '@/api.json';
 import nodata from '@/assets/images/nodata.svg';
+import storage from '@/utils/storage';
 
 const LinkButton = Actions.LinkButton;
 function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 	const { cluster, namespace, project } = props.globalVar;
+	const history = useHistory();
 	const [searchText, setSearchText] = useState<string>('');
 	const [dataSource, setDataSource] = useState<ServiceIngressItem[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -116,7 +119,31 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						查看详情
 					</LinkButton>
 				)}
-				<LinkButton>编辑</LinkButton>
+				{/* <LinkButton
+				// onClick={() => {
+				// 	if (
+				// 		record.middlewareType === 'kafka' ||
+				// 		record.middlewareType === 'rocketmq'
+				// 	) {
+				// 		storage.setSession('serviceIngress', record);
+				// 		history.push(
+				// 			`/serviceList/${record.middlewareType}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
+				// 		);
+				// 	} else if (record.middlewareType === 'elasticsearch') {
+				// 		storage.setSession('serviceIngress', record);
+				// 		history.push(
+				// 			`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+				// 		);
+				// 	} else {
+				// 		storage.setSession('serviceIngress', record);
+				// 		history.push(
+				// 			`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+				// 		);
+				// 	}
+				// }}
+				>
+					编辑
+				</LinkButton> */}
 				<LinkButton onClick={() => handleDelete(record)}>
 					删除
 				</LinkButton>

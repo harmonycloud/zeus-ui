@@ -25,9 +25,10 @@ import otherColor from '@/assets/images/nodata.svg';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
 import { api } from '@/api.json';
 import { copyValue } from '@/utils/utils';
-import { CheckCircleFilled } from '@ant-design/icons';
+import { CheckCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import nodata from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
+import EditPortForm from './EditPortForm';
 
 const LinkButton = Actions.LinkButton;
 export default function ServiceDetailIngress(
@@ -45,7 +46,8 @@ export default function ServiceDetailIngress(
 		mode,
 		readWriteProxy,
 		brokerNum,
-		enableExternal
+		enableExternal,
+		imagePath
 	} = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
@@ -55,6 +57,10 @@ export default function ServiceDetailIngress(
 	const [internalDataSource, setInternalDataSource] = useState<
 		InternalServiceItem[]
 	>([]);
+	const [editVisible, setEditVisible] = useState<boolean>(false);
+	const onRefresh = () => {
+		getIngressByMid(clusterId, namespace, name, middlewareName);
+	};
 	const Operation = {
 		primary: (
 			<Button
@@ -85,9 +91,17 @@ export default function ServiceDetailIngress(
 			</Button>
 		),
 		secondary: (
-			<span className="name-link" onClick={() => setVisible(true)}>
-				查看集群内访问
-			</span>
+			<Space>
+				<span className="name-link" onClick={() => setVisible(true)}>
+					查看集群内访问
+				</span>
+				<Button
+					onClick={onRefresh}
+					style={{ padding: '0 9px', marginRight: '8px' }}
+				>
+					<ReloadOutlined />
+				</Button>
+			</Space>
 		)
 	};
 	useEffect(() => {
@@ -106,6 +120,7 @@ export default function ServiceDetailIngress(
 			}
 		});
 	};
+
 	const getIngressByMid = (
 		clusterId: string,
 		namespace: string,
@@ -247,7 +262,7 @@ export default function ServiceDetailIngress(
 						return (
 							<ListPanel
 								key={item.name}
-								title={item.name}
+								title={item.middlewareName}
 								subTitle={item.middlewareType}
 								icon={
 									<img
@@ -274,9 +289,13 @@ export default function ServiceDetailIngress(
 														'serviceIngress',
 														item
 													);
-													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
-													);
+													if (judgeInit(item)) {
+														setEditVisible(true);
+													} else {
+														history.push(
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
+														);
+													}
 												} else if (
 													name === 'elasticsearch'
 												) {
@@ -416,7 +435,7 @@ export default function ServiceDetailIngress(
 						return (
 							<ListCard
 								key={item.name}
-								title={item.name}
+								title={item.middlewareName}
 								subTitle={item.middlewareType}
 								icon={
 									<img
@@ -443,9 +462,13 @@ export default function ServiceDetailIngress(
 														'serviceIngress',
 														item
 													);
-													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
-													);
+													if (judgeInit(item)) {
+														setEditVisible(true);
+													} else {
+														history.push(
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+														);
+													}
 												} else if (
 													name === 'elasticsearch'
 												) {
@@ -549,25 +572,29 @@ export default function ServiceDetailIngress(
 			<Drawer
 				title={
 					<div className="icon-type-content">
-						{/* <img
+						<img
 							width={14}
 							height={14}
 							src={
-								current.imagePath
-									? `${api}/images/middleware/${current.imagePath}`
+								imagePath
+									? `${api}/images/middleware/${imagePath}`
 									: nodata
 							}
-						/> */}
+						/>
 						<div style={{ marginLeft: 8 }}>{middlewareName}</div>
 					</div>
 				}
 				placement="right"
 				onClose={() => setVisible(false)}
 				visible={visible}
-				width={500}
+				width={600}
 			>
 				<Table rowKey="serviceName" dataSource={internalDataSource}>
-					<Table.Column dataIndex="servicePurpose" title="暴露服务" />
+					<Table.Column
+						width={100}
+						dataIndex="servicePurpose"
+						title="暴露服务"
+					/>
 					<Table.Column
 						dataIndex="internalAddress"
 						title="服务及端口号"
@@ -575,6 +602,16 @@ export default function ServiceDetailIngress(
 					/>
 				</Table>
 			</Drawer>
+			{editVisible && (
+				<EditPortForm
+					visible={editVisible}
+					onCancel={() => setEditVisible(false)}
+					clusterId={clusterId}
+					namespace={namespace}
+					middlewareName={middlewareName}
+					onRefresh={onRefresh}
+				/>
+			)}
 		</>
 	);
 }
