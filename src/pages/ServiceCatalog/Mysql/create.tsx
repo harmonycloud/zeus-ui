@@ -205,7 +205,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [mysqlPwd, setMysqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	// * 读写分离模式
-	const [readWriteProxy, setReadWriteProxy] = useState<string>('true');
+	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -1638,24 +1638,34 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									<div className={`form-content`}>
 										<Select
 											value={readWriteProxy}
-											onChange={(val) =>
-												setReadWriteProxy(val)
-											}
+											onChange={(val) => {
+												val === 'true' &&
+													mode === '1m-0s' &&
+													setMode('1m-1s');
+												setReadWriteProxy(val);
+											}}
 											style={{
 												marginBottom: 12,
 												width: 182
 											}}
 										>
-											<Select.Option key="true">
-												读写分离模式
-											</Select.Option>
 											<Select.Option key="false">
 												普通模式
+											</Select.Option>
+											<Select.Option key="true">
+												读写分离模式
 											</Select.Option>
 										</Select>
 										<div className={`display-flex`}>
 											<SelectBlock
-												options={modeList}
+												options={
+													readWriteProxy === 'true'
+														? [
+																modeList[1],
+																modeList[2]
+														  ]
+														: modeList
+												}
 												currentValue={mode}
 												onCallBack={(value: any) =>
 													setMode(value)
