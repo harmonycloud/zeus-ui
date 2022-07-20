@@ -180,12 +180,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						for (let i = 0; i < Number(brokerNum); i++) {
 							lt.push({
 								serviceName: `${middlewareName}-${i}-master`,
-								exposeType: null
+								exposePort: null
 							});
 						}
 						lt.push({
 							serviceName: `${middlewareName}-nameserver-proxy-svc`,
-							exposeType: values.exposePort
+							exposePort: values.exposePort
 						});
 					}
 				} else {
@@ -200,12 +200,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						for (let i = 0; i < Number(brokerNum); i++) {
 							lt.push({
 								serviceName: `${middlewareName}-${i}-master`,
-								exposeType: values[`brokerPort${i}`]
+								exposePort: values[`brokerPort${i}`]
 							});
 						}
 						lt.push({
 							serviceName: `${middlewareName}-nameserver-proxy-svc`,
-							exposeType: values.exposePort
+							exposePort: values.exposePort
 						});
 					}
 				}
