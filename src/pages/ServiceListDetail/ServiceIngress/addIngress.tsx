@@ -121,6 +121,11 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					icon: 'icon-yemianguanli'
 				}
 			];
+			const at = [];
+			for (let i = 0; i < Number(brokerNum); i++) {
+				at.push(i);
+			}
+			setBrokers(at);
 			if (enableExternal === 'true') {
 				list = list.filter((item) => item.name !== 'cluster');
 			}
