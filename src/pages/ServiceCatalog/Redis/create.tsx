@@ -304,7 +304,12 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				description: values.description,
 				version: version,
 				password: values.pwd,
-				mode: mode,
+				mode:
+					mode === 'readWriteProxy' || mode === 'agent'
+						? mode === 'readWriteProxy'
+							? 'sentinel'
+							: 'cluster'
+						: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				readWriteProxy: {
