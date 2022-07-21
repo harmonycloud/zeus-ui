@@ -1286,6 +1286,26 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														options={tolerationList}
 														style={{
