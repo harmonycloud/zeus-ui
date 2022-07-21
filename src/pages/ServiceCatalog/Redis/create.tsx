@@ -137,12 +137,12 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			value: 'sentinel'
 		},
 		{
-			label: '读写分离模式',
-			value: 'readWriteProxy'
-		},
-		{
 			label: '代理模式',
 			value: 'agent'
+		},
+		{
+			label: '读写分离模式',
+			value: 'readWriteProxy'
 		}
 	];
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
@@ -1258,26 +1258,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												/>
 											</div>
 										) : null}
-										{mode === 'sentinel' ? (
-											<div
-												style={{
-													marginTop: 12
-												}}
-											>
-												<SelectBlock
-													options={[
-														sentinelModeList[0]
-													]}
-													currentValue={sentinelMode}
-													onCallBack={(value: any) =>
-														setSentinelMode(value)
-													}
-												/>
-											</div>
-										) : null}
 									</div>
 								</li>
-								{mode === 'readWriteProxy' ? (
+								{mode === 'readWriteProxy' ||
+								mode === 'sentinel' ? (
 									<li className="display-flex form-li">
 										<label className="form-name">
 											<span>分片数</span>
