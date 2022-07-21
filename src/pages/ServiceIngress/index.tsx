@@ -196,7 +196,7 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						value: searchText,
 						onChange: handleChange,
 						onSearch: handleSearch,
-						placeholder: '请输入服务名称、暴露服务、暴露方式搜索',
+						placeholder: '请输入服务名称、暴露服务搜索',
 						style: { width: '350px' }
 					}}
 				>
