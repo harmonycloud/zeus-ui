@@ -130,7 +130,6 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 		);
 	};
 	const ipRender = (value: string, record: ServiceIngressItem) => {
-		console.log(record);
 		if (record.exposeType === 'NodePort') return record.exposeIP;
 		if (record.protocol === 'HTTP') return record.rules?.[0].domain;
 		if (record.exposeType === 'Ingress')
@@ -139,6 +138,9 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 	const exposeTypeRender = (value: string, record: ServiceIngressItem) => {
 		if (record.exposeType === 'Ingress') return record.protocol;
 		return record.exposeType;
+	};
+	const nameRender = (value: string, record: ServiceIngressItem) => {
+		return record.servicePurpose;
 	};
 
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
@@ -190,8 +192,9 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						}}
 					/>
 					<ProTable.Column
-						dataIndex="servicePurpose"
+						dataIndex="name"
 						title="暴露服务"
+						render={nameRender}
 					/>
 					<ProTable.Column
 						dataIndex="ip"
