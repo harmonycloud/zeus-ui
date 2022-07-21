@@ -123,14 +123,21 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						查看详情
 					</LinkButton>
 				)}
-				<LinkButton onClick={() => handleDelete(record)}>
+				<LinkButton
+					title={
+						judgeInit(record)
+							? '该服务暴露为集群外访问，无法删除。'
+							: ''
+					}
+					disabled={judgeInit(record)}
+					onClick={() => handleDelete(record)}
+				>
 					删除
 				</LinkButton>
 			</Actions>
 		);
 	};
 	const ipRender = (value: string, record: ServiceIngressItem) => {
-		console.log(record);
 		if (record.exposeType === 'NodePort') return record.exposeIP;
 		if (record.protocol === 'HTTP') return record.rules?.[0].domain;
 		if (record.exposeType === 'Ingress')
@@ -139,6 +146,37 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 	const exposeTypeRender = (value: string, record: ServiceIngressItem) => {
 		if (record.exposeType === 'Ingress') return record.protocol;
 		return record.exposeType;
+	};
+	const nameRender = (value: string, record: ServiceIngressItem) => {
+		return record.servicePurpose;
+	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.serviceName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
 	};
 
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
@@ -158,7 +196,7 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						value: searchText,
 						onChange: handleChange,
 						onSearch: handleSearch,
-						placeholder: '请输入服务名称、暴露服务、暴露方式搜索',
+						placeholder: '请输入服务名称、暴露服务搜索',
 						style: { width: '350px' }
 					}}
 				>
@@ -190,8 +228,9 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						}}
 					/>
 					<ProTable.Column
-						dataIndex="servicePurpose"
+						dataIndex="name"
 						title="暴露服务"
+						render={nameRender}
 					/>
 					<ProTable.Column
 						dataIndex="ip"
