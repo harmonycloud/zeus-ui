@@ -123,7 +123,15 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						查看详情
 					</LinkButton>
 				)}
-				<LinkButton onClick={() => handleDelete(record)}>
+				<LinkButton
+					title={
+						judgeInit(record)
+							? '该服务暴露为集群外访问，无法删除。'
+							: ''
+					}
+					disabled={judgeInit(record)}
+					onClick={() => handleDelete(record)}
+				>
 					删除
 				</LinkButton>
 			</Actions>
@@ -141,6 +149,34 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 	};
 	const nameRender = (value: string, record: ServiceIngressItem) => {
 		return record.servicePurpose;
+	};
+	const judgeInit = (record: any) => {
+		if (
+			record.middlewareType === 'rocketmq' ||
+			record.middlewareType === 'kafka'
+		) {
+			const initService = [
+				`${record.middlewareName}-0-master`,
+				`${record.middlewareName}-1-master`,
+				`${record.middlewareName}-2-master`,
+				`${record.middlewareName}-nameserver-proxy-svc`
+			];
+			if (record.middlewareType === 'rocketmq') {
+				return initService.some((item) => record.name.includes(item));
+			} else {
+				if (
+					record.name.includes(
+						`${record.serviceName}-kafka-external-svc`
+					)
+				) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
 	};
 
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
