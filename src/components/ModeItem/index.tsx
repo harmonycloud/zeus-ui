@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import { Input } from 'antd';
 import EditQuotaForm from './EditQuotaForm';
 import './index.scss';
@@ -23,6 +24,7 @@ export interface modeItemProps {
 const ModeItem = (props: modeItemProps): JSX.Element => {
 	const { data, clusterId, namespace, type, onChange, middlewareType } =
 		props;
+	const params: any = useParams();
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -57,31 +59,33 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 			<div className="mode-item-box">
 				<div className="mode-item-title">
 					<span>{data.title}</span>
-					{isEdit ? (
-						<Input
-							size="small"
-							value={modifyData.num}
-							type="number"
-							bordered={false}
-							onChange={inputChange}
-							onBlur={() => setIsEdit(false)}
-							autoFocus={true}
-							min={
-								data.title === '主节点' ||
-								data.title === '数据节点'
-									? 3
-									: 1
-							}
-							className="mode-item-number-input"
-						/>
-					) : (
-						<span
-							className="mode-item-circle"
-							onClick={() => setIsEdit(true)}
-						>
-							{modifyData.num}
-						</span>
-					)}
+					{params?.chartName !== 'redis' ? (
+						isEdit ? (
+							<Input
+								size="small"
+								value={modifyData.num}
+								type="number"
+								bordered={false}
+								onChange={inputChange}
+								onBlur={() => setIsEdit(false)}
+								autoFocus={true}
+								min={
+									data.title === '主节点' ||
+									data.title === '数据节点'
+										? 3
+										: 1
+								}
+								className="mode-item-number-input"
+							/>
+						) : (
+							<span
+								className="mode-item-circle"
+								onClick={() => setIsEdit(true)}
+							>
+								{modifyData.num}
+							</span>
+						)
+					) : null}
 				</div>
 				<div
 					className="mode-item-data"

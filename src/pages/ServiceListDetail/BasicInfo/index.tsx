@@ -142,7 +142,7 @@ const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
 	'1m-ns': '一主多从',
-	'1m': '单实例',
+	'1m-0s': '单实例',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
 	'complex-cold': 'N主N数据N冷',
@@ -152,18 +152,14 @@ const modelMap = {
 	'2m-noslave': '双主',
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
-	6: '三主三从',
-	10: '五主五从',
-	dledger: 'DLedger模式',
-	cluster: '集群模式'
-};
-const redisModelMap = {
 	2: '单分片',
 	4: '二分片',
 	6: '三分片',
 	8: '四分片',
 	10: '五分片',
-	16: '八分片'
+	16: '八分片',
+	dledger: 'DLedger模式',
+	cluster: '集群模式'
 };
 const titleConfig = {
 	dataIndex: 'title',
@@ -451,7 +447,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						text = '哨兵模式';
 					}
 				}
-				return `${text}（${redisModelMap[data.quota.redis.num]}）`;
+				return `${text}（${modelMap[data.quota.redis.num]}）`;
 			}
 		} else {
 			return modelMap[data.mode];
