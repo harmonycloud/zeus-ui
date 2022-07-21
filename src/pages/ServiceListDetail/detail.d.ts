@@ -593,6 +593,7 @@ export interface ServiceNameItem {
 	name: string;
 	label: string;
 	icon: string;
+	port?: number;
 }
 export interface HttpPathItem {
 	path: string;
