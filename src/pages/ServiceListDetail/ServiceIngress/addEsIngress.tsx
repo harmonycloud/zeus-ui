@@ -119,12 +119,14 @@ export default function AddEsIngress(): JSX.Element {
 					{
 						name: `${middlewareName}-master`,
 						label: '读写',
-						icon: 'icon-duxie1'
+						icon: 'icon-duxie1',
+						port: 9200
 					},
 					{
 						name: `${middlewareName}-kibana`,
 						label: '管理页面',
-						icon: 'icon-yemianguanli'
+						icon: 'icon-yemianguanli',
+						port: 5200
 					}
 				];
 				setServiceNames(list);
@@ -136,12 +138,14 @@ export default function AddEsIngress(): JSX.Element {
 					{
 						name: `${middlewareName}-client`,
 						label: '读写',
-						icon: 'icon-duxie1'
+						icon: 'icon-duxie1',
+						port: 9200
 					},
 					{
 						name: `${middlewareName}-kibana`,
 						label: '管理页面',
-						icon: 'icon-yemianguanli'
+						icon: 'icon-yemianguanli',
+						port: 5200
 					}
 				];
 				setServiceNames(list);
@@ -153,12 +157,14 @@ export default function AddEsIngress(): JSX.Element {
 					{
 						name: `${middlewareName}-client`,
 						label: '读写',
-						icon: 'icon-duxie1'
+						icon: 'icon-duxie1',
+						port: 9200
 					},
 					{
 						name: `${middlewareName}-kibana`,
 						label: '管理页面',
-						icon: 'icon-yemianguanli'
+						icon: 'icon-yemianguanli',
+						port: 5200
 					}
 				];
 				setServiceNames(list);
@@ -170,12 +176,14 @@ export default function AddEsIngress(): JSX.Element {
 					{
 						name: `${middlewareName}-data`,
 						label: '读写',
-						icon: 'icon-duxie1'
+						icon: 'icon-duxie1',
+						port: 9200
 					},
 					{
 						name: `${middlewareName}-kibana`,
 						label: '管理页面',
-						icon: 'icon-yemianguanli'
+						icon: 'icon-yemianguanli',
+						port: 5200
 					}
 				];
 				setServiceNames(list);
@@ -284,8 +292,8 @@ export default function AddEsIngress(): JSX.Element {
 						{
 							serviceName: curServiceName?.name,
 							exposePort: values.exposePort,
-							servicePort: 9200,
-							targetPort: 9200,
+							servicePort: curServiceName?.port,
+							targetPort: curServiceName?.port,
 							...old
 						}
 					]
