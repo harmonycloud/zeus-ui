@@ -80,7 +80,7 @@ export default function ServiceDetailIngress(
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
-					} else if (name === 'mysql' || name === 'redis') {
+					} else {
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
