@@ -40,9 +40,10 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		onChange(modifyData);
 	}, [modifyData]);
 	const inputChange = (value: any) => {
+		console.log(value);
 		setModifyData({
 			...modifyData,
-			num: value
+			num: value.target.value
 		});
 	};
 	if (data.disabled) {
