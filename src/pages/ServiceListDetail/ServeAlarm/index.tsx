@@ -444,7 +444,7 @@ function Rules(props: RuleProps): JSX.Element {
 				onRefresh={onRefresh}
 				rowKey="alertId"
 				search={{
-					placeholder: '请输入规则ID、告警规则、告警内容进行搜索',
+					placeholder: '请输入告警规则、告警内容进行搜索',
 					// onSearch: () => onRefresh(),
 					onSearch: (value: string) => setSearchText(value),
 					style: {
