@@ -14,7 +14,11 @@ import { ListCard, ListCardItem, ListPanel } from '@/components/ListCard';
 import ArrowLine from '@/components/ArrowLine';
 import Actions from '@/components/Actions';
 import { IconFont } from '@/components/IconFont';
-import { InternalServiceItem, ServiceDetailIngressProps } from '../detail';
+import {
+	HttpPathItem,
+	InternalServiceItem,
+	ServiceDetailIngressProps
+} from '../detail';
 import DefaultPicture from '@/components/DefaultPicture';
 import {
 	getIngressMid,
@@ -255,9 +259,10 @@ export default function ServiceDetailIngress(
 			<ProList operation={Operation}>
 				{dataSource.map((item: serviceAvailableItemProps) => {
 					if (
-						item.protocol === 'TCP' &&
-						item.exposeType === 'Ingress' &&
-						item.address === null
+						(item.protocol === 'TCP' &&
+							item.exposeType === 'Ingress' &&
+							item.address === null) ||
+						item.protocol === 'HTTP'
 					) {
 						return (
 							<ListPanel
@@ -331,68 +336,147 @@ export default function ServiceDetailIngress(
 								render={
 									<>
 										<Space wrap>
-											{item.ingressPodList?.map((i) => {
-												return (
-													<div
-														key={i.podName}
-														className="pod-card-item"
-													>
-														<IconFont
-															type="icon-duankou"
-															style={{
-																fontSize: 32,
-																marginRight: 8
-															}}
-														/>
-														<div className="pod-card-des">
-															<div className="pod-card-ip">
-																{i.hostIp}:
-																{
-																	item
-																		.serviceList[0]
-																		.exposePort
-																}
-																<Popover
-																	content={
-																		<div>
-																			<CheckCircleFilled
-																				style={{
-																					color: '#00A700',
-																					marginRight:
-																						'5px'
-																				}}
-																			/>
-																			复制成功
-																		</div>
-																	}
-																	trigger="click"
-																>
-																	<IconFont
-																		className="pod-card-ip-copy"
-																		type="icon-fuzhi1"
-																		style={{
-																			fontSize: 12
-																		}}
-																		onClick={() =>
-																			copyValue(
-																				`${i.hostIp}:${item.serviceList[0].exposePort}`
-																			)
-																		}
-																	/>
-																</Popover>
-															</div>
+											{item.protocol === 'TCP' &&
+												item.ingressPodList?.map(
+													(i) => {
+														return (
 															<div
-																className="pod-card-name"
-																title={
-																	i.podName
-																}
+																key={i.podName}
+																className="pod-card-item"
 															>
-																{i.podName}
+																<IconFont
+																	type="icon-duankou"
+																	style={{
+																		fontSize: 32,
+																		marginRight: 8
+																	}}
+																/>
+																<div className="pod-card-des">
+																	<div className="pod-card-ip">
+																		{
+																			i.hostIp
+																		}
+																		:
+																		{
+																			item
+																				.serviceList[0]
+																				.exposePort
+																		}
+																		<Popover
+																			content={
+																				<div>
+																					<CheckCircleFilled
+																						style={{
+																							color: '#00A700',
+																							marginRight:
+																								'5px'
+																						}}
+																					/>
+																					复制成功
+																				</div>
+																			}
+																			trigger="click"
+																		>
+																			<IconFont
+																				className="pod-card-ip-copy"
+																				type="icon-fuzhi1"
+																				style={{
+																					fontSize: 12
+																				}}
+																				onClick={() =>
+																					copyValue(
+																						`${i.hostIp}:${item.serviceList[0].exposePort}`
+																					)
+																				}
+																			/>
+																		</Popover>
+																	</div>
+																	<div
+																		className="pod-card-name"
+																		title={
+																			i.podName
+																		}
+																	>
+																		{
+																			i.podName
+																		}
+																	</div>
+																</div>
 															</div>
-														</div>
-													</div>
-												);
-											})}
+														);
+													}
+												)}
+											{item.protocol === 'HTTP' &&
+												item.rules?.[0].ingressHttpPaths?.map(
+													(i: HttpPathItem) => {
+														return (
+															<div
+																key={i.path}
+																className="pod-card-item"
+															>
+																<IconFont
+																	type="icon-duankou"
+																	style={{
+																		fontSize: 32,
+																		marginRight: 8
+																	}}
+																/>
+																<div className="pod-card-des">
+																	<div className="pod-card-ip">
+																		{
+																			item
+																				.rules[0]
+																				.domain
+																		}
+																		:
+																		{
+																			i.servicePort
+																		}
+																		{i.path}
+																		<Popover
+																			content={
+																				<div>
+																					<CheckCircleFilled
+																						style={{
+																							color: '#00A700',
+																							marginRight:
+																								'5px'
+																						}}
+																					/>
+																					复制成功
+																				</div>
+																			}
+																			trigger="click"
+																		>
+																			<IconFont
+																				className="pod-card-ip-copy"
+																				type="icon-fuzhi1"
+																				style={{
+																					fontSize: 12
+																				}}
+																				onClick={() =>
+																					copyValue(
+																						`${item.rules[0].domain}:${i.servicePort}${i.path}`
+																					)
+																				}
+																			/>
+																		</Popover>
+																	</div>
+																	<div
+																		className="pod-card-name"
+																		title={
+																			i.serviceName
+																		}
+																	>
+																		{
+																			i.serviceName
+																		}
+																	</div>
+																</div>
+															</div>
+														);
+													}
+												)}
 										</Space>
 									</>
 								}
@@ -418,7 +502,7 @@ export default function ServiceDetailIngress(
 											? '四层网络暴露'
 											: '七层网络暴露'
 									}
-									value={item.serviceList[0].exposePort}
+									value={ipValue(item)}
 									icon={
 										<IconFont
 											type="icon-duankou"

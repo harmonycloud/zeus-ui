@@ -21,7 +21,11 @@ export default function ArrowLine(props: ArrowLineProps): JSX.Element {
 					}}
 				/>
 			</div>
-			{label && <div className="arrow-line-label">{label}</div>}
+			{label && (
+				<div className="arrow-line-label-box">
+					<span className="arrow-line-label">{label}</span>
+				</div>
+			)}
 		</div>
 	);
 }

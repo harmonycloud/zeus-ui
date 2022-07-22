@@ -8,17 +8,23 @@
 		height: 1px;
 		border-bottom: 1px solid $black-4;
 	}
-	.arrow-line-label {
+	.arrow-line-label-box {
 		position: absolute;
-		top: 20px;
-		left: 35%;
-		width: 56px;
+		top: 0px;
+		bottom: 0px;
+		right: 0px;
+		left: 0px;
+		margin: auto;
 		height: 22px;
 		line-height: 20px;
-		background: $black-10;
-		border-radius: 2px;
-		border: 1px solid #d7d7d7;
 		text-align: center;
-		color: #585858;
+		.arrow-line-label {
+			background: $black-10;
+			border-radius: 2px;
+			padding: 2px 4px;
+			border: 1px solid #d7d7d7;
+			text-align: center;
+			color: #585858;
+		}
 	}
 }
