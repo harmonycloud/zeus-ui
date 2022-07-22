@@ -27,6 +27,11 @@ export default function EditPortForm(props: EditPortFormProps): JSX.Element {
 		storage.getSession('serviceIngress')
 	);
 	useEffect(() => {
+		if (serviceIngress) {
+			form.setFieldsValue({
+				port: serviceIngress.serviceList[0].exposePort
+			});
+		}
 		return () => {
 			storage.getSession('serviceIngress') &&
 				storage.removeSession('serviceIngress');

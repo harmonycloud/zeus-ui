@@ -73,7 +73,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 			} else {
 				setCurServiceName({
 					name: serviceIngress.serviceList?.[0]?.serviceName,
-					label: serviceIngress.servicePurpose || '管理页面',
+					label:
+						serviceIngress.servicePurpose === '服务连接'
+							? '集群外访问'
+							: '管理页面',
 					icon:
 						serviceIngress.servicePurpose === '服务连接'
 							? 'icon-jiqunwaifangwen'
