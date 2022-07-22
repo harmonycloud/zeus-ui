@@ -69,6 +69,24 @@ function Affinity(props: any): JSX.Element {
 									style={{ width: 260 }}
 									options={labelList}
 									onChange={(value) => setLabel(value)}
+									onBlur={() => {
+										label &&
+											/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+												label
+											) &&
+											!values.find(
+												(item: any) =>
+													item.label === label
+											) &&
+											onChange([
+												...values,
+												{
+													label: label,
+													checked,
+													id: Math.random()
+												}
+											]);
+									}}
 									status={
 										label &&
 										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
