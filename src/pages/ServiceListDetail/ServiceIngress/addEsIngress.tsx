@@ -104,7 +104,8 @@ export default function AddEsIngress(): JSX.Element {
 				icon:
 					serviceIngress.servicePurpose === '管理页面'
 						? 'icon-yemianguanli'
-						: 'icon-duxie1'
+						: 'icon-duxie1',
+				port: serviceIngress.serviceList?.[0].servicePort
 			});
 		}
 		return () =>
@@ -311,6 +312,7 @@ export default function AddEsIngress(): JSX.Element {
 					]
 				};
 			}
+			console.log(sendData);
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

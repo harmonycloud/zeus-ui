@@ -123,7 +123,19 @@ export default function ServiceDetailIngress(
 			middlewareName
 		}).then((res) => {
 			if (res.success) {
-				setInternalDataSource(res.data);
+				const initService = [
+					`${middlewareName}-0-master`,
+					`${middlewareName}-1-master`,
+					`${middlewareName}-2-master`,
+					`${middlewareName}-nameserver-proxy-svc`,
+					`${middlewareName}-kafka-external-svc`
+				];
+				const list = res.data.filter((item: InternalServiceItem) => {
+					initService.some((i: string) =>
+						item.serviceName.includes(i)
+					);
+				});
+				setInternalDataSource(list);
 			}
 		});
 	};
@@ -301,12 +313,7 @@ export default function ServiceDetailIngress(
 														setEditVisible(true);
 													} else {
 														history.push(
-															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${
-																dataSource.length >
-																0
-																	? `${dataSource[0].externalEnable}`
-																	: 'false'
-															}`
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
 														);
 													}
 												} else if (
