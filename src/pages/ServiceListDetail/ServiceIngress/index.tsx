@@ -50,7 +50,6 @@ export default function ServiceDetailIngress(
 		mode,
 		readWriteProxy,
 		brokerNum,
-		enableExternal,
 		imagePath
 	} = props;
 	const history = useHistory();
@@ -78,7 +77,11 @@ export default function ServiceDetailIngress(
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${
+								dataSource.length > 0
+									? `${dataSource[0].externalEnable}`
+									: 'false'
+							}`
 						);
 					} else if (name === 'elasticsearch') {
 						history.push(
@@ -298,7 +301,12 @@ export default function ServiceDetailIngress(
 														setEditVisible(true);
 													} else {
 														history.push(
-															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${
+																dataSource.length >
+																0
+																	? `${dataSource[0].externalEnable}`
+																	: 'false'
+															}`
 														);
 													}
 												} else if (

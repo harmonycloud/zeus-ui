@@ -23,6 +23,7 @@ export interface serviceAvailableItemProps {
 	servicePurpose: string | null;
 	networkModel: 4 | 7;
 	address: string | null;
+	externalEnable?: boolean;
 }
 export interface serviceAvailablesProps {
 	chartName: string;
