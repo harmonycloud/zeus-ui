@@ -436,7 +436,10 @@ export default function AddEsIngress(): JSX.Element {
 										}
 									]}
 								>
-									<Select disabled={!!serviceIngress}>
+									<Select
+										disabled={!!serviceIngress}
+										placeholder="请选择负载均衡"
+									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
 												return (
@@ -496,7 +499,10 @@ export default function AddEsIngress(): JSX.Element {
 									}
 								]}
 							>
-								<Select disabled={!!serviceIngress}>
+								<Select
+									disabled={!!serviceIngress}
+									placeholder="请选择负载均衡"
+								>
 									{ingresses.map((item: IngressItemProps) => {
 										return (
 											<Option

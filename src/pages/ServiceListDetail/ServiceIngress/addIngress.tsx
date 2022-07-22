@@ -404,7 +404,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									required
 									label="负载均衡选择"
 								>
-									<Select disabled={!!serviceIngress}>
+									<Select
+										placeholder="请选择负载均衡"
+										disabled={!!serviceIngress}
+									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
 												return (
@@ -541,7 +544,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											required
 											label="负载均衡选择"
 										>
-											<Select disabled={!!serviceIngress}>
+											<Select
+												placeholder="请选择负载均衡"
+												disabled={!!serviceIngress}
+											>
 												{ingresses.map(
 													(
 														item: IngressItemProps
@@ -602,7 +608,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										required
 										label="负载均衡选择"
 									>
-										<Select disabled={!!serviceIngress}>
+										<Select
+											placeholder="请选择负载均衡"
+											disabled={!!serviceIngress}
+										>
 											{ingresses.map(
 												(item: IngressItemProps) => {
 													return (
