@@ -59,7 +59,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 			<div className="mode-item-box">
 				<div className="mode-item-title">
 					<span>{data.title}</span>
-					{params?.chartName !== 'redis' ? (
+					{props.type !== 'redis' ? (
 						isEdit ? (
 							<Input
 								size="small"

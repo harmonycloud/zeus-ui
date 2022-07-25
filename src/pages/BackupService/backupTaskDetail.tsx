@@ -150,14 +150,17 @@ function BackupTaskDetail(props: any): JSX.Element {
 									item.value ===
 									storage.getLocal('backupDetail').dateUnit
 						  )?.label
-						: ''}
-					<EditOutlined
-						style={{ marginLeft: 8, color: '#226EE7' }}
-						onClick={() => {
-							setVisible(true);
-							setModalType('time');
-						}}
-					/>
+						: '--'}
+					{storage.getLocal('backupDetail').backupMode !==
+					'single' ? (
+						<EditOutlined
+							style={{ marginLeft: 8, color: '#226EE7' }}
+							onClick={() => {
+								setVisible(true);
+								setModalType('time');
+							}}
+						/>
+					) : null}
 				</div>
 			)
 		},
@@ -187,7 +190,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				title: '基础信息',
 				cron: storage.getLocal('backupDetail').cron,
 				phrase: storage.getLocal('backupDetail').phrase,
-				sourceName: storage.getLocal('backupDetail').sourceName,
+				sourceName: storage.getLocal('backupDetail')?.sourceName,
 				position: storage.getLocal('backupDetail').position,
 				backupTime: storage.getLocal('backupDetail').backupTime,
 				retentionTime: storage.getLocal('backupDetail').retentionTime,
@@ -379,11 +382,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 					title: '基础信息',
 					cron: res.data[0]?.cron,
 					phrase: res.data[0]?.phrase,
-					sourceName: res.data[0].sourceName,
-					position: res.data[0].position,
-					backupTime: res.data[0].backupTime,
-					retentionTime: res.data[0].retentionTime,
-					limitRecord: res.data[0].limitRecord
+					sourceName: res.data[0]?.sourceName,
+					position: res.data[0]?.position,
+					backupTime: res.data[0]?.backupTime,
+					retentionTime: res.data[0]?.retentionTime,
+					limitRecord: res.data[0]?.limitRecord
 				});
 				storage.setLocal('backupDetail', res.data[0]);
 				setVisible(false);

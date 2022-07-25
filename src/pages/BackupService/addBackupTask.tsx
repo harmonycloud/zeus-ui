@@ -153,15 +153,15 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			getMiddlewares().then((res) => {
 				const data = res.data.filter(
 					(item: any) =>
-						item.name === 'redis' ||
-						item.name === 'rocketmq' ||
-						item.name === 'elasticsearch' ||
-						item.name === 'mysql' ||
-						item.name === 'postgresql'
+						item.name === 'Redis' ||
+						item.name === 'RocketMQ' ||
+						item.name === 'Elasticsearch' ||
+						item.name === 'MySQL' ||
+						item.name === 'PostgreSQL'
 				);
 				serMiddleware(data);
-				setSelect(data[0].name);
-				setSelectText(data[0].name);
+				setSelect(data[0].chartName);
+				setSelectText(data[0].chartName);
 			});
 		}
 		getBackupAddress({ keyword: '' }).then((res) => {
@@ -211,7 +211,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								options: middlewares?.map((item) => {
 									return {
 										label: item.name,
-										value: item.name
+										value: item.chartName
 									};
 								})
 							}}
@@ -774,11 +774,13 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								<div key={item.id} className="card-box">
 									<div
 										className={`card ${
-											select === item.name ? 'active' : ''
+											select === item.chartName
+												? 'active'
+												: ''
 										}`}
 										onClick={() => {
-											setSelect(item.name);
-											setSelectText(item.name);
+											setSelect(item.chartName);
+											setSelectText(item.chartName);
 										}}
 									>
 										<img
