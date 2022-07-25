@@ -168,7 +168,7 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 			onRefresh={onRefresh}
 			rowKey="alertId"
 			search={{
-				placeholder: '请输入告警ID、告警内容、规则描述、实际监测搜索',
+				placeholder: '请输入告警内容、规则描述、实际监测搜索',
 				onSearch: (value: string) => setKeyword(value),
 				style: {
 					width: '360px'
@@ -177,12 +177,12 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 			// onSort={onSort}
 			// onFilter={onFilter}
 		>
-			<ProTable.Column
+			{/* <ProTable.Column
 				title="告警ID"
 				dataIndex="alertId"
 				width={100}
 				render={nullRender}
-			/>
+			/> */}
 			<ProTable.Column
 				title="告警等级"
 				dataIndex="level"

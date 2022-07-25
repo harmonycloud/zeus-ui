@@ -130,34 +130,36 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 			centered
 		>
 			<Form form={form}>
-				{/* <FormItem
-					label="数据节点数量"
-					labelAlign="left"
-					rules={[
-						{
-							type: 'number',
-							min:
-								data.title === '主节点' ||
-								data.title === '数据节点'
-									? 3
-									: 1,
-							message:
-								data.title === '主节点' ||
-								data.title === '数据节点'
-									? '数据节点数量最小值为3'
-									: '数据节点数量最小值为1'
-						}
-					]}
-					name="num"
-					className="ant-form-name"
-					initialValue={data.num}
-				>
-					<InputNumber
-						value={data.num}
-						style={{ width: '150px' }}
-						onChange={inputChange}
-					/>
-				</FormItem> */}
+				{type !== 'redis' ? (
+					<FormItem
+						label="数据节点数量"
+						labelAlign="left"
+						rules={[
+							{
+								type: 'number',
+								min:
+									data.title === '主节点' ||
+									data.title === '数据节点'
+										? 3
+										: 1,
+								message:
+									data.title === '主节点' ||
+									data.title === '数据节点'
+										? '数据节点数量最小值为3'
+										: '数据节点数量最小值为1'
+							}
+						]}
+						name="num"
+						className="ant-form-name"
+						initialValue={data.num}
+					>
+						<InputNumber
+							value={data.num}
+							style={{ width: '150px' }}
+							onChange={inputChange}
+						/>
+					</FormItem>
+				) : null}
 				<ul className="form-layout">
 					<li className="display-flex form-li">
 						<label className="form-name">
