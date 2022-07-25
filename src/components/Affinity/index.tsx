@@ -71,7 +71,7 @@ function Affinity(props: any): JSX.Element {
 									onChange={(value) => setLabel(value)}
 									onBlur={() => {
 										label &&
-											/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+											/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
 												label
 											) &&
 											!values.find(
@@ -89,7 +89,7 @@ function Affinity(props: any): JSX.Element {
 									}}
 									status={
 										label &&
-										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+										!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
 											label
 										)
 											? 'error'
@@ -105,7 +105,7 @@ function Affinity(props: any): JSX.Element {
 									}}
 									disabled={
 										!label ||
-										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+										!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
 											label
 										)
 											? true
@@ -159,7 +159,8 @@ function Affinity(props: any): JSX.Element {
 					) : null}
 				</div>
 			</li>
-			{label && !/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(label) ? (
+			{label &&
+			!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(label) ? (
 				<div style={{ marginLeft: 240, color: '#ff4d4f' }}>
 					请输入key=value格式的内容
 				</div>
