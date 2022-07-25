@@ -493,6 +493,11 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 														type: 'number',
 														message:
 															'请输入符合规定的端口号'
+													},
+													{
+														required: true,
+														message:
+															'请输入符合规定的端口号'
 													}
 												]}
 											>
