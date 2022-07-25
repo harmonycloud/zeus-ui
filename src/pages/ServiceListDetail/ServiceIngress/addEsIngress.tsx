@@ -84,7 +84,9 @@ export default function AddEsIngress(): JSX.Element {
 						? 'TCP'
 						: serviceIngress.exposeType,
 				ingressClassName: serviceIngress.ingressClassName,
-				exposePort: serviceIngress?.serviceList?.[0]?.exposePort,
+				exposePort: Number(
+					serviceIngress?.serviceList?.[0]?.exposePort
+				),
 				domain: serviceIngress.rules?.[0].domain
 			});
 			if (serviceIngress.protocol === 'HTTP') {
@@ -105,7 +107,7 @@ export default function AddEsIngress(): JSX.Element {
 					serviceIngress.servicePurpose === '管理页面'
 						? 'icon-yemianguanli'
 						: 'icon-duxie1',
-				port: serviceIngress.serviceList?.[0].servicePort
+				port: Number(serviceIngress.serviceList?.[0].servicePort)
 			});
 		}
 		return () =>
