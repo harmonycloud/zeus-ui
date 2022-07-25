@@ -965,11 +965,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													required: true,
 													message:
 														'请输入唯一服务路径'
-												},
-												{
-													pattern: /^\/[a-zA-Z0-9]*$/,
-													message:
-														'服务路径必须以 / 开头'
 												}
 											]}
 										>
@@ -978,7 +973,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													styles['zeus-zk-path']
 												}
 												value={kfkDTO.path}
-												placeholder="请输入唯一服务路径"
+												placeholder="路径 如：/path"
 												onChange={(e) =>
 													setKfkDTO({
 														...kfkDTO,

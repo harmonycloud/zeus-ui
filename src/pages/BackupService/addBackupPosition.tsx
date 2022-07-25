@@ -238,7 +238,7 @@ export default function AddBackupPosition(): JSX.Element {
 							}}
 						/>
 					</Form.Item>
-					<Form.Item label="备份地址" required className="flex-form">
+					<Form.Item label="备份地址" required>
 						<Form.Item
 							rules={[
 								{
@@ -248,7 +248,10 @@ export default function AddBackupPosition(): JSX.Element {
 							]}
 							name="http"
 						>
-							<Select placeholder="协议" disabled={!!params.id}>
+							<Select
+								placeholder="请选择协议"
+								disabled={!!params.id}
+							>
 								<Select.Option key="http" value="http">
 									http
 								</Select.Option>
@@ -257,46 +260,51 @@ export default function AddBackupPosition(): JSX.Element {
 								</Select.Option>
 							</Select>
 						</Form.Item>
-						<Form.Item
-							name="serverHost"
-							rules={[
-								{
-									required: true,
-									message: '请输入地址'
-								}
-							]}
-						>
-							<Input
-								placeholder="请输入地址"
-								disabled={!!params.id}
-							/>
-						</Form.Item>
-						<Form.Item
-							name="serverPort"
-							rules={[
-								{
-									required: true,
-									message: '请输入端口'
-								}
-							]}
-						>
-							<InputNumber
-								style={{ width: '100%' }}
-								placeholder="端口"
-								disabled={!!params.id}
-							/>
-						</Form.Item>
-						<Form.Item
-							name="bucketName"
-							rules={[
-								{
-									required: true,
-									message: '请输入路径'
-								}
-							]}
-						>
-							<Input placeholder="路径" disabled={!!params.id} />
-						</Form.Item>
+						<div className="flex-form">
+							<Form.Item
+								name="serverHost"
+								rules={[
+									{
+										required: true,
+										message: '请输入地址'
+									}
+								]}
+							>
+								<Input
+									placeholder="请输入地址"
+									disabled={!!params.id}
+								/>
+							</Form.Item>
+							<Form.Item
+								name="serverPort"
+								rules={[
+									{
+										required: true,
+										message: '请输入端口'
+									}
+								]}
+							>
+								<InputNumber
+									style={{ width: '100%' }}
+									placeholder="端口"
+									disabled={!!params.id}
+								/>
+							</Form.Item>
+							<Form.Item
+								name="bucketName"
+								rules={[
+									{
+										required: true,
+										message: '请输入路径'
+									}
+								]}
+							>
+								<Input
+									placeholder="路径 如：/path"
+									disabled={!!params.id}
+								/>
+							</Form.Item>
+						</div>
 					</Form.Item>
 					<Form.Item
 						label="用户ID"
