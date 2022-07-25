@@ -104,7 +104,8 @@ export default function AddEsIngress(): JSX.Element {
 				icon:
 					serviceIngress.servicePurpose === '管理页面'
 						? 'icon-yemianguanli'
-						: 'icon-duxie1'
+						: 'icon-duxie1',
+				port: serviceIngress.serviceList?.[0].servicePort
 			});
 		}
 		return () =>
@@ -259,6 +260,18 @@ export default function AddEsIngress(): JSX.Element {
 					oldServiceName: serviceIngress.serviceList[0].serviceName
 				};
 			if (networkModel === 7) {
+				if (
+					httpPaths.some(
+						(item: HttpPathItem) =>
+							item.path === '' || item.serviceName === ''
+					)
+				) {
+					notification.error({
+						message: '失败',
+						description: '请添加服务暴露和路径'
+					});
+					return;
+				}
 				sendData = {
 					...edit,
 					clusterId,
@@ -299,6 +312,7 @@ export default function AddEsIngress(): JSX.Element {
 					]
 				};
 			}
+			console.log(sendData);
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
@@ -415,8 +429,17 @@ export default function AddEsIngress(): JSX.Element {
 									name="ingressClassName"
 									required
 									label="负载均衡选择"
+									rules={[
+										{
+											required: true,
+											message: '请选择负载均衡'
+										}
+									]}
 								>
-									<Select disabled={!!serviceIngress}>
+									<Select
+										disabled={!!serviceIngress}
+										placeholder="请选择负载均衡"
+									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
 												return (
@@ -469,8 +492,17 @@ export default function AddEsIngress(): JSX.Element {
 								name="ingressClassName"
 								required
 								label="负载均衡选择"
+								rules={[
+									{
+										required: true,
+										message: '请选择负载均衡'
+									}
+								]}
 							>
-								<Select disabled={!!serviceIngress}>
+								<Select
+									disabled={!!serviceIngress}
+									placeholder="请选择负载均衡"
+								>
 									{ingresses.map((item: IngressItemProps) => {
 										return (
 											<Option
@@ -483,7 +515,14 @@ export default function AddEsIngress(): JSX.Element {
 									})}
 								</Select>
 							</FormItem>
-							<FormItem name="domain" label="域名" required>
+							<FormItem
+								name="domain"
+								label="域名"
+								required
+								rules={[
+									{ required: true, message: '请填写域名' }
+								]}
+							>
 								<Input
 									disabled={!!serviceIngress}
 									placeholder="请输入域名"

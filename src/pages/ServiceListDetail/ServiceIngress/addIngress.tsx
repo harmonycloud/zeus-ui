@@ -57,26 +57,43 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	);
 	useEffect(() => {
 		if (serviceIngress) {
+			console.log(serviceIngress);
 			setExposeType(
 				serviceIngress.exposeType === 'Ingress'
 					? 'TCP'
 					: serviceIngress.exposeType
 			);
-			setCurServiceName({
-				name: serviceIngress.serviceList?.[0]?.serviceName,
-				label: serviceIngress.servicePurpose || '管理页面',
-				icon:
-					serviceIngress.servicePurpose === '服务连接'
-						? 'icon-jiqunwaifangwen'
-						: 'icon-yemianguanli'
-			});
+			if (serviceIngress.protocol === 'HTTP') {
+				setCurServiceName({
+					name: serviceIngress.rules[0]?.ingressHttpPaths?.[0]
+						.serviceName,
+					label: '管理页面',
+					icon: 'icon-yemianguanli'
+				});
+			} else {
+				setCurServiceName({
+					name: serviceIngress.serviceList?.[0]?.serviceName,
+					label:
+						serviceIngress.servicePurpose === '服务连接'
+							? '集群外访问'
+							: '管理页面',
+					icon:
+						serviceIngress.servicePurpose === '服务连接'
+							? 'icon-jiqunwaifangwen'
+							: 'icon-yemianguanli'
+				});
+			}
+			setNetworkIngress(serviceIngress.networkModel);
 			form.setFieldsValue({
 				exposeType:
 					serviceIngress.exposeType === 'Ingress'
 						? 'TCP'
 						: serviceIngress.exposeType,
 				ingressClassName: serviceIngress.ingressClassName,
-				exposePort: serviceIngress.serviceList?.[0].exposePort
+				exposePort: serviceIngress.serviceList?.[0].exposePort,
+				networkModel: serviceIngress.networkModel,
+				domain: serviceIngress.rules?.[0].domain,
+				path: serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path
 			});
 		}
 		return () => {
@@ -330,7 +347,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										<div
 											key={index}
 											className={`ingress-service-box ${
-												curServiceName?.name.includes(
+												curServiceName?.name?.includes(
 													item.name
 												)
 													? 'ingress-service-box-active'
@@ -387,7 +404,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									required
 									label="负载均衡选择"
 								>
-									<Select disabled={!!serviceIngress}>
+									<Select
+										placeholder="请选择负载均衡"
+										disabled={!!serviceIngress}
+									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
 												return (
@@ -481,10 +501,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						</>
 					)}
 					{/* 选择管理页面 */}
-					{(curServiceName?.name ===
-						`${middlewareName}-console-svc` ||
-						curServiceName?.name ===
-							`${middlewareName}-manager-svc`) && (
+					{(curServiceName?.name.includes(
+						`${middlewareName}-console-svc`
+					) ||
+						curServiceName?.name.includes(
+							`${middlewareName}-manager-svc`
+						)) && (
 						<>
 							<h2>暴露配置</h2>
 							<FormItem
@@ -522,7 +544,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											required
 											label="负载均衡选择"
 										>
-											<Select disabled={!!serviceIngress}>
+											<Select
+												placeholder="请选择负载均衡"
+												disabled={!!serviceIngress}
+											>
 												{ingresses.map(
 													(
 														item: IngressItemProps
@@ -583,7 +608,10 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										required
 										label="负载均衡选择"
 									>
-										<Select>
+										<Select
+											placeholder="请选择负载均衡"
+											disabled={!!serviceIngress}
+										>
 											{ingresses.map(
 												(item: IngressItemProps) => {
 													return (

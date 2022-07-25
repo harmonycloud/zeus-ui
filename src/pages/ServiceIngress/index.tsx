@@ -24,6 +24,7 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [curIngress, setCurIngress] = useState<ServiceIngressItem>();
 	const [typeFilter, setTypeFilter] = useState<FiltersProps[]>([]);
+	const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
 	useEffect(() => {
 		let mounted = true;
 		if (
@@ -31,27 +32,31 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 			JSON.stringify(namespace) !== '{}'
 		) {
 			if (mounted) {
+				setLoadingVisible(true);
 				getIngresses({
 					clusterId: cluster.id,
 					namespace: namespace.name,
 					keyword: searchText
-				}).then((res) => {
-					if (res.success) {
-						setDataSource(res.data);
-						const list = res.data.map(
-							(item: ServiceIngressItem) => {
-								return {
-									value: item.middlewareType,
-									text: item.middlewareType
-								};
-							}
-						);
-
-						setTypeFilter(
-							objectRemoveDuplicatesByKey(list, 'value')
-						);
-					}
-				});
+				})
+					.then((res) => {
+						if (res.success) {
+							setDataSource(res.data);
+							const list = res.data.map(
+								(item: ServiceIngressItem) => {
+									return {
+										value: item.middlewareType,
+										text: item.middlewareType
+									};
+								}
+							);
+							setTypeFilter(
+								objectRemoveDuplicatesByKey(list, 'value')
+							);
+						}
+					})
+					.finally(() => {
+						setLoadingVisible(false);
+					});
 			}
 		}
 		return () => {
@@ -59,15 +64,20 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 		};
 	}, [cluster, namespace]);
 	const getData = (keyword?: string) => {
+		setLoadingVisible(true);
 		getIngresses({
 			clusterId: cluster.id,
 			namespace: namespace.name,
 			keyword: keyword || ''
-		}).then((res) => {
-			if (res.success) {
-				setDataSource(res.data);
-			}
-		});
+		})
+			.then((res) => {
+				if (res.success) {
+					setDataSource(res.data);
+				}
+			})
+			.finally(() => {
+				setLoadingVisible(false);
+			});
 	};
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchText(event.target.value);
@@ -199,6 +209,7 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						placeholder: '请输入服务名称、暴露服务搜索',
 						style: { width: '350px' }
 					}}
+					loading={loadingVisible}
 				>
 					<ProTable.Column
 						dataIndex="middlewareName"

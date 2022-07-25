@@ -8,13 +8,18 @@ import {
 	notification,
 	Popover,
 	Space,
+	Spin,
 	Table
 } from 'antd';
 import { ListCard, ListCardItem, ListPanel } from '@/components/ListCard';
 import ArrowLine from '@/components/ArrowLine';
 import Actions from '@/components/Actions';
 import { IconFont } from '@/components/IconFont';
-import { InternalServiceItem, ServiceDetailIngressProps } from '../detail';
+import {
+	HttpPathItem,
+	InternalServiceItem,
+	ServiceDetailIngressProps
+} from '../detail';
 import DefaultPicture from '@/components/DefaultPicture';
 import {
 	getIngressMid,
@@ -46,7 +51,6 @@ export default function ServiceDetailIngress(
 		mode,
 		readWriteProxy,
 		brokerNum,
-		enableExternal,
 		imagePath
 	} = props;
 	const history = useHistory();
@@ -58,6 +62,7 @@ export default function ServiceDetailIngress(
 		InternalServiceItem[]
 	>([]);
 	const [editVisible, setEditVisible] = useState<boolean>(false);
+	const [spinning, setSpinning] = useState<boolean>(false);
 	const onRefresh = () => {
 		getIngressByMid(clusterId, namespace, name, middlewareName);
 	};
@@ -74,7 +79,11 @@ export default function ServiceDetailIngress(
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${
+								dataSource.length > 0
+									? `${dataSource[0].externalEnable}`
+									: 'false'
+							}`
 						);
 					} else if (name === 'elasticsearch') {
 						history.push(
@@ -116,7 +125,19 @@ export default function ServiceDetailIngress(
 			middlewareName
 		}).then((res) => {
 			if (res.success) {
-				setInternalDataSource(res.data);
+				const initService = [
+					`${middlewareName}-0-master`,
+					`${middlewareName}-1-master`,
+					`${middlewareName}-2-master`,
+					`${middlewareName}-nameserver-proxy-svc`,
+					`${middlewareName}-kafka-external-svc`
+				];
+				const list = res.data.filter((item: InternalServiceItem) => {
+					return !initService.some((i: string) =>
+						item.serviceName.includes(i)
+					);
+				});
+				setInternalDataSource(list);
 			}
 		});
 	};
@@ -127,18 +148,22 @@ export default function ServiceDetailIngress(
 		type: string,
 		middlewareName: string
 	) => {
+		setSpinning(true);
 		const sendData = {
 			clusterId,
 			namespace: namespace,
 			type,
 			middlewareName
 		};
-		getIngressMid(sendData).then((res) => {
-			if (res.success) {
-				console.log(res);
-				setDataSource(res.data);
-			}
-		});
+		getIngressMid(sendData)
+			.then((res) => {
+				if (res.success) {
+					setDataSource(res.data);
+				}
+			})
+			.finally(() => {
+				setSpinning(false);
+			});
 	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
 		Modal.confirm({
@@ -196,7 +221,7 @@ export default function ServiceDetailIngress(
 			} else {
 				if (
 					record.name.includes(
-						`${record.serviceName}-kafka-external-svc`
+						`${record.middlewareName}-kafka-external-svc`
 					)
 				) {
 					return true;
@@ -252,323 +277,419 @@ export default function ServiceDetailIngress(
 	}
 	return (
 		<>
-			<ProList operation={Operation}>
-				{dataSource.map((item: serviceAvailableItemProps) => {
-					if (
-						item.protocol === 'TCP' &&
-						item.exposeType === 'Ingress' &&
-						item.address === null
-					) {
-						return (
-							<ListPanel
-								key={item.name}
-								title={item.middlewareName}
-								subTitle={item.middlewareType}
-								icon={
-									<img
-										height={34}
-										width={34}
-										style={{ marginRight: 8 }}
-										src={
-											item.imagePath
-												? `${api}/images/middleware/${item.imagePath}`
-												: otherColor
-										}
-										alt={name}
-									/>
-								}
-								actionRender={
-									<Actions>
-										<LinkButton
-											onClick={() => {
-												if (
-													name === 'kafka' ||
-													name === 'rocketmq'
-												) {
-													storage.setSession(
-														'serviceIngress',
-														item
-													);
-													if (judgeInit(item)) {
-														setEditVisible(true);
-													} else {
+			<Spin spinning={spinning}>
+				<ProList operation={Operation}>
+					{dataSource.map((item: serviceAvailableItemProps) => {
+						if (
+							(item.protocol === 'TCP' &&
+								item.exposeType === 'Ingress' &&
+								item.address === null) ||
+							item.protocol === 'HTTP'
+						) {
+							return (
+								<ListPanel
+									key={item.name}
+									title={item.middlewareName}
+									subTitle={item.middlewareType}
+									icon={
+										<img
+											height={34}
+											width={34}
+											style={{ marginRight: 8 }}
+											src={
+												item.imagePath
+													? `${api}/images/middleware/${item.imagePath}`
+													: otherColor
+											}
+											alt={name}
+										/>
+									}
+									actionRender={
+										<Actions>
+											<LinkButton
+												onClick={() => {
+													if (
+														name === 'kafka' ||
+														name === 'rocketmq'
+													) {
+														storage.setSession(
+															'serviceIngress',
+															item
+														);
+														if (judgeInit(item)) {
+															setEditVisible(
+																true
+															);
+														} else {
+															history.push(
+																`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+															);
+														}
+													} else if (
+														name === 'elasticsearch'
+													) {
+														storage.setSession(
+															'serviceIngress',
+															item
+														);
 														history.push(
-															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${enableExternal}`
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+														);
+													} else {
+														storage.setSession(
+															'serviceIngress',
+															item
+														);
+														history.push(
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 														);
 													}
-												} else if (
-													name === 'elasticsearch'
-												) {
-													storage.setSession(
-														'serviceIngress',
-														item
-													);
-													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-													);
-												} else {
-													storage.setSession(
-														'serviceIngress',
-														item
-													);
-													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-													);
+												}}
+											>
+												编辑
+											</LinkButton>
+											<LinkButton
+												disabled={judgeInit(item)}
+												onClick={() =>
+													handleDelete(item)
 												}
-											}}
-										>
-											编辑
-										</LinkButton>
-										<LinkButton
-											disabled={judgeInit(item)}
-											onClick={() => handleDelete(item)}
-										>
-											删除
-										</LinkButton>
-									</Actions>
-								}
-								columnGap="24px"
-								render={
-									<>
-										<Space wrap>
-											{item.ingressPodList?.map((i) => {
-												return (
-													<div
-														key={i.podName}
-														className="pod-card-item"
-													>
-														<IconFont
-															type="icon-duankou"
-															style={{
-																fontSize: 32,
-																marginRight: 8
-															}}
-														/>
-														<div className="pod-card-des">
-															<div className="pod-card-ip">
-																{i.hostIp}:
-																{
-																	item
-																		.serviceList[0]
-																		.exposePort
-																}
-																<Popover
-																	content={
-																		<div>
-																			<CheckCircleFilled
-																				style={{
-																					color: '#00A700',
-																					marginRight:
-																						'5px'
-																				}}
-																			/>
-																			复制成功
-																		</div>
+											>
+												删除
+											</LinkButton>
+										</Actions>
+									}
+									columnGap="24px"
+									render={
+										<>
+											<Space wrap>
+												{item.protocol === 'TCP' &&
+													item.ingressPodList?.map(
+														(i) => {
+															return (
+																<div
+																	key={
+																		i.podName
 																	}
-																	trigger="click"
+																	className="pod-card-item"
 																>
 																	<IconFont
-																		className="pod-card-ip-copy"
-																		type="icon-fuzhi1"
+																		type="icon-duankou"
 																		style={{
-																			fontSize: 12
+																			fontSize: 32,
+																			marginRight: 8
 																		}}
-																		onClick={() =>
-																			copyValue(
-																				`${i.hostIp}:${item.serviceList[0].exposePort}`
-																			)
-																		}
 																	/>
-																</Popover>
-															</div>
-															<div
-																className="pod-card-name"
-																title={
-																	i.podName
-																}
-															>
-																{i.podName}
-															</div>
-														</div>
-													</div>
-												);
-											})}
-										</Space>
-									</>
-								}
-							>
-								<ArrowLine
-									width="calc((100% - 350px) / 2)"
-									label={item.servicePurpose || '未知'}
-								/>
-								<ListCardItem
-									width={100}
-									label="暴露方式"
-									value={
-										item.exposeType === 'Ingress'
-											? item.protocol
-											: item.exposeType
+																	<div className="pod-card-des">
+																		<div className="pod-card-ip">
+																			{
+																				i.hostIp
+																			}
+																			:
+																			{
+																				item
+																					.serviceList[0]
+																					.exposePort
+																			}
+																			<Popover
+																				content={
+																					<div>
+																						<CheckCircleFilled
+																							style={{
+																								color: '#00A700',
+																								marginRight:
+																									'5px'
+																							}}
+																						/>
+																						复制成功
+																					</div>
+																				}
+																				trigger="click"
+																			>
+																				<IconFont
+																					className="pod-card-ip-copy"
+																					type="icon-fuzhi1"
+																					style={{
+																						fontSize: 12
+																					}}
+																					onClick={() =>
+																						copyValue(
+																							`${i.hostIp}:${item.serviceList[0].exposePort}`
+																						)
+																					}
+																				/>
+																			</Popover>
+																		</div>
+																		<div
+																			className="pod-card-name"
+																			title={
+																				i.podName
+																			}
+																		>
+																			{
+																				i.podName
+																			}
+																		</div>
+																	</div>
+																</div>
+															);
+														}
+													)}
+												{item.protocol === 'HTTP' &&
+													item.rules?.[0].ingressHttpPaths?.map(
+														(i: HttpPathItem) => {
+															return (
+																<div
+																	key={i.path}
+																	className="pod-card-item"
+																>
+																	<IconFont
+																		type="icon-duankou"
+																		style={{
+																			fontSize: 32,
+																			marginRight: 8
+																		}}
+																	/>
+																	<div className="pod-card-des">
+																		<div className="pod-card-ip">
+																			{
+																				item
+																					.rules[0]
+																					.domain
+																			}
+																			:
+																			{
+																				i.servicePort
+																			}
+																			{
+																				i.path
+																			}
+																			<Popover
+																				content={
+																					<div>
+																						<CheckCircleFilled
+																							style={{
+																								color: '#00A700',
+																								marginRight:
+																									'5px'
+																							}}
+																						/>
+																						复制成功
+																					</div>
+																				}
+																				trigger="click"
+																			>
+																				<IconFont
+																					className="pod-card-ip-copy"
+																					type="icon-fuzhi1"
+																					style={{
+																						fontSize: 12
+																					}}
+																					onClick={() =>
+																						copyValue(
+																							`${item.rules[0].domain}:${i.servicePort}${i.path}`
+																						)
+																					}
+																				/>
+																			</Popover>
+																		</div>
+																		<div
+																			className="pod-card-name"
+																			title={
+																				i.serviceName
+																			}
+																		>
+																			{
+																				i.serviceName
+																			}
+																		</div>
+																	</div>
+																</div>
+															);
+														}
+													)}
+											</Space>
+										</>
 									}
-								/>
-								<ArrowLine width="calc((100% - 350px) / 2)" />
-								<ListCardItem
-									width={250}
-									label={
-										item.networkModel === 4
-											? '四层网络暴露'
-											: '七层网络暴露'
-									}
-									value={item.serviceList[0].exposePort}
+								>
+									<ArrowLine
+										width="calc((100% - 350px) / 2)"
+										label={item.servicePurpose || '未知'}
+									/>
+									<ListCardItem
+										width={100}
+										label="暴露方式"
+										value={
+											item.exposeType === 'Ingress'
+												? item.protocol
+												: item.exposeType
+										}
+									/>
+									<ArrowLine width="calc((100% - 350px) / 2)" />
+									<ListCardItem
+										width={250}
+										label={
+											item.networkModel === 4
+												? '四层网络暴露'
+												: '七层网络暴露'
+										}
+										value={ipValue(item)}
+										icon={
+											<IconFont
+												type="icon-duankou"
+												style={{
+													fontSize: 32,
+													marginRight: 8
+												}}
+											/>
+										}
+									/>
+								</ListPanel>
+							);
+						} else {
+							return (
+								<ListCard
+									key={item.name}
+									title={item.middlewareName}
+									subTitle={item.middlewareType}
 									icon={
-										<IconFont
-											type="icon-duankou"
-											style={{
-												fontSize: 32,
-												marginRight: 8
-											}}
+										<img
+											height={32}
+											width={32}
+											style={{ marginRight: 8 }}
+											src={
+												item.imagePath
+													? `${api}/images/middleware/${item.imagePath}`
+													: otherColor
+											}
+											alt={name}
 										/>
 									}
-								/>
-							</ListPanel>
-						);
-					} else {
-						return (
-							<ListCard
-								key={item.name}
-								title={item.middlewareName}
-								subTitle={item.middlewareType}
-								icon={
-									<img
-										height={32}
-										width={32}
-										style={{ marginRight: 8 }}
-										src={
-											item.imagePath
-												? `${api}/images/middleware/${item.imagePath}`
-												: otherColor
-										}
-										alt={name}
-									/>
-								}
-								actionRender={
-									<Actions>
-										<LinkButton
-											onClick={() => {
-												if (
-													name === 'kafka' ||
-													name === 'rocketmq'
-												) {
-													storage.setSession(
-														'serviceIngress',
-														item
-													);
-													if (judgeInit(item)) {
-														setEditVisible(true);
-													} else {
+									actionRender={
+										<Actions>
+											<LinkButton
+												onClick={() => {
+													if (
+														name === 'kafka' ||
+														name === 'rocketmq'
+													) {
+														storage.setSession(
+															'serviceIngress',
+															item
+														);
+														if (judgeInit(item)) {
+															setEditVisible(
+																true
+															);
+														} else {
+															history.push(
+																`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+															);
+														}
+													} else if (
+														name === 'elasticsearch'
+													) {
+														storage.setSession(
+															'serviceIngress',
+															item
+														);
 														history.push(
-															`/serviceList/${name}/${aliasName}/externalAccess/edit/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}`
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+														);
+													} else {
+														storage.setSession(
+															'serviceIngress',
+															item
+														);
+														history.push(
+															`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 														);
 													}
-												} else if (
-													name === 'elasticsearch'
-												) {
-													storage.setSession(
-														'serviceIngress',
-														item
-													);
-													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-													);
-												} else {
-													storage.setSession(
-														'serviceIngress',
-														item
-													);
-													history.push(
-														`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-													);
-												}
-											}}
-										>
-											编辑
-										</LinkButton>
-										<LinkButton
-											disabled={judgeInit(item)}
-											onClick={() => handleDelete(item)}
-										>
-											删除
-										</LinkButton>
-									</Actions>
-								}
-								columnGap="24px"
-							>
-								<ArrowLine
-									width="calc((100% - 350px) / 2)"
-									label={item.servicePurpose || '未知'}
-								/>
-								<ListCardItem
-									width={100}
-									label="暴露方式"
-									value={
-										item.exposeType === 'Ingress'
-											? item.protocol
-											: item.exposeType
-									}
-								/>
-								<ArrowLine width="calc((100% - 350px) / 2)" />
-								<ListCardItem
-									width={250}
-									label={
-										item.networkModel === 4
-											? '四层网络暴露'
-											: '七层网络暴露'
-									}
-									value={
-										<span>
-											{ipValue(item)}
-											<Popover
-												content={
-													<div>
-														<CheckCircleFilled
-															style={{
-																color: '#00A700',
-																marginRight:
-																	'5px'
-															}}
-														/>
-														复制成功
-													</div>
-												}
-												trigger="click"
+												}}
 											>
-												<IconFont
-													className="card-ip-copy"
-													type="icon-fuzhi1"
-													style={{
-														fontSize: 12
-													}}
-													onClick={() =>
-														copyValue(ipValue(item))
+												编辑
+											</LinkButton>
+											<LinkButton
+												disabled={judgeInit(item)}
+												onClick={() =>
+													handleDelete(item)
+												}
+											>
+												删除
+											</LinkButton>
+										</Actions>
+									}
+									columnGap="24px"
+								>
+									<ArrowLine
+										width="calc((100% - 350px) / 2)"
+										label={item.servicePurpose || '未知'}
+									/>
+									<ListCardItem
+										width={100}
+										label="暴露方式"
+										value={
+											item.exposeType === 'Ingress'
+												? item.protocol
+												: item.exposeType
+										}
+									/>
+									<ArrowLine width="calc((100% - 350px) / 2)" />
+									<ListCardItem
+										width={250}
+										label={
+											item.networkModel === 4
+												? '四层网络暴露'
+												: '七层网络暴露'
+										}
+										value={
+											<span>
+												{ipValue(item)}
+												<Popover
+													content={
+														<div>
+															<CheckCircleFilled
+																style={{
+																	color: '#00A700',
+																	marginRight:
+																		'5px'
+																}}
+															/>
+															复制成功
+														</div>
 													}
-												/>
-											</Popover>
-										</span>
-									}
-									icon={
-										<IconFont
-											type="icon-duankou"
-											style={{
-												fontSize: 32,
-												marginRight: 8
-											}}
-										/>
-									}
-								/>
-							</ListCard>
-						);
-					}
-				})}
-			</ProList>
+													trigger="click"
+												>
+													<IconFont
+														className="card-ip-copy"
+														type="icon-fuzhi1"
+														style={{
+															fontSize: 12
+														}}
+														onClick={() =>
+															copyValue(
+																ipValue(item)
+															)
+														}
+													/>
+												</Popover>
+											</span>
+										}
+										icon={
+											<IconFont
+												type="icon-duankou"
+												style={{
+													fontSize: 32,
+													marginRight: 8
+												}}
+											/>
+										}
+									/>
+								</ListCard>
+							);
+						}
+					})}
+				</ProList>
+			</Spin>
 			<Drawer
 				title={
 					<div className="icon-type-content">
