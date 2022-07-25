@@ -373,7 +373,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			keyword: storage.getLocal('backupDetail').taskName,
 			clusterId: cluster.id,
 			namespace: storage.getLocal('backupDetail').namespace,
-			middlewareName: params?.name || '',
+			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
 		};
 		getBackupTasks(sendData).then((res) => {
