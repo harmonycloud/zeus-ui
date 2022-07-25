@@ -137,7 +137,6 @@ export default function ServiceDetailIngress(
 						item.serviceName.includes(i)
 					);
 				});
-				console.log(list);
 				setInternalDataSource(list);
 			}
 		});
