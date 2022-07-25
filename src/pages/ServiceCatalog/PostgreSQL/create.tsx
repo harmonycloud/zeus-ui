@@ -628,6 +628,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												name="namespace"
 											>
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
