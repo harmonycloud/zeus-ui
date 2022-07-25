@@ -79,7 +79,7 @@ export default function ServiceDetailIngress(
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${brokerNum}/${
 								dataSource.length > 0
 									? `${dataSource[0].externalEnable}`
 									: 'false'
@@ -363,12 +363,12 @@ export default function ServiceDetailIngress(
 										<>
 											<Space wrap>
 												{item.protocol === 'TCP' &&
-													item.ingressPodList?.map(
-														(i) => {
+													item.ingressIpSet?.map(
+														(i: string) => {
 															return (
 																<div
 																	key={
-																		i.podName
+																		item.ingressClassName
 																	}
 																	className="pod-card-item"
 																>
@@ -381,10 +381,7 @@ export default function ServiceDetailIngress(
 																	/>
 																	<div className="pod-card-des">
 																		<div className="pod-card-ip">
-																			{
-																				i.hostIp
-																			}
-																			:
+																			{i}:
 																			{
 																				item
 																					.serviceList[0]
@@ -413,7 +410,7 @@ export default function ServiceDetailIngress(
 																					}}
 																					onClick={() =>
 																						copyValue(
-																							`${i.hostIp}:${item.serviceList[0].exposePort}`
+																							`${i}:${item.serviceList[0].exposePort}`
 																						)
 																					}
 																				/>
@@ -422,11 +419,12 @@ export default function ServiceDetailIngress(
 																		<div
 																			className="pod-card-name"
 																			title={
-																				i.podName
+																				item.ingressClassName ||
+																				''
 																			}
 																		>
 																			{
-																				i.podName
+																				item.ingressClassName
 																			}
 																		</div>
 																	</div>

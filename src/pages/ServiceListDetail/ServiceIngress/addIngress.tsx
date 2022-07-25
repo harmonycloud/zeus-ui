@@ -42,7 +42,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 		brokerNum,
 		aliasName,
 		chartVersion,
-		enableExternal
+		enableExternal,
+		mode
 	} = params;
 	const [form] = Form.useForm();
 	const [curServiceName, setCurServiceName] = useState<ServiceNameItem>();
@@ -55,6 +56,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	const [serviceIngress] = useState<serviceAvailableItemProps>(
 		storage.getSession('serviceIngress')
 	);
+	console.log(mode);
 	useEffect(() => {
 		if (serviceIngress) {
 			setExposeType(
@@ -119,7 +121,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				at.push(i);
 			}
 			setBrokers(at);
-			if (enableExternal === 'true') {
+			if (enableExternal === 'true' || mode === 'dledger') {
 				list = list.filter((item) => item.name !== 'cluster');
 			}
 			setServiceNames(list);
@@ -142,7 +144,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				at.push(i);
 			}
 			setBrokers(at);
-			if (enableExternal === 'true') {
+			if (enableExternal === 'true' || mode === 'dledger') {
 				list = list.filter((item) => item.name !== 'cluster');
 			}
 			setServiceNames(list);
@@ -328,7 +330,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				{enableExternal === 'false' && (
+				{enableExternal === 'false' && mode !== 'dledger' && (
 					<Alert
 						message="您好！选择集群外访问服务暴露后需要重启服务！"
 						type="info"
