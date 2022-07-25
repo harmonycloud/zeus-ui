@@ -1091,7 +1091,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<FormItem required name="namespace">
-												<Select>
+												<Select placeholder="请选择命名空间">
 													{namespaceList.map(
 														(item) => {
 															return (

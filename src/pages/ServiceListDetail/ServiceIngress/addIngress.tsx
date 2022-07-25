@@ -57,7 +57,6 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	);
 	useEffect(() => {
 		if (serviceIngress) {
-			console.log(serviceIngress);
 			setExposeType(
 				serviceIngress.exposeType === 'Ingress'
 					? 'TCP'
@@ -90,7 +89,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						? 'TCP'
 						: serviceIngress.exposeType,
 				ingressClassName: serviceIngress.ingressClassName,
-				exposePort: serviceIngress.serviceList?.[0].exposePort,
+				exposePort: Number(serviceIngress.serviceList?.[0].exposePort),
 				networkModel: serviceIngress.networkModel,
 				domain: serviceIngress.rules?.[0].domain,
 				path: serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path

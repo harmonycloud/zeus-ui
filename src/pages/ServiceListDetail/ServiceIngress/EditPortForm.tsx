@@ -29,7 +29,7 @@ export default function EditPortForm(props: EditPortFormProps): JSX.Element {
 	useEffect(() => {
 		if (serviceIngress) {
 			form.setFieldsValue({
-				port: serviceIngress.serviceList[0].exposePort
+				port: Number(serviceIngress.serviceList[0].exposePort)
 			});
 		}
 		return () => {
