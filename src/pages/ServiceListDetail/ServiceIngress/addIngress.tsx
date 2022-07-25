@@ -402,6 +402,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									name="ingressClassName"
 									required
 									label="负载均衡选择"
+									rules={[
+										{
+											required: true,
+											message: '请选择负载均衡'
+										}
+									]}
 								>
 									<Select
 										placeholder="请选择负载均衡"
@@ -542,6 +548,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											name="ingressClassName"
 											required
 											label="负载均衡选择"
+											rules={[
+												{
+													required: true,
+													message: '请选择负载均衡'
+												}
+											]}
 										>
 											<Select
 												placeholder="请选择负载均衡"
@@ -606,6 +618,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										name="ingressClassName"
 										required
 										label="负载均衡选择"
+										rules={[
+											{
+												required: true,
+												message: '请选择负载均衡'
+											}
+										]}
 									>
 										<Select
 											placeholder="请选择负载均衡"
