@@ -133,10 +133,11 @@ export default function ServiceDetailIngress(
 					`${middlewareName}-kafka-external-svc`
 				];
 				const list = res.data.filter((item: InternalServiceItem) => {
-					initService.some((i: string) =>
+					return !initService.some((i: string) =>
 						item.serviceName.includes(i)
 					);
 				});
+				console.log(list);
 				setInternalDataSource(list);
 			}
 		});
