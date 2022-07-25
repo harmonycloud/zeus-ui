@@ -79,7 +79,7 @@ export default function ServiceDetailIngress(
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {
 						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${brokerNum}/${
+							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${brokerNum}/${
 								dataSource.length > 0
 									? `${dataSource[0].externalEnable}`
 									: 'false'
