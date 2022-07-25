@@ -597,7 +597,14 @@ function AddBackupTask(props: StoreState): JSX.Element {
 												? '周期备份'
 												: '单次备份'}
 										</p>
-										<p>
+										<p
+											style={{
+												visibility:
+													backupWay === 'one'
+														? 'hidden'
+														: 'visible'
+											}}
+										>
 											备份时间：
 											{formData.rule !== 'now'
 												? '每周'
@@ -668,6 +675,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 											]}
 										>
 											<Select
+												placeholder="请选择备份位置"
 												value={selectAddress}
 												onChange={(value) => {
 													setSelectAddress(value);
@@ -711,13 +719,6 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				namespace: params.namespace || selectedRow.namespace,
 				middlewareName: params.middlewareName || selectedRow.name,
 				type: selectedRow?.type || params.type
-				// cron:
-				// 	typeof formData.time !== 'string'
-				// 		? cron
-				// 		: `${formData.time.substring(
-				// 				3,
-				// 				5
-				// 		  )} ${formData.time.substring(0, 2)} ? ? ${week}`
 			};
 			if (params.type === 'mysql' || selectedRow?.type === 'mysql') {
 				sendData.limitRecord = formData.limitRecord;
