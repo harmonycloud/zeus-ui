@@ -75,7 +75,7 @@ export const statusBackupRender: (
 	value: string,
 	index: number,
 	record: any
-) => JSX.Element = (value: string, index: number, record: any) => {
+) => JSX.Element = (value: string, record: any, index: number) => {
 	switch (value) {
 		case 'Running':
 			return <Badge status="warning" text="进行中" />;
@@ -420,30 +420,27 @@ export const judgeObjArrayHeavyByAttr: (arr: any[], attr: string) => boolean = (
 	return values.length !== t.length;
 };
 // * 调换对象属性位置
-export const changeObjectIndex: (
-	obj: any,
-	prop: string,
-	index: number
-) => any = (obj: any, prop: string, index: number) => {
-	const keyArr = Object.keys(obj);
-	if (keyArr.length > 1) {
-		const propIndex = keyArr.indexOf(prop);
-		console.log(propIndex);
-		if (propIndex > 0) {
-			keyArr.splice(propIndex, 0);
-			keyArr.splice(index, 0, prop);
-			const result = {};
-			for (let i = 0; i < keyArr.length; i++) {
-				result[keyArr[i]] = obj[keyArr[i]];
+export const changeObjectIndex: (obj: any, prop: string, index: number) => any =
+	(obj: any, prop: string, index: number) => {
+		const keyArr = Object.keys(obj);
+		if (keyArr.length > 1) {
+			const propIndex = keyArr.indexOf(prop);
+			console.log(propIndex);
+			if (propIndex > 0) {
+				keyArr.splice(propIndex, 0);
+				keyArr.splice(index, 0, prop);
+				const result = {};
+				for (let i = 0; i < keyArr.length; i++) {
+					result[keyArr[i]] = obj[keyArr[i]];
+				}
+				return result;
+			} else {
+				return obj;
 			}
-			return result;
 		} else {
 			return obj;
 		}
-	} else {
-		return obj;
-	}
-};
+	};
 
 // * 获取customForm中的所有variable-递归
 export const getCustomFormKeys: (value: any) => string[] = (value: any) => {
