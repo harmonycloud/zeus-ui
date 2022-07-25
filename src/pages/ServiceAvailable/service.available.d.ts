@@ -24,6 +24,7 @@ export interface serviceAvailableItemProps {
 	networkModel: 4 | 7;
 	address: string | null;
 	externalEnable?: boolean;
+	ingressIpSet?: string[] | null;
 }
 export interface serviceAvailablesProps {
 	chartName: string;
