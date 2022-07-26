@@ -471,10 +471,6 @@ export default function ServiceDetailIngress(
 																					.rules[0]
 																					.domain
 																			}
-																			:
-																			{
-																				i.servicePort
-																			}
 																			{
 																				i.path
 																			}
