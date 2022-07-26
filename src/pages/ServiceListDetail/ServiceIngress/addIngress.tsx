@@ -23,6 +23,7 @@ import SelectBlock from '@/components/SelectBlock';
 import { addIngress } from '@/services/ingress';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
 import storage from '@/utils/storage';
+import { ValidateStatus } from 'antd/lib/form/FormItem';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -56,7 +57,6 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	const [serviceIngress] = useState<serviceAvailableItemProps>(
 		storage.getSession('serviceIngress')
 	);
-	console.log(mode);
 	useEffect(() => {
 		if (serviceIngress) {
 			setExposeType(
@@ -493,6 +493,11 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 														type: 'number',
 														message:
 															'请输入符合规定的端口号'
+													},
+													{
+														required: true,
+														message:
+															'请输入符合规定的端口号'
 													}
 												]}
 											>
@@ -655,6 +660,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										label="域名路径"
 										required
 										name="domainPath"
+										rules={[
+											{
+												required: true,
+												message: '请输入域名和路径'
+											}
+										]}
 									>
 										<div className="display-flex flex-align">
 											<FormItem noStyle name="domain">
