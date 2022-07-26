@@ -233,7 +233,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 							/>
 						)}
 					</div>
-					{vips.find((item) => item === address) && (
+					{vipChecked && vips.find((item) => item === address) && (
 						<div
 							style={{
 								marginLeft: 52,
@@ -243,7 +243,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 							当前VIP地址已经被配置
 						</div>
 					)}
-					{vipNoAlive && (
+					{vipChecked && vipNoAlive && (
 						<div
 							style={{
 								marginLeft: 52,
