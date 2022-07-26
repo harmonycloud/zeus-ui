@@ -247,9 +247,9 @@ function Rules(props: RuleProps): JSX.Element {
 	};
 
 	const ruleRender = (value: any, record: ServiceRuleItem, index: number) =>
-		`${record.description}${record.symbol}${record.threshold}%且${
-			record.alertTime || ''
-		}分钟内触发${record.alertTimes || ''}次`;
+		`${record.description}${record.symbol}${record.threshold}${
+			alarmType === 'system' ? '%' : ''
+		}且${record.alertTime || ''}分钟内触发${record.alertTimes || ''}次`;
 
 	const levelRender = (value: any) => {
 		const temp = alarmWarn.find((item) => item.value === value.severity);
