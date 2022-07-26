@@ -7,11 +7,15 @@ import { useHistory, useParams } from 'react-router';
 import { getParamsTemps, deleteParamsTemp } from '@/services/template';
 import { ParamterTemplateItem } from '../detail';
 import { Key } from 'antd/lib/table/interface';
+import { connect } from 'react-redux';
+import { setParamTemplateBasic } from '@/redux/param/param';
+import { StoreState } from '@/types';
 
 interface ParamterTemplateProps {
 	type: string;
 	chartVersion: string;
 	middlewareName: string;
+	setParamTemplateBasic: (value: any) => void;
 }
 interface paramsProps {
 	name: string;
@@ -21,7 +25,7 @@ interface paramsProps {
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 const ParamterTemplate = (props: ParamterTemplateProps) => {
-	const { type, chartVersion, middlewareName } = props;
+	const { type, chartVersion, middlewareName, setParamTemplateBasic } = props;
 	const [originData, setOriginData] = useState([]);
 	const [dataSource, setDataSource] = useState([]);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -147,6 +151,10 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 						history.push(
 							`/serviceList/${params.name}/${params.aliasName}/paramterSetting/template/${middlewareName}/${type}/${chartVersion}/${record.uid}/${record.name}/${params.namespace}`
 						);
+						setParamTemplateBasic({
+							name: record.name,
+							description: record.description
+						});
 					}}
 					disabled={selectedRowKeys.length > 0}
 				>
@@ -231,4 +239,10 @@ const ParamterTemplate = (props: ParamterTemplateProps) => {
 		</ProTable>
 	);
 };
-export default ParamterTemplate;
+const mapStateToProps = (state: StoreState) => ({
+	param: state.param,
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {
+	setParamTemplateBasic
+})(ParamterTemplate);
