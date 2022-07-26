@@ -429,7 +429,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		<ProPage>
 			<ProHeader
 				title={
-					<h1>{`${type}:${middlewareName}(${
+					<h1>{`${aliasName}:${middlewareName}(${
 						statusRender(status) || ''
 					})`}</h1>
 				}
@@ -524,7 +524,21 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('disaster')}
 						</TabPane>
 					) : null}
-					{operateFlag && type === 'mysql' ? (
+					{/* {operateFlag &&
+						type === 'mysql' &&
+						data?.mysqlDTO?.openDisasterRecoveryMode &&
+						data?.mysqlDTO?.isSource === true} */}
+					{operateFlag &&
+					type === 'mysql' &&
+					!data?.mysqlDTO?.openDisasterRecoveryMode ? (
+						<TabPane tab="数据库管理" key="database">
+							{childrenRender('database')}
+						</TabPane>
+					) : null}
+					{operateFlag &&
+					type === 'mysql' &&
+					data?.mysqlDTO?.openDisasterRecoveryMode &&
+					data?.mysqlDTO?.isSource === true ? (
 						<TabPane tab="数据库管理" key="database">
 							{childrenRender('database')}
 						</TabPane>

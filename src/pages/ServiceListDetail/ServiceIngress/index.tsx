@@ -34,6 +34,7 @@ import { CheckCircleFilled, ReloadOutlined } from '@ant-design/icons';
 import nodata from '@/assets/images/nodata.svg';
 import storage from '@/utils/storage';
 import EditPortForm from './EditPortForm';
+import { getMidImagePath } from '@/services/common';
 
 const LinkButton = Actions.LinkButton;
 export default function ServiceDetailIngress(
@@ -50,8 +51,7 @@ export default function ServiceDetailIngress(
 		clusterId,
 		mode,
 		readWriteProxy,
-		brokerNum,
-		imagePath
+		brokerNum
 	} = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
@@ -63,6 +63,7 @@ export default function ServiceDetailIngress(
 	>([]);
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [spinning, setSpinning] = useState<boolean>(false);
+	const [imagePath, setImagePath] = useState<string>();
 	const onRefresh = () => {
 		getIngressByMid(clusterId, namespace, name, middlewareName);
 	};
@@ -116,6 +117,7 @@ export default function ServiceDetailIngress(
 	useEffect(() => {
 		getIngressByMid(clusterId, namespace, name, middlewareName);
 		getInternalService();
+		getMiddlewareImagePath();
 	}, []);
 	const getInternalService = () => {
 		getInternalServices({
@@ -164,6 +166,21 @@ export default function ServiceDetailIngress(
 			.finally(() => {
 				setSpinning(false);
 			});
+	};
+	const getMiddlewareImagePath = () => {
+		getMidImagePath({
+			clusterId,
+			namespace,
+			type: name,
+			version: chartVersion
+		}).then((res) => {
+			console.log(res);
+			if (res.success) {
+				setImagePath(res.data);
+			} else {
+				setImagePath('');
+			}
+		});
 	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
 		Modal.confirm({
@@ -453,10 +470,6 @@ export default function ServiceDetailIngress(
 																				item
 																					.rules[0]
 																					.domain
-																			}
-																			:
-																			{
-																				i.servicePort
 																			}
 																			{
 																				i.path

@@ -225,7 +225,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 							{status[val]}
 						</div>
 					);
-				} else if (val === 'stopSyncing') {
+				} else if (val === 'StopSyncing') {
 					return (
 						<div>
 							<SyncOutlined
