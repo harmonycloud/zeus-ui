@@ -16,7 +16,7 @@ import { getNodePort } from '@/services/middleware';
 import './index.scss';
 
 function Affinity(props: any): JSX.Element {
-	const { values, onChange, flag, flagChange, cluster } = props;
+	const { values, onChange, flag, flagChange, cluster, disabled } = props;
 	const [label, setLabel] = useState<string>('');
 	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [checked, setChecked] = useState<boolean>(false);
@@ -57,6 +57,7 @@ function Affinity(props: any): JSX.Element {
 								margin: '0 16px',
 								verticalAlign: 'middle'
 							}}
+							disabled={disabled}
 						/>
 					</div>
 					{flag ? (
