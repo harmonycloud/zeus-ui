@@ -374,6 +374,17 @@ export default function AddBackupPosition(): JSX.Element {
 											clusterId: value
 										});
 									}}
+									onBlur={() => {
+										selectClusterId &&
+											!selectClusterIds.find(
+												(item) =>
+													item === selectClusterId
+											) &&
+											setSelectClusterIds([
+												...selectClusterIds,
+												selectClusterId
+											]);
+									}}
 								>
 									{poolList.map((item: poolListItem) => {
 										return (
