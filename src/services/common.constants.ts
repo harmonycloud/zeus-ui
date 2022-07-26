@@ -25,3 +25,5 @@ export const cutInComponents = `${api}/clusters/{clusterId}/components/{componen
 export const mirror = `${api}/clusters/{clusterId}/mirror`;
 // * 查询是否接入观云台
 export const isAccessGYT = `${api}/user/useOpenUserCenter`;
+// * 获取中间件图片接口
+export const getMidImage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/middlewareImage`;

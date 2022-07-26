@@ -12,7 +12,6 @@ import { Drawer, Modal, notification, Table } from 'antd';
 import { FiltersProps } from '@/types/comment';
 import { api } from '@/api.json';
 import nodata from '@/assets/images/nodata.svg';
-import storage from '@/utils/storage';
 import { objectRemoveDuplicatesByKey } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
@@ -126,6 +125,15 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 				{record.exposeType === 'Ingress' && record.protocol === 'TCP' && (
 					<LinkButton
 						onClick={() => {
+							const list = record.ingressIpSet?.map(
+								(item: string) => {
+									return {
+										podIp: item,
+										podName: record.ingressClassName
+									};
+								}
+							);
+							record.ingressComponentDtoList = list;
 							setCurIngress(record);
 							setVisible(true);
 						}}
@@ -277,7 +285,9 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 					visible={visible}
 					width={500}
 				>
-					<Table dataSource={curIngress?.ingressPodList || []}>
+					<Table
+						dataSource={curIngress?.ingressComponentDtoList || []}
+					>
 						<Table.Column dataIndex="podIp" title="IP" />
 						<Table.Column dataIndex="podName" title="Ingress名称" />
 					</Table>
