@@ -429,7 +429,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		<ProPage>
 			<ProHeader
 				title={
-					<h1>{`${type}:${middlewareName}(${
+					<h1>{`${aliasName}:${middlewareName}(${
 						statusRender(status) || ''
 					})`}</h1>
 				}
