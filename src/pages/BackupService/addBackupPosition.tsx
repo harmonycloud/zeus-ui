@@ -300,7 +300,7 @@ export default function AddBackupPosition(): JSX.Element {
 									},
 									{
 										pattern: /^\/[a-zA-Z0-9]*$/,
-										message: '路径必须以 / 开头'
+										message: '路径不符合规则'
 									}
 								]}
 							>
