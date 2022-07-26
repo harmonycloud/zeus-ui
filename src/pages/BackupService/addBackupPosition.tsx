@@ -30,7 +30,7 @@ const formItemLayout = {
 		span: 2
 	},
 	wrapperCol: {
-		span: 9
+		span: 10
 	}
 };
 
@@ -271,6 +271,7 @@ export default function AddBackupPosition(): JSX.Element {
 								]}
 							>
 								<Input
+									style={{ width: '250px' }}
 									placeholder="请输入地址"
 									disabled={!!params.id}
 								/>
@@ -296,6 +297,10 @@ export default function AddBackupPosition(): JSX.Element {
 									{
 										required: true,
 										message: '请输入路径'
+									},
+									{
+										pattern: /^\/[a-zA-Z0-9]*$/,
+										message: '路径必须以 / 开头'
 									}
 								]}
 							>
