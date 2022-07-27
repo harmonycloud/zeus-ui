@@ -131,7 +131,11 @@ export default function ServiceDetailIngress(
 					`${middlewareName}-0-master`,
 					`${middlewareName}-1-master`,
 					`${middlewareName}-2-master`,
-					`${middlewareName}-nameserver-proxy-svc`,
+					`${middlewareName}-0-slave`,
+					`${middlewareName}-1-slave`,
+					`${middlewareName}-2-slave`,
+					`${middlewareName}nameserver-proxy-svc-0`,
+					`${middlewareName}nameserver-proxy-svc-1`,
 					`${middlewareName}-kafka-external-svc`
 				];
 				const list = res.data.filter((item: InternalServiceItem) => {
@@ -228,10 +232,15 @@ export default function ServiceDetailIngress(
 			record.middlewareType === 'kafka'
 		) {
 			const initService = [
-				`${record.middlewareName}-0-master`,
-				`${record.middlewareName}-1-master`,
-				`${record.middlewareName}-2-master`,
-				`${record.middlewareName}-nameserver-proxy-svc`
+				`${middlewareName}-0-master`,
+				`${middlewareName}-1-master`,
+				`${middlewareName}-2-master`,
+				`${middlewareName}-0-slave`,
+				`${middlewareName}-1-slave`,
+				`${middlewareName}-2-slave`,
+				`${middlewareName}nameserver-proxy-svc-0`,
+				`${middlewareName}nameserver-proxy-svc-1`,
+				`${middlewareName}-kafka-external-svc`
 			];
 			if (record.middlewareType === 'rocketmq') {
 				return initService.some((item) => record.name.includes(item));

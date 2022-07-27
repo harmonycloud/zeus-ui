@@ -178,7 +178,12 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 				`${record.middlewareName}-0-master`,
 				`${record.middlewareName}-1-master`,
 				`${record.middlewareName}-2-master`,
-				`${record.middlewareName}-nameserver-proxy-svc`
+				`${record.middlewareName}-0-slave`,
+				`${record.middlewareName}-1-slave`,
+				`${record.middlewareName}-2-slave`,
+				`${record.middlewareName}nameserver-proxy-svc-0`,
+				`${record.middlewareName}nameserver-proxy-svc-1`,
+				`${record.middlewareName}-kafka-external-svc`
 			];
 			if (record.middlewareType === 'rocketmq') {
 				return initService.some((item) => record.name.includes(item));
