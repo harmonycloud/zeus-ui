@@ -1684,16 +1684,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												单实例模式
 											</Select.Option>
 										</Select>
-										<div className={`display-flex`}>
-											<SelectBlock
-												options={modeList}
-												currentValue={mode}
-												onCallBack={(value: any) =>
-													setMode(value)
-												}
-												disabled={!!backupFileName}
-											/>
-										</div>
+										{readWriteProxy !== '1m-0s' ? (
+											<div className={`display-flex`}>
+												<SelectBlock
+													options={modeList}
+													currentValue={mode}
+													onCallBack={(value: any) =>
+														setMode(value)
+													}
+													disabled={!!backupFileName}
+												/>
+											</div>
+										) : null}
 									</div>
 								</li>
 								{mode === '1m-ns' ? (
