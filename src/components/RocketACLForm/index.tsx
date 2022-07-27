@@ -7,7 +7,7 @@ import './index.scss';
 
 const { Item: FormItem } = Form;
 function RocketACLForm(props: any): JSX.Element {
-	const { data } = props;
+	const { data, disabled } = props;
 	const form = Form.useFormInstance();
 	const list =
 		data?.rocketMQAccountList.map((item: any) => {
@@ -41,6 +41,7 @@ function RocketACLForm(props: any): JSX.Element {
 			form.setFieldsValue({
 				globalWhiteRemoteAddresses: data.globalWhiteRemoteAddresses
 			});
+			setUserConfigs(data.rocketMQAccountList);
 		}
 	}, [data]);
 	const deleteUserConfig = (id: number) => {
@@ -135,6 +136,7 @@ function RocketACLForm(props: any): JSX.Element {
 							style={{ width: '375px' }}
 							placeholder="请输入全局IP白名单，支持输入多个IP"
 							maxLength={200}
+							disabled={disabled}
 						/>
 					</FormItem>
 				</div>
@@ -153,12 +155,17 @@ function RocketACLForm(props: any): JSX.Element {
 									setUserConfig={(value) =>
 										handleSetUserConfig(value, item.id)
 									}
+									disabled={disabled}
 								/>
 							</FormItem>
 						);
 					})}
 					<div
-						className="acl-add-user-config"
+						className={
+							disabled
+								? 'acl-add-user-config disabled'
+								: 'acl-add-user-config'
+						}
 						onClick={addUserConfig}
 					>
 						<PlusOutlined />

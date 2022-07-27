@@ -145,6 +145,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * acl相关
 	const [aclCheck, setAclCheck] = useState<boolean>(false);
+	const [aclData, setAclData] = useState();
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 	// * 集群外访问
@@ -488,6 +489,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			setAclCheck(res.data?.rocketMQParam?.acl?.enable);
+			setAclData(res.data?.rocketMQParam.acl);
 			form.setFieldsValue({
 				name: res.data.name + '-backup',
 				labels: res.data.labels,
@@ -803,7 +806,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					>
 						{aclCheck ? (
 							<div className={styles['acl-config']}>
-								<RocketACLForm form={form} />
+								<RocketACLForm
+									form={form}
+									data={aclData}
+									disabled={!!middlewareName}
+								/>
 							</div>
 						) : null}
 					</FormBlock>
