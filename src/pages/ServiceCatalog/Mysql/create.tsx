@@ -156,12 +156,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			value: 'latin1'
 		}
 	];
-	const [mode, setMode] = useState<string>('1m-0s');
+	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
-		{
-			label: '单实例',
-			value: '1m-0s'
-		},
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -1668,9 +1664,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										<Select
 											value={readWriteProxy}
 											onChange={(val) => {
-												val === 'true' &&
-													mode === '1m-0s' &&
-													setMode('1m-1s');
+												val === '1m-0s' &&
+													setMode('1m-0s');
 												setReadWriteProxy(val);
 											}}
 											style={{
@@ -1680,22 +1675,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											disabled={!!backupFileName}
 										>
 											<Select.Option key="false">
-												普通模式
+												高可用模式
 											</Select.Option>
 											<Select.Option key="true">
 												读写分离模式
 											</Select.Option>
+											<Select.Option key="1m-0s">
+												单实例模式
+											</Select.Option>
 										</Select>
 										<div className={`display-flex`}>
 											<SelectBlock
-												options={
-													readWriteProxy === 'true'
-														? [
-																modeList[1],
-																modeList[2]
-														  ]
-														: modeList
-												}
+												options={modeList}
 												currentValue={mode}
 												onCallBack={(value: any) =>
 													setMode(value)

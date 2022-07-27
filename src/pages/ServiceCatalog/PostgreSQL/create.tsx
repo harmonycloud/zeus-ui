@@ -144,12 +144,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			value: '9.6'
 		}
 	];
-	const [mode, setMode] = useState<string>('1m-0s');
+	const [mode, setMode] = useState<string>('1m-1s');
 	const modeList = [
-		{
-			label: '单实例',
-			value: '1m-0s'
-		},
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -157,6 +153,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '一主多从',
 			value: '1m-ns'
+		},
+		{
+			label: '单实例',
+			value: '1m-0s'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
