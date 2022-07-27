@@ -63,7 +63,6 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
-import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -711,6 +710,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			res.data.readWriteProxy?.enabled && setReadWriteProxy('true');
 			form.setFieldsValue({
 				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,

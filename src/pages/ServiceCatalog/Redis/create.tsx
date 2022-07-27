@@ -580,7 +580,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				);
 			}
 			if (res.data.mode) {
-				setMode(res.data.mode);
+				if (res.data.readWriteProxy?.enabled) {
+					res.data.mode === 'cluster'
+						? setMode('agent')
+						: setMode('readWriteProxy');
+				} else {
+					setMode(res.data.mode);
+				}
 			}
 			if (res.data.version) {
 				setVersion(res.data.version);
