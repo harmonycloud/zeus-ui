@@ -429,9 +429,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const modeText = (data: any) => {
 		if (data.type === 'redis' || data.type === 'mysql') {
 			if (type === 'mysql') {
-				return `${
-					data.readWriteProxy?.enabled ? '读写分离模式' : '普通模式'
-				}（${modelMap[data.mode]}）`;
+				if (data.mode === '1m-0s') {
+					return '单实例模式';
+				} else {
+					return `${
+						data.readWriteProxy?.enabled
+							? '读写分离模式'
+							: '高可用模式'
+					}（${modelMap[data.mode]}）`;
+				}
 			} else {
 				let text = '';
 				if (data.mode === 'cluster') {
