@@ -270,7 +270,7 @@ export default function AddIngress(): JSX.Element {
 								NodePort
 							</Select.Option>
 							<Select.Option value="TCP" key="TCP">
-								TCP
+								Ingress-TCP
 							</Select.Option>
 						</Select>
 					</Form.Item>
