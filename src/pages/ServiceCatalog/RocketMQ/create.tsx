@@ -795,6 +795,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										onChange={(checked: boolean) =>
 											setAclCheck(checked)
 										}
+										disabled={!!middlewareName}
 									/>
 								</span>
 							</span>
@@ -815,6 +816,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -840,6 +842,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -984,6 +987,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1018,6 +1022,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1042,6 +1047,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1084,6 +1090,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '376px'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</div>
@@ -1130,6 +1137,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
+											disabled={!!middlewareName}
 										/>
 										{/* <div
 											style={{
@@ -1159,6 +1167,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												}
 												min={3}
 												max={10}
+												disabled={!!middlewareName}
 											/>
 										</div>
 									</li>
@@ -1176,6 +1185,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
+											disabled={!!middlewareName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1230,6 +1240,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
+																	disabled={
+																		!!middlewareName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1264,6 +1277,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
+																	disabled={
+																		!!middlewareName
+																	}
 																/>
 															</FormItem>
 														</div>

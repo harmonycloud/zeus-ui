@@ -150,7 +150,12 @@ function BackupTaskDetail(props: any): JSX.Element {
 									item.value ===
 									storage.getLocal('backupDetail').dateUnit
 						  )?.label
-						: '--'}
+						: `${
+								storage.getLocal('backupDetail').sourceType ===
+								'mysql'
+									? ''
+									: '--'
+						  }`}
 					{storage.getLocal('backupDetail').backupMode !==
 					'single' ? (
 						<EditOutlined
