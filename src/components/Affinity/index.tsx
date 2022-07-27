@@ -96,6 +96,7 @@ function Affinity(props: any): JSX.Element {
 											? 'error'
 											: ''
 									}
+									disabled={disabled}
 								/>
 							</div>
 							<div className={'add'}>
@@ -105,6 +106,7 @@ function Affinity(props: any): JSX.Element {
 										padding: '0 9px'
 									}}
 									disabled={
+										disabled ||
 										!label ||
 										!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
 											label
@@ -152,6 +154,7 @@ function Affinity(props: any): JSX.Element {
 											})
 										);
 									}}
+									disabled={disabled}
 								>
 									强制亲和
 								</Checkbox>
@@ -172,7 +175,7 @@ function Affinity(props: any): JSX.Element {
 						return (
 							<Tag
 								key={item.label}
-								closable
+								closable={!disabled}
 								style={{ padding: '4px 10px' }}
 								onClose={(e: React.MouseEvent<HTMLElement>) => {
 									e.preventDefault();

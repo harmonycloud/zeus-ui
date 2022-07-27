@@ -16,7 +16,8 @@ const { Item: FormItem } = Form;
 const { Option } = Select;
 
 export default function UserConfig(props: userConfigProps): JSX.Element {
-	const { deleteUserConfigProps, userConfig, setUserConfig } = props;
+	const { deleteUserConfigProps, userConfig, setUserConfig, disabled } =
+		props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [topicCustom, setTopicCustom] = useState<boolean>(false);
 	const [groupCustom, setGroupCustom] = useState<boolean>(false);
@@ -245,6 +246,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 													'accessKey'
 												)
 											}
+											disabled={disabled}
 										/>
 									</FormItem>
 								</Col>
@@ -268,6 +270,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 											}
 											minLength={6}
 											maxLength={20}
+											disabled={disabled}
 										/>
 									</FormItem>
 								</Col>
@@ -286,9 +289,10 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								<Radio.Group
 									name="admin"
 									value={data.admin}
-									onChange={(value) =>
-										changeData(value, 'admin')
+									onChange={(e) =>
+										changeData(e.target.value, 'admin')
 									}
+									disabled={disabled}
 								>
 									<Radio value={false}>否</Radio>
 									<Radio value={true}>是</Radio>
@@ -317,6 +321,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 									)
 								}
 								maxLength={20}
+								disabled={disabled}
 							/>
 						</div>
 					</li>
@@ -339,6 +344,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								}
 								value={topics[0].value}
 								defaultValue="DENY"
+								disabled={disabled}
 							>
 								<Option value="DENY">DENY</Option>
 								<Option value="PUB">PUB</Option>
@@ -356,6 +362,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								onChange={(value: boolean) =>
 									handleSwitch(value, 'topic')
 								}
+								disabled={disabled}
 							/>
 						</div>
 					</li>
@@ -388,6 +395,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														)
 													}
 													maxLength={20}
+													disabled={disabled}
 												/>
 												<span className="acl-equal">
 													=
@@ -405,6 +413,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														)
 													}
 													value={item.value}
+													disabled={disabled}
 												>
 													<Option value="DENY">
 														DENY
@@ -479,6 +488,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								onChange={(value: string) =>
 									handleSelectChange(value, 'groupValue', 0)
 								}
+								disabled={disabled}
 							>
 								<Option value="DENY">DENY</Option>
 								<Option value="PUB">PUB</Option>
@@ -496,6 +506,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								onChange={(value: boolean) =>
 									handleSwitch(value, 'group')
 								}
+								disabled={disabled}
 							/>
 						</div>
 					</li>

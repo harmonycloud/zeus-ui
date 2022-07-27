@@ -17,6 +17,7 @@ export interface userConfigProps {
 	userConfig: rocketMQAccount;
 	deleteUserConfigProps: (index: number) => void;
 	setUserConfig: (values: rocketMQAccount) => void;
+	disabled: boolean;
 }
 export interface authProps {
 	id?: number;

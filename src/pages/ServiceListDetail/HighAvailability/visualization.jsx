@@ -1543,7 +1543,7 @@ function Visualization(props) {
 				left: 0,
 				zIndex: 1000
 			});
-			window.graph.changeSize(window.innerWidth, window.innerHeight);
+			window.graph.changeSize(window.innerWidth, window.innerHeight - 80);
 			window.graph.fitView();
 		} else {
 			window.graph.changeSize(1180, 480);

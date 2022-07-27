@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { Select, Button, Tag, Input, notification, Empty, Modal } from 'antd';
+import {
+	Select,
+	Button,
+	Tag,
+	Input,
+	notification,
+	Empty,
+	Modal,
+	Card,
+	Spin
+} from 'antd';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import Backup from '@/assets/images/backup.svg';
 
@@ -297,10 +307,11 @@ export default function BackupPosition(): JSX.Element {
 						);
 					})
 				) : (
-					<Empty
-						image={Empty.PRESENTED_IMAGE_SIMPLE}
-						style={{ height: '450px', lineHeight: '450px' }}
-					/>
+					<Spin>
+						<Card>
+							<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+						</Card>
+					</Spin>
 				)}
 			</ProContent>
 		</ProPage>
