@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import DefaultPicture from '@/components/DefaultPicture';
 import ComponentNull from '@/components/ComponentsNull';
 import BackupTask from './backupBask';
@@ -9,6 +10,7 @@ export default function BackupRecovery(
 	props: BackupRecoveryProps
 ): JSX.Element {
 	const { clusterId, namespace, data } = props;
+	const history = useHistory();
 	const [customMid, setCustomMid] = useState<boolean>(false);
 	const [capabilities, setCapabilities] = useState<string[]>([]);
 	const [storageFlag, setStorageFlag] = useState<boolean>(false);
@@ -20,18 +22,23 @@ export default function BackupRecovery(
 		getBackupAddress({ keyword: '' }).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
-					setStorageFlag(true);
-				} else {
 					setStorageFlag(false);
+				} else {
+					setStorageFlag(true);
 				}
 			} else {
-				setStorageFlag(false);
+				setStorageFlag(true);
 			}
 		});
 	}, []);
 	if (storageFlag) {
 		return (
-			<ComponentNull title="该功能所需要备份存储工具支持，您可前往“备份服务——>备份位置进行添加" />
+			<ComponentNull
+				title="该功能所需要备份存储工具支持，您可前往“备份服务——>备份位置进行添加"
+				onClick={() => {
+					history.push('/backupService/backupPosition');
+				}}
+			/>
 		);
 	}
 

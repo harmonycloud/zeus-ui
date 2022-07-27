@@ -434,35 +434,68 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								</FormItem>
 							)}
 							{name === 'rocketmq' && (
-								<FormItem
-									label="proxy端口配置"
-									required
-									name="exposePort"
-									rules={[
-										{
-											required: true,
-											message: '请填写proxy端口'
-										},
-										{
-											max:
-												exposeType === 'TCP'
-													? 65535
-													: 32767,
-											min: 30000,
-											type: 'number',
-											message: `请输入30000-${
-												exposeType === 'TCP'
-													? 65535
-													: 32767
-											}以内的端口`
-										}
-									]}
-								>
-									<InputNumber
-										disabled={!!serviceIngress}
-										style={{ width: '260px' }}
-									/>
-								</FormItem>
+								<>
+									<FormItem
+										label="proxy端口配置"
+										required
+										name="exposePort"
+										rules={[
+											{
+												required: true,
+												message: '请填写proxy端口'
+											},
+											{
+												max:
+													exposeType === 'TCP'
+														? 65535
+														: 32767,
+												min: 30000,
+												type: 'number',
+												message: `请输入30000-${
+													exposeType === 'TCP'
+														? 65535
+														: 32767
+												}以内的端口`
+											}
+										]}
+									>
+										<InputNumber
+											placeholder="请填写proxy端口"
+											disabled={!!serviceIngress}
+											style={{ width: '260px' }}
+										/>
+									</FormItem>
+									<FormItem
+										label="proxy-1端口配置"
+										required
+										name="exposePort-1"
+										rules={[
+											{
+												required: true,
+												message: '请填写proxy端口'
+											},
+											{
+												max:
+													exposeType === 'TCP'
+														? 65535
+														: 32767,
+												min: 30000,
+												type: 'number',
+												message: `请输入30000-${
+													exposeType === 'TCP'
+														? 65535
+														: 32767
+												}以内的端口`
+											}
+										]}
+									>
+										<InputNumber
+											placeholder="请填写proxy-1端口"
+											disabled={!!serviceIngress}
+											style={{ width: '260px' }}
+										/>
+									</FormItem>
+								</>
 							)}
 							<FormItem
 								name="brokerPort"
