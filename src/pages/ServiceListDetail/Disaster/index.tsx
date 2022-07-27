@@ -92,7 +92,6 @@ export default function Disaster(props: disasterProps): JSX.Element {
 	const [runState, setRunState] = useState<runStateProps>(runStateInit);
 	const history = useHistory();
 	useEffect(() => {
-		// if (clusterId && namespace && data) {
 		getMysqlExternal({
 			clusterId,
 			namespace,
@@ -122,7 +121,8 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				});
 			}
 		});
-		// }
+	}, []);
+	useEffect(() => {
 		setRunState({
 			title: '运行状态',
 			status: data?.mysqlDTO?.phase || '',
@@ -132,7 +132,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				  )
 				: '--'
 		});
-	}, []);
+	}, [data]);
 	const items: any = [
 		{
 			dataIndex: 'title',
@@ -214,6 +214,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 			dataIndex: 'status',
 			label: 'MySQL同步器状态',
 			render: (val: any) => {
+				console.log(val);
 				if (val === 'Syncing') {
 					return (
 						<div>
