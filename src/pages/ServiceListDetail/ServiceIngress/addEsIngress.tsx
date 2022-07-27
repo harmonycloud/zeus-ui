@@ -423,7 +423,7 @@ export default function AddEsIngress(): JSX.Element {
 									onChange={(value) => setExposeType(value)}
 								>
 									<Option value="NodePort">NodePort</Option>
-									<Option value="TCP">TCP</Option>
+									<Option value="TCP">Ingress-TCP</Option>
 								</Select>
 							</FormItem>
 							{exposeType === 'TCP' && (

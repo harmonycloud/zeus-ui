@@ -23,15 +23,14 @@ import SelectBlock from '@/components/SelectBlock';
 import { addIngress } from '@/services/ingress';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
 import storage from '@/utils/storage';
-import { ValidateStatus } from 'antd/lib/form/FormItem';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const fourNetworkIngress = [
-	{ value: 'TCP', label: 'TCP' },
+	{ value: 'TCP', label: 'Ingress-TCP' },
 	{ value: 'NodePort', label: 'NodePort' }
 ];
-// kfk mq 的添加服务暴露页面
+// ! kfk mq 的添加服务暴露页面
 export default function ServiceDetailAddIngress(): JSX.Element {
 	const params: ServiceIngressAddParams = useParams();
 	const history = useHistory();
@@ -396,7 +395,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									onChange={(value) => setExposeType(value)}
 								>
 									<Option value="NodePort">NodePort</Option>
-									<Option value="TCP">TCP</Option>
+									<Option value="TCP">Ingress-TCP</Option>
 								</Select>
 							</FormItem>
 							{exposeType === 'TCP' && (

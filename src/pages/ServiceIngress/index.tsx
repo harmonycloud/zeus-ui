@@ -162,7 +162,8 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 			return record.serviceList?.[0].exposePort;
 	};
 	const exposeTypeRender = (value: string, record: ServiceIngressItem) => {
-		if (record.exposeType === 'Ingress') return record.protocol;
+		if (record.exposeType === 'Ingress')
+			return `Ingress-${record.protocol}`;
 		return record.exposeType;
 	};
 	const nameRender = (value: string, record: ServiceIngressItem) => {
@@ -237,8 +238,8 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 						render={exposeTypeRender}
 						filters={[
 							{ value: 'NodePort', text: 'NodePort' },
-							{ value: 'HTTP', text: 'HTTP' },
-							{ value: 'TCP', text: 'TCP' }
+							{ value: 'HTTP', text: 'Ingress-HTTP' },
+							{ value: 'TCP', text: 'Ingress-TCP' }
 						]}
 						onFilter={(value: any, record: ServiceIngressItem) => {
 							if (record.exposeType === 'Ingress')
