@@ -234,7 +234,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						}
 						for (let i = 0; i < 2; i++) {
 							lt.push({
-								serviceName: `${middlewareName}-nameserver-proxy-sv-${i}`,
+								serviceName: `${middlewareName}nameserver-proxy-svc-${i}`,
 								exposePort: values[`exposePort${i}`]
 							});
 						}
@@ -267,7 +267,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						}
 						for (let i = 0; i < 2; i++) {
 							lt.push({
-								serviceName: `${middlewareName}-nameserver-proxy-svc-${i}`,
+								serviceName: `${middlewareName}nameserver-proxy-svc-${i}`,
 								exposePort: values[`exposePort${i}`]
 							});
 						}
