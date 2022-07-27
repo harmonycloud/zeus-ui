@@ -576,19 +576,26 @@ export default function AddEsIngress(): JSX.Element {
 														>
 															{serviceNames.map(
 																(
-																	item: ServiceNameItem
+																	st: ServiceNameItem
 																) => {
 																	return (
 																		<Select.Option
 																			key={
-																				item.name
+																				st.name
 																			}
 																			value={
-																				item.name
+																				st.name
 																			}
+																			disabled={httpPaths.some(
+																				(
+																					hp
+																				) =>
+																					hp.serviceName ===
+																					st.name
+																			)}
 																		>
 																			{
-																				item.label
+																				st.label
 																			}
 																		</Select.Option>
 																	);
@@ -645,20 +652,22 @@ export default function AddEsIngress(): JSX.Element {
 									);
 								}
 							)}
-							<Row>
-								<Col span={4}></Col>
-								<Col span={10}>
-									<div
-										className="es-ingress-seven-add"
-										onClick={addHttpPath}
-									>
-										<Space>
-											<PlusCircleOutlined />
-											新增
-										</Space>
-									</div>
-								</Col>
-							</Row>
+							{httpPaths.length < 2 && (
+								<Row>
+									<Col span={4}></Col>
+									<Col span={10}>
+										<div
+											className="es-ingress-seven-add"
+											onClick={addHttpPath}
+										>
+											<Space>
+												<PlusCircleOutlined />
+												新增
+											</Space>
+										</div>
+									</Col>
+								</Row>
+							)}
 						</>
 					)}
 					<Divider />
