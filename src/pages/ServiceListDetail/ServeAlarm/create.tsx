@@ -855,7 +855,9 @@ function CreateAlarm(): JSX.Element {
 													);
 												}}
 											/>
-											<span className="info">%</span>
+											{alarmType === 'system' ? (
+												<span className="info">%</span>
+											) : null}
 										</Col>
 										<Col span={5}>
 											<Input
