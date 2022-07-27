@@ -354,9 +354,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 										storage.getLocal('backupDetail')
 											.namespace || namespace.name,
 									type: record.sourceType,
-									backupName: record.backupName,
 									backupId: record.backupId,
-									backupFileName: record.backupFileName || '',
+									crName: record.crName,
 									addressName: record.addressName
 								};
 								deleteBackups(result).then((res) => {
