@@ -30,6 +30,24 @@ const fourNetworkIngress = [
 	{ value: 'TCP', label: 'Ingress-TCP' },
 	{ value: 'NodePort', label: 'NodePort' }
 ];
+function getIndex(x: number): number {
+	switch (x) {
+		case 0:
+			return 0;
+		case 1:
+			return 0;
+		case 2:
+			return 1;
+		case 3:
+			return 1;
+		case 4:
+			return 2;
+		case 5:
+			return 2;
+		default:
+			return 0;
+	}
+}
 // ! kfk mq 的添加服务暴露页面
 export default function ServiceDetailAddIngress(): JSX.Element {
 	const params: ServiceIngressAddParams = useParams();
@@ -198,15 +216,28 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						}
 					} else {
 						for (let i = 0; i < Number(brokerNum); i++) {
+							if ((i + 1) % 2 === 1) {
+								lt.push({
+									serviceName: `${middlewareName}-${getIndex(
+										i
+									)}-master`,
+									exposePort: null
+								});
+							} else {
+								lt.push({
+									serviceName: `${middlewareName}-${getIndex(
+										i
+									)}-slave`,
+									exposePort: null
+								});
+							}
+						}
+						for (let i = 0; i < 2; i++) {
 							lt.push({
-								serviceName: `${middlewareName}-${i}-master`,
-								exposePort: null
+								serviceName: `${middlewareName}-nameserver-proxy-sv-${i}`,
+								exposePort: values[`exposePort${i}`]
 							});
 						}
-						lt.push({
-							serviceName: `${middlewareName}-nameserver-proxy-svc`,
-							exposePort: values.exposePort
-						});
 					}
 				} else {
 					if (name === 'kafka') {
@@ -218,15 +249,28 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						}
 					} else {
 						for (let i = 0; i < Number(brokerNum); i++) {
+							if ((i + 1) % 2 === 1) {
+								lt.push({
+									serviceName: `${middlewareName}-${getIndex(
+										i
+									)}-master`,
+									exposePort: values[`brokerPort${i}`]
+								});
+							} else {
+								lt.push({
+									serviceName: `${middlewareName}-${getIndex(
+										i
+									)}-slave`,
+									exposePort: values[`brokerPort${i}`]
+								});
+							}
+						}
+						for (let i = 0; i < 2; i++) {
 							lt.push({
-								serviceName: `${middlewareName}-${i}-master`,
-								exposePort: values[`brokerPort${i}`]
+								serviceName: `${middlewareName}-nameserver-proxy-svc-${i}`,
+								exposePort: values[`exposePort${i}`]
 							});
 						}
-						lt.push({
-							serviceName: `${middlewareName}-nameserver-proxy-svc`,
-							exposePort: values.exposePort
-						});
 					}
 				}
 				sendData = {
@@ -302,6 +346,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					};
 				}
 			}
+			console.log(sendData);
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
@@ -436,9 +481,9 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 							{name === 'rocketmq' && (
 								<>
 									<FormItem
-										label="proxy端口配置"
+										label="proxy-0端口配置"
 										required
-										name="exposePort"
+										name="exposePort0"
 										rules={[
 											{
 												required: true,
@@ -468,7 +513,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									<FormItem
 										label="proxy-1端口配置"
 										required
-										name="exposePort-1"
+										name="exposePort1"
 										rules={[
 											{
 												required: true,
