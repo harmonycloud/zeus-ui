@@ -246,10 +246,18 @@ function Rules(props: RuleProps): JSX.Element {
 		)
 	};
 
-	const ruleRender = (value: any, record: ServiceRuleItem, index: number) =>
-		`${record.description}${record.symbol}${record.threshold}${
-			alarmType === 'system' ? '%' : ''
-		}且${record.alertTime || ''}分钟内触发${record.alertTimes || ''}次`;
+	const ruleRender = (value: any, record: ServiceRuleItem, index: number) => (
+		<span>
+			{`${record.description}${record.symbol}${record.threshold}${
+				alarmType === 'system' ? '%' : ''
+			}`}
+			{record.alertTime && record.alertTimes
+				? `且${record.alertTime || ''}分钟内触发${
+						record.alertTimes || ''
+				  }次`
+				: ''}
+		</span>
+	);
 
 	const levelRender = (value: any) => {
 		const temp = alarmWarn.find((item) => item.value === value.severity);
