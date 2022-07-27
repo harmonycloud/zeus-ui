@@ -159,7 +159,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 											(res) => {
 												if (res.success) {
 													notification.success({
-														message: '失败',
+														message: '成功',
 														description:
 															'服务切换成功'
 													});

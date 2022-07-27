@@ -23,15 +23,14 @@ import SelectBlock from '@/components/SelectBlock';
 import { addIngress } from '@/services/ingress';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
 import storage from '@/utils/storage';
-import { ValidateStatus } from 'antd/lib/form/FormItem';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const fourNetworkIngress = [
-	{ value: 'TCP', label: 'TCP' },
+	{ value: 'TCP', label: 'Ingress-TCP' },
 	{ value: 'NodePort', label: 'NodePort' }
 ];
-// kfk mq 的添加服务暴露页面
+// ! kfk mq 的添加服务暴露页面
 export default function ServiceDetailAddIngress(): JSX.Element {
 	const params: ServiceIngressAddParams = useParams();
 	const history = useHistory();
@@ -396,7 +395,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									onChange={(value) => setExposeType(value)}
 								>
 									<Option value="NodePort">NodePort</Option>
-									<Option value="TCP">TCP</Option>
+									<Option value="TCP">Ingress-TCP</Option>
 								</Select>
 							</FormItem>
 							{exposeType === 'TCP' && (
@@ -435,35 +434,68 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								</FormItem>
 							)}
 							{name === 'rocketmq' && (
-								<FormItem
-									label="proxy端口配置"
-									required
-									name="exposePort"
-									rules={[
-										{
-											required: true,
-											message: '请填写proxy端口'
-										},
-										{
-											max:
-												exposeType === 'TCP'
-													? 65535
-													: 32767,
-											min: 30000,
-											type: 'number',
-											message: `请输入30000-${
-												exposeType === 'TCP'
-													? 65535
-													: 32767
-											}以内的端口`
-										}
-									]}
-								>
-									<InputNumber
-										disabled={!!serviceIngress}
-										style={{ width: '260px' }}
-									/>
-								</FormItem>
+								<>
+									<FormItem
+										label="proxy端口配置"
+										required
+										name="exposePort"
+										rules={[
+											{
+												required: true,
+												message: '请填写proxy端口'
+											},
+											{
+												max:
+													exposeType === 'TCP'
+														? 65535
+														: 32767,
+												min: 30000,
+												type: 'number',
+												message: `请输入30000-${
+													exposeType === 'TCP'
+														? 65535
+														: 32767
+												}以内的端口`
+											}
+										]}
+									>
+										<InputNumber
+											placeholder="请填写proxy端口"
+											disabled={!!serviceIngress}
+											style={{ width: '260px' }}
+										/>
+									</FormItem>
+									<FormItem
+										label="proxy-1端口配置"
+										required
+										name="exposePort-1"
+										rules={[
+											{
+												required: true,
+												message: '请填写proxy端口'
+											},
+											{
+												max:
+													exposeType === 'TCP'
+														? 65535
+														: 32767,
+												min: 30000,
+												type: 'number',
+												message: `请输入30000-${
+													exposeType === 'TCP'
+														? 65535
+														: 32767
+												}以内的端口`
+											}
+										]}
+									>
+										<InputNumber
+											placeholder="请填写proxy-1端口"
+											disabled={!!serviceIngress}
+											style={{ width: '260px' }}
+										/>
+									</FormItem>
+								</>
 							)}
 							<FormItem
 								name="brokerPort"

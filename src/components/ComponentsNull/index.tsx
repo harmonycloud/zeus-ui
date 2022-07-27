@@ -9,10 +9,11 @@ import './index.scss';
 
 interface ComponentNullProps {
 	title: string;
+	onClick?: () => void;
 	globalVar: globalVarProps;
 }
 const ComponentNull = (props: ComponentNullProps) => {
-	const { title } = props;
+	const { title, onClick } = props;
 	const { cluster } = props.globalVar;
 	const history = useHistory();
 	return (
@@ -23,10 +24,17 @@ const ComponentNull = (props: ComponentNullProps) => {
 				style={{ marginTop: 8 }}
 				type="primary"
 				onClick={() => {
-					storage.setLocal('cluster-detail-current-tab', 'component');
-					history.push(
-						`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
-					);
+					if (onClick) {
+						onClick();
+					} else {
+						storage.setLocal(
+							'cluster-detail-current-tab',
+							'component'
+						);
+						history.push(
+							`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
+						);
+					}
 				}}
 			>
 				点击跳转
