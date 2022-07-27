@@ -779,6 +779,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!backupFileName}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -804,6 +805,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!backupFileName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -939,9 +941,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
-											disabled={
-												backupFileName ? true : false
-											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -1017,6 +1017,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													value={pgsqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										</Tooltip>
@@ -1063,6 +1064,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '100%'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										</div>
@@ -1092,6 +1094,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -1110,6 +1113,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												value={replicaCount}
 												max={6}
 												min={2}
+												disabled={!!backupFileName}
 											/>
 										</div>
 									</li>
@@ -1127,6 +1131,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
+											disabled={!!backupFileName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1181,6 +1186,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义CPU配额，单位为Core"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1214,6 +1222,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义内存配额，单位为Gi"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>

@@ -565,6 +565,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					label: '',
 					checked: false
 				});
+				setAffinityFlag(true);
 				setAffinityLabels(res.data?.nodeAffinity || []);
 			}
 			if (res.data.tolerations) {
@@ -910,6 +911,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -935,6 +937,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -1096,6 +1099,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1140,6 +1144,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1164,6 +1169,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1180,6 +1186,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												type="password"
 												name="pwd"
 												placeholder="请输入初始密码，输入空则由平台随机生成"
+												disabled={!!middlewareName}
 											/>
 										</FormItem>
 									</div>
@@ -1225,6 +1232,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '100%'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</div>
@@ -1253,6 +1261,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												width: 182,
 												marginBottom: 12
 											}}
+											disabled={!!middlewareName}
 										>
 											{modeList.map((item, index) => (
 												<Select.Option
@@ -1276,6 +1285,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setClusterMode(value)
 													}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										) : null}
@@ -1298,6 +1308,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: 182
 												}}
+												disabled={!!middlewareName}
 											>
 												{sentinelModeList.map(
 													(item, index) => (
@@ -1370,6 +1381,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setInstanceSpec(value)
 													}
+													disabled={!!middlewareName}
 												/>
 												{instanceSpec === 'General' ? (
 													<div
@@ -1435,6 +1447,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																				width: '100%'
 																			}}
 																			placeholder="请输入自定义CPU配额，单位为Core"
+																			disabled={
+																				!!middlewareName
+																			}
 																		/>
 																	</FormItem>
 																</div>
@@ -1470,6 +1485,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																				width: '100%'
 																			}}
 																			placeholder="请输入自定义内存配额，单位为Gi"
+																			disabled={
+																				!!middlewareName
+																			}
 																		/>
 																	</FormItem>
 																</div>

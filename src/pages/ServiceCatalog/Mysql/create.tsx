@@ -1244,6 +1244,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!backupFileName}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -1269,6 +1270,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!backupFileName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -1413,6 +1415,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</div>
 										</div>
@@ -1447,6 +1450,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</div>
 										</div>
@@ -1471,6 +1475,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -1487,6 +1492,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setCharSet(value)
 											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -1518,6 +1524,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<InputNumber
 												style={{ width: '380px' }}
 												placeholder="请输入mysql的服务端口号，默认为3306"
+												disabled={!!backupFileName}
 											/>
 										</FormItem>
 									</div>
@@ -1591,6 +1598,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													value={mysqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={mysqlPwdChange}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										</Tooltip>
@@ -1635,6 +1643,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '380px'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										)}
@@ -1668,6 +1677,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												marginBottom: 12,
 												width: 182
 											}}
+											disabled={!!backupFileName}
 										>
 											<Select.Option key="false">
 												普通模式
@@ -1690,6 +1700,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												onCallBack={(value: any) =>
 													setMode(value)
 												}
+												disabled={!!backupFileName}
 											/>
 										</div>
 									</div>
@@ -1709,6 +1720,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												value={replicaCount}
 												max={6}
 												min={2}
+												disabled={!!backupFileName}
 											/>
 										</div>
 									</li>
@@ -1726,6 +1738,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
+											disabled={!!backupFileName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1781,6 +1794,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1815,6 +1831,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1862,6 +1881,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 															verticalAlign:
 																'middle'
 														}}
+														disabled={
+															!!backupFileName
+														}
 													/>
 												</div>
 											</FormItem>

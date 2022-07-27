@@ -150,12 +150,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 									item.value ===
 									storage.getLocal('backupDetail').dateUnit
 						  )?.label
-						: `${
-								storage.getLocal('backupDetail').sourceType ===
-								'mysql'
-									? ''
-									: '--'
-						  }`}
+						: ''}
+					{storage.getLocal('backupDetail').backupMode === 'single'
+						? '--'
+						: ''}
 					{storage.getLocal('backupDetail').backupMode !==
 					'single' ? (
 						<EditOutlined
@@ -250,6 +248,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 						storage.getLocal('backupDetail').namespace
 					}`
 				);
+				storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 				break;
 			case 'postgresql':
 				history.push(
@@ -258,6 +257,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 					}/${record.sourceName}/backup/${record.backupFileName}/${
 						storage.getLocal('backupDetail').namespace
 					}`
+				);
+				storage.setSession(
+					'menuPath',
+					'serviceList/postgresql/PostgreSQL'
 				);
 				break;
 			case 'redis':
@@ -268,6 +271,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 						storage.getLocal('backupDetail').namespace
 					}`
 				);
+				storage.setSession('menuPath', 'serviceList/redis/Redis');
 				break;
 			case 'elasticsearch':
 				history.push(
@@ -276,6 +280,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 					}/${record.sourceName}/backup/${
 						storage.getLocal('backupDetail').namespace
 					}`
+				);
+				storage.setSession(
+					'menuPath',
+					'serviceList/elasticsearch/Elasticsearch'
 				);
 				break;
 			case 'rocketmq':
@@ -286,6 +294,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 						storage.getLocal('backupDetail').namespace
 					}`
 				);
+				storage.setSession('menuPath', 'serviceList/rocketmq/rocketMQ');
 				break;
 		}
 	};
