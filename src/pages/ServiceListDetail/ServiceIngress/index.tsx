@@ -140,7 +140,7 @@ export default function ServiceDetailIngress(
 				];
 				const list = res.data.filter((item: InternalServiceItem) => {
 					return !initService.some((i: string) =>
-						item.serviceName.includes(i)
+						item.serviceName?.includes(i)
 					);
 				});
 				setInternalDataSource(list);
