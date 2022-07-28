@@ -214,7 +214,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								exposePort: null
 							});
 						}
-					} else {
+					} else if (name === 'rocketmq' && mode !== '2m-noslave') {
 						for (let i = 0; i < Number(brokerNum); i++) {
 							if ((i + 1) % 2 === 1) {
 								lt.push({
@@ -238,6 +238,19 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								exposePort: values[`exposePort${i}`]
 							});
 						}
+					} else {
+						for (let i = 0; i < Number(brokerNum); i++) {
+							lt.push({
+								serviceName: `${middlewareName}-${i}-master`,
+								exposePort: null
+							});
+						}
+						for (let i = 0; i < 2; i++) {
+							lt.push({
+								serviceName: `${middlewareName}nameserver-proxy-svc-${i}`,
+								exposePort: values[`exposePort${i}`]
+							});
+						}
 					}
 				} else {
 					if (name === 'kafka') {
@@ -247,7 +260,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								exposePort: values[`brokerPort${i}`]
 							});
 						}
-					} else {
+					} else if (name === 'rocketmq' && mode !== '2m-noslave') {
 						for (let i = 0; i < Number(brokerNum); i++) {
 							if ((i + 1) % 2 === 1) {
 								lt.push({
@@ -264,6 +277,19 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									exposePort: values[`brokerPort${i}`]
 								});
 							}
+						}
+						for (let i = 0; i < 2; i++) {
+							lt.push({
+								serviceName: `${middlewareName}nameserver-proxy-svc-${i}`,
+								exposePort: values[`exposePort${i}`]
+							});
+						}
+					} else {
+						for (let i = 0; i < Number(brokerNum); i++) {
+							lt.push({
+								serviceName: `${middlewareName}-${i}-master`,
+								exposePort: values[`brokerPort${i}`]
+							});
 						}
 						for (let i = 0; i < 2; i++) {
 							lt.push({
