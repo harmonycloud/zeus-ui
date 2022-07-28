@@ -137,7 +137,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			value: '5.7'
 		},
 		{
-			label: '8.0(beta)版',
+			label: '8.0',
 			value: '8.0'
 		}
 	];

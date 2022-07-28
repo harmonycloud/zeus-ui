@@ -118,7 +118,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [mode, setMode] = useState<string>('cluster');
 	const modeList = [
 		{
-			label: '集群模式（beta版）',
+			label: '集群模式',
 			value: 'cluster'
 		}
 	];
