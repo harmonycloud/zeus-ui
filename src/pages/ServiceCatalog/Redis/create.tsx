@@ -1300,10 +1300,27 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												/>
 											</div>
 										) : null}
+										{mode === 'sentinel' ? (
+											<div
+												style={{
+													marginTop: 12
+												}}
+											>
+												<SelectBlock
+													options={[
+														sentinelModeList[0]
+													]}
+													currentValue={sentinelMode}
+													onCallBack={(value: any) =>
+														setSentinelMode(value)
+													}
+													disabled={!!middlewareName}
+												/>
+											</div>
+										) : null}
 									</div>
 								</li>
-								{mode === 'readWriteProxy' ||
-								mode === 'sentinel' ? (
+								{mode === 'readWriteProxy' ? (
 									<li className="display-flex form-li">
 										<label className="form-name">
 											<span>分片数</span>
