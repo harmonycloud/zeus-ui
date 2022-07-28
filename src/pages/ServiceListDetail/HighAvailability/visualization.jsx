@@ -65,7 +65,7 @@ function Visualization(props) {
 	const { pathname } = location;
 	const { type, chartVersion } = useParams();
 	const [option, setOption] = useState();
-	const [direction, setDirection] = useState('LR');
+	const [direction, setDirection] = useState('TB');
 
 	const roleRender = (value, index, record) => {
 		if (record.podName.includes('exporter')) {
