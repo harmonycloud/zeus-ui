@@ -249,22 +249,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const [runData, setRunData] = useState<any>(runStatus);
 	const [runConfig, setRunConfig] = useState(
 		type !== 'rocketmq'
-			? type === 'postgresql'
-				? [
-						titleConfig,
-						healthConfig,
-						createTimeConfig,
-						namespaceConfig,
-						storageClassNameConfig
-				  ]
-				: [
-						titleConfig,
-						healthConfig,
-						createTimeConfig,
-						modelConfig,
-						namespaceConfig,
-						storageClassNameConfig
-				  ]
+			? [
+					titleConfig,
+					healthConfig,
+					createTimeConfig,
+					modelConfig,
+					namespaceConfig,
+					storageClassNameConfig
+			  ]
 			: [
 					titleConfig,
 					healthConfig,
@@ -797,7 +789,10 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	];
 	const configConfigTemp =
-		type === 'redis' || type === 'elasticsearch' || type === 'kafka'
+		type === 'redis' ||
+		type === 'elasticsearch' ||
+		type === 'kafka' ||
+		type === 'postgresql'
 			? type === 'kafka'
 				? [
 						...configConfig,
