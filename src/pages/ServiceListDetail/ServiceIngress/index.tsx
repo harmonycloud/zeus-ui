@@ -51,7 +51,8 @@ export default function ServiceDetailIngress(
 		clusterId,
 		mode,
 		readWriteProxy,
-		brokerNum
+		brokerNum,
+		status
 	} = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
@@ -67,15 +68,33 @@ export default function ServiceDetailIngress(
 	const onRefresh = () => {
 		getIngressByMid(clusterId, namespace, name, middlewareName);
 	};
+	const judgeDisabled = () => {
+		if (
+			name === 'redis' &&
+			mode === 'cluster' &&
+			!readWriteProxy?.enabled
+		) {
+			return { flag: true, title: 'Redis中间件在集群模式下无法使用' };
+		} else if (name === 'kafka' && status !== 'Running') {
+			return {
+				flag: true,
+				title: '当前中间件运行异常，无法新增服务暴露 '
+			};
+		} else if (name === 'rocketmq' && status !== 'Running') {
+			return {
+				flag: true,
+				title: '当前中间件运行异常，无法新增服务暴露 '
+			};
+		} else {
+			return { flag: false, title: '' };
+		}
+	};
 	const Operation = {
 		primary: (
 			<Button
 				type="primary"
-				disabled={
-					name === 'redis' &&
-					mode === 'cluster' &&
-					!readWriteProxy?.enabled
-				}
+				title={judgeDisabled().title}
+				disabled={judgeDisabled().flag}
 				onClick={() => {
 					// kfk mq 的添加服务暴露页不同
 					if (name === 'kafka' || name === 'rocketmq') {

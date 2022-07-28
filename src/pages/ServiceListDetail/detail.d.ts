@@ -587,6 +587,7 @@ export interface ServiceDetailIngressProps {
 	brokerNum: number;
 	enableExternal: number | null;
 	imagePath: string;
+	status: string;
 }
 
 export interface ServiceNameItem {
