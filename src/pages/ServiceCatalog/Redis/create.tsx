@@ -164,7 +164,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			num: 2
 		},
 		{
-			label: '二分片',
+			label: '双分片',
 			value: '2s-2m',
 			num: 4
 		},
@@ -426,9 +426,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							}
 							sendData.quota[key] = {
 								...nodeObj[key],
-								num: sentinelModeList.find(
-									(item) => item.value === sentinelMode
-								)?.num,
+								num:
+									key === 'redis'
+										? sentinelModeList.find(
+												(item) =>
+													item.value === sentinelMode
+										  )?.num
+										: nodeObj[key].num,
 								storageClassName:
 									nodeObj[key].storageClass?.split('/')[0],
 								storageClassQuota: nodeObj[key].storageQuota
@@ -465,6 +469,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
