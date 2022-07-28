@@ -157,21 +157,21 @@ function AlarmSet(props: any): JSX.Element {
 						</span>
 					}
 					name="way"
-					rules={[
-						{
-							required: !mailDisabled && !dingDisabled,
-							message: '请选择通知方式'
-						}
-					]}
+					// rules={[
+					// 	{
+					// 		required: !mailDisabled && !dingDisabled,
+					// 		message: '请选择通知方式'
+					// 	}
+					// ]}
 				>
 					<Checkbox.Group options={options} />
 				</Form.Item>
 				<Form.Item
 					label="告警联系人"
 					name="userIds"
-					rules={[
-						{ required: !mailDisabled, message: '请选择告警联系人' }
-					]}
+					// rules={[
+					// 	{ required: !mailDisabled, message: '请选择告警联系人' }
+					// ]}
 				>
 					<Select mode="multiple" disabled={mailDisabled}>
 						{users.map((item) => {
