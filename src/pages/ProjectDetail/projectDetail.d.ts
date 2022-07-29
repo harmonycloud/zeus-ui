@@ -62,6 +62,8 @@ export interface EditMemberProps {
 	onCancel: () => void;
 	onRefresh: () => void;
 	data: UserItem;
+	projectId: string;
+	isAccess: boolean;
 }
 export interface EditMemberFieldValues {
 	userName: string;

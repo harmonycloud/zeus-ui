@@ -68,7 +68,10 @@ export default function Member(): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={record.id === role.id}
+					disabled={
+						record.id === role.id ||
+						(isAccess && record.roleId === 2)
+					}
 					onClick={() => {
 						setEditVisible(true);
 						setEditData(record);
@@ -159,6 +162,8 @@ export default function Member(): JSX.Element {
 					onCancel={() => setEditVisible(false)}
 					onRefresh={getData}
 					data={editData}
+					projectId={id}
+					isAccess={isAccess}
 				/>
 			)}
 		</div>
