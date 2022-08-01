@@ -57,6 +57,10 @@ import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
 import AddStorage from '@/pages/StorageManagement/addStorage';
 import StorageDetail from '@/pages/StorageManagement/storageDetail';
+import ServiceIngress from '@/pages/ServiceIngress';
+import AddEsIngress from '@/pages/ServiceListDetail/ServiceIngress/addEsIngress';
+import AddServiceIngress from '@/pages/ServiceListDetail/ServiceIngress/addServiceIngress';
+import AddServiceDetailIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
 
 const Routes = withRouter((props) => {
 	return (
@@ -158,7 +162,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* pgsql备份跳转使用 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/:backupFileName/:namespace"
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/backup/:backupFileName/:namespace"
 					component={PostgreSQLCreate}
 					exact
 				/>
@@ -226,10 +230,40 @@ const Routes = withRouter((props) => {
 				{/* 服务暴露 */}
 				<Route
 					path="/serviceAvailable"
-					component={ServiceAvailable}
+					component={ServiceIngress}
 					exact
 				/>
 				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/add/es/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddEsIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/edit/es/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddEsIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/edit/kfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:brokerNum"
+					component={AddServiceDetailIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/add/kfkmq/:middlewareName/:clusterId/:chartVersion/:namespace/:mode/:brokerNum/:enableExternal"
+					component={AddServiceDetailIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/add/msrdpgzk/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddServiceIngress}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/edit/msrdpgzk/:middlewareName/:clusterId/:chartVersion/:namespace/:mode"
+					component={AddServiceIngress}
+					exact
+				/>
+				{/* <Route
 					path="/serviceAvailable/addServiceAvailable"
 					component={AddServiceAvailableForm}
 					exact
@@ -238,7 +272,8 @@ const Routes = withRouter((props) => {
 					path="/serviceList/:name/:aliasName/externalAccess/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
 					component={AddServiceAvailableForm}
 					exact
-				/>
+				/> */}
+				{/* 监控告警 */}
 				<Route
 					path="/monitorAlarm"
 					exact

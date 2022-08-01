@@ -131,3 +131,12 @@ export const getAspectFrom = () => {
 export const getIsAccessGYT: () => Promise<judgeResProps> = () => {
 	return Axios.get(COMMON.isAccessGYT);
 };
+// * 获取中间件图片
+export const getMidImagePath = (params: {
+	clusterId: string;
+	namespace: string;
+	type: string;
+	version: string;
+}) => {
+	return Axios.get(COMMON.getMidImage, params);
+};

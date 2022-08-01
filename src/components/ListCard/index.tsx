@@ -5,7 +5,7 @@ import './index.scss';
 
 const { Panel } = Collapse;
 export const ListCardItem = (props: ListCardItemProps) => {
-	const { width, label, value, render, style } = props;
+	const { width, label, value, render, style, icon } = props;
 	const upValue = () => {
 		if (value as string) {
 			return (
@@ -39,13 +39,24 @@ export const ListCardItem = (props: ListCardItemProps) => {
 			className="zeus-list-card-item-content"
 			style={{ width: width, ...style }}
 		>
-			{upValue()}
-			{downValue()}
+			{icon}
+			<div>
+				{upValue()}
+				{downValue()}
+			</div>
 		</div>
 	);
 };
 export const ListCard = (props: ListCardProps) => {
-	const { title, subTitle, icon, children, actionRender, titleClick } = props;
+	const {
+		title,
+		subTitle,
+		icon,
+		children,
+		actionRender,
+		titleClick,
+		columnGap
+	} = props;
 	return (
 		<div className="zeus-list-card-box">
 			<div className="zeus-list-card-head">
@@ -56,6 +67,7 @@ export const ListCard = (props: ListCardProps) => {
 					}`}
 				>
 					<div
+						title={title}
 						className="zeus-list-card-title"
 						onClick={titleClick ? titleClick : undefined}
 					>
@@ -64,13 +76,19 @@ export const ListCard = (props: ListCardProps) => {
 					<div className="zeus-list-card-subTitle">{subTitle}</div>
 				</div>
 			</div>
-			<div className="zeus-list-card-content">{children}</div>
+			<div
+				className="zeus-list-card-content"
+				style={{ columnGap: columnGap }}
+			>
+				{children}
+			</div>
 			<div className="zeus-list-card-action">{actionRender}</div>
 		</div>
 	);
 };
 export const ListPanel = (props: ListCardProps) => {
-	const { title, subTitle, icon, children, actionRender, render } = props;
+	const { title, subTitle, icon, children, actionRender, render, columnGap } =
+		props;
 	return (
 		<Collapse>
 			<Panel
@@ -92,7 +110,12 @@ export const ListPanel = (props: ListCardProps) => {
 								</div>
 							</div>
 						</div>
-						<div className="zeus-list-card-content">{children}</div>
+						<div
+							className="zeus-list-card-content"
+							style={{ columnGap: columnGap }}
+						>
+							{children}
+						</div>
 						<div className="zeus-list-card-action">
 							{actionRender}
 						</div>

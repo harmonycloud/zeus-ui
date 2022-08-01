@@ -94,6 +94,9 @@ export interface MysqlSendDataParams extends CommonSendDataParams {
 			memory?: string;
 		};
 	};
+	readWriteProxy: {
+		enabled: boolean;
+	};
 	mysqlDTO: {
 		replicaCount: number;
 		openDisasterRecoveryMode: boolean;
@@ -141,6 +144,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 		};
 	};
 	mirrorImageId?: any;
+	readWriteProxy?: any;
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
@@ -165,7 +169,7 @@ export interface KafkaSendDataParams extends CommonSendDataParams {
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];
 	kafkaDTO: KafkaDTO;
-	hostNetwork: boolean;
+	hostNetwork?: boolean;
 	quota: {
 		kafka: {
 			num?: number;
@@ -242,7 +246,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 	namespace: string;
 	name: string;
 	aliasName: string;
-	hostNetwork: boolean;
+	hostNetwork?: boolean;
 	dynamicValues?: any;
 	nodeAffinity?: AffinityItem[];
 	tolerations?: string[];

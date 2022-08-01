@@ -102,6 +102,7 @@ const YamlEdit = () => {
 				orig: oldValue,
 				mode: 'yaml',
 				lineNumbers: true, // * 显示行数
+				lineWrapping: true,
 				styleActiveLine: true,
 				revertButtons: false, // * 确定是都显示允许用户还原更改的按钮
 				connect: 'left', // * 设置用于连接更改的代码块的样式

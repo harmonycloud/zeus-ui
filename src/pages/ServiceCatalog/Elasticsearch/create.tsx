@@ -750,6 +750,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												]}
 											>
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -900,6 +901,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex form-li flex-center">
 									<label className="form-name">
@@ -925,6 +927,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -942,6 +945,26 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														options={tolerationList}
 														style={{
@@ -1060,6 +1083,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1104,6 +1128,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1128,6 +1153,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1142,6 +1168,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											<Input.Password
 												name="pwd"
 												placeholder="请输入初始密码，输入为空则由平台随机生成"
+												disabled={!!middlewareName}
 											/>
 										</FormItem>
 									</div>
@@ -1187,6 +1214,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '100%'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</div>
@@ -1224,6 +1252,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
+											disabled={!!middlewareName}
 										/>
 										<div
 											className={`display-flex ${styles['mode-content']}`}

@@ -145,10 +145,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	// * acl相关
 	const [aclCheck, setAclCheck] = useState<boolean>(false);
+	const [aclData, setAclData] = useState();
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 	// * 集群外访问
-	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 是否点击提交跳转至结果页
 	const [commitFlag, setCommitFlag] = useState<boolean>(false);
 	// * 发布成功
@@ -220,7 +221,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				mode: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
-				hostNetwork: hostNetwork,
+				// hostNetwork: hostNetwork,
 				quota: {
 					rocketmq: {
 						storageClassName: values.storageClass.split('/')[0],
@@ -335,9 +336,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				});
 				return;
 			}
-			if (hostNetwork) {
-				sendData.ingresses = values.ingresses;
-			}
+			// if (hostNetwork) {
+			// 	sendData.ingresses = values.ingresses;
+			// }
 			if (namespace) {
 				sendData.namespace = namespace;
 			}
@@ -488,6 +489,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			setAclCheck(res.data?.rocketMQParam?.acl?.enable);
+			setAclData(res.data?.rocketMQParam.acl);
 			form.setFieldsValue({
 				name: res.data.name + '-backup',
 				labels: res.data.labels,
@@ -597,19 +600,19 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			</ProPage>
 		);
 	}
-	const childrenPostRender = (mode: string) => {
-		return (
-			<FormItem name="ingresses" noStyle>
-				<ModePost
-					mode={mode}
-					clusterId={globalCluster.id}
-					middlewareName={form.getFieldValue('name')}
-					form={form}
-					middlewareType={chartName}
-				/>
-			</FormItem>
-		);
-	};
+	// const childrenPostRender = (mode: string) => {
+	// 	return (
+	// 		<FormItem name="ingresses" noStyle>
+	// 			<ModePost
+	// 				mode={mode}
+	// 				clusterId={globalCluster.id}
+	// 				middlewareName={form.getFieldValue('name')}
+	// 				form={form}
+	// 				middlewareType={chartName}
+	// 			/>
+	// 		</FormItem>
+	// 	);
+	// };
 	return (
 		<ProPage>
 			<ProHeader
@@ -633,6 +636,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										<div className="form-content">
 											<FormItem required name="namespace">
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -794,6 +798,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										onChange={(checked: boolean) =>
 											setAclCheck(checked)
 										}
+										disabled={!!middlewareName}
 									/>
 								</span>
 							</span>
@@ -801,7 +806,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					>
 						{aclCheck ? (
 							<div className={styles['acl-config']}>
-								<RocketACLForm form={form} />
+								<RocketACLForm
+									form={form}
+									data={aclData}
+									disabled={!!middlewareName}
+								/>
 							</div>
 						) : null}
 					</FormBlock>
@@ -814,6 +823,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -839,6 +849,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -856,6 +867,26 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														options={tolerationList}
 														style={{
@@ -963,6 +994,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -997,6 +1029,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1021,6 +1054,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1063,6 +1097,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '376px'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</div>
@@ -1109,8 +1144,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
+											disabled={!!middlewareName}
 										/>
-										<div
+										{/* <div
 											style={{
 												display:
 													mode === 'dledger'
@@ -1121,6 +1157,15 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											<label style={{ margin: '0 16px' }}>
 												自定义集群实例数量
 											</label>
+										</div> */}
+									</div>
+								</li>
+								{mode === 'dledger' && (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											从节点数
+										</label>
+										<div className="form-content">
 											<InputNumber
 												name="节点数量"
 												defaultValue={3}
@@ -1129,10 +1174,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												}
 												min={3}
 												max={10}
+												disabled={!!middlewareName}
 											/>
 										</div>
-									</div>
-								</li>
+									</li>
+								)}
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span>节点规格</span>
@@ -1146,6 +1192,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
+											disabled={!!middlewareName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1200,6 +1247,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
+																	disabled={
+																		!!middlewareName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1234,6 +1284,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
+																	disabled={
+																		!!middlewareName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1244,7 +1297,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									</div>
 								</li>
 								<StorageQuota clusterId={globalCluster.id} />
-								{mode !== 'dledger' && (
+								{/* {mode !== 'dledger' && (
 									<>
 										<li
 											className="display-flex form-li"
@@ -1286,7 +1339,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										{hostNetwork &&
 											childrenPostRender(mode)}
 									</>
-								)}
+								)} */}
 							</ul>
 						</div>
 					</FormBlock>

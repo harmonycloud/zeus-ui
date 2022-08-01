@@ -26,6 +26,18 @@ export interface DetailParams {
 	chartVersion: string;
 	namespace: string;
 }
+export interface ServiceIngressAddParams {
+	name: string;
+	aliasName: string;
+	currentTab: string;
+	middlewareName: string;
+	clusterId: string;
+	chartVersion: string;
+	namespace: string;
+	mode: string;
+	brokerNum: string;
+	enableExternal: string;
+}
 export interface ParamterSettingProps {
 	middlewareName: string;
 	clusterId: string;
@@ -186,6 +198,7 @@ export interface configParams {
 	characterSet: string;
 	port: string | number;
 	password: string;
+	kafkaDTO?: any;
 }
 export interface runParams {
 	title: string;
@@ -557,4 +570,43 @@ export interface RedisSentinelNodeSpeProps {
 	onCreate: (value: any) => void;
 	onCancel: () => void;
 	data: any;
+}
+export interface ServiceDetailIngressProps {
+	name: string;
+	aliasName: string;
+	middlewareName: string;
+	chartVersion: string;
+	namespace: string;
+	customMid: boolean;
+	capabilities: string[];
+	clusterId: string;
+	mode: string;
+	readWriteProxy?: {
+		enabled: boolean;
+	};
+	brokerNum: number;
+	enableExternal: number | null;
+	imagePath: string;
+	status: string;
+}
+
+export interface ServiceNameItem {
+	name: string;
+	label: string;
+	icon: string;
+	port?: number;
+}
+export interface HttpPathItem {
+	path: string;
+	serviceName: string;
+	servicePort: number | string;
+	id: number;
+}
+
+export interface InternalServiceItem {
+	clusterIP: null;
+	internalAddress: string;
+	portDetailDtoList: [];
+	serviceName: string;
+	servicePurpose: string;
 }

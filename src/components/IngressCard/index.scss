@@ -1,0 +1,10 @@
+.tag-box {
+	width: calc(100% - 52px);
+	margin-left: 52px;
+	height: 100px;
+	overflow-y: auto;
+	background: $black-9;
+	margin-top: $padding-sm;
+	padding: $padding-sm;
+	border-radius: $border-radius-lg;
+}

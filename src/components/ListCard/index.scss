@@ -12,6 +12,7 @@
 		width: 200px;
 		padding: 12px;
 		display: flex;
+		align-items: center;
 		.zeus-list-card-title-content {
 			width: 140px;
 			.zeus-list-card-title {
@@ -56,6 +57,8 @@
 	height: 62px;
 	width: 150px;
 	padding: 12px;
+	display: flex;
+	align-items: center;
 	.zeus-list-card-item-label,
 	.zeus-list-card-item-value {
 		width: 100%;

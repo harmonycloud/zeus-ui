@@ -129,7 +129,7 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 						notification.success({
 							message: '成功',
 							description:
-								'ConfigMap修改成功，需要前往高可用性页面重启服务。'
+								'ConfigMap修改成功，需要前往实例详情页面重启服务。'
 						});
 						setSaveFlag(true);
 						setReturnFlag(true);

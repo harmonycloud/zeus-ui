@@ -431,13 +431,13 @@ function PlatformOverview(props: any): JSX.Element {
 														onClick={() => {
 															storage.setSession(
 																'menuPath',
-																`/serviceList/${item.name}/${item.aliasName}`
+																`/serviceList/${item.chartName}/${item.aliasName}`
 															);
 															setNamespace({
 																name: '*'
 															});
 															history.push(
-																`/serviceList/${item.name}/${item.aliasName}`
+																`/serviceList/${item.chartName}/${item.aliasName}`
 															);
 														}}
 													>

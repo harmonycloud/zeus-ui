@@ -16,7 +16,7 @@ import { getNodePort } from '@/services/middleware';
 import './index.scss';
 
 function Affinity(props: any): JSX.Element {
-	const { values, onChange, flag, flagChange, cluster } = props;
+	const { values, onChange, flag, flagChange, cluster, disabled } = props;
 	const [label, setLabel] = useState<string>('');
 	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [checked, setChecked] = useState<boolean>(false);
@@ -57,6 +57,7 @@ function Affinity(props: any): JSX.Element {
 								margin: '0 16px',
 								verticalAlign: 'middle'
 							}}
+							disabled={disabled}
 						/>
 					</div>
 					{flag ? (
@@ -69,14 +70,33 @@ function Affinity(props: any): JSX.Element {
 									style={{ width: 260 }}
 									options={labelList}
 									onChange={(value) => setLabel(value)}
+									onBlur={() => {
+										label &&
+											/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
+												label
+											) &&
+											!values.find(
+												(item: any) =>
+													item.label === label
+											) &&
+											onChange([
+												...values,
+												{
+													label: label,
+													checked,
+													id: Math.random()
+												}
+											]);
+									}}
 									status={
 										label &&
-										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+										!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
 											label
 										)
 											? 'error'
 											: ''
 									}
+									disabled={disabled}
 								/>
 							</div>
 							<div className={'add'}>
@@ -86,8 +106,9 @@ function Affinity(props: any): JSX.Element {
 										padding: '0 9px'
 									}}
 									disabled={
+										disabled ||
 										!label ||
-										!/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(
+										!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(
 											label
 										)
 											? true
@@ -133,6 +154,7 @@ function Affinity(props: any): JSX.Element {
 											})
 										);
 									}}
+									disabled={disabled}
 								>
 									强制亲和
 								</Checkbox>
@@ -141,7 +163,8 @@ function Affinity(props: any): JSX.Element {
 					) : null}
 				</div>
 			</li>
-			{label && !/^[a-zA-Z0-9-./_]+[=][a-zA-Z0-9-./_]+$/.test(label) ? (
+			{label &&
+			!/^[a-zA-Z0-9-./_]+[=]([a-zA-Z0-9-./_]+)?$/.test(label) ? (
 				<div style={{ marginLeft: 240, color: '#ff4d4f' }}>
 					请输入key=value格式的内容
 				</div>
@@ -152,7 +175,7 @@ function Affinity(props: any): JSX.Element {
 						return (
 							<Tag
 								key={item.label}
-								closable
+								closable={!disabled}
 								style={{ padding: '4px 10px' }}
 								onClose={(e: React.MouseEvent<HTMLElement>) => {
 									e.preventDefault();

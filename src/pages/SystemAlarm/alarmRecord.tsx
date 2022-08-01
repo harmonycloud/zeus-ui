@@ -26,13 +26,15 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 		monitor,
 		alarmType
 	} = props;
+	const [current, setCurrent] = useState<number>(1); // * 页码
+	const [total, setTotal] = useState<number | undefined>(10); // * 总数
+	const [pageSize, setPageSize] = useState<number>(); // * 每页条数
 	const [eventData, setEventData] = useState<evevtDataProps[]>([]);
-	const [originData, setOriginData] = useState<evevtDataProps[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
 	const [filters, setFilters] = useState<any[] | undefined>();
 	const systemTab = storage.getLocal('systemTab');
 	const onRefresh = () => {
-		getData();
+		getData(1);
 	};
 
 	const createTimeRender = (value: string) => {
@@ -41,7 +43,7 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 	};
 
 	useEffect(() => {
-		getData();
+		getData(1);
 		getClusters().then((res) => {
 			if (!res.data) return;
 			if (alarmType === 'system') {
@@ -55,18 +57,19 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 	}, [middlewareName]);
 
 	useEffect(() => {
-		getData();
+		getData(1);
 	}, [systemTab, keyword]);
 
-	const getData = () => {
+	const getData = (current: number, size?: number) => {
 		if (alarmType === 'system') {
 			const sendData = {
 				lay: 'system',
-				keyword
+				keyword,
+				current,
+				size: size || 10
 			};
 			getEvents(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);
-				setOriginData(res.data ? res.data.list : []);
 			});
 		} else {
 			const sendData = {
@@ -75,11 +78,14 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 				clusterId,
 				namespace,
 				lay: 'service',
-				keyword
+				keyword,
+				current,
+				size: size || 10
 			};
 			getEvents(sendData).then((res) => {
 				setEventData(res.data ? res.data.list : []);
-				setOriginData(res.data ? res.data.list : []);
+				setCurrent(res.data.pageNum || 1);
+				setTotal(res.data.total);
 			});
 		}
 	};
@@ -94,57 +100,16 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 		);
 	};
 
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'time') {
-			const dsTemp = eventData.sort((a, b) => {
-				const result =
-					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setEventData([...dsTemp]);
-		}
-	};
-
-	const onFilter = (filterParams: any) => {
-		if (filterParams.level) {
-			const {
-				level: { selectedKeys }
-			} = filterParams;
-			if (selectedKeys.length === 0) {
-				setEventData(originData);
-			} else {
-				let tempData = null;
-				tempData = originData.filter((item: evevtDataProps) => {
-					return item.level === selectedKeys[0];
-				});
-				setEventData(tempData);
-			}
-		} else if (filterParams.clusterId) {
-			const {
-				clusterId: { selectedKeys }
-			} = filterParams;
-			if (selectedKeys.length === 0) {
-				setEventData(originData);
-			} else {
-				let tempData = null;
-				tempData = originData.filter((item: evevtDataProps) => {
-					return item.clusterId === selectedKeys[0];
-				});
-				setEventData(tempData);
-			}
-		}
-	};
-
 	const nameRender = (value: string) => {
 		return alarmType === 'system'
 			? value
 			: clusterId + '/' + namespace + '/' + type + '/' + middlewareName;
+	};
+
+	const handleTableChange = (pagination: any) => {
+		getData(pagination.current || 1, pagination.size || 10);
+		setCurrent(pagination.current || 1);
+		setPageSize(pagination.pageSize);
 	};
 
 	if (!monitor || !monitor.alertManager) {
@@ -160,35 +125,29 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 	return (
 		<ProTable
 			dataSource={eventData}
-			// exact
-			// fixedBarExpandWidth={[24]}
-			// affixActionBar
 			showRefresh
 			showColumnSetting
 			onRefresh={onRefresh}
+			pagination={{
+				total: total,
+				current: current,
+				pageSize: pageSize
+			}}
 			rowKey="alertId"
 			search={{
-				placeholder: '请输入告警ID、告警内容、规则描述、实际监测搜索',
+				placeholder: '请输入告警内容、规则描述、实际监测搜索',
 				onSearch: (value: string) => setKeyword(value),
 				style: {
 					width: '360px'
 				}
 			}}
-			// onSort={onSort}
-			// onFilter={onFilter}
+			onChange={handleTableChange}
 		>
-			<ProTable.Column
-				title="告警ID"
-				dataIndex="alertId"
-				width={100}
-				render={nullRender}
-			/>
 			<ProTable.Column
 				title="告警等级"
 				dataIndex="level"
 				width={110}
 				filters={alarmWarn}
-				// filterMode="single"
 				filterMultiple={false}
 				onFilter={(value, record: ServiceRuleItem) =>
 					value === record.level

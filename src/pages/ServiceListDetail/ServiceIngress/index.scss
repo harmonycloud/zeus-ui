@@ -1,0 +1,89 @@
+.ingress-service-box {
+	width: 160px;
+	height: 100px;
+	background: $black-10;
+	border: 1px solid $black-5;
+	text-align: center;
+	padding: 16px;
+	cursor: pointer;
+	.ingress-service-box-label {
+		height: 20px;
+		font-size: $font-2;
+		font-weight: $font-weight;
+		color: $black-2;
+		line-height: $line-height-2;
+		margin-top: 4px;
+	}
+}
+.ingress-service-box-active{
+	border: 1px solid $blue-base;
+}
+.ingress-broker-content {
+	margin-left: 200px;
+}
+.ingress-four-tcp-or-NodePort {
+	margin-left: 200px;
+	margin-bottom: 24px;
+}
+.es-ingress-seven-add {
+	width: 100%;
+	height: 32px;
+	line-height: 32px;
+	text-align: center;
+	background: $black-10;
+	border-radius: 2px;
+	cursor: pointer;
+	border: 1px dashed rgba(0,0,0,0.1500);
+	&:hover {
+		color: $blue-base;
+	}
+}
+.add-list-item-box {
+	width: 100%;
+	height: 48px;
+	border: 1px solid rgba(0,0,0,0.1500);
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	margin-bottom: 8px;
+}
+.add-list-item-closed {
+	cursor: pointer;
+	color: $black-4;
+	&:hover {
+		color: $red-5;
+	}
+}
+.pod-card-item {
+	display: flex;
+	align-items: center;
+	width: 250px;
+	height: 52px;
+	border: 1px solid rgba(0,0,0,0.1500);
+	padding: 8px;
+	.pod-card-des {
+		width: calc(100% - 40px);
+		.pod-card-ip {
+			color: $black-2;
+			@include text-ellipsis;
+			.pod-card-ip-copy {
+				margin-left: $margin;
+				cursor: pointer;
+				&:hover{
+					color: $blue-base;
+				}
+			}
+		}
+		.pod-card-name {
+			color: $black-4;
+			@include text-ellipsis;
+		}
+	}
+}
+.card-ip-copy {
+	margin-left: $margin;
+	cursor: pointer;
+	&:hover{
+		color: $blue-base;
+	}
+}

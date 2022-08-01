@@ -15,6 +15,7 @@ import ParamterSetting from './ParamterSetting/index';
 import Disaster from './Disaster/index';
 import DataBase from './Database/index';
 import RedisDataBase from './RedisDatabase/index';
+import ServiceDetailIngress from './ServiceIngress';
 
 import { getMiddlewareDetail } from '@/services/middleware';
 import { getNamespaces } from '@/services/common';
@@ -176,14 +177,45 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					);
 				case 'externalAccess':
 					return (
-						<ExternalAccess
-							type={type}
+						<ServiceDetailIngress
+							name={name}
+							aliasName={aliasName}
 							middlewareName={middlewareName}
+							chartVersion={chartVersion}
 							namespace={namespace}
 							customMid={customMid}
+							clusterId={globalVar.cluster.id}
 							capabilities={(data && data.capabilities) || []}
+							mode={data.mode}
+							readWriteProxy={data?.readWriteProxy}
+							imagePath={data.imagePath}
+							status={data.status}
+							brokerNum={
+								name === 'kafka'
+									? data.kafkaDTO.brokerNum
+									: name === 'rocketmq'
+									? data.rocketMQParam.brokerNum
+									: null
+							}
+							enableExternal={
+								name === 'kafka'
+									? data.kafkaDTO.enableExternal
+									: name === 'rocketmq'
+									? data.rocketMQParam.enableExternal
+									: null
+							}
 						/>
 					);
+				// case 'externalAccess':
+				// 	return (
+				// 		<ExternalAccess
+				// 			type={type}
+				// 			middlewareName={middlewareName}
+				// 			namespace={namespace}
+				// 			customMid={customMid}
+				// 			capabilities={(data && data.capabilities) || []}
+				// 		/>
+				// 	);
 				case 'monitor':
 					return (
 						<Monitor
@@ -398,7 +430,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		<ProPage>
 			<ProHeader
 				title={
-					<h1>{`${type}:${middlewareName}(${
+					<h1>{`${aliasName}:${middlewareName}(${
 						statusRender(status) || ''
 					})`}</h1>
 				}
@@ -457,7 +489,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					(type === 'mysql' ||
 						type === 'elasticsearch' ||
 						type === 'redis' ||
-						type === 'rocketmq') ? (
+						type === 'rocketmq' ||
+						type === 'postgresql') ? (
 						<TabPane tab="数据安全" key="backupRecovery">
 							{childrenRender('backupRecovery')}
 						</TabPane>
@@ -492,7 +525,21 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('disaster')}
 						</TabPane>
 					) : null}
-					{operateFlag && type === 'mysql' ? (
+					{/* {operateFlag &&
+						type === 'mysql' &&
+						data?.mysqlDTO?.openDisasterRecoveryMode &&
+						data?.mysqlDTO?.isSource === true} */}
+					{operateFlag &&
+					type === 'mysql' &&
+					!data?.mysqlDTO?.openDisasterRecoveryMode ? (
+						<TabPane tab="数据库管理" key="database">
+							{childrenRender('database')}
+						</TabPane>
+					) : null}
+					{operateFlag &&
+					type === 'mysql' &&
+					data?.mysqlDTO?.openDisasterRecoveryMode &&
+					data?.mysqlDTO?.isSource === true ? (
 						<TabPane tab="数据库管理" key="database">
 							{childrenRender('database')}
 						</TabPane>

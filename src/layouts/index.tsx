@@ -262,14 +262,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					const childMenu = item.subMenu.map((item: ResMenuItem) =>
 						getItem(item.aliasName, item.url)
 					);
-					// if (item.name === 'backupService') {
-					// 	return getItem(
-					// 		item.aliasName,
-					// 		item.url,
-					// 		<img width={12} height={12} src={backupService} />,
-					// 		childMenu
-					// 	);
-					// }
 					return getItem(
 						item.aliasName,
 						item.url,
@@ -277,20 +269,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 						childMenu
 					);
 				} else {
-					// if (item.name === 'storageManagement') {
-					// 	return getItem(
-					// 		item.aliasName,
-					// 		item.url,
-					// 		<StorageManageIcon />
-					// 	);
-					// }
-					// if (item.name === 'myProject') {
-					// 	return getItem(
-					// 		item.aliasName,
-					// 		item.url,
-					// 		<img width={12} height={12} src={myProject} />
-					// 	);
-					// }
 					return getItem(
 						item.aliasName,
 						item.url,

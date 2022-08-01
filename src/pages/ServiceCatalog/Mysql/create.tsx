@@ -63,7 +63,6 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
-import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -138,7 +137,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			value: '5.7'
 		},
 		{
-			label: '8.0(beta)版',
+			label: '8.0',
 			value: '8.0'
 		}
 	];
@@ -164,12 +163,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			value: '1m-1s'
 		},
 		{
-			label: '一主多从（beta版）',
+			label: '一主多从',
 			value: '1m-ns'
-		},
-		{
-			label: '单实例',
-			value: '1m-0s'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -204,6 +199,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	// * root密码
 	const [mysqlPwd, setMysqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
+	// * 读写分离模式
+	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -293,6 +290,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				mode: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
+				readWriteProxy: {
+					enabled: readWriteProxy === 'true' ? true : false
+				},
 				quota: {
 					mysql: {
 						storageClassName: values.storageClass.split('/')[0],
@@ -404,28 +404,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
-				const result = {
-					clusterId: globalCluster.id,
-					namespace: namespace,
-					middlewareName: middlewareName,
-					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
-				};
-				applyBackup(result).then((res) => {
-					// if (res.success) {
-					// 	notification.success({
-					// 		message: '成功',
-					// 		description: '克隆成功'
-					// 	});
-					// } else {
-					// 	notification.error({
-					// 		message: '失败',
-					// 		description: res.errorMsg
-					// 	});
-					// }
-				});
 			}
 			// 灾备服务-源服务和备服务同时创建
 			if (backupFlag) {
@@ -500,6 +478,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					mode: originData.mode,
 					filelogEnabled: originData.filelogEnabled,
 					stdoutEnabled: originData.stdoutEnabled,
+					readWriteProxy: {
+						enabled: readWriteProxy === 'true' ? true : false
+					},
 					quota: {
 						mysql: {
 							cpu: originData.quota.mysql.cpu,
@@ -725,6 +706,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			res.data.readWriteProxy?.enabled && setReadWriteProxy('true');
 			form.setFieldsValue({
 				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,
@@ -1105,7 +1087,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<FormItem required name="namespace">
-												<Select>
+												<Select placeholder="请选择命名空间">
 													{namespaceList.map(
 														(item) => {
 															return (
@@ -1258,6 +1240,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!backupFileName}
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -1283,6 +1266,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!backupFileName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -1300,6 +1284,26 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														options={tolerationList}
 														style={{
@@ -1407,6 +1411,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</div>
 										</div>
@@ -1441,6 +1446,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</div>
 										</div>
@@ -1465,6 +1471,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -1481,6 +1488,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setCharSet(value)
 											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -1512,6 +1520,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<InputNumber
 												style={{ width: '380px' }}
 												placeholder="请输入mysql的服务端口号，默认为3306"
+												disabled={!!backupFileName}
 											/>
 										</FormItem>
 									</div>
@@ -1585,6 +1594,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													value={mysqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={mysqlPwdChange}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										</Tooltip>
@@ -1629,6 +1639,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '380px'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										)}
@@ -1649,27 +1660,50 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<QuestionCircleOutlined />
 										</Tooltip>
 									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={modeList}
-											currentValue={mode}
-											onCallBack={(value: any) =>
-												setMode(value)
-											}
-										/>
-										<div
-											style={{
-												display:
-													mode === '1m-ns'
-														? 'block'
-														: 'none'
+									<div className={`form-content`}>
+										<Select
+											value={readWriteProxy}
+											onChange={(val) => {
+												val === '1m-0s' &&
+													setMode('1m-0s');
+												setReadWriteProxy(val);
 											}}
+											style={{
+												marginBottom: 12,
+												width: 182
+											}}
+											disabled={!!backupFileName}
 										>
-											<label style={{ margin: '0 16px' }}>
-												自定义从节点实例数量
-											</label>
+											<Select.Option key="false">
+												高可用模式
+											</Select.Option>
+											<Select.Option key="true">
+												读写分离模式
+											</Select.Option>
+											<Select.Option key="1m-0s">
+												单实例模式
+											</Select.Option>
+										</Select>
+										{readWriteProxy !== '1m-0s' ? (
+											<div className={`display-flex`}>
+												<SelectBlock
+													options={modeList}
+													currentValue={mode}
+													onCallBack={(value: any) =>
+														setMode(value)
+													}
+													disabled={!!backupFileName}
+												/>
+											</div>
+										) : null}
+									</div>
+								</li>
+								{mode === '1m-ns' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											从节点数
+										</label>
+										<div className="form-content">
 											<InputNumber
 												name="从节点数量字段"
 												defaultValue={2}
@@ -1679,10 +1713,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												value={replicaCount}
 												max={6}
 												min={2}
+												disabled={!!backupFileName}
 											/>
 										</div>
-									</div>
-								</li>
+									</li>
+								) : null}
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span>节点规格</span>
@@ -1696,6 +1731,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
+											disabled={!!backupFileName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1751,6 +1787,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义CPU配额，单位为Core"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1785,6 +1824,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	step={0.1}
 																	placeholder="请输入自定义内存配额，单位为Gi"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1832,6 +1874,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 															verticalAlign:
 																'middle'
 														}}
+														disabled={
+															!!backupFileName
+														}
 													/>
 												</div>
 											</FormItem>

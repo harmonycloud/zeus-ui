@@ -12,3 +12,7 @@ export const getInstances = `${api}/clusters/{clusterId}/namespaces/{namespace}/
 export const getService = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/services`;
 // * 获取中间件对外访问
 export const getIngressByMiddleware = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/ingress`;
+// * ingress 获取 vip
+export const getVIPs = `${api}/clusters/{clusterId}/ingress/vip`;
+// * 获取集群内访问
+export const getInternalServices = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/internalServices`;

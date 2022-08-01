@@ -511,6 +511,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 										<div className="form-content">
 											<FormItem required name="namespace">
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -707,6 +708,26 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														options={tolerationList}
 														style={{
@@ -945,15 +966,13 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 												setMode(value)
 											}
 										/>
-										<label
-											className={
-												styles[
-													'custom-cluster-number-label'
-												]
-											}
-										>
-											自定义集群实例数量
-										</label>
+									</div>
+								</li>
+								<li className="display-flex form-li">
+									<label className="form-name">
+										从节点数
+									</label>
+									<div className="form-content">
 										<InputNumber
 											min={3}
 											value={customCluster}

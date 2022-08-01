@@ -2,21 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Input, Select, Form, notification } from 'antd';
 import { getRoleList } from '@/services/role';
 import { updateProjectMember } from '@/services/project';
-import storage from '@/utils/storage';
 import { EditMemberProps } from './projectDetail';
 import { formItemLayout618 } from '@/utils/const';
 import { roleProps } from '../RoleManage/role';
-import { ProjectItem } from '../ProjectManage/project';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 export default function EditMember(props: EditMemberProps): JSX.Element {
-	const { visible, onCancel, onRefresh, data } = props;
+	const { visible, onCancel, onRefresh, data, projectId, isAccess } = props;
 	const [form] = Form.useForm();
 	const [roles, setRoles] = useState<roleProps[]>([]);
-	const [project] = useState<ProjectItem>(
-		JSON.parse(storage.getLocal('project'))
-	);
 	useEffect(() => {
 		getRoleList({ key: '' }).then((res) => {
 			if (res.success) {
@@ -39,7 +34,7 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 	const onOk = () => {
 		form.validateFields().then((values) => {
 			const sendData = {
-				projectId: project.projectId,
+				projectId: projectId,
 				userName: data.userName,
 				aliasName: data.aliasName,
 				roleId: values.roleId
@@ -85,6 +80,18 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 					<Select style={{ width: '100%' }}>
 						{roles.map((item: roleProps) => {
 							if (item.id !== 1) {
+								if (item.id === 2) {
+									return (
+										!isAccess && (
+											<Option
+												key={item.id}
+												value={item.id}
+											>
+												{item.name}
+											</Option>
+										)
+									);
+								}
 								return (
 									<Option key={item.id} value={item.id}>
 										{item.name}

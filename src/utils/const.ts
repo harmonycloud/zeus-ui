@@ -279,6 +279,14 @@ export const initMenu = [
 		own: false
 	}
 ];
+export const formItemLayout410 = {
+	labelCol: {
+		span: 4
+	},
+	wrapperCol: {
+		span: 10
+	}
+};
 export const formItemLayout614 = {
 	labelCol: {
 		span: 6

@@ -119,30 +119,22 @@ h2 {
 	}
 }
 
-.ant-form-item.flex-form {
+.flex-form {
 	display: flex;
-	.ant-form-item-control-input-content {
-		display: flex;
-		.ant-form-item-control {
-			display: block;
+	.ant-form-item {
+		flex: 1;
+		&:first-of-type {
+			margin: 0;
 		}
-		.ant-form-item {
-			flex: 1;
-			&:first-of-type {
-				margin: 0;
-			}
-			margin-bottom: 0;
-		}
-	}
-	.ant-form-item-label {
-		width: 100px;
+		margin-left: 8px;
+		margin-bottom: 0;
 	}
 }
-.ant-table-row.disabled{
+.ant-table-row.disabled {
 	background-color: #fafafa;
 	color: #ccc;
-	td:first-of-type{
-		.name-link{
+	td:first-of-type {
+		.name-link {
 			color: #ccc;
 		}
 	}

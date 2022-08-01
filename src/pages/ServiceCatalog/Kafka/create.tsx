@@ -97,11 +97,15 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 	// * 日志-end
 	// * Kafka配置-start
-	const [version, setVersion] = useState<string>('2.6.0');
+	const [version, setVersion] = useState<string>('2.6');
 	const versionList = [
 		{
-			label: '2.6.0',
-			value: '2.6.0'
+			label: '2.6',
+			value: '2.6'
+		},
+		{
+			label: '3.1',
+			value: '3.1'
 		}
 	];
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
@@ -114,7 +118,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [mode, setMode] = useState<string>('cluster');
 	const modeList = [
 		{
-			label: '集群模式（beta版）',
+			label: '集群模式',
 			value: 'cluster'
 		}
 	];
@@ -139,7 +143,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	// * 集群外访问
-	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 根据命名空间，来提示可编辑的最大最小值
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -261,7 +265,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
 				kafkaDTO: kfkDTO,
-				hostNetwork: hostNetwork,
+				// hostNetwork: hostNetwork,
 				quota: {
 					kafka: {
 						num: customCluster,
@@ -365,9 +369,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				});
 				return;
 			}
-			if (hostNetwork) {
-				sendData.ingresses = values.ingresses;
-			}
+			// if (hostNetwork) {
+			// 	sendData.ingresses = values.ingresses;
+			// }
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -469,20 +473,20 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			</ProPage>
 		);
 	}
-	const childrenPostRender = (mode: string) => {
-		return (
-			<FormItem name="ingresses">
-				<ModePost
-					mode={mode}
-					clusterId={globalCluster.id}
-					middlewareName={form.getFieldValue('name')}
-					form={form}
-					middlewareType={chartName}
-					customCluster={customCluster}
-				/>
-			</FormItem>
-		);
-	};
+	// const childrenPostRender = (mode: string) => {
+	// 	return (
+	// 		<FormItem name="ingresses">
+	// 			<ModePost
+	// 				mode={mode}
+	// 				clusterId={globalCluster.id}
+	// 				middlewareName={form.getFieldValue('name')}
+	// 				form={form}
+	// 				middlewareType={chartName}
+	// 				customCluster={customCluster}
+	// 			/>
+	// 		</FormItem>
+	// 	);
+	// };
 	return (
 		<ProPage>
 			<ProHeader
@@ -508,6 +512,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										<div className="form-content">
 											<FormItem required name="namespace">
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -704,6 +709,26 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														options={tolerationList}
 														style={{
@@ -922,7 +947,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												}
 												style={{ width: '95px' }}
 												value={kfkDTO.zkPort}
-												placeholder="请输入服务端口"
+												placeholder="端口"
 												onChange={(value: number) =>
 													setKfkDTO({
 														...kfkDTO,
@@ -938,7 +963,11 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 											rules={[
 												{
 													required: true,
-													message: '请输入服务路径'
+													message: '请输入唯一路径'
+												},
+												{
+													pattern: /^\/[a-zA-Z0-9]*$/,
+													message: '路径不符合规则'
 												}
 											]}
 										>
@@ -947,7 +976,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 													styles['zeus-zk-path']
 												}
 												value={kfkDTO.path}
-												placeholder="请输入服务路径"
+												placeholder="路径 如：/path"
 												onChange={(e) =>
 													setKfkDTO({
 														...kfkDTO,
@@ -1027,7 +1056,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												setMode(value)
 											}
 										/>
-										<label
+										{/* <label
 											className={
 												styles[
 													'custom-cluster-number-label'
@@ -1036,6 +1065,14 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										>
 											自定义集群实例数量
 										</label>
+										 */}
+									</div>
+								</li>
+								<li className="display-flex form-li">
+									<label className="form-name">
+										<span>集群实例数量</span>
+									</label>
+									<div className="form-content">
 										<InputNumber
 											min={3}
 											value={customCluster}
@@ -1157,7 +1194,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 									</div>
 								</li>
 								<StorageQuota clusterId={globalCluster.id} />
-								<li
+								{/* <li
 									className="display-flex form-li"
 									style={{ alignItems: 'center' }}
 								>
@@ -1185,7 +1222,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										</div>
 									</div>
 								</li>
-								{hostNetwork && childrenPostRender(mode)}
+								{hostNetwork && childrenPostRender(mode)} */}
 							</ul>
 						</div>
 					</FormBlock>

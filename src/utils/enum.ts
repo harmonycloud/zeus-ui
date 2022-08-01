@@ -1,6 +1,6 @@
 export enum status {
 	Syncing = '同步中',
-	stopSyncing = '停止同步',
+	StopSyncing = '停止同步',
 	Error = '错误'
 }
 export enum stateProps {

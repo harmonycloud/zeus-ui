@@ -88,40 +88,71 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 			if (location.pathname === '/middlewareRepository') {
 				list.forEach((item) => {
 					if (item === null || item === '') {
-						obj['其他'] = originData.filter((i) => i.type === item);
+						obj['其他'] = originData
+							.filter((i) => i.type === item)
+							.sort(
+								(a, b) =>
+									a.name.charCodeAt(0) - b.name.charCodeAt(0)
+							);
 					} else {
-						obj[MiddlewareType[item]] = originData.filter(
-							(i) => i.type === item
-						);
+						obj[MiddlewareType[item]] = originData
+							.filter((i) => i.type === item)
+							.sort(
+								(a, b) =>
+									a.name.charCodeAt(0) - b.name.charCodeAt(0)
+							);
 					}
 				});
 			} else {
 				list.forEach((item) => {
 					if (item === null || item === '') {
-						obj['其他'] = originData.filter(
-							(i) => i.type === item && i.status === 1
-						);
+						obj['其他'] = originData
+							.filter((i) => i.type === item && i.status === 1)
+							.sort(
+								(a, b) =>
+									a.name.charCodeAt(0) - b.name.charCodeAt(0)
+							);
 					} else {
-						obj[MiddlewareType[item]] = originData.filter(
-							(i) => i.type === item && i.status === 1
-						);
+						obj[MiddlewareType[item]] = originData
+							.filter((i) => i.type === item && i.status === 1)
+							.sort(
+								(a, b) =>
+									a.name.charCodeAt(0) - b.name.charCodeAt(0)
+							);
 					}
 				});
 			}
-			if (!list.includes(null)) setDataSource(obj);
-			else setDataSource(changeObjectIndex(obj, '其他', list.length - 1));
+			if (!list.includes('')) {
+				const ot = changeObjectIndex(obj, '数据库', 0);
+				setDataSource(ot);
+			} else {
+				const ot = changeObjectIndex(obj, '其他', list.length - 1);
+				setDataSource(changeObjectIndex(ot, '数据库', 0));
+			}
 		} else if (rule === 'source') {
 			const obj = {};
 			if (location.pathname === '/middlewareRepository') {
-				obj['官方'] = originData.filter((i) => i.official === true);
-				obj['非官方'] = originData.filter((i) => i.official !== true);
+				obj['官方'] = originData
+					.filter((i) => i.official === true)
+					.sort(
+						(a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0)
+					);
+				obj['非官方'] = originData
+					.filter((i) => i.official !== true)
+					.sort(
+						(a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0)
+					);
 			} else {
-				obj['官方'] = originData.filter(
-					(i) => i.official === true && i.status === 1
-				);
-				obj['非官方'] = originData.filter(
-					(i) => i.official !== true && i.status === 1
-				);
+				obj['官方'] = originData
+					.filter((i) => i.official === true && i.status === 1)
+					.sort(
+						(a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0)
+					);
+				obj['非官方'] = originData
+					.filter((i) => i.official !== true && i.status === 1)
+					.sort(
+						(a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0)
+					);
 			}
 			setDataSource(obj);
 		}

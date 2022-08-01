@@ -31,10 +31,12 @@ import {
 	getNodePort,
 	getNodeTaint,
 	getStorageClass,
-	postMiddleware
+	postMiddleware,
+	getMiddlewareDetail
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
+import transUnit from '@/utils/transUnit';
 import {
 	CreateProps,
 	CreateParams,
@@ -149,12 +151,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			value: '1m-1s'
 		},
 		{
-			label: '一主多从（beta版）',
+			label: '一主多从',
 			value: '1m-ns'
 		},
 		{
 			label: '单实例',
-			value: '1m'
+			value: '1m-0s'
 		}
 	];
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -305,6 +307,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					);
 				}
 			}
+			if (namespace) {
+				sendData.namespace = namespace;
+			}
 			if (backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
@@ -354,6 +359,75 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			});
 		});
 	};
+
+	const getMiddlewareDetailAndSetForm = (middlewareName: string) => {
+		getMiddlewareDetail({
+			clusterId: globalCluster.id,
+			namespace: namespace || globalNamespace.name,
+			middlewareName: middlewareName,
+			type: 'postgresql'
+		}).then((res) => {
+			if (!res.data) return;
+			setInstanceSpec('Customize');
+			if (res.data.nodeAffinity) {
+				setAffinity({
+					flag: true,
+					label: '',
+					checked: false
+				});
+				setAffinityLabels(res.data?.nodeAffinity || []);
+			}
+			if (res.data.tolerations) {
+				setTolerations({
+					flag: true,
+					label: ''
+				});
+				setTolerationsLabels(
+					res.data?.tolerations?.map((item: string) => {
+						return { label: item };
+					}) || []
+				);
+			}
+			if (res.data.mode) {
+				setMode(res.data.mode);
+			}
+			if (res.data.version) {
+				setVersion(res.data.version);
+			}
+			form.setFieldsValue({
+				name: backupFileName ? res.data.name + '-backup' : '',
+				labels: res.data.labels,
+				annotations: res.data.annotations,
+				description: res.data.description,
+				mysqlPort: res.data.port,
+				mysqlPwd: res.data.password,
+				cpu: Number(res.data.quota.postgresql.cpu),
+				memory: Number(
+					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
+				),
+				storageClass: res.data.quota.postgresql.storageClassName,
+				storageQuota: transUnit.removeUnit(
+					res.data.quota.postgresql.storageClassQuota,
+					'Gi'
+				)
+			});
+			if (res.data.dynamicValues) {
+				for (const i in res.data.dynamicValues) {
+					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
+				}
+			}
+		});
+	};
+
+	// 全局分区更新
+	useEffect(() => {
+		if (JSON.stringify(globalNamespace) !== '{}') {
+			// 克隆服务
+			if (backupFileName) {
+				getMiddlewareDetailAndSetForm(middlewareName);
+			}
+		}
+	}, [globalNamespace]);
 
 	// 全局集群、分区更新
 	useEffect(() => {
@@ -532,7 +606,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{globalNamespace.name === '*' && (
+					{globalNamespace.name === '*' && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
 								<ul className="form-layout">
@@ -554,6 +628,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												name="namespace"
 											>
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -704,6 +779,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!backupFileName}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -729,6 +805,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!backupFileName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -746,6 +823,26 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														dataSource={
 															tolerationList
@@ -844,9 +941,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
-											disabled={
-												backupFileName ? true : false
-											}
+											disabled={!!backupFileName}
 										/>
 									</div>
 								</li>
@@ -922,6 +1017,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													value={pgsqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										</Tooltip>
@@ -968,6 +1064,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '100%'
 													}}
+													disabled={!!backupFileName}
 												/>
 											</FormItem>
 										</div>
@@ -989,7 +1086,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</Tooltip>
 									</label>
 									<div
-										className={`form-content display-flex ${styles['redis-mode']}`}
+										className={`form-content display-flex`}
 									>
 										<SelectBlock
 											options={modeList}
@@ -997,31 +1094,30 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
+											disabled={!!backupFileName}
 										/>
-										<div
-											style={{
-												display:
-													mode === '1m-ns'
-														? 'block'
-														: 'none'
-											}}
-										>
-											<label style={{ margin: '0 16px' }}>
-												自定义从节点实例数量
-											</label>
+									</div>
+								</li>
+								{mode === '1m-ns' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											从节点数
+										</label>
+										<div className="form-content">
 											<InputNumber
 												name="从节点数量字段"
 												defaultValue={2}
-												onChange={(value) =>
+												onChange={(value: number) =>
 													setReplicaCount(value)
 												}
 												value={replicaCount}
 												max={6}
 												min={2}
+												disabled={!!backupFileName}
 											/>
 										</div>
-									</div>
-								</li>
+									</li>
+								) : null}
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span>节点规格</span>
@@ -1035,6 +1131,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
+											disabled={!!backupFileName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1089,6 +1186,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义CPU配额，单位为Core"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>
@@ -1122,6 +1222,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义内存配额，单位为Gi"
+																	disabled={
+																		!!backupFileName
+																	}
 																/>
 															</FormItem>
 														</div>

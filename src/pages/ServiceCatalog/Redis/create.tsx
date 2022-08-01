@@ -16,7 +16,8 @@ import {
 	notification,
 	Result,
 	InputNumber,
-	Tag
+	Tag,
+	Checkbox
 } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
@@ -134,17 +135,48 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '哨兵模式',
 			value: 'sentinel'
+		},
+		{
+			label: '代理模式',
+			value: 'agent'
+		},
+		{
+			label: '读写分离模式',
+			value: 'readWriteProxy'
 		}
 	];
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
+	const [sentinelMode, setSentinelMode] = useState<string>('1s-1m');
 	const clusterModeList = [
 		{
-			label: '三主三从',
+			label: '三分片',
 			value: '3s-3m'
 		},
 		{
-			label: '五主五从',
+			label: '五分片',
 			value: '5s-5m'
+		}
+	];
+	const sentinelModeList = [
+		{
+			label: '单分片',
+			value: '1s-1m',
+			num: 2
+		},
+		{
+			label: '双分片',
+			value: '2s-2m',
+			num: 4
+		},
+		{
+			label: '四分片',
+			value: '4s-4m',
+			num: 8
+		},
+		{
+			label: '八分片',
+			value: '8s-8m',
+			num: 16
 		}
 	];
 	const [nodeObj, setNodeObj] = useState<NodeObjParams>({
@@ -190,6 +222,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -229,10 +262,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	}, [project, globalNamespace]);
 
 	const modifyQuota = (key: string) => {
-		setNodeModify({
-			nodeName: key,
-			flag: true
-		});
+		// setNodeModify({
+		// 	nodeName: key,
+		// 	flag: true
+		// });
 		setSpecId(nodeObj[key].specId);
 		if (nodeObj[key].specId === '') {
 			setInstanceSpec('Customize');
@@ -271,9 +304,20 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				description: values.description,
 				version: version,
 				password: values.pwd,
-				mode: mode,
+				mode:
+					mode === 'readWriteProxy' || mode === 'agent'
+						? mode === 'readWriteProxy'
+							? 'sentinel'
+							: 'cluster'
+						: mode,
 				filelogEnabled: fileLog,
 				stdoutEnabled: standardLog,
+				readWriteProxy: {
+					enabled:
+						mode === 'readWriteProxy' || mode === 'agent'
+							? true
+							: false
+				},
 				quota: { redis: {} },
 				mirrorImageId:
 					mirrorList
@@ -326,7 +370,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					);
 				}
 			}
-			if (mode === 'cluster') {
+			if (mode === 'cluster' || mode === 'agent') {
 				sendData.quota = {
 					redis: {
 						num: clusterMode === '3s-3m' ? 6 : 10,
@@ -382,6 +426,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							}
 							sendData.quota[key] = {
 								...nodeObj[key],
+								num:
+									key === 'redis'
+										? sentinelModeList.find(
+												(item) =>
+													item.value === sentinelMode
+										  )?.num
+										: nodeObj[key].num,
 								storageClassName:
 									nodeObj[key].storageClass?.split('/')[0],
 								storageClassQuota: nodeObj[key].storageQuota
@@ -418,6 +469,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -518,6 +570,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					label: '',
 					checked: false
 				});
+				setAffinityFlag(true);
 				setAffinityLabels(res.data?.nodeAffinity || []);
 			}
 			if (res.data.tolerations) {
@@ -532,7 +585,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				);
 			}
 			if (res.data.mode) {
-				setMode(res.data.mode);
+				if (res.data.readWriteProxy?.enabled) {
+					res.data.mode === 'cluster'
+						? setMode('agent')
+						: setMode('readWriteProxy');
+				} else {
+					setMode(res.data.mode);
+				}
 			}
 			if (res.data.version) {
 				setVersion(res.data.version);
@@ -712,6 +771,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												name="namespace"
 											>
 												<Select
+													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
 												>
 													{namespaceList.map(
@@ -862,6 +922,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -887,6 +948,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -904,6 +966,26 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																'label'
 															)
 														}
+														onBlur={() => {
+															if (
+																tolerations.label &&
+																!tolerationsLabels.find(
+																	(item) =>
+																		item.label ===
+																		tolerations.label
+																)
+															) {
+																setTolerationsLabels(
+																	[
+																		...tolerationsLabels,
+																		{
+																			label: tolerations.label,
+																			id: Math.random()
+																		}
+																	]
+																);
+															}
+														}}
 														allowClear={true}
 														dataSource={
 															tolerationList
@@ -1028,6 +1110,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1072,6 +1155,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														marginLeft: 16,
 														verticalAlign: 'middle'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										</div>
@@ -1096,6 +1180,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1112,6 +1197,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												type="password"
 												name="pwd"
 												placeholder="请输入初始密码，输入空则由平台随机生成"
+												disabled={!!middlewareName}
 											/>
 										</FormItem>
 									</div>
@@ -1157,6 +1243,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													style={{
 														width: '100%'
 													}}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</div>
@@ -1173,12 +1260,19 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										<span>模式</span>
 									</label>
 									<div
-										className={`form-content display-flex ${styles['redis-mode']}`}
+										className={`form-content ${styles['redis-mode']}`}
 									>
+										{/* <div>
+
+										</div> */}
 										<Select
 											value={mode}
 											onChange={(value) => setMode(value)}
-											style={{ width: 150 }}
+											style={{
+												width: 182,
+												marginBottom: 12
+											}}
+											disabled={!!middlewareName}
 										>
 											{modeList.map((item, index) => (
 												<Select.Option
@@ -1189,29 +1283,85 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												</Select.Option>
 											))}
 										</Select>
-										{mode === 'cluster' ? (
-											<div style={{ marginLeft: 16 }}>
+										{mode === 'cluster' ||
+										mode === 'agent' ? (
+											<div
+												style={{
+													marginTop: 12
+												}}
+											>
 												<SelectBlock
 													options={clusterModeList}
 													currentValue={clusterMode}
 													onCallBack={(value: any) =>
 														setClusterMode(value)
 													}
+													disabled={!!middlewareName}
+												/>
+											</div>
+										) : null}
+										{mode === 'sentinel' ? (
+											<div
+												style={{
+													marginTop: 12
+												}}
+											>
+												<SelectBlock
+													options={[
+														sentinelModeList[0]
+													]}
+													currentValue={sentinelMode}
+													onCallBack={(value: any) =>
+														setSentinelMode(value)
+													}
+													disabled={!!middlewareName}
 												/>
 											</div>
 										) : null}
 									</div>
 								</li>
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span></span>
-									</label>
-									<div>
-										{mode === 'sentinel' ? (
+								{mode === 'readWriteProxy' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span>分片数</span>
+										</label>
+										<div
+											className={`form-content ${styles['redis-mode']}`}
+										>
+											<Select
+												value={sentinelMode}
+												onChange={(value) =>
+													setSentinelMode(value)
+												}
+												style={{
+													width: 182
+												}}
+												disabled={!!middlewareName}
+											>
+												{sentinelModeList.map(
+													(item, index) => (
+														<Select.Option
+															key={index}
+															value={item.value}
+														>
+															{item.label}
+														</Select.Option>
+													)
+												)}
+											</Select>
+										</div>
+									</li>
+								) : null}
+								{mode === 'sentinel' ||
+								mode === 'readWriteProxy' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span></span>
+										</label>
+										<div>
 											<div
 												className={`display-flex ${styles['mode-content']}`}
 											>
-												{console.log(nodeObj)}
 												{Object.keys(nodeObj).map(
 													(key) => (
 														<ModeItem
@@ -1239,10 +1389,12 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													)
 												)}
 											</div>
-										) : null}
-									</div>
-								</li>
-								{(mode === 'cluster' || nodeModify.flag) && (
+										</div>
+									</li>
+								) : null}
+								{(mode === 'cluster' ||
+									mode === 'agent' ||
+									nodeModify.flag) && (
 									<>
 										<li className="display-flex form-li">
 											<label className="form-name">
@@ -1257,6 +1409,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setInstanceSpec(value)
 													}
+													disabled={!!middlewareName}
 												/>
 												{instanceSpec === 'General' ? (
 													<div
@@ -1322,6 +1475,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																				width: '100%'
 																			}}
 																			placeholder="请输入自定义CPU配额，单位为Core"
+																			disabled={
+																				!!middlewareName
+																			}
 																		/>
 																	</FormItem>
 																</div>
@@ -1357,6 +1513,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																				width: '100%'
 																			}}
 																			placeholder="请输入自定义内存配额，单位为Gi"
+																			disabled={
+																				!!middlewareName
+																			}
 																		/>
 																	</FormItem>
 																</div>

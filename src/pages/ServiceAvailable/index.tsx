@@ -54,8 +54,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 		location?.state?.middlewareName || ''
 	);
 	const [visibleFlag, setVisibleFlag] = useState<boolean>(false);
-	// const [operateFlag, setOperateFlag] = useState<boolean>(false);
-	const [lock, setLock] = useState<any>({ lock: 'right' });
 	const history = useHistory();
 
 	useEffect(() => {
@@ -73,11 +71,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 					if (res.success) {
 						setOriginData(res.data);
 						const listTemp = [{ name: '全部服务', count: 0 }];
-						// if (res.data.length === 0) {
-						// 	setOperateFlag(false);
-						// } else {
-						// 	setOperateFlag(true);
-						// }
 						res.data.forEach((item: serviceAvailablesProps) => {
 							listTemp.push({
 								name: item.name,
@@ -124,13 +117,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			mounted = false;
 		};
 	}, [cluster, namespace]);
-	useEffect(() => {
-		window.onresize = function () {
-			document.body.clientWidth >= 2300
-				? setLock(null)
-				: setLock({ lock: 'right' });
-		};
-	}, []);
 	useEffect(() => {
 		const allList: serviceAvailableItemProps[] = [];
 		originData.forEach((item) => {
@@ -205,9 +191,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 	const handleSearch = (value: string) => {
 		setSearchText(value);
 		getData(value);
-	};
-	const handleChange = (value: string) => {
-		setSearchText(value);
 	};
 	const handleDelete = (record: serviceAvailableItemProps) => {
 		Modal.confirm({
@@ -453,7 +436,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 			return false;
 		}
 	};
-	const actionRender = (value: string, record: any, index: number) => {
+	const actionRender = (_: string, record: any) => {
 		return (
 			<Actions>
 				<LinkButton
@@ -472,45 +455,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				</LinkButton>
 			</Actions>
 		);
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['createTimeNum'] - b['createTimeNum'];
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		} else if (dataIndex === 'exposeType') {
-			const tempDataSource = showDataSource.sort((a, b) => {
-				const result = a['exposeType'].length - b['exposeType'].length;
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setShowDataSource([...tempDataSource]);
-		}
-	};
-	const onFilter = (filterParams: any) => {
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = dataSource.filter(
-				(item) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setShowDataSource(list);
-		} else {
-			setShowDataSource(dataSource);
-		}
 	};
 	if (JSON.stringify(cluster) === '{}' || JSON.stringify(project) === '{}') {
 		return <GuidePage />;
@@ -612,7 +556,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						dataIndex="action"
 						render={actionRender}
 						width={100}
-						{...lock}
 					/>
 				</ProTable>
 				{console.log(showDataSource)}

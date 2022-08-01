@@ -73,7 +73,7 @@ function ProTable<T extends object>(props: ProTableProps<T>): JSX.Element {
 			{operatorVisible && (
 				<div className="zeus-pro-table-operator-content">
 					<div className="zeus-pro-table-operator-left">
-						<Space>
+						<Space align="center">
 							{operation?.primary}
 							{search && <Search allowClear {...search} />}
 						</Space>

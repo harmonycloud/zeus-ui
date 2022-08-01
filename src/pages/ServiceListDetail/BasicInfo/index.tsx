@@ -142,7 +142,7 @@ const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
 	'1m-ns': '一主多从',
-	'1m': '单实例',
+	'1m-0s': '单实例',
 	simple: 'N主',
 	complex: 'N主N数据N协调',
 	'complex-cold': 'N主N数据N冷',
@@ -152,8 +152,12 @@ const modelMap = {
 	'2m-noslave': '双主',
 	'2m-2s': '两主两从',
 	'3m-3s': '三主三从',
-	6: '三主三从',
-	10: '五主五从',
+	2: '单分片',
+	4: '二分片',
+	6: '三分片',
+	8: '四分片',
+	10: '五分片',
+	16: '八分片',
 	dledger: 'DLedger模式',
 	cluster: '集群模式'
 };
@@ -211,6 +215,13 @@ const hostNetworkConfig = {
 		</div>
 	)
 };
+const zookeeperConfig = {
+	dataIndex: 'kafkaDTO',
+	label: 'Zookeeper配置',
+	render: (val: any) => (
+		<div>{val ? val?.zkAddress + ':' + val?.zkPort + val?.path : '/'}</div>
+	)
+};
 function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const {
 		type,
@@ -238,22 +249,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const [runData, setRunData] = useState<any>(runStatus);
 	const [runConfig, setRunConfig] = useState(
 		type !== 'rocketmq'
-			? type === 'postgresql'
-				? [
-						titleConfig,
-						healthConfig,
-						createTimeConfig,
-						namespaceConfig,
-						storageClassNameConfig
-				  ]
-				: [
-						titleConfig,
-						healthConfig,
-						createTimeConfig,
-						modelConfig,
-						namespaceConfig,
-						storageClassNameConfig
-				  ]
+			? [
+					titleConfig,
+					healthConfig,
+					createTimeConfig,
+					modelConfig,
+					namespaceConfig,
+					storageClassNameConfig
+			  ]
 			: [
 					titleConfig,
 					healthConfig,
@@ -415,6 +418,40 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		});
 	};
 
+	const modeText = (data: any) => {
+		if (data.type === 'redis' || data.type === 'mysql') {
+			if (type === 'mysql') {
+				if (data.mode === '1m-0s') {
+					return '单实例模式';
+				} else {
+					return `${
+						data.readWriteProxy?.enabled
+							? '读写分离模式'
+							: '高可用模式'
+					}（${modelMap[data.mode]}）`;
+				}
+			} else {
+				let text = '';
+				if (data.mode === 'cluster') {
+					if (data.readWriteProxy?.enabled) {
+						text = '代理模式';
+					} else {
+						text = '集群模式';
+					}
+				} else {
+					if (data.readWriteProxy?.enabled) {
+						text = '读写分离模式';
+					} else {
+						text = '哨兵模式';
+					}
+				}
+				return `${text}（${modelMap[data.quota.redis.num]}）`;
+			}
+		} else {
+			return modelMap[data.mode];
+		}
+	};
+
 	useEffect(() => {
 		if (data !== undefined) {
 			if (data.mysqlDTO || data?.mysqlDTO?.openDisasterRecoveryMode) {
@@ -474,20 +511,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				version: data.version || '无',
 				characterSet: data.charSet || '',
 				port: data.port || '',
-				password: data.password || ''
+				password: data.password || '',
+				kafkaDTO: data.kafkaDTO
 			});
 			setRunData({
 				title: '运行状态',
 				status: data.status || 'Failed',
 				createTime: data.createTime || '',
-				model:
-					type !== 'redis'
-						? modelMap[data.mode]
-						: data.mode === 'sentinel'
-						? '哨兵'
-						: data.quota.redis.num === 6
-						? '三主三从'
-						: '五主五从' || '',
+				model: modeText(data),
 				namespace: data.namespace || '',
 				namespaceAliasName: data.namespaceAliasName,
 				storageClassName:
@@ -758,34 +789,43 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	];
 	const configConfigTemp =
-		type === 'redis' || type === 'elasticsearch'
-			? [
-					...configConfig,
-					{
-						dataIndex: 'password',
-						label: '密码',
-						render: (val: string) => {
-							return (
-								<div className="password-content">
-									<div className="password-display">
-										{passwordDisplay ? val : '******'}
+		type === 'redis' ||
+		type === 'elasticsearch' ||
+		type === 'kafka' ||
+		type === 'postgresql'
+			? type === 'kafka'
+				? [
+						...configConfig,
+						operateFlag ? yamlConfig : {},
+						zookeeperConfig
+				  ]
+				: [
+						...configConfig,
+						{
+							dataIndex: 'password',
+							label: '密码',
+							render: (val: string) => {
+								return (
+									<div className="password-content">
+										<div className="password-display">
+											{passwordDisplay ? val : '******'}
+										</div>
+										<div
+											className="name-link password-reset"
+											onClick={() => {
+												setPasswordDisplay(
+													!passwordDisplay
+												);
+											}}
+										>
+											{passwordDisplay ? '隐藏' : '查看'}
+										</div>
 									</div>
-									<div
-										className="name-link password-reset"
-										onClick={() => {
-											setPasswordDisplay(
-												!passwordDisplay
-											);
-										}}
-									>
-										{passwordDisplay ? '隐藏' : '查看'}
-									</div>
-								</div>
-							);
-						}
-					},
-					operateFlag ? yamlConfig : {}
-			  ]
+								);
+							}
+						},
+						operateFlag ? yamlConfig : {}
+				  ]
 			: [...configConfig, operateFlag ? yamlConfig : {}];
 	const onCancel = (value: boolean) => {
 		setVisible(false);

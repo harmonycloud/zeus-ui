@@ -44,7 +44,7 @@ const Monitor = (props: MonitorProps) => {
 				}
 			}
 		}
-	}, [namespace]);
+	}, [namespace, clusterId, chartVersion]);
 
 	useEffect(() => {
 		if (url) {

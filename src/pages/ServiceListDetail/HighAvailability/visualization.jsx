@@ -65,7 +65,7 @@ function Visualization(props) {
 	const { pathname } = location;
 	const { type, chartVersion } = useParams();
 	const [option, setOption] = useState();
-	const [direction, setDirection] = useState('LR');
+	const [direction, setDirection] = useState('TB');
 
 	const roleRender = (value, index, record) => {
 		if (record.podName.includes('exporter')) {
@@ -1543,7 +1543,7 @@ function Visualization(props) {
 				left: 0,
 				zIndex: 1000
 			});
-			window.graph.changeSize(window.innerWidth, window.innerHeight);
+			window.graph.changeSize(window.innerWidth, window.innerHeight - 80);
 			window.graph.fitView();
 		} else {
 			window.graph.changeSize(1180, 480);
