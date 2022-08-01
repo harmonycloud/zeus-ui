@@ -65,7 +65,7 @@ import AddServiceDetailIngress from '@/pages/ServiceListDetail/ServiceIngress/ad
 const Routes = withRouter((props) => {
 	return (
 		<>
-			<MdBreadcrumb pathname={props.location.pathname} />
+			{/* <MdBreadcrumb pathname={props.location.pathname} /> */}
 			<Switch>
 				<Route
 					path="/"
