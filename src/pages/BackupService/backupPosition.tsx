@@ -24,6 +24,7 @@ import {
 	editBackupAddress
 } from '@/services/backup';
 import { poolListItem } from '@/types/comment';
+import DefaultPicture from '@/components/DefaultPicture';
 
 const LinkButton = Actions.LinkButton;
 const Search = Input.Search;
@@ -32,6 +33,7 @@ export default function BackupPosition(): JSX.Element {
 	const [poolList, setPoolList] = useState<poolListItem[]>([]);
 	const [addressList, setAddressList] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
+	const [spinning, setSpinning] = useState<boolean>(false);
 	const history = useHistory();
 
 	useEffect(() => {
@@ -43,16 +45,21 @@ export default function BackupPosition(): JSX.Element {
 	}, []);
 
 	const getData = (keyword: string) => {
-		getBackupAddress({ keyword }).then((res) => {
-			if (res.success) {
-				setAddressList(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
-		});
+		setSpinning(true);
+		getBackupAddress({ keyword })
+			.then((res) => {
+				if (res.success) {
+					setAddressList(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			})
+			.finally(() => {
+				setSpinning(false);
+			});
 	};
 
 	const handleDelete = (id: number, clusterId?: string) => {
@@ -170,147 +177,159 @@ export default function BackupPosition(): JSX.Element {
 						></Button>
 					</div>
 				</div>
-				{addressList.length ? (
-					addressList.map((item: any) => {
-						return (
-							<ListPanel
-								title={item.name}
-								subTitle={item.type}
-								icon={
-									<img
-										src={Backup}
-										style={{
-											marginLeft: 13,
-											marginRight: 16
-										}}
-									/>
-								}
-								key={item.id}
-								actionRender={
-									<Actions>
-										<LinkButton
-											onClick={() =>
-												history.push(
-													`/backupService/backupPosition/addBackupPosition/${item.id}`
-												)
-											}
-										>
-											编辑
-										</LinkButton>
-										<LinkButton
-											disabled={addressList.length === 1}
-											onClick={() =>
-												handleDelete(item.id)
-											}
-										>
-											删除
-										</LinkButton>
-									</Actions>
-								}
-								render={
-									<>
-										<Select
-											style={{ width: 260 }}
-											placeholder="请选择集群名称"
-											value={selectService}
-											onChange={(value) =>
-												setSelectService(value)
-											}
-										>
-											{poolList.length &&
-												poolList.map(
-													(item: poolListItem) => {
+				{!spinning ? (
+					addressList.length > 0 ? (
+						addressList.map((item: any) => {
+							return (
+								<ListPanel
+									title={item.name}
+									subTitle={item.type}
+									icon={
+										<img
+											src={Backup}
+											style={{
+												marginLeft: 13,
+												marginRight: 16
+											}}
+										/>
+									}
+									key={item.id}
+									actionRender={
+										<Actions>
+											<LinkButton
+												onClick={() =>
+													history.push(
+														`/backupService/backupPosition/addBackupPosition/${item.id}`
+													)
+												}
+											>
+												编辑
+											</LinkButton>
+											<LinkButton
+												disabled={
+													addressList.length === 1
+												}
+												onClick={() =>
+													handleDelete(item.id)
+												}
+											>
+												删除
+											</LinkButton>
+										</Actions>
+									}
+									render={
+										<>
+											<Select
+												style={{ width: 260 }}
+												placeholder="请选择集群名称"
+												value={selectService}
+												onChange={(value) =>
+													setSelectService(value)
+												}
+											>
+												{poolList.length &&
+													poolList.map(
+														(
+															item: poolListItem
+														) => {
+															return (
+																<Select.Option
+																	value={
+																		item.id
+																	}
+																	key={
+																		item.id
+																	}
+																>
+																	{item.name}
+																</Select.Option>
+															);
+														}
+													)}
+											</Select>
+											<Button
+												icon={<PlusOutlined />}
+												style={{ marginLeft: 16 }}
+												disabled={
+													!selectService ||
+													!!item.clusterIds.find(
+														(res: any) =>
+															res ===
+															selectService
+													)
+												}
+												onClick={() => handleAdd(item)}
+											></Button>
+											<div style={{ marginTop: 16 }}>
+												{item.clusterIds.map(
+													(
+														data: string,
+														index: number,
+														arr: any
+													) => {
 														return (
-															<Select.Option
-																value={item.id}
-																key={item.id}
+															<Tag
+																key={item}
+																closable={
+																	arr.length !==
+																	1
+																}
+																visible={true}
+																style={{
+																	padding:
+																		'4px 10px'
+																}}
+																onClose={() =>
+																	handleDelete(
+																		item.id,
+																		data
+																	)
+																}
 															>
-																{item.name}
-															</Select.Option>
+																{
+																	poolList.find(
+																		(res) =>
+																			res.id ===
+																			data
+																	)?.name
+																}
+															</Tag>
 														);
 													}
 												)}
-										</Select>
-										<Button
-											icon={<PlusOutlined />}
-											style={{ marginLeft: 16 }}
-											disabled={
-												!selectService ||
-												!!item.clusterIds.find(
-													(res: any) =>
-														res === selectService
-												)
-											}
-											onClick={() => handleAdd(item)}
-										></Button>
-										<div style={{ marginTop: 16 }}>
-											{item.clusterIds.map(
-												(
-													data: string,
-													index: number,
-													arr: any
-												) => {
-													return (
-														<Tag
-															key={item}
-															closable={
-																arr.length !== 1
-															}
-															visible={true}
-															style={{
-																padding:
-																	'4px 10px'
-															}}
-															onClose={() =>
-																handleDelete(
-																	item.id,
-																	data
-																)
-															}
-														>
-															{
-																poolList.find(
-																	(res) =>
-																		res.id ===
-																		data
-																)?.name
-															}
-														</Tag>
-													);
-												}
-											)}
-										</div>
-									</>
-								}
-							>
-								<ListCardItem
-									label="备份地址"
-									value={item.endpoint}
-									width={260}
-								/>
-								{/* <ListCardItem
-									label="容量"
-									value={item.capacity + 'G'}
-									width={100}
-								/> */}
-								<ListCardItem
-									label="所引用备份数"
-									value={item.relevanceNum}
-									width={100}
-								/>
-								<ListCardItem
-									label="创建时间"
-									value={item.createTime}
-									width={200}
-								/>
-							</ListPanel>
-						);
-					})
+											</div>
+										</>
+									}
+								>
+									<ListCardItem
+										label="备份地址"
+										value={item.endpoint}
+										width={260}
+									/>
+									{/* <ListCardItem
+										label="容量"
+										value={item.capacity + 'G'}
+										width={100}
+									/> */}
+									<ListCardItem
+										label="所引用备份数"
+										value={item.relevanceNum}
+										width={100}
+									/>
+									<ListCardItem
+										label="创建时间"
+										value={item.createTime}
+										width={200}
+									/>
+								</ListPanel>
+							);
+						})
+					) : (
+						<DefaultPicture title="当前列表无数据" />
+					)
 				) : (
 					<Spin>
-						<Card>
-							<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-						</Card>
+						<DefaultPicture title="当前列表无数据" />
 					</Spin>
 				)}
 			</ProContent>

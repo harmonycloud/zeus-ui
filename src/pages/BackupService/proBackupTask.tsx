@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import BackupBask from '../ServiceListDetail/BackupRecovery/backupBask';
 import { StoreState } from '@/types';
@@ -23,7 +23,7 @@ function ProBackupBask(props: StoreState): JSX.Element {
 				}}
 			/>
 			<ProContent>
-				<BackupBask clusterId={cluster.id} namespace={namespace.name} />
+				<BackupBask namespace="*" />
 			</ProContent>
 		</ProPage>
 	);
