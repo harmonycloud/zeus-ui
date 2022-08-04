@@ -61,6 +61,7 @@ import ServiceIngress from '@/pages/ServiceIngress';
 import AddEsIngress from '@/pages/ServiceListDetail/ServiceIngress/addEsIngress';
 import AddServiceIngress from '@/pages/ServiceListDetail/ServiceIngress/addServiceIngress';
 import AddServiceDetailIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
+import ActiveActive from '@/pages/ActiveActive';
 
 const Routes = withRouter((props) => {
 	return (
@@ -483,6 +484,8 @@ const Routes = withRouter((props) => {
 					component={Personlization}
 					exact
 				/>
+				{/* 同城双活 */}
+				<Route path="/activeActive" component={ActiveActive} exact />
 			</Switch>
 		</>
 	);
