@@ -698,6 +698,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				);
 			}
 			if (res.data.mode) {
+				if (res.data.mode === '1m-0s') {
+					setReadWriteProxy(res.data.mode);
+				}
 				setMode(res.data.mode);
 			}
 			if (res.data.charSet) {
