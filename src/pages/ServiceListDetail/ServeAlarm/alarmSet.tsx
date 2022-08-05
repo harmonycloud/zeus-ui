@@ -54,10 +54,10 @@ function AlarmSet(props: any): JSX.Element {
 		if (alarmType === 'system') {
 			getSystemAlarmSetting().then((res) => {
 				let way: string[] = [];
-				res.data.enableMailAlert
+				res.data?.enableMailAlert
 					? (way = [...way, 'enableMailAlert'])
 					: (way = [...way]);
-				res.data.enableDingAlert
+				res.data?.enableDingAlert
 					? (way = [...way, 'enableDingAlert'])
 					: (way = [...way]);
 				form.setFieldsValue({
@@ -72,10 +72,10 @@ function AlarmSet(props: any): JSX.Element {
 				namespace
 			}).then((res) => {
 				let way: string[] = [];
-				res.data.enableMailAlert
+				res.data?.enableMailAlert
 					? (way = [...way, 'enableMailAlert'])
 					: (way = [...way]);
-				res.data.enableDingAlert
+				res.data?.enableDingAlert
 					? (way = [...way, 'enableDingAlert'])
 					: (way = [...way]);
 				form.setFieldsValue({
