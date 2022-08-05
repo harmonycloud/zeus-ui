@@ -230,7 +230,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				},
 				rocketMQParam: {
 					acl: {
-						enable: aclCheck
+						enable: aclCheck || false
 					}
 				},
 				mirrorImageId: mirrorList.find(
