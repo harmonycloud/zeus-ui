@@ -343,7 +343,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -589,38 +589,38 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}
 				sendData = sendDataTemp;
 			}
-			// console.log(sendData);
-			if (state && state.disasterOriginName) {
-				setCommitFlag(true);
-				addDisasterIns(sendData).then((res) => {
-					if (res.success) {
-						setCreateData(res.data);
-						setSuccessFlag(true);
-						setErrorFlag(false);
-						setCommitFlag(false);
-					} else {
-						setErrorData(res.errorMsg);
-						setSuccessFlag(false);
-						setErrorFlag(true);
-						setCommitFlag(false);
-					}
-				});
-			} else {
-				setCommitFlag(true);
-				postMiddleware(sendData).then((res) => {
-					if (res.success) {
-						setCreateData(res.data);
-						setSuccessFlag(true);
-						setErrorFlag(false);
-						setCommitFlag(false);
-					} else {
-						setErrorData(res.errorMsg);
-						setSuccessFlag(false);
-						setErrorFlag(true);
-						setCommitFlag(false);
-					}
-				});
-			}
+			console.log(sendData);
+			// if (state && state.disasterOriginName) {
+			// 	setCommitFlag(true);
+			// 	addDisasterIns(sendData).then((res) => {
+			// 		if (res.success) {
+			// 			setCreateData(res.data);
+			// 			setSuccessFlag(true);
+			// 			setErrorFlag(false);
+			// 			setCommitFlag(false);
+			// 		} else {
+			// 			setErrorData(res.errorMsg);
+			// 			setSuccessFlag(false);
+			// 			setErrorFlag(true);
+			// 			setCommitFlag(false);
+			// 		}
+			// 	});
+			// } else {
+			// 	setCommitFlag(true);
+			// 	postMiddleware(sendData).then((res) => {
+			// 		if (res.success) {
+			// 			setCreateData(res.data);
+			// 			setSuccessFlag(true);
+			// 			setErrorFlag(false);
+			// 			setCommitFlag(false);
+			// 		} else {
+			// 			setErrorData(res.errorMsg);
+			// 			setSuccessFlag(false);
+			// 			setErrorFlag(true);
+			// 			setCommitFlag(false);
+			// 		}
+			// 	});
+			// }
 		});
 	};
 
