@@ -4,6 +4,7 @@ import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import './index.scss';
 import { CloseOutlined } from '@ant-design/icons';
 import { IconFont } from '@/components/IconFont';
+import ActiveCard from './ActiveCard';
 
 const { Panel } = Collapse;
 export default function ActiveActive(): JSX.Element {
@@ -58,6 +59,14 @@ export default function ActiveActive(): JSX.Element {
 						</Panel>
 					)}
 				</Collapse>
+				<div className="active-list-content">
+					<ActiveCard
+						title="集群名字"
+						isActive={true}
+						areaNumber={4}
+						status={1}
+					/>
+				</div>
 			</ProContent>
 		</ProPage>
 	);

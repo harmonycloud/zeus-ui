@@ -62,6 +62,8 @@ import AddEsIngress from '@/pages/ServiceListDetail/ServiceIngress/addEsIngress'
 import AddServiceIngress from '@/pages/ServiceListDetail/ServiceIngress/addServiceIngress';
 import AddServiceDetailIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
 import ActiveActive from '@/pages/ActiveActive';
+import AreaConfig from '@/pages/ActiveActive/AreaConfig';
+import AreaDetail from '@/pages/ActiveActive/AreaDetail';
 
 const Routes = withRouter((props) => {
 	return (
@@ -486,6 +488,16 @@ const Routes = withRouter((props) => {
 				/>
 				{/* 同城双活 */}
 				<Route path="/activeActive" component={ActiveActive} exact />
+				<Route
+					path="/activeActive/active-active/:id/:nickname/:areaName/:aliasName"
+					component={AreaConfig}
+					exact
+				/>
+				<Route
+					path="/activeActive/active-detail/:id/:nickname/:areaName/:aliasName"
+					component={AreaDetail}
+					exact
+				/>
 			</Switch>
 		</>
 	);
