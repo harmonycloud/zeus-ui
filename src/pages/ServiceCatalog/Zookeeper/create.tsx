@@ -106,19 +106,11 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 	// * 日志-end
 	// * Zookeeper配置-start
-	const [version, setVersion] = useState<string>('3.7.0');
+	const [version, setVersion] = useState<string>('3.6');
 	const versionList = [
 		{
-			label: '3.7.0',
-			value: '3.7.0'
-		},
-		{
-			label: '3.6.3',
-			value: '3.6.3'
-		},
-		{
-			label: '3.5.9',
-			value: '3.5.9'
+			label: '3.6',
+			value: '3.6'
 		}
 	];
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
