@@ -1164,9 +1164,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									<div
 										className={`form-content ${styles['input-flex-length']}`}
 									>
-										<FormItem>
+										<FormItem name="pwd">
 											<Input.Password
-												name="pwd"
 												placeholder="请输入初始密码，输入为空则由平台随机生成"
 												disabled={!!middlewareName}
 											/>

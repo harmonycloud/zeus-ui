@@ -1192,10 +1192,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem>
+										<FormItem name="pwd">
 											<Input
 												type="password"
-												name="pwd"
 												placeholder="请输入初始密码，输入空则由平台随机生成"
 												disabled={!!middlewareName}
 											/>
