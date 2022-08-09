@@ -34,7 +34,9 @@ const info = {
 	backupTime: '',
 	cron: '',
 	retentionTime: '',
-	limitRecord: ''
+	limitRecord: '',
+	x: false,
+	y: ''
 };
 const dataType = [
 	{ label: '天', value: 'day', max: 3650 },
@@ -168,6 +170,24 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
+			dataIndex: 'x',
+			label: '是否开启增量',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val ? '已开启' : '未开启'}
+				</div>
+			)
+		},
+		{
+			dataIndex: 'y',
+			label: '最后一次备份时间',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val || '--'}
+				</div>
+			)
+		},
+		{
 			dataIndex: 'position',
 			label: '备份位置',
 			render: (val: string) => (
@@ -197,7 +217,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 				position: storage.getLocal('backupDetail').position,
 				backupTime: storage.getLocal('backupDetail').backupTime,
 				retentionTime: storage.getLocal('backupDetail').retentionTime,
-				limitRecord: storage.getLocal('backupDetail').limitRecord
+				limitRecord: storage.getLocal('backupDetail').limitRecord,
+				y: '2022-08-15 00:00:00'
 			});
 	}, []);
 
@@ -302,44 +323,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const actionRender = (value: any, record: any, index: number) => {
 		return (
 			<Actions>
-				<LinkButton
-					// disabled={record.phrase !== 'Success'}
-					onClick={() => releaseMiddleware(record)}
-					// onClick={() => {
-					// 	if (record.sourceType === 'mysql') {
-					// 		history.push(
-					// 			`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/${record.namespace}`
-					// 		);
-					// 	} else {
-					// 		const result = {
-					// 			clusterId: cluster.id,
-					// 			namespace: namespace.name,
-					// 			middlewareName:
-					// 				storage.getLocal('backupDetail').sourceName,
-					// 			type: storage.getLocal('backupDetail')
-					// 				.sourceType,
-					// 			cron: storage.getLocal('backupDetail').cron,
-					// 			backupName:
-					// 				storage.getLocal('backupDetail').backupName,
-					// 			addressName:
-					// 				storage.getLocal('backupDetail').addressName
-					// 		};
-					// 		applyBackup(result).then((res) => {
-					// 			if (res.success) {
-					// 				notification.success({
-					// 					message: '成功',
-					// 					description: '恢复成功'
-					// 				});
-					// 			} else {
-					// 				notification.error({
-					// 					message: '失败',
-					// 					description: res.errorMsg
-					// 				});
-					// 			}
-					// 		});
-					// 	}
-					// }}
-				>
+				<LinkButton onClick={() => releaseMiddleware(record)}>
 					克隆服务
 				</LinkButton>
 				<LinkButton

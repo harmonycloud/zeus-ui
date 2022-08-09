@@ -31,6 +31,7 @@ export interface NamespaceItem {
 	projectId: string;
 	quotas: null;
 	registered: boolean;
+	availableDomain: boolean;
 }
 export interface AddMemberProps {
 	visible: boolean;

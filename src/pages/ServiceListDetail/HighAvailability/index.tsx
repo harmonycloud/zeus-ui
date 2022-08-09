@@ -501,6 +501,14 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			</>
 		)
 	};
+	const nodeNameRender = (value: string, record: PodItem) => {
+		return (
+			<span>
+				{value}
+				{record.nodeZone ? `(${record.nodeZone})` : ''}
+			</span>
+		);
+	};
 
 	return (
 		<div>
@@ -579,6 +587,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							title="所在主机"
 							dataIndex="nodeName"
 							width={150}
+							render={nodeNameRender}
 						/>
 						<ProTable.Column
 							title="节点类型"

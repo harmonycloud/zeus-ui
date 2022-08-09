@@ -17,7 +17,8 @@ import {
 	Cascader,
 	Tooltip,
 	AutoComplete,
-	Tag
+	Tag,
+	Popover
 } from 'antd';
 import {
 	getNodePort,
@@ -157,7 +158,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		}
 	];
 	const [mode, setMode] = useState<string>('1m-1s');
-	const modeList = [
+	const [modeList, setModeList] = useState([
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -166,7 +167,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			label: '一主多从',
 			value: '1m-ns'
 		}
-	];
+	]);
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
@@ -225,6 +226,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				});
 			}
 		});
+		if (globalNamespace.availableDomain) {
+			setModeList([
+				{
+					label: '一主三从',
+					value: '1m-3s'
+				}
+			]);
+			setMode('1m-3s');
+		}
 	}, []);
 
 	useEffect(() => {
@@ -1098,10 +1108,28 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
-																>
-																	{
-																		item.aliasName
+																	disabled={
+																		item.availableDomain
 																	}
+																>
+																	{item.availableDomain ? (
+																		<Popover
+																			content={
+																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
+																			}
+																		>
+																			<p>
+																				{
+																					item.aliasName
+																				}
+																				<span className="available-domain">
+																					可用区
+																				</span>
+																			</p>
+																		</Popover>
+																	) : (
+																		item.aliasName
+																	)}
 																</Select.Option>
 															);
 														}
@@ -1664,8 +1692,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										<Select
 											value={readWriteProxy}
 											onChange={(val) => {
-												val === '1m-0s' &&
-													setMode('1m-0s');
+												val === '1m-0s'
+													? setMode('1m-0s')
+													: setMode('1m-1s');
 												setReadWriteProxy(val);
 											}}
 											style={{
@@ -1680,9 +1709,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<Select.Option key="true">
 												读写分离模式
 											</Select.Option>
-											<Select.Option key="1m-0s">
-												单实例模式
-											</Select.Option>
+											{!globalNamespace.availableDomain ? (
+												<Select.Option key="1m-0s">
+													单实例模式
+												</Select.Option>
+											) : null}
 										</Select>
 										{readWriteProxy !== '1m-0s' ? (
 											<div className={`display-flex`}>
@@ -1840,7 +1871,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					{!state || !state.disasterOriginName ? (
+					{(!state || !state.disasterOriginName) &&
+					!globalNamespace.availableDomain ? (
 						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
 								<ul className="form-layout">
