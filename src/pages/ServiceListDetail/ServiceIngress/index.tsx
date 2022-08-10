@@ -97,7 +97,11 @@ export default function ServiceDetailIngress(
 				disabled={judgeDisabled().flag}
 				onClick={() => {
 					// kfk mq 的添加服务暴露页不同
-					if (name === 'kafka' || name === 'rocketmq') {
+					if (
+						name === 'kafka' ||
+						name === 'rocketmq' ||
+						name === 'minio'
+					) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${brokerNum}/${
 								dataSource.length > 0

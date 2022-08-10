@@ -166,6 +166,16 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 			}
 			setServiceNames(list);
 			!serviceIngress && setCurServiceName(list[0]);
+		} else if (name === 'minio') {
+			const list = [
+				{
+					label: '服务连接',
+					name: 'client',
+					icon: 'icon-fuwulianjie'
+				}
+			];
+			setServiceNames(list);
+			!serviceIngress && setCurServiceName(list[0]);
 		}
 	}, [name]);
 	useEffect(() => {
@@ -330,12 +340,16 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						protocol: exposeType === 'TCP' ? 'TCP' : null,
 						serviceList: [
 							{
-								serviceName: `${middlewareName}-${
-									name === 'kafka' ? 'manager' : 'console'
+								serviceName: `${middlewareName}${
+									name === 'kafka'
+										? '-manager'
+										: name === 'rocketmq'
+										? '-console'
+										: ''
 								}-svc`,
 								exposePort: values.exposePort,
-								servicePort: name === 'kafka' ? 9000 : 8080,
-								targetPort: name === 'kafka' ? 9000 : 8080,
+								servicePort: name === 'rocketmq' ? 8080 : 9000,
+								targetPort: name === 'rocketmq' ? 8080 : 9000,
 								...old
 							}
 						]
@@ -358,13 +372,15 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								ingressHttpPaths: [
 									{
 										path: values.path,
-										serviceName: `${middlewareName}-${
+										serviceName: `${middlewareName}${
 											name === 'kafka'
-												? 'manager'
-												: 'console'
+												? '-manager'
+												: name === 'rocketmq'
+												? '-console'
+												: ''
 										}-svc`,
 										servicePort:
-											name === 'kafka' ? 9000 : 8080
+											name === 'rocketmq' ? 8080 : 9000
 									}
 								]
 							}
@@ -400,14 +416,16 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				{enableExternal === 'false' && mode !== 'dledger' && (
-					<Alert
-						message="您好！选择集群外访问服务暴露后需要重启服务！"
-						type="info"
-						showIcon
-						style={{ marginBottom: 8 }}
-					/>
-				)}
+				{name !== 'minio' &&
+					enableExternal === 'false' &&
+					mode !== 'dledger' && (
+						<Alert
+							message="您好！选择集群外访问服务暴露后需要重启服务！"
+							type="info"
+							showIcon
+							style={{ marginBottom: 8 }}
+						/>
+					)}
 				<Form {...formItemLayout410} form={form} labelAlign="left">
 					<h2>暴露服务</h2>
 					<FormItem required name="serviceName" label="暴露服务">
@@ -621,7 +639,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					) ||
 						curServiceName?.name.includes(
 							`${middlewareName}-manager-svc`
-						)) && (
+						) ||
+						curServiceName?.name === 'client') && (
 						<>
 							<h2>暴露配置</h2>
 							<FormItem
