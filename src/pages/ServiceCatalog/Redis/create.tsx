@@ -127,7 +127,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		}
 	];
 	const [mode, setMode] = useState<string>('cluster');
-	const modeList = [
+	const [modeList, setModeList] = useState([
 		{
 			label: '集群模式',
 			value: 'cluster'
@@ -144,7 +144,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			label: '读写分离模式',
 			value: 'readWriteProxy'
 		}
-	];
+	]);
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
 	const [sentinelMode, setSentinelMode] = useState<string>('1s-1m');
 	const clusterModeList = [
@@ -258,6 +258,27 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			);
+		}
+		if (globalNamespace.availableDomain) {
+			setModeList([
+				{
+					label: '集群模式',
+					value: 'cluster'
+				},
+				{
+					label: '哨兵模式',
+					value: 'sentinel'
+				},
+				{
+					label: '代理模式',
+					value: 'agent'
+				},
+				{
+					label: '读写分离模式',
+					value: 'readWriteProxy'
+				}
+			]);
+			setMode('sentinel');
 		}
 	}, [project, globalNamespace]);
 
@@ -784,10 +805,28 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
-																>
-																	{
-																		item.aliasName
+																	disabled={
+																		item.availableDomain
 																	}
+																>
+																	{item.availableDomain ? (
+																		<Popover
+																			content={
+																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
+																			}
+																		>
+																			<p>
+																				{
+																					item.aliasName
+																				}
+																				<span className="available-domain">
+																					可用区
+																				</span>
+																			</p>
+																		</Popover>
+																	) : (
+																		item.aliasName
+																	)}
 																</Select.Option>
 															);
 														}
@@ -1261,9 +1300,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									<div
 										className={`form-content ${styles['redis-mode']}`}
 									>
-										{/* <div>
-
-										</div> */}
 										<Select
 											value={mode}
 											onChange={(value) => setMode(value)}
@@ -1273,14 +1309,16 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											}}
 											disabled={!!middlewareName}
 										>
-											{modeList.map((item, index) => (
-												<Select.Option
-													key={index}
-													value={item.value}
-												>
-													{item.label}
-												</Select.Option>
-											))}
+											{modeList.map(
+												(item: any, index: number) => (
+													<Select.Option
+														key={index}
+														value={item.value}
+													>
+														{item.label}
+													</Select.Option>
+												)
+											)}
 										</Select>
 										{mode === 'cluster' ||
 										mode === 'agent' ? (

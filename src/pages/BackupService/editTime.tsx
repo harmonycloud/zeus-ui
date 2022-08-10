@@ -112,6 +112,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 					}
 				});
 			}}
+			forceRender
 			onCancel={onCancel}
 			width={720}
 		>

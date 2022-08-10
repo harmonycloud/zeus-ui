@@ -348,6 +348,7 @@ export interface PodItem {
 	restartCount: number;
 	role: string;
 	status: string;
+	nodeZone: string;
 }
 export interface PodSendData {
 	clusterId: string;

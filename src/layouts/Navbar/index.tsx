@@ -298,7 +298,16 @@ function Navbar(props: NavbarProps): JSX.Element {
 											key={index}
 											value={namespace.name}
 										>
-											{namespace.aliasName}
+											{namespace.availableDomain ? (
+												<p>
+													{namespace.aliasName}
+													<span className="available-domain">
+														可用区
+													</span>
+												</p>
+											) : (
+												namespace.aliasName
+											)}
 										</Select.Option>
 									);
 								})}
