@@ -1,4 +1,7 @@
-const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
+const getPieOption = (
+	data: { [propName: string]: any } | null | undefined,
+	legend?: boolean
+) => {
 	const option = {
 		title: {
 			text: data ? data.total + '个' : '',
@@ -14,44 +17,84 @@ const getPieOption = (data: { [propName: string]: any } | null | undefined) => {
 		tooltip: {
 			trigger: 'item'
 		},
-		legend: {
-			bottom: 0,
-			left: 'center',
-			icon: 'circle',
-			itemWidth: 8,
-			itemStyle: {
-				fontSize: 12
-			},
-			formatter: (name: unknown) => {
-				const total = data?.total || 0;
-				let target = 0;
-				if (data)
-					name === '运行正常'
-						? (target = data.running)
-						: (target = data.error);
-				const arr = [
-					'{a|' + name + '}',
-					'{b|' + '|' + '}',
-					'{c|' + ((target / total) * 100).toFixed(2) + '%}',
-					'{d|' + target + '个}'
-				];
-				return arr.join(' ');
-			},
-			textStyle: {
-				lineHeight: 20,
-				fontSize: 10,
-				rich: {
-					b: {
-						fontSize: 9,
-						color: 'rgba(0, 0, 0, 0.45)'
+		legend: legend
+			? {
+					right: 0,
+					bottom: 90,
+					icon: 'circle',
+					orient: 'vertical',
+					itemWidth: 8,
+					itemStyle: {
+						fontSize: 12
 					},
-					c: {
-						fontSize: 9,
-						color: 'rgba(0, 0, 0, 0.45)'
+					formatter: (name: unknown) => {
+						const total = data?.total || 0;
+						let target = 0;
+						if (data)
+							name === '运行正常'
+								? (target = data.running)
+								: (target = data.error);
+						const arr = [
+							'{a|' + name + '}',
+							'{b|' + '|' + '}',
+							'{c|' + ((target / total) * 100).toFixed(2) + '%}',
+							'{d|' + target + '个}'
+						];
+						return arr.join(' ');
+					},
+					textStyle: {
+						lineHeight: 20,
+						fontSize: 10,
+						rich: {
+							b: {
+								fontSize: 9,
+								color: 'rgba(0, 0, 0, 0.45)'
+							},
+							c: {
+								fontSize: 9,
+								color: 'rgba(0, 0, 0, 0.45)'
+							}
+						}
 					}
-				}
-			}
-		},
+			  }
+			: {
+					bottom: 0,
+					left: 'center',
+					icon: 'circle',
+					itemWidth: 8,
+					itemStyle: {
+						fontSize: 12
+					},
+					formatter: (name: unknown) => {
+						const total = data?.total || 0;
+						let target = 0;
+						if (data)
+							name === '运行正常'
+								? (target = data.running)
+								: (target = data.error);
+						const arr = [
+							'{a|' + name + '}',
+							'{b|' + '|' + '}',
+							'{c|' + ((target / total) * 100).toFixed(2) + '%}',
+							'{d|' + target + '个}'
+						];
+						return arr.join(' ');
+					},
+					textStyle: {
+						lineHeight: 20,
+						fontSize: 10,
+						rich: {
+							b: {
+								fontSize: 9,
+								color: 'rgba(0, 0, 0, 0.45)'
+							},
+							c: {
+								fontSize: 9,
+								color: 'rgba(0, 0, 0, 0.45)'
+							}
+						}
+					}
+			  },
 		graphic: {
 			type: 'text',
 			left: 'center',
