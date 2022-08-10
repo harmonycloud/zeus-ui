@@ -36,6 +36,13 @@
 		transform: translateY(-3px);
 		border: 1px solid #226EE7;
 		transition: 0.3s ease-in;
+		.active-card-header {
+			.active-card-title-box {
+				.active-card-title {
+					color: $blue-base;
+				}
+			}
+		}
 	}
 	.active-card-header {
 		display: flex;
