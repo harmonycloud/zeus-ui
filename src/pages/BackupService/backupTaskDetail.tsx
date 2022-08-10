@@ -11,16 +11,17 @@ import {
 	getBackups,
 	editBackupTasks,
 	deleteBackups,
-	getBackupTasks
+	getBackupTasks,
+	deleteBackupTasks
 } from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
-import { statusBackupRender, nullRender } from '@/utils/utils';
+import { statusBackupRender } from '@/utils/utils';
 import { getCanReleaseMiddleware } from '@/services/middleware';
 import { weekMap, backupTaskStatus } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
-import { notification, Modal } from 'antd';
+import { notification, Modal, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import EditTime from './editTime';
 
@@ -55,6 +56,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const [modalType, setModalType] = useState<string>('');
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
+	const backupDetail = storage.getLocal('backupDetail');
 	const InfoConfig = [
 		{
 			dataIndex: 'title',
@@ -69,8 +71,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		{
 			dataIndex: 'phrase',
 			label: '状态情况',
-			render: (val: string) =>
-				statusBackupRender(val, 0, storage.getLocal('backupDetail'))
+			render: (val: string) => statusBackupRender(val, 0, backupDetail)
 		},
 		{
 			dataIndex: 'sourceName',
@@ -86,9 +87,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			label: '备份方式',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
-					{storage.getLocal('backupDetail').backupMode !== 'single'
-						? '周期'
-						: '单次'}
+					{backupDetail.backupMode !== 'single' ? '周期' : '单次'}
 					{val
 						? val.indexOf('? ?') !== -1
 							? `（每周${val
@@ -136,28 +135,23 @@ function BackupTaskDetail(props: any): JSX.Element {
 		},
 		{
 			dataIndex:
-				storage.getLocal('backupDetail').sourceType === 'mysql'
+				backupDetail.sourceType === 'mysql'
 					? 'limitRecord'
 					: 'retentionTime',
 			label:
-				storage.getLocal('backupDetail').sourceType === 'mysql'
+				backupDetail.sourceType === 'mysql'
 					? '备份保留个数'
 					: '备份保留时间',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
 					{val}
-					{storage.getLocal('backupDetail').dateUnit
+					{backupDetail.dateUnit
 						? dataType.find(
-								(item) =>
-									item.value ===
-									storage.getLocal('backupDetail').dateUnit
+								(item) => item.value === backupDetail.dateUnit
 						  )?.label
 						: ''}
-					{storage.getLocal('backupDetail').backupMode === 'single'
-						? '--'
-						: ''}
-					{storage.getLocal('backupDetail').backupMode !==
-					'single' ? (
+					{backupDetail.backupMode === 'single' ? '--' : ''}
+					{backupDetail.backupMode !== 'single' ? (
 						<EditOutlined
 							style={{ marginLeft: 8, color: '#226EE7' }}
 							onClick={() => {
@@ -173,7 +167,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			dataIndex: 'x',
 			label: '是否开启增量',
 			render: (val: string) => (
-				<div className="text-overflow-one" title={val}>
+				<div className="text-overflow-one">
 					{val ? '已开启' : '未开启'}
 				</div>
 			)
@@ -208,16 +202,17 @@ function BackupTaskDetail(props: any): JSX.Element {
 	];
 
 	useEffect(() => {
-		storage.getLocal('backupDetail') &&
+		backupDetail &&
 			setBasicData({
 				title: '基础信息',
-				cron: storage.getLocal('backupDetail').cron,
-				phrase: storage.getLocal('backupDetail').phrase,
-				sourceName: storage.getLocal('backupDetail')?.sourceName,
-				position: storage.getLocal('backupDetail').position,
-				backupTime: storage.getLocal('backupDetail').backupTime,
-				retentionTime: storage.getLocal('backupDetail').retentionTime,
-				limitRecord: storage.getLocal('backupDetail').limitRecord,
+				cron: backupDetail.cron,
+				phrase: backupDetail.phrase,
+				sourceName: backupDetail?.sourceName,
+				position: backupDetail.position,
+				backupTime: backupDetail.backupTime,
+				retentionTime: backupDetail.retentionTime,
+				limitRecord: backupDetail.limitRecord,
+				x: false,
 				y: '2022-08-15 00:00:00'
 			});
 	}, []);
@@ -245,7 +240,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		getBackups({
 			backupName: params.backupName,
 			clusterId: cluster.id,
-			namespace: storage.getLocal('backupDetail').namespace,
+			namespace: backupDetail.namespace,
 			type: params.type
 		}).then((res) => {
 			if (res.success) {
@@ -259,25 +254,17 @@ function BackupTaskDetail(props: any): JSX.Element {
 		});
 	};
 
-	const releaseMiddleware = (record: any) => {
-		switch (record.sourceType) {
+	const releaseMiddleware = () => {
+		switch (backupDetail.sourceType) {
 			case 'mysql':
 				history.push(
-					`/serviceList/mysql/MySQL/mysqlCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${record.backupFileName}/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 				break;
 			case 'postgresql':
 				history.push(
-					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${record.backupFileName}/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -286,21 +273,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 				break;
 			case 'redis':
 				history.push(
-					`/serviceList/redis/Redis/redisCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/redis/Redis');
 				break;
 			case 'elasticsearch':
 				history.push(
-					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -309,11 +288,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				break;
 			case 'rocketmq':
 				history.push(
-					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/rocketmq/rocketMQ');
 				break;
@@ -323,9 +298,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const actionRender = (value: any, record: any, index: number) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => releaseMiddleware(record)}>
-					克隆服务
-				</LinkButton>
 				<LinkButton
 					onClick={() => {
 						Modal.confirm({
@@ -335,8 +307,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 								const result = {
 									clusterId: cluster.id,
 									namespace:
-										storage.getLocal('backupDetail')
-											.namespace || namespace.name,
+										backupDetail.namespace ||
+										namespace.name,
 									type: record.sourceType,
 									backupId: record.backupId,
 									crName: record.crName,
@@ -367,9 +339,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 	const getBasicInfo = () => {
 		const sendData = {
-			keyword: storage.getLocal('backupDetail').taskName,
+			keyword: backupDetail.taskName,
 			clusterId: cluster.id,
-			namespace: storage.getLocal('backupDetail').namespace,
+			namespace: backupDetail.namespace,
 			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
 		};
@@ -399,8 +371,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		const sendData = {
 			backupName: params.backupName,
 			clusterId: cluster.id,
-			namespace:
-				storage.getLocal('backupDetail').namespace || namespace.name,
+			namespace: backupDetail.namespace || namespace.name,
 			type: params.type,
 			...cron
 		};
@@ -411,14 +382,65 @@ function BackupTaskDetail(props: any): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				title={`${storage.getLocal('backupDetail').taskName}（${
+				title={`${backupDetail.taskName}（${
 					backupTaskStatus.find(
-						(item) =>
-							item.value ===
-							storage.getLocal('backupDetail').phrase
+						(item) => item.value === backupDetail.phrase
 					)?.text
 				}）`}
 				onBack={() => history.goBack()}
+				extra={
+					<>
+						<Button type="primary" onClick={releaseMiddleware}>
+							克隆服务
+						</Button>
+						<Button
+							type="primary"
+							danger
+							onClick={() => {
+								Modal.confirm({
+									title: '操作确认',
+									content:
+										'备份任务删除后将无法恢复，请确认执行',
+									onOk: () => {
+										const sendData = {
+											clusterId: cluster.id,
+											namespace: backupDetail.namespace,
+											type: backupDetail.sourceType,
+											cron: backupDetail.cron || '',
+											backupName: backupDetail.backupName,
+											backupId: backupDetail.backupId,
+											addressName:
+												backupDetail.addressName,
+											backupFileName:
+												backupDetail.backupFileName ||
+												''
+										};
+										deleteBackupTasks(sendData).then(
+											(res) => {
+												if (res.success) {
+													notification.success({
+														message: '成功',
+														description:
+															'备份任务删除成功'
+													});
+												} else {
+													notification.error({
+														message: '失败',
+														description:
+															res.errorMsg
+													});
+												}
+											}
+										);
+										history.goBack();
+									}
+								});
+							}}
+						>
+							删除任务
+						</Button>
+					</>
+				}
 			/>
 			<ProContent>
 				<DataFields dataSource={basicData} items={InfoConfig} />
@@ -429,11 +451,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 					rowKey="recordName"
 				>
 					<ProTable.Column title="备份记录" dataIndex="recordName" />
-					{/* <ProTable.Column
-						title="备份使用量(GB)"
-						dataIndex="percent"
-						render={nullRender}
-					/> */}
 					<ProTable.Column
 						title="备份时间"
 						dataIndex="backupTime"
@@ -445,7 +462,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 					<ProTable.Column title="操作" render={actionRender} />
 				</ProTable>
 				<EditTime
-					data={storage.getLocal('backupDetail')}
+					data={backupDetail}
 					visible={visible}
 					onCreate={onCreate}
 					onCancel={() => setVisible(false)}

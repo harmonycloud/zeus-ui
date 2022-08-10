@@ -84,8 +84,7 @@ export default function List(props: any): JSX.Element {
 
 	const actionRender = (
 		value: any,
-		// record: BackupRecordItem,
-		record: any,
+		record: BackupRecordItem,
 		index: number
 	) => {
 		return (
