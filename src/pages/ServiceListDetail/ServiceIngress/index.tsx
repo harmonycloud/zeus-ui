@@ -113,9 +113,18 @@ export default function ServiceDetailIngress(
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
-					} else {
+					} else if (
+						name === 'mysql' ||
+						name === 'redis' ||
+						name === 'postgresql' ||
+						name === 'zookeeper'
+					) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+						);
+					} else {
+						history.push(
+							`/serviceList/${name}/${aliasName}/externalAccess/addExternalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
 						);
 					}
 				}}

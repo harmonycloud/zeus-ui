@@ -10,7 +10,9 @@ import {
 	Switch,
 	Button,
 	Divider,
-	Alert
+	Alert,
+	Row,
+	Col
 } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import { ServiceIngressAddParams, ServiceNameItem } from '../detail';
@@ -662,16 +664,19 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 							</FormItem>
 							{networkIngress === 4 && (
 								<>
-									<div className="ingress-four-tcp-or-NodePort">
-										<SelectBlock
-											disabled={!!serviceIngress}
-											options={fourNetworkIngress}
-											currentValue={exposeType}
-											onCallBack={(value: any) =>
-												setExposeType(value)
-											}
-										/>
-									</div>
+									<Row style={{ marginBottom: 24 }}>
+										<Col span={4}></Col>
+										<Col span={10}>
+											<SelectBlock
+												disabled={!!serviceIngress}
+												options={fourNetworkIngress}
+												currentValue={exposeType}
+												onCallBack={(value: any) =>
+													setExposeType(value)
+												}
+											/>
+										</Col>
+									</Row>
 									{exposeType === 'TCP' && (
 										<FormItem
 											name="ingressClassName"
