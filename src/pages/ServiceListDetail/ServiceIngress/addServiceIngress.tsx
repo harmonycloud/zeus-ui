@@ -331,7 +331,7 @@ export default function AddIngress(): JSX.Element {
 						onClick={handleSubmit}
 						style={{ marginRight: 16 }}
 					>
-						确认
+						确定
 					</Button>
 					<Button onClick={() => window.history.back()}>取消</Button>
 				</Form>
