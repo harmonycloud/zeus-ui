@@ -393,13 +393,26 @@ export default function ServiceDetailIngress(
 														history.push(
 															`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 														);
-													} else {
+													} else if (
+														name === 'mysql' ||
+														name === 'redis' ||
+														name === 'postgresql' ||
+														name === 'zookeeper'
+													) {
 														storage.setSession(
 															'serviceIngress',
 															item
 														);
 														history.push(
 															`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+														);
+													} else {
+														storage.setLocal(
+															'availableRecord',
+															item
+														);
+														history.push(
+															`/serviceList/${name}/${aliasName}/externalAccess/addExternalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
 														);
 													}
 												}}
