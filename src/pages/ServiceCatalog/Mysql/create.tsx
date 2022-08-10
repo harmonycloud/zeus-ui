@@ -1613,39 +1613,36 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</span>
 									</label>
 									<div className="form-content">
-										{mirrorList.length && (
-											<FormItem
-												name="mirrorImageId"
-												required
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+										<FormItem
+											name="mirrorImageId"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item) => {
-															return {
-																value: item.address,
-																label: item.address
-															};
-														}
-													)}
-													style={{
-														width: '380px'
-													}}
-													disabled={!!backupFileName}
-												/>
-											</FormItem>
-										)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item) => {
+														return {
+															value: item.address,
+															label: item.address
+														};
+													}
+												)}
+												style={{
+													width: '380px'
+												}}
+												disabled={!!backupFileName}
+											/>
+										</FormItem>
 									</div>
 								</li>
 							</ul>

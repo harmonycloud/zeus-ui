@@ -889,50 +889,47 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 										/>
 									</div>
 								</li>
-								{mirrorList.length && (
-									<li className="display-flex">
-										<label className="form-name">
-											<span
-												className="ne-required"
-												style={{ marginRight: 8 }}
-											>
-												镜像仓库
-											</span>
-										</label>
-										<div className="form-content">
-											<FormItem
-												name="mirrorImageId"
-												required
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+								<li className="display-flex">
+									<label className="form-name">
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											镜像仓库
+										</span>
+									</label>
+									<div className="form-content">
+										<FormItem
+											name="mirrorImageId"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																value: item.address,
-																label: item.address
-															};
-														}
-													)}
-													style={{
-														width: '380px'
-													}}
-												/>
-											</FormItem>
-										</div>
-									</li>
-								)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															value: item.address,
+															label: item.address
+														};
+													}
+												)}
+												style={{
+													width: '380px'
+												}}
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
