@@ -181,10 +181,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						name="password"
 						rules={[
 							{ required: true, message: '请输入密码' },
-							{
-								pattern: new RegExp('^[A-Za-z0-9_.-]{8,16}$'),
-								message: '密码长度为8-16位数字或字母'
-							}
+							{ max: 64, min: 8, message: '密码长度为8-64位' }
 						]}
 						style={{ width: '37%' }}
 					>
