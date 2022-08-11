@@ -27,3 +27,5 @@ export const mirror = `${api}/clusters/{clusterId}/mirror`;
 export const isAccessGYT = `${api}/user/useOpenUserCenter`;
 // * 获取中间件图片接口
 export const getMidImage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/middlewareImage`;
+// * 获取集群cpu，内存信息
+export const getClusterCpuAndMemory = `${api}/clusters/{clusterId}/monitoring`;

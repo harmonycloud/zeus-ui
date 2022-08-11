@@ -124,6 +124,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '5.0',
 			value: '5.0'
+		},
+		{
+			label: '6.2',
+			value: '6.2'
 		}
 	];
 	const [mode, setMode] = useState<string>('cluster');

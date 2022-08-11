@@ -6,7 +6,11 @@ import { connect } from 'react-redux';
 import ProTable from '@/components/ProTable';
 import Actions from '@/components/Actions';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-import { deleteCluster, getClusters } from '@/services/common';
+import {
+	deleteCluster,
+	getClusters,
+	getClusterCpuAndMemory
+} from '@/services/common';
 import { clusterType } from '@/types';
 import transBg from '@/assets/images/trans-bg.svg';
 import storage from '@/utils/storage';
@@ -40,6 +44,14 @@ function ResourcePoolManagement(
 		getClusters({ detail: true, key }).then((res) => {
 			if (res.success) {
 				if (mounted) {
+					const list = res.data.map((item: clusterType) => {
+						getClusterCpuAndMemory({ clusterId: item.id }).then(
+							(r) => {
+								item.clusterQuotaDTO = r.data;
+							}
+						);
+						return item;
+					});
 					setClusterList(res.data);
 				}
 			} else {
@@ -136,8 +148,6 @@ function ResourcePoolManagement(
 									});
 								}
 							});
-							// setVisible(true);
-							// setData(record);
 						} else {
 							Modal.info({
 								title: '提示',
