@@ -288,7 +288,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});

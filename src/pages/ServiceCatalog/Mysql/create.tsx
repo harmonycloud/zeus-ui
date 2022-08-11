@@ -547,7 +547,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							(item) => {
 								return {
 									label: item.label,
-									required: affinity.checked,
+									required: item.checked,
 									namespace: globalNamespace.name
 								};
 							}
