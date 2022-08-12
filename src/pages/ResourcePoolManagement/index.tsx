@@ -28,9 +28,9 @@ function ResourcePoolManagement(
 ): JSX.Element {
 	const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
-	const [dataSource, setDataSource] = useState<clusterType[]>([]);
 	const [key, setKey] = useState<string>('');
 	const [isAccess, setIsAccess] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		getIsAccessGYT().then((res) => {
@@ -41,39 +41,60 @@ function ResourcePoolManagement(
 	}, []);
 	useEffect(() => {
 		let mounted = true;
-		getClusters({ detail: true, key }).then((res) => {
-			if (res.success) {
-				if (mounted) {
-					const list = res.data.map((item: clusterType) => {
-						getClusterCpuAndMemory({ clusterId: item.id }).then(
-							(r) => {
-								item.clusterQuotaDTO = r.data;
-							}
-						);
-						return item;
+		setLoading(true);
+		getClusters({ detail: true, key })
+			.then((res) => {
+				if (res.success) {
+					if (mounted) {
+						const list = res.data.map((item: clusterType) => {
+							getClusterCpuAndMemory({ clusterId: item.id }).then(
+								(r) => {
+									if (r.success) {
+										item.clusterQuotaDTO = r.data;
+									}
+								}
+							);
+							return item;
+						});
+						setClusterList(list);
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
 					});
-					setClusterList(res.data);
 				}
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
-		});
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 		return () => {
 			mounted = false;
 		};
 	}, []);
-	useEffect(() => {
-		setDataSource(clusterList);
-	}, [clusterList]);
 	const getData = (key: string) => {
-		getClusters({ detail: true, key }).then((res) => {
-			if (res.success) {
-				setClusterList(res.data);
-			}
-		});
+		setLoading(true);
+		getClusters({ detail: true, key })
+			.then((res) => {
+				if (res.success) {
+					const list = res.data.map((item: clusterType) => {
+						getClusterCpuAndMemory({ clusterId: item.id }).then(
+							(r) => {
+								if (r.success) {
+									item.clusterQuotaDTO = r.data;
+								}
+							}
+						);
+						return item;
+					});
+					setTimeout(() => {
+						setClusterList(list);
+					}, 500);
+				}
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 	};
 	const handleChange = (value: string) => {
 		setKey(value);
@@ -164,6 +185,7 @@ function ResourcePoolManagement(
 		);
 	};
 	const cpuRender = (value: string, record: clusterType, index: number) => {
+		console.log(record);
 		const percentage = record.clusterQuotaDTO
 			? (Number(record.clusterQuotaDTO?.usedCpu) /
 					Number(record.clusterQuotaDTO?.totalCpu)) *
@@ -283,7 +305,7 @@ function ResourcePoolManagement(
 			/>
 			<ProContent>
 				<ProTable
-					dataSource={dataSource}
+					dataSource={clusterList}
 					showRefresh
 					onRefresh={() => getData(key)}
 					search={{
@@ -292,6 +314,7 @@ function ResourcePoolManagement(
 					}}
 					rowKey="name"
 					operation={Operation}
+					loading={loading}
 				>
 					<ProTable.Column
 						title="集群名称"
@@ -312,11 +335,11 @@ function ResourcePoolManagement(
 						render={cpuRender}
 						sorter={(a, b) => {
 							const aPer =
-								Number(a.clusterQuotaDTO?.usedCpu) /
-								Number(a.clusterQuotaDTO?.totalCpu);
+								(a.clusterQuotaDTO?.usedCpu || 0) /
+									(a.clusterQuotaDTO?.totalCpu || 0) || 0;
 							const bPer =
-								Number(b.clusterQuotaDTO?.usedCpu) /
-								Number(b.clusterQuotaDTO?.totalCpu);
+								(b.clusterQuotaDTO?.usedCpu || 0) /
+									(b.clusterQuotaDTO?.totalCpu || 0) || 0;
 							return aPer - bPer;
 						}}
 					/>
@@ -326,11 +349,11 @@ function ResourcePoolManagement(
 						render={memoryRender}
 						sorter={(a, b) => {
 							const aPer =
-								Number(a.clusterQuotaDTO?.usedMemory) /
-								Number(a.clusterQuotaDTO?.totalMemory);
+								(a.clusterQuotaDTO?.usedMemory || 0) /
+									(a.clusterQuotaDTO?.totalMemory || 0) || 0;
 							const bPer =
-								Number(b.clusterQuotaDTO?.usedMemory) /
-								Number(b.clusterQuotaDTO?.totalMemory);
+								(b.clusterQuotaDTO?.usedMemory || 0) /
+									(b.clusterQuotaDTO?.totalMemory || 0) || 0;
 							return aPer - bPer;
 						}}
 					/>
@@ -339,6 +362,7 @@ function ResourcePoolManagement(
 						dataIndex="createTime"
 						render={createTimeRender}
 						sorter={(a, b) => {
+							if (!b.attributes.createTime) return -1;
 							return (
 								moment(a.attributes.createTime).unix() -
 								moment(b.attributes.createTime).unix()
