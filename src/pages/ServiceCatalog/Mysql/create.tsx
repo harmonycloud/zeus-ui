@@ -259,8 +259,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [project, globalNamespace]);
 
 	useEffect(() => {
-		console.log(globalNamespace);
-
 		if (globalNamespace.quotas) {
 			const cpuMax =
 				Number(globalNamespace.quotas.cpu[1]) -
@@ -311,11 +309,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				},
 				mysqlDTO: {
 					replicaCount:
-						mode !== '1m-ns'
-							? mode === '1m-1s'
-								? 1
-								: 0
-							: replicaCount,
+						mode.charAt(3) === 'n'
+							? replicaCount
+							: Number(mode.charAt(3)),
 					openDisasterRecoveryMode: backupFlag,
 					type: mode === '1m-1s' ? 'master-master' : 'master-slave'
 				},
@@ -425,11 +421,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					mode === '1m-1s' ? 'master-master' : 'master-slave';
 				sendData.mysqlDTO.isSource = true;
 				sendData.mysqlDTO.replicaCount =
-					mode !== '1m-ns'
-						? mode === '1m-1s'
-							? 1
-							: 0
-						: replicaCount;
+					mode.charAt(3) === 'n'
+						? replicaCount
+						: Number(mode.charAt(3));
 				sendData.relationMiddleware = {
 					chartName: chartName,
 					chartVersion: chartVersion,
@@ -503,11 +497,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					},
 					mysqlDTO: {
 						replicaCount:
-							mode !== '1m-ns'
-								? mode === '1m-1s'
-									? 1
-									: 0
-								: replicaCount,
+							mode.charAt(3) === 'n'
+								? replicaCount
+								: Number(mode.charAt(3)),
 						openDisasterRecoveryMode: true,
 						relationName: values.name,
 						relationAliasName: values.aliasName,
@@ -1694,7 +1686,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											onChange={(val) => {
 												val === '1m-0s'
 													? setMode('1m-0s')
-													: setMode('1m-1s');
+													: setMode(
+															modeList[0].value
+													  );
 												setReadWriteProxy(val);
 											}}
 											style={{

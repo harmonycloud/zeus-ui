@@ -145,7 +145,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		}
 	];
 	const [mode, setMode] = useState<string>('1m-1s');
-	const modeList = [
+	const [modeList, setModeList] = useState([
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -158,7 +158,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			label: '单实例',
 			value: '1m-0s'
 		}
-	];
+	]);
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
@@ -196,6 +196,23 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			setMaxMemory({
 				max: memoryMax
 			});
+		}
+		if (globalNamespace.availableDomain) {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
+				},
+				{
+					label: '单实例',
+					value: '1m-0s'
+				}
+			]);
+			setMode('1m-1s');
 		}
 	}, [props]);
 
@@ -247,11 +264,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				quota: {
 					postgresql: {
 						num:
-							mode === '1m-1s'
-								? 1
-								: mode === '1m'
-								? 0
-								: replicaCount,
+							mode.charAt(3) === 'n'
+								? replicaCount
+								: Number(mode.charAt(3)),
 						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
