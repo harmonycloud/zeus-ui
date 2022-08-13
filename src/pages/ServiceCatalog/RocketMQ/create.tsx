@@ -1163,6 +1163,25 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 								{mode === 'dledger' && (
 									<li className="display-flex form-li">
 										<label className="form-name">
+											DLedger组数
+										</label>
+										<div className="form-content">
+											<InputNumber
+												name="节点数量"
+												defaultValue={3}
+												onChange={(value) =>
+													setReplicaCount(value)
+												}
+												min={3}
+												max={10}
+												disabled={!!middlewareName}
+											/>
+										</div>
+									</li>
+								)}
+								{mode === 'dledger' && (
+									<li className="display-flex form-li">
+										<label className="form-name">
 											从节点数
 										</label>
 										<div className="form-content">
