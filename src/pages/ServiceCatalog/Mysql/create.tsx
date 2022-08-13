@@ -353,7 +353,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -557,7 +557,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							(item) => {
 								return {
 									label: item.label,
-									required: affinity.checked,
+									required: item.checked,
 									namespace: globalNamespace.name
 								};
 							}
@@ -708,6 +708,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				);
 			}
 			if (res.data.mode) {
+				if (res.data.mode === '1m-0s') {
+					setReadWriteProxy(res.data.mode);
+				}
 				setMode(res.data.mode);
 			}
 			if (res.data.charSet) {
@@ -1638,39 +1641,36 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</span>
 									</label>
 									<div className="form-content">
-										{mirrorList.length && (
-											<FormItem
-												name="mirrorImageId"
-												required
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+										<FormItem
+											name="mirrorImageId"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item) => {
-															return {
-																value: item.address,
-																label: item.address
-															};
-														}
-													)}
-													style={{
-														width: '380px'
-													}}
-													disabled={!!backupFileName}
-												/>
-											</FormItem>
-										)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item) => {
+														return {
+															value: item.address,
+															label: item.address
+														};
+													}
+												)}
+												style={{
+													width: '380px'
+												}}
+												disabled={!!backupFileName}
+											/>
+										</FormItem>
 									</div>
 								</li>
 							</ul>

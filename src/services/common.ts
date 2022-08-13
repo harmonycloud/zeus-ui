@@ -140,3 +140,7 @@ export const getMidImagePath = (params: {
 }) => {
 	return Axios.get(COMMON.getMidImage, params);
 };
+// * 获取集群cpu，内存信息
+export const getClusterCpuAndMemory = (params: { clusterId: string }) => {
+	return Axios.get(COMMON.getClusterCpuAndMemory, params);
+};

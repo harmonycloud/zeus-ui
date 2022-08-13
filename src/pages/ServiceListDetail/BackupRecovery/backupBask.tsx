@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, notification, Tooltip } from 'antd';
+import { Button, Modal, notification, Select, Space, Tooltip } from 'antd';
 import moment from 'moment';
 import { useHistory, useParams } from 'react-router';
 import Actions from '@/components/Actions';
@@ -14,9 +14,12 @@ import { statusBackupRender } from '@/utils/utils';
 import { backupTaskStatus } from '@/utils/const';
 import storage from '@/utils/storage';
 import { BackupRecordItem } from './backup';
+import { getClusters } from '@/services/common';
+import { clusterType } from '@/types';
 
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
+const { Option } = Select;
 export default function List(props: any): JSX.Element {
 	const { clusterId, namespace, data } = props;
 	const params: any = useParams();
@@ -24,8 +27,24 @@ export default function List(props: any): JSX.Element {
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
 	const [serviceList, setServiceList] = useState<any>([]);
 	const [isLvm, setIsLvm] = useState<boolean>(true);
+	const [clusterList, setClusterList] = useState<clusterType[]>([]);
+	const [currentCluster, setCurrentCluster] = useState<clusterType>();
 	const history = useHistory();
-
+	useEffect(() => {
+		if (!data) {
+			getClusters({ detail: true }).then((res) => {
+				if (res.success) {
+					setClusterList(res.data);
+					setCurrentCluster(res.data[0]);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, []);
 	useEffect(() => {
 		if (clusterId !== undefined && namespace !== undefined) {
 			getData('');
@@ -43,11 +62,29 @@ export default function List(props: any): JSX.Element {
 		}
 		params.type && !data.isAllLvmStorage && setIsLvm(false);
 	}, [clusterId, namespace]);
+	useEffect(() => {
+		if (!data) {
+			if (currentCluster) {
+				getData('');
+				getServiceList().then((res) => {
+					res.data?.length ? setDisabled(false) : setDisabled(true);
+					setServiceList(
+						res.data.map((item: any) => {
+							return {
+								text: item.name,
+								value: item.name
+							};
+						})
+					);
+				});
+			}
+		}
+	}, [currentCluster]);
 
 	const getData = (keyword: string) => {
 		const sendData = {
 			keyword,
-			clusterId,
+			clusterId: clusterId ? clusterId : currentCluster?.id,
 			namespace,
 			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
@@ -134,36 +171,54 @@ export default function List(props: any): JSX.Element {
 		);
 	};
 
+	const onChange = (value: string) => {
+		const ct = clusterList.find((item) => item.id === value);
+		setCurrentCluster(ct);
+	};
+
 	const Operation = {
 		primary: (
-			<Button
-				onClick={() => {
-					if (disabled) {
-						notification.error({
-							message: '提示',
-							description: '当前集群下没有服务，没有备份对象'
-						});
-					} else if (!isLvm) {
-						notification.error({
-							message: '提示',
-							description: '存储不使用Lvm时，无法创建备份任务'
-						});
-					} else {
-						if (params.type) {
-							history.push(
-								`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
-							);
+			<Space>
+				<Button
+					onClick={() => {
+						if (disabled) {
+							notification.error({
+								message: '提示',
+								description: '当前集群下没有服务，没有备份对象'
+							});
+						} else if (!isLvm) {
+							notification.error({
+								message: '提示',
+								description: '存储不使用Lvm时，无法创建备份任务'
+							});
 						} else {
-							history.push(
-								'/backupService/backupTask/addBackupTask'
-							);
+							if (params.type) {
+								history.push(
+									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
+								);
+							} else {
+								history.push(
+									'/backupService/backupTask/addBackupTask'
+								);
+							}
 						}
-					}
-				}}
-				type="primary"
-			>
-				新增
-			</Button>
+					}}
+					type="primary"
+				>
+					新增
+				</Button>
+				{!data && (
+					<Select onChange={onChange} value={currentCluster?.id}>
+						{clusterList.map((item: clusterType) => {
+							return (
+								<Option value={item.id} key={item.id}>
+									{item.nickname}
+								</Option>
+							);
+						})}
+					</Select>
+				)}
+			</Space>
 		)
 	};
 

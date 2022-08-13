@@ -266,6 +266,11 @@ const Routes = withRouter((props) => {
 					component={AddServiceIngress}
 					exact
 				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
+					component={AddServiceAvailableForm}
+					exact
+				/>
 				{/* <Route
 					path="/serviceAvailable/addServiceAvailable"
 					component={AddServiceAvailableForm}
