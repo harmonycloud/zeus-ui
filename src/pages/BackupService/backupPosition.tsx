@@ -24,6 +24,7 @@ import {
 	editBackupAddress
 } from '@/services/backup';
 import { poolListItem } from '@/types/comment';
+import DefaultPicture from '@/components/DefaultPicture';
 
 const LinkButton = Actions.LinkButton;
 const Search = Input.Search;
@@ -32,7 +33,7 @@ export default function BackupPosition(): JSX.Element {
 	const [poolList, setPoolList] = useState<poolListItem[]>([]);
 	const [addressList, setAddressList] = useState<any[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [spinning, setSpinning] = useState<boolean>(false);
 	const history = useHistory();
 
 	useEffect(() => {
@@ -44,17 +45,21 @@ export default function BackupPosition(): JSX.Element {
 	}, []);
 
 	const getData = (keyword: string) => {
-		getBackupAddress({ keyword }).then((res) => {
-			if (res.success) {
-				setIsLoading(false);
-				setAddressList(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
-		});
+		setSpinning(true);
+		getBackupAddress({ keyword })
+			.then((res) => {
+				if (res.success) {
+					setAddressList(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			})
+			.finally(() => {
+				setSpinning(false);
+			});
 	};
 
 	const handleDelete = (id: number, clusterId?: string) => {
@@ -167,8 +172,8 @@ export default function BackupPosition(): JSX.Element {
 						></Button>
 					</div>
 				</div>
-				<Spin spinning={isLoading}>
-					{addressList.length ? (
+				{!spinning ? (
+					addressList.length > 0 ? (
 						addressList.map((item: any) => {
 							return (
 								<ListPanel
@@ -297,10 +302,10 @@ export default function BackupPosition(): JSX.Element {
 										width={260}
 									/>
 									{/* <ListCardItem
-									label="容量"
-									value={item.capacity + 'G'}
-									width={100}
-								/> */}
+										label="容量"
+										value={item.capacity + 'G'}
+										width={100}
+									/> */}
 									<ListCardItem
 										label="所引用备份数"
 										value={item.relevanceNum}
@@ -315,13 +320,13 @@ export default function BackupPosition(): JSX.Element {
 							);
 						})
 					) : (
-						// <Spin>
-						<Card>
-							<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-						</Card>
-						// </Spin>
-					)}
-				</Spin>
+						<DefaultPicture title="当前列表无数据" />
+					)
+				) : (
+					<Spin>
+						<DefaultPicture title="当前列表无数据" />
+					</Spin>
+				)}
 			</ProContent>
 		</ProPage>
 	);

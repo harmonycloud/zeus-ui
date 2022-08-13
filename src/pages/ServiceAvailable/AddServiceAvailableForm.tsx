@@ -403,6 +403,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		if (record) {
 			sendData.namespace = record.namespace;
 		}
+		console.log(sendData);
 		addIngress(sendData).then((res) => {
 			if (res.success) {
 				notification.success({
@@ -432,14 +433,6 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 			name: value[1],
 			type: value[0]
 		});
-		// setInitService([
-		// 	`${value}-0-master`,
-		// 	`${value}-0-slave`,
-		// 	`${value}-1-master`,
-		// 	`${value}-1-slave`,
-		// 	`${value}-2-master`,
-		// 	`${value}-2-slave`
-		// ]);
 		getExposedService(
 			value[1],
 			selectOption[0].value,

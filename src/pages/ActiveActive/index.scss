@@ -36,6 +36,13 @@
 		transform: translateY(-3px);
 		border: 1px solid #226EE7;
 		transition: 0.3s ease-in;
+		.active-card-header {
+			.active-card-title-box {
+				.active-card-title {
+					color: $blue-base;
+				}
+			}
+		}
 	}
 	.active-card-header {
 		display: flex;
@@ -60,11 +67,12 @@
 .zeus-area-config-content {
 	display: flex;
 	width: 100%;
+	margin-top: $margin;
 	.zeus-area-label-content {
-		width: 80px;
+		width: 120px;
 		height: 18px;
 		font-size: $font-2;
-		font-weight: $font-weight;
+		font-weight: $font-weight-sm;
 		color: $text-color-title;
 		line-height: $line-height-2;
 		margin-top: 20px;
@@ -96,7 +104,7 @@
 			column-gap: 21px;
 			row-gap: 24px;
 			.zeus-area-node-item {
-				width: 194px;
+				width: 200px;
 				height: 40px;
 				display: flex;
 				align-items: center;

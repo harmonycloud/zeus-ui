@@ -69,7 +69,8 @@ export const ActiveDataCard = (props: ActiveDataProps) => {
 									marginLeft: 8,
 									cursor: 'pointer',
 									fontSize: 14,
-									verticalAlign: 'middle'
+									verticalAlign: 'middle',
+									color: '#ffffff'
 								}}
 							/>
 						</Popconfirm>
@@ -78,7 +79,7 @@ export const ActiveDataCard = (props: ActiveDataProps) => {
 						className="zeus-active-data-to-detail"
 						onClick={() => onClick(data)}
 					>
-						<RightOutlined />
+						<RightOutlined style={{ fontSize: 14 }} />
 					</div>
 				</div>
 			</div>

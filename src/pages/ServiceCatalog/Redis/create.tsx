@@ -124,6 +124,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '5.0',
 			value: '5.0'
+		},
+		{
+			label: '6.2',
+			value: '6.2'
 		}
 	];
 	const [mode, setMode] = useState<string>('cluster');
@@ -372,7 +376,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -1249,43 +1253,40 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									{mirrorList.length && (
-										<div
-											className="form-content"
-											style={{ flex: '0 0 376px' }}
-										>
-											<FormItem
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												name="mirrorImageId"
-												initialValue={
-													mirrorList[0].address
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																label: item.address,
-																value: item.address
-															};
-														}
-													)}
-													style={{
-														width: '100%'
-													}}
-													disabled={!!middlewareName}
-												/>
-											</FormItem>
-										</div>
-									)}
+											]}
+											name="mirrorImageId"
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
+												)}
+												style={{
+													width: '100%'
+												}}
+												disabled={!!middlewareName}
+											/>
+										</FormItem>
+									</div>
 								</li>
 							</ul>
 						</div>

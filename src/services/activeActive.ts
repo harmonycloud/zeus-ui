@@ -46,3 +46,10 @@ export const deleteNode = (params: {
 }) => {
 	return Axios.delete(ActiveActive.getZoneDetail, params);
 };
+
+export const getActiveClusters = () => {
+	return Axios.get(ActiveActive.getActiveClusters);
+};
+export const startActive = (params: { clusterId: string }) => {
+	return Axios.get(ActiveActive.startActive, params);
+};
