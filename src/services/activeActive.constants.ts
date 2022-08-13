@@ -8,3 +8,7 @@ export const getZoneDetail = `${api}/clusters/{clusterId}/area/{areaName}`;
 export const getZoneNodes = `${api}/clusters/{clusterId}/area/{areaName}/node`;
 // * 获取可分配可用区的节点
 export const getUsableNodes = `${api}/clusters/{clusterId}/nodes/allocatable`;
+// * 可用区查询集群列表
+export const getActiveClusters = `${api}/area/clusters`;
+// * 开启可用区
+export const startActive = `${api}/area/clusters/{clusterId}`;

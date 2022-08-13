@@ -6,6 +6,7 @@ import FormBlock from '@/components/FormBlock';
 import { getUsableNodes, divideArea } from '@/services/activeActive';
 import { NodeItem } from './activeActive';
 import { IconFont } from '@/components/IconFont';
+import './index.scss';
 
 const { Search } = Input;
 interface AreaConfigParams {

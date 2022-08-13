@@ -3,9 +3,9 @@ import React from 'react';
 import { ActiveCardProps } from './activeActive';
 
 export default function ActiveCard(props: ActiveCardProps): JSX.Element {
-	const { title, status, isActive, areaNumber } = props;
+	const { title, status, isActive, areaNumber, onClick } = props;
 	return (
-		<div className="active-card-box">
+		<div className="active-card-box" onClick={onClick}>
 			<div className="active-card-header">
 				<IconFont
 					type="icon-jiqun"

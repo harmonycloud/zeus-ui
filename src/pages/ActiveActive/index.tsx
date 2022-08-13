@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
-import { Collapse } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Collapse, notification, Modal } from 'antd';
+import { useHistory } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
-import './index.scss';
 import { CloseOutlined } from '@ant-design/icons';
 import { IconFont } from '@/components/IconFont';
 import ActiveCard from './ActiveCard';
+import { getActiveClusters, startActive } from '@/services/activeActive';
+import { ActiveClusterItem } from './activeActive';
+import './index.scss';
 
+const { confirm } = Modal;
 const { Panel } = Collapse;
 export default function ActiveActive(): JSX.Element {
+	const history = useHistory();
 	const [panelVisible, setPanelVisible] = useState<boolean>(true);
 	const [panel1Visible, setPanel1Visible] = useState<boolean>(true);
+	const [activeClusters, setActiveClusters] = useState<ActiveClusterItem[]>(
+		[]
+	);
+	useEffect(() => {
+		let mounted = true;
+		if (mounted) {
+			getActiveClusters().then((res) => {
+				if (res.success) {
+					setActiveClusters(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+		return () => {
+			mounted = false;
+		};
+	}, []);
 	const genExtra = (record: number) => (
 		<CloseOutlined
 			onClick={(event) => {
@@ -19,6 +45,47 @@ export default function ActiveActive(): JSX.Element {
 			}}
 		/>
 	);
+	const toActiveDetail = (record: ActiveClusterItem) => {
+		if (!record.activeActive) {
+			confirm({
+				title: '操作确认',
+				content: (
+					<>
+						当前集群尚未开启可用区配置，是否开启可用区？
+						<br />
+						<span style={{ color: '#ff4d4f' }}>
+							注：开启后无法关闭可用区配置！
+						</span>
+					</>
+				),
+				onOk: () => {
+					startActive({ clusterId: record.clusterId }).then((res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '可用区开启成功！'
+							});
+							setTimeout(() => {
+								history.push(
+									`/activeActive/${record.clusterId}/${record.clusterAliasName}`
+								);
+							}, 1000);
+						} else {
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
+						}
+					});
+				}
+			});
+		} else {
+			history.push(
+				`/activeActive/${record.clusterId}/${record.clusterAliasName}`
+			);
+		}
+	};
+
 	return (
 		<ProPage>
 			<ProHeader
@@ -60,12 +127,18 @@ export default function ActiveActive(): JSX.Element {
 					)}
 				</Collapse>
 				<div className="active-list-content">
-					<ActiveCard
-						title="集群名字"
-						isActive={true}
-						areaNumber={4}
-						status={1}
-					/>
+					{activeClusters.map((item: ActiveClusterItem) => {
+						return (
+							<ActiveCard
+								key={item.clusterId}
+								title={item.clusterAliasName || item.clusterId}
+								isActive={item.activeActive || false}
+								areaNumber={item.activeAreaNum}
+								status={item.statusCode}
+								onClick={() => toActiveDetail(item)}
+							/>
+						);
+					})}
 				</div>
 			</ProContent>
 		</ProPage>

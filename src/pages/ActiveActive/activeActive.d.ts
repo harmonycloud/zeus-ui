@@ -3,6 +3,7 @@ export interface ActiveCardProps {
 	status: number;
 	areaNumber: number;
 	isActive: boolean;
+	onClick: () => void;
 }
 // 可用域相关接口
 
@@ -74,4 +75,14 @@ export interface UsableNodeItem {
 	memoryUsed: number | null;
 	nodeName: string;
 	status: string;
+}
+export interface ActiveClusterItem {
+	activeActive: null | boolean;
+	activeAreaNum: number;
+	clusterAliasName: string;
+	clusterId: string;
+	statusCode: number;
+}
+export interface NamespaceTableProps {
+	clusterId: string;
 }
