@@ -1197,6 +1197,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												type="password"
 												placeholder="请输入初始密码，输入空则由平台随机生成"
 												disabled={!!middlewareName}
+												autoComplete="new-password"
 											/>
 										</FormItem>
 									</div>

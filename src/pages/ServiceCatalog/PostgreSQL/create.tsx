@@ -1018,6 +1018,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
 													disabled={!!backupFileName}
+													autoComplete="new-password"
 												/>
 											</FormItem>
 										</Tooltip>

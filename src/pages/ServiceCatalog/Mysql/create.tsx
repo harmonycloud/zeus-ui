@@ -1598,6 +1598,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={mysqlPwdChange}
 													disabled={!!backupFileName}
+													autoComplete="new-password"
 												/>
 											</FormItem>
 										</Tooltip>
