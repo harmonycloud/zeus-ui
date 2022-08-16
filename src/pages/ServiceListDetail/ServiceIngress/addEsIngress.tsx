@@ -483,7 +483,12 @@ export default function AddEsIngress(): JSX.Element {
 									}
 								]}
 							>
-								<InputNumber style={{ width: '160px' }} />
+								<InputNumber
+									placeholder={`请输入30000-${
+										exposeType === 'TCP' ? 65535 : 32767
+									}以内的端口号`}
+									style={{ width: 250 }}
+								/>
 							</FormItem>
 						</>
 					)}

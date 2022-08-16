@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Row, Col, Radio, RadioChangeEvent } from 'antd';
-import { ArrowsAltOutlined, ShrinkOutlined } from '@ant-design/icons';
+import {
+	Select,
+	Row,
+	Col,
+	Radio,
+	RadioChangeEvent,
+	Popover,
+	Space
+} from 'antd';
+import {
+	ArrowsAltOutlined,
+	QuestionCircleOutlined,
+	ShrinkOutlined
+} from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { setRealLog, cleanRealLog } from '@/redux/log/log';
@@ -135,7 +147,23 @@ const RealtimeLog = (props: RealTimeProps) => {
 				<div className={styles['filter-item-realtime']}>
 					<Row align="middle">
 						<Col span={5}>
-							<label>日志类型</label>
+							<Space>
+								<label>日志类型</label>
+								<Popover
+									content={
+										<span
+											style={{
+												lineHeight: '18px'
+											}}
+										>
+											通过kubectl logs{' '}
+											-f命令获得的实时日志信息
+										</span>
+									}
+								>
+									<QuestionCircleOutlined />
+								</Popover>
+							</Space>
 						</Col>
 						<Col span={19}>
 							<RadioGroup

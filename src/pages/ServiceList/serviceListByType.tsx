@@ -577,7 +577,6 @@ const ServiceListByType = (props: serviceListProps) => {
 							};
 							getPlatformAdd(sendData).then((res) => {
 								if (res.success) {
-									console.log(res);
 									if (res.data) {
 										window.open(
 											`${window.location.protocol.toLowerCase()}//${
@@ -598,8 +597,8 @@ const ServiceListByType = (props: serviceListProps) => {
 										});
 									}
 								} else {
-									notification.error({
-										message: '失败',
+									notification.info({
+										message: '提醒',
 										description: res.errorMsg
 									});
 								}
@@ -654,8 +653,8 @@ const ServiceListByType = (props: serviceListProps) => {
 									});
 								}
 							} else {
-								notification.error({
-									message: '失败',
+								notification.info({
+									message: '提醒',
 									description: res.errorMsg
 								});
 							}

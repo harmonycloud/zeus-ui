@@ -292,7 +292,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			/>
 			<ProContent>
 				<Alert
-					type="warning"
+					type="info"
 					showIcon={true}
 					message="本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本"
 				/>

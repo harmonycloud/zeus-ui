@@ -43,6 +43,7 @@ export interface NamespaceResourceProps {
 	};
 	registered: boolean;
 	phase: string;
+	availableDomain: boolean;
 }
 export interface ClusterQuotaDTO {
 	clusterNum: number;

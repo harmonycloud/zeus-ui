@@ -321,8 +321,10 @@ export default function AddIngress(): JSX.Element {
 						]}
 					>
 						<InputNumber
-							placeholder="对外端口"
-							style={{ width: 182 }}
+							placeholder={`请输入30000-${
+								exposeType === 'TCP' ? 65535 : 32767
+							}以内的端口号`}
+							style={{ width: 250 }}
 						/>
 					</Form.Item>
 					<Divider style={{ marginTop: 40 }} />

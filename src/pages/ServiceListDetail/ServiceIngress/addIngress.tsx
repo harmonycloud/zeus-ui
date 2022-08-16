@@ -551,9 +551,13 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										]}
 									>
 										<InputNumber
-											placeholder="请填写proxy端口"
 											disabled={!!serviceIngress}
-											style={{ width: '260px' }}
+											placeholder={`请输入30000-${
+												exposeType === 'TCP'
+													? 65535
+													: 32767
+											}以内的端口号`}
+											style={{ width: 250 }}
 										/>
 									</FormItem>
 									<FormItem
@@ -581,9 +585,13 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										]}
 									>
 										<InputNumber
-											placeholder="请填写proxy-1端口"
 											disabled={!!serviceIngress}
-											style={{ width: '260px' }}
+											placeholder={`请输入30000-${
+												exposeType === 'TCP'
+													? 65535
+													: 32767
+											}以内的端口号`}
+											style={{ width: 250 }}
 										/>
 									</FormItem>
 								</>
@@ -625,8 +633,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 												]}
 											>
 												<InputNumber
-													placeholder="请输入30000-65535以内的端口"
-													style={{ width: '260px' }}
+													placeholder={`请输入30000-${
+														exposeType === 'TCP'
+															? 65535
+															: 32767
+													}以内的端口号`}
+													style={{ width: 250 }}
 												/>
 											</FormItem>
 										);
@@ -741,7 +753,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										]}
 									>
 										<InputNumber
-											style={{ width: '160px' }}
+											placeholder={`请输入30000-${
+												exposeType === 'TCP'
+													? 65535
+													: 32767
+											}以内的端口号`}
+											style={{ width: 250 }}
 										/>
 									</FormItem>
 								</>

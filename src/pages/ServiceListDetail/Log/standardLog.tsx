@@ -366,7 +366,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 										lineHeight: '18px'
 									}}
 								>
-									安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+									通过logpilot采集出来的实时日志
 								</span>
 							}
 						>

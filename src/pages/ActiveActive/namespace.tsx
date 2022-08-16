@@ -1,5 +1,6 @@
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
+import { updateDomain } from '@/services/activeActive';
 import { getNamespaces } from '@/services/common';
 import { nullRender } from '@/utils/utils';
 import { Button, notification } from 'antd';
@@ -27,7 +28,12 @@ export default function NamespaceTable(
 		}).then((res) => {
 			if (res.success) {
 				if (mounted) {
-					setDataSource(res.data);
+					setDataSource(
+						res.data.filter(
+							(item: NamespaceResourceProps) =>
+								item.availableDomain === true
+						)
+					);
 				}
 			} else {
 				notification.error({
@@ -40,10 +46,34 @@ export default function NamespaceTable(
 			mounted = false;
 		};
 	}, [keyword]);
+	const handleChangeDomain = (
+		value: boolean,
+		record: NamespaceResourceProps
+	) => {
+		updateDomain({
+			clusterId: clusterId,
+			name: record.name,
+			availableDomain: value
+		}).then((res) => {
+			if (res.success) {
+				const msg = value ? '可用区开启成功' : '可用区关闭成功';
+				notification.success({
+					message: '成功',
+					description: msg
+				});
+				getData();
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
 	const Operation = {
 		primary: (
 			<Button type="primary" onClick={() => setVisible(true)}>
-				新增
+				新增/接入命名空间
 			</Button>
 		)
 	};
@@ -59,7 +89,12 @@ export default function NamespaceTable(
 			keyword: keyword
 		}).then((res) => {
 			if (res.success) {
-				setDataSource(res.data);
+				setDataSource(
+					res.data.filter(
+						(item: NamespaceResourceProps) =>
+							item.availableDomain === true
+					)
+				);
 			} else {
 				notification.error({
 					message: '失败',
@@ -94,7 +129,9 @@ export default function NamespaceTable(
 	const actionRender = (value: string, record: NamespaceResourceProps) => {
 		return (
 			<Actions>
-				<LinkButton>关闭可用区</LinkButton>
+				<LinkButton onClick={() => handleChangeDomain(false, record)}>
+					关闭可用区
+				</LinkButton>
 			</Actions>
 		);
 	};

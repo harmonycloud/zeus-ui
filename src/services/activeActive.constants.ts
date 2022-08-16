@@ -12,3 +12,5 @@ export const getUsableNodes = `${api}/clusters/{clusterId}/nodes/allocatable`;
 export const getActiveClusters = `${api}/area/clusters`;
 // * 开启可用区
 export const startActive = `${api}/area/clusters/{clusterId}`;
+// * 开启/关闭可用区
+export const updateDomain = `${api}/clusters/{clusterId}/namespaces/{name}/update`;

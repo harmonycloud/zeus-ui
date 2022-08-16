@@ -53,3 +53,6 @@ export const getActiveClusters = () => {
 export const startActive = (params: { clusterId: string }) => {
 	return Axios.get(ActiveActive.startActive, params);
 };
+export const updateDomain = (params: any) => {
+	return Axios.put(ActiveActive.updateDomain, params);
+};
