@@ -86,3 +86,10 @@ export interface ActiveClusterItem {
 export interface NamespaceTableProps {
 	clusterId: string;
 }
+export interface AccessNamespaceProps {
+	visible: boolean;
+	onCancel: () => void;
+	onCreate: (value: any) => void;
+	clusterId: string;
+	onRefresh: () => void;
+}

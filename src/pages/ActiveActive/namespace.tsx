@@ -3,12 +3,14 @@ import ProTable from '@/components/ProTable';
 import { updateDomain } from '@/services/activeActive';
 import { getNamespaces } from '@/services/common';
 import { nullRender } from '@/utils/utils';
-import { Button, notification } from 'antd';
+import { Button, notification, Modal } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { NamespaceResourceProps } from '../ResourcePoolManagement/resource.pool';
+import AccessNamespace from './accessNamespace';
 import { NamespaceTableProps } from './activeActive';
 
+const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 export default function NamespaceTable(
 	props: NamespaceTableProps
@@ -46,13 +48,22 @@ export default function NamespaceTable(
 			mounted = false;
 		};
 	}, [keyword]);
-	const handleChangeDomain = (
-		value: boolean,
-		record: NamespaceResourceProps
-	) => {
+	const onCreate = (value: any) => {
+		handleChangeDomain(true, value.name);
+	};
+	const closeActive = (name: string) => {
+		confirm({
+			title: '操作确认',
+			content: '是否确认关闭该命名空间的可用区操作？',
+			onOk: () => {
+				handleChangeDomain(false, name);
+			}
+		});
+	};
+	const handleChangeDomain = (value: boolean, name: string) => {
 		updateDomain({
 			clusterId: clusterId,
-			name: record.name,
+			name: name,
 			availableDomain: value
 		}).then((res) => {
 			if (res.success) {
@@ -61,6 +72,7 @@ export default function NamespaceTable(
 					message: '成功',
 					description: msg
 				});
+				setVisible(false);
 				getData();
 			} else {
 				notification.error({
@@ -129,80 +141,94 @@ export default function NamespaceTable(
 	const actionRender = (value: string, record: NamespaceResourceProps) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => handleChangeDomain(false, record)}>
+				<LinkButton onClick={() => closeActive(record.name)}>
 					关闭可用区
 				</LinkButton>
 			</Actions>
 		);
 	};
 	return (
-		<ProTable
-			dataSource={dataSource}
-			rowKey="name"
-			operation={Operation}
-			showRefresh
-			onRefresh={getData}
-			search={{
-				onSearch: handleSearch,
-				placeholder: '请输入命名空间名称搜索'
-			}}
-		>
-			<ProTable.Column
-				title="命名空间"
-				dataIndex="aliasName"
-				render={nameRender}
-			/>
-			<ProTable.Column
-				title="命名空间英文名"
-				dataIndex="name"
-				ellipsis={true}
-				// render={nameRender}
-			/>
-			<ProTable.Column
-				title="CPU配额（核）"
-				dataIndex="cpu"
-				render={cpuRender}
-				sorter={(a, b) => {
-					return (
-						Number(a.quotas?.cpu[1] || null) -
-						Number(b.quotas?.cpu[1] || null)
-					);
+		<>
+			<ProTable
+				dataSource={dataSource}
+				rowKey="name"
+				operation={Operation}
+				showRefresh
+				onRefresh={getData}
+				search={{
+					onSearch: handleSearch,
+					placeholder: '请输入命名空间名称搜索'
 				}}
-			/>
-			<ProTable.Column
-				title="内存配额（GB）"
-				dataIndex="memory"
-				render={memoryRender}
-				sorter={(a, b) => {
-					return (
-						Number(a.quotas?.memory[1] || null) -
-						Number(b.quotas?.memory[1] || null)
-					);
-				}}
-			/>
-			<ProTable.Column
-				title="已发布服务"
-				dataIndex="middlewareReplicas"
-				render={nullRender}
-				sorter={(
-					a: NamespaceResourceProps,
-					b: NamespaceResourceProps
-				) => a.middlewareReplicas || 0 - b.middlewareReplicas || 0}
-			/>
-			<ProTable.Column
-				title="创建时间"
-				dataIndex="createTime"
-				width={180}
-				sorter={(
-					a: NamespaceResourceProps,
-					b: NamespaceResourceProps
-				) => moment(a.createTime).unix() - moment(b.createTime).unix()}
-			/>
-			<ProTable.Column
-				title="操作"
-				dataIndex="action"
-				render={actionRender}
-			/>
-		</ProTable>
+			>
+				<ProTable.Column
+					title="命名空间"
+					dataIndex="aliasName"
+					render={nameRender}
+				/>
+				<ProTable.Column
+					title="命名空间英文名"
+					dataIndex="name"
+					ellipsis={true}
+					// render={nameRender}
+				/>
+				<ProTable.Column
+					title="CPU配额（核）"
+					dataIndex="cpu"
+					render={cpuRender}
+					sorter={(a, b) => {
+						return (
+							Number(a.quotas?.cpu[1] || null) -
+							Number(b.quotas?.cpu[1] || null)
+						);
+					}}
+				/>
+				<ProTable.Column
+					title="内存配额（GB）"
+					dataIndex="memory"
+					render={memoryRender}
+					sorter={(a, b) => {
+						return (
+							Number(a.quotas?.memory[1] || null) -
+							Number(b.quotas?.memory[1] || null)
+						);
+					}}
+				/>
+				<ProTable.Column
+					title="已发布服务"
+					dataIndex="middlewareReplicas"
+					render={nullRender}
+					sorter={(
+						a: NamespaceResourceProps,
+						b: NamespaceResourceProps
+					) => a.middlewareReplicas || 0 - b.middlewareReplicas || 0}
+				/>
+				<ProTable.Column
+					title="创建时间"
+					dataIndex="createTime"
+					width={180}
+					sorter={(
+						a: NamespaceResourceProps,
+						b: NamespaceResourceProps
+					) =>
+						moment(a.createTime).unix() -
+						moment(b.createTime).unix()
+					}
+				/>
+				<ProTable.Column
+					title="操作"
+					dataIndex="action"
+					render={actionRender}
+				/>
+			</ProTable>
+			{visible && (
+				<AccessNamespace
+					visible={visible}
+					onCancel={() => setVisible(false)}
+					clusterId={clusterId}
+					onCreate={onCreate}
+					onRefresh={getData}
+				/>
+			)}
+		</>
 	);
 }

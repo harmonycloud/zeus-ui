@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Collapse, notification, Modal } from 'antd';
+import { Collapse, notification, Modal, Input } from 'antd';
 import { useHistory } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import { CloseOutlined } from '@ant-design/icons';
@@ -8,6 +8,7 @@ import ActiveCard from './ActiveCard';
 import { getActiveClusters, startActive } from '@/services/activeActive';
 import { ActiveClusterItem } from './activeActive';
 import './index.scss';
+import DefaultPicture from '@/components/DefaultPicture';
 
 const { confirm } = Modal;
 const { Panel } = Collapse;
@@ -18,11 +19,13 @@ export default function ActiveActive(): JSX.Element {
 	const [activeClusters, setActiveClusters] = useState<ActiveClusterItem[]>(
 		[]
 	);
+	const [originData, setOriginData] = useState<ActiveClusterItem[]>([]);
 	useEffect(() => {
 		let mounted = true;
 		if (mounted) {
 			getActiveClusters().then((res) => {
 				if (res.success) {
+					setOriginData(res.data);
 					setActiveClusters(res.data);
 				} else {
 					notification.error({
@@ -85,7 +88,13 @@ export default function ActiveActive(): JSX.Element {
 			);
 		}
 	};
-
+	const onSearch = (value: string) => {
+		console.log(value);
+		const list = originData.filter((item) =>
+			item.clusterAliasName.includes(value)
+		);
+		setActiveClusters(list);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -104,28 +113,35 @@ export default function ActiveActive(): JSX.Element {
 				subTitle="针对不同集群内的可用区进行管理"
 			/>
 			<ProContent className="active-active-box">
-				<Collapse className="site-collapse-custom-collapse">
-					{panelVisible && (
-						<Panel
-							className="site-collapse-custom-panel"
-							key="0"
-							header="什么是同城双活？"
-							extra={genExtra(0)}
-						>
-							同城双活是基于谐云的云原生产品的基础上，可以做到业务轻松实现跨数据中心同城双活，故障秒级切换，数据强一致性，同时业务零改造。
-						</Panel>
-					)}
-					{panel1Visible && (
-						<Panel
-							className="site-collapse-custom-panel"
-							key="1"
-							header="什么是可用区？"
-							extra={genExtra(1)}
-						>
-							可用区是指在同城双活场景下，中心概念的载体，通过可用区的划分来数据中心，实现跨数据中心同城双活。
-						</Panel>
-					)}
-				</Collapse>
+				{(panel1Visible || panelVisible) && (
+					<Collapse className="site-collapse-custom-collapse">
+						{panelVisible && (
+							<Panel
+								className="site-collapse-custom-panel"
+								key="0"
+								header="什么是同城双活？"
+								extra={genExtra(0)}
+							>
+								同城双活是基于谐云的云原生产品的基础上，可以做到业务轻松实现跨数据中心同城双活，故障秒级切换，数据强一致性，同时业务零改造。
+							</Panel>
+						)}
+						{panel1Visible && (
+							<Panel
+								className="site-collapse-custom-panel"
+								key="1"
+								header="什么是可用区？"
+								extra={genExtra(1)}
+							>
+								可用区是指在同城双活场景下，中心概念的载体，通过可用区的划分来数据中心，实现跨数据中心同城双活。
+							</Panel>
+						)}
+					</Collapse>
+				)}
+				<Input.Search
+					style={{ width: 250, marginBottom: 16 }}
+					placeholder="请输入关键词搜索"
+					onSearch={onSearch}
+				/>
 				<div className="active-list-content">
 					{activeClusters.map((item: ActiveClusterItem) => {
 						return (
@@ -139,6 +155,9 @@ export default function ActiveActive(): JSX.Element {
 							/>
 						);
 					})}
+					{activeClusters.length === 0 && (
+						<DefaultPicture title="当前列表无数据" />
+					)}
 				</div>
 			</ProContent>
 		</ProPage>
