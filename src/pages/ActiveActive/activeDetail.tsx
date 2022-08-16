@@ -8,12 +8,11 @@ import {
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { NoDataCard, ActiveDataCard } from './ActiveActiveCard';
 import { ResourceZones, ZonesItem } from './activeActive';
-import { Collapse, notification, Tabs } from 'antd';
+import { notification, Tabs } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import './index.scss';
 import NamespaceTable from './namespace';
 
-const { Panel } = Collapse;
 const { TabPane } = Tabs;
 interface paramsProps {
 	id: string;
@@ -22,8 +21,6 @@ interface paramsProps {
 export default function ActiveDetail(): JSX.Element {
 	const params: paramsProps = useParams();
 	const history = useHistory();
-	const [panelVisible, setPanelVisible] = useState<boolean>(true);
-	const [panel1Visible, setPanel1Visible] = useState<boolean>(true);
 	const [zones, setZones] = useState<ZonesItem[]>([]);
 	const [resourceZones, setResourceZones] = useState<ResourceZones>({
 		zoneA: null,
@@ -130,15 +127,6 @@ export default function ActiveDetail(): JSX.Element {
 				getData();
 			});
 	};
-	const genExtra = (record: number) => (
-		<CloseOutlined
-			onClick={(event) => {
-				record === 0 ? setPanelVisible(false) : setPanel1Visible(false);
-				// If you don't want click extra trigger collapse, you can prevent this:
-				event.stopPropagation();
-			}}
-		/>
-	);
 	return (
 		<ProPage>
 			<ProHeader
@@ -146,28 +134,6 @@ export default function ActiveDetail(): JSX.Element {
 				onBack={() => history.goBack()}
 			/>
 			<ProContent className="active-active-box">
-				<Collapse className="site-collapse-custom-collapse">
-					{panelVisible && (
-						<Panel
-							className="site-collapse-custom-panel"
-							key="0"
-							header="什么是同城双活？"
-							extra={genExtra(0)}
-						>
-							同城双活是基于谐云的云原生产品的基础上，可以做到业务轻松实现跨数据中心同城双活，故障秒级切换，数据强一致性，同时业务零改造。
-						</Panel>
-					)}
-					{panel1Visible && (
-						<Panel
-							className="site-collapse-custom-panel"
-							key="1"
-							header="什么是可用区？"
-							extra={genExtra(1)}
-						>
-							可用区是指在同城双活场景下，中心概念的载体，通过可用区的划分来数据中心，实现跨数据中心同城双活。
-						</Panel>
-					)}
-				</Collapse>
 				<Tabs defaultActiveKey="1">
 					<TabPane tab="可用区" key="1">
 						<div

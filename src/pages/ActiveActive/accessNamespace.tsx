@@ -86,6 +86,16 @@ export default function AccessNamespace(
 						onCancel();
 						onRefresh();
 					} else {
+						setName({
+							value: value.name,
+							validateStatus: '',
+							errorMsg: ''
+						});
+						setAliasName({
+							value: value.name,
+							validateStatus: '',
+							errorMsg: ''
+						});
 						res.errorMsg.indexOf('命名空间') !== -1
 							? setAliasName({
 									value: value.aliasName,

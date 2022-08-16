@@ -101,7 +101,7 @@ export default function AreaDetail(): JSX.Element {
 			<Button
 				onClick={() =>
 					history.push(
-						`/systemManagement/resourcePoolManagement/resourcePoolDetail/active-active/${params.id}/${params.aliasName}/${params.areaName}/${params.aliasName}`
+						`/activeActive/active-active/${params.id}/${params.aliasName}/${params.areaName}/${params.aliasName}`
 					)
 				}
 				type="primary"
@@ -113,27 +113,6 @@ export default function AreaDetail(): JSX.Element {
 	const handleSearch = (value: string) => {
 		const list = dataSource.filter((item) => item.ip.includes(value));
 		setShowDataSource(list);
-	};
-	const onSort = (dataIndex: string, order: string) => {
-		const dsTemp = showDataSource.sort((a, b) => {
-			if (order === 'desc')
-				return (a[dataIndex] || 0) - (b[dataIndex] || 0);
-			else return (b[dataIndex] || 0) - (a[dataIndex] || 0);
-		});
-		setShowDataSource([...dsTemp]);
-	};
-	const onFilter = (filterParams: any) => {
-		setKeyword('');
-		const keys = Object.keys(filterParams);
-		if (filterParams[keys[0]].selectedKeys.length > 0) {
-			const list = showDataSource.filter(
-				(item) =>
-					item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-			);
-			setShowDataSource(list);
-		} else {
-			setShowDataSource(dataSource);
-		}
 	};
 	const cpuRender = (
 		value: string,
