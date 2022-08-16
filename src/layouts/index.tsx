@@ -287,19 +287,21 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			});
 			if (res.success) {
 				const child = res.data.map((i: ResMenuItem) =>
-					getItem(i.aliasName, i.url)
+					getItem(i.aliasName, i.url || '')
 				);
 				const itemsT = items.map((item: any) => {
 					if (item?.key === 'serviceList') {
-						item.children = child;
+						item.children = child.length > 0 ? child : null;
 					}
 					return item;
 				});
 				setItems(itemsT);
-				if (window.location.hash === '#/serviceList') {
-					window.location.href =
-						window.location.origin + '/#/' + res.data[0].url;
-					storage.setSession('menuPath', res.data[0].url);
+				if (child.length > 0) {
+					if (window.location.hash === '#/serviceList') {
+						window.location.href =
+							window.location.origin + '/#/' + res.data[0].url;
+						storage.setSession('menuPath', res.data[0].url);
+					}
 				}
 			}
 		} else {
