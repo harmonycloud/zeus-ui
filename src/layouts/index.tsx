@@ -291,7 +291,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				);
 				const itemsT = items.map((item: any) => {
 					if (item?.key === 'serviceList') {
-						item.children = child;
+						item.children = child.length > 0 ? child : null;
 					}
 					return item;
 				});
