@@ -5,6 +5,7 @@ import InstallIngressForm from './InstallIngress';
 import AccessIngressForm from './AccessIngress';
 import { deleteIngress } from '@/services/common';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
+import SelectedType from './selectedType';
 
 interface IngressCardProps {
 	status: number;
@@ -21,7 +22,7 @@ const IngressCard = (props: IngressCardProps) => {
 		props;
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
-
+	const [selectedVisible, setSelectedVisible] = useState<boolean>(false);
 	const uninstallComponent = (type = 'install') => {
 		confirm({
 			title: '操作确认',
@@ -64,8 +65,10 @@ const IngressCard = (props: IngressCardProps) => {
 						leftClass="link"
 						rightClass="link"
 						actionCount={2}
-						leftHandle={() => setInstallVisible(true)}
-						rightHandle={() => setAccessVisible(true)}
+						leftHandle={() => setSelectedVisible(true)}
+						rightHandle={() => setSelectedVisible(true)}
+						// leftHandle={() => setInstallVisible(true)}
+						// rightHandle={() => setAccessVisible(true)}
 						status={-1}
 						addTitle="新增负载均衡"
 						createTime={createTime}
@@ -225,6 +228,12 @@ const IngressCard = (props: IngressCardProps) => {
 					onCancel={() => setInstallVisible(false)}
 					onRefresh={onRefresh}
 					clusterId={clusterId}
+				/>
+			)}
+			{selectedVisible && (
+				<SelectedType
+					visible={selectedVisible}
+					onCancel={() => setSelectedVisible(false)}
 				/>
 			)}
 		</>
