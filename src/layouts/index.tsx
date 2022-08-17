@@ -296,18 +296,33 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					return item;
 				});
 				setItems(itemsT);
+				console.log(storage.getSession('menuPath'));
+				console.log(child);
 				if (child.length > 0) {
 					if (window.location.hash === '#/serviceList') {
 						window.location.href =
 							window.location.origin + '/#/' + res.data[0].url;
 						storage.setSession('menuPath', res.data[0].url);
+					} else {
+						if (
+							child.every(
+								(item: any) =>
+									item.key !== storage.getSession('menuPath')
+							)
+						) {
+							window.location.href =
+								window.location.origin +
+								'/#/' +
+								res.data[0].url;
+							storage.setSession('menuPath', res.data[0].url);
+						}
 					}
 				}
 			}
 		} else {
 			const itemT = items.map((item: any) => {
 				if (item.key === 'serviceList') {
-					item.children = undefined;
+					item.children = null;
 				}
 				return item;
 			});
