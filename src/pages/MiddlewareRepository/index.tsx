@@ -301,7 +301,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 																			currentCluster.id
 																		);
 																	},
-																	5
+																	3
 																)
 															);
 														}
