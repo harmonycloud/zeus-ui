@@ -13,7 +13,7 @@ import { paramsProps } from '../detail';
 
 interface ComponentProps {
 	setRefreshCluster: (flag: boolean) => void;
-	setMenuRefresh: (flag: boolean) => void;
+	setMenuRefresh: (flag: boolean, clusterId: string) => void;
 }
 
 const Component = (props: ComponentProps) => {
@@ -44,7 +44,7 @@ const Component = (props: ComponentProps) => {
 			if (res.success) {
 				setComponents(res.data);
 				setRefreshCluster(true);
-				setMenuRefresh(true);
+				setMenuRefresh(true, id);
 			} else {
 				notification.error({
 					message: '失败',

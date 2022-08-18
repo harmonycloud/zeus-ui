@@ -93,34 +93,6 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 			</Button>
 		)
 	};
-	// const onFilter = (filterParams: any) => {
-	// 	const keys = Object.keys(filterParams);
-	// 	if (filterParams[keys[0]].selectedKeys.length > 0) {
-	// 		const list = originData.filter(
-	// 			(item) =>
-	// 				item[keys[0]] === filterParams[keys[0]].selectedKeys[0]
-	// 		);
-	// 		setDataSource(list);
-	// 	} else {
-	// 		setDataSource(originData);
-	// 	}
-	// };
-	// const onSort = (dataIndex: string, order: string) => {
-	// 	if (dataIndex === 'createTime') {
-	// 		const dsTemp = originData.sort((a, b) => {
-	// 			const result =
-	// 				moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-	// 			return order === 'asc'
-	// 				? result > 0
-	// 					? 1
-	// 					: -1
-	// 				: result > 0
-	// 				? -1
-	// 				: 1;
-	// 		});
-	// 		setDataSource([...dsTemp]);
-	// 	}
-	// };
 	const versionStatusRender = (value: string) => {
 		const color =
 			value === 'now'
@@ -191,7 +163,8 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 								message: '成功',
 								description: '已升级到该版本'
 							});
-							setMenuRefresh && setMenuRefresh(true);
+							setMenuRefresh &&
+								setMenuRefresh(true, params.clusterId);
 						} else {
 							Modal.error({
 								title: '失败',

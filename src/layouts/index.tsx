@@ -9,9 +9,8 @@ import MyMenu from './Menu/MyMenu';
 import Login from '@/pages/Login';
 import MidTerminal from '@/components/MidTerminal';
 import storage from '@/utils/storage';
-import './layout.scss';
 import { getMenu, getServiceListChildMenu } from '@/services/user';
-import { IconFont, StorageManageIcon } from '@/components/IconFont';
+import { IconFont } from '@/components/IconFont';
 import { ResMenuItem } from '@/types/comment';
 import { getProjects } from '@/services/project';
 import { getClusters, getNamespaces } from '@/services/common';
@@ -20,6 +19,7 @@ import { getUserInformation } from '@/services/user';
 import {
 	clusterType,
 	globalVarProps,
+	menuReduxProps,
 	NavbarNamespaceItem,
 	StoreState,
 	User
@@ -35,6 +35,7 @@ import {
 import { setMenuRefresh } from '@/redux/menu/menu';
 import backupService from '@/assets/images/backupService.svg';
 import myProject from '@/assets/images/myProject.svg';
+import './layout.scss';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -59,7 +60,8 @@ interface MyLayoutProps {
 	setRefreshCluster: (flag: boolean) => void;
 	setGlobalClusterList: (clusterList: any) => void;
 	setGlobalNamespaceList: (namespaceList: any) => void;
-	setMenuRefresh: (flag: boolean) => void;
+	setMenuRefresh: (flag: boolean, clusterId: string) => void;
+	menu: menuReduxProps;
 }
 function MyLayout(props: MyLayoutProps): JSX.Element {
 	const {
@@ -69,7 +71,8 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		setRefreshCluster,
 		setGlobalClusterList,
 		setGlobalNamespaceList,
-		setMenuRefresh
+		setMenuRefresh,
+		menu
 	} = props;
 	const { flag } = props.globalVar;
 	const [collapsed, setCollapsed] = useState<boolean>(false); // * 是否收起侧边栏
@@ -122,6 +125,15 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			setRefreshCluster(false);
 		}
 	}, [flag]);
+	useEffect(() => {
+		if (menu.flag) {
+			if (currentProject && currentCluster) {
+				if (menu.clusterId === currentCluster.id) {
+					getMenuMid(currentProject.projectId, currentCluster.id);
+				}
+			}
+		}
+	}, [menu]);
 	const getUserInfo = async () => {
 		const res: { aliasName?: string; [propsName: string]: any } =
 			await getUserInformation();
@@ -296,8 +308,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					return item;
 				});
 				setItems(itemsT);
-				console.log(storage.getSession('menuPath'));
-				console.log(child);
 				if (child.length > 0) {
 					if (window.location.hash === '#/serviceList') {
 						window.location.href =
@@ -424,7 +434,8 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	);
 }
 const mapStateToProps = (state: StoreState) => ({
-	globalVar: state.globalVar
+	globalVar: state.globalVar,
+	menu: state.menu
 });
 export default connect(mapStateToProps, {
 	setCluster,

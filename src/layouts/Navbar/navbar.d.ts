@@ -12,7 +12,7 @@ export interface NavbarProps {
 	setGlobalClusterList: (clusterList: any) => void;
 	setGlobalNamespaceList: (namespaceList: any) => void;
 	// getClusterId: (namespace?: any) => void;
-	setMenuRefresh: (flag: boolean) => void;
+	// setMenuRefresh: (flag: boolean, clusterId: string) => void;
 	currentProject: ProjectItem | undefined;
 	projects: ProjectItem[];
 	currentCluster: clusterType | undefined;
