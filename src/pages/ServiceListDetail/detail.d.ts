@@ -476,6 +476,7 @@ export interface ConsoleDataProps {
 	podName: string;
 	type: string;
 	name: string;
+	role?: string;
 }
 export interface consoleProps {
 	visible: boolean;

@@ -285,6 +285,26 @@ const ComponentCard = (props: ComponentCardProps) => {
 						seconds={seconds}
 					/>
 				);
+			case 7:
+				return (
+					<MidCard
+						color={color[title]}
+						icon={icon[title]}
+						title={name[title]}
+						status={status}
+						actionCount={actionRender(title)}
+						leftText="卸载"
+						leftClass="danger"
+						rightText="编辑"
+						leftHandle={uninstallComponent}
+						rightHandle={() => setAccessVisible(true)}
+						centerText="卸载"
+						centerClass="danger"
+						centerHandle={uninstallComponent}
+						createTime={createTime}
+						seconds={seconds}
+					/>
+				);
 			default:
 				break;
 		}

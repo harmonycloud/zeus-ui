@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
 	CheckCircleFilled,
 	CloseCircleFilled,
+	ExclamationCircleFilled,
 	PlusOutlined
 } from '@ant-design/icons';
 import { IconFont } from '../IconFont';
@@ -54,6 +55,13 @@ export const iconRender = (status: number | undefined) => {
 			return (
 				<>
 					<CloseCircleFilled style={{ color: '#C80000' }} /> 安装异常
+				</>
+			);
+		case 7:
+			return (
+				<>
+					<ExclamationCircleFilled style={{ color: '#faad14' }} />{' '}
+					未配置
 				</>
 			);
 		default:

@@ -165,15 +165,17 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			name: data.name,
 			namespace: namespace,
 			clusterId: clusterId,
-			type: data.type
+			type: data.type,
+			role: record.role
 		};
-		if (data.type == 'mysql') {
-			setCurrentContainer('mysql');
-		} else if (data.type === 'redis') {
+		// if (data.type == 'mysql') {
+		// 	setCurrentContainer('mysql');
+		// } else
+		if (data.type === 'redis') {
 			if (record.role === 'master' || record.role === 'slave') {
 				setCurrentContainer('redis-cluster');
 			} else {
-				setCurrentContainer('sentinel');
+				setCurrentContainer(strArr[0]);
 			}
 		} else {
 			setCurrentContainer(strArr[0]);
