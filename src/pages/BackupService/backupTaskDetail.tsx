@@ -205,7 +205,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 		if (cluster.id !== undefined && namespace.name !== undefined) {
 			getData();
 			getCanReleaseMiddleware({
-				clusterId: cluster.id,
+				clusterId:
+					storage.getLocal('backupDetail').clusterId || cluster.id,
 				type: params.type
 			}).then((res) => {
 				if (res.success) {
@@ -223,7 +224,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const getData = () => {
 		getBackups({
 			backupName: params.backupName,
-			clusterId: cluster.id,
+			clusterId: storage.getLocal('backupDetail').clusterId || cluster.id,
 			namespace: storage.getLocal('backupDetail').namespace,
 			type: params.type
 		}).then((res) => {
@@ -349,7 +350,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 							content: '备份记录删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const result = {
-									clusterId: cluster.id,
+									clusterId:
+										storage.getLocal('backupDetail')
+											.clusterId || cluster.id,
 									namespace:
 										storage.getLocal('backupDetail')
 											.namespace || namespace.name,
@@ -384,7 +387,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const getBasicInfo = () => {
 		const sendData = {
 			keyword: storage.getLocal('backupDetail').taskName,
-			clusterId: cluster.id,
+			clusterId: storage.getLocal('backupDetail').clusterId || cluster.id,
 			namespace: storage.getLocal('backupDetail').namespace,
 			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
@@ -414,7 +417,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const onCreate = (cron: any) => {
 		const sendData = {
 			backupName: params.backupName,
-			clusterId: cluster.id,
+			clusterId: storage.getLocal('backupDetail').clusterId || cluster.id,
 			namespace:
 				storage.getLocal('backupDetail').namespace || namespace.name,
 			type: params.type,

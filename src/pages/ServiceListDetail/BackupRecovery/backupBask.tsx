@@ -136,7 +136,9 @@ export default function List(props: any): JSX.Element {
 							content: '备份任务删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const sendData = {
-									clusterId,
+									clusterId: clusterId
+										? clusterId
+										: currentCluster?.id,
 									namespace: record.namespace,
 									type: record.sourceType,
 									cron: record.cron || '',
@@ -238,7 +240,10 @@ export default function List(props: any): JSX.Element {
 							`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
 						);
 					}
-					storage.setLocal('backupDetail', record);
+					storage.setLocal('backupDetail', {
+						...record,
+						clusterId: currentCluster?.id
+					});
 				}}
 			>
 				{value}
