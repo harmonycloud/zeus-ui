@@ -95,3 +95,6 @@ export interface paramsProps {
 	aliasName: string;
 	namespace: string;
 }
+export interface ShowDataSourceParams {
+	[propsName: string]: serviceProps[];
+}
