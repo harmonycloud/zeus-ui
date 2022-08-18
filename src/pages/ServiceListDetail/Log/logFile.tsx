@@ -61,7 +61,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 		middlewareName,
 		clusterId,
 		namespace,
-		data: { filelogEnabled }
+		data: { filelogEnabled, stdoutEnabled }
 	} = props.data;
 	// *------------显示-------------------
 	// * 日志显示是否全屏
@@ -99,9 +99,13 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 
 	const [switchVisible, setSwitchVisible] = useState<boolean>(false);
 	const [logFile, setLogFile] = useState<boolean>(filelogEnabled || false);
+	const [standardLog, setStandardLog] = useState<boolean>(
+		stdoutEnabled || false
+	);
 
 	useEffect(() => {
 		setLogFile(props.data.data.filelogEnabled);
+		setStandardLog(props.data.data.stdoutEnabled);
 	}, [props.data.data.filelogEnabled]);
 	// * 当logList发生变化是去更新logs内容
 	useEffect(() => {
@@ -566,6 +570,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 							visible={switchVisible}
 							source="logfile"
 							flag={logFile}
+							withFlag={standardLog}
 							data={{
 								clusterId,
 								namespace,

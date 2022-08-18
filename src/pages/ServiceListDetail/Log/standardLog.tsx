@@ -57,7 +57,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 		middlewareName,
 		clusterId,
 		namespace,
-		data: { stdoutEnabled }
+		data: { stdoutEnabled, filelogEnabled }
 	} = props.data;
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 	const [logs, setLogs] = useState<string>('');
@@ -90,6 +90,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(
 		stdoutEnabled || false
 	);
+	const [logFile, setLogFile] = useState<boolean>(filelogEnabled || false);
 	const [switchVisible, setSwitchVisible] = useState<boolean>(false);
 
 	const changePod = (value: string) => {
@@ -105,6 +106,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 	};
 	useEffect(() => {
 		setStandardLog(props.data.data.stdoutEnabled);
+		setLogFile(props.data.data.filelogEnabled);
 	}, [props.data.data.stdoutEnabled]);
 
 	useEffect(() => {
@@ -573,6 +575,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 							visible={switchVisible}
 							source="standard"
 							flag={standardLog}
+							withFlag={logFile}
 							data={{
 								clusterId,
 								namespace,
