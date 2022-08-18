@@ -1062,7 +1062,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: '100%'
 												}}
-												disabled={!!backupFileName}
 											/>
 										</FormItem>
 									</div>
