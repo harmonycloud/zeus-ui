@@ -1640,7 +1640,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: '380px'
 												}}
-												disabled={!!backupFileName}
 											/>
 										</FormItem>
 									</div>

@@ -1211,7 +1211,6 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: '100%'
 												}}
-												disabled={!!middlewareName}
 											/>
 										</FormItem>
 									</div>
