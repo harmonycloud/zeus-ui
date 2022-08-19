@@ -374,6 +374,7 @@ export default function AddBackupPosition(): JSX.Element {
 											clusterId: value
 										});
 									}}
+									dropdownMatchSelectWidth={false}
 									onBlur={() => {
 										selectClusterId &&
 											!selectClusterIds.find(

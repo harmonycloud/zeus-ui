@@ -504,6 +504,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									<Select
 										placeholder="请选择负载均衡"
 										disabled={!!serviceIngress}
+										dropdownMatchSelectWidth={false}
 									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
@@ -704,6 +705,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											<Select
 												placeholder="请选择负载均衡"
 												disabled={!!serviceIngress}
+												dropdownMatchSelectWidth={false}
 											>
 												{ingresses.map(
 													(
@@ -779,6 +781,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										<Select
 											placeholder="请选择负载均衡"
 											disabled={!!serviceIngress}
+											dropdownMatchSelectWidth={false}
 										>
 											{ingresses.map(
 												(item: IngressItemProps) => {

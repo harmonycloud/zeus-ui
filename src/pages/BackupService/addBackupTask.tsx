@@ -380,6 +380,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 															'dateUnit'
 														]);
 													}}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{dataType?.map(
 														(item: any) => {
@@ -681,6 +684,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 													setSelectAddress(value);
 												}}
 												style={{ width: '150px' }}
+												dropdownMatchSelectWidth={false}
 											>
 												{addressList?.map(
 													(item: any) => {

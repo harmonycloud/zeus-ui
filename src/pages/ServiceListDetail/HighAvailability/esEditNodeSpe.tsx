@@ -570,6 +570,7 @@ export default function EsEditNodeSpe(props: EsNodeProps): JSX.Element {
 														nodeModify.nodeName
 													].storageClassName
 												}
+												dropdownMatchSelectWidth={false}
 											>
 												<Option
 													value={

@@ -754,6 +754,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							value={eventType}
 							onChange={(val) => setEventType(val)}
 							disabled={!eventList.length}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={'All'}>全部状态</Option>
 							<Option value={'Normal'}>正常</Option>
@@ -764,6 +765,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							value={kind}
 							onChange={(val) => setKind(val)}
 							disabled={!eventList.length}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={'All'}>全部类型</Option>
 							<Option value={'Pod'}>Pod</Option>

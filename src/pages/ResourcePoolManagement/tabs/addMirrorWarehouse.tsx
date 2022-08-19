@@ -110,6 +110,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 								<Select
 									placeholder="请选择镜像地址"
 									style={{ width: '120px' }}
+									dropdownMatchSelectWidth={false}
 								>
 									{address.map((item: any) => {
 										return (

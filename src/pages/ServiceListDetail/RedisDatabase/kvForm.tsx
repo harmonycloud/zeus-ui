@@ -195,6 +195,7 @@ export default function KvForm(props: any): JSX.Element {
 						placeholder="请选择"
 						style={{ width: '100%' }}
 						onChange={(value) => setType(value)}
+						dropdownMatchSelectWidth={false}
 					>
 						{typeList.map((item: string) => {
 							return (

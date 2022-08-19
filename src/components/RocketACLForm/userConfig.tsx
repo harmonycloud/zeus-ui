@@ -345,6 +345,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 								value={topics[0].value}
 								defaultValue="DENY"
 								disabled={disabled}
+								dropdownMatchSelectWidth={false}
 							>
 								<Option value="DENY">DENY</Option>
 								<Option value="PUB">PUB</Option>
@@ -489,6 +490,7 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 									handleSelectChange(value, 'groupValue', 0)
 								}
 								disabled={disabled}
+								dropdownMatchSelectWidth={false}
 							>
 								<Option value="DENY">DENY</Option>
 								<Option value="PUB">PUB</Option>
@@ -554,6 +556,9 @@ export default function UserConfig(props: userConfigProps): JSX.Element {
 														)
 													}
 													value={item.value}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													<Option value="DENY">
 														DENY

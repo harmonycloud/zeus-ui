@@ -209,6 +209,7 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 									onChange(value, 'ingressClassName')
 								}
 								style={{ width: '200px', marginRight: 8 }}
+								dropdownMatchSelectWidth={false}
 							>
 								{ingresses.map(
 									(item: IngressItemProps, index) => {

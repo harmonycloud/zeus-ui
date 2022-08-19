@@ -172,6 +172,7 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 								value={searchType}
 								onChange={onFilterChange}
 								style={{ width: '100%' }}
+								dropdownMatchSelectWidth={false}
 							>
 								{searchTypes.map((item) => (
 									<Option key={item.value} value={item.value}>

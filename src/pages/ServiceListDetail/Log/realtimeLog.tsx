@@ -200,6 +200,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 								value={pod}
 								onChange={changePod}
 								style={{ width: '100%' }}
+								dropdownMatchSelectWidth={false}
 							>
 								{podList.map((item, index) => (
 									<Option value={item.podName} key={index}>
@@ -221,6 +222,7 @@ const RealtimeLog = (props: RealTimeProps) => {
 								value={container}
 								onChange={changeContainr}
 								style={{ width: '100%' }}
+								dropdownMatchSelectWidth={false}
 							>
 								{containerList.map((item, index) => (
 									<Option value={item.name} key={index}>

@@ -135,7 +135,7 @@ export default function AccessNamespace(
 						required
 						rules={[{ required: true, message: '请选择命名空间' }]}
 					>
-						<Select>
+						<Select dropdownMatchSelectWidth={false}>
 							{namespaces.map((item: NamespaceResourceProps) => (
 								<Select.Option
 									key={item.name}

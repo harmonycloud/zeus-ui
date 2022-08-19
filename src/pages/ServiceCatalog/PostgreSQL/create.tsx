@@ -645,6 +645,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -1247,75 +1250,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									</div>
 								</li>
 								<StorageQuota clusterId={globalCluster.id} />
-								{/* <li className="display-flex">
-									<label className="form-name">
-										<span className="ne-required">
-											存储配额
-										</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<FormItem
-											rules={[
-												{
-													required: true,
-													message: '请选择存储类型'
-												}
-											]}
-											name="storageClass"
-										>
-											<Select
-												style={{
-													marginRight: 8,
-													width: 150
-												}}
-												placeholder="请选择"
-											>
-												{storageClassList.map(
-													(item, index) => {
-														return (
-															<Select.Option
-																key={index}
-																value={
-																	item.name
-																}
-															>
-																{item.name}
-															</Select.Option>
-														);
-													}
-												)}
-											</Select>
-										</FormItem>
-										<FormItem
-											rules={[
-												{
-													required: true,
-													message:
-														'请输入存储配额大小（GB）'
-												},
-												{
-													pattern: new RegExp(
-														pattern.posInt
-													),
-													message:
-														'请输入小于21位的正整数'
-												}
-											]}
-											name="storageQuota"
-											initialValue={5}
-										>
-											<InputNumber
-												style={{
-													width: '100%'
-												}}
-												placeholder="请输入存储配额大小"
-												addonAfter="GB"
-											/>
-										</FormItem>
-									</div>
-								</li> */}
 							</ul>
 						</div>
 					</FormBlock>

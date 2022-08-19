@@ -790,6 +790,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -1301,6 +1304,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												marginBottom: 12
 											}}
 											disabled={!!middlewareName}
+											dropdownMatchSelectWidth={false}
 										>
 											{modeList.map(
 												(item: any, index: number) => (
@@ -1367,6 +1371,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													width: 182
 												}}
 												disabled={!!middlewareName}
+												dropdownMatchSelectWidth={false}
 											>
 												{sentinelModeList.map(
 													(item, index) => (

@@ -368,6 +368,9 @@ function DynamicForm(props: CreateProps): JSX.Element {
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '390px' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {

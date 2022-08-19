@@ -689,6 +689,7 @@ function CreateAlarm(): JSX.Element {
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
 							disabled={ruleId as unknown as boolean}
+							dropdownMatchSelectWidth={false}
 						>
 							{poolList.length &&
 								poolList.map((item: any) => {
@@ -828,6 +829,7 @@ function CreateAlarm(): JSX.Element {
 													minWidth: 'auto'
 												}}
 												// autoWidth={true}
+												dropdownMatchSelectWidth={false}
 												value={item.symbol}
 											>
 												{symbols.map((i) => {
@@ -906,6 +908,7 @@ function CreateAlarm(): JSX.Element {
 												}
 												style={{ width: '100%' }}
 												value={item.severity}
+												dropdownMatchSelectWidth={false}
 											>
 												{alarmWarn.map((i) => {
 													return (
@@ -929,6 +932,7 @@ function CreateAlarm(): JSX.Element {
 														'silence'
 													)
 												}
+												dropdownMatchSelectWidth={false}
 												style={{ width: '100%' }}
 												value={item.silence}
 											>
