@@ -7,6 +7,7 @@ interface SwitchFormProps {
 	visible: boolean;
 	source: string;
 	flag: boolean;
+	withFlag: boolean;
 	data: {
 		clusterId: string;
 		namespace: string;
@@ -18,7 +19,7 @@ interface SwitchFormProps {
 	onCancel: (v: boolean) => void;
 }
 export default function SwitchForm(props: SwitchFormProps): JSX.Element {
-	const { visible, onCancel, source, flag } = props;
+	const { visible, onCancel, source, flag, withFlag } = props;
 	const {
 		clusterId,
 		namespace,
@@ -30,9 +31,9 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 	const [checked, setChecked] = useState<boolean>(false);
 	const onOk = () => {
 		const stdoutEnabled =
-			source === 'standard' ? flag : checked ? flag : !flag;
+			source === 'standard' ? flag : withFlag ? !checked : checked;
 		const filelogEnabled =
-			source === 'logfile' ? flag : checked ? flag : !flag;
+			source === 'logfile' ? flag : withFlag ? !checked : checked;
 		const sendData = {
 			clusterId,
 			namespace,
@@ -73,19 +74,23 @@ export default function SwitchForm(props: SwitchFormProps): JSX.Element {
 			{`${flag ? '开启' : '关闭'}将导致服务重启${
 				flag ? ',数据同步ES也需要等待一会' : ''
 			}，是否继续？`}
-			<br />
-			<br />
-			<Checkbox
-				style={{ marginLeft: 24 }}
-				checked={checked}
-				onChange={(e: CheckboxChangeEvent) =>
-					setChecked(e.target.checked)
-				}
-			>
-				{`若${source === 'standard' ? '文件日志' : '标准日志'}${
-					flag ? '未启用' : '启用中'
-				}，您可以选择同步${flag ? '开启' : '关闭'}`}
-			</Checkbox>
+			{(flag && !withFlag) || (!flag && withFlag) ? (
+				<>
+					<br />
+					<br />
+					<Checkbox
+						style={{ marginLeft: 24 }}
+						checked={checked}
+						onChange={(e: CheckboxChangeEvent) =>
+							setChecked(e.target.checked)
+						}
+					>
+						{`是否同步${!withFlag ? '开启' : '关闭'}${
+							source === 'standard' ? '文件日志' : '标准日志'
+						}`}
+					</Checkbox>
+				</>
+			) : null}
 		</Modal>
 	);
 }
