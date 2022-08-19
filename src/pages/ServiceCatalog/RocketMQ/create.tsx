@@ -181,22 +181,23 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	}, [props]);
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) =>
+							item.clusterId === globalCluster.id
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
 		}
 	}, [project, globalNamespace]);
 
