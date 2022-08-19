@@ -257,6 +257,7 @@ function PlatformOverview(props: any): JSX.Element {
 									}}
 									onChange={(value) => setType(value)}
 									defaultValue="全部"
+									dropdownMatchSelectWidth={false}
 								>
 									{poolList.length &&
 										poolList.map((item: poolListItem) => {

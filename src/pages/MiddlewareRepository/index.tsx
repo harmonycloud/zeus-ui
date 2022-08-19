@@ -236,6 +236,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							<Select
 								onChange={onChange}
 								value={currentCluster?.id}
+								dropdownMatchSelectWidth={false}
 							>
 								{clusterList.map((item: clusterType) => {
 									return (

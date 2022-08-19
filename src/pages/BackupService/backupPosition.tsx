@@ -221,6 +221,7 @@ export default function BackupPosition(): JSX.Element {
 												onChange={(value) =>
 													setSelectService(value)
 												}
+												dropdownMatchSelectWidth={false}
 											>
 												{poolList.length &&
 													poolList.map(

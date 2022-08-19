@@ -240,6 +240,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 										setDateUnit(value);
 										form.validateFields(['dateUnit']);
 									}}
+									dropdownMatchSelectWidth={false}
 								>
 									{dataType?.map((item: any) => {
 										return (

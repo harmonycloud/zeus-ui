@@ -54,6 +54,7 @@ export default function Console(props: consoleProps): JSX.Element {
 							style={{ width: '100%' }}
 							value={mysqlDatabaseContainer[0]}
 							onChange={(value: any) => setContainer(value)}
+							dropdownMatchSelectWidth={false}
 						>
 							{mysqlDatabaseContainer.map(
 								(item: string, index: number) => {
@@ -78,6 +79,7 @@ export default function Console(props: consoleProps): JSX.Element {
 							style={{ width: '100%' }}
 							value={redisDatabaseContainer[0]}
 							onChange={(value: any) => setContainer(value)}
+							dropdownMatchSelectWidth={false}
 						>
 							{redisDatabaseContainer.map(
 								(item: string, index: number) => {
@@ -103,6 +105,7 @@ export default function Console(props: consoleProps): JSX.Element {
 						style={{ width: '100%' }}
 						value={container}
 						onChange={(value: any) => setContainer(value)}
+						dropdownMatchSelectWidth={false}
 					>
 						{containers.map((item: string, index: number) => {
 							return (

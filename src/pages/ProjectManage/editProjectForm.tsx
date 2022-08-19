@@ -275,7 +275,11 @@ export default function EditProjectForm(
 					<Input />
 				</FormItem>
 				<FormItem label="绑定项目管理员" name="user">
-					<Select allowClear={true} style={{ width: '100%' }}>
+					<Select
+						dropdownMatchSelectWidth={false}
+						allowClear={true}
+						style={{ width: '100%' }}
+					>
 						{users.map((item: filtersProps) => {
 							return (
 								<Option value={item.value} key={item.value}>

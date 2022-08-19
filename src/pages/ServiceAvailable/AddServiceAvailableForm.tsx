@@ -583,6 +583,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									disabled={
 										record && record.protocol === 'TCP'
 									}
+									dropdownMatchSelectWidth={false}
 								>
 									{ingresses.map(
 										(item: IngressItemProps, index) => {
@@ -668,6 +669,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 								]}
 							>
 								<Select
+									dropdownMatchSelectWidth={false}
 									onChange={onServiceChange}
 									style={{ width: '100%' }}
 									value={selectedService.serviceName}
@@ -742,6 +744,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												)
 											))
 									}
+									dropdownMatchSelectWidth={false}
 								>
 									{selectedService.portDetailDtoList &&
 										selectedService.portDetailDtoList.map(
@@ -789,6 +792,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 												value={item.serviceName}
 												style={{ width: '200px' }}
 												placeholder="请选择Service"
+												dropdownMatchSelectWidth={false}
 												disabled={
 													selectedService?.serviceName?.includes(
 														`${selectedInstance.name}-kafka-external-svc`
@@ -860,6 +864,7 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 														'servicePort'
 													)
 												}
+												dropdownMatchSelectWidth={false}
 											>
 												{selectedService.portDetailDtoList &&
 													selectedService.portDetailDtoList.map(

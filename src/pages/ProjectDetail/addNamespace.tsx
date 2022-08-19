@@ -234,6 +234,7 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 						value={currentCluster?.id}
 						onChange={handleChange}
 						style={{ width: '100%' }}
+						dropdownMatchSelectWidth={false}
 					>
 						{clusterList.map((item: clusterType) => {
 							return (
@@ -256,7 +257,10 @@ function AddNamespace(props: AddNamespaceProps): JSX.Element {
 							}
 						]}
 					>
-						<Select style={{ width: '100%' }}>
+						<Select
+							style={{ width: '100%' }}
+							dropdownMatchSelectWidth={false}
+						>
 							{namespaceList?.map((item: any) => {
 								return (
 									<Option key={item.name} value={item.name}>

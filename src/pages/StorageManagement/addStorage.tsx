@@ -181,6 +181,7 @@ export default function AddStorage(): JSX.Element {
 										vgName: ''
 									});
 								}}
+								dropdownMatchSelectWidth={false}
 								disabled={params.name ? true : false}
 							>
 								{clusterList.map((item: clusterType) => {
@@ -213,6 +214,7 @@ export default function AddStorage(): JSX.Element {
 									storages.length === 0 &&
 									'暂不存在未接入的存储'
 								}
+								dropdownMatchSelectWidth={false}
 							>
 								{storages.length > 0 &&
 									storages.map((item: StorageItem) => {

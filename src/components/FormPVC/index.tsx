@@ -79,6 +79,7 @@ export default function FormPVC(props: CustomFormItemProps): JSX.Element {
 						style={{ width: '390px' }}
 						onChange={handleChange}
 						value={value}
+						dropdownMatchSelectWidth={false}
 					>
 						{pvcList.map((item: any, index: number) => (
 							<Option key={index} value={item.name}>

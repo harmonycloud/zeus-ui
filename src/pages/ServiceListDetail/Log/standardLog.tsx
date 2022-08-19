@@ -414,6 +414,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 									value={pod}
 									onChange={changePod}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value="all">全部</Option>
 									{podList.map((item, index) => (
@@ -439,6 +440,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 									value={container}
 									onChange={changeContainr}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value="all">全部</Option>
 									{containerList.map((item, index) => (
@@ -461,6 +463,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 									value={searchType}
 									onChange={changeSearchType}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									{searchTypes.map((item) => (
 										<Option

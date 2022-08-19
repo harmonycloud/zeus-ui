@@ -200,6 +200,7 @@ const ConfigMapEdit = (props: ConfigMapEditProp) => {
 					<Select
 						onChange={handleChange}
 						value={currentConfig}
+						dropdownMatchSelectWidth={false}
 						// autoWidth={false}
 					>
 						{list.map((item: string) => {

@@ -92,6 +92,7 @@ export default function StorageManagement(): JSX.Element {
 				<Select
 					defaultValue="*"
 					style={{ width: 120 }}
+					dropdownMatchSelectWidth={false}
 					onChange={(value: string) => handleChange(value, 'cluster')}
 				>
 					<Option value="*">全部</Option>
@@ -107,6 +108,7 @@ export default function StorageManagement(): JSX.Element {
 				<Select
 					defaultValue=""
 					style={{ width: 120 }}
+					dropdownMatchSelectWidth={false}
 					onChange={(value: string) => handleChange(value, 'type')}
 				>
 					<Option value="">全部</Option>

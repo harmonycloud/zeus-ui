@@ -48,6 +48,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 							onChange={onTypeChange}
 							defaultValue={isSelect}
 							bordered={false}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={false}>日期选择</Option>
 							<Option value={true}>时间段</Option>
@@ -65,6 +66,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 							onChange={onTypeChange}
 							defaultValue={isSelect}
 							bordered={false}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={false}>日期选择</Option>
 							<Option value={true}>时间段</Option>
@@ -90,6 +92,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 									onChange={onTypeChange}
 									defaultValue={isSelect}
 									bordered={false}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value={false}>日期选择</Option>
 									<Option value={true}>时间段</Option>
@@ -113,6 +116,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 									onChange={onTypeChange}
 									defaultValue={isSelect}
 									bordered={false}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value={false}>日期选择</Option>
 									<Option value={true}>时间段</Option>

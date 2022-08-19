@@ -208,7 +208,11 @@ export default function List(props: any): JSX.Element {
 					新增
 				</Button>
 				{!data && (
-					<Select onChange={onChange} value={currentCluster?.id}>
+					<Select
+						dropdownMatchSelectWidth={false}
+						onChange={onChange}
+						value={currentCluster?.id}
+					>
 						{clusterList.map((item: clusterType) => {
 							return (
 								<Option value={item.id} key={item.id}>

@@ -485,6 +485,7 @@ export default function RedisSentinelNodeSpe(props: RedisSentinelNodeSpeProps) {
 														nodeModify.nodeName
 													].storageClassAliasName
 												}
+												dropdownMatchSelectWidth={false}
 											>
 												<Option
 													value={
