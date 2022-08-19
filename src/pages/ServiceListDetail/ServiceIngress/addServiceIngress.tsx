@@ -58,7 +58,9 @@ export default function AddIngress(): JSX.Element {
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'redis') {
 			return data?.readWriteProxy?.enabled
-				? [ingressTypeList[1]]
+				? mode === 'sentinel'
+					? ingressTypeList
+					: [ingressTypeList[1]]
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'postgresql') {
 			return [ingressTypeList[0], ingressTypeList[1]];
@@ -122,6 +124,7 @@ export default function AddIngress(): JSX.Element {
 				setData(res.data);
 				name === 'redis' &&
 					res.data.readWriteProxy?.enabled &&
+					mode !== 'sentinel' &&
 					setIngressType('rw');
 			} else {
 				notification.error({
@@ -145,8 +148,18 @@ export default function AddIngress(): JSX.Element {
 			}
 		} else if (name === 'redis') {
 			if (data.readWriteProxy.enabled) {
-				servicePort = 7617;
-				service = `${middlewareName}-predixy`;
+				if (mode === 'sentinel') {
+					servicePort = ingressType === 'rw' ? 7617 : 6379;
+					service =
+						ingressType === 'read'
+							? `${middlewareName}-readonly`
+							: ingressType === 'rw'
+							? `${middlewareName}-predixy`
+							: middlewareName;
+				} else {
+					servicePort = 7617;
+					service = `${middlewareName}-predixy`;
+				}
 			} else {
 				servicePort = 6379;
 				service =
@@ -241,6 +254,7 @@ export default function AddIngress(): JSX.Element {
 							}
 						]}
 					>
+						{console.log(ingressType)}
 						<SelectCard
 							options={selectOptions()}
 							disabled={!!serviceIngress}
