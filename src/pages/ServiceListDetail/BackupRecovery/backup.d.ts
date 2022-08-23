@@ -10,6 +10,7 @@ export interface BackupRecordItem {
 	backupFileName: string;
 	backupName: string;
 	backupTime: string;
+	backupMode: string;
 	backupType: string;
 	phrase: string;
 	podRole: string;

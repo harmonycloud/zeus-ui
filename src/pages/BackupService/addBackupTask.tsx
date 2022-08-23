@@ -669,7 +669,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									>
 										<span>备份位置：</span>
 										<Form.Item
-											name="addressName"
+											name="addressId"
 											rules={[
 												{
 													required: true,

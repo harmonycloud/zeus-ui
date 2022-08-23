@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, notification, Select, Space, Tooltip } from 'antd';
+import { Button, Modal, notification, Select, Space } from 'antd';
 import moment from 'moment';
 import { useHistory, useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import {
 	getBackupTasks,
-	addBackupConfig,
 	deleteBackupTasks,
 	getServiceList
 } from '@/services/backup';
@@ -17,7 +16,6 @@ import { BackupRecordItem } from './backup';
 import { getClusters } from '@/services/common';
 import { clusterType } from '@/types';
 
-const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 const { Option } = Select;
 export default function List(props: any): JSX.Element {
@@ -135,13 +133,19 @@ export default function List(props: any): JSX.Element {
 							content: '备份任务删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const sendData = {
-									clusterId,
+									clusterId: clusterId
+										? clusterId
+										: currentCluster?.id,
 									namespace: record.namespace,
 									type: record.sourceType,
 									cron: record.cron || '',
 									backupName: record.backupName,
 									backupId: record.backupId,
 									addressName: record.addressName,
+									schedule:
+										record.backupMode === 'single'
+											? false
+											: true,
 									backupFileName: record.backupFileName || ''
 								};
 								deleteBackupTasks(sendData)
