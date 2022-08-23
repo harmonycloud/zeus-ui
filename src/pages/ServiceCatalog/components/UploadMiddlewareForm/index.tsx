@@ -52,8 +52,7 @@ function UploadMiddlewareForm(props: UploadMiddlewareFormProps) {
 			} else {
 				Modal.error({
 					title: '失败',
-					content: '上架失败，不可上传旧版本或者已有版本哦。',
-					okText: '我知道了'
+					content: '上架失败，不可上传旧版本或者已有版本'
 				});
 			}
 		});
