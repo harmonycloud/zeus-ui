@@ -395,9 +395,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				/>
 				<div className="zeus-mid-content">
 					<aside style={{ width: collapsed ? '0px' : '200px' }}>
-						<div className="zeus-mid-title">
-							谐云云原生中间件管理平台
-						</div>
+						<div className="zeus-mid-title">中间件平台</div>
 						<MyMenu items={items} />
 					</aside>
 					<div

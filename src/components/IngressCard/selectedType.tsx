@@ -6,6 +6,7 @@ import './index.scss';
 interface SelectedTypeProps {
 	visible: boolean;
 	onCancel: () => void;
+	onCreate: (type: string) => void;
 }
 const ingressTypeList = [
 	{
@@ -20,10 +21,18 @@ const ingressTypeList = [
 	}
 ];
 export default function SelectedType(props: SelectedTypeProps): JSX.Element {
-	const { visible, onCancel } = props;
+	const { visible, onCancel, onCreate } = props;
 	const [selected, setSelected] = useState<string>('ingress');
+	const onOk = () => {
+		onCreate(selected);
+	};
 	return (
-		<Modal visible={visible} onCancel={onCancel} title="选择负载均衡类型">
+		<Modal
+			visible={visible}
+			onCancel={onCancel}
+			title="选择负载均衡类型"
+			onOk={onOk}
+		>
 			<div className="ingress-type-content">
 				{ingressTypeList.map((item) => (
 					<div
