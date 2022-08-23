@@ -64,6 +64,7 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
+import { log } from 'console';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -197,6 +198,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	const [selectNamespace, setSelectNamespace] = useState<string>();
 	// * root密码
 	const [mysqlPwd, setMysqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
@@ -236,6 +238,21 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			setMode('1m-3s');
 		}
 	}, []);
+
+	useEffect(() => {
+		if (
+			namespaceList.find((item) => item.name === selectNamespace)
+				?.availableDomain
+		) {
+			setModeList([
+				{
+					label: '一主三从',
+					value: '1m-3s'
+				}
+			]);
+			setMode('1m-3s');
+		}
+	}, [selectNamespace]);
 
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
@@ -1098,6 +1115,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														false
 													}
 													placeholder="请选择命名空间"
+													value={selectNamespace}
+													onChange={(value) =>
+														setSelectNamespace(
+															value
+														)
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -1109,11 +1132,21 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
-																	disabled={
-																		item.availableDomain
-																	}
+																	// disabled={
+																	// 	item.availableDomain
+																	// }
 																>
-																	{item.availableDomain ? (
+																	<p>
+																		{
+																			item.aliasName
+																		}
+																		{item.availableDomain ? (
+																			<span className="available-domain">
+																				可用区
+																			</span>
+																		) : null}
+																	</p>
+																	{/* {item.availableDomain ? (
 																		<Popover
 																			content={
 																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
@@ -1130,7 +1163,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																		</Popover>
 																	) : (
 																		item.aliasName
-																	)}
+																	)} */}
 																</Select.Option>
 															);
 														}
@@ -1709,11 +1742,23 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<Select.Option key="true">
 												读写分离模式
 											</Select.Option>
-											{!globalNamespace.availableDomain ? (
+											{console.log(
+												namespaceList.find(
+													(item) =>
+														item.name ===
+														selectNamespace
+												)?.availableDomain
+											)}
+											{globalNamespace.availableDomain ||
+											namespaceList.find(
+												(item) =>
+													item.name ===
+													selectNamespace
+											)?.availableDomain ? null : (
 												<Select.Option key="1m-0s">
 													单实例模式
 												</Select.Option>
-											) : null}
+											)}
 										</Select>
 										{readWriteProxy !== '1m-0s' ? (
 											<div className={`display-flex`}>

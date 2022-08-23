@@ -226,6 +226,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	const [selectNamespace, setSelectNamespace] = useState<string>();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -278,6 +279,25 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			setMode('sentinel');
 		}
 	}, [project, globalNamespace]);
+
+	useEffect(() => {
+		if (
+			namespaceList.find((item) => item.name === selectNamespace)
+				?.availableDomain
+		) {
+			setModeList([
+				{
+					label: '哨兵模式',
+					value: 'sentinel'
+				},
+				{
+					label: '读写分离模式',
+					value: 'readWriteProxy'
+				}
+			]);
+			setMode('sentinel');
+		}
+	}, [selectNamespace]);
 
 	const modifyQuota = (key: string) => {
 		// setNodeModify({
@@ -794,6 +814,12 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													dropdownMatchSelectWidth={
 														false
 													}
+													value={selectNamespace}
+													onChange={(value) =>
+														setSelectNamespace(
+															value
+														)
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -805,11 +831,21 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
-																	disabled={
-																		item.availableDomain
-																	}
+																	// disabled={
+																	// 	item.availableDomain
+																	// }
 																>
-																	{item.availableDomain ? (
+																	<p>
+																		{
+																			item.aliasName
+																		}
+																		{item.availableDomain ? (
+																			<span className="available-domain">
+																				可用区
+																			</span>
+																		) : null}
+																	</p>
+																	{/* {item.availableDomain ? (
 																		<Popover
 																			content={
 																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
@@ -826,7 +862,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																		</Popover>
 																	) : (
 																		item.aliasName
-																	)}
+																	)} */}
 																</Select.Option>
 															);
 														}

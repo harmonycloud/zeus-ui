@@ -27,18 +27,6 @@ import EditTime from './editTime';
 
 const LinkButton = Actions.LinkButton;
 
-const info = {
-	title: '基础信息',
-	phrase: '',
-	sourceName: '',
-	position: '',
-	backupTime: '',
-	cron: '',
-	retentionTime: '',
-	limitRecord: '',
-	x: false,
-	y: ''
-};
 const dataType = [
 	{ label: '天', value: 'day', max: 3650 },
 	{ label: '周', value: 'week', max: 521 },
@@ -54,6 +42,16 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const [data, setData] = useState();
 	const [visible, setVisible] = useState<boolean>(false);
 	const [modalType, setModalType] = useState<string>('');
+	const [info, setInfo] = useState<any>({
+		title: '基础信息',
+		phrase: '',
+		sourceName: '',
+		position: '',
+		backupTime: '',
+		cron: '',
+		retentionTime: '',
+		limitRecord: ''
+	});
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const backupDetail = storage.getLocal('backupDetail');
@@ -202,6 +200,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	];
 
 	useEffect(() => {
+		if (params.type === 'mysql') {
+			setInfo({ ...info, x: false, y: '' });
+		}
 		backupDetail &&
 			setBasicData({
 				title: '基础信息',
