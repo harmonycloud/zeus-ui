@@ -159,7 +159,7 @@ export default function StorageManagement(): JSX.Element {
 					{storages.map((item: StorageItem, index: number) => {
 						return (
 							<ListCard
-								key={item.name}
+								key={`${item.name}-${item.clusterId}`}
 								title={item.aliasName}
 								subTitle={item.volumeType}
 								icon={

@@ -6,6 +6,8 @@ import AccessIngressForm from './AccessIngress';
 import { deleteIngress } from '@/services/common';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import SelectedType from './selectedType';
+import AccessTraefik from './AccessTraefik';
+import InstallTraefik from './InstallTraefik';
 
 interface IngressCardProps {
 	status: number;
@@ -23,6 +25,11 @@ const IngressCard = (props: IngressCardProps) => {
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 	const [selectedVisible, setSelectedVisible] = useState<boolean>(false);
+	const [way, setWay] = useState<string>('');
+	const [traefikInstallVisible, setTraefikInstallVisible] =
+		useState<boolean>(false);
+	const [traefikAccessVisible, setTraefikAccessVisible] =
+		useState<boolean>(false);
 	const uninstallComponent = (type = 'install') => {
 		confirm({
 			title: '操作确认',
@@ -54,7 +61,27 @@ const IngressCard = (props: IngressCardProps) => {
 			}
 		});
 	};
-
+	const onCreate = (type: string) => {
+		switch (type) {
+			case 'traefik':
+				if (way === 'install') {
+					setTraefikInstallVisible(true);
+				} else {
+					setTraefikAccessVisible(true);
+				}
+				break;
+			case 'ingress':
+				if (way === 'install') {
+					setInstallVisible(true);
+				} else {
+					setAccessVisible(true);
+				}
+				break;
+			default:
+				break;
+		}
+		setSelectedVisible(false);
+	};
 	const childrenRender = () => {
 		switch (status) {
 			case -1:
@@ -65,8 +92,14 @@ const IngressCard = (props: IngressCardProps) => {
 						leftClass="link"
 						rightClass="link"
 						actionCount={2}
-						leftHandle={() => setSelectedVisible(true)}
-						rightHandle={() => setSelectedVisible(true)}
+						leftHandle={() => {
+							setWay('install');
+							setSelectedVisible(true);
+						}}
+						rightHandle={() => {
+							setWay('access');
+							setSelectedVisible(true);
+						}}
 						// leftHandle={() => setInstallVisible(true)}
 						// rightHandle={() => setAccessVisible(true)}
 						status={-1}
@@ -230,10 +263,25 @@ const IngressCard = (props: IngressCardProps) => {
 					clusterId={clusterId}
 				/>
 			)}
+			{traefikAccessVisible && (
+				<AccessTraefik
+					visible={traefikAccessVisible}
+					clusterId={clusterId}
+					onCancel={() => setTraefikAccessVisible(false)}
+					data={{}}
+				/>
+			)}
+			{traefikInstallVisible && (
+				<InstallTraefik
+					visible={traefikInstallVisible}
+					onCancel={() => setTraefikInstallVisible(false)}
+				/>
+			)}
 			{selectedVisible && (
 				<SelectedType
 					visible={selectedVisible}
 					onCancel={() => setSelectedVisible(false)}
+					onCreate={onCreate}
 				/>
 			)}
 		</>

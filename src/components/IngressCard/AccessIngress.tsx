@@ -167,7 +167,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					name="configMapName"
 					rules={[{ required: true, message: '请输入ConfigMap名称' }]}
 				>
-					<Input placeholder="请输入ConfigMap名称" />
+					<Input placeholder="仅支持Ingress-TCP，暂不支持Ingress-UDP" />
 				</FormItem>
 				<FormItem label="VIP配置" required name="address">
 					<div className="display-flex flex-align">
