@@ -510,7 +510,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				<DefaultPicture />
 			) : (
 				<>
-					{type === 'mysql' ? (
+					{type === 'mysql' && data.mode !== '1m-0s' ? (
 						<>
 							<div className="title-content">
 								<div className="blue-line"></div>
