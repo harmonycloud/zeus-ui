@@ -230,7 +230,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					},
 					onCancel() {
 						history.push(
-							`/middlewareRepository/versionManagement/${type}`
+							`/middlewareRepository/versionManagement/${type}/${cluster.id}`
 						);
 					}
 				});
