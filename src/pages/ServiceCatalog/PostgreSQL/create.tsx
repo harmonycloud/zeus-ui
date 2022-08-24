@@ -249,7 +249,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						num:
 							mode === '1m-1s'
 								? 1
-								: mode === '1m'
+								: mode === '1m-0s'
 								? 0
 								: replicaCount,
 						storageClassName: values.storageClass.split('/')[0],
