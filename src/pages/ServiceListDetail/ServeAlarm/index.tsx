@@ -430,7 +430,7 @@ function Rules(props: RuleProps): JSX.Element {
 		}
 	};
 
-	if (!monitor || !monitor.alertManager) {
+	if (alarmType !== 'system' && (!monitor || !monitor.alertManager)) {
 		return (
 			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);
