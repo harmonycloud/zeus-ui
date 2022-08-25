@@ -10,9 +10,9 @@ interface SelectedTypeProps {
 }
 const ingressTypeList = [
 	{
-		label: 'Ingress',
-		value: 'ingress',
-		icon: 'icon-fuzaijunheng'
+		label: 'Nginx',
+		value: 'nginx',
+		icon: 'icon-nginx'
 	},
 	{
 		label: 'Traefik',
@@ -22,7 +22,7 @@ const ingressTypeList = [
 ];
 export default function SelectedType(props: SelectedTypeProps): JSX.Element {
 	const { visible, onCancel, onCreate } = props;
-	const [selected, setSelected] = useState<string>('ingress');
+	const [selected, setSelected] = useState<string>('nginx');
 	const onOk = () => {
 		onCreate(selected);
 	};

@@ -16,3 +16,5 @@ export const getIngressByMiddleware = `${api}/clusters/{clusterId}/namespaces/{n
 export const getVIPs = `${api}/clusters/{clusterId}/ingress/vip`;
 // * 获取集群内访问
 export const getInternalServices = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/internalServices`;
+// * traefik端口校验
+export const checkTraefikPort = `${api}/clusters/{clusterId}/ingress/check`;

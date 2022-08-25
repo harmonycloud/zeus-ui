@@ -122,7 +122,7 @@ export default function ActiveActive(): JSX.Element {
 								header="什么是同城双活？"
 								extra={genExtra(0)}
 							>
-								同城双活是基于谐云的云原生产品的基础上，可以做到业务轻松实现跨数据中心同城双活，故障秒级切换，数据强一致性，同时业务零改造。
+								谐云同城双活是基于云原生能力，在应用层面和数据层面实现跨数据中心的部署方案，在不对业务进行改造的前提下，保持数据读写一致性，并且保证中间件同城双活故障秒级跨数据中心切换，实现高可用。
 							</Panel>
 						)}
 						{panel1Visible && (
@@ -132,7 +132,7 @@ export default function ActiveActive(): JSX.Element {
 								header="什么是可用区？"
 								extra={genExtra(1)}
 							>
-								可用区是指在同城双活场景下，中心概念的载体，通过可用区的划分来数据中心，实现跨数据中心同城双活。
+								可用区是指在同城双活场景下，数据中心概念的载体，通过可用区来划分数据中心，实现跨数据中心部署及故障秒级切换。
 							</Panel>
 						)}
 					</Collapse>

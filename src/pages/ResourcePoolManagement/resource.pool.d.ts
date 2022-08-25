@@ -82,6 +82,7 @@ export interface IngressItemProps {
 	id: number;
 	createTime: string | null;
 	seconds: number;
+	type: string | null;
 }
 
 export interface MirrorParams {
