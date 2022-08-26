@@ -2080,14 +2080,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						>
 							提交
 						</Button>
-						<Button
-							type="default"
-							onClick={() =>
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								})
-							}
-						>
+						<Button onClick={() => window.history.back()}>
 							取消
 						</Button>
 					</div>
