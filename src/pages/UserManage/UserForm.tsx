@@ -21,6 +21,7 @@ interface userFormProps {
 }
 export default function UserForm(props: userFormProps): JSX.Element {
 	const { visible, onCreate, onCancel, data } = props;
+	console.log(data);
 	const [form] = Form.useForm();
 	useEffect(() => {
 		if (data) {
@@ -28,7 +29,12 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				userName: data.userName,
 				aliasName: data.aliasName,
 				phone: data.phone,
-				email: data.email
+				email: data.email,
+				isAdmin: data.userRoleList.some(
+					(item: any) => item.roleId === 1
+				)
+					? true
+					: false
 			});
 		}
 	}, [data]);
