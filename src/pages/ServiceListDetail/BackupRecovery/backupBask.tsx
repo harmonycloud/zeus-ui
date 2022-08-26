@@ -245,7 +245,10 @@ export default function List(props: any): JSX.Element {
 							`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
 						);
 					}
-					storage.setLocal('backupDetail', record);
+					storage.setLocal('backupDetail', {
+						...record,
+						clusterId: currentCluster?.id
+					});
 				}}
 			>
 				{value}

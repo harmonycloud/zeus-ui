@@ -52,6 +52,7 @@ import AllotRole from '@/pages/RoleManage/allotRole';
 import BackupTask from '@/pages/BackupService/proBackupTask';
 import AddBackupTask from '@/pages/BackupService/addBackupTask';
 import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
+import BackupRecovery from '@/pages/BackupService/backupRecovery';
 import BackupPosition from '@/pages/BackupService/backupPosition';
 import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
@@ -343,6 +344,11 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/backupService/backupTask/detail/:backupName/:type"
 					component={BackupTaskDetail}
+					exact
+				/>
+				<Route
+					path="/backupService/backupRecovery/:clusterId/:namespace/:backupName/:type"
+					component={BackupRecovery}
 					exact
 				/>
 				<Route
