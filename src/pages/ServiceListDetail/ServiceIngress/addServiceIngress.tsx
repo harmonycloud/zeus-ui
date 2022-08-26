@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-import { Button, Divider, Form, InputNumber, Select, notification } from 'antd';
+import {
+	Button,
+	Divider,
+	Form,
+	InputNumber,
+	Select,
+	notification,
+	Tag,
+	Row,
+	Col
+} from 'antd';
 import SelectCard from '@/components/SelectCard';
 import { getIngresses } from '@/services/common';
 import { addIngress } from '@/services/ingress';
@@ -33,7 +43,12 @@ export default function AddIngress(): JSX.Element {
 		storage.getSession('serviceIngress')
 	);
 	const [data, setData] = useState<any>();
-
+	const [ingressClassName, setIngressClassName] = useState<{
+		value: string;
+		type: string;
+		startPort: number;
+		endPort: number;
+	}>();
 	const ingressTypeList = [
 		{
 			label: '只读',
@@ -236,6 +251,15 @@ export default function AddIngress(): JSX.Element {
 			});
 		});
 	};
+	const handleIngressChange = (value: string) => {
+		const cur = ingresses.find((item) => item.ingressClassName === value);
+		setIngressClassName({
+			value: value,
+			type: cur?.type as string,
+			startPort: Number(cur?.startPort || 0),
+			endPort: Number(cur?.endPort || 0)
+		});
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -303,6 +327,8 @@ export default function AddIngress(): JSX.Element {
 								placeholder="请选择负载均衡"
 								disabled={!!serviceIngress}
 								dropdownMatchSelectWidth={false}
+								value={ingressClassName?.value}
+								onChange={handleIngressChange}
 							>
 								{ingresses.map((item: IngressItemProps) => {
 									return (
@@ -310,7 +336,18 @@ export default function AddIngress(): JSX.Element {
 											key={item.ingressClassName}
 											value={item.ingressClassName}
 										>
-											{item.ingressClassName}
+											<div className="flex-space-between">
+												{item.ingressClassName}
+												<Tag
+													color={
+														item.type === 'nginx'
+															? 'cyan'
+															: 'green'
+													}
+												>
+													{item.type}
+												</Tag>
+											</div>
 										</Select.Option>
 									);
 								})}
@@ -327,21 +364,58 @@ export default function AddIngress(): JSX.Element {
 							},
 							{
 								type: 'number',
-								min: 30000,
-								max: exposeType === 'TCP' ? 65535 : 32767,
-								message: `对外端口不能小于30000，大于${
-									exposeType === 'TCP' ? 65535 : 32767
-								}`
+								min:
+									ingressClassName?.type === 'traefik'
+										? ingressClassName.startPort
+										: 30000,
+								max:
+									exposeType === 'TCP'
+										? ingressClassName?.type === 'traefik'
+											? ingressClassName.endPort
+											: 65535
+										: 32767,
+								message: `请输入${
+									ingressClassName?.type === 'traefik'
+										? ingressClassName.startPort
+										: 30000
+								}-${
+									exposeType === 'TCP'
+										? ingressClassName?.type === 'traefik'
+											? ingressClassName.endPort
+											: 65535
+										: 32767
+								}以内的端口`
 							}
 						]}
 					>
 						<InputNumber
-							placeholder={`请输入30000-${
-								exposeType === 'TCP' ? 65535 : 32767
-							}以内的端口号`}
+							placeholder={`请输入${
+								ingressClassName?.type === 'traefik'
+									? ingressClassName.startPort
+									: 30000
+							}-${
+								exposeType === 'TCP'
+									? ingressClassName?.type === 'traefik'
+										? ingressClassName.endPort
+										: 65535
+									: 32767
+							}以内的端口`}
 							style={{ width: 250 }}
 						/>
 					</Form.Item>
+					{ingressClassName?.type === 'traefik' && (
+						<Row>
+							<Col span={3}></Col>
+							<Col span={10}>
+								<div>
+									当前负载均衡相关端口组为
+									{ingressClassName?.startPort}-
+									{ingressClassName?.endPort}
+									,请在端口组范围内选择端口
+								</div>
+							</Col>
+						</Row>
+					)}
 					<Divider style={{ marginTop: 40 }} />
 					<Button
 						type="primary"

@@ -9,7 +9,8 @@ import {
 	notification,
 	Row,
 	Select,
-	Space
+	Space,
+	Tag
 } from 'antd';
 import { IconFont } from '@/components/IconFont';
 import { useParams, useHistory } from 'react-router';
@@ -57,6 +58,12 @@ export default function AddEsIngress(): JSX.Element {
 	const [serviceIngress] = useState<serviceAvailableItemProps>(
 		storage.getSession('serviceIngress')
 	);
+	const [ingressClassName, setIngressClassName] = useState<{
+		value: string;
+		type: string;
+		startPort: number;
+		endPort: number;
+	}>();
 	const [form] = Form.useForm();
 	useEffect(() => {
 		getIngresses({ clusterId: clusterId }).then((res) => {
@@ -314,7 +321,6 @@ export default function AddEsIngress(): JSX.Element {
 					]
 				};
 			}
-			console.log(sendData);
 			addIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
@@ -333,6 +339,15 @@ export default function AddEsIngress(): JSX.Element {
 					});
 				}
 			});
+		});
+	};
+	const handleIngressChange = (value: string) => {
+		const cur = ingresses.find((item) => item.ingressClassName === value);
+		setIngressClassName({
+			value: value,
+			type: cur?.type as string,
+			startPort: Number(cur?.startPort || 0),
+			endPort: Number(cur?.endPort || 0)
 		});
 	};
 	return (
@@ -439,8 +454,10 @@ export default function AddEsIngress(): JSX.Element {
 									]}
 								>
 									<Select
+										value={ingressClassName?.value}
 										disabled={!!serviceIngress}
 										placeholder="请选择负载均衡"
+										onChange={handleIngressChange}
 									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
@@ -453,7 +470,21 @@ export default function AddEsIngress(): JSX.Element {
 															item.ingressClassName
 														}
 													>
-														{item.ingressClassName}
+														<div className="flex-space-between">
+															{
+																item.ingressClassName
+															}
+															<Tag
+																color={
+																	item.type ===
+																	'nginx'
+																		? 'cyan'
+																		: 'green'
+																}
+															>
+																{item.type}
+															</Tag>
+														</div>
 													</Option>
 												);
 											}
@@ -473,23 +504,60 @@ export default function AddEsIngress(): JSX.Element {
 									{
 										max:
 											exposeType === 'TCP'
-												? 65535
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.endPort
+													: 65535
 												: 32767,
-										min: 30000,
+										min:
+											ingressClassName?.type === 'traefik'
+												? ingressClassName.startPort
+												: 30000,
 										type: 'number',
-										message: `请输入30000-${
-											exposeType === 'TCP' ? 65535 : 32767
+										message: `请输入${
+											ingressClassName?.type === 'traefik'
+												? ingressClassName.startPort
+												: 30000
+										}-${
+											exposeType === 'TCP'
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.endPort
+													: 65535
+												: 32767
 										}以内的端口`
 									}
 								]}
 							>
 								<InputNumber
-									placeholder={`请输入30000-${
-										exposeType === 'TCP' ? 65535 : 32767
-									}以内的端口号`}
+									placeholder={`请输入${
+										ingressClassName?.type === 'traefik'
+											? ingressClassName.startPort
+											: 30000
+									}-${
+										exposeType === 'TCP'
+											? ingressClassName?.type ===
+											  'traefik'
+												? ingressClassName.endPort
+												: 65535
+											: 32767
+									}以内的端口`}
 									style={{ width: 250 }}
 								/>
 							</FormItem>
+							{ingressClassName?.type === 'traefik' && (
+								<Row>
+									<Col span={4}></Col>
+									<Col span={10}>
+										<div>
+											当前负载均衡相关端口组为
+											{ingressClassName?.startPort}-
+											{ingressClassName?.endPort}
+											,请在端口组范围内选择端口
+										</div>
+									</Col>
+								</Row>
+							)}
 						</>
 					)}
 					{networkModel === 7 && (
@@ -516,7 +584,19 @@ export default function AddEsIngress(): JSX.Element {
 												key={item.ingressClassName}
 												value={item.ingressClassName}
 											>
-												{item.ingressClassName}
+												<div className="flex-space-between">
+													{item.ingressClassName}
+													<Tag
+														color={
+															item.type ===
+															'nginx'
+																? 'cyan'
+																: 'green'
+														}
+													>
+														{item.type}
+													</Tag>
+												</div>
 											</Option>
 										);
 									})}

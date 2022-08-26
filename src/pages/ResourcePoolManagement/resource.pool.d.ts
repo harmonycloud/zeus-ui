@@ -83,6 +83,8 @@ export interface IngressItemProps {
 	createTime: string | null;
 	seconds: number;
 	type: string | null;
+	startPort: string | null;
+	endPort: string | null;
 }
 
 export interface MirrorParams {
