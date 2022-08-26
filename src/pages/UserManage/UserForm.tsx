@@ -28,7 +28,10 @@ export default function UserForm(props: userFormProps): JSX.Element {
 				userName: data.userName,
 				aliasName: data.aliasName,
 				phone: data.phone,
-				email: data.email
+				email: data.email,
+				isAdmin: data.userRoleList?.some((i: any) => i.roleId === 1)
+					? true
+					: false
 			});
 		}
 	}, [data]);
@@ -150,7 +153,7 @@ export default function UserForm(props: userFormProps): JSX.Element {
 					name="isAdmin"
 					initialValue={false}
 				>
-					<Radio.Group>
+					<Radio.Group disabled={data?.userName === 'admin'}>
 						<Radio value={false}>否</Radio>
 						<Radio value={true}>是</Radio>
 					</Radio.Group>
