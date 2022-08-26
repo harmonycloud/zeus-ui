@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
-import { Tabs } from 'antd';
+import { Tabs, Alert, Button } from 'antd';
 
 import AlarmRecord from './alarmRecord';
 import GuidePage from '../GuidePage';
@@ -8,6 +9,7 @@ import AlarmSet from './alarmSet';
 import ServerAlarm from '@/pages/ServiceListDetail/ServeAlarm';
 
 import { connect } from 'react-redux';
+import { getClusters } from '@/services/common';
 import storage from '@/utils/storage';
 import { StoreState } from '@/types';
 import { systemAlarmProps } from './systemAlarm';
@@ -19,12 +21,25 @@ function SystemAlarm(props: systemAlarmProps) {
 	const [activeKey, setActiveKey] = useState(
 		storage.getLocal('systemTab') || 'alarmRecord'
 	);
+	const history = useHistory();
+	const [utilClusters, setUtilClusters] = useState<string[]>([]);
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
 	const onChange = (key: string | number) => {
 		setActiveKey(key);
 		storage.setLocal('systemTab', key);
 	};
+
+	useEffect(() => {
+		getClusters().then((res) => {
+			if (!res.data) return;
+			setUtilClusters(
+				res.data.map(
+					(item: any) => !item.monitor?.alertManager && item.nickname
+				)
+			);
+		});
+	}, []);
 
 	useEffect(() => {
 		return () => storage.removeLocal('systemTab');
@@ -38,6 +53,38 @@ function SystemAlarm(props: systemAlarmProps) {
 	return (
 		<ProPage className="system-alarm">
 			<ProHeader title="系统告警" subTitle="系统相关告警展示及设置" />
+			{utilClusters.filter((item) => item).length ? (
+				<Alert
+					message={
+						<div>
+							集群{utilClusters.filter((item) => item).join(',')}
+							尚且未安装告警组件，将无法正常告警！
+							<Button
+								type="link"
+								style={{
+									height: 20,
+									padding: 0
+								}}
+								onClick={() => {
+									storage.setLocal(
+										'cluster-detail-current-tab',
+										'component'
+									);
+									history.push(
+										`/systemManagement/resourcePoolManagement/resourcePoolDetail/${globalCluster.id}/${globalCluster.nickname}`
+									);
+								}}
+							>
+								立即安装
+							</Button>
+						</div>
+					}
+					type="warning"
+					showIcon
+					closable
+					style={{ margin: '0 24px' }}
+				/>
+			) : null}
 			<ProContent>
 				<Tabs id="mid-menu" activeKey={activeKey} onChange={onChange}>
 					<Tabs.TabPane tab="系统告警记录" key="alarmRecord">

@@ -21,9 +21,10 @@ import { getCanReleaseMiddleware } from '@/services/middleware';
 import { weekMap, backupTaskStatus } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
-import { notification, Modal, Button } from 'antd';
+import { notification, Modal, Button, Switch } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import EditTime from './editTime';
+import EditIncrTime from './editIncrTime';
 
 const LinkButton = Actions.LinkButton;
 
@@ -41,6 +42,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const params: any = useParams();
 	const [data, setData] = useState();
 	const [visible, setVisible] = useState<boolean>(false);
+	const [incrVisible, setIncrVisible] = useState<boolean>(false);
 	const [modalType, setModalType] = useState<string>('');
 	const [info, setInfo] = useState<any>({
 		title: '基础信息',
@@ -162,11 +164,37 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'x',
+			dataIndex: 'increment',
 			label: '是否开启增量',
-			render: (val: string) => (
+			render: (val: boolean) => (
 				<div className="text-overflow-one">
 					{val ? '已开启' : '未开启'}
+					<Switch
+						checked={val}
+						size="small"
+						style={{ marginLeft: 8 }}
+						onChange={(checked) => {
+							checked && setIncrVisible(true);
+						}}
+					/>
+				</div>
+			)
+		},
+		{
+			dataIndex: 'pause',
+			label: '备份间隔时间',
+			render: (val: boolean) => (
+				<div className="text-overflow-one">
+					{val + '分/次'}
+					{backupDetail.increment ? (
+						<EditOutlined
+							style={{ marginLeft: 8, color: '#226EE7' }}
+							onClick={() => {
+								setIncrVisible(true);
+								// setModalType('time');
+							}}
+						/>
+					) : null}
 				</div>
 			)
 		},
@@ -213,7 +241,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 				backupTime: backupDetail.backupTime,
 				retentionTime: backupDetail.retentionTime,
 				limitRecord: backupDetail.limitRecord,
-				x: false,
+				x: true,
+				z: 10,
 				y: '2022-08-15 00:00:00'
 			});
 	}, []);
@@ -222,7 +251,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		if (cluster.id !== undefined && namespace.name !== undefined) {
 			getData();
 			getCanReleaseMiddleware({
-				clusterId: cluster.id,
+				clusterId: backupDetail.clusterId || cluster.id,
 				type: params.type
 			}).then((res) => {
 				if (res.success) {
@@ -240,7 +269,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const getData = () => {
 		getBackups({
 			backupName: params.backupName,
-			clusterId: cluster.id,
+			clusterId: backupDetail.clusterId || cluster.id,
 			namespace: backupDetail.namespace,
 			type: params.type
 		}).then((res) => {
@@ -306,7 +335,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 							content: '备份记录删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const result = {
-									clusterId: cluster.id,
+									clusterId:
+										backupDetail.clusterId || cluster.id,
 									namespace:
 										backupDetail.namespace ||
 										namespace.name,
@@ -341,7 +371,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const getBasicInfo = () => {
 		const sendData = {
 			keyword: backupDetail.taskName,
-			clusterId: cluster.id,
+			clusterId: backupDetail.clusterId || cluster.id,
 			namespace: backupDetail.namespace,
 			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
@@ -371,9 +401,23 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const onCreate = (cron: any) => {
 		const sendData = {
 			backupName: params.backupName,
-			clusterId: cluster.id,
+			clusterId: backupDetail.clusterId || cluster.id,
 			namespace: backupDetail.namespace || namespace.name,
 			type: params.type,
+			...cron
+		};
+		editBackupTasks(sendData).then((res) => {
+			getBasicInfo();
+		});
+	};
+	const onIncrCreate = (cron: any) => {
+		const sendData = {
+			backupName: params.backupName,
+			clusterId: backupDetail.clusterId || cluster.id,
+			namespace: backupDetail.namespace || namespace.name,
+			type: params.type,
+			increment: backupDetail.increment,
+			pause: backupDetail.pause,
 			...cron
 		};
 		editBackupTasks(sendData).then((res) => {
@@ -391,7 +435,18 @@ function BackupTaskDetail(props: any): JSX.Element {
 				onBack={() => history.goBack()}
 				extra={
 					<>
-						<Button type="primary" onClick={releaseMiddleware}>
+						<Button
+							type="primary"
+							onClick={() =>
+								history.push(
+									`/backupService/backupRecovery/${
+										backupDetail.clusterId || cluster.id
+									}/${backupDetail.namespace}/${
+										backupDetail.backupName
+									}/${backupDetail.type}`
+								)
+							}
+						>
 							克隆服务
 						</Button>
 						<Button
@@ -404,12 +459,19 @@ function BackupTaskDetail(props: any): JSX.Element {
 										'备份任务删除后将无法恢复，请确认执行',
 									onOk: () => {
 										const sendData = {
-											clusterId: cluster.id,
+											clusterId:
+												backupDetail.clusterId ||
+												cluster.id,
 											namespace: backupDetail.namespace,
 											type: backupDetail.sourceType,
 											cron: backupDetail.cron || '',
 											backupName: backupDetail.backupName,
 											backupId: backupDetail.backupId,
+											schedule:
+												backupDetail.backupMode ===
+												'single'
+													? false
+													: true,
 											addressName:
 												backupDetail.addressName,
 											backupFileName:
@@ -467,6 +529,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 					visible={visible}
 					onCreate={onCreate}
 					onCancel={() => setVisible(false)}
+					type={modalType}
+				/>
+				<EditIncrTime
+					data={backupDetail}
+					visible={incrVisible}
+					onCreate={onIncrCreate}
+					onCancel={() => setIncrVisible(false)}
 					type={modalType}
 				/>
 			</ProContent>

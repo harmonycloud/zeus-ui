@@ -14,7 +14,8 @@ import {
 	Input,
 	Select,
 	Card,
-	notification
+	notification,
+	Switch
 } from 'antd';
 import { api } from '@/api.json';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
@@ -103,6 +104,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [tableData, setTableData] = useState<any>({ '': [] });
 	const [addressList, setAddressList] = useState<any>();
 	const [selectAddress, setSelectAddress] = useState<any>();
+	const [incrementChecked, setIncrementChecked] = useState<boolean>(false);
+
 	const next = () => {
 		if (current === 0) {
 			if (selectedRow) {
@@ -515,10 +518,58 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									>
 										<TimePicker
 											showNow={false}
-											// minuteStep={30}
 											format="HH:mm"
 										/>
 									</Form.Item>
+									{selectedRow?.type === 'mysql' ||
+									selectedRow?.type === 'postgresql' ||
+									params.type === 'mysql' ||
+									params.type === 'postgresql' ? (
+										<Form.Item
+											label="是否开启增量备份"
+											name="increment"
+											initialValue={false}
+											valuePropName="checked"
+											required
+										>
+											<Switch
+												checked={incrementChecked}
+												onChange={(checked) =>
+													setIncrementChecked(checked)
+												}
+											/>
+										</Form.Item>
+									) : null}
+									{incrementChecked ? (
+										<Form.Item
+											label="增量备份间隔时间"
+											name="pause"
+											rules={[
+												{
+													required: true,
+													message:
+														'请选择增量备份间隔时间'
+												}
+											]}
+											extra="分/次"
+											className="pause-extra"
+										>
+											<Select
+												style={{
+													width: 150,
+													marginRight: 8
+												}}
+											>
+												<Select.Option
+													key="10"
+													value={'10'}
+												>
+													10
+												</Select.Option>
+												分/次
+											</Select>
+										</Form.Item>
+									) : null}
 								</>
 							) : null}
 						</Form>
@@ -719,22 +770,17 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
 				...values,
+				...formData,
 				clusterId: selectedRow?.clusterId || cluster.id,
 				namespace: params.namespace || selectedRow.namespace,
 				middlewareName: params.middlewareName || selectedRow.name,
 				type: selectedRow?.type || params.type
 			};
-			if (params.type === 'mysql' || selectedRow?.type === 'mysql') {
-				sendData.limitRecord = formData.limitRecord;
-			} else {
-				sendData.retentionTime = formData.retentionTime;
-			}
-			if (formData.retentionTime) {
-				sendData.dateUnit = dataSelect;
-			}
 			if (formData.way === 'time') {
 				sendData.cron = cron;
 			}
+			delete sendData.cycle;
+			delete sendData.time;
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

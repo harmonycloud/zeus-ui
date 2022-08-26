@@ -13,7 +13,8 @@ import {
 	Table,
 	Spin,
 	Popover,
-	Progress
+	Progress,
+	Empty
 } from 'antd';
 import {
 	ReloadOutlined,
@@ -483,12 +484,32 @@ function PlatformOverview(props: any): JSX.Element {
 											}
 										)
 									) : (
-										<Spin
+										<Empty
 											style={{
 												width: '100%',
-												height: '70px',
-												lineHeight: '70px'
+												padding: 0
 											}}
+											image={Empty.PRESENTED_IMAGE_SIMPLE}
+											description={
+												<div>
+													该集群暂无中间件上架，请前往
+													<Button
+														type="link"
+														style={{
+															height: 20,
+															padding: 0
+														}}
+														onClick={() =>
+															history.push(
+																'middlewareRepository'
+															)
+														}
+													>
+														中间件市场
+													</Button>
+													上架
+												</div>
+											}
 										/>
 									)}
 								</div>
