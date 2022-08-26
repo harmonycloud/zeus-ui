@@ -124,6 +124,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 			}
 			const sendData = {
 				clusterId,
+				type: 'nginx',
 				...values
 			};
 			if (affinity.flag) {

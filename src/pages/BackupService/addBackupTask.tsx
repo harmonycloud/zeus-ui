@@ -101,7 +101,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [dataSelect, setDataSelect] = useState<string>('day');
 	const [formData, setFormData] = useState<any>();
 	const [formWayData, setFormWayData] = useState<any>();
-	const [tableData, setTableData] = useState<any[]>([]);
+	const [tableData, setTableData] = useState<any>({ '': [] });
 	const [addressList, setAddressList] = useState<any>();
 	const [selectAddress, setSelectAddress] = useState<any>();
 	const [incrementChecked, setIncrementChecked] = useState<boolean>(false);
@@ -172,13 +172,14 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	}, []);
 
 	useEffect(() => {
-		setTableData([]);
+		setTableData({ '': [] });
 		if (selectText) {
 			getServiceList({
 				type: params.name || selectText,
 				keyword: searchText
 			}).then((res) => {
-				setTableData(res.data);
+				console.log({ [params.name || selectText]: res.data });
+				setTableData({ [params.name || selectText]: res.data });
 				// setSelectedRowKeys([res.data[0]?.name]);
 				// setSelectedRow(res.data[0]);
 			});
@@ -228,7 +229,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 							showRefresh
 							onRefresh={() => setSearchText('')}
 							columns={columns}
-							dataSource={tableData}
+							dataSource={tableData[params.name || selectText]}
 							selectedRow={selectedRow}
 							setSelectedRow={setSelectedRow}
 							selectedRowKeys={selectedRowKeys}

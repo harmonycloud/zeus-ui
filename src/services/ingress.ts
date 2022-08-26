@@ -38,3 +38,63 @@ export const getInternalServices = async (params: {
 	const result = Axios.get(Ingress.getInternalServices, params);
 	return result;
 };
+export const checkTraefikPort = async (params: {
+	clusterId: string;
+	startPort?: number;
+}) => {
+	const result = Axios.get(Ingress.checkTraefikPort, params);
+	return result;
+};
+export const getIngressDetail = async (params: {
+	clusterId: string;
+	ingressClassName: string;
+}) => {
+	const result = Axios.get(Ingress.getIngressDetail, params);
+	return result;
+};
+export const getPorts = async (params: {
+	clusterId: string;
+	ingressClassName: string;
+}) => {
+	const result = Axios.get(Ingress.getPorts, params);
+	return result;
+};
+export const getPods = async (params: {
+	clusterId: string;
+	ingressName: string;
+}) => {
+	const result = Axios.get(Ingress.getPods, params);
+	return result;
+};
+export const restartPod = async (params: {
+	clusterId: string;
+	ingressClassName: string;
+	podName: string;
+}) => {
+	const result = Axios.delete(Ingress.restartPod, params);
+	return result;
+};
+export const getPodYaml = async (params: {
+	clusterId: string;
+	ingressName: string;
+	podName: string;
+}) => {
+	const result = Axios.get(Ingress.getPodYaml, params);
+	return result;
+};
+export const getIngressYaml = async (params: {
+	clusterId: string;
+	ingressClassName: string;
+}) => {
+	const result = Axios.get(Ingress.getIngressYaml, params);
+	return result;
+};
+
+export const updateIngressYaml = async (params: {
+	clusterId: string;
+	ingressClassName: string;
+	values: string;
+}) => {
+	const result = Axios.json(Ingress.getIngressYaml, params, {}, 'PUT');
+	return result;
+};

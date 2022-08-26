@@ -1,6 +1,7 @@
+import { accessIngress, updateIngress } from '@/services/common';
 import { getVIPs } from '@/services/ingress';
 import pattern from '@/utils/pattern';
-import { Form, Input, Modal, Switch } from 'antd';
+import { Form, Input, Modal, notification, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 interface AccessTraefikProps {
@@ -8,6 +9,7 @@ interface AccessTraefikProps {
 	onCancel: () => void;
 	data: any;
 	clusterId: string;
+	onRefresh: () => void;
 }
 const formItemLayout = {
 	labelCol: {
@@ -19,7 +21,7 @@ const formItemLayout = {
 };
 const FormItem = Form.Item;
 export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
-	const { visible, onCancel, data, clusterId } = props;
+	const { visible, onCancel, data, clusterId, onRefresh } = props;
 	const [form] = Form.useForm();
 	const [vipChecked, setVIPChecked] = useState<boolean>(false);
 	const [vips, setVIPs] = useState<string[]>([]);
@@ -39,6 +41,17 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 			}
 		});
 	}, []);
+	useEffect(() => {
+		if (data) {
+			if (data.address) {
+				setVIPChecked(true);
+				setAddress(data.address);
+			}
+			form.setFieldsValue({
+				...data
+			});
+		}
+	}, [data]);
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setAddress(event.target.value);
 		if (event.target.value === '') {
@@ -48,7 +61,58 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 		}
 	};
 	const onOk = () => {
-		console.log('click');
+		form.validateFields().then((values) => {
+			const sendData = {
+				clusterId,
+				...values
+			};
+			if (vipChecked && address === '') {
+				setVIPNoAlive(true);
+				return;
+			}
+			if (!vipChecked) {
+				sendData.address = null;
+			} else {
+				sendData.address = address;
+			}
+			if (data) {
+				sendData.id = data.id;
+				sendData.ingressName = values.ingressClassName;
+			}
+			if (data) {
+				onCancel();
+				updateIngress(sendData).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '负载均衡修改成功'
+						});
+						onRefresh();
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				});
+			} else {
+				onCancel();
+				accessIngress(sendData).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '负载均衡接入成功'
+						});
+						onRefresh();
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				});
+			}
+		});
 	};
 	return (
 		<Modal
@@ -68,8 +132,8 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
 						}
 					]}
-					initialValue="Traefik-controller"
-					name="traefikName"
+					initialValue="traefik-controller"
+					name="ingressClassName"
 				>
 					<Input placeholder="请输入Traefik名称" />
 				</FormItem>

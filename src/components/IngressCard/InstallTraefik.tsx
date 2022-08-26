@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	AutoComplete,
 	Button,
@@ -7,10 +7,13 @@ import {
 	Input,
 	InputNumber,
 	Modal,
+	notification,
 	Space,
 	Switch,
 	Tag,
-	Tooltip
+	Tooltip,
+	Row,
+	Col
 } from 'antd';
 import pattern from '@/utils/pattern';
 import {
@@ -21,10 +24,17 @@ import {
 import { TolerationLabelItem } from '../FormTolerations/formTolerations';
 import { AutoCompleteOptionItem } from '@/types/comment';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { installIngress } from '@/services/common';
+import { getNodePort, getNodeTaint } from '@/services/middleware';
+import { getVIPs, checkTraefikPort } from '@/services/ingress';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import './index.scss';
 
 interface InstallTraefikProps {
 	visible: boolean;
 	onCancel: () => void;
+	clusterId: string;
+	onRefresh: () => void;
 }
 const formItemLayout = {
 	labelCol: {
@@ -38,7 +48,7 @@ const FormItem = Form.Item;
 export default function InstallTraefik(
 	props: InstallTraefikProps
 ): JSX.Element {
-	const { visible, onCancel } = props;
+	const { visible, onCancel, clusterId, onRefresh } = props;
 	const [form] = Form.useForm();
 	const [portConfig, setPortConfig] = useState<boolean>(false);
 	const [vipChecked, setVIPChecked] = useState<boolean>(false);
@@ -65,8 +75,131 @@ export default function InstallTraefik(
 	const [address, setAddress] = useState<string>('');
 	const [vips, setVIPs] = useState<string[]>([]);
 	const [vipNoAlive, setVIPNoAlive] = useState<boolean>(false);
+	const [skipPortConflict, setSkipPortConflict] = useState<boolean>(false);
+	const [startPort, setStartPort] = useState<number>();
+	const [ports, setPorts] = useState<number[]>();
+	useEffect(() => {
+		getNodePort({ clusterId }).then((res) => {
+			if (res.success) {
+				const list = res.data.map((item: string) => {
+					return {
+						value: item,
+						label: item
+					};
+				});
+				setLabelList(list);
+			}
+		});
+		getNodeTaint({ clusterid: clusterId }).then((res) => {
+			if (res.success) {
+				const list = res.data.map((item: string) => {
+					return {
+						value: item,
+						label: item
+					};
+				});
+				setTaintList(list);
+			}
+		});
+		getVIPs({ clusterId }).then((res) => {
+			if (res.success) {
+				setVIPs(res.data);
+			}
+		});
+	}, []);
+	const onChange = (e: CheckboxChangeEvent) => {
+		setSkipPortConflict(e.target.checked);
+	};
+	const onInputNumberChange = (value: number) => {
+		setStartPort(value);
+		if (value >= 30000 && value <= 65435) {
+			setPorts(undefined);
+			checkTraefikPort({ clusterId, startPort: value }).then((res) => {
+				if (res.success) {
+					setPorts(res.data);
+				}
+			});
+		}
+	};
 	const onOk = () => {
-		console.log('click');
+		form.validateFields().then((values) => {
+			console.log(values);
+			if (vipChecked && address === '') {
+				setVIPNoAlive(true);
+				return;
+			}
+			const sendData = {
+				clusterId,
+				...values,
+				type: 'traefik',
+				skipPortConflict: skipPortConflict
+			};
+			if (!skipPortConflict) {
+				if (ports && ports?.length > 0) {
+					notification.error({
+						message: '错误',
+						description:
+							'当前端口组存在冲突，请重新输入或勾选强制跳过端口冲突！'
+					});
+				}
+			}
+			if (affinity.flag) {
+				if (!affinityLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机亲和。'
+					});
+					return;
+				} else {
+					sendData.nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked
+						};
+					});
+				}
+			}
+			if (tolerations.flag) {
+				if (!tolerationsLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机容忍。'
+					});
+					return;
+				} else {
+					sendData.tolerations = tolerationsLabels.map(
+						(item) => item.label
+					);
+				}
+			}
+			if (!portConfig) {
+				sendData.httpPort = null;
+				sendData.httpsPort = null;
+				sendData.dashboardPort = null;
+				sendData.monitorPort = null;
+			}
+			if (!vipChecked) {
+				sendData.address = null;
+			} else {
+				sendData.address = address;
+			}
+			onCancel();
+			console.log(sendData);
+			installIngress(sendData).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: 'Traefik安装成功'
+					});
+					onRefresh();
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		});
 	};
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setAddress(event.target.value);
@@ -76,6 +209,7 @@ export default function InstallTraefik(
 			setVIPNoAlive(false);
 		}
 	};
+
 	return (
 		<Modal
 			visible={visible}
@@ -95,7 +229,8 @@ export default function InstallTraefik(
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
 						}
 					]}
-					name="TraefikName"
+					initialValue="traefik-controller"
+					name="ingressClassName"
 				>
 					<Input placeholder="请输入Traefik名称" />
 				</FormItem>
@@ -406,15 +541,67 @@ export default function InstallTraefik(
 							</Tooltip>
 						</Space>
 					}
-					name="startPort"
 					required
-					rules={[{ required: true, message: '请输入起始服务端口' }]}
+					rules={[
+						{ required: true, message: '请输入起始服务端口' },
+						{
+							min: 30000,
+							type: 'number',
+							max: 65435,
+							message: '请输入30000-65435范围内的端口号'
+						}
+					]}
 				>
-					<InputNumber
-						style={{ width: '100%' }}
-						placeholder="请输入30000-65435范围内的端口号"
-					/>
+					<FormItem
+						noStyle
+						name="startPort"
+						rules={[
+							{ required: true, message: '请输入起始服务端口' },
+							{
+								min: 30000,
+								type: 'number',
+								max: 65435,
+								message: '请输入30000-65435范围内的端口号'
+							}
+						]}
+					>
+						<InputNumber
+							value={startPort}
+							onChange={onInputNumberChange}
+							style={{ width: '330px', marginRight: 8 }}
+							placeholder="请输入30000-65435范围内的端口号"
+						/>
+					</FormItem>
+					<FormItem noStyle name="skipPortConflict">
+						<Checkbox
+							checked={skipPortConflict}
+							onChange={onChange}
+						>
+							强制跳过端口冲突
+						</Checkbox>
+					</FormItem>
 				</FormItem>
+				{startPort && startPort >= 30000 && startPort <= 65435 && (
+					<Row>
+						<Col span={5}></Col>
+						<Col>
+							<div>
+								当前选择的服务端口组是
+								{form.getFieldValue('startPort')}-
+								{form.getFieldValue('startPort') + 100}
+							</div>
+							{ports?.length === 0 && (
+								<div>其中没有端口被占用！</div>
+							)}
+							{ports && ports.length > 0 && (
+								<div style={{ color: '#ff4d4f' }}>
+									其中{ports?.join(',')}
+									端口号被占用，请重新输入
+								</div>
+							)}
+						</Col>
+					</Row>
+				)}
 			</Form>
 		</Modal>
 	);

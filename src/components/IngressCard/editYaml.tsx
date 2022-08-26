@@ -3,6 +3,7 @@ import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { Button, notification, Modal, Alert } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import { getValueYaml, updateValueYaml } from '@/services/middleware';
+import { getIngressYaml, updateIngressYaml } from '@/services/ingress';
 import CodeMirror from 'codemirror';
 import 'codemirror/addon/merge/merge.css';
 import 'codemirror/addon/merge/merge.js';
@@ -19,13 +20,8 @@ const msgColor = {
 	3: '#68B642'
 };
 interface paramsProps {
-	middlewareName: string;
 	clusterId: string;
-	namespace: string;
-	type: string;
-	chartVersion: string;
-	name: string;
-	aliasName: string;
+	ingressClassName: string;
 }
 interface YamlMsgProp {
 	time: string;
@@ -33,17 +29,9 @@ interface YamlMsgProp {
 	messageStatus: number;
 }
 const { confirm } = Modal;
-const YamlEdit = () => {
+const EditYaml = () => {
 	const codeEditor = useRef<any>(null);
-	const {
-		middlewareName,
-		clusterId,
-		namespace,
-		type,
-		chartVersion,
-		name,
-		aliasName
-	}: paramsProps = useParams();
+	const { clusterId, ingressClassName }: paramsProps = useParams();
 	const [oldValue, setOldValue] = useState<string>('');
 	const [newValue, setNewValue] = useState<string>('');
 	const [originValue, setOriginValue] = useState('');
@@ -71,11 +59,7 @@ const YamlEdit = () => {
 		};
 	}, [originValue]);
 	useEffect(() => {
-		getValueYaml({
-			clusterId,
-			namespace,
-			middlewareName
-		}).then((res) => {
+		getIngressYaml({ clusterId, ingressClassName }).then((res) => {
 			if (res.success) {
 				setOldValue(res.data);
 				setNewValue(res.data);
@@ -121,27 +105,21 @@ const YamlEdit = () => {
 		setCodeMirrorInstance(CodeMirrorInstance);
 	};
 	const saveValueYaml = () => {
-		const sendData = {
-			middlewareName,
-			clusterId,
-			namespace,
-			type,
-			chartVersion,
-			values: originValue
-		};
 		confirm({
 			title: '操作确认',
 			content: '请确认是否保存编辑后的yaml？',
 			onOk: () => {
-				updateValueYaml(sendData).then((res) => {
+				updateIngressYaml({
+					clusterId,
+					ingressClassName,
+					values: originValue
+				}).then((res) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
 							description: 'yaml编辑成功'
 						});
-						history.push(
-							`/serviceList/${name}/${aliasName}/basicInfo/${middlewareName}/${type}/${chartVersion}/${namespace}`
-						);
+						history.goBack();
 					} else {
 						notification.error({
 							message: '失败',
@@ -207,7 +185,7 @@ const YamlEdit = () => {
 			/>
 			<ProContent>
 				<Alert
-					message="此处修改可能导致部署配置与实际部署配置内容不匹配，请谨慎操作！"
+					message="此处修改可能导致yaml文件与实际yaml内容不匹配，请谨慎操作！"
 					type="warning"
 					showIcon
 					style={{ marginBottom: 16 }}
@@ -270,4 +248,4 @@ const YamlEdit = () => {
 		</ProPage>
 	);
 };
-export default YamlEdit;
+export default EditYaml;
