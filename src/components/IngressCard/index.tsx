@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, notification } from 'antd';
+import { useHistory } from 'react-router';
 import MidCard from '../MidCard';
 import InstallIngressForm from './InstallIngress';
 import AccessIngressForm from './AccessIngress';
@@ -22,6 +23,7 @@ const { confirm } = Modal;
 const IngressCard = (props: IngressCardProps) => {
 	const { status, title, onRefresh, clusterId, data, createTime, seconds } =
 		props;
+	const history = useHistory();
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
 	const [selectedVisible, setSelectedVisible] = useState<boolean>(false);
@@ -81,6 +83,11 @@ const IngressCard = (props: IngressCardProps) => {
 				break;
 		}
 		setSelectedVisible(false);
+	};
+	const toDetail = () => {
+		history.push(
+			`/systemManagement/systemAlarm/ingress/${clusterId}/${data?.ingressClassName}/${data?.type}`
+		);
 	};
 	const childrenRender = () => {
 		switch (status) {
@@ -148,6 +155,7 @@ const IngressCard = (props: IngressCardProps) => {
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			case 2:
@@ -191,6 +199,7 @@ const IngressCard = (props: IngressCardProps) => {
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			case 4:
@@ -214,6 +223,7 @@ const IngressCard = (props: IngressCardProps) => {
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			case 5:

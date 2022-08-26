@@ -65,7 +65,8 @@ import ActiveActive from '@/pages/ActiveActive';
 import ActiveDetail from '@/pages/ActiveActive/activeDetail';
 import AreaConfig from '@/pages/ActiveActive/AreaConfig';
 import AreaDetail from '@/pages/ActiveActive/AreaDetail';
-
+import IngressDetail from '@/components/IngressCard/IngressDetail';
+import EditYaml from '@/components/IngressCard/editYaml';
 const Routes = withRouter((props) => {
 	return (
 		<>
@@ -507,6 +508,17 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/activeActive/active-detail/:id/:nickname/:areaName/:aliasName"
 					component={AreaDetail}
+					exact
+				/>
+				{/* 负载均衡详情 */}
+				<Route
+					path="/systemManagement/systemAlarm/ingress/:clusterId/:ingressClassName/:type"
+					component={IngressDetail}
+					exact
+				/>
+				<Route
+					path="/systemManagement/systemAlarm/ingress/:clusterId/:ingressClassName"
+					component={EditYaml}
 					exact
 				/>
 			</Switch>

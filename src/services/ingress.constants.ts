@@ -18,3 +18,15 @@ export const getVIPs = `${api}/clusters/{clusterId}/ingress/vip`;
 export const getInternalServices = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/internalServices`;
 // * traefik端口校验
 export const checkTraefikPort = `${api}/clusters/{clusterId}/ingress/check`;
+// * 查询Ingress详情
+export const getIngressDetail = `${api}/clusters/{clusterId}/ingress/{ingressClassName}/detail`;
+// * 查询端口列表
+export const getPorts = `${api}/clusters/{clusterId}/ingress/{ingressClassName}/ports`;
+// * 查询pod列表
+export const getPods = `${api}/clusters/{clusterId}/ingress/{ingressName}/pods`;
+// * 重启pod
+export const restartPod = `${api}/clusters/{clusterId}/ingress/{ingressClassName}/pods/{podName}`;
+// * 查询pod yaml
+export const getPodYaml = `${api}/clusters/{clusterId}/ingress/{ingressName}/pods/{podName}/yaml`;
+// * 查询ingress yaml/修改ingress yaml
+export const getIngressYaml = `${api}/clusters/{clusterId}/ingress/{ingressClassName}/values`;

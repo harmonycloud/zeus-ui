@@ -30,6 +30,7 @@ interface MidCardProps {
 	createTime: string | null;
 	onRefresh?: () => void;
 	seconds: number;
+	onClick?: () => void;
 }
 export const iconRender = (status: number | undefined) => {
 	switch (status) {
@@ -89,7 +90,8 @@ const MidCard = (props: MidCardProps) => {
 		titleStyle,
 		onRefresh,
 		createTime,
-		seconds
+		seconds,
+		onClick
 	} = props;
 	const [borderColor, setBorderColor] = useState<string>('#E9E9E9');
 	const [titleColor, setTitleColor] = useState<string>('#333333');
@@ -148,7 +150,7 @@ const MidCard = (props: MidCardProps) => {
 				}
 			}}
 		>
-			<div className="mid-card-display">
+			<div className="mid-card-display" onClick={onClick}>
 				{status === -1 && (
 					<div className="mid-card-add" style={{ color: titleColor }}>
 						<PlusOutlined style={{ marginRight: 4 }} />
