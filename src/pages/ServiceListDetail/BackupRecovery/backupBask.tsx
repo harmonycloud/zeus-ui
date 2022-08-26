@@ -142,10 +142,7 @@ export default function List(props: any): JSX.Element {
 									backupName: record.backupName,
 									backupId: record.backupId,
 									addressName: record.addressName,
-									schedule:
-										record.backupMode === 'single'
-											? false
-											: true,
+									schedule: record.schedule,
 									backupFileName: record.backupFileName || ''
 								};
 								deleteBackupTasks(sendData)
@@ -328,10 +325,8 @@ export default function List(props: any): JSX.Element {
 				/>
 				<ProTable.Column
 					title="备份方式"
-					dataIndex="backupMode"
-					render={(value) =>
-						value === 'single' ? '单次备份' : '周期备份'
-					}
+					dataIndex="schedule"
+					render={(value) => (!value ? '单次备份' : '周期备份')}
 					width={120}
 					filterMultiple={false}
 					filters={[

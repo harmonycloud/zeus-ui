@@ -57,7 +57,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const backupDetail = storage.getLocal('backupDetail');
-	const InfoConfig = [
+	const [infoConfig, setInfoConfig] = useState<any>([
 		{
 			dataIndex: 'title',
 			render: (val: string) => (
@@ -87,7 +87,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			label: '备份方式',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
-					{backupDetail.backupMode !== 'single' ? '周期' : '单次'}
+					{backupDetail.schedule ? '周期' : '单次'}
 					{val
 						? val.indexOf('? ?') !== -1
 							? `（每周${val
@@ -181,24 +181,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'pause',
-			label: '备份间隔时间',
-			render: (val: boolean) => (
-				<div className="text-overflow-one">
-					{val + '分/次'}
-					{backupDetail.increment ? (
-						<EditOutlined
-							style={{ marginLeft: 8, color: '#226EE7' }}
-							onClick={() => {
-								setIncrVisible(true);
-								// setModalType('time');
-							}}
-						/>
-					) : null}
-				</div>
-			)
-		},
-		{
 			dataIndex: 'y',
 			label: '最后一次备份时间',
 			render: (val: string) => (
@@ -225,12 +207,32 @@ function BackupTaskDetail(props: any): JSX.Element {
 				</div>
 			)
 		}
-	];
+	]);
 
 	useEffect(() => {
-		if (params.type === 'mysql') {
-			setInfo({ ...info, x: false, y: '' });
-		}
+		backupDetail?.increment &&
+			setInfoConfig([
+				...infoConfig,
+				{
+					dataIndex: 'pause',
+					label: '备份间隔时间',
+					// visible: backupDetail.increment,
+					render: (val: boolean) => (
+						<div className="text-overflow-one">
+							{val || '' + '分/次'}
+							{backupDetail.increment ? (
+								<EditOutlined
+									style={{ marginLeft: 8, color: '#226EE7' }}
+									onClick={() => {
+										setIncrVisible(true);
+										// setModalType('time');
+									}}
+								/>
+							) : null}
+						</div>
+					)
+				}
+			]);
 		backupDetail &&
 			setBasicData({
 				title: '基础信息',
@@ -241,8 +243,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 				backupTime: backupDetail.backupTime,
 				retentionTime: backupDetail.retentionTime,
 				limitRecord: backupDetail.limitRecord,
-				x: true,
-				z: 10,
+				increment: backupDetail.increment,
+				pause: backupDetail.pause,
 				y: '2022-08-15 00:00:00'
 			});
 	}, []);
@@ -386,6 +388,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 					position: res.data[0]?.position,
 					backupTime: res.data[0]?.backupTime,
 					retentionTime: res.data[0]?.retentionTime,
+					increment: res.data[0]?.increment,
+					pause: res.data[0]?.pause,
 					limitRecord: res.data[0]?.limitRecord
 				});
 				storage.setLocal('backupDetail', res.data[0]);
@@ -404,6 +408,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 			clusterId: backupDetail.clusterId || cluster.id,
 			namespace: backupDetail.namespace || namespace.name,
 			type: params.type,
+			// increment: backupDetail.increment,
+			// pause: backupDetail.pause,
 			...cron
 		};
 		editBackupTasks(sendData).then((res) => {
@@ -416,8 +422,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 			clusterId: backupDetail.clusterId || cluster.id,
 			namespace: backupDetail.namespace || namespace.name,
 			type: params.type,
-			increment: backupDetail.increment,
-			pause: backupDetail.pause,
+			// increment: backupDetail.increment,
+			// pause: backupDetail.pause,
 			...cron
 		};
 		editBackupTasks(sendData).then((res) => {
@@ -467,11 +473,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 											cron: backupDetail.cron || '',
 											backupName: backupDetail.backupName,
 											backupId: backupDetail.backupId,
-											schedule:
-												backupDetail.backupMode ===
-												'single'
-													? false
-													: true,
+											schedule: backupDetail.schedule,
 											addressName:
 												backupDetail.addressName,
 											backupFileName:
@@ -506,7 +508,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				}
 			/>
 			<ProContent>
-				<DataFields dataSource={basicData} items={InfoConfig} />
+				<DataFields dataSource={basicData} items={infoConfig} />
 				<ProTable
 					dataSource={data}
 					showRefresh

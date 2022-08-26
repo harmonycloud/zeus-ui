@@ -508,7 +508,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									</Form.Item>
 									<Form.Item
 										label="备份时间"
-										name="time"
+										name="backupTime"
 										rules={[
 											{
 												required: true,
@@ -522,9 +522,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 									{selectedRow?.type === 'mysql' ||
-									selectedRow?.type === 'postgresql' ||
-									params.type === 'mysql' ||
-									params.type === 'postgresql' ? (
+									params.type === 'mysql' ? (
 										<Form.Item
 											label="是否开启增量备份"
 											name="increment"
@@ -543,7 +541,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									{incrementChecked ? (
 										<Form.Item
 											label="增量备份间隔时间"
-											name="pause"
+											name="time"
 											rules={[
 												{
 													required: true,
@@ -678,25 +676,25 @@ function AddBackupTask(props: StoreState): JSX.Element {
 											{formData.rule !== 'now'
 												? `（${
 														moment(
-															formData.time
+															formData.backupTime
 														).get('hour') >= 10
 															? moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('hour')
 															: '0' +
 															  moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('hour')
 												  }:${
 														moment(
-															formData.time
+															formData.backupTime
 														).get('minute') >= 10
 															? moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('minute')
 															: '0' +
 															  moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('minute')
 												  }）`
 												: ''}
@@ -768,8 +766,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 
 	const handleSubmit = () => {
 		formWay.validateFields().then((values) => {
-			const minute = moment(formData.time).get('minute');
-			const hour = moment(formData.time).get('hour');
+			const minute = moment(formData.backupTime).get('minute');
+			const hour = moment(formData.backupTime).get('hour');
 			const week = formData.cycle?.join(',');
 			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
@@ -784,7 +782,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				sendData.cron = cron;
 			}
 			delete sendData.cycle;
-			delete sendData.time;
+			delete sendData.backupTime;
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

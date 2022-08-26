@@ -21,4 +21,5 @@ export interface BackupRecordItem {
 	cron: string;
 	backupId: string;
 	addressName: string;
+	schedule: boolean;
 }
