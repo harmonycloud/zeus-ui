@@ -33,7 +33,7 @@ import {
 	addBackupConfig
 } from '@/services/backup';
 import moment from 'moment';
-import { weekMap } from '@/utils/const';
+import { weekMap, minutes } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import './index.scss';
@@ -560,12 +560,16 @@ function AddBackupTask(props: StoreState): JSX.Element {
 													marginRight: 8
 												}}
 											>
-												<Select.Option
-													key="10"
-													value={'10'}
-												>
-													10
-												</Select.Option>
+												{minutes.map((item) => {
+													return (
+														<Select.Option
+															key={item}
+															value={item}
+														>
+															{item}
+														</Select.Option>
+													);
+												})}
 												分/次
 											</Select>
 										</Form.Item>
