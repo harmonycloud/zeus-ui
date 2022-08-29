@@ -54,6 +54,7 @@ export interface globalVarProps {
 	clusterList: clusterType[];
 	project: ProjectItem;
 	flag: boolean;
+	avatar: boolean;
 	namespace: namespaceType;
 	namespaceList: namespaceType[];
 }

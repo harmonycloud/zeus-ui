@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { EditOutlined } from '@ant-design/icons';
 import { IconFont } from '@/components/IconFont';
 import { notification } from 'antd';
+import { connect } from 'react-redux';
 
 import { postLogout } from '@/services/user';
 import EditPasswordForm from './EditPasswordForm';
@@ -10,15 +11,19 @@ import { userProps } from './user';
 import { getLDAP } from '@/services/user';
 
 import Storage from '@/utils/storage';
+import { StoreState } from '@/types';
+import { setAvatar } from '@/redux/globalVar/var';
 import logoutSvg from '@/assets/images/navbar/logout.svg';
 
 import styles from './user.module.scss';
 
 function User(props: userProps): JSX.Element {
-	const { nickName, className, role } = props;
+	const { nickName, className, role, setAvatar } = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
-	const [checked, setChecked] = useState<boolean>(false);
+	const { avatar } = props.globalVar;
+
+	// const [checked, setChecked] = useState<boolean>(false);
 	const history = useHistory();
 
 	const logout = () => {
@@ -50,7 +55,10 @@ function User(props: userProps): JSX.Element {
 	return (
 		<div
 			className={`${styles['nav-user-container']} ${className}`}
-			onClick={() => setChecked(!checked)}
+			onClick={(e) => {
+				e.stopPropagation();
+				setAvatar(!avatar);
+			}}
 		>
 			<IconFont
 				type="icon-user-circle"
@@ -59,7 +67,7 @@ function User(props: userProps): JSX.Element {
 					verticalAlign: 'middle'
 				}}
 			/>
-			{checked ? (
+			{avatar ? (
 				<ul className={styles['nav-user-operator']}>
 					<li className={styles['nav-user-container-item']}>
 						<p>{nickName}</p>
@@ -116,4 +124,9 @@ function User(props: userProps): JSX.Element {
 	);
 }
 
-export default User;
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps, {
+	setAvatar
+})(User);
