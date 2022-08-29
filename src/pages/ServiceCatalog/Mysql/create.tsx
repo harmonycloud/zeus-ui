@@ -275,11 +275,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					});
 				}
 			});
-			getIncBackup({
-				clusterId: globalCluster.id,
-				namespace: namespace || globalNamespace.name,
-				backupName: backupFileName
-			});
+			if (backupFileName) {
+				getIncBackup({
+					clusterId: globalCluster.id,
+					namespace: namespace || globalNamespace.name,
+					backupName: backupFileName
+				});
+			}
 		}
 	}, [project, globalNamespace]);
 
@@ -2072,25 +2074,58 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 						</FormBlock>
 					) : null}
-					<FormBlock title="恢复配置">
-						<div>
-							可恢复的时间范围: 2022-08-20 18:35 - 2022-08-29
-							09:35
-						</div>
-						<FormItem
-							label="选择恢复的时间点"
-							required
-							name="backTime"
-						>
-							<DatePicker showTime />
-						</FormItem>
-						<FormItem label="冲突处理" required name="backType">
-							<Radio.Group>
-								<Radio value="x">遇到同名对象失败</Radio>
-								<Radio value="y">遇到同名对象则重命名</Radio>
-							</Radio.Group>
-						</FormItem>
-					</FormBlock>
+					{backupFileName ? (
+						<FormBlock title="恢复配置">
+							<div className={styles['basic-info']}>
+								<div>
+									可恢复的时间范围: 2022-08-20 18:35 -
+									2022-08-29 09:35
+								</div>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												选择恢复的时间点
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择恢复的时间点'
+													}
+												]}
+												name="backTime"
+											>
+												<DatePicker showTime />
+											</FormItem>
+										</div>
+									</li>
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												冲突处理
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required name="backType">
+												<Radio.Group defaultValue="x">
+													<Radio value="x">
+														遇到同名对象失败
+													</Radio>
+													<Radio value="y">
+														遇到同名对象则重命名
+													</Radio>
+												</Radio.Group>
+											</FormItem>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</FormBlock>
+					) : null}
 					{childrenRender(
 						customForm,
 						form,
