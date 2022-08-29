@@ -299,7 +299,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					return item;
 				});
 				setItems(itemsT);
-				console.log(storage.getSession('menuPath'));
+				console.log(window.location);
 				console.log(child);
 				if (child.length > 0) {
 					if (window.location.hash === '#/serviceList') {
