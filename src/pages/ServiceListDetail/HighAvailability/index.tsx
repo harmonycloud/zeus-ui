@@ -588,7 +588,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						<ProTable.Column
 							title="所在主机"
 							dataIndex="nodeName"
-							width={150}
+							width={220}
 							render={nodeNameRender}
 						/>
 						<ProTable.Column

@@ -3,8 +3,11 @@ import { useParams } from 'react-router';
 import { useHistory } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { getBackups } from '@/services/backup';
+import { middlewareProps } from '@/pages/ServiceList/service.list';
+import { getCanReleaseMiddleware } from '@/services/middleware';
 import TableRadio from '@/components/TableRadio';
 import { Radio, notification, Button, Divider } from 'antd';
+import storage from '@/utils/storage';
 
 const columns = [
 	{ title: '备份记录', dataIndex: 'name' },
@@ -17,6 +20,65 @@ function ProBackupBask(): JSX.Element {
 	const { backupName, clusterId, namespace, type } = params;
 	const [recoveryType, setRecoveryType] = useState<string>('time');
 	const [list, setList] = useState();
+	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
+	const backupDetail = storage.getLocal('backupDetail');
+
+	useEffect(() => {
+		getCanReleaseMiddleware({
+			clusterId,
+			type
+		}).then((res) => {
+			if (res.success) {
+				setMiddlewareInfo(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	}, []);
+
+	const releaseMiddleware = () => {
+		switch (backupDetail.sourceType) {
+			case 'mysql':
+				history.push(
+					`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
+				);
+				storage.setSession('menuPath', 'serviceList/mysql/MySQL');
+				break;
+			case 'postgresql':
+				history.push(
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
+				);
+				storage.setSession(
+					'menuPath',
+					'serviceList/postgresql/PostgreSQL'
+				);
+				break;
+			case 'redis':
+				history.push(
+					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
+				);
+				storage.setSession('menuPath', 'serviceList/redis/Redis');
+				break;
+			case 'elasticsearch':
+				history.push(
+					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
+				);
+				storage.setSession(
+					'menuPath',
+					'serviceList/elasticsearch/Elasticsearch'
+				);
+				break;
+			case 'rocketmq':
+				history.push(
+					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
+				);
+				storage.setSession('menuPath', 'serviceList/rocketmq/rocketMQ');
+				break;
+		}
+	};
 
 	useEffect(() => {
 		getBackups({
@@ -64,7 +126,13 @@ function ProBackupBask(): JSX.Element {
 					<Button
 						type="primary"
 						style={{ marginRight: 16 }}
-						// onClick={() => handleSubmit()}
+						onClick={() => {
+							if (type === 'record') {
+								releaseMiddleware();
+							} else {
+								releaseMiddleware();
+							}
+						}}
 					>
 						确认
 					</Button>

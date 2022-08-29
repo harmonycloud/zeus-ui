@@ -1,16 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Modal, Form, Checkbox, TimePicker, Select, InputNumber } from 'antd';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { list } from '@/utils/const';
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
-import moment from 'moment';
-
-const CheckboxGroup = Checkbox.Group;
+import { Modal, Form, Select } from 'antd';
+import { minutes } from '@/utils/const';
 
 interface editTimeProps {
 	visible: boolean;
-	onCreate: (cron: any) => void;
+	onCreate: (time: string) => void;
 	onCancel: () => void;
 	data: any;
 	type: string;
@@ -22,16 +17,18 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 
 	return (
 		<Modal
-			title={data.increment ? '开启增量备份' : '修改增量备份间隔时间'}
+			title={type === 'add' ? '开启增量备份' : '修改增量备份间隔时间'}
 			visible={visible}
-			onOk={onCreate}
+			onOk={() =>
+				form.validateFields().then((values) => onCreate(values.time))
+			}
 			forceRender
 			onCancel={onCancel}
 		>
 			<Form form={form} style={{ marginTop: '24px' }} labelAlign="left">
 				<Form.Item
 					label="增量备份间隔时间"
-					name="pause"
+					name="time"
 					rules={[
 						{
 							required: true,
@@ -47,9 +44,13 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 							marginRight: 8
 						}}
 					>
-						<Select.Option key="10" value={'10'}>
-							10
-						</Select.Option>
+						{minutes.map((item) => {
+							return (
+								<Select.Option key={item} value={item}>
+									{item}
+								</Select.Option>
+							);
+						})}
 						分/次
 					</Select>
 				</Form.Item>

@@ -619,3 +619,5 @@ export const backupTaskStatus = [
 	{ value: 'Creating', text: '创建中', color: '#18900f' },
 	{ value: 'Unknown', text: '未知', color: '#d7d7d7' }
 ];
+
+export const minutes = ['10', '15', '20', '30', '40', '50', '60'];

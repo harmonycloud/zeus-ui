@@ -33,7 +33,7 @@ import {
 	addBackupConfig
 } from '@/services/backup';
 import moment from 'moment';
-import { weekMap } from '@/utils/const';
+import { weekMap, minutes } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import './index.scss';
@@ -328,6 +328,58 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								</RadioGroup>
 							</Form.Item>
 							{backupWay === 'time' ? (
+								<Form.Item
+									label="备份保留时间"
+									name="retentionTime"
+									rules={[
+										{
+											required: true,
+											message: '备份保留时间不能为空'
+										},
+										{
+											max: dataType.find(
+												(item: any) =>
+													item.value === dataSelect
+											)?.max,
+											type: 'number',
+											message: '保留时间最长为10年'
+										},
+										{
+											min: 0,
+											type: 'number',
+											message: '保留时间不能小于0'
+										}
+									]}
+								>
+									<InputNumber
+										type="inline"
+										addonAfter={
+											<Select
+												value={dataSelect}
+												onChange={(value) => {
+													setDataSelect(value);
+													form.validateFields([
+														'dateUnit'
+													]);
+												}}
+												dropdownMatchSelectWidth={false}
+											>
+												{dataType?.map((item: any) => {
+													return (
+														<Select.Option
+															key={item.value}
+															value={item.value}
+														>
+															{item.label}
+														</Select.Option>
+													);
+												})}
+											</Select>
+										}
+									/>
+								</Form.Item>
+							) : null}
+							{/* {backupWay === 'time' ? (
 								params.type === 'mysql' ||
 								selectedRow?.type === 'mysql' ? (
 									<Form.Item
@@ -408,28 +460,29 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 								)
-							) : // <Form.Item
-							// 	label="备份规则"
-							// 	name="rule"
-							// 	rules={[
-							// 		{
-							// 			required: true,
-							// 			message: '请选择备时间'
-							// 		}
-							// 	]}
-							// 	initialValue="now"
-							// >
-							// 	<RadioGroup
-							// 		value={backupTime}
-							// 		onChange={(e) =>
-							// 			setBackupTime(e.target.value)
-							// 		}
-							// 	>
-							// 		<Radio value="now">立即备份</Radio>
-							// 		<Radio value="onetime">定时备份</Radio>
-							// 	</RadioGroup>
-							// </Form.Item>
-							null}
+							) :
+							<Form.Item
+								label="备份规则"
+								name="rule"
+								rules={[
+									{
+										required: true,
+										message: '请选择备时间'
+									}
+								]}
+								initialValue="now"
+							>
+								<RadioGroup
+									value={backupTime}
+									onChange={(e) =>
+										setBackupTime(e.target.value)
+									}
+								>
+									<Radio value="now">立即备份</Radio>
+									<Radio value="onetime">定时备份</Radio>
+								</RadioGroup>
+							</Form.Item>
+							null} */}
 							{backupWay === 'time' ||
 							backupTime === 'onetime' ? (
 								<>
@@ -508,7 +561,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									</Form.Item>
 									<Form.Item
 										label="备份时间"
-										name="time"
+										name="backupTime"
 										rules={[
 											{
 												required: true,
@@ -522,9 +575,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 									{selectedRow?.type === 'mysql' ||
-									selectedRow?.type === 'postgresql' ||
-									params.type === 'mysql' ||
-									params.type === 'postgresql' ? (
+									params.type === 'mysql' ? (
 										<Form.Item
 											label="是否开启增量备份"
 											name="increment"
@@ -543,7 +594,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									{incrementChecked ? (
 										<Form.Item
 											label="增量备份间隔时间"
-											name="pause"
+											name="time"
 											rules={[
 												{
 													required: true,
@@ -560,12 +611,16 @@ function AddBackupTask(props: StoreState): JSX.Element {
 													marginRight: 8
 												}}
 											>
-												<Select.Option
-													key="10"
-													value={'10'}
-												>
-													10
-												</Select.Option>
+												{minutes.map((item) => {
+													return (
+														<Select.Option
+															key={item}
+															value={item}
+														>
+															{item}
+														</Select.Option>
+													);
+												})}
 												分/次
 											</Select>
 										</Form.Item>
@@ -674,25 +729,25 @@ function AddBackupTask(props: StoreState): JSX.Element {
 											{formData.rule !== 'now'
 												? `（${
 														moment(
-															formData.time
+															formData.backupTime
 														).get('hour') >= 10
 															? moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('hour')
 															: '0' +
 															  moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('hour')
 												  }:${
 														moment(
-															formData.time
+															formData.backupTime
 														).get('minute') >= 10
 															? moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('minute')
 															: '0' +
 															  moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('minute')
 												  }）`
 												: ''}
@@ -764,8 +819,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 
 	const handleSubmit = () => {
 		formWay.validateFields().then((values) => {
-			const minute = moment(formData.time).get('minute');
-			const hour = moment(formData.time).get('hour');
+			const minute = moment(formData.backupTime).get('minute');
+			const hour = moment(formData.backupTime).get('hour');
 			const week = formData.cycle?.join(',');
 			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
@@ -780,7 +835,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				sendData.cron = cron;
 			}
 			delete sendData.cycle;
-			delete sendData.time;
+			delete sendData.backupTime;
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

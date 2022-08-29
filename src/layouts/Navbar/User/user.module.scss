@@ -11,7 +11,7 @@
 	color: #49a9e1;
 }
 .nav-user-operator {
-	display: none;
+	display: block;
 	position: absolute;
 	top: 50px;
 	right: 0;
@@ -21,9 +21,6 @@
 	-moz-transition: all 0.1s ease 0s;
 	-webkit-transition: all 0.1s ease 0s;
 	-o-transition: all 0.1s ease 0s;
-}
-.nav-user-container:hover .nav-user-operator {
-	display: block;
 }
 .nav-user-container-item {
 	padding-left: 20px;
