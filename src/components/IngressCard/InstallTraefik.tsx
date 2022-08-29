@@ -139,7 +139,7 @@ export default function InstallTraefik(
 					notification.error({
 						message: '错误',
 						description:
-							'当前端口组存在冲突，请重新输入或勾选强制跳过端口冲突！'
+							'当前端口组存在冲突，请重新输入或勾选强制跳过冲突端口！'
 					});
 				}
 			}
@@ -577,7 +577,7 @@ export default function InstallTraefik(
 							checked={skipPortConflict}
 							onChange={onChange}
 						>
-							强制跳过端口冲突
+							跳过冲突端口
 						</Checkbox>
 					</FormItem>
 				</FormItem>
@@ -593,10 +593,16 @@ export default function InstallTraefik(
 							{ports?.length === 0 && (
 								<div>其中没有端口被占用！</div>
 							)}
-							{ports && ports.length > 0 && (
+							{ports && !skipPortConflict && ports.length > 0 && (
 								<div style={{ color: '#ff4d4f' }}>
 									其中{ports?.join(',')}
 									端口号被占用，请重新输入
+								</div>
+							)}
+							{ports && skipPortConflict && ports.length > 0 && (
+								<div style={{ color: '#ff4d4f' }}>
+									其中{ports?.join(',')}
+									端口号被占用，已跳过冲突端口
 								</div>
 							)}
 						</Col>
