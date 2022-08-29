@@ -27,7 +27,7 @@ const ComponentNull = (props: ComponentNullProps) => {
 					if (onClick) {
 						onClick();
 					} else {
-						storage.setLocal(
+						storage.setSession(
 							'cluster-detail-current-tab',
 							'component'
 						);

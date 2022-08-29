@@ -14,6 +14,7 @@ import { iconTypeRender, objectRemoveDuplicatesByKey } from '@/utils/utils';
 import { FiltersProps } from '@/types/comment';
 import Actions from '../Actions';
 import CheckYaml from './checkYaml';
+import storage from '@/utils/storage';
 
 const { TabPane } = Tabs;
 const LinkButton = Actions.LinkButton;
@@ -242,7 +243,10 @@ export default function IngressDetail(): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				onBack={() => window.history.back()}
+				onBack={() => {
+					storage.setSession('cluster-detail-current-tab', 'ingress');
+					window.history.back();
+				}}
 				title={params.ingressClassName}
 				extra={[
 					<Button
