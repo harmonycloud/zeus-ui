@@ -10,7 +10,6 @@ import './index.scss';
 
 const { Search } = Input;
 const translateChildrenToColumns = (value: React.ReactNode[]) => {
-	console.log(value);
 	const list = value
 		.filter(
 			(item: any) =>

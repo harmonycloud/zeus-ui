@@ -21,7 +21,6 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { getGaugeOption, getPieOption } from '@/utils/echartsOption';
 import { UsableNodeItem, ZonesItem } from './activeActive';
 import { Button, Modal, notification } from 'antd';
-import storage from '@/utils/storage';
 
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
@@ -299,6 +298,10 @@ export default function AreaDetail(): JSX.Element {
 							{ text: '正常', value: 'True' },
 							{ text: '异常', value: 'False' }
 						]}
+						onFilter={(
+							value: string | number | boolean,
+							record: UsableNodeItem
+						) => record.status === value}
 					/>
 					<ProTable.Column
 						title="操作"

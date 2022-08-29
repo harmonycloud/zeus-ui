@@ -91,20 +91,6 @@ export default function ActiveDetail(): JSX.Element {
 			  );
 	};
 	const handleEdit = (value: any, name: string) => {
-		if (value.aliasName.length > 20) {
-			notification.error({
-				message: '失败',
-				description: '可用区名字不能超过20个字符！'
-			});
-			return;
-		}
-		if ((value.aliasName as string).trim() === '') {
-			notification.error({
-				message: '失败',
-				description: '请填写可用区名字！'
-			});
-			return;
-		}
 		updateZones({
 			clusterId: params.id,
 			areaName: name,
