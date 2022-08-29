@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, notification } from 'antd';
+import { Alert, Button, notification } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router';
 import { connect } from 'react-redux';
@@ -55,6 +55,16 @@ const Component = (props: ComponentProps) => {
 	};
 	return (
 		<>
+			{components.find(
+				(item) => item.component === 'middleware-controller'
+			)?.status !== 3 && (
+				<Alert
+					showIcon
+					type="info"
+					message="强烈建议安装中间件管理组件且运行正常，否则将无法使用平台大部分功能！"
+					style={{ marginBottom: 16 }}
+				/>
+			)}
 			<div className="flex-space-between">
 				<Button type="primary" onClick={() => setVisible(true)}>
 					批量安装

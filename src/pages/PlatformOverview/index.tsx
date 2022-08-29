@@ -492,22 +492,7 @@ function PlatformOverview(props: any): JSX.Element {
 											image={Empty.PRESENTED_IMAGE_SIMPLE}
 											description={
 												<div>
-													该集群暂无中间件上架，请前往
-													<Button
-														type="link"
-														style={{
-															height: 20,
-															padding: 0
-														}}
-														onClick={() =>
-															history.push(
-																'middlewareRepository'
-															)
-														}
-													>
-														中间件市场
-													</Button>
-													上架
+													该集群暂无服务，请前往服务列表发布
 												</div>
 											}
 										/>
