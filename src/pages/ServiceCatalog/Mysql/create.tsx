@@ -233,11 +233,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		if (globalNamespace.availableDomain) {
 			setModeList([
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主一从',
+					value: '1m-1s'
 				}
 			]);
-			setMode('1m-3s');
+			setMode('1m-1s');
 		}
 	}, []);
 
@@ -248,11 +248,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			setModeList([
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主一从',
+					value: '1m-1s'
 				}
 			]);
-			setMode('1m-3s');
+			setMode('1m-1s');
 		}
 	}, [selectNamespace]);
 
