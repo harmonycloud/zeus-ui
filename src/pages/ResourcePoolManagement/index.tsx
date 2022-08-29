@@ -243,7 +243,10 @@ function ResourcePoolManagement(
 					history.push(
 						`/systemManagement/resourcePoolManagement/resourcePoolDetail/${record.id}/${record.nickname}`
 					);
-					storage.setLocal('cluster-detail-current-tab', 'namespace');
+					storage.setSession(
+						'cluster-detail-current-tab',
+						'namespace'
+					);
 				}}
 			>
 				{record.attributes.nsCount}

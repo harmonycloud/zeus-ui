@@ -171,7 +171,7 @@ function AddForm(props: addFormProps): JSX.Element {
 							description: '集群接入成功'
 						});
 						setRefreshCluster(true);
-						storage.setLocal(
+						storage.setSession(
 							'cluster-detail-current-tab',
 							'component'
 						);

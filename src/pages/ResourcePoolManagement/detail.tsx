@@ -18,19 +18,19 @@ export interface paramsProps {
 const { TabPane } = Tabs;
 const ResourcePoolDetail = () => {
 	const [activeKey, setActiveKey] = useState<string>(
-		storage.getLocal('cluster-detail-current-tab') === ''
+		storage.getSession('cluster-detail-current-tab') === ''
 			? 'overview'
-			: storage.getLocal('cluster-detail-current-tab')
+			: storage.getSession('cluster-detail-current-tab')
 	);
 	const params: paramsProps = useParams();
 	const { nickname } = params;
 	const onChange = (key: string | number) => {
 		setActiveKey(key as string);
-		storage.setLocal('cluster-detail-current-tab', key);
+		storage.setSession('cluster-detail-current-tab', key);
 	};
 
 	useEffect(() => {
-		return storage.setLocal('cluster-detail-current-tab', '');
+		return storage.setSession('cluster-detail-current-tab', '');
 	});
 
 	return (

@@ -14,6 +14,7 @@ import { iconTypeRender, objectRemoveDuplicatesByKey } from '@/utils/utils';
 import { FiltersProps } from '@/types/comment';
 import Actions from '../Actions';
 import CheckYaml from './checkYaml';
+import storage from '@/utils/storage';
 
 const { TabPane } = Tabs;
 const LinkButton = Actions.LinkButton;
@@ -118,6 +119,26 @@ const traefikInfoConfig = [
 				{val || '/'}
 			</div>
 		)
+	},
+	{
+		dataIndex: 'portOrg',
+		label: '服务端口组'
+	},
+	{
+		dataIndex: 'httpPort',
+		label: 'http端口'
+	},
+	{
+		dataIndex: 'httpsPort',
+		label: 'https端口'
+	},
+	{
+		dataIndex: 'dashboardPort',
+		label: 'Dashboard端口'
+	},
+	{
+		dataIndex: 'monitorPort',
+		label: '数据监控端口'
 	}
 ];
 export default function IngressDetail(): JSX.Element {
@@ -145,7 +166,10 @@ export default function IngressDetail(): JSX.Element {
 					httpPort: res.data.httpPort,
 					httpsPort: res.data.httpsPort,
 					healthzPort: res.data.healthzPort,
-					defaultServerPort: res.data.defaultServerPort
+					defaultServerPort: res.data.defaultServerPort,
+					portOrg: `${res.data.startPort}-${res.data.endPort}(100个)`,
+					dashboardPort: res.data.dashboardPort,
+					monitorPort: res.data.monitorPort
 				});
 			}
 		});
@@ -242,7 +266,10 @@ export default function IngressDetail(): JSX.Element {
 	return (
 		<ProPage>
 			<ProHeader
-				onBack={() => window.history.back()}
+				onBack={() => {
+					storage.setSession('cluster-detail-current-tab', 'ingress');
+					window.history.back();
+				}}
 				title={params.ingressClassName}
 				extra={[
 					<Button

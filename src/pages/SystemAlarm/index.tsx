@@ -66,7 +66,7 @@ function SystemAlarm(props: systemAlarmProps) {
 									padding: 0
 								}}
 								onClick={() => {
-									storage.setLocal(
+									storage.setSession(
 										'cluster-detail-current-tab',
 										'component'
 									);
