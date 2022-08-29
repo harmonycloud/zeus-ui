@@ -328,6 +328,58 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								</RadioGroup>
 							</Form.Item>
 							{backupWay === 'time' ? (
+								<Form.Item
+									label="备份保留时间"
+									name="retentionTime"
+									rules={[
+										{
+											required: true,
+											message: '备份保留时间不能为空'
+										},
+										{
+											max: dataType.find(
+												(item: any) =>
+													item.value === dataSelect
+											)?.max,
+											type: 'number',
+											message: '保留时间最长为10年'
+										},
+										{
+											min: 0,
+											type: 'number',
+											message: '保留时间不能小于0'
+										}
+									]}
+								>
+									<InputNumber
+										type="inline"
+										addonAfter={
+											<Select
+												value={dataSelect}
+												onChange={(value) => {
+													setDataSelect(value);
+													form.validateFields([
+														'dateUnit'
+													]);
+												}}
+												dropdownMatchSelectWidth={false}
+											>
+												{dataType?.map((item: any) => {
+													return (
+														<Select.Option
+															key={item.value}
+															value={item.value}
+														>
+															{item.label}
+														</Select.Option>
+													);
+												})}
+											</Select>
+										}
+									/>
+								</Form.Item>
+							) : null}
+							{/* {backupWay === 'time' ? (
 								params.type === 'mysql' ||
 								selectedRow?.type === 'mysql' ? (
 									<Form.Item
@@ -408,28 +460,29 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 								)
-							) : // <Form.Item
-							// 	label="备份规则"
-							// 	name="rule"
-							// 	rules={[
-							// 		{
-							// 			required: true,
-							// 			message: '请选择备时间'
-							// 		}
-							// 	]}
-							// 	initialValue="now"
-							// >
-							// 	<RadioGroup
-							// 		value={backupTime}
-							// 		onChange={(e) =>
-							// 			setBackupTime(e.target.value)
-							// 		}
-							// 	>
-							// 		<Radio value="now">立即备份</Radio>
-							// 		<Radio value="onetime">定时备份</Radio>
-							// 	</RadioGroup>
-							// </Form.Item>
-							null}
+							) :
+							<Form.Item
+								label="备份规则"
+								name="rule"
+								rules={[
+									{
+										required: true,
+										message: '请选择备时间'
+									}
+								]}
+								initialValue="now"
+							>
+								<RadioGroup
+									value={backupTime}
+									onChange={(e) =>
+										setBackupTime(e.target.value)
+									}
+								>
+									<Radio value="now">立即备份</Radio>
+									<Radio value="onetime">定时备份</Radio>
+								</RadioGroup>
+							</Form.Item>
+							null} */}
 							{backupWay === 'time' ||
 							backupTime === 'onetime' ? (
 								<>

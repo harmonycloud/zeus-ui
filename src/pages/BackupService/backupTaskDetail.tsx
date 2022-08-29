@@ -12,7 +12,8 @@ import {
 	editBackupTasks,
 	deleteBackups,
 	getBackupTasks,
-	deleteBackupTasks
+	deleteBackupTasks,
+	addIncBackup
 } from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
@@ -134,14 +135,16 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex:
-				backupDetail.sourceType === 'mysql'
-					? 'limitRecord'
-					: 'retentionTime',
-			label:
-				backupDetail.sourceType === 'mysql'
-					? '备份保留个数'
-					: '备份保留时间',
+			// dataIndex:
+			// 	backupDetail.sourceType === 'mysql'
+			// 		? 'limitRecord'
+			// 		: 'retentionTime',
+			// label:
+			// 	backupDetail.sourceType === 'mysql'
+			// 		? '备份保留个数'
+			// 		: '备份保留时间',
+			dataIndex: 'retentionTime',
+			label: '备份保留时间',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
 					{val}
@@ -150,8 +153,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 								(item) => item.value === backupDetail.dateUnit
 						  )?.label
 						: ''}
-					{backupDetail.backupMode === 'single' ? '--' : ''}
-					{backupDetail.backupMode !== 'single' ? (
+					{backupDetail.schedule ? '' : '--'}
+					{backupDetail.schedule ? (
 						<EditOutlined
 							style={{ marginLeft: 8, color: '#226EE7' }}
 							onClick={() => {
@@ -174,7 +177,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 						size="small"
 						style={{ marginLeft: 8 }}
 						onChange={(checked) => {
-							checked && setIncrVisible(true);
+							if (checked) {
+								setIncrVisible(true);
+								setModalType('add');
+							} else {
+								const sendData = {
+									backupName: params.backupName,
+									clusterId:
+										backupDetail.clusterId || cluster.id,
+									namespace:
+										backupDetail.namespace ||
+										namespace.name,
+									type: params.type,
+									time: backupDetail.time,
+									increment: backupDetail.increment,
+									turnOff: true
+								};
+								editBackupTasks(sendData).then((res) => {
+									getBasicInfo();
+								});
+							}
 						}}
 					/>
 				</div>
@@ -216,7 +238,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 				{
 					dataIndex: 'pause',
 					label: '备份间隔时间',
-					// visible: backupDetail.increment,
 					render: (val: boolean) => (
 						<div className="text-overflow-one">
 							{val || '' + '分/次'}
@@ -225,7 +246,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 									style={{ marginLeft: 8, color: '#226EE7' }}
 									onClick={() => {
 										setIncrVisible(true);
-										// setModalType('time');
+										setModalType('edit');
 									}}
 								/>
 							) : null}
@@ -394,6 +415,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				});
 				storage.setLocal('backupDetail', res.data[0]);
 				setVisible(false);
+				setIncrVisible(false);
 			} else {
 				notification.error({
 					message: '失败',
@@ -416,19 +438,32 @@ function BackupTaskDetail(props: any): JSX.Element {
 			getBasicInfo();
 		});
 	};
-	const onIncrCreate = (cron: any) => {
-		const sendData = {
-			backupName: params.backupName,
-			clusterId: backupDetail.clusterId || cluster.id,
-			namespace: backupDetail.namespace || namespace.name,
-			type: params.type,
-			// increment: backupDetail.increment,
-			// pause: backupDetail.pause,
-			...cron
-		};
-		editBackupTasks(sendData).then((res) => {
-			getBasicInfo();
-		});
+	const onIncrCreate = (time: string) => {
+		if (modalType === 'add') {
+			const sendData = {
+				backupName: params.backupName,
+				clusterId: backupDetail.clusterId || cluster.id,
+				namespace: backupDetail.namespace || namespace.name,
+				time
+			};
+			addIncBackup(sendData).then((res) => {
+				getBasicInfo();
+			});
+		} else {
+			const sendData = {
+				backupName: params.backupName,
+				clusterId: backupDetail.clusterId || cluster.id,
+				namespace: backupDetail.namespace || namespace.name,
+				type: params.type,
+				time
+				// increment: backupDetail.increment,
+				// pause: backupDetail.pause,
+				// ...cron
+			};
+			editBackupTasks(sendData).then((res) => {
+				getBasicInfo();
+			});
+		}
 	};
 	return (
 		<ProPage>

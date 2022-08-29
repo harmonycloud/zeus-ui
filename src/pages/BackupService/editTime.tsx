@@ -81,6 +81,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 						if (data.sourceType === 'mysql') {
 							onCreate({
 								cron,
+								increment: false,
 								keepAlive:
 									data.sourceType === 'mysql'
 										? data.limitRecord
@@ -189,7 +190,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 						</Form.Item>
 					</>
 				) : null}
-				{type !== 'way' && data.sourceType === 'mysql' ? (
+				{/* {type !== 'way' && data.sourceType === 'mysql' ? (
 					<Form.Item
 						label="备份保留个数"
 						name="limitRecord"
@@ -207,56 +208,56 @@ function EditTime(props: editTimeProps): JSX.Element {
 					>
 						<InputNumber style={{ width: 160 }} />
 					</Form.Item>
-				) : null}
-				{type !== 'way' && data.sourceType !== 'mysql' ? (
-					<Form.Item
-						label="备份保留时间"
-						name="retentionTime"
-						rules={[
-							{
-								required: true,
-								message: '备份保留时间不能为空'
-							},
-							{
-								max: dataType.find(
-									(item: any) => item.value === dateUnit
-								)?.max,
-								type: 'number',
-								message: '保留时间最长为10年'
-							},
-							{
-								min: 0,
-								type: 'number',
-								message: '保留时间不能小于0'
-							}
-						]}
-					>
-						<InputNumber
-							type="inline"
-							addonAfter={
-								<Select
-									value={dateUnit}
-									onChange={(value) => {
-										setDateUnit(value);
-										form.validateFields(['dateUnit']);
-									}}
-									dropdownMatchSelectWidth={false}
-								>
-									{dataType?.map((item: any) => {
-										return (
-											<Select.Option
-												key={item.value}
-												value={item.value}
-											>
-												{item.label}
-											</Select.Option>
-										);
-									})}
-								</Select>
-							}
-						/>
-					</Form.Item>
-				) : null}
+				) : null} */}
+				{/* {type !== 'way' && data.sourceType !== 'mysql' ? ( */}
+				<Form.Item
+					label="备份保留时间"
+					name="retentionTime"
+					rules={[
+						{
+							required: true,
+							message: '备份保留时间不能为空'
+						},
+						{
+							max: dataType.find(
+								(item: any) => item.value === dateUnit
+							)?.max,
+							type: 'number',
+							message: '保留时间最长为10年'
+						},
+						{
+							min: 0,
+							type: 'number',
+							message: '保留时间不能小于0'
+						}
+					]}
+				>
+					<InputNumber
+						type="inline"
+						addonAfter={
+							<Select
+								value={dateUnit}
+								onChange={(value) => {
+									setDateUnit(value);
+									form.validateFields(['dateUnit']);
+								}}
+								dropdownMatchSelectWidth={false}
+							>
+								{dataType?.map((item: any) => {
+									return (
+										<Select.Option
+											key={item.value}
+											value={item.value}
+										>
+											{item.label}
+										</Select.Option>
+									);
+								})}
+							</Select>
+						}
+					/>
+				</Form.Item>
+				{/* ) : null} */}
 			</Form>
 		</Modal>
 	);

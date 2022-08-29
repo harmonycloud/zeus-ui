@@ -18,6 +18,7 @@ function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
+	const [checked, setChecked] = useState<boolean>(false);
 	const history = useHistory();
 
 	const logout = () => {
@@ -47,7 +48,10 @@ function User(props: userProps): JSX.Element {
 	}, []);
 
 	return (
-		<div className={`${styles['nav-user-container']} ${className}`}>
+		<div
+			className={`${styles['nav-user-container']} ${className}`}
+			onClick={() => setChecked(!checked)}
+		>
 			<IconFont
 				type="icon-user-circle"
 				style={{
@@ -55,49 +59,52 @@ function User(props: userProps): JSX.Element {
 					verticalAlign: 'middle'
 				}}
 			/>
-			<ul className={styles['nav-user-operator']}>
-				<li className={styles['nav-user-container-item']}>
-					<p>{nickName}</p>
-					<span className={styles['nav-user-role-p']}>
-						{role?.userName}
-					</span>
-				</li>
-				{Storage.getLocal('userName') === 'admin' && (
+			{checked ? (
+				<ul className={styles['nav-user-operator']}>
+					<li className={styles['nav-user-container-item']}>
+						<p>{nickName}</p>
+						<span className={styles['nav-user-role-p']}>
+							{role?.userName}
+						</span>
+					</li>
+					{Storage.getLocal('userName') === 'admin' && (
+						<li
+							className={styles['nav-user-container-item']}
+							onClick={() =>
+								history.push('/dataOverview/personlization')
+							}
+						>
+							<IconFont
+								type="icon-gexinghua"
+								style={{
+									fontSize: '14px',
+									marginRight: '4px'
+								}}
+							/>
+							<span>平台管理</span>
+						</li>
+					)}
+					{Storage.getLocal('userName') !== 'admin' &&
+					isLDAP ? null : (
+						<li
+							className={styles['nav-user-container-item']}
+							onClick={editPassword}
+						>
+							<EditOutlined
+								style={{ fontSize: '14px', marginRight: '4px' }}
+							/>
+							修改密码
+						</li>
+					)}
 					<li
 						className={styles['nav-user-container-item']}
-						onClick={() =>
-							history.push('/dataOverview/personlization')
-						}
+						onClick={logout}
 					>
-						<IconFont
-							type="icon-gexinghua"
-							style={{
-								fontSize: '14px',
-								marginRight: '4px'
-							}}
-						/>
-						<span>平台管理</span>
+						<img src={logoutSvg} alt="退出" />
+						退出登录
 					</li>
-				)}
-				{Storage.getLocal('userName') !== 'admin' && isLDAP ? null : (
-					<li
-						className={styles['nav-user-container-item']}
-						onClick={editPassword}
-					>
-						<EditOutlined
-							style={{ fontSize: '14px', marginRight: '4px' }}
-						/>
-						修改密码
-					</li>
-				)}
-				<li
-					className={styles['nav-user-container-item']}
-					onClick={logout}
-				>
-					<img src={logoutSvg} alt="退出" />
-					退出登录
-				</li>
-			</ul>
+				</ul>
+			) : null}
 			{visible && (
 				<EditPasswordForm
 					visible={visible}

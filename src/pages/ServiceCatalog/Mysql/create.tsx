@@ -18,7 +18,9 @@ import {
 	Tooltip,
 	AutoComplete,
 	Tag,
-	Popover
+	Popover,
+	Radio,
+	DatePicker
 } from 'antd';
 import {
 	getNodePort,
@@ -32,7 +34,7 @@ import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import { getProjectNamespace } from '@/services/project';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
 import transUnit from '@/utils/transUnit';
-import { applyBackup } from '@/services/backup';
+import { applyBackup, getIncBackup } from '@/services/backup';
 import pattern from '@/utils/pattern';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
@@ -272,6 +274,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						description: res.errorMsg
 					});
 				}
+			});
+			getIncBackup({
+				clusterId: globalCluster.id,
+				namespace: namespace || globalNamespace.name,
+				backupName: backupFileName
 			});
 		}
 	}, [project, globalNamespace]);
@@ -2065,6 +2072,25 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 						</FormBlock>
 					) : null}
+					<FormBlock title="恢复配置">
+						<div>
+							可恢复的时间范围: 2022-08-20 18:35 - 2022-08-29
+							09:35
+						</div>
+						<FormItem
+							label="选择恢复的时间点"
+							required
+							name="backTime"
+						>
+							<DatePicker showTime />
+						</FormItem>
+						<FormItem label="冲突处理" required name="backType">
+							<Radio.Group>
+								<Radio value="x">遇到同名对象失败</Radio>
+								<Radio value="y">遇到同名对象则重命名</Radio>
+							</Radio.Group>
+						</FormItem>
+					</FormBlock>
 					{childrenRender(
 						customForm,
 						form,
