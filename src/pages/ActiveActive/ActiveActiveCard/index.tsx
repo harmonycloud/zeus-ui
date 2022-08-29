@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Popconfirm, Progress } from 'antd';
+import { Form, Input, notification, Popconfirm, Progress } from 'antd';
 import noData1 from '@/assets/images/active-bg1.svg';
 import noData2 from '@/assets/images/active-bg2.svg';
 import noData3 from '@/assets/images/active-bg3.svg';
@@ -51,18 +51,40 @@ export const ActiveDataCard = (props: ActiveDataProps) => {
 						<Popconfirm
 							title={
 								<Form form={form}>
-									<Form.Item name="aliasName">
-										<Input
-											placeholder="请输入"
-											defaultValue={title}
-										/>
+									<Form.Item
+										name="aliasName"
+										initialValue={title}
+									>
+										<Input placeholder="请输入" />
 									</Form.Item>
 								</Form>
 							}
 							icon={null}
-							onConfirm={() =>
-								handleEdit(form.getFieldsValue(), 'aliasName')
-							}
+							onConfirm={() => {
+								if (
+									form.getFieldsValue().aliasName.length > 20
+								) {
+									notification.error({
+										message: '失败',
+										description:
+											'可用区名字不能超过20个字符！'
+									});
+									form.setFieldsValue({ aliasName: title });
+									return;
+								}
+								if (
+									form.getFieldsValue().aliasName.trim() ===
+									''
+								) {
+									notification.error({
+										message: '失败',
+										description: '请填写可用区名字！'
+									});
+									form.setFieldsValue({ aliasName: title });
+									return;
+								}
+								handleEdit(form.getFieldsValue(), data.name);
+							}}
 						>
 							<EditOutlined
 								style={{
