@@ -259,6 +259,7 @@ const IngressCard = (props: IngressCardProps) => {
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			default:
