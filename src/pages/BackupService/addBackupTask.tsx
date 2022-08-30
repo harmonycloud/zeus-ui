@@ -834,6 +834,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			if (formData.way === 'time') {
 				sendData.cron = cron;
 			}
+			if (formData.retentionTime) {
+				sendData.dateUnit = dataSelect;
+			}
 			delete sendData.cycle;
 			delete sendData.backupTime;
 			addBackupConfig(sendData).then((res) => {
