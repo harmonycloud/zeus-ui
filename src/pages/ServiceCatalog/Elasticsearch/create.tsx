@@ -313,9 +313,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
+					backupName: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -555,6 +553,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					res.data.quota.master.memory,
 					'Gi'
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.master.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.master.storageClassQuota,

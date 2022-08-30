@@ -489,9 +489,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
+					backupName: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -645,6 +643,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.redis.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.redis.storageClassQuota,

@@ -39,6 +39,7 @@ import pattern from '@/utils/pattern';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import Affinity from '@/components/Affinity';
+import moment from 'moment';
 
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import {
@@ -67,6 +68,7 @@ import {
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
 import { log } from 'console';
+import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -279,7 +281,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				getIncBackup({
 					clusterId: globalCluster.id,
 					namespace: namespace || globalNamespace.name,
-					backupName: backupFileName
+					backupName: storage.getLocal('backupDetail').backupName
 				});
 			}
 		}
@@ -434,7 +436,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData.namespace = namespace;
 			}
 			// 克隆服务
-			if (backupFileName) {
+			if (storage.getLocal('backupDetail').backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
 			}
@@ -619,6 +621,32 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
+			if (middlewareName) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					restoreTime: moment(values.restoreTime).format(
+						'YYYY-MM-DD hh:mm:ss'
+					),
+					type: storage.getLocal('backupDetail').sourceType,
+					backupName: storage.getLocal('backupDetail').backupName
+				};
+				applyBackup(result).then((res) => {
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
+				});
+				console.log(result);
+			}
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);
 				addDisasterIns(sendData).then((res) => {
@@ -750,6 +778,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.mysql.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
@@ -2074,7 +2103,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 						</FormBlock>
 					) : null}
-					{backupFileName ? (
+					{storage.getLocal('backupDetail').recoveryType ===
+					'time' ? (
 						<FormBlock title="恢复配置">
 							<div className={styles['basic-info']}>
 								<div>
@@ -2097,13 +2127,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 															'请选择恢复的时间点'
 													}
 												]}
-												name="backTime"
+												name="restoreTime"
 											>
 												<DatePicker showTime />
 											</FormItem>
 										</div>
 									</li>
-									<li className="display-flex">
+									{/* <li className="display-flex">
 										<label className="form-name">
 											<span className="ne-required">
 												冲突处理
@@ -2121,7 +2151,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												</Radio.Group>
 											</FormItem>
 										</div>
-									</li>
+									</li> */}
 								</ul>
 							</div>
 						</FormBlock>

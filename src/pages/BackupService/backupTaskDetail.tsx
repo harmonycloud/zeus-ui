@@ -190,7 +190,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 										namespace.name,
 									type: params.type,
 									time: backupDetail.time,
-									increment: backupDetail.increment,
+									cron: backupDetail.cron,
+									retentionTime: backupDetail.retentionTime,
+									dateUnit: backupDetail.dateUnit,
 									turnOff: true
 								};
 								editBackupTasks(sendData).then((res) => {
@@ -231,29 +233,28 @@ function BackupTaskDetail(props: any): JSX.Element {
 		}
 	]);
 
+	const time = {
+		dataIndex: 'time',
+		label: '备份间隔时间',
+		render: (val: boolean) => (
+			<div className="text-overflow-one">
+				{(val || '') + '分/次'}
+				{backupDetail.increment ? (
+					<EditOutlined
+						style={{ marginLeft: 8, color: '#226EE7' }}
+						onClick={() => {
+							setIncrVisible(true);
+							setModalType('edit');
+						}}
+					/>
+				) : null}
+			</div>
+		)
+	};
+
 	useEffect(() => {
-		backupDetail?.increment &&
-			setInfoConfig([
-				...infoConfig,
-				{
-					dataIndex: 'pause',
-					label: '备份间隔时间',
-					render: (val: boolean) => (
-						<div className="text-overflow-one">
-							{val || '' + '分/次'}
-							{backupDetail.increment ? (
-								<EditOutlined
-									style={{ marginLeft: 8, color: '#226EE7' }}
-									onClick={() => {
-										setIncrVisible(true);
-										setModalType('edit');
-									}}
-								/>
-							) : null}
-						</div>
-					)
-				}
-			]);
+		infoConfig.splice(6, 0, time);
+		backupDetail?.increment && setInfoConfig(infoConfig);
 		backupDetail &&
 			setBasicData({
 				title: '基础信息',
@@ -265,7 +266,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				retentionTime: backupDetail.retentionTime,
 				limitRecord: backupDetail.limitRecord,
 				increment: backupDetail.increment,
-				pause: backupDetail.pause,
+				time: backupDetail.time,
 				y: '2022-08-15 00:00:00'
 			});
 	}, []);
@@ -410,8 +411,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 					backupTime: res.data[0]?.backupTime,
 					retentionTime: res.data[0]?.retentionTime,
 					increment: res.data[0]?.increment,
-					pause: res.data[0]?.pause,
-					limitRecord: res.data[0]?.limitRecord
+					time: res.data[0]?.time,
+					limitRecord: res.data[0]?.limitRecord,
+					y: '2022-08-15 00:00:00'
 				});
 				storage.setLocal('backupDetail', res.data[0]);
 				setVisible(false);
@@ -424,27 +426,28 @@ function BackupTaskDetail(props: any): JSX.Element {
 			}
 		});
 	};
-	const onCreate = (cron: any) => {
+	const onCreate = (data: any) => {
 		const sendData = {
 			backupName: params.backupName,
 			clusterId: backupDetail.clusterId || cluster.id,
 			namespace: backupDetail.namespace || namespace.name,
 			type: params.type,
-			// increment: backupDetail.increment,
-			// pause: backupDetail.pause,
-			...cron
+			increment: backupDetail.increment,
+			time: backupDetail.time,
+			...data
 		};
 		editBackupTasks(sendData).then((res) => {
 			getBasicInfo();
 		});
 	};
-	const onIncrCreate = (time: string) => {
+	const onIncrCreate = (data: any) => {
 		if (modalType === 'add') {
 			const sendData = {
 				backupName: params.backupName,
 				clusterId: backupDetail.clusterId || cluster.id,
 				namespace: backupDetail.namespace || namespace.name,
-				time
+				increment: backupDetail.increment,
+				...data
 			};
 			addIncBackup(sendData).then((res) => {
 				getBasicInfo();
@@ -455,10 +458,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				clusterId: backupDetail.clusterId || cluster.id,
 				namespace: backupDetail.namespace || namespace.name,
 				type: params.type,
-				time
-				// increment: backupDetail.increment,
-				// pause: backupDetail.pause,
-				// ...cron
+				...data
 			};
 			editBackupTasks(sendData).then((res) => {
 				getBasicInfo();
@@ -484,7 +484,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 										backupDetail.clusterId || cluster.id
 									}/${backupDetail.namespace}/${
 										backupDetail.backupName
-									}/${backupDetail.type}`
+									}/${backupDetail.sourceType}`
 								)
 							}
 						>

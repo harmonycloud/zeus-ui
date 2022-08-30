@@ -78,38 +78,57 @@ function EditTime(props: editTimeProps): JSX.Element {
 					const week = values.cycle?.join(',');
 					const cron = `${minute} ${hour} ? ? ${week}`;
 					if (type === 'way') {
-						if (data.sourceType === 'mysql') {
-							onCreate({
-								cron,
-								increment: false,
-								keepAlive:
-									data.sourceType === 'mysql'
-										? data.limitRecord
-										: data.retentionTime
-							});
-						} else {
-							onCreate({
-								cron,
-								dateUnit: data.dateUnit,
-								keepAlive:
-									data.sourceType === 'mysql'
-										? data.limitRecord
-										: data.retentionTime
-							});
+						// if (data.sourceType === 'mysql') {
+						// 	onCreate({
+						// 		cron,
+						// 		keepAlive:
+						// 			data.sourceType === 'mysql'
+						// 				? data.limitRecord
+						// 				: data.retentionTime
+						// 	});
+						// } else {
+						// 	onCreate({
+						// 		cron,
+						// 		dateUnit: data.dateUnit,
+						// 		keepAlive:
+						// 			data.sourceType === 'mysql'
+						// 				? data.limitRecord
+						// 				: data.retentionTime
+						// 	});
+						// }
+						const sendData: any = {
+							cron,
+							dateUnit: data.dateUnit,
+							increment: data.increment,
+							retentionTime: data.retentionTime
+						};
+						if (data.increment) {
+							sendData.time = data.time;
 						}
+						onCreate(sendData);
 					} else {
-						if (data.sourceType === 'mysql') {
-							onCreate({
-								cron: data.cron,
-								keepAlive: values.limitRecord
-							});
-						} else {
-							onCreate({
-								cron: data.cron,
-								keepAlive: values.retentionTime,
-								dateUnit
-							});
+						// if (data.sourceType === 'mysql') {
+						// 	onCreate({
+						// 		cron: data.cron,
+						// 		keepAlive: values.limitRecord
+						// 	});
+						// } else {
+						// 	onCreate({
+						// 		cron: data.cron,
+						// 		keepAlive: values.retentionTime,
+						// 		dateUnit
+						// 	});
+						// }
+						const sendData: any = {
+							cron: data.cron,
+							dateUnit: dateUnit,
+							increment: data.increment,
+							retentionTime: values.retentionTime
+						};
+						if (data.increment) {
+							sendData.time = data.time;
 						}
+						onCreate(sendData);
 					}
 				});
 			}}
@@ -209,55 +228,55 @@ function EditTime(props: editTimeProps): JSX.Element {
 						<InputNumber style={{ width: 160 }} />
 					</Form.Item>
 				) : null} */}
-				{/* {type !== 'way' && data.sourceType !== 'mysql' ? ( */}
-				<Form.Item
-					label="备份保留时间"
-					name="retentionTime"
-					rules={[
-						{
-							required: true,
-							message: '备份保留时间不能为空'
-						},
-						{
-							max: dataType.find(
-								(item: any) => item.value === dateUnit
-							)?.max,
-							type: 'number',
-							message: '保留时间最长为10年'
-						},
-						{
-							min: 0,
-							type: 'number',
-							message: '保留时间不能小于0'
-						}
-					]}
-				>
-					<InputNumber
-						type="inline"
-						addonAfter={
-							<Select
-								value={dateUnit}
-								onChange={(value) => {
-									setDateUnit(value);
-									form.validateFields(['dateUnit']);
-								}}
-								dropdownMatchSelectWidth={false}
-							>
-								{dataType?.map((item: any) => {
-									return (
-										<Select.Option
-											key={item.value}
-											value={item.value}
-										>
-											{item.label}
-										</Select.Option>
-									);
-								})}
-							</Select>
-						}
-					/>
-				</Form.Item>
-				{/* ) : null} */}
+				{type !== 'way' ? (
+					<Form.Item
+						label="备份保留时间"
+						name="retentionTime"
+						rules={[
+							{
+								required: true,
+								message: '备份保留时间不能为空'
+							},
+							{
+								max: dataType.find(
+									(item: any) => item.value === dateUnit
+								)?.max,
+								type: 'number',
+								message: '保留时间最长为10年'
+							},
+							{
+								min: 0,
+								type: 'number',
+								message: '保留时间不能小于0'
+							}
+						]}
+					>
+						<InputNumber
+							type="inline"
+							addonAfter={
+								<Select
+									value={dateUnit}
+									onChange={(value) => {
+										setDateUnit(value);
+										form.validateFields(['dateUnit']);
+									}}
+									dropdownMatchSelectWidth={false}
+								>
+									{dataType?.map((item: any) => {
+										return (
+											<Select.Option
+												key={item.value}
+												value={item.value}
+											>
+												{item.label}
+											</Select.Option>
+										);
+									})}
+								</Select>
+							}
+						/>
+					</Form.Item>
+				) : null}
 			</Form>
 		</Modal>
 	);

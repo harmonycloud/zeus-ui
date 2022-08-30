@@ -55,6 +55,8 @@ import {
 	AutoCompleteOptionItem
 } from '@/types/comment';
 import { StoreState } from '@/types';
+import storage from '@/utils/storage';
+import { applyBackup } from '@/services/backup';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 
@@ -326,10 +328,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (namespace) {
 				sendData.namespace = namespace;
 			}
-			if (backupFileName) {
-				sendData.middlewareName = middlewareName;
-				sendData.backupFileName = backupFileName;
-			}
+			// if (backupFileName) {
+			// 	sendData.middlewareName = middlewareName;
+			// 	sendData.backupFileName = backupFileName;
+			// }
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
@@ -358,6 +360,28 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			} else if (instanceSpec === 'Customize') {
 				sendData.quota.postgresql.cpu = values.cpu;
 				sendData.quota.postgresql.memory = values.memory + 'Gi';
+			}
+			if (middlewareName) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					type: storage.getLocal('backupDetail').sourceType,
+					backupName: storage.getLocal('backupDetail').backupName
+				};
+				applyBackup(result).then((res) => {
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
+				});
 			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {

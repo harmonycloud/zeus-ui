@@ -10,8 +10,8 @@ import { Radio, notification, Button, Divider } from 'antd';
 import storage from '@/utils/storage';
 
 const columns = [
-	{ title: '备份记录', dataIndex: 'name' },
-	{ title: '备份时间', dataIndex: 'type' }
+	{ title: '备份记录', dataIndex: 'backupName' },
+	{ title: '备份时间', dataIndex: 'backupTime' }
 ];
 
 function ProBackupBask(): JSX.Element {
@@ -22,6 +22,8 @@ function ProBackupBask(): JSX.Element {
 	const [list, setList] = useState();
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const backupDetail = storage.getLocal('backupDetail');
+	const [selectedRow, setSelectedRow] = useState<any>();
+	const [selectedRowKeys, setSelectedRowKeys] = useState();
 
 	useEffect(() => {
 		getCanReleaseMiddleware({
@@ -43,13 +45,24 @@ function ProBackupBask(): JSX.Element {
 		switch (backupDetail.sourceType) {
 			case 'mysql':
 				history.push(
-					`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
+					`/serviceList/mysql/MySQL/mysqlCreate/${
+						middlewareInfo?.chartVersion
+					}/${
+						selectedRow?.sourceName || backupDetail.sourceName
+					}/backup/${backupDetail.backupFileName}/${
+						selectedRow?.namespace || backupDetail.namespace
+					}`
 				);
 				storage.setSession('menuPath', 'serviceList/mysql/MySQL');
+				recoveryType === 'time' &&
+					storage.setLocal('backupDetail', {
+						...backupDetail,
+						recoveryType: 'time'
+					});
 				break;
 			case 'postgresql':
 				history.push(
-					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${selectedRow?.sourceName}/backup/${selectedRow?.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -58,13 +71,13 @@ function ProBackupBask(): JSX.Element {
 				break;
 			case 'redis':
 				history.push(
-					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
+					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${selectedRow?.sourceName}/backup/${selectedRow?.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/redis/Redis');
 				break;
 			case 'elasticsearch':
 				history.push(
-					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
+					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${selectedRow?.sourceName}/backup/${selectedRow?.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -73,7 +86,7 @@ function ProBackupBask(): JSX.Element {
 				break;
 			case 'rocketmq':
 				history.push(
-					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
+					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${selectedRow?.sourceName}/backup/${selectedRow?.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/rocketmq/rocketMQ');
 				break;
@@ -118,7 +131,12 @@ function ProBackupBask(): JSX.Element {
 					<TableRadio
 						dataSource={list}
 						columns={columns}
+						rowKey="backupName"
 						style={{ marginTop: 16 }}
+						selectedRow={selectedRow}
+						setSelectedRow={setSelectedRow}
+						selectedRowKeys={selectedRowKeys}
+						setSelectedRowKeys={setSelectedRowKeys}
 					/>
 				) : null}
 				<Divider />
@@ -127,8 +145,15 @@ function ProBackupBask(): JSX.Element {
 						type="primary"
 						style={{ marginRight: 16 }}
 						onClick={() => {
-							if (type === 'record') {
-								releaseMiddleware();
+							if (recoveryType === 'record') {
+								if (selectedRow) {
+									releaseMiddleware();
+								} else {
+									notification.error({
+										message: '失败',
+										description: '请选择备份源'
+									});
+								}
 							} else {
 								releaseMiddleware();
 							}
