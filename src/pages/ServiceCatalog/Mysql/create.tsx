@@ -208,6 +208,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	// * 读写分离模式
 	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
+	// * 增量备份
+	const [increment, setIncrement] = useState<any>();
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -282,7 +284,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					clusterId: globalCluster.id,
 					namespace: namespace || globalNamespace.name,
 					backupName: storage.getLocal('backupDetail').backupName
-				});
+				}).then((res) => setIncrement(res.data));
 			}
 		}
 	}, [project, globalNamespace]);
@@ -630,7 +632,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						'YYYY-MM-DD hh:mm:ss'
 					),
 					type: storage.getLocal('backupDetail').sourceType,
-					backupName: storage.getLocal('backupDetail').backupName
+					backupName: increment
+						? increment.backupName
+						: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -1174,10 +1178,21 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	// 	item.availableDomain
 																	// }
 																>
-																	<p>
-																		{
+																	<p
+																		title={
 																			item.aliasName
 																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		25
+																			? item.aliasName.substring(
+																					0,
+																					25
+																			  ) +
+																			  '...'
+																			: item.aliasName}
 																		{item.availableDomain ? (
 																			<span className="available-domain">
 																				可用区
@@ -2108,8 +2123,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						<FormBlock title="恢复配置">
 							<div className={styles['basic-info']}>
 								<div>
-									可恢复的时间范围: 2022-08-20 18:35 -
-									2022-08-29 09:35
+									可恢复的时间范围:{' '}
+									{increment.startTime +
+										'-' +
+										increment.endTime}
 								</div>
 								<ul className="form-layout">
 									<li className="display-flex">

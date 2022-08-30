@@ -834,10 +834,21 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	// 	item.availableDomain
 																	// }
 																>
-																	<p>
-																		{
+																	<p
+																		title={
 																			item.aliasName
 																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		25
+																			? item.aliasName.substring(
+																					0,
+																					25
+																			  ) +
+																			  '...'
+																			: item.aliasName}
 																		{item.availableDomain ? (
 																			<span className="available-domain">
 																				可用区

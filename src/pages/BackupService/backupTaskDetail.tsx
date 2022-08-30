@@ -193,7 +193,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 									cron: backupDetail.cron,
 									retentionTime: backupDetail.retentionTime,
 									dateUnit: backupDetail.dateUnit,
-									turnOff: true
+									turnOff: true,
+									pause: 'on'
 								};
 								editBackupTasks(sendData).then((res) => {
 									getBasicInfo();
@@ -415,7 +416,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 					limitRecord: res.data[0]?.limitRecord,
 					y: '2022-08-15 00:00:00'
 				});
-				storage.setLocal('backupDetail', res.data[0]);
+				storage.setLocal('backupDetail', {
+					...res.data[0],
+					clusterId: backupDetail.clusterId
+				});
 				setVisible(false);
 				setIncrVisible(false);
 			} else {
@@ -447,6 +451,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				clusterId: backupDetail.clusterId || cluster.id,
 				namespace: backupDetail.namespace || namespace.name,
 				increment: backupDetail.increment,
+				pause: 'off',
 				...data
 			};
 			addIncBackup(sendData).then((res) => {
