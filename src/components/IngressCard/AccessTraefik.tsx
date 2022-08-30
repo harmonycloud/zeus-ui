@@ -118,7 +118,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 		<Modal
 			visible={visible}
 			onCancel={onCancel}
-			title="接入Traefik"
+			title={data ? '编辑Traefik' : '接入Traefik'}
 			onOk={onOk}
 		>
 			<Form form={form} labelAlign="left" {...formItemLayout}>

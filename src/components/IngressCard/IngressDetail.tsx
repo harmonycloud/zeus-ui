@@ -95,7 +95,10 @@ const traefikInfoConfig = [
 	},
 	{
 		dataIndex: 'status',
-		label: '当前状态'
+		label: '当前状态',
+		render: (val: string) => (
+			<div className="mid-card-icon">{iconRender(Number(val))}</div>
+		)
 	},
 	{
 		dataIndex: 'address',

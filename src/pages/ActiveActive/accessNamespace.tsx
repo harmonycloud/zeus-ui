@@ -157,6 +157,7 @@ export default function AccessNamespace(
 								{ required: true, message: '命名空间名称必填' },
 								{
 									max: 64,
+									type: 'string',
 									message:
 										'请输入名称，且最大长度不超过64个字符'
 								}

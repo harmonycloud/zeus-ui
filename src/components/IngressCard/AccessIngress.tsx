@@ -129,7 +129,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 	};
 	return (
 		<Modal
-			title={data ? '编辑负载均衡' : '接入负载均衡'}
+			title={data ? '编辑Nginx' : '接入Nginx'}
 			width={640}
 			visible={visible}
 			okText="确定"
@@ -139,10 +139,10 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 		>
 			<Form labelAlign="left" {...formItemLayout} form={form}>
 				<FormItem
-					label="Ingress名称"
+					label="Nginx名称"
 					required
 					rules={[
-						{ required: true, message: '请输入Ingress名称' },
+						{ required: true, message: '请输入Nginx名称' },
 						{
 							pattern: new RegExp(pattern.ingressName),
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
@@ -151,10 +151,10 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					initialValue="nginx-ingress-controller"
 					name="ingressClassName"
 				>
-					<Input placeholder="请输入Ingress名称" />
+					<Input placeholder="请输入Nginx名称" />
 				</FormItem>
 				<FormItem
-					label="ConfigMap分区"
+					label="Nginx分区"
 					name="namespace"
 					required
 					rules={[{ required: true, message: '请输入分区' }]}
@@ -162,10 +162,10 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 					<Input placeholder="请输入分区" />
 				</FormItem>
 				<FormItem
-					label="ConfigMap名称"
+					label="配置文件名称"
 					required
 					name="configMapName"
-					rules={[{ required: true, message: '请输入ConfigMap名称' }]}
+					rules={[{ required: true, message: '请输入配置文件名称' }]}
 				>
 					<Input placeholder="仅支持Ingress-TCP，暂不支持Ingress-UDP" />
 				</FormItem>
