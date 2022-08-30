@@ -78,7 +78,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (JSON.stringify(globalVar.cluster) !== '{}') {
 			getData(globalVar.cluster.id, namespace);
 		}
-	}, [globalVar]);
+	}, [globalVar.cluster.id]);
 
 	useEffect(() => {
 		setActiveKey(currentTab);
