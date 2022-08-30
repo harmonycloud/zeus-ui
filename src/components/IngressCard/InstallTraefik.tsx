@@ -107,6 +107,15 @@ export default function InstallTraefik(
 			}
 		});
 	}, []);
+	useEffect(() => {
+		form.setFieldsValue({
+			ingressClassName: 'traefik-controller',
+			httpPort: 80,
+			httpsPort: 443,
+			dashboardPort: 10254,
+			monitorPort: 8181
+		});
+	}, []);
 	const onChange = (e: CheckboxChangeEvent) => {
 		setSkipPortConflict(e.target.checked);
 	};
@@ -229,7 +238,6 @@ export default function InstallTraefik(
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
 						}
 					]}
-					initialValue="traefik-controller"
 					name="ingressClassName"
 				>
 					<Input placeholder="请输入Traefik名称" />

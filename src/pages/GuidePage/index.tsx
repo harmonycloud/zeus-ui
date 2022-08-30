@@ -68,25 +68,29 @@ const GuidePage = (props: GuideProps) => {
 					}
 				})
 				.finally(() => {
-					getComponents({ clusterId: cluster.id }).then((res) => {
-						if (res.success) {
-							const middlewareControllerStatus = res.data.find(
-								(item: ComponentProp) =>
-									item.component === 'middleware-controller'
-							).status;
-							if (middlewareControllerStatus === 3) {
-								setCurrent('3');
+					if (JSON.stringify(cluster) !== '{}') {
+						getComponents({ clusterId: cluster.id }).then((res) => {
+							if (res.success) {
+								const middlewareControllerStatus =
+									res.data.find(
+										(item: ComponentProp) =>
+											item.component ===
+											'middleware-controller'
+									).status;
+								if (middlewareControllerStatus === 3) {
+									setCurrent('3');
+								} else {
+									setCurrent('2');
+								}
 							} else {
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
 								setCurrent('2');
 							}
-						} else {
-							notification.error({
-								message: '失败',
-								description: res.errorMsg
-							});
-							setCurrent('2');
-						}
-					});
+						});
+					}
 				});
 		}
 	}, [props]);

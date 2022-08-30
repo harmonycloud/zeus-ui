@@ -77,6 +77,7 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 		form.validateFields().then((values) => {
 			const sendData: SendDataProps = {
 				clusterId,
+				type: 'nginx',
 				...values
 			};
 			if (vipChecked && address === '') {
