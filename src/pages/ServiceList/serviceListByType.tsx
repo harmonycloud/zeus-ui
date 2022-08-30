@@ -286,7 +286,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
 				) || [];
 		}
-
 		setShowDataSource({ [name]: list });
 	};
 	const releaseMiddleware = () => {
@@ -581,7 +580,69 @@ const ServiceListByType = (props: serviceListProps) => {
 		if (roleFlag.operateFlag && !roleFlag.deleteFlag) {
 			return (
 				<Actions>
+					{(name === 'kafka' ||
+						name === 'rocketmq' ||
+						name === 'elasticsearch') && (
+						<LinkButton
+							onClick={() => {
+								const sendData = {
+									clusterId: cluster.id,
+									namespace: record.namespace,
+									middlewareName: record.name,
+									type: record.type
+								};
+								getPlatformAdd(sendData).then((res) => {
+									if (res.success) {
+										if (res.data) {
+											window.open(
+												`${window.location.protocol.toLowerCase()}//${
+													res.data
+												}`,
+												'_blank'
+											);
+										} else {
+											const sn =
+												record.type === 'elasticsearch'
+													? `${record.name}-kibana`
+													: record.type === 'rocketmq'
+													? `${record.name}-console-svc`
+													: `${record.name}-manager-svc`;
+											notification.error({
+												message: '失败',
+												description: `请先前往服务暴露管理页面暴露服务`
+											});
+										}
+									} else {
+										notification.info({
+											message: '提醒',
+											description: res.errorMsg
+										});
+									}
+								});
+							}}
+						>
+							<span>服务控制台</span>
+						</LinkButton>
+					)}
 					<LinkButton
+						onClick={() =>
+							history.push(
+								`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
+							)
+						}
+					>
+						<span>版本管理</span>
+					</LinkButton>
+				</Actions>
+			);
+		}
+		return (
+			<Actions>
+				{(name === 'kafka' ||
+					name === 'rocketmq' ||
+					name === 'elasticsearch') && (
+					<LinkButton
+						disabled={!roleFlag.operateFlag}
 						onClick={() => {
 							const sendData = {
 								clusterId: cluster.id,
@@ -591,6 +652,7 @@ const ServiceListByType = (props: serviceListProps) => {
 							};
 							getPlatformAdd(sendData).then((res) => {
 								if (res.success) {
+									console.log(res);
 									if (res.data) {
 										window.open(
 											`${window.location.protocol.toLowerCase()}//${
@@ -607,7 +669,7 @@ const ServiceListByType = (props: serviceListProps) => {
 												: `${record.name}-manager-svc`;
 										notification.error({
 											message: '失败',
-											description: `请先前往服务暴露管理页面暴露服务`
+											description: `请先前往“服务暴露”暴露该服务的${sn}服务`
 										});
 									}
 								} else {
@@ -619,72 +681,17 @@ const ServiceListByType = (props: serviceListProps) => {
 							});
 						}}
 					>
-						<span>服务控制台</span>
-					</LinkButton>
-					<LinkButton
-						onClick={() =>
-							history.push(
-								`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
-							)
-						}
-					>
-						<span>版本管理</span>
-					</LinkButton>
-				</Actions>
-			);
-		}
-		return (
-			<Actions>
-				<LinkButton
-					disabled={!roleFlag.operateFlag}
-					onClick={() => {
-						const sendData = {
-							clusterId: cluster.id,
-							namespace: record.namespace,
-							middlewareName: record.name,
-							type: record.type
-						};
-						getPlatformAdd(sendData).then((res) => {
-							if (res.success) {
-								console.log(res);
-								if (res.data) {
-									window.open(
-										`${window.location.protocol.toLowerCase()}//${
-											res.data
-										}`,
-										'_blank'
-									);
-								} else {
-									const sn =
-										record.type === 'elasticsearch'
-											? `${record.name}-kibana`
-											: record.type === 'rocketmq'
-											? `${record.name}-console-svc`
-											: `${record.name}-manager-svc`;
-									notification.error({
-										message: '失败',
-										description: `请先前往“服务暴露”暴露该服务的${sn}服务`
-									});
-								}
-							} else {
-								notification.info({
-									message: '提醒',
-									description: res.errorMsg
-								});
+						<span
+							title={
+								!roleFlag.operateFlag
+									? '当前用户无改操作的权限'
+									: ''
 							}
-						});
-					}}
-				>
-					<span
-						title={
-							!roleFlag.operateFlag
-								? '当前用户无改操作的权限'
-								: ''
-						}
-					>
-						服务控制台
-					</span>
-				</LinkButton>
+						>
+							服务控制台
+						</span>
+					</LinkButton>
+				)}
 				<LinkButton
 					disabled={!roleFlag.operateFlag}
 					onClick={() =>
