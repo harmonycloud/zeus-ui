@@ -64,6 +64,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 		form.validateFields().then((values) => {
 			const sendData = {
 				clusterId,
+				type: 'traefik',
 				...values
 			};
 			if (vipChecked && address === '') {
