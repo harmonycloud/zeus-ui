@@ -161,9 +161,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	// * 创建失败返回的失败信息
 	const [errorData, setErrorData] = useState<string>('');
 	// * DLedger模式节点数量
-	const [replicaCount, setReplicaCount] = useState(1);
+	const [replicaCount, setReplicaCount] = useState(3);
 	// * DLedger模式组数
-	const [groupCount, setGroupCount] = useState(1);
+	const [groupCount, setGroupCount] = useState(2);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -1184,11 +1184,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										<div className="form-content">
 											<InputNumber
 												name="组数"
-												defaultValue={2}
+												value={groupCount}
 												onChange={(value) =>
 													setGroupCount(value)
 												}
-												min={3}
+												min={2}
 												max={10}
 												disabled={!!middlewareName}
 											/>
@@ -1203,7 +1203,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										<div className="form-content">
 											<InputNumber
 												name="节点数量"
-												defaultValue={3}
+												value={replicaCount}
 												onChange={(value) =>
 													setReplicaCount(value)
 												}
