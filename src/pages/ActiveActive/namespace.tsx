@@ -67,7 +67,7 @@ export default function NamespaceTable(
 			availableDomain: value
 		}).then((res) => {
 			if (res.success) {
-				const msg = value ? '可用区开启成功' : '可用区关闭成功';
+				const msg = value ? '命名空间接入成功' : '可用区关闭成功';
 				notification.success({
 					message: '成功',
 					description: msg

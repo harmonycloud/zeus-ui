@@ -192,8 +192,18 @@ const modelConfig = {
 const namespaceConfig = {
 	dataIndex: 'namespaceAliasName',
 	label: '所在分区',
-	render: (val: string, dataSource: any) =>
-		`${val || dataSource.namespace}(${dataSource.namespace})`
+	render: (val: string, dataSource: any) => {
+		return (
+			<div
+				className="text-overflow-one"
+				title={`${val || dataSource.namespace}(${
+					dataSource.namespace
+				})`}
+			>
+				{`${val || dataSource.namespace}(${dataSource.namespace})`}
+			</div>
+		);
+	}
 };
 const storageClassNameConfig = {
 	dataIndex: 'storageClassName',

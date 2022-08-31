@@ -1198,7 +1198,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 								{mode === 'dledger' && (
 									<li className="display-flex form-li">
 										<label className="form-name">
-											从节点数
+											副本数
 										</label>
 										<div className="form-content">
 											<InputNumber
