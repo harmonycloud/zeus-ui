@@ -142,7 +142,16 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 					label="Traefik分区"
 					name="namespace"
 					required
-					rules={[{ required: true, message: '请输入Traefik分区' }]}
+					rules={[
+						{ required: true, message: '请输入Traefik分区' },
+						{
+							pattern: new RegExp(
+								'^[a-z][a-z0-9-]{0,38}[a-z0-9]$'
+							),
+							message:
+								'Traefik分区是由小写字母数字及“-”组成，且以小写字母开头和结尾，不能以“-”结尾的2-40个字符'
+						}
+					]}
 				>
 					<Input placeholder="请输入Traefik分区" />
 				</FormItem>
