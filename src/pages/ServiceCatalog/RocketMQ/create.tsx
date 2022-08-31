@@ -162,6 +162,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * DLedger模式节点数量
 	const [replicaCount, setReplicaCount] = useState(1);
+	// * DLedger模式组数
+	const [groupCount, setGroupCount] = useState(1);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -247,6 +249,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			};
 			if (mode === 'dledger') {
 				sendData.rocketMQParam.replicas = replicaCount;
+				sendData.rocketMQParam.group = groupCount;
 			}
 			// * 动态表单相关
 			if (customForm) {
@@ -1180,10 +1183,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<InputNumber
-												name="节点数量"
-												defaultValue={3}
+												name="组数"
+												defaultValue={2}
 												onChange={(value) =>
-													setReplicaCount(value)
+													setGroupCount(value)
 												}
 												min={3}
 												max={10}
