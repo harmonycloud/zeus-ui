@@ -284,7 +284,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					clusterId: globalCluster.id,
 					namespace: namespace || globalNamespace.name,
 					backupName: storage.getLocal('backupDetail').backupName
-				}).then((res) => setIncrement(res.data));
+				}).then((res) => {
+					if (res.data) {
+						setIncrement(res.data);
+					}
+				});
 			}
 		}
 	}, [project, globalNamespace]);
@@ -2124,9 +2128,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							<div className={styles['basic-info']}>
 								<div>
 									可恢复的时间范围:{' '}
-									{increment.startTime +
-										'-' +
-										increment.endTime}
+									{increment
+										? increment?.startTime +
+										  '-' +
+										  increment?.endTime
+										: '--'}
 								</div>
 								<ul className="form-layout">
 									<li className="display-flex">
