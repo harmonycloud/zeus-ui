@@ -164,15 +164,19 @@ export default function IngressDetail(): JSX.Element {
 					title: '基本信息',
 					status: res.data.status,
 					address: res.data.address,
-					nodeAffinity: res.data.nodeAffinity,
-					tolerations: res.data.tolerations,
-					httpPort: res.data.httpPort,
-					httpsPort: res.data.httpsPort,
-					healthzPort: res.data.healthzPort,
-					defaultServerPort: res.data.defaultServerPort,
-					portOrg: `${res.data.startPort}-${res.data.endPort}(100个)`,
-					dashboardPort: res.data.dashboardPort,
-					monitorPort: res.data.monitorPort
+					nodeAffinity: res.data.nodeAffinity
+						?.map((item: any) => item.label)
+						.join(','),
+					tolerations: res.data.tolerations?.join(','),
+					httpPort: res.data.httpPort || '/',
+					httpsPort: res.data.httpsPort || '/',
+					healthzPort: res.data.healthzPort || '/',
+					defaultServerPort: res.data.defaultServerPort || '/',
+					portOrg: res.data.startPort
+						? `${res.data.startPort}-${res.data.endPort}(100个)`
+						: '/',
+					dashboardPort: res.data.dashboardPort || '/',
+					monitorPort: res.data.monitorPort || '/'
 				});
 			}
 		});
