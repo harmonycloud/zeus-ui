@@ -95,58 +95,50 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 			onOk={onOk}
 			okText="确定"
 			cancelText="取消"
+			width={800}
 		>
 			<Form labelAlign="left" form={form} {...formItemLayout}>
 				<div className="display-form">
 					<label className="label">镜像仓库地址</label>
-					<Row>
-						<Col span={8} style={{ marginRight: 7 }}>
-							<FormItem
-								{...formItemLayout2}
-								name="protocol"
-								required
-								rules={[{ required: true, message: '请选择' }]}
-							>
-								<Select
-									placeholder="请选择镜像地址"
-									style={{ width: '120px' }}
-									dropdownMatchSelectWidth={false}
-								>
-									{address.map((item: any) => {
-										return (
-											<Option
-												key={item.key}
-												value={item.value}
-											>
-												{item.value}
-											</Option>
-										);
-									})}
-								</Select>
-							</FormItem>
-						</Col>
-						<Col span={9} style={{ marginRight: 6 }}>
-							<FormItem
-								{...formItemLayout2}
-								required
-								name="hostAddress"
-								rules={[
-									{
-										required: true,
-										message: '请输入主机地址'
-									},
-									{ max: 32, message: '主机地址不能超过32位' }
-								]}
-							>
-								<Input placeholder="请输入harbor主机地址" />
-							</FormItem>
-						</Col>
-						<Col span={6}>
-							<FormItem {...formItemLayout2} name="port">
-								<InputNumber placeholder="端口" />
-							</FormItem>
-						</Col>
-					</Row>
+					<FormItem
+						{...formItemLayout2}
+						name="protocol"
+						required
+						rules={[{ required: true, message: '请选择' }]}
+						style={{ width: '43%', marginRight: 8 }}
+					>
+						<Select
+							placeholder="请选择镜像地址"
+							style={{ width: '100%' }}
+							dropdownMatchSelectWidth={false}
+						>
+							{address.map((item: any) => {
+								return (
+									<Option key={item.key} value={item.value}>
+										{item.value}
+									</Option>
+								);
+							})}
+						</Select>
+					</FormItem>
+					<FormItem
+						{...formItemLayout2}
+						required
+						name="hostAddress"
+						style={{ marginRight: 8 }}
+						rules={[
+							{
+								required: true,
+								message: '请输入主机地址'
+							},
+							{ max: 32, message: '主机地址不能超过32位' }
+						]}
+					>
+						<Input placeholder="请输入harbor主机地址" />
+					</FormItem>
+					<FormItem {...formItemLayout2} name="port">
+						<InputNumber placeholder="端口" />
+					</FormItem>
 				</div>
 				<FormItem
 					label="镜像仓库项目"
