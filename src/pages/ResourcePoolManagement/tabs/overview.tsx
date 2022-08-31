@@ -618,8 +618,8 @@ const Overview = () => {
 						render={statusRender}
 						filterMultiple={false}
 						filters={[
-							{ text: '成功', value: 'True' },
-							{ text: '失败', value: 'False' }
+							{ text: '正常', value: 'True' },
+							{ text: '异常', value: 'False' }
 						]}
 						onFilter={(
 							value: string | number | boolean,
