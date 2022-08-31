@@ -350,9 +350,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
+					backupName: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -502,6 +500,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.rocketmq.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.rocketmq.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.rocketmq.storageClassQuota,
@@ -654,9 +653,22 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}

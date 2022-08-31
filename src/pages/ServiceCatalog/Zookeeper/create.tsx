@@ -505,7 +505,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 											<FormItem required name="namespace">
 												<Select
 													placeholder="请选择命名空间"
-													style={{ width: '100%' }}
+													style={{ width: '380px' }}
 													dropdownMatchSelectWidth={
 														false
 													}
@@ -521,9 +521,22 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}

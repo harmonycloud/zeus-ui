@@ -20,7 +20,16 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 			title={type === 'add' ? '开启增量备份' : '修改增量备份间隔时间'}
 			visible={visible}
 			onOk={() =>
-				form.validateFields().then((values) => onCreate(values.time))
+				form.validateFields().then((values) => {
+					const sendData: any = {
+						cron: data.cron,
+						dateUnit: data.dateUnit,
+						increment: data.increment,
+						retentionTime: data.retentionTime,
+						time: values.time + 'm'
+					};
+					onCreate(sendData);
+				})
 			}
 			forceRender
 			onCancel={onCancel}
@@ -36,6 +45,7 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 						}
 					]}
 					extra="分/次"
+					initialValue={data.time}
 					className="pause-extra"
 				>
 					<Select
