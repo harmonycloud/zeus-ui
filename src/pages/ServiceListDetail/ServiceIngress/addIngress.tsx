@@ -188,16 +188,18 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 		}
 	}, [name]);
 	useEffect(() => {
-		getIngresses({ clusterId: clusterId }).then((res) => {
-			if (res.success) {
-				setIngresses(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
+		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
+			(res) => {
+				if (res.success) {
+					setIngresses(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
 			}
-		});
+		);
 	}, []);
 	const handleClick = (record: ServiceNameItem) => {
 		setCurServiceName(record);

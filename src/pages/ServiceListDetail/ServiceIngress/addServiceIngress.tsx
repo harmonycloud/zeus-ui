@@ -90,16 +90,18 @@ export default function AddIngress(): JSX.Element {
 		}
 	};
 	useEffect(() => {
-		getIngresses({ clusterId: clusterId }).then((res) => {
-			if (res.success) {
-				setIngresses(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
+		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
+			(res) => {
+				if (res.success) {
+					setIngresses(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
 			}
-		});
+		);
 		getData(clusterId, namespace);
 	}, []);
 	useEffect(() => {
