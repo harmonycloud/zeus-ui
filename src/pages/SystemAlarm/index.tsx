@@ -63,9 +63,13 @@ function SystemAlarm(props: systemAlarmProps) {
 						<div>
 							集群
 							{utilClusters
+								.filter((item) => item)
 								.map((item) => item.nickname)
 								.join(',')}
 							尚且未安装告警组件，将无法正常告警！
+							{utilClusters
+								.filter((item) => item)
+								.map((item) => item.nickname)}
 							<Button
 								type="link"
 								style={{
@@ -78,7 +82,15 @@ function SystemAlarm(props: systemAlarmProps) {
 										'component'
 									);
 									history.push(
-										`/systemManagement/resourcePoolManagement/resourcePoolDetail/${utilClusters[0].id}/${globalCluster.nickname}`
+										`/systemManagement/resourcePoolManagement/resourcePoolDetail/${
+											utilClusters.filter(
+												(item) => item
+											)[0].id
+										}/${
+											utilClusters.filter(
+												(item) => item
+											)[0].nickname
+										}`
 									);
 								}}
 							>

@@ -829,7 +829,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				clusterId: selectedRow?.clusterId || cluster.id,
 				namespace: params.namespace || selectedRow.namespace,
 				middlewareName: params.middlewareName || selectedRow.name,
-				type: selectedRow?.type || params.type
+				type: selectedRow?.type || params.type,
+				time: formData.time + 'm'
 			};
 			if (formData.way === 'time') {
 				sendData.cron = cron;

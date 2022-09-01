@@ -148,11 +148,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 			label: '备份保留时间',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
-					{val}
+					{val[0]}
 					{backupDetail.dateUnit
-						? dataType.find(
-								(item) => item.value === backupDetail.dateUnit
-						  )?.label
+						? dataType.find((item) => item.value === val[1])?.label
 						: ''}
 					{backupDetail.schedule ? '' : '--'}
 					{backupDetail.schedule ? (
@@ -192,7 +190,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 									type: params.type,
 									time: backupDetail.time,
 									cron: backupDetail.cron,
-									retentionTime: backupDetail.retentionTime,
+									retentionTime: [
+										backupDetail.retentionTime,
+										backupDetail.dateUnit
+									],
 									dateUnit: backupDetail.dateUnit,
 									turnOff: true,
 									pause: 'on'
@@ -263,7 +264,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 				sourceName: backupDetail?.sourceName,
 				position: backupDetail.position,
 				backupTime: backupDetail.backupTime,
-				retentionTime: backupDetail.retentionTime,
+				retentionTime: [
+					backupDetail.retentionTime,
+					backupDetail.dateUnit
+				],
 				limitRecord: backupDetail.limitRecord,
 				increment: backupDetail.increment,
 				dateUnit: backupDetail.dateUnit,
@@ -420,7 +424,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 					sourceName: res.data[0]?.sourceName,
 					position: res.data[0]?.position,
 					backupTime: res.data[0]?.backupTime,
-					retentionTime: res.data[0]?.retentionTime,
+					retentionTime: [
+						res.data[0].retentionTime,
+						res.data[0].dateUnit
+					],
 					dateUnit: res.data[0].dateUnit,
 					increment: res.data[0]?.increment,
 					time: res.data[0]?.time,

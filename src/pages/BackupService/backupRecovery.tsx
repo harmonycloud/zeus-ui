@@ -155,7 +155,14 @@ function ProBackupBask(): JSX.Element {
 									});
 								}
 							} else {
-								releaseMiddleware();
+								if (backupDetail.increment) {
+									releaseMiddleware();
+								} else {
+									notification.error({
+										message: '失败',
+										description: '请开启增量备份'
+									});
+								}
 							}
 						}}
 					>
