@@ -81,12 +81,12 @@ const Component = (props: ComponentProps) => {
 					type="info"
 					message={
 						<span>
-							强烈建议安装中间件管理组件且运行正常，否则将无法使用平台大部分功能！
+							中间件管理组件未安装或运行异常，请先安装或修复异常！
 							<span
 								className="name-link"
 								onClick={() => setMiddlewareVisible(true)}
 							>
-								立即跳转
+								立即安装
 							</span>
 						</span>
 					}

@@ -405,19 +405,20 @@ export default function AddIngress(): JSX.Element {
 							style={{ width: 250 }}
 						/>
 					</Form.Item>
-					{ingressClassName?.type === 'traefik' && (
-						<Row>
-							<Col span={3}></Col>
-							<Col span={10}>
-								<div>
-									当前负载均衡相关端口组为
-									{ingressClassName?.startPort}-
-									{ingressClassName?.endPort}
-									,请在端口组范围内选择端口
-								</div>
-							</Col>
-						</Row>
-					)}
+					{exposeType === 'TCP' &&
+						ingressClassName?.type === 'traefik' && (
+							<Row>
+								<Col span={3}></Col>
+								<Col span={10}>
+									<div>
+										当前负载均衡相关端口组为
+										{ingressClassName?.startPort}-
+										{ingressClassName?.endPort}
+										,请在端口组范围内选择端口
+									</div>
+								</Col>
+							</Row>
+						)}
 					<Divider style={{ marginTop: 40 }} />
 					<Button
 						type="primary"

@@ -74,6 +74,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
+	console.log(namespace);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -494,6 +495,42 @@ const ServiceListByType = (props: serviceListProps) => {
 								发布服务
 							</Button>
 						</Tooltip>
+					)
+				};
+			}
+		} else if (namespace.availableDomain) {
+			if (name !== 'mysql') {
+				return {
+					primary: (
+						<Tooltip title="当前中间件不支持同城双活">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={namespace.availableDomain}
+							>
+								发布服务
+							</Button>
+						</Tooltip>
+					)
+				};
+			} else {
+				return {
+					primary: (
+						<Button
+							onClick={releaseMiddleware}
+							type="primary"
+							disabled={!middlewareInfo}
+						>
+							发布服务
+						</Button>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
 				};
 			}

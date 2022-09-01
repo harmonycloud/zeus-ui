@@ -52,7 +52,7 @@ const nginxInfoConfig = [
 		label: '节点亲和',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
-				{val || '/'}
+				{val}
 			</div>
 		)
 	},
@@ -110,7 +110,7 @@ const traefikInfoConfig = [
 		label: '节点亲和',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
-				{val || '/'}
+				{val}
 			</div>
 		)
 	},
@@ -164,16 +164,18 @@ export default function IngressDetail(): JSX.Element {
 					title: '基本信息',
 					status: res.data.status,
 					address: res.data.address,
-					nodeAffinity:
-						res.data.nodeAffinity
-							?.map((item: any) => item.label)
-							.join(',') +
-						`(${
-							res.data.nodeAffinity &&
-							res.data.nodeAffinity[0].required
-								? '强制'
-								: '非强制'
-						})`,
+					nodeAffinity: `${
+						(res.data.nodeAffinity &&
+							res.data.nodeAffinity
+								.map((item: any) => item.label)
+								.join(';')) ||
+						'无'
+					}(${
+						res.data.nodeAffinity &&
+						res.data.nodeAffinity[0].required
+							? '强制'
+							: '非强制'
+					})`,
 					tolerations: res.data.tolerations?.join(','),
 					httpPort: res.data.httpPort || '/',
 					httpsPort: res.data.httpsPort || '/',
