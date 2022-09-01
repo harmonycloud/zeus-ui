@@ -669,7 +669,7 @@ const ServiceListByType = (props: serviceListProps) => {
 												: `${record.name}-manager-svc`;
 										notification.error({
 											message: '失败',
-											description: `请先前往“服务暴露”暴露该服务的${sn}服务`
+											description: `请先前往服务暴露管理页面暴露服务`
 										});
 									}
 								} else {

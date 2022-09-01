@@ -75,7 +75,7 @@ const Component = (props: ComponentProps) => {
 		<>
 			{components.find(
 				(item) => item.component === 'middleware-controller'
-			)?.status === 3 && (
+			)?.status !== 3 && (
 				<Alert
 					showIcon
 					type="info"
