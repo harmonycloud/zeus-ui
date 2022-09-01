@@ -30,8 +30,7 @@ import {
 	setProject,
 	setRefreshCluster,
 	setGlobalClusterList,
-	setGlobalNamespaceList,
-	setAvatar
+	setGlobalNamespaceList
 } from '@/redux/globalVar/var';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import backupService from '@/assets/images/backupService.svg';
@@ -61,7 +60,6 @@ interface MyLayoutProps {
 	setGlobalClusterList: (clusterList: any) => void;
 	setGlobalNamespaceList: (namespaceList: any) => void;
 	setMenuRefresh: (flag: boolean) => void;
-	setAvatar: (avatar: boolean) => void;
 }
 function MyLayout(props: MyLayoutProps): JSX.Element {
 	const {
@@ -71,8 +69,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		setRefreshCluster,
 		setGlobalClusterList,
 		setGlobalNamespaceList,
-		setMenuRefresh,
-		setAvatar
+		setMenuRefresh
 	} = props;
 	const { flag } = props.globalVar;
 	const [collapsed, setCollapsed] = useState<boolean>(false); // * 是否收起侧边栏
@@ -382,7 +379,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 		return redirectToTerminal();
 	}
 	return (
-		<div className="zeus-mid-layout" onClick={() => setAvatar(false)}>
+		<div className="zeus-mid-layout">
 			<Router>
 				<Navbar
 					currentProject={currentProject}
@@ -435,6 +432,5 @@ export default connect(mapStateToProps, {
 	setRefreshCluster,
 	setGlobalClusterList,
 	setGlobalNamespaceList,
-	setMenuRefresh,
-	setAvatar
+	setMenuRefresh
 })(MyLayout);
