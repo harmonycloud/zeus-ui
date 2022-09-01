@@ -130,7 +130,9 @@ const runStatus: runParams = {
 	namespace: '',
 	storageClassName: '',
 	storageType: '',
-	hostNetwork: ''
+	hostNetwork: '',
+	group: 0,
+	replicas: 0
 };
 
 const events: eventsParams = {
@@ -188,6 +190,16 @@ const createTimeConfig = {
 const modelConfig = {
 	dataIndex: 'model',
 	label: '模式'
+};
+const replicasConfig = {
+	dataIndex: 'replicas',
+	label: '副本数',
+	render: (val: number) => val || '--'
+};
+const groupConfig = {
+	dataIndex: 'group',
+	label: 'DLedger组数',
+	render: (val: number) => val || '--'
 };
 const namespaceConfig = {
 	dataIndex: 'namespaceAliasName',
@@ -266,6 +278,18 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					modelConfig,
 					namespaceConfig,
 					storageClassNameConfig
+			  ]
+			: data.mode === 'dledger'
+			? [
+					titleConfig,
+					healthConfig,
+					createTimeConfig,
+					modelConfig,
+					groupConfig,
+					replicasConfig,
+					namespaceConfig,
+					storageClassNameConfig,
+					hostNetworkConfig
 			  ]
 			: [
 					titleConfig,
@@ -539,7 +563,9 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					data.quota && data.quota[data.type]
 						? data.quota[data.type].storageClassName || ''
 						: '',
-				hostNetwork: data.hostNetwork
+				hostNetwork: data.hostNetwork,
+				group: data.rocketMQParam?.group,
+				replicas: data.rocketMQParam?.replicas
 			});
 			setAclData({
 				title: '访问权限控制认证',

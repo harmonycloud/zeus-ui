@@ -206,6 +206,8 @@ export interface runParams {
 	createTime: string;
 	model: string;
 	namespace: string;
+	group: number;
+	replicas: number;
 	storageClassName: string;
 	storageType: string;
 	hostNetwork?: any;
