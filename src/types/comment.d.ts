@@ -80,6 +80,7 @@ export interface middlewareDetailProps {
 		enabled: boolean;
 	};
 	imagePath: string;
+	lastAutoSwitchTime: string | null;
 }
 
 export interface basicDataProps {
