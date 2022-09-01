@@ -74,7 +74,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
-	console.log(namespace);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -646,7 +645,7 @@ const ServiceListByType = (props: serviceListProps) => {
 													: `${record.name}-manager-svc`;
 											notification.error({
 												message: '失败',
-												description: `请先前往服务暴露管理页面暴露服务`
+												description: `请前往服务暴露页面暴露管理页面服务`
 											});
 										}
 									} else {
@@ -706,7 +705,7 @@ const ServiceListByType = (props: serviceListProps) => {
 												: `${record.name}-manager-svc`;
 										notification.error({
 											message: '失败',
-											description: `请先前往服务暴露管理页面暴露服务`
+											description: `请前往服务暴露页面暴露管理页面服务`
 										});
 									}
 								} else {
