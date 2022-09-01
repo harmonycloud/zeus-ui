@@ -596,7 +596,7 @@ export default function InstallTraefik(
 							<div>
 								当前选择的服务端口组是
 								{form.getFieldValue('startPort')}-
-								{form.getFieldValue('startPort') + 100}
+								{form.getFieldValue('startPort') + 99}
 							</div>
 							{ports?.length === 0 && (
 								<div>其中没有端口被占用！</div>
