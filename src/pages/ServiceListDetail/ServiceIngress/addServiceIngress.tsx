@@ -74,7 +74,7 @@ export default function AddIngress(): JSX.Element {
 		} else if (name === 'redis') {
 			return data?.readWriteProxy?.enabled
 				? mode === 'sentinel'
-					? ingressTypeList
+					? [ingressTypeList[2]]
 					: [ingressTypeList[1]]
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'postgresql') {
