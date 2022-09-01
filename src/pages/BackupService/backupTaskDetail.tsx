@@ -190,10 +190,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 									type: params.type,
 									time: backupDetail.time,
 									cron: backupDetail.cron,
-									retentionTime: [
-										backupDetail.retentionTime,
-										backupDetail.dateUnit
-									],
+									retentionTime:
+										backupDetail.retentionTime[0],
 									dateUnit: backupDetail.dateUnit,
 									turnOff: true,
 									pause: 'on'
@@ -239,9 +237,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const time = {
 		dataIndex: 'time',
 		label: '备份间隔时间',
-		render: (val: boolean) => (
+		render: (val: string) => (
 			<div className="text-overflow-one">
-				{(val || '') + '分/次'}
+				{(val?.substring(0, val?.length - 1) || '') + '分/次'}
 				{backupDetail.increment ? (
 					<EditOutlined
 						style={{ marginLeft: 8, color: '#226EE7' }}

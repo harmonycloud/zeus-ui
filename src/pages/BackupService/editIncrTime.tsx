@@ -15,6 +15,12 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 	const { visible, onCreate, onCancel, data, type } = props;
 	const [form] = Form.useForm();
 
+	useEffect(() => {
+		form.setFieldsValue({
+			time: data.time.substring(0, data.time.length - 1)
+		});
+	}, []);
+
 	return (
 		<Modal
 			title={type === 'add' ? '开启增量备份' : '修改增量备份间隔时间'}
@@ -25,7 +31,7 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 						cron: data.cron,
 						dateUnit: data.dateUnit,
 						increment: data.increment,
-						retentionTime: data.retentionTime,
+						retentionTime: data.retentionTime[0],
 						time: values.time + 'm'
 					};
 					onCreate(sendData);

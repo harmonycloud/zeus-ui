@@ -210,6 +210,54 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
 	// * 增量备份
 	const [increment, setIncrement] = useState<any>();
+	const disabledDate = (current: any) => {
+		// Can not select days before today and today
+		return (
+			current < moment(new Date(increment?.startTime)) ||
+			current > moment(new Date(increment?.endTime))
+		);
+	};
+	const range = (start: number, end: number) => {
+		const result = [];
+		for (let i = start; i < end; i++) {
+			result.push(i);
+		}
+		return result;
+	};
+
+	const disabledDateTime = (date: any) => {
+		if (
+			moment(date).format('YYYY-MM-DD') ===
+			increment?.startTime?.substring(0, 10)
+		)
+			return {
+				disabledHours: () =>
+					range(0, moment(increment?.startTime).hour()),
+				disabledMinutes: () =>
+					range(0, moment(increment?.startTime).minute()),
+				disabledSeconds: () =>
+					range(0, moment(increment?.startTime).second())
+			};
+		else if (
+			moment(date).format('YYYY-MM-DD') ===
+			increment?.endTime?.substring(0, 10)
+		) {
+			return {
+				disabledHours: () =>
+					range(moment(increment?.startTime).hour(), 60),
+				disabledMinutes: () =>
+					range(moment(increment?.startTime).minute(), 60),
+				disabledSeconds: () =>
+					range(moment(increment?.startTime).second(), 60)
+			};
+		} else {
+			return {
+				disabledHours: () => range(0, 60),
+				disabledMinutes: () => range(0, 60),
+				disabledSeconds: () => range(0, 60)
+			};
+		}
+	};
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -633,7 +681,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					restoreTime: moment(values.restoreTime).format(
-						'YYYY-MM-DD hh:mm:ss'
+						'YYYY-MM-DD HH:mm:ss'
 					),
 					type: storage.getLocal('backupDetail').sourceType,
 					backupName: increment
@@ -2152,7 +2200,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												]}
 												name="restoreTime"
 											>
-												<DatePicker showTime />
+												<DatePicker
+													showTime
+													disabledDate={disabledDate}
+													disabledTime={
+														disabledDateTime
+													}
+												/>
 											</FormItem>
 										</div>
 									</li>

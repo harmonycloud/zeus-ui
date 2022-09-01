@@ -61,7 +61,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 						'HH:mm'
 					),
 					limitRecord: data.limitRecord,
-					retentionTime: data.retentionTime
+					retentionTime: data.retentionTime[0] || data.retentionTime
 				});
 			data && setDateUnit(data.dateUnit);
 		}
@@ -100,7 +100,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 							cron,
 							dateUnit: data.dateUnit,
 							increment: data.increment,
-							retentionTime: data.retentionTime
+							retentionTime: data.retentionTime[0]
 						};
 						if (data.increment) {
 							sendData.time = data.time;
