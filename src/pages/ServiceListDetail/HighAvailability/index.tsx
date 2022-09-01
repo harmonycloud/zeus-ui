@@ -168,9 +168,6 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			type: data.type,
 			role: record.role
 		};
-		// if (data.type == 'mysql') {
-		// 	setCurrentContainer('mysql');
-		// } else
 		if (data.type === 'redis') {
 			if (record.role === 'master' || record.role === 'slave') {
 				setCurrentContainer('redis-cluster');
@@ -250,7 +247,19 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			if (res.success) {
 				notification.success({
 					message: '成功',
-					description: '切换中, 3s 后获取数据'
+					description: (
+						<span>
+							已完成切换：
+							<br /> {pods[0].podName}:{' '}
+							{pods[0].role === 'master'
+								? '主节点 -> 从节点'
+								: '从节点 -> 主节点'}{' '}
+							<br /> {pods[1].podName}:{' '}
+							{pods[1].role === 'master'
+								? '主节点 -> 从节点'
+								: '从节点 -> 主节点'}
+						</span>
+					)
 				});
 				setTimeout(function () {
 					onRefresh('highAvailability');
@@ -518,7 +527,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				<DefaultPicture />
 			) : (
 				<>
-					{type === 'mysql' ? (
+					{type === 'mysql' && data.mode === '1m-1s' ? (
 						<>
 							<div className="title-content">
 								<div className="blue-line"></div>
@@ -548,6 +557,15 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									checked={switchValue}
 									onChange={onChange}
 								/>
+							</div>
+							<div
+								className="display-flex switch-master flex-align"
+								style={{ marginTop: 12 }}
+							>
+								<span style={{ marginRight: 32 }}>
+									上一次自动切换时间
+								</span>
+								<label>{data.lastAutoSwitchTime || '/'}</label>
 							</div>
 							<div className="detail-divider" />
 						</>
