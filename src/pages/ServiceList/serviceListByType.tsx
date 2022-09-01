@@ -497,6 +497,42 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			}
+		} else if (namespace.availableDomain) {
+			if (name !== 'mysql') {
+				return {
+					primary: (
+						<Tooltip title="当前中间件不支持同城双活">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={namespace.availableDomain}
+							>
+								发布服务
+							</Button>
+						</Tooltip>
+					)
+				};
+			} else {
+				return {
+					primary: (
+						<Button
+							onClick={releaseMiddleware}
+							type="primary"
+							disabled={!middlewareInfo}
+						>
+							发布服务
+						</Button>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
+					)
+				};
+			}
 		} else {
 			if (name === 'mysql') {
 				return {
@@ -609,7 +645,7 @@ const ServiceListByType = (props: serviceListProps) => {
 													: `${record.name}-manager-svc`;
 											notification.error({
 												message: '失败',
-												description: `请先前往服务暴露管理页面暴露服务`
+												description: `请前往服务暴露页面暴露管理页面服务`
 											});
 										}
 									} else {
@@ -669,7 +705,7 @@ const ServiceListByType = (props: serviceListProps) => {
 												: `${record.name}-manager-svc`;
 										notification.error({
 											message: '失败',
-											description: `请先前往服务暴露管理页面暴露服务`
+											description: `请前往服务暴露页面暴露管理页面服务`
 										});
 									}
 								} else {

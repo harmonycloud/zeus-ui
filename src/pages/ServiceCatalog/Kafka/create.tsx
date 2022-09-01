@@ -167,11 +167,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 				projectId: project.projectId,
 				clusterId: globalCluster.id
 			}).then((res) => {
-				console.log(res);
 				if (res.success) {
 					const list = res.data.filter(
-						(item: NamespaceItem) =>
-							item.clusterId === globalCluster.id
+						(item: NamespaceItem) => item.availableDomain !== true
 					);
 					setNamespaceList(list);
 				} else {

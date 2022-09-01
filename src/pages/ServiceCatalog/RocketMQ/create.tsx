@@ -189,8 +189,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					const list = res.data.filter(
-						(item: NamespaceItem) =>
-							item.clusterId === globalCluster.id
+						(item: NamespaceItem) => item.availableDomain !== true
 					);
 					setNamespaceList(list);
 				} else {

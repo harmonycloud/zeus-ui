@@ -744,19 +744,20 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									})}
 								</div>
 							)}
-							{ingressClassName?.type === 'traefik' && (
-								<Row>
-									<Col span={4}></Col>
-									<Col span={10}>
-										<div>
-											当前负载均衡相关端口组为
-											{ingressClassName?.startPort}-
-											{ingressClassName?.endPort}
-											,请在端口组范围内选择端口
-										</div>
-									</Col>
-								</Row>
-							)}
+							{exposeType === 'TCP' &&
+								ingressClassName?.type === 'traefik' && (
+									<Row>
+										<Col span={4}></Col>
+										<Col span={10}>
+											<div>
+												当前负载均衡相关端口组为
+												{ingressClassName?.startPort}-
+												{ingressClassName?.endPort}
+												,请在端口组范围内选择端口
+											</div>
+										</Col>
+									</Row>
+								)}
 						</>
 					)}
 					{/* 选择管理页面 */}
@@ -913,21 +914,26 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											style={{ width: 250 }}
 										/>
 									</FormItem>
-									{ingressClassName?.type === 'traefik' && (
-										<Row>
-											<Col span={4}></Col>
-											<Col span={10}>
-												<div>
-													当前负载均衡相关端口组为
-													{
-														ingressClassName?.startPort
-													}
-													-{ingressClassName?.endPort}
-													,请在端口组范围内选择端口
-												</div>
-											</Col>
-										</Row>
-									)}
+									{exposeType === 'TCP' &&
+										ingressClassName?.type ===
+											'traefik' && (
+											<Row>
+												<Col span={4}></Col>
+												<Col span={10}>
+													<div>
+														当前负载均衡相关端口组为
+														{
+															ingressClassName?.startPort
+														}
+														-
+														{
+															ingressClassName?.endPort
+														}
+														,请在端口组范围内选择端口
+													</div>
+												</Col>
+											</Row>
+										)}
 								</>
 							)}
 							{networkIngress === 7 && (
