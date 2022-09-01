@@ -22,7 +22,7 @@ function SystemAlarm(props: systemAlarmProps) {
 		storage.getLocal('systemTab') || 'alarmRecord'
 	);
 	const history = useHistory();
-	const [utilClusters, setUtilClusters] = useState<string[]>([]);
+	const [utilClusters, setUtilClusters] = useState<any[]>([]);
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
 	const onChange = (key: string | number) => {
@@ -35,7 +35,11 @@ function SystemAlarm(props: systemAlarmProps) {
 			if (!res.data) return;
 			setUtilClusters(
 				res.data.map(
-					(item: any) => !item.monitor?.alertManager && item.nickname
+					(item: any) =>
+						!item.monitor?.alertManager && {
+							id: item.id,
+							nickname: item.nickname
+						}
 				)
 			);
 		});
@@ -57,7 +61,10 @@ function SystemAlarm(props: systemAlarmProps) {
 				<Alert
 					message={
 						<div>
-							集群{utilClusters.filter((item) => item).join(',')}
+							集群
+							{utilClusters
+								.map((item) => item.nickname)
+								.join(',')}
 							尚且未安装告警组件，将无法正常告警！
 							<Button
 								type="link"
@@ -71,7 +78,7 @@ function SystemAlarm(props: systemAlarmProps) {
 										'component'
 									);
 									history.push(
-										`/systemManagement/resourcePoolManagement/resourcePoolDetail/${globalCluster.id}/${globalCluster.nickname}`
+										`/systemManagement/resourcePoolManagement/resourcePoolDetail/${utilClusters[0].id}/${globalCluster.nickname}`
 									);
 								}}
 							>
