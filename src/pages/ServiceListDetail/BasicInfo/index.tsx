@@ -496,12 +496,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					label: data.labels || '',
 					hostAffinity: `${
 						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
 							data.nodeAffinity
 								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
 					}(${
-						data.nodeAffinity && data.nodeAffinity[0].required
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity[0].required
 							? '强制'
 							: '非强制'
 					})`,
