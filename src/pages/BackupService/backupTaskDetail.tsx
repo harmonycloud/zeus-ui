@@ -53,6 +53,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		backupTime: '',
 		cron: '',
 		retentionTime: '',
+		dateUnit: '',
 		limitRecord: ''
 	});
 	const [basicData, setBasicData] = useState<any>(info);
@@ -254,8 +255,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 
 	useEffect(() => {
-		infoConfig.splice(6, 0, time);
-		backupDetail?.increment && setInfoConfig(infoConfig);
 		backupDetail &&
 			setBasicData({
 				title: '基础信息',
@@ -267,6 +266,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				retentionTime: backupDetail.retentionTime,
 				limitRecord: backupDetail.limitRecord,
 				increment: backupDetail.increment,
+				dateUnit: backupDetail.dateUnit,
 				time: backupDetail.time,
 				y: '2022-08-15 00:00:00'
 			});
@@ -290,6 +290,16 @@ function BackupTaskDetail(props: any): JSX.Element {
 			});
 		}
 	}, [cluster.id, namespace.name]);
+
+	useEffect(() => {
+		const list = [...infoConfig];
+		!list.find((item) => item.dataIndex === 'time') &&
+			list.splice(6, 0, time);
+
+		backupDetail?.increment
+			? setInfoConfig(list)
+			: setInfoConfig(infoConfig);
+	}, [basicData]);
 
 	const getData = () => {
 		getBackups({
@@ -411,6 +421,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 					position: res.data[0]?.position,
 					backupTime: res.data[0]?.backupTime,
 					retentionTime: res.data[0]?.retentionTime,
+					dateUnit: res.data[0].dateUnit,
 					increment: res.data[0]?.increment,
 					time: res.data[0]?.time,
 					limitRecord: res.data[0]?.limitRecord,
