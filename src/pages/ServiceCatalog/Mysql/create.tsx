@@ -244,17 +244,17 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			return {
 				disabledHours: () =>
-					range(moment(increment?.startTime).hour(), 60),
+					range(moment(increment?.endTime).hour(), 60),
 				disabledMinutes: () =>
-					range(moment(increment?.startTime).minute(), 60),
+					range(moment(increment?.endTime).minute(), 60),
 				disabledSeconds: () =>
-					range(moment(increment?.startTime).second(), 60)
+					range(moment(increment?.endTime).second(), 60)
 			};
 		} else {
 			return {
-				disabledHours: () => range(0, 60),
-				disabledMinutes: () => range(0, 60),
-				disabledSeconds: () => range(0, 60)
+				disabledHours: () => range(0, 0),
+				disabledMinutes: () => range(0, 0),
+				disabledSeconds: () => range(0, 0)
 			};
 		}
 	};
