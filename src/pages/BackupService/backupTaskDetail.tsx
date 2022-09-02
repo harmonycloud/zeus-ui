@@ -55,7 +55,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 		cron: '',
 		retentionTime: '',
 		dateUnit: '',
-		limitRecord: ''
+		limitRecord: '',
+		endTime: ''
 	});
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
@@ -306,6 +307,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 		basicData?.pause === 'off'
 			? setInfoConfig(list)
 			: setInfoConfig(infoConfig);
+		storage.setLocal('backupDetail', {
+			...backupDetail,
+			clusterId: backupDetail.clusterId
+		});
 	}, [basicData]);
 
 	const getData = () => {
@@ -421,7 +426,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
 				getIncBackup({
-					clusterId: res.data[0].clusterId || cluster.id,
+					clusterId: backupDetail.clusterId || cluster.id,
 					namespace: backupDetail.namespace,
 					backupName: backupDetail.backupName
 				}).then((result) => {
