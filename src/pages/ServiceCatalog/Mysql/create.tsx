@@ -208,13 +208,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	// * 读写分离模式
 	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
-	// * 增量备份
-	const [increment, setIncrement] = useState<any>();
+	// * 备份
+	const backupDetail = storage.getLocal('backupDetail');
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
-			current < moment(new Date(increment?.startTime)) ||
-			current > moment(new Date(increment?.endTime))
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current > moment(new Date(backupDetail?.endTime))
 		);
 	};
 	const range = (start: number, end: number) => {
@@ -228,27 +228,27 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const disabledDateTime = (date: any) => {
 		if (
 			moment(date).format('YYYY-MM-DD') ===
-			increment?.startTime?.substring(0, 10)
+			backupDetail?.startTime?.substring(0, 10)
 		)
 			return {
 				disabledHours: () =>
-					range(0, moment(increment?.startTime).hour()),
+					range(0, moment(backupDetail?.startTime).hour()),
 				disabledMinutes: () =>
-					range(0, moment(increment?.startTime).minute()),
+					range(0, moment(backupDetail?.startTime).minute()),
 				disabledSeconds: () =>
-					range(0, moment(increment?.startTime).second())
+					range(0, moment(backupDetail?.startTime).second())
 			};
 		else if (
 			moment(date).format('YYYY-MM-DD') ===
-			increment?.endTime?.substring(0, 10)
+			backupDetail?.endTime?.substring(0, 10)
 		) {
 			return {
 				disabledHours: () =>
-					range(moment(increment?.endTime).hour(), 60),
+					range(moment(backupDetail?.endTime).hour(), 60),
 				disabledMinutes: () =>
-					range(moment(increment?.endTime).minute(), 60),
+					range(moment(backupDetail?.endTime).minute(), 60),
 				disabledSeconds: () =>
-					range(moment(increment?.endTime).second(), 60)
+					range(moment(backupDetail?.endTime).second(), 60)
 			};
 		} else {
 			return {
@@ -327,17 +327,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					});
 				}
 			});
-			if (backupFileName) {
-				getIncBackup({
-					clusterId: globalCluster.id,
-					namespace: namespace || globalNamespace.name,
-					backupName: storage.getLocal('backupDetail').backupName
-				}).then((res) => {
-					if (res.data) {
-						setIncrement(res.data);
-					}
-				});
-			}
 		}
 	}, [project, globalNamespace]);
 
@@ -684,9 +673,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						'YYYY-MM-DD HH:mm:ss'
 					),
 					type: storage.getLocal('backupDetail').sourceType,
-					backupName: increment
-						? increment.backupName
-						: storage.getLocal('backupDetail').backupName
+					backupName: backupDetail.backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -2170,16 +2157,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 						</FormBlock>
 					) : null}
-					{storage.getLocal('backupDetail').recoveryType ===
-					'time' ? (
+					{backupDetail.recoveryType === 'time' ? (
 						<FormBlock title="恢复配置">
 							<div className={styles['basic-info']}>
 								<div>
 									可恢复的时间范围:{' '}
-									{increment
-										? increment?.startTime +
+									{backupDetail
+										? backupDetail?.startTime +
 										  '-' +
-										  increment?.endTime
+										  backupDetail?.endTime
 										: '--'}
 								</div>
 								<ul className="form-layout">

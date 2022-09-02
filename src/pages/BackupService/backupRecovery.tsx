@@ -62,12 +62,23 @@ function ProBackupBask(): JSX.Element {
 				break;
 			case 'postgresql':
 				history.push(
-					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${selectedRow?.sourceName}/backup/${selectedRow?.namespace}`
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${
+						middlewareInfo?.chartVersion
+					}/${
+						selectedRow?.sourceName || backupDetail.sourceName
+					}/backup/${
+						selectedRow?.namespace || backupDetail.namespace
+					}`
 				);
 				storage.setSession(
 					'menuPath',
 					'serviceList/postgresql/PostgreSQL'
 				);
+				recoveryType === 'time' &&
+					storage.setLocal('backupDetail', {
+						...backupDetail,
+						recoveryType: 'time'
+					});
 				break;
 			case 'redis':
 				history.push(
@@ -120,6 +131,7 @@ function ProBackupBask(): JSX.Element {
 			/>
 			<ProContent>
 				<h2>恢复方式</h2>
+				{}
 				<Radio.Group
 					onChange={(e) => setRecoveryType(e.target.value)}
 					value={recoveryType}
@@ -155,12 +167,12 @@ function ProBackupBask(): JSX.Element {
 									});
 								}
 							} else {
-								if (backupDetail.increment) {
+								if (backupDetail.pause === 'off') {
 									releaseMiddleware();
 								} else {
 									notification.error({
 										message: '失败',
-										description: '请开启增量备份'
+										description: '增量备份未开启'
 									});
 								}
 							}

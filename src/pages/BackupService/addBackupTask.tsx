@@ -575,7 +575,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 									{selectedRow?.type === 'mysql' ||
-									params.type === 'mysql' ? (
+									params.type === 'mysql' ||
+									selectedRow?.type === 'postgresql' ||
+									params.type === 'postgresql' ? (
 										<Form.Item
 											label="是否开启增量备份"
 											name="increment"

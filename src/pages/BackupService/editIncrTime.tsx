@@ -17,7 +17,7 @@ function EditIncrTime(props: editTimeProps): JSX.Element {
 
 	useEffect(() => {
 		form.setFieldsValue({
-			time: data.time.substring(0, data.time.length - 1)
+			time: data?.time?.substring(0, data?.time?.length - 1)
 		});
 	}, []);
 
