@@ -233,10 +233,10 @@ export default function IngressDetail(): JSX.Element {
 		});
 	};
 	const portRedner = (value: string, record: any) => {
-		return record.serviceList[0].exposePort;
+		return record.serviceList?.[0].exposePort;
 	};
 	const mappingRender = (value: string, record: any) => {
-		return record.serviceList[0].servicePort;
+		return record.serviceList?.[0].servicePort;
 	};
 	const onRestart = (record: any) => {
 		confirm({
@@ -319,7 +319,7 @@ export default function IngressDetail(): JSX.Element {
 						<Table
 							dataSource={portDataSource}
 							rowKey={(record: any) =>
-								record.serviceList[0].exposePort
+								record.serviceList?.[0].exposePort
 							}
 						>
 							<Table.Column
