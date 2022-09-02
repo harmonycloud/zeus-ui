@@ -5,5 +5,4 @@ export interface userProps {
 	className: string;
 	role: any;
 	globalVar: globalVarProps;
-	setAvatar: (avatar: boolean) => void;
 }

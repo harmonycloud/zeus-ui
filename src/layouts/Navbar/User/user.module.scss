@@ -1,3 +1,23 @@
+.nav-user-icon-box {
+	.nav-user-role-p {
+		margin-top: 2px;
+		padding: 2px 6px;
+		line-height: $line-height-4;
+		font-size: $font-1;
+		border: 1px solid $primary-color;
+		color: $primary-color;
+	}
+}
+.nav-icon-font {
+	width: 60px;
+	height: 48px;
+	text-align: center;
+	line-height: 48px;
+	cursor: pointer;
+	&:hover {
+		background-color: #edf0f5;
+	}
+}
 .nav-user-container {
 	position: relative;
 }
@@ -11,7 +31,7 @@
 	color: #49a9e1;
 }
 .nav-user-operator {
-	display: block;
+	display: none;
 	position: absolute;
 	top: 50px;
 	right: 0;
@@ -22,24 +42,21 @@
 	-webkit-transition: all 0.1s ease 0s;
 	-o-transition: all 0.1s ease 0s;
 }
+.nav-user-container:hover .nav-user-operator {
+	display: block;
+}
 .nav-user-container-item {
 	padding-left: 20px;
 	line-height: 36px;
 	background: $white;
-	width: 150px;
 	border-bottom: 1px solid $border-color;
 	text-align: left;
+	cursor: pointer;
 	&:hover {
 		background-color: $background;
 	}
 }
-.nav-user-role-p {
-	padding: 2px 6px;
-	line-height: $line-height-4;
-	font-size: $font-1;
-	border: 1px solid $primary-color;
-	color: $primary-color;
-}
+
 .nav-user-container-item img {
 	margin-right: 6px;
 	vertical-align: middle;

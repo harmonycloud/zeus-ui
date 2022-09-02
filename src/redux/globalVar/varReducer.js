@@ -4,8 +4,7 @@ import {
 	SET_REFRESH_CLUSTER,
 	SET_GLOBAL_CLUSTER_LIST,
 	SET_GLOBAL_NAMESPACE_LIST,
-	SET_PROJECT,
-	SET_AVATAR
+	SET_PROJECT
 } from './var.js';
 /**
  * 全局变量
@@ -17,8 +16,7 @@ const defaultState = {
 	flag: false, // 触发集群重新获取的标识
 	clusterList: [],
 	namespaceList: [],
-	project: {},
-	avatar: false
+	project: {}
 };
 
 export default function varReducer(state = defaultState, action) {
@@ -37,8 +35,6 @@ export default function varReducer(state = defaultState, action) {
 			return { ...state, namespaceList: data };
 		case SET_PROJECT:
 			return { ...state, project: data };
-		case SET_AVATAR:
-			return { ...state, avatar: data };
 		default:
 			return state;
 	}

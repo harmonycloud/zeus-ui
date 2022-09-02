@@ -732,3 +732,9 @@ table.table-list tbody .ant-space-item label span tr span:nth-child(1) {
 .CodeMirror-gutter-wrapper {
 	left: -32px !important;
 }
+.zeus-nav > .ant-popover-content {
+	width: 150px;
+}
+.zeus-nav > .ant-popover-content > .ant-popover-inner > .ant-popover-inner-content {
+	padding: 0px !important;
+}
