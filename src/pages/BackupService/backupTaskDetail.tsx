@@ -147,10 +147,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 			// 		: '备份保留时间',
 			dataIndex: 'retentionTime',
 			label: '备份保留时间',
-			render: (val: string) => (
-				<div className="text-overflow-one" title={val}>
-					{val[0]}
-					{backupDetail.dateUnit
+			render: (val: any) => (
+				<div className="text-overflow-one" title={val && val[0]}>
+					{val && val[0]}
+					{backupDetail.dateUnit && val
 						? dataType.find((item) => item.value === val[1])?.label
 						: ''}
 					{backupDetail.schedule ? '' : '--'}
@@ -207,15 +207,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'endTime',
-			label: '最后一次备份时间',
-			render: (val: string) => (
-				<div className="text-overflow-one" title={val}>
-					{val || '--'}
-				</div>
-			)
-		},
-		{
 			dataIndex: 'position',
 			label: '备份位置',
 			render: (val: string) => (
@@ -254,6 +245,16 @@ function BackupTaskDetail(props: any): JSX.Element {
 		)
 	};
 
+	const endTime = {
+		dataIndex: 'endTime',
+		label: '最后一次备份时间',
+		render: (val: string) => (
+			<div className="text-overflow-one" title={val}>
+				{val || '--'}
+			</div>
+		)
+	};
+
 	useEffect(() => {
 		// backupDetail &&
 		// 	setBasicData({
@@ -274,7 +275,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 		// 		y: '2022-08-15 00:00:00'
 		// 	});
 		getBasicInfo();
-		getInrBasicInfo();
 	}, []);
 
 	useEffect(() => {
@@ -300,8 +300,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 		const list = [...infoConfig];
 		!list.find((item) => item.dataIndex === 'time') &&
 			list.splice(6, 0, time);
+		!list.find((item) => item.dataIndex === 'endTime') &&
+			list.splice(7, 0, endTime);
 
-		backupDetail?.pause === 'off'
+		basicData?.pause === 'off'
 			? setInfoConfig(list)
 			: setInfoConfig(infoConfig);
 	}, [basicData]);
@@ -418,51 +420,42 @@ function BackupTaskDetail(props: any): JSX.Element {
 		};
 		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
-				setBasicData({
-					title: '基础信息',
-					cron: res.data[0]?.cron,
-					phrase: res.data[0]?.phrase,
-					sourceName: res.data[0]?.sourceName,
-					position: res.data[0]?.position,
-					backupTime: res.data[0]?.backupTime,
-					retentionTime: [
-						res.data[0].retentionTime,
-						res.data[0].dateUnit
-					],
-					dateUnit: res.data[0].dateUnit,
-					limitRecord: res.data[0]?.limitRecord
+				getIncBackup({
+					clusterId: res.data[0].clusterId || cluster.id,
+					namespace: backupDetail.namespace,
+					backupName: backupDetail.backupName
+				}).then((result) => {
+					if (result.success) {
+						setBasicData({
+							title: '基础信息',
+							cron: res.data[0]?.cron,
+							phrase: res.data[0]?.phrase,
+							sourceName: res.data[0]?.sourceName,
+							position: res.data[0]?.position,
+							backupTime: res.data[0]?.backupTime,
+							retentionTime: [
+								res.data[0]?.retentionTime,
+								res.data[0]?.dateUnit
+							],
+							dateUnit: res.data[0]?.dateUnit,
+							limitRecord: res.data[0]?.limitRecord,
+							endTime: result.data?.endTime,
+							time: result.data?.time,
+							pause: result.data?.pause
+						});
+						storage.setLocal('backupDetail', {
+							...res.data[0],
+							...result.data,
+							clusterId: backupDetail.clusterId
+						});
+						setVisible(false);
+						setIncrVisible(false);
+					}
 				});
-				storage.setLocal('backupDetail', {
-					...res.data[0],
-					...backupDetail,
-					clusterId: backupDetail.clusterId
-				});
-				setVisible(false);
-				setIncrVisible(false);
 			} else {
 				notification.error({
 					message: '失败',
 					description: res.errorMsg
-				});
-			}
-		});
-	};
-	const getInrBasicInfo = () => {
-		getIncBackup({
-			clusterId: backupDetail.clusterId || cluster.id,
-			namespace: backupDetail.namespace,
-			backupName: storage.getLocal('backupDetail').backupName
-		}).then((res) => {
-			if (res.success) {
-				setBasicData({
-					endTime: res.data?.endTime,
-					time: res.data?.time,
-					pause: res.data?.pause
-				});
-				storage.setLocal('backupDetail', {
-					...backupDetail,
-					...res.data,
-					clusterId: backupDetail.clusterId
 				});
 			}
 		});

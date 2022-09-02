@@ -166,11 +166,11 @@ export default function AddIngress(): JSX.Element {
 		} else if (name === 'redis') {
 			if (data.readWriteProxy.enabled) {
 				if (mode === 'sentinel') {
-					servicePort = ingressType === 'rw' ? 7617 : 6379;
+					servicePort = ingressType === 'proxy' ? 7617 : 6379;
 					service =
 						ingressType === 'read'
 							? `${middlewareName}-readonly`
-							: ingressType === 'rw'
+							: ingressType === 'proxy'
 							? `${middlewareName}-predixy`
 							: middlewareName;
 				} else {
