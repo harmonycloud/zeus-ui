@@ -13,7 +13,8 @@ import {
 	deleteBackups,
 	getBackupTasks,
 	deleteBackupTasks,
-	addIncBackup
+	addIncBackup,
+	getIncBackup
 } from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
@@ -166,13 +167,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'increment',
+			dataIndex: 'pause',
 			label: '是否开启增量',
-			render: (val: boolean) => (
+			render: (val: string) => (
 				<div className="text-overflow-one">
-					{val ? '已开启' : '未开启'}
+					{val === 'off' ? '已开启' : '未开启'}
 					<Switch
-						checked={val}
+						checked={val === 'off'}
 						size="small"
 						style={{ marginLeft: 8 }}
 						onChange={(checked) => {
@@ -206,7 +207,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'y',
+			dataIndex: 'endTime',
 			label: '最后一次备份时间',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
@@ -254,24 +255,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 
 	useEffect(() => {
-		backupDetail &&
-			setBasicData({
-				title: '基础信息',
-				cron: backupDetail.cron,
-				phrase: backupDetail.phrase,
-				sourceName: backupDetail?.sourceName,
-				position: backupDetail.position,
-				backupTime: backupDetail.backupTime,
-				retentionTime: [
-					backupDetail.retentionTime,
-					backupDetail.dateUnit
-				],
-				limitRecord: backupDetail.limitRecord,
-				increment: backupDetail.increment,
-				dateUnit: backupDetail.dateUnit,
-				time: backupDetail.time,
-				y: '2022-08-15 00:00:00'
-			});
+		// backupDetail &&
+		// 	setBasicData({
+		// 		title: '基础信息',
+		// 		cron: backupDetail.cron,
+		// 		phrase: backupDetail.phrase,
+		// 		sourceName: backupDetail?.sourceName,
+		// 		position: backupDetail.position,
+		// 		backupTime: backupDetail.backupTime,
+		// 		retentionTime: [
+		// 			backupDetail.retentionTime,
+		// 			backupDetail.dateUnit
+		// 		],
+		// 		limitRecord: backupDetail.limitRecord,
+		// 		increment: backupDetail.increment,
+		// 		dateUnit: backupDetail.dateUnit,
+		// 		time: backupDetail.time,
+		// 		y: '2022-08-15 00:00:00'
+		// 	});
+		getBasicInfo();
+		getInrBasicInfo();
 	}, []);
 
 	useEffect(() => {
@@ -298,7 +301,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		!list.find((item) => item.dataIndex === 'time') &&
 			list.splice(6, 0, time);
 
-		backupDetail?.increment
+		backupDetail?.pause === 'off'
 			? setInfoConfig(list)
 			: setInfoConfig(infoConfig);
 	}, [basicData]);
@@ -427,13 +430,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 						res.data[0].dateUnit
 					],
 					dateUnit: res.data[0].dateUnit,
-					increment: res.data[0]?.increment,
-					time: res.data[0]?.time,
-					limitRecord: res.data[0]?.limitRecord,
-					y: '2022-08-15 00:00:00'
+					limitRecord: res.data[0]?.limitRecord
 				});
 				storage.setLocal('backupDetail', {
 					...res.data[0],
+					...backupDetail,
 					clusterId: backupDetail.clusterId
 				});
 				setVisible(false);
@@ -442,6 +443,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 				notification.error({
 					message: '失败',
 					description: res.errorMsg
+				});
+			}
+		});
+	};
+	const getInrBasicInfo = () => {
+		getIncBackup({
+			clusterId: backupDetail.clusterId || cluster.id,
+			namespace: backupDetail.namespace,
+			backupName: storage.getLocal('backupDetail').backupName
+		}).then((res) => {
+			if (res.success) {
+				setBasicData({
+					endTime: res.data?.endTime,
+					time: res.data?.time,
+					pause: res.data?.pause
+				});
+				storage.setLocal('backupDetail', {
+					...backupDetail,
+					...res.data,
+					clusterId: backupDetail.clusterId
 				});
 			}
 		});

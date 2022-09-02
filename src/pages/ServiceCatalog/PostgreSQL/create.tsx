@@ -17,7 +17,8 @@ import {
 	Result,
 	InputNumber,
 	Tooltip,
-	Tag
+	Tag,
+	DatePicker
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -27,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
 import styles from './pgsql.module.scss';
+import moment from 'moment';
 import {
 	getNodePort,
 	getNodeTaint,
@@ -184,6 +186,57 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	// * root密码
 	const [pgsqlPwd, setPgsqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
+	// * 备份
+	const backupDetail = storage.getLocal('backupDetail');
+	const disabledDate = (current: any) => {
+		// Can not select days before today and today
+		return (
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current > moment(new Date(backupDetail?.endTime))
+		);
+	};
+	const range = (start: number, end: number) => {
+		const result = [];
+		for (let i = start; i < end; i++) {
+			result.push(i);
+		}
+		return result;
+	};
+
+	const disabledDateTime = (date: any) => {
+		if (
+			moment(date).format('YYYY-MM-DD') ===
+			backupDetail?.startTime?.substring(0, 10)
+		)
+			return {
+				disabledHours: () =>
+					range(0, moment(backupDetail?.startTime).hour()),
+				disabledMinutes: () =>
+					range(0, moment(backupDetail?.startTime).minute()),
+				disabledSeconds: () =>
+					range(0, moment(backupDetail?.startTime).second())
+			};
+		else if (
+			moment(date).format('YYYY-MM-DD') ===
+			backupDetail?.endTime?.substring(0, 10)
+		) {
+			return {
+				disabledHours: () =>
+					range(moment(backupDetail?.endTime).hour(), 60),
+				disabledMinutes: () =>
+					range(moment(backupDetail?.endTime).minute(), 60),
+				disabledSeconds: () =>
+					range(moment(backupDetail?.endTime).second(), 60)
+			};
+		} else {
+			return {
+				disabledHours: () => range(0, 0),
+				disabledMinutes: () => range(0, 0),
+				disabledSeconds: () => range(0, 0)
+			};
+		}
+	};
+
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -433,7 +486,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				setVersion(res.data.version);
 			}
 			form.setFieldsValue({
-				name: backupFileName ? res.data.name + '-backup' : '',
+				name: res.data.name + '-backup',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
@@ -461,7 +514,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	useEffect(() => {
 		if (JSON.stringify(globalNamespace) !== '{}') {
 			// 克隆服务
-			if (backupFileName) {
+			if (middlewareName) {
 				getMiddlewareDetailAndSetForm(middlewareName);
 			}
 		}
@@ -833,7 +886,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
-									disabled={!!backupFileName}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -859,7 +912,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
-												disabled={!!backupFileName}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -995,7 +1048,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
-											disabled={!!backupFileName}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1071,7 +1124,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													value={pgsqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
-													disabled={!!backupFileName}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</Tooltip>
@@ -1116,7 +1169,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: '100%'
 												}}
-												disabled={!!backupFileName}
+												disabled={!!middlewareName}
 											/>
 										</FormItem>
 									</div>
@@ -1145,7 +1198,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
-											disabled={!!backupFileName}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1164,7 +1217,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												value={replicaCount}
 												max={6}
 												min={2}
-												disabled={!!backupFileName}
+												disabled={!!middlewareName}
 											/>
 										</div>
 									</li>
@@ -1182,7 +1235,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
-											disabled={!!backupFileName}
+											disabled={!!middlewareName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1238,7 +1291,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																	disabled={
-																		!!backupFileName
+																		!!middlewareName
 																	}
 																/>
 															</FormItem>
@@ -1274,7 +1327,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																	disabled={
-																		!!backupFileName
+																		!!middlewareName
 																	}
 																/>
 															</FormItem>
@@ -1289,6 +1342,68 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
+					{backupDetail.recoveryType === 'time' ? (
+						<FormBlock title="恢复配置">
+							<div className={styles['basic-info']}>
+								<div>
+									可恢复的时间范围:{' '}
+									{backupDetail
+										? backupDetail?.startTime +
+										  '-' +
+										  backupDetail?.endTime
+										: '--'}
+								</div>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												选择恢复的时间点
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择恢复的时间点'
+													}
+												]}
+												name="restoreTime"
+											>
+												<DatePicker
+													showTime
+													disabledDate={disabledDate}
+													disabledTime={
+														disabledDateTime
+													}
+												/>
+											</FormItem>
+										</div>
+									</li>
+									{/* <li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												冲突处理
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required name="backType">
+												<Radio.Group defaultValue="x">
+													<Radio value="x">
+														遇到同名对象失败
+													</Radio>
+													<Radio value="y">
+														遇到同名对象则重命名
+													</Radio>
+												</Radio.Group>
+											</FormItem>
+										</div>
+									</li> */}
+								</ul>
+							</div>
+						</FormBlock>
+					) : null}
 					{childrenRender(
 						customForm,
 						form,
