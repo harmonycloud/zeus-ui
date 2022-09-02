@@ -226,13 +226,13 @@ const Overview = () => {
 		if (value === 'True') {
 			return (
 				<>
-					<CheckCircleFilled style={{ color: '#00A700' }} /> 成功
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 正常
 				</>
 			);
 		} else {
 			return (
 				<>
-					<CloseCircleFilled style={{ color: '#C80000' }} /> 失败
+					<CloseCircleFilled style={{ color: '#C80000' }} /> 异常
 				</>
 			);
 		}
