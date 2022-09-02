@@ -15,6 +15,7 @@ import { FiltersProps } from '@/types/comment';
 import Actions from '../Actions';
 import CheckYaml from './checkYaml';
 import storage from '@/utils/storage';
+import transTime from '@/utils/transTime';
 
 const { TabPane } = Tabs;
 const LinkButton = Actions.LinkButton;
@@ -279,6 +280,9 @@ export default function IngressDetail(): JSX.Element {
 			</Actions>
 		);
 	};
+	const createTimeRender = (value: string) => {
+		return transTime.gmt2local(value);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -365,6 +369,7 @@ export default function IngressDetail(): JSX.Element {
 							<Table.Column
 								dataIndex="createTime"
 								title="创建时间"
+								render={createTimeRender}
 							/>
 							<Table.Column
 								dataIndex="action"
