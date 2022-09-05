@@ -24,7 +24,8 @@ const pattern: patternProps = {
 	projectName: '^[a-z][a-z0-9-]{0,38}[a-z0-9]$',
 	projectAliasName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{0,20}$',
 	backupAliasName: '^[\u4E00-\u9FA5]*$',
-	storageName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,10}$'
+	storageName: '^[\u4E00-\u9FA5A-Za-z0-9]{1,10}$',
+	backupName: '^[\u4E00-\u9FA5A-Za-z0-9]{1,15}$'
 };
 
 export default pattern;
