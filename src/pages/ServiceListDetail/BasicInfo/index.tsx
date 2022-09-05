@@ -551,6 +551,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				password: data.password || '',
 				kafkaDTO: data.kafkaDTO
 			});
+			const storageClassName =
+				data.type === 'elasticsearch'
+					? data.quota?.master.storageClassAliasName || ''
+					: data.quota?.[data.type].storageClassAliasName;
+			const storageType =
+				data.type === 'elasticsearch'
+					? data.quota?.master.storageClassName || ''
+					: data.quota?.[data.type].storageClassName;
 			setRunData({
 				title: '运行状态',
 				status: data.status || 'Failed',
@@ -558,14 +566,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				model: modeText(data),
 				namespace: data.namespace || '',
 				namespaceAliasName: data.namespaceAliasName,
-				storageClassName:
-					data.quota && data.quota[data.type]
-						? data.quota[data.type].storageClassAliasName || ''
-						: '',
-				storageType:
-					data.quota && data.quota[data.type]
-						? data.quota[data.type].storageClassName || ''
-						: '',
+				storageClassName: storageClassName,
+				storageType: storageType,
 				hostNetwork: data.hostNetwork,
 				group: data.rocketMQParam?.group,
 				replicas: data.rocketMQParam?.replicas

@@ -15,6 +15,7 @@ import { FiltersProps } from '@/types/comment';
 import Actions from '../Actions';
 import CheckYaml from './checkYaml';
 import storage from '@/utils/storage';
+import transTime from '@/utils/transTime';
 
 const { TabPane } = Tabs;
 const LinkButton = Actions.LinkButton;
@@ -232,10 +233,10 @@ export default function IngressDetail(): JSX.Element {
 		});
 	};
 	const portRedner = (value: string, record: any) => {
-		return record.serviceList[0].exposePort;
+		return record.serviceList?.[0].exposePort;
 	};
 	const mappingRender = (value: string, record: any) => {
-		return record.serviceList[0].servicePort;
+		return record.serviceList?.[0].servicePort;
 	};
 	const onRestart = (record: any) => {
 		confirm({
@@ -279,6 +280,9 @@ export default function IngressDetail(): JSX.Element {
 			</Actions>
 		);
 	};
+	const createTimeRender = (value: string) => {
+		return transTime.gmt2local(value);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -315,7 +319,7 @@ export default function IngressDetail(): JSX.Element {
 						<Table
 							dataSource={portDataSource}
 							rowKey={(record: any) =>
-								record.serviceList[0].exposePort
+								record.serviceList?.[0].exposePort
 							}
 						>
 							<Table.Column
@@ -365,6 +369,7 @@ export default function IngressDetail(): JSX.Element {
 							<Table.Column
 								dataIndex="createTime"
 								title="创建时间"
+								render={createTimeRender}
 							/>
 							<Table.Column
 								dataIndex="action"

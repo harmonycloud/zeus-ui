@@ -66,8 +66,8 @@ export default function StorageManagement(): JSX.Element {
 			}
 		});
 	};
-	const handleSearch = (e: any) => {
-		getData(e.target.value);
+	const handleSearch = (value: string) => {
+		getData(value);
 	};
 	const handleChange = (value: string, type: string) => {
 		setStorages([]);
