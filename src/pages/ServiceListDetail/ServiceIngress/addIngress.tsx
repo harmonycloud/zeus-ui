@@ -746,6 +746,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								</div>
 							)}
 							{exposeType === 'TCP' &&
+								!autoConfig &&
 								ingressClassName?.type === 'traefik' && (
 									<Row>
 										<Col span={4}></Col>
