@@ -168,46 +168,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'pause',
-			label: '是否开启增量',
-			render: (val: string) => (
-				<div className="text-overflow-one">
-					{val === 'off' ? '已开启' : '未开启'}
-					<Switch
-						checked={val === 'off'}
-						size="small"
-						style={{ marginLeft: 8 }}
-						onChange={(checked) => {
-							if (checked) {
-								setIncrVisible(true);
-								setModalType('add');
-							} else {
-								const sendData = {
-									backupName: params.backupName,
-									clusterId:
-										backupDetail.clusterId || cluster.id,
-									namespace:
-										backupDetail.namespace ||
-										namespace.name,
-									type: params.type,
-									time: backupDetail.time,
-									cron: backupDetail.cron,
-									retentionTime:
-										backupDetail.retentionTime[0],
-									dateUnit: backupDetail.dateUnit,
-									turnOff: true,
-									pause: 'on'
-								};
-								editBackupTasks(sendData).then((res) => {
-									getBasicInfo();
-								});
-							}
-						}}
-					/>
-				</div>
-			)
-		},
-		{
 			dataIndex: 'position',
 			label: '备份位置',
 			render: (val: string) => (
@@ -227,13 +187,50 @@ function BackupTaskDetail(props: any): JSX.Element {
 		}
 	]);
 
+	const increment = {
+		dataIndex: 'pause',
+		label: '是否开启增量',
+		render: (val: string) => (
+			<div className="text-overflow-one">
+				{val === 'off' ? '已开启' : '未开启'}
+				<Switch
+					checked={val === 'off'}
+					size="small"
+					style={{ marginLeft: 8 }}
+					onChange={(checked) => {
+						if (checked) {
+							setIncrVisible(true);
+							setModalType('add');
+						} else {
+							const sendData = {
+								backupName: params.backupName,
+								clusterId: params.clusterId,
+								namespace: params.namespace,
+								type: params.type,
+								time: backupDetail.time,
+								cron: backupDetail.cron,
+								retentionTime: backupDetail.retentionTime[0],
+								dateUnit: backupDetail.dateUnit,
+								turnOff: true,
+								pause: 'on'
+							};
+							editBackupTasks(sendData).then((res) => {
+								getBasicInfo();
+							});
+						}
+					}}
+				/>
+			</div>
+		)
+	};
+
 	const time = {
 		dataIndex: 'time',
 		label: '备份间隔时间',
 		render: (val: string) => (
 			<div className="text-overflow-one">
 				{(val?.substring(0, val?.length - 1) || '') + '分/次'}
-				{backupDetail.increment ? (
+				{backupDetail.pause === 'off' ? (
 					<EditOutlined
 						style={{ marginLeft: 8, color: '#226EE7' }}
 						onClick={() => {
@@ -282,7 +279,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		if (cluster.id !== undefined && namespace.name !== undefined) {
 			getData();
 			getCanReleaseMiddleware({
-				clusterId: backupDetail.clusterId || cluster.id,
+				clusterId: params.clusterId,
 				type: params.type
 			}).then((res) => {
 				if (res.success) {
@@ -299,25 +296,25 @@ function BackupTaskDetail(props: any): JSX.Element {
 
 	useEffect(() => {
 		const list = [...infoConfig];
-		!list.find((item) => item.dataIndex === 'time') &&
-			list.splice(6, 0, time);
-		!list.find((item) => item.dataIndex === 'endTime') &&
-			list.splice(7, 0, endTime);
+		if (params.type === 'mysql' || params.type === 'postgresql') {
+			!list.find((item) => item.dataIndex === 'pause') &&
+				list.splice(5, 0, increment);
+			!list.find((item) => item.dataIndex === 'time') &&
+				list.splice(6, 0, time);
+			!list.find((item) => item.dataIndex === 'endTime') &&
+				list.splice(7, 0, endTime);
 
-		basicData?.pause === 'off'
-			? setInfoConfig(list)
-			: setInfoConfig(infoConfig);
-		storage.setLocal('backupDetail', {
-			...backupDetail,
-			clusterId: backupDetail.clusterId
-		});
+			basicData?.pause === 'off'
+				? setInfoConfig(list)
+				: setInfoConfig(infoConfig);
+		}
 	}, [basicData]);
 
 	const getData = () => {
 		getBackups({
 			backupName: params.backupName,
-			clusterId: backupDetail.clusterId || cluster.id,
-			namespace: backupDetail.namespace,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
 			type: params.type
 		}).then((res) => {
 			if (res.success) {
@@ -382,11 +379,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 							content: '备份记录删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const result = {
-									clusterId:
-										backupDetail.clusterId || cluster.id,
-									namespace:
-										backupDetail.namespace ||
-										namespace.name,
+									clusterId: params.clusterId,
+									namespace: params.clusterId,
 									type: record.sourceType,
 									backupId: record.backupId,
 									crName: record.crName,
@@ -418,21 +412,19 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const getBasicInfo = () => {
 		const sendData = {
 			keyword: backupDetail.taskName,
-			clusterId: backupDetail.clusterId || cluster.id,
-			namespace: backupDetail.namespace,
-			middlewareName: params?.middlewareName || '',
-			type: params?.type || ''
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params?.middlewareName || ''
 		};
 		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
 				getIncBackup({
-					clusterId: backupDetail.clusterId || cluster.id,
-					namespace: backupDetail.namespace,
+					clusterId: params.clusterId,
+					namespace: params.namespace,
 					backupName: backupDetail.backupName
 				}).then((result) => {
 					if (result.success) {
-						setBasicData({
-							title: '基础信息',
+						const data = {
 							cron: res.data[0]?.cron,
 							phrase: res.data[0]?.phrase,
 							sourceName: res.data[0]?.sourceName,
@@ -445,13 +437,17 @@ function BackupTaskDetail(props: any): JSX.Element {
 							dateUnit: res.data[0]?.dateUnit,
 							limitRecord: res.data[0]?.limitRecord,
 							endTime: result.data?.endTime,
+							startTime: result.data?.startTime,
 							time: result.data?.time,
 							pause: result.data?.pause
+						};
+						setBasicData({
+							title: '基础信息',
+							...data
 						});
 						storage.setLocal('backupDetail', {
-							...res.data[0],
-							...result.data,
-							clusterId: backupDetail.clusterId
+							...data,
+							...backupDetail
 						});
 						setVisible(false);
 						setIncrVisible(false);
@@ -468,8 +464,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const onCreate = (data: any) => {
 		const sendData = {
 			backupName: params.backupName,
-			clusterId: backupDetail.clusterId || cluster.id,
-			namespace: backupDetail.namespace || namespace.name,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
 			type: params.type,
 			increment: backupDetail.increment,
 			time: backupDetail.time,
@@ -483,8 +479,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 		if (modalType === 'add') {
 			const sendData = {
 				backupName: params.backupName,
-				clusterId: backupDetail.clusterId || cluster.id,
-				namespace: backupDetail.namespace || namespace.name,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
 				increment: backupDetail.increment,
 				pause: 'off',
 				...data
@@ -495,8 +491,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 		} else {
 			const sendData = {
 				backupName: params.backupName,
-				clusterId: backupDetail.clusterId || cluster.id,
-				namespace: backupDetail.namespace || namespace.name,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
 				type: params.type,
 				...data
 			};
@@ -521,8 +517,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 							onClick={() =>
 								history.push(
 									`/backupService/backupRecovery/${
-										backupDetail.clusterId || cluster.id
-									}/${backupDetail.namespace}/${
+										params.clusterId || cluster.id
+									}/${params.namespace}/${
 										backupDetail.backupName
 									}/${backupDetail.sourceType}`
 								)
@@ -543,7 +539,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 											clusterId:
 												backupDetail.clusterId ||
 												cluster.id,
-											namespace: backupDetail.namespace,
+											namespace: params.namespace,
 											type: backupDetail.sourceType,
 											cron: backupDetail.cron || '',
 											backupName: backupDetail.backupName,

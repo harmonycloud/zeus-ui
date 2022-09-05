@@ -106,7 +106,7 @@ function ProBackupBask(): JSX.Element {
 
 	useEffect(() => {
 		getBackups({
-			backupName: backupName,
+			backupName,
 			clusterId,
 			namespace,
 			type
@@ -131,7 +131,6 @@ function ProBackupBask(): JSX.Element {
 			/>
 			<ProContent>
 				<h2>恢复方式</h2>
-				{}
 				<Radio.Group
 					onChange={(e) => setRecoveryType(e.target.value)}
 					value={recoveryType}

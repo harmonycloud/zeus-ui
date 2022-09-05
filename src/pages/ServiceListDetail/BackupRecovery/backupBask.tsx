@@ -239,12 +239,15 @@ export default function List(props: any): JSX.Element {
 						);
 					} else {
 						history.push(
-							`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
+							`/backupService/backupTask/detail/${
+								clusterId ? clusterId : currentCluster?.id
+							}/${record.namespace}/${record.backupName}/${
+								record.sourceType
+							}`
 						);
 					}
 					storage.setLocal('backupDetail', {
-						...record,
-						clusterId: currentCluster?.id
+						...record
 					});
 				}}
 			>

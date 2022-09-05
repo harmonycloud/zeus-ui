@@ -417,8 +417,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					clusterId: globalCluster.id,
 					namespace: namespace,
 					middlewareName: values.name,
-					type: storage.getLocal('backupDetail').sourceType,
-					backupName: storage.getLocal('backupDetail').backupName
+					type: backupDetail.sourceType,
+					backupName: backupDetail.backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -496,6 +496,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.postgresql.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.postgresql.storageClassQuota,
