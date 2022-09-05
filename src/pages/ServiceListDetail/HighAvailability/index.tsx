@@ -563,7 +563,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								style={{ marginTop: 12 }}
 							>
 								<span style={{ marginRight: 32 }}>
-									上一次自动切换时间
+									上一次切换时间
 								</span>
 								<label>{data.lastAutoSwitchTime || '/'}</label>
 							</div>
