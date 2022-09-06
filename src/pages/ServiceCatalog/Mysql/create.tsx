@@ -290,6 +290,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			]);
 			setMode('1m-1s');
 		}
+		return () => {
+			storage.removeLocal('backupDetail');
+		};
 	}, []);
 
 	useEffect(() => {
@@ -663,7 +666,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
-			if (backupDetail) {
+			if (middlewareName && !state) {
 				const result = {
 					clusterId: globalCluster.id,
 					namespace: namespace,
@@ -675,17 +678,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					backupName: backupDetail.backupName
 				};
 				applyBackup(result).then((res) => {
-					if (res.success) {
-						notification.success({
-							message: '成功',
-							description: '克隆成功'
-						});
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+					// * 恢复服务时，需要调用发布接口和备份接口
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
 				});
 			}
 			if (state && state.disasterOriginName) {
