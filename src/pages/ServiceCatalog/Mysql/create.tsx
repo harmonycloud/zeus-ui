@@ -81,14 +81,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	console.log(params);
 	const {
 		chartName,
 		chartVersion,
 		middlewareName,
 		backupFileName,
 		aliasName,
-		namespace
+		namespace,
+		backup
 	} = params;
 	const { state } = props.location;
 	const [form] = Form.useForm();
@@ -664,7 +664,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
-			if (middlewareName) {
+			if (backup) {
 				const result = {
 					clusterId: globalCluster.id,
 					namespace: namespace,
