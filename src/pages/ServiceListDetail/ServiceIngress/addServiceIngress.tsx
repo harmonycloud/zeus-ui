@@ -141,8 +141,8 @@ export default function AddIngress(): JSX.Element {
 				setData(res.data);
 				name === 'redis' &&
 					res.data.readWriteProxy?.enabled &&
-					mode !== 'sentinel' &&
-					setIngressType('rw');
+					mode === 'sentinel' &&
+					setIngressType('proxy');
 			} else {
 				notification.error({
 					message: '失败',
@@ -280,7 +280,6 @@ export default function AddIngress(): JSX.Element {
 							}
 						]}
 					>
-						{console.log(ingressType)}
 						<SelectCard
 							options={selectOptions()}
 							disabled={!!serviceIngress}
