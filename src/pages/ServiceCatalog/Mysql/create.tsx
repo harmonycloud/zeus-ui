@@ -666,7 +666,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
-			if (middlewareName) {
+			if (backup) {
 				const result = {
 					clusterId: globalCluster.id,
 					namespace: namespace,
