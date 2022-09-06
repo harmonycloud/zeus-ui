@@ -67,7 +67,6 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
-import { log } from 'console';
 import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
@@ -291,6 +290,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			]);
 			setMode('1m-1s');
 		}
+		return () => {
+			storage.removeLocal('backupDetail');
+		};
 	}, []);
 
 	useEffect(() => {
@@ -664,7 +666,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
-			if (backup) {
+			if (middlewareName) {
 				const result = {
 					clusterId: globalCluster.id,
 					namespace: namespace,
@@ -676,6 +678,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					backupName: backupDetail.backupName
 				};
 				applyBackup(result).then((res) => {
+					// * 恢复服务时，需要调用发布接口和备份接口
 					// if (res.success) {
 					// 	notification.success({
 					// 		message: '成功',
@@ -688,7 +691,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					// 	});
 					// }
 				});
-				console.log(result);
 			}
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);

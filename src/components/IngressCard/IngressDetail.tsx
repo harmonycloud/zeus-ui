@@ -155,6 +155,8 @@ export default function IngressDetail(): JSX.Element {
 	const [statusFilters, setStatusFilters] = useState<FiltersProps[]>([]);
 	const [podYamlVisible, setPodYamlVisible] = useState<boolean>(false);
 	const [podRecord, setPodRecord] = useState({});
+	const [portLoading, setPortLoading] = useState<boolean>(false);
+	const [podLoading, setPodLoading] = useState<boolean>(false);
 	useEffect(() => {
 		getIngressDetail({
 			clusterId: params.clusterId,
@@ -190,47 +192,57 @@ export default function IngressDetail(): JSX.Element {
 				});
 			}
 		});
+		setPortLoading(true);
 		getPorts({
 			clusterId: params.clusterId,
 			ingressClassName: params.ingressClassName
-		}).then((res) => {
-			if (res.success) {
-				setPortDataSource(res.data);
-				setFilters(
-					objectRemoveDuplicatesByKey(
-						res.data.map((item: any) => {
-							return {
-								value: item.middlewareOfficialName,
-								text: item.middlewareOfficialName
-							};
-						}),
-						'value'
-					)
-				);
-			}
-		});
+		})
+			.then((res) => {
+				if (res.success) {
+					setPortDataSource(res.data);
+					setFilters(
+						objectRemoveDuplicatesByKey(
+							res.data.map((item: any) => {
+								return {
+									value: item.middlewareOfficialName,
+									text: item.middlewareOfficialName
+								};
+							}),
+							'value'
+						)
+					);
+				}
+			})
+			.finally(() => {
+				setPortLoading(false);
+			});
 		getPodData();
 	}, []);
 	const getPodData = () => {
+		setPodLoading(true);
 		getPods({
 			clusterId: params.clusterId,
 			ingressName: params.ingressClassName
-		}).then((res) => {
-			if (res.success) {
-				setPodDataSource(res.data);
-				setStatusFilters(
-					objectRemoveDuplicatesByKey(
-						res.data.map((item: any) => {
-							return {
-								value: item.status,
-								text: item.status
-							};
-						}),
-						'value'
-					)
-				);
-			}
-		});
+		})
+			.then((res) => {
+				if (res.success) {
+					setPodDataSource(res.data);
+					setStatusFilters(
+						objectRemoveDuplicatesByKey(
+							res.data.map((item: any) => {
+								return {
+									value: item.status,
+									text: item.status
+								};
+							}),
+							'value'
+						)
+					);
+				}
+			})
+			.finally(() => {
+				setPodLoading(false);
+			});
 	};
 	const portRedner = (value: string, record: any) => {
 		return record.serviceList?.[0].exposePort;
@@ -321,6 +333,7 @@ export default function IngressDetail(): JSX.Element {
 							rowKey={(record: any) =>
 								record.serviceList?.[0].exposePort
 							}
+							loading={portLoading}
 						>
 							<Table.Column
 								dataIndex="port"

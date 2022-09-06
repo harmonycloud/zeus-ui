@@ -193,7 +193,7 @@ export default function AddBackupPosition(): JSX.Element {
 								message: '请输入位置名称'
 							},
 							{
-								pattern: new RegExp(pattern.storageName),
+								pattern: new RegExp(pattern.backupName),
 								message:
 									'任务名称由中文、大写字母、小写字母和数字组成，长度不超过15个字符'
 							}

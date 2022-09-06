@@ -77,7 +77,7 @@ export default function InstallTraefik(
 	const [vipNoAlive, setVIPNoAlive] = useState<boolean>(false);
 	const [skipPortConflict, setSkipPortConflict] = useState<boolean>(false);
 	const [startPort, setStartPort] = useState<number>();
-	const [ports, setPorts] = useState<number[]>();
+	const [ports, setPorts] = useState<string>();
 	useEffect(() => {
 		getNodePort({ clusterId }).then((res) => {
 			if (res.success) {
@@ -144,7 +144,7 @@ export default function InstallTraefik(
 				skipPortConflict: skipPortConflict
 			};
 			if (!skipPortConflict) {
-				if (ports && ports?.length > 0) {
+				if (ports && ports !== '[]') {
 					notification.error({
 						message: '错误',
 						description:
@@ -598,18 +598,16 @@ export default function InstallTraefik(
 								{form.getFieldValue('startPort')}-
 								{form.getFieldValue('startPort') + 99}
 							</div>
-							{ports?.length === 0 && (
-								<div>其中没有端口被占用！</div>
-							)}
-							{ports && !skipPortConflict && ports.length > 0 && (
+							{ports === '[]' && <div>其中没有端口被占用！</div>}
+							{ports && !skipPortConflict && ports !== '[]' && (
 								<div style={{ color: '#ff4d4f' }}>
-									其中{ports?.join(',')}
+									其中{ports}
 									端口号被占用，请重新输入
 								</div>
 							)}
-							{ports && skipPortConflict && ports.length > 0 && (
+							{ports && skipPortConflict && ports !== '[]' && (
 								<div style={{ color: '#ff4d4f' }}>
-									其中{ports?.join(',')}
+									其中{ports}
 									端口号被占用，已跳过冲突端口
 								</div>
 							)}

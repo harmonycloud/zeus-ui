@@ -120,7 +120,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				exposePort: Number(serviceIngress.serviceList?.[0].exposePort),
 				networkModel: serviceIngress.networkModel,
 				domain: serviceIngress.rules?.[0].domain,
-				path: serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path
+				path: serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path,
+				domainPath: `${serviceIngress.rules?.[0].domai}-${serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path}`
 			});
 		}
 		return () => {
@@ -745,6 +746,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								</div>
 							)}
 							{exposeType === 'TCP' &&
+								!autoConfig &&
 								ingressClassName?.type === 'traefik' && (
 									<Row>
 										<Col span={4}></Col>
