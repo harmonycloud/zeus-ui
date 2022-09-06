@@ -105,7 +105,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						name="protocol"
 						required
 						rules={[{ required: true, message: '请选择' }]}
-						style={{ width: '43%', marginRight: 8 }}
+						style={{ width: '23%', marginRight: 8 }}
 					>
 						<Select
 							placeholder="请选择镜像地址"
@@ -125,7 +125,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 						{...formItemLayout2}
 						required
 						name="hostAddress"
-						style={{ marginRight: 8 }}
+						style={{ marginRight: 8, width: '42%' }}
 						rules={[
 							{
 								required: true,
@@ -176,7 +176,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 							{ required: true, message: '请输入密码' },
 							{ max: 64, min: 8, message: '密码长度为8-64位' }
 						]}
-						style={{ width: '37%' }}
+						style={{ width: '38%' }}
 					>
 						<Input.Password placeholder="请输入密码" />
 					</FormItem>

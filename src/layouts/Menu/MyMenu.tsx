@@ -36,19 +36,9 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 	const history = useHistory();
 	const location = useLocation();
 	const { pathname } = location;
-	// const [items, setItems] = useState<MenuItem[]>([]);
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([
 		pathname.slice(1)
 	]);
-	// useEffect(() => {
-	// 	getMenus();
-	// }, [clusterId]);
-	// useEffect(() => {
-	// 	if (menu.flag) {
-	// 		getMenus();
-	// 		setMenuRefresh(false);
-	// 	}
-	// }, [menu]);
 	const mapLocationToActiveKey = (location: Location) => {
 		const pathArray = location.pathname.split('/');
 		if (!location || !location.pathname || location.pathname === '/') {
@@ -68,40 +58,8 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 			return [storage.getSession('menuPath')];
 		return [location.pathname.substring(1)];
 	};
-	// const getMenus = async () => {
-	// 	const res = await getMenu(
-	// 		clusterId !== ''
-	// 			? {
-	// 					clusterId: clusterId
-	// 			  }
-	// 			: {}
-	// 	);
-	// 	if (res.success) {
-	// 		const its = res.data.map((item: ResMenuItem) => {
-	// 			if (item.subMenu) {
-	// 				const childMenu = item.subMenu.map((item: ResMenuItem) =>
-	// 					getItem(item.aliasName, item.url)
-	// 				);
-	// 				return getItem(
-	// 					item.aliasName,
-	// 					item.url,
-	// 					<IconFont size={14} type={item.iconName} />,
-	// 					childMenu
-	// 				);
-	// 			} else {
-	// 				return getItem(
-	// 					item.aliasName,
-	// 					item.url,
-	// 					<IconFont size={14} type={item.iconName} />
-	// 				);
-	// 			}
-	// 		});
-
-	// 		setItems(its);
-	// 	}
-	// };
 	const onMenuItemClick = (info: MenuInfo) => {
-		if (info.key.includes('serviceList')) {
+		if (info.key.includes('serviceList/')) {
 			storage.setSession('menuPath', `${info.key}`);
 		}
 		history.push(`/${info.key}`);
