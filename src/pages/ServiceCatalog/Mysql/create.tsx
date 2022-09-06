@@ -67,7 +67,6 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
-import { log } from 'console';
 import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
@@ -664,7 +663,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
-			if (middlewareName) {
+			if (backupDetail) {
 				const result = {
 					clusterId: globalCluster.id,
 					namespace: namespace,
@@ -676,19 +675,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					backupName: backupDetail.backupName
 				};
 				applyBackup(result).then((res) => {
-					// if (res.success) {
-					// 	notification.success({
-					// 		message: '成功',
-					// 		description: '克隆成功'
-					// 	});
-					// } else {
-					// 	notification.error({
-					// 		message: '失败',
-					// 		description: res.errorMsg
-					// 	});
-					// }
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '克隆成功'
+						});
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
 				});
-				console.log(result);
 			}
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);
