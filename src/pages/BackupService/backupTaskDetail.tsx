@@ -51,7 +51,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		phrase: '',
 		sourceName: '',
 		position: '',
-		backupTime: '',
+		creationTime: '',
 		cron: '',
 		retentionTime: '',
 		dateUnit: '',
@@ -177,7 +177,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'backupTime',
+			dataIndex: 'creationTime',
 			label: '创建时间',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
@@ -261,7 +261,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		// 		phrase: backupDetail.phrase,
 		// 		sourceName: backupDetail?.sourceName,
 		// 		position: backupDetail.position,
-		// 		backupTime: backupDetail.backupTime,
+		// 		creationTime: backupDetail.creationTime,
 		// 		retentionTime: [
 		// 			backupDetail.retentionTime,
 		// 			backupDetail.dateUnit
@@ -429,7 +429,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 							phrase: res.data[0]?.phrase,
 							sourceName: res.data[0]?.sourceName,
 							position: res.data[0]?.position,
-							backupTime: res.data[0]?.backupTime,
+							creationTime: res.data[0]?.creationTime,
 							retentionTime: [
 								res.data[0]?.retentionTime,
 								res.data[0]?.dateUnit
@@ -589,10 +589,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 					<ProTable.Column title="备份记录" dataIndex="recordName" />
 					<ProTable.Column
 						title="备份时间"
-						dataIndex="backupTime"
+						dataIndex="creationTime"
 						sorter={(a: any, b: any) =>
-							moment(a.backupTime).unix() -
-							moment(b.backupTime).unix()
+							moment(a.creationTime).unix() -
+							moment(b.creationTime).unix()
 						}
 					/>
 					<ProTable.Column title="操作" render={actionRender} />

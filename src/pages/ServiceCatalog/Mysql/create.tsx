@@ -2163,9 +2163,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								<div>
 									可恢复的时间范围:{' '}
 									{backupDetail
-										? backupDetail?.startTime +
+										? (backupDetail?.startTime || '--') +
 										  '-' +
-										  backupDetail?.endTime
+										  (backupDetail?.endTime || '--')
 										: '--'}
 								</div>
 								<ul className="form-layout">

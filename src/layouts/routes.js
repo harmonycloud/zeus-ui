@@ -353,7 +353,7 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/serviceList/:name/:aliasName/:currentTab/backupTaskDetail/:middlewareName/:type/:chartVersion/:namespace/:backupName"
+					path="/serviceList/:name/:aliasName/:currentTab/backupTaskDetail/:middlewareName/:type/:chartVersion/:namespace/:clusterId/:backupName"
 					component={BackupTaskDetail}
 					exact
 				/>

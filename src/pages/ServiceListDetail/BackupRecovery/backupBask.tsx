@@ -235,7 +235,13 @@ export default function List(props: any): JSX.Element {
 					if (record.status === 'Deleted' || !record.status) return;
 					if (params.type) {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
+							`/serviceList/${params.name}/${params.aliasName}/${
+								params.currentTab
+							}/backupTaskDetail/${params.middlewareName}/${
+								params.type
+							}/${params.chartVersion}/${params.namespace}/${
+								clusterId ? clusterId : currentCluster?.id
+							}/${record.backupName}`
 						);
 					} else {
 						history.push(
