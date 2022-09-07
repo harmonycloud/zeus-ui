@@ -113,11 +113,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 
 	// RMQ配置
-	const [version, setVersion] = useState<string>('4.8');
+	const [version, setVersion] = useState<string>('4.8.0');
 	const versionList = [
 		{
-			label: '4.8',
-			value: '4.8'
+			label: '4.8.0',
+			value: '4.8.0'
 		}
 	];
 	const [mode, setMode] = useState<string>('2m-noslave');
