@@ -353,6 +353,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								>
 									<InputNumber
 										type="inline"
+										min={1}
 										addonAfter={
 											<Select
 												value={dataSelect}

@@ -253,6 +253,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 					>
 						<InputNumber
 							type="inline"
+							min={1}
 							addonAfter={
 								<Select
 									value={dateUnit}
