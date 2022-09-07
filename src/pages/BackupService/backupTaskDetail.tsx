@@ -298,9 +298,9 @@ function BackupTaskDetail(props: any): JSX.Element {
 	useEffect(() => {
 		const list = [...infoConfig];
 		if (params.type === 'mysql' || params.type === 'postgresql') {
+			!list.find((item) => item.dataIndex === 'pause') &&
+				list.splice(5, 0, increment);
 			if (basicData.pause === 'off') {
-				!list.find((item) => item.dataIndex === 'pause') &&
-					list.splice(5, 0, increment);
 				!list.find((item) => item.dataIndex === 'time') &&
 					list.splice(6, 0, time);
 				!list.find((item) => item.dataIndex === 'endTime') &&
@@ -423,8 +423,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		const sendData = {
 			keyword: backupDetail.taskName,
 			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params?.middlewareName || ''
+			namespace: params.namespace
 		};
 		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
@@ -456,8 +455,8 @@ function BackupTaskDetail(props: any): JSX.Element {
 							...data
 						});
 						storage.setLocal('backupDetail', {
-							...data,
-							...backupDetail
+							...backupDetail,
+							...data
 						});
 						setVisible(false);
 						setIncrVisible(false);
