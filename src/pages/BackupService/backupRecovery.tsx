@@ -5,13 +5,19 @@ import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { getBackups } from '@/services/backup';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
 import { getCanReleaseMiddleware } from '@/services/middleware';
+import moment from 'moment';
 import TableRadio from '@/components/TableRadio';
 import { Radio, notification, Button, Divider } from 'antd';
 import storage from '@/utils/storage';
 
 const columns = [
 	{ title: '备份记录', dataIndex: 'backupName' },
-	{ title: '备份时间', dataIndex: 'backupTime' }
+	{
+		title: '备份时间',
+		dataIndex: 'creationTime',
+		sorter: (a: any, b: any) =>
+			moment(a.creationTime).unix() - moment(b.creationTime).unix()
+	}
 ];
 
 function ProBackupBask(): JSX.Element {

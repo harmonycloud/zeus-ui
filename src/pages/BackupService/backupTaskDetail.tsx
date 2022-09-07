@@ -42,7 +42,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	} = props;
 	const history = useHistory();
 	const params: any = useParams();
-	const [data, setData] = useState();
+	const [data, setData] = useState<any>([]);
 	const [visible, setVisible] = useState<boolean>(false);
 	const [incrVisible, setIncrVisible] = useState<boolean>(false);
 	const [modalType, setModalType] = useState<string>('');
@@ -246,7 +246,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 
 	const endTime = {
 		dataIndex: 'endTime',
-		label: '最后一次备份时间',
+		label: '最近一次备份时间',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val || '--'}
@@ -382,6 +382,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
+					disabled={data?.length === 1}
 					onClick={() => {
 						Modal.confirm({
 							title: '操作确认',
