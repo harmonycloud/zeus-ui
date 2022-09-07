@@ -212,6 +212,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 								retentionTime: backupDetail.retentionTime[0],
 								dateUnit: backupDetail.dateUnit,
 								turnOff: true,
+								increment: true,
 								pause: 'on'
 							};
 							editBackupTasks(sendData).then((res) => {
@@ -230,7 +231,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		render: (val: string) => (
 			<div className="text-overflow-one">
 				{(val?.substring(0, val?.length - 1) || '') + '分/次'}
-				{backupDetail.pause === 'off' ? (
+				{basicData.pause === 'off' ? (
 					<EditOutlined
 						style={{ marginLeft: 8, color: '#226EE7' }}
 						onClick={() => {
@@ -297,16 +298,24 @@ function BackupTaskDetail(props: any): JSX.Element {
 	useEffect(() => {
 		const list = [...infoConfig];
 		if (params.type === 'mysql' || params.type === 'postgresql') {
-			!list.find((item) => item.dataIndex === 'pause') &&
-				list.splice(5, 0, increment);
-			!list.find((item) => item.dataIndex === 'time') &&
-				list.splice(6, 0, time);
-			!list.find((item) => item.dataIndex === 'endTime') &&
-				list.splice(7, 0, endTime);
+			if (basicData.pause === 'off') {
+				!list.find((item) => item.dataIndex === 'pause') &&
+					list.splice(5, 0, increment);
+				!list.find((item) => item.dataIndex === 'time') &&
+					list.splice(6, 0, time);
+				!list.find((item) => item.dataIndex === 'endTime') &&
+					list.splice(7, 0, endTime);
+			} else {
+				list.find((item) => item.dataIndex === 'time') &&
+					list.splice(6, 1);
+				list.find((item) => item.dataIndex === 'endTime') &&
+					list.splice(6, 1);
+			}
+			backupDetail.schedule && setInfoConfig(list);
 
-			basicData?.pause === 'off'
-				? setInfoConfig(list)
-				: setInfoConfig(infoConfig);
+			// basicData?.pause === 'off'
+			// 	? setInfoConfig(list)
+			// 	: setInfoConfig(infoConfig);
 		}
 	}, [basicData]);
 
