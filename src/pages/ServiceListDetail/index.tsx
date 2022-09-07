@@ -78,7 +78,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (JSON.stringify(globalVar.cluster) !== '{}') {
 			getData(globalVar.cluster.id, namespace);
 		}
-	}, [globalVar.cluster.id]);
+	}, [globalVar.cluster.id, middlewareName]);
 
 	useEffect(() => {
 		setActiveKey(currentTab);
@@ -86,7 +86,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
 			setOperateFlag(true);
 		}
-	}, []);
+	}, [middlewareName]);
 	useEffect(() => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
 		if (jsonRole.userRoleList.every((i: any) => i.roleId !== 1)) {
