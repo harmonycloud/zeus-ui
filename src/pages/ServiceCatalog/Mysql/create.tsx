@@ -2171,7 +2171,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									可恢复的时间范围:{' '}
 									{backupDetail
 										? (backupDetail?.startTime || '--') +
-										  '-' +
+										  ' —— ' +
 										  (backupDetail?.endTime || '--')
 										: '--'}
 								</div>

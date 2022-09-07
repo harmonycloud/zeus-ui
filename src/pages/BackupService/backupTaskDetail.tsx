@@ -382,7 +382,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={data?.length === 1}
+					disabled={index === 0}
 					onClick={() => {
 						Modal.confirm({
 							title: '操作确认',
@@ -393,8 +393,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 									namespace: params.clusterId,
 									type: record.sourceType,
 									backupId: record.backupId,
-									crName: record.crName,
-									addressName: record.addressName
+									backupName: record.backupName
 								};
 								deleteBackups(result).then((res) => {
 									if (res.success) {
@@ -414,6 +413,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 						});
 					}}
 				>
+					{console.log(index)}
 					删除
 				</LinkButton>
 			</Actions>
@@ -596,6 +596,20 @@ function BackupTaskDetail(props: any): JSX.Element {
 					rowKey="recordName"
 				>
 					<ProTable.Column title="备份记录" dataIndex="recordName" />
+					<ProTable.Column
+						title="状态"
+						dataIndex="phrase"
+						render={statusBackupRender}
+						filterMultiple={false}
+						filters={[
+							backupTaskStatus[0],
+							backupTaskStatus[1],
+							backupTaskStatus[2]
+						]}
+						onFilter={(value, record: any) =>
+							record.phrase === value
+						}
+					/>
 					<ProTable.Column
 						title="备份时间"
 						dataIndex="creationTime"

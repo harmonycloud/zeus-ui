@@ -136,14 +136,19 @@ function ProBackupBask(): JSX.Element {
 				onBack={() => history.goBack()}
 			/>
 			<ProContent>
-				<h2>恢复方式</h2>
-				<Radio.Group
-					onChange={(e) => setRecoveryType(e.target.value)}
-					value={recoveryType}
-				>
-					<Radio value="time">选择时间点恢复</Radio>
-					<Radio value="record">选择备份记录恢复</Radio>
-				</Radio.Group>
+				{type === 'mysql' || type === 'postgresql' ? (
+					<>
+						<h2>恢复方式</h2>
+						<Radio.Group
+							onChange={(e) => setRecoveryType(e.target.value)}
+							value={recoveryType}
+						>
+							<Radio value="time">选择时间点恢复</Radio>
+							<Radio value="record">选择备份记录恢复</Radio>
+						</Radio.Group>
+					</>
+				) : null}
+
 				{recoveryType === 'record' ? (
 					<TableRadio
 						dataSource={list}
