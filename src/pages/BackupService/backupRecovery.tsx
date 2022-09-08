@@ -146,10 +146,20 @@ function ProBackupBask(): JSX.Element {
 							<Radio value="time">选择时间点恢复</Radio>
 							<Radio value="record">选择备份记录恢复</Radio>
 						</Radio.Group>
+						{recoveryType === 'record' ? (
+							<TableRadio
+								dataSource={list}
+								columns={columns}
+								rowKey="backupName"
+								style={{ marginTop: 16 }}
+								selectedRow={selectedRow}
+								setSelectedRow={setSelectedRow}
+								selectedRowKeys={selectedRowKeys}
+								setSelectedRowKeys={setSelectedRowKeys}
+							/>
+						) : null}
 					</>
-				) : null}
-
-				{recoveryType === 'record' ? (
+				) : (
 					<TableRadio
 						dataSource={list}
 						columns={columns}
@@ -160,7 +170,7 @@ function ProBackupBask(): JSX.Element {
 						selectedRowKeys={selectedRowKeys}
 						setSelectedRowKeys={setSelectedRowKeys}
 					/>
-				) : null}
+				)}
 				<Divider />
 				<div>
 					<Button

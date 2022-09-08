@@ -22,4 +22,5 @@ export interface BackupRecordItem {
 	backupId: string;
 	addressName: string;
 	schedule: boolean;
+	creationTime: string;
 }

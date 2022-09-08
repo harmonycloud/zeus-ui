@@ -348,12 +348,12 @@ export default function List(props: any): JSX.Element {
 				/>
 				<ProTable.Column title="备份位置" dataIndex="position" />
 				<ProTable.Column
-					title="备份时间"
-					dataIndex="backupTime"
+					title="创建时间"
+					dataIndex="creationTime"
 					width={160}
 					sorter={(a: BackupRecordItem, b: BackupRecordItem) =>
-						moment(a.backupTime).unix() -
-						moment(b.backupTime).unix()
+						moment(a.creationTime).unix() -
+						moment(b.creationTime).unix()
 					}
 				/>
 				<ProTable.Column
