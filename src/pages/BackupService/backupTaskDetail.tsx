@@ -347,7 +347,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				break;
 			case 'postgresql':
 				history.push(
-					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -523,15 +523,20 @@ function BackupTaskDetail(props: any): JSX.Element {
 					<>
 						<Button
 							type="primary"
-							onClick={() =>
-								history.push(
-									`/backupService/backupRecovery/${
-										params.clusterId || cluster.id
-									}/${params.namespace}/${
-										backupDetail.backupName
-									}/${backupDetail.sourceType}`
-								)
-							}
+							onClick={() => {
+								console.log(backupDetail);
+								if (backupDetail.schedule) {
+									history.push(
+										`/backupService/backupRecovery/${
+											params.clusterId || cluster.id
+										}/${params.namespace}/${
+											backupDetail.backupName
+										}/${backupDetail.sourceType}`
+									);
+								} else {
+									releaseMiddleware();
+								}
+							}}
 						>
 							克隆服务
 						</Button>

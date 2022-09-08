@@ -190,9 +190,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const backupDetail = storage.getLocal('backupDetail');
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
+		console.log(current);
+		console.log(backupDetail);
 		return (
-			current < moment(new Date(backupDetail?.startTime)) ||
-			current > moment(new Date(backupDetail?.endTime))
+			current <= moment(new Date(backupDetail?.startTime)) ||
+			current >= moment(new Date(backupDetail?.endTime))
 		);
 	};
 	const range = (start: number, end: number) => {
@@ -691,9 +693,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			<ProHeader
 				title="发布PostgreSQL服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					history.goBack();
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				}}
 			/>
 			<ProContent>
@@ -1374,6 +1377,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											>
 												<DatePicker
 													showTime
+													showNow={false}
 													disabledDate={disabledDate}
 													disabledTime={
 														disabledDateTime
