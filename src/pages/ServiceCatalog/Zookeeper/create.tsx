@@ -482,9 +482,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 			<ProHeader
 				title="创建Zookeeper服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					window.history.back();
 				}}
 			/>
 			<ProContent>

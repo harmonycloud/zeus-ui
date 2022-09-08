@@ -491,9 +491,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			<ProHeader
 				title="创建Kafka服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					history.goBack();
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				}}
 			/>
 			<ProContent>

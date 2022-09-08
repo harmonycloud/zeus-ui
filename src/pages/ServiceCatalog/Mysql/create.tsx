@@ -1080,9 +1080,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			<ProHeader
 				title="发布MySQL服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					history.goBack();
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				}}
 			/>
 			<ProContent>
@@ -2195,6 +2196,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												name="restoreTime"
 											>
 												<DatePicker
+													showNow={false}
 													showTime
 													disabledDate={disabledDate}
 													disabledTime={
