@@ -192,7 +192,13 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		// Can not select days before today and today
 		return (
 			current < moment(new Date(backupDetail?.startTime)) ||
-			current > moment(new Date(backupDetail?.endTime))
+			current >
+				moment(
+					new Date(
+						new Date(backupDetail?.endTime).getTime() +
+							24 * 60 * 60 * 1000
+					)
+				)
 		);
 	};
 	const range = (start: number, end: number) => {

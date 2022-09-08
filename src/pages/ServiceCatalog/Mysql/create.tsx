@@ -212,12 +212,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
-			current <= moment(new Date(backupDetail?.startTime)) ||
-			current >=
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current >
 				moment(
-					backupDetail?.endTime
-						? new Date(backupDetail?.endTime)
-						: new Date()
+					new Date(
+						new Date(backupDetail?.endTime).getTime() +
+							24 * 60 * 60 * 1000
+					)
 				)
 		);
 	};
