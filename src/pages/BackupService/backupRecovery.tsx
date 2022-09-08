@@ -187,13 +187,20 @@ function ProBackupBask(): JSX.Element {
 									});
 								}
 							} else {
-								if (backupDetail.pause === 'off') {
-									releaseMiddleware();
+								if (
+									backupDetail.sourceType === 'mysql' ||
+									backupDetail.sourceType === 'postgresql'
+								) {
+									if (backupDetail.pause === 'off') {
+										releaseMiddleware();
+									} else {
+										notification.error({
+											message: '失败',
+											description: '增量备份未开启'
+										});
+									}
 								} else {
-									notification.error({
-										message: '失败',
-										description: '增量备份未开启'
-									});
+									releaseMiddleware();
 								}
 							}
 						}}

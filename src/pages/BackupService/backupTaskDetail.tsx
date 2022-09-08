@@ -390,7 +390,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 							onOk: () => {
 								const result = {
 									clusterId: params.clusterId,
-									namespace: params.clusterId,
+									namespace: params.namespace,
 									type: record.sourceType,
 									backupId: record.backupId,
 									backupName: record.backupName
