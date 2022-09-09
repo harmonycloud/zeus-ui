@@ -215,10 +215,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			current < moment(new Date(backupDetail?.startTime)) ||
 			current >
 				moment(
-					new Date(
-						new Date(backupDetail?.endTime).getTime() +
-							24 * 60 * 60 * 1000
-					)
+					new Date(new Date(backupDetail?.endTime).getTime() + 1000)
 				)
 		);
 	};
@@ -237,9 +234,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		)
 			return {
 				disabledHours: () =>
-					range(0, moment(backupDetail?.startTime).hour()),
+					range(0, moment(backupDetail?.startTime).hour() + 1),
 				disabledMinutes: () =>
-					range(0, moment(backupDetail?.startTime).minute()),
+					range(0, moment(backupDetail?.startTime).minute() + 1),
 				disabledSeconds: () =>
 					range(0, moment(backupDetail?.startTime).second())
 			};
@@ -2199,9 +2196,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													showNow={false}
 													showTime
 													disabledDate={disabledDate}
-													disabledTime={
-														disabledDateTime
-													}
+													// disabledTime={
+													// 	disabledDateTime
+													// }
 												/>
 											</FormItem>
 										</div>
