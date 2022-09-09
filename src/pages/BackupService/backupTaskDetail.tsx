@@ -61,6 +61,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const backupDetail = storage.getLocal('backupDetail');
+	console.log(backupDetail);
 	const [infoConfig, setInfoConfig] = useState<any>([
 		{
 			dataIndex: 'title',
@@ -255,24 +256,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 
 	useEffect(() => {
-		// backupDetail &&
-		// 	setBasicData({
-		// 		title: '基础信息',
-		// 		cron: backupDetail.cron,
-		// 		phrase: backupDetail.phrase,
-		// 		sourceName: backupDetail?.sourceName,
-		// 		position: backupDetail.position,
-		// 		creationTime: backupDetail.creationTime,
-		// 		retentionTime: [
-		// 			backupDetail.retentionTime,
-		// 			backupDetail.dateUnit
-		// 		],
-		// 		limitRecord: backupDetail.limitRecord,
-		// 		increment: backupDetail.increment,
-		// 		dateUnit: backupDetail.dateUnit,
-		// 		time: backupDetail.time,
-		// 		y: '2022-08-15 00:00:00'
-		// 	});
 		getBasicInfo();
 	}, []);
 
@@ -420,6 +403,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		);
 	};
 	const getBasicInfo = () => {
+		console.log(backupDetail);
 		const sendData = {
 			keyword: backupDetail.taskName,
 			clusterId: params.clusterId,
@@ -430,7 +414,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				getIncBackup({
 					clusterId: params.clusterId,
 					namespace: params.namespace,
-					backupName: backupDetail.backupName
+					backupName: params.backupName
 				}).then((result) => {
 					if (result.success) {
 						const data = {
