@@ -293,9 +293,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			]);
 			setMode('1m-1s');
 		}
-		return () => {
-			storage.removeLocal('backupDetail');
-		};
 	}, []);
 
 	useEffect(() => {
@@ -1840,13 +1837,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<Select.Option key="true">
 												读写分离模式
 											</Select.Option>
-											{console.log(
-												namespaceList.find(
-													(item) =>
-														item.name ===
-														selectNamespace
-												)?.availableDomain
-											)}
 											{globalNamespace.availableDomain ||
 											namespaceList.find(
 												(item) =>
