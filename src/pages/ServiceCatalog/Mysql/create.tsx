@@ -212,12 +212,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
-			current <= moment(new Date(backupDetail?.startTime)) ||
-			current >=
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current >
 				moment(
-					backupDetail?.endTime
-						? new Date(backupDetail?.endTime)
-						: new Date()
+					new Date(new Date(backupDetail?.endTime).getTime() + 1000)
 				)
 		);
 	};
@@ -236,9 +234,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		)
 			return {
 				disabledHours: () =>
-					range(0, moment(backupDetail?.startTime).hour()),
+					range(0, moment(backupDetail?.startTime).hour() + 1),
 				disabledMinutes: () =>
-					range(0, moment(backupDetail?.startTime).minute()),
+					range(0, moment(backupDetail?.startTime).minute() + 1),
 				disabledSeconds: () =>
 					range(0, moment(backupDetail?.startTime).second())
 			};
@@ -2188,9 +2186,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													showNow={false}
 													showTime
 													disabledDate={disabledDate}
-													disabledTime={
-														disabledDateTime
-													}
+													// disabledTime={
+													// 	disabledDateTime
+													// }
 												/>
 											</FormItem>
 										</div>

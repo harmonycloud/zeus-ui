@@ -190,11 +190,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const backupDetail = storage.getLocal('backupDetail');
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
-		console.log(current);
-		console.log(backupDetail);
 		return (
-			current <= moment(new Date(backupDetail?.startTime)) ||
-			current >= moment(new Date(backupDetail?.endTime))
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current >
+				moment(
+					new Date(new Date(backupDetail?.endTime).getTime() + 1000)
+				)
 		);
 	};
 	const range = (start: number, end: number) => {
@@ -212,11 +213,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		)
 			return {
 				disabledHours: () =>
-					range(0, moment(backupDetail?.startTime).hour()),
+					range(0, moment(backupDetail?.startTime).hour() + 1),
 				disabledMinutes: () =>
-					range(0, moment(backupDetail?.startTime).minute()),
+					range(0, moment(backupDetail?.startTime).minute() + 1),
 				disabledSeconds: () =>
-					range(0, moment(backupDetail?.startTime).second())
+					range(0, moment(backupDetail?.startTime).second() + 1)
 			};
 		else if (
 			moment(date).format('YYYY-MM-DD') ===
@@ -224,11 +225,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		) {
 			return {
 				disabledHours: () =>
-					range(moment(backupDetail?.endTime).hour(), 60),
+					range(moment(backupDetail?.endTime).hour() - 1, 60),
 				disabledMinutes: () =>
-					range(moment(backupDetail?.endTime).minute(), 60),
+					range(moment(backupDetail?.endTime).minute() - 1, 60),
 				disabledSeconds: () =>
-					range(moment(backupDetail?.endTime).second(), 60)
+					range(moment(backupDetail?.endTime).second() - 1, 60)
 			};
 		} else {
 			return {
@@ -1379,9 +1380,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													showTime
 													showNow={false}
 													disabledDate={disabledDate}
-													disabledTime={
-														disabledDateTime
-													}
+													// disabledTime={
+													// 	disabledDateTime
+													// }
 												/>
 											</FormItem>
 										</div>
