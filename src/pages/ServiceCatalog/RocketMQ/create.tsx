@@ -1187,8 +1187,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												onChange={(value) =>
 													setGroupCount(value)
 												}
-												min={2}
-												max={10}
+												// min={2}
+												// max={10}
 												disabled={!!middlewareName}
 											/>
 										</div>
@@ -1206,8 +1206,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												onChange={(value) =>
 													setReplicaCount(value)
 												}
-												min={3}
-												max={10}
+												// min={3}
+												// max={10}
 												disabled={!!middlewareName}
 											/>
 										</div>
