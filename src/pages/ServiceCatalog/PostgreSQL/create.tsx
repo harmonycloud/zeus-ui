@@ -421,7 +421,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: backupDetail.sourceType,
-					backupName: backupDetail.backupName
+					backupName: backupDetail.backupName,
+					restoreTime: moment(values.restoreTime).format(
+						'YYYY-MM-DD HH:mm:ss'
+					)
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -1347,7 +1350,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					{backupDetail.recoveryType === 'time' ? (
+					{middlewareName && backupDetail.recoveryType === 'time' ? (
 						<FormBlock title="恢复配置">
 							<div className={styles['basic-info']}>
 								<div>
