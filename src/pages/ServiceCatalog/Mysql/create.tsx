@@ -2153,7 +2153,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 						</FormBlock>
 					) : null}
-					{backupDetail.recoveryType === 'time' ? (
+					{backup && backupDetail.recoveryType === 'time' ? (
 						<FormBlock title="恢复配置">
 							<div className={styles['basic-info']}>
 								<div>

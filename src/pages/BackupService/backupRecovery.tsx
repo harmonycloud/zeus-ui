@@ -11,7 +11,7 @@ import { Radio, notification, Button, Divider } from 'antd';
 import storage from '@/utils/storage';
 
 const columns = [
-	{ title: '备份记录', dataIndex: 'backupName' },
+	{ title: '备份记录', dataIndex: 'recordName' },
 	{
 		title: '备份时间',
 		dataIndex: 'creationTime',
@@ -108,6 +108,11 @@ function ProBackupBask(): JSX.Element {
 				storage.setSession('menuPath', 'serviceList/rocketmq/rocketMQ');
 				break;
 		}
+		selectedRow &&
+			storage.setLocal('backupDetail', {
+				...backupDetail,
+				backupName: selectedRow.backupName
+			});
 	};
 
 	useEffect(() => {
