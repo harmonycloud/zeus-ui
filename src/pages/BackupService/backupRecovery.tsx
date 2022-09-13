@@ -200,7 +200,14 @@ function ProBackupBask(): JSX.Element {
 										});
 									}
 								} else {
-									releaseMiddleware();
+									if (selectedRow) {
+										releaseMiddleware();
+									} else {
+										notification.error({
+											message: '失败',
+											description: '请选择备份源'
+										});
+									}
 								}
 							}
 						}}
