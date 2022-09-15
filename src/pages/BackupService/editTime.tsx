@@ -32,9 +32,9 @@ function EditTime(props: editTimeProps): JSX.Element {
 	useEffect(() => {
 		if (data.cron) {
 			const cron =
-				data.cron.indexOf('? ?') !== -1
-					? data.cron.split(' ? ? ')
-					: data.cron.split(' * * ');
+				data?.cron.indexOf('? ?') !== -1
+					? data?.cron.split(' ? ? ')
+					: data?.cron.split(' * * ');
 			data &&
 				setChecks(
 					cron[1].split(',').map((item: string) => Number(item))
@@ -60,8 +60,10 @@ function EditTime(props: editTimeProps): JSX.Element {
 							.join(':'),
 						'HH:mm'
 					),
-					limitRecord: data.limitRecord,
-					retentionTime: data.retentionTime[0] || data.retentionTime
+					limitRecord: data?.limitRecord,
+					retentionTime:
+						data?.retentionTime &&
+						(data?.retentionTime[0] || data?.retentionTime)
 				});
 			data && setDateUnit(data.dateUnit);
 		}
@@ -96,36 +98,56 @@ function EditTime(props: editTimeProps): JSX.Element {
 						// 				: data.retentionTime
 						// 	});
 						// }
-						const sendData: any = {
-							cron,
-							dateUnit: data.dateUnit,
-							increment: data.increment,
-							retentionTime: data.retentionTime[0]
-						};
-						if (data.increment) {
+						let sendData: any;
+						if (data.sourceType === 'mysql' && data.mysqlBackup) {
+							sendData = {
+								cron: data.cron,
+								// increment: data.increment,
+								mysqlBackup: true,
+								keepAlive: data.limitRecord
+							};
+						} else {
+							sendData = {
+								cron: cron,
+								dateUnit: dateUnit,
+								increment: data.increment,
+								retentionTime: data.retentionTime[0]
+							};
+						}
+						// const sendData: any = {
+						// 	cron,
+						// 	dateUnit: data.dateUnit,
+						// 	increment: data.increment,
+						// 	retentionTime: data.retentionTime[0]
+						// };
+						if (data.pause === 'off') {
 							sendData.time = data.time;
 						}
 						onCreate(sendData);
 					} else {
-						// if (data.sourceType === 'mysql') {
-						// 	onCreate({
-						// 		cron: data.cron,
-						// 		keepAlive: values.limitRecord
-						// 	});
-						// } else {
-						// 	onCreate({
-						// 		cron: data.cron,
-						// 		keepAlive: values.retentionTime,
-						// 		dateUnit
-						// 	});
-						// }
-						const sendData: any = {
-							cron: data.cron,
-							dateUnit: dateUnit,
-							increment: data.increment,
-							retentionTime: values.retentionTime
-						};
-						if (data.increment) {
+						let sendData: any;
+						if (data.sourceType === 'mysql' && data.mysqlBackup) {
+							sendData = {
+								cron: data.cron,
+								// increment: data.increment,
+								mysqlBackup: true,
+								keepAlive: values.limitRecord
+							};
+						} else {
+							sendData = {
+								cron: data.cron,
+								dateUnit: dateUnit,
+								increment: data.increment,
+								retentionTime: values.retentionTime
+							};
+						}
+						// const sendData: any = {
+						// 	cron: data.cron,
+						// 	dateUnit: dateUnit,
+						// 	increment: data.increment,
+						// 	retentionTime: values.retentionTime
+						// };
+						if (data.pause === 'off') {
 							sendData.time = data.time;
 						}
 						onCreate(sendData);
@@ -209,7 +231,9 @@ function EditTime(props: editTimeProps): JSX.Element {
 						</Form.Item>
 					</>
 				) : null}
-				{/* {type !== 'way' && data.sourceType === 'mysql' ? (
+				{type !== 'way' &&
+				data.sourceType === 'mysql' &&
+				data.mysqlBackup ? (
 					<Form.Item
 						label="备份保留个数"
 						name="limitRecord"
@@ -227,8 +251,8 @@ function EditTime(props: editTimeProps): JSX.Element {
 					>
 						<InputNumber style={{ width: 160 }} />
 					</Form.Item>
-				) : null} */}
-				{type !== 'way' ? (
+				) : null}
+				{type !== 'way' && !data.mysqlBackup ? (
 					<Form.Item
 						label="备份保留时间"
 						name="retentionTime"

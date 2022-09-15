@@ -61,7 +61,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const backupDetail = storage.getLocal('backupDetail');
-	console.log(backupDetail);
 	const [infoConfig, setInfoConfig] = useState<any>([
 		{
 			dataIndex: 'title',
@@ -139,19 +138,22 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			// dataIndex:
-			// 	backupDetail.sourceType === 'mysql'
-			// 		? 'limitRecord'
-			// 		: 'retentionTime',
-			// label:
-			// 	backupDetail.sourceType === 'mysql'
-			// 		? '备份保留个数'
-			// 		: '备份保留时间',
-			dataIndex: 'retentionTime',
-			label: '备份保留时间',
+			dataIndex:
+				backupDetail.sourceType === 'mysql' && backupDetail.mysqlBackup
+					? 'limitRecord'
+					: 'retentionTime',
+			label:
+				backupDetail.sourceType === 'mysql' && backupDetail.mysqlBackup
+					? '备份保留个数'
+					: '备份保留时间',
+			// dataIndex: 'retentionTime',
+			// label: '备份保留时间',
 			render: (val: any) => (
-				<div className="text-overflow-one" title={val && val[0]}>
-					{val && val[0]}
+				<div
+					className="text-overflow-one"
+					title={!val || typeof val === 'number' ? val : val[0]}
+				>
+					{!val || typeof val === 'number' ? val : val[0]}
 					{backupDetail.dateUnit && val
 						? dataType.find((item) => item.value === val[1])?.label
 						: ''}
@@ -281,8 +283,15 @@ function BackupTaskDetail(props: any): JSX.Element {
 	useEffect(() => {
 		const list = [...infoConfig];
 		if (params.type === 'mysql' || params.type === 'postgresql') {
-			!list.find((item) => item.dataIndex === 'pause') &&
-				list.splice(5, 0, increment);
+			console.log(basicData.mysqlBackup);
+
+			if (basicData.mysqlBackup) {
+				list.find((item) => item.dataIndex === 'pause') &&
+					list.splice(5, 1);
+			} else {
+				!list.find((item) => item.dataIndex === 'pause') &&
+					list.splice(5, 0, increment);
+			}
 			if (basicData.pause === 'off') {
 				!list.find((item) => item.dataIndex === 'time') &&
 					list.splice(6, 0, time);
@@ -396,14 +405,12 @@ function BackupTaskDetail(props: any): JSX.Element {
 						});
 					}}
 				>
-					{console.log(index)}
 					删除
 				</LinkButton>
 			</Actions>
 		);
 	};
 	const getBasicInfo = () => {
-		console.log(backupDetail);
 		const sendData = {
 			keyword: backupDetail.taskName,
 			clusterId: params.clusterId,
@@ -427,6 +434,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 								res.data[0]?.retentionTime,
 								res.data[0]?.dateUnit
 							],
+							mysqlBackup: res.data[0]?.mysqlBackup,
 							dateUnit: res.data[0]?.dateUnit,
 							limitRecord: res.data[0]?.limitRecord,
 							endTime: result.data?.endTime,
@@ -444,6 +452,11 @@ function BackupTaskDetail(props: any): JSX.Element {
 						});
 						setVisible(false);
 						setIncrVisible(false);
+					} else {
+						notification.error({
+							message: '失败',
+							description: result.errorMsg
+						});
 					}
 				});
 			} else {
@@ -464,6 +477,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 			time: backupDetail.time,
 			...data
 		};
+		if (backupDetail.mysqlBackup) {
+			delete sendData.increment;
+			delete sendData.time;
+		}
 		editBackupTasks(sendData).then((res) => {
 			getBasicInfo();
 		});
@@ -508,7 +525,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 						<Button
 							type="primary"
 							onClick={() => {
-								console.log(backupDetail);
 								if (backupDetail.schedule) {
 									history.push(
 										`/backupService/backupRecovery/${
