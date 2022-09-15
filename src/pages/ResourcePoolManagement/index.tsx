@@ -56,7 +56,9 @@ function ResourcePoolManagement(
 							);
 							return item;
 						});
-						setClusterList(list);
+						setTimeout(() => {
+							setClusterList(list);
+						}, 500);
 					}
 				} else {
 					notification.error({
