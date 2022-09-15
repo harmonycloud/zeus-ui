@@ -101,14 +101,14 @@ function EditTime(props: editTimeProps): JSX.Element {
 						let sendData: any;
 						if (data.sourceType === 'mysql' && data.mysqlBackup) {
 							sendData = {
-								cron: data.cron,
+								cron,
 								// increment: data.increment,
 								mysqlBackup: true,
 								limitRecord: data.limitRecord
 							};
 						} else {
 							sendData = {
-								cron: cron,
+								cron,
 								dateUnit: dateUnit,
 								increment: data.increment,
 								retentionTime: data.retentionTime[0]
