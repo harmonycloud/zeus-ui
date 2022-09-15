@@ -104,7 +104,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 								cron: data.cron,
 								// increment: data.increment,
 								mysqlBackup: true,
-								keepAlive: data.limitRecord
+								limitRecord: data.limitRecord
 							};
 						} else {
 							sendData = {
@@ -131,7 +131,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 								cron: data.cron,
 								// increment: data.increment,
 								mysqlBackup: true,
-								keepAlive: values.limitRecord
+								limitRecord: values.limitRecord
 							};
 						} else {
 							sendData = {
