@@ -58,9 +58,10 @@ export default function EditProjectForm(
 			}
 		});
 		getUserList({ keyword: '' }).then((res) => {
+			console.log(res);
 			if (res.success) {
 				const list = res.data
-					.filter((item) => {
+					.filter((item: any) => {
 						if (!item.userRoleList) return item;
 						if (
 							item.userRoleList?.every((i: any) => i.roleId !== 1)
@@ -68,7 +69,7 @@ export default function EditProjectForm(
 							return item;
 						}
 					})
-					.map((item) => {
+					.map((item: any) => {
 						return {
 							label: item.aliasName || item.userName,
 							value: item.userName
@@ -275,7 +276,11 @@ export default function EditProjectForm(
 					<Input />
 				</FormItem>
 				<FormItem label="绑定项目管理员" name="user">
-					<Select allowClear={true} style={{ width: '100%' }}>
+					<Select
+						dropdownMatchSelectWidth={false}
+						allowClear={true}
+						style={{ width: '100%' }}
+					>
 						{users.map((item: filtersProps) => {
 							return (
 								<Option value={item.value} key={item.value}>

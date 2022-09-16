@@ -8,7 +8,8 @@ import {
 	Input,
 	Checkbox,
 	Popover,
-	notification
+	notification,
+	InputNumber
 } from 'antd';
 import {
 	DeleteOutlined,
@@ -688,6 +689,7 @@ function CreateAlarm(): JSX.Element {
 							value={systemId}
 							onChange={(value) => setSystemId(value)}
 							disabled={ruleId as unknown as boolean}
+							dropdownMatchSelectWidth={false}
 						>
 							{poolList.length &&
 								poolList.map((item: any) => {
@@ -711,7 +713,7 @@ function CreateAlarm(): JSX.Element {
 					<Col span={4}>
 						<span>告警阈值</span>
 					</Col>
-					<Col span={5}>
+					<Col span={6}>
 						<span>触发规则</span>
 						<Popover
 							content={'特定时间≥设定的触发次数，则预警一次'}
@@ -728,7 +730,7 @@ function CreateAlarm(): JSX.Element {
 					<Col span={3}>
 						<span>告警等级</span>
 					</Col>
-					<Col span={3}>
+					<Col span={2}>
 						<span>告警间隔</span>
 						<Popover
 							content={
@@ -827,6 +829,7 @@ function CreateAlarm(): JSX.Element {
 													minWidth: 'auto'
 												}}
 												// autoWidth={true}
+												dropdownMatchSelectWidth={false}
 												value={item.symbol}
 											>
 												{symbols.map((i) => {
@@ -840,16 +843,16 @@ function CreateAlarm(): JSX.Element {
 													);
 												})}
 											</Select>
-											<Input
+											<InputNumber
 												style={{
-													width: '30%',
+													width: '80px',
 													borderLeft: 0
 												}}
+												min="0"
 												value={item.threshold}
-												type="number"
-												onChange={(e) => {
+												onChange={(value) => {
 													onChange(
-														e.target.value,
+														value,
 														item,
 														'threshold'
 													);
@@ -859,14 +862,16 @@ function CreateAlarm(): JSX.Element {
 												<span className="info">%</span>
 											) : null}
 										</Col>
-										<Col span={5}>
-											<Input
-												style={{ width: '25%' }}
+										<Col span={6}>
+											<InputNumber
+												style={{ width: '80px' }}
 												value={item.alertTime}
-												type="number"
-												onChange={(e) => {
+												placeholder="1-1140"
+												min="1"
+												max="1140"
+												onChange={(value) => {
 													onChange(
-														e.target.value,
+														value,
 														item,
 														'alertTime'
 													);
@@ -875,18 +880,20 @@ function CreateAlarm(): JSX.Element {
 											<span className="info">
 												分钟内触发
 											</span>
-											<Input
-												style={{ width: '25%' }}
+											<InputNumber
+												style={{ width: '80px' }}
 												value={item.alertTimes}
-												type="number"
-												onChange={(e) => {
+												placeholder="1-1000"
+												min="1"
+												max="1000"
+												onChange={(value) => {
 													onChange(
-														e.target.value,
+														value,
 														item,
 														'alertTimes'
 													);
 												}}
-											></Input>
+											></InputNumber>
 											<span className="info">次</span>
 										</Col>
 										<Col span={3}>
@@ -901,6 +908,7 @@ function CreateAlarm(): JSX.Element {
 												}
 												style={{ width: '100%' }}
 												value={item.severity}
+												dropdownMatchSelectWidth={false}
 											>
 												{alarmWarn.map((i) => {
 													return (
@@ -914,7 +922,7 @@ function CreateAlarm(): JSX.Element {
 												})}
 											</Select>
 										</Col>
-										<Col span={3}>
+										<Col span={2}>
 											<Select
 												placeholder="请选择"
 												onChange={(value) =>
@@ -924,6 +932,7 @@ function CreateAlarm(): JSX.Element {
 														'silence'
 													)
 												}
+												dropdownMatchSelectWidth={false}
 												style={{ width: '100%' }}
 												value={item.silence}
 											>
@@ -1002,7 +1011,7 @@ function CreateAlarm(): JSX.Element {
 											)}
 										</Col>
 									</Row>
-									{(Number(item.alertTime) > 1440 ||
+									{/* {(Number(item.alertTime) > 1440 ||
 										Number(item.alertTime) < 1 ||
 										Number(item.alertTimes) > 1000 ||
 										Number(item.alertTimes) < 1) && (
@@ -1030,7 +1039,7 @@ function CreateAlarm(): JSX.Element {
 												)}
 											</Col>
 										</Row>
-									)}
+									)} */}
 								</div>
 							);
 						})}

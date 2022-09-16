@@ -280,7 +280,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 							</Select>
 							<span style={{ marginLeft: 24 }}>命名空间</span>
 							<Select
-								style={{ marginLeft: 8 }}
+								style={{ marginLeft: 8, maxWidth: '300px' }}
 								className="no-shadow"
 								value={
 									currentNamespace
@@ -298,7 +298,29 @@ function Navbar(props: NavbarProps): JSX.Element {
 											key={index}
 											value={namespace.name}
 										>
-											{namespace.aliasName}
+											{namespace.availableDomain ? (
+												<p className="display-flex flex-align">
+													<span
+														className="text-overflow-one"
+														style={{
+															display:
+																'inline-block',
+															maxWidth: '210px',
+															maxHeight: '30px'
+														}}
+														title={
+															namespace.aliasName
+														}
+													>
+														{namespace.aliasName}
+													</span>
+													<span className="available-domain">
+														可用区
+													</span>
+												</p>
+											) : (
+												namespace.aliasName
+											)}
 										</Select.Option>
 									);
 								})}

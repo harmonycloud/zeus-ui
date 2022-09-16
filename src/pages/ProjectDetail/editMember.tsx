@@ -77,7 +77,10 @@ export default function EditMember(props: EditMemberProps): JSX.Element {
 					<Input disabled />
 				</FormItem>
 				<FormItem name="roleId" label="选择角色" required>
-					<Select style={{ width: '100%' }}>
+					<Select
+						style={{ width: '100%' }}
+						dropdownMatchSelectWidth={false}
+					>
 						{roles.map((item: roleProps) => {
 							if (item.id !== 1) {
 								if (item.id === 2) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
 	CheckCircleFilled,
 	CloseCircleFilled,
+	ExclamationCircleFilled,
 	PlusOutlined
 } from '@ant-design/icons';
 import { IconFont } from '../IconFont';
@@ -29,6 +30,7 @@ interface MidCardProps {
 	createTime: string | null;
 	onRefresh?: () => void;
 	seconds: number;
+	onClick?: () => void;
 }
 export const iconRender = (status: number | undefined) => {
 	switch (status) {
@@ -56,6 +58,13 @@ export const iconRender = (status: number | undefined) => {
 					<CloseCircleFilled style={{ color: '#C80000' }} /> 安装异常
 				</>
 			);
+		case 7:
+			return (
+				<>
+					<ExclamationCircleFilled style={{ color: '#faad14' }} />{' '}
+					未配置
+				</>
+			);
 		default:
 			return null;
 	}
@@ -81,7 +90,8 @@ const MidCard = (props: MidCardProps) => {
 		titleStyle,
 		onRefresh,
 		createTime,
-		seconds
+		seconds,
+		onClick
 	} = props;
 	const [borderColor, setBorderColor] = useState<string>('#E9E9E9');
 	const [titleColor, setTitleColor] = useState<string>('#333333');
@@ -140,7 +150,7 @@ const MidCard = (props: MidCardProps) => {
 				}
 			}}
 		>
-			<div className="mid-card-display">
+			<div className="mid-card-display" onClick={onClick}>
 				{status === -1 && (
 					<div className="mid-card-add" style={{ color: titleColor }}>
 						<PlusOutlined style={{ marginRight: 4 }} />

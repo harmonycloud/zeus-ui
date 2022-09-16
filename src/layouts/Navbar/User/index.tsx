@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Popover } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { IconFont } from '@/components/IconFont';
 import { notification } from 'antd';
+import { connect } from 'react-redux';
 
 import { postLogout } from '@/services/user';
 import EditPasswordForm from './EditPasswordForm';
@@ -10,6 +12,7 @@ import { userProps } from './user';
 import { getLDAP } from '@/services/user';
 
 import Storage from '@/utils/storage';
+import { StoreState } from '@/types';
 import logoutSvg from '@/assets/images/navbar/logout.svg';
 
 import styles from './user.module.scss';
@@ -18,6 +21,8 @@ function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
+
+	// const [checked, setChecked] = useState<boolean>(false);
 	const history = useHistory();
 
 	const logout = () => {
@@ -45,23 +50,15 @@ function User(props: userProps): JSX.Element {
 			res.success && setIsLDAP(res.data.isOn);
 		});
 	}, []);
-
-	return (
-		<div className={`${styles['nav-user-container']} ${className}`}>
-			<IconFont
-				type="icon-user-circle"
-				style={{
-					fontSize: '20px',
-					verticalAlign: 'middle'
-				}}
-			/>
-			<ul className={styles['nav-user-operator']}>
-				<li className={styles['nav-user-container-item']}>
-					<p>{nickName}</p>
-					<span className={styles['nav-user-role-p']}>
-						{role?.userName}
-					</span>
-				</li>
+	const title = (
+		<div className={styles['nav-user-icon-box']}>
+			<div>{nickName}</div>
+			<span className={styles['nav-user-role-p']}>{role?.userName}</span>
+		</div>
+	);
+	const content = () => {
+		return (
+			<ul>
 				{Storage.getLocal('userName') === 'admin' && (
 					<li
 						className={styles['nav-user-container-item']}
@@ -98,6 +95,25 @@ function User(props: userProps): JSX.Element {
 					退出登录
 				</li>
 			</ul>
+		);
+	};
+	return (
+		<>
+			<Popover
+				overlayClassName="zeus-nav"
+				placement="bottomRight"
+				title={title}
+				content={content}
+			>
+				<div className={styles['nav-icon-font']}>
+					<IconFont
+						type="icon-user-circle"
+						style={{
+							fontSize: '20px'
+						}}
+					/>
+				</div>
+			</Popover>
 			{visible && (
 				<EditPasswordForm
 					visible={visible}
@@ -105,8 +121,22 @@ function User(props: userProps): JSX.Element {
 					userName={role.userName}
 				/>
 			)}
-		</div>
+		</>
+		// <div className={`${styles['nav-user-container']} ${className}`}>
+		// 	<IconFont
+		// 		type="icon-user-circle"
+		// 		style={{
+		// 			fontSize: '20px',
+		// 			verticalAlign: 'middle'
+		// 		}}
+		// 	/>
+		// 	<ul className={styles['nav-user-operator']}>
+		// 	</ul>
+		// </div>
 	);
 }
 
-export default User;
+const mapStateToProps = (state: StoreState) => ({
+	globalVar: state.globalVar
+});
+export default connect(mapStateToProps)(User);

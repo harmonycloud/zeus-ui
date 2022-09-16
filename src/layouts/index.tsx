@@ -291,21 +291,39 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				);
 				const itemsT = items.map((item: any) => {
 					if (item?.key === 'serviceList') {
-						item.children = child;
+						item.children = child.length > 0 ? child : null;
 					}
 					return item;
 				});
 				setItems(itemsT);
-				if (window.location.hash === '#/serviceList') {
-					window.location.href =
-						window.location.origin + '/#/' + res.data[0].url;
-					storage.setSession('menuPath', res.data[0].url);
+				console.log(window.location);
+				console.log(child);
+				if (child.length > 0) {
+					if (window.location.hash === '#/serviceList') {
+						window.location.href =
+							window.location.origin + '/#/' + res.data[0].url;
+						storage.setSession('menuPath', res.data[0].url);
+					} else {
+						if (
+							storage.getSession('menuPath') &&
+							child.every(
+								(item: any) =>
+									item.key !== storage.getSession('menuPath')
+							)
+						) {
+							window.location.href =
+								window.location.origin +
+								'/#/' +
+								res.data[0].url;
+							storage.setSession('menuPath', res.data[0].url);
+						}
+					}
 				}
 			}
 		} else {
 			const itemT = items.map((item: any) => {
 				if (item.key === 'serviceList') {
-					item.children = undefined;
+					item.children = null;
 				}
 				return item;
 			});

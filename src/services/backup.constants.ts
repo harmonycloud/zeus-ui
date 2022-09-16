@@ -15,3 +15,4 @@ export const backupAddressCheck = `${api}/backup/address/check`;
 export const middlewares = `${api}/middlewares/info/middleware`;
 export const serviceList = `${api}/middlewares/info/list`;
 export const backupTask = `${api}/clusters/{clusterId}/namespaces/{namespace}/backup`;
+export const incBackup = `${api}/clusters/{clusterId}/namespaces/{namespace}/backup/{backupName}/inc`;

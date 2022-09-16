@@ -113,11 +113,11 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 
 	// RMQ配置
-	const [version, setVersion] = useState<string>('4.8');
+	const [version, setVersion] = useState<string>('4.8.0');
 	const versionList = [
 		{
-			label: '4.8',
-			value: '4.8'
+			label: '4.8.0',
+			value: '4.8.0'
 		}
 	];
 	const [mode, setMode] = useState<string>('2m-noslave');
@@ -161,7 +161,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	// * 创建失败返回的失败信息
 	const [errorData, setErrorData] = useState<string>('');
 	// * DLedger模式节点数量
-	const [replicaCount, setReplicaCount] = useState(1);
+	const [replicaCount, setReplicaCount] = useState(3);
+	// * DLedger模式组数
+	const [groupCount, setGroupCount] = useState(2);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -181,22 +183,22 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	}, [props]);
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) => item.availableDomain !== true
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
 		}
 	}, [project, globalNamespace]);
 
@@ -230,7 +232,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				},
 				rocketMQParam: {
 					acl: {
-						enable: aclCheck
+						enable: aclCheck || false
 					}
 				},
 				mirrorImageId: mirrorList.find(
@@ -246,6 +248,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 			};
 			if (mode === 'dledger') {
 				sendData.rocketMQParam.replicas = replicaCount;
+				sendData.rocketMQParam.group = groupCount;
 			}
 			// * 动态表单相关
 			if (customForm) {
@@ -271,7 +274,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -349,9 +352,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
+					backupName: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -501,6 +502,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.rocketmq.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.rocketmq.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.rocketmq.storageClassQuota,
@@ -638,6 +640,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -650,9 +655,22 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}
@@ -1058,51 +1076,48 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										/>
 									</div>
 								</li>
-								{mirrorList.length && (
-									<li className="display-flex form-li">
-										<label className="form-name">
-											<span
-												className="ne-required"
-												style={{ marginRight: 8 }}
-											>
-												镜像仓库
-											</span>
-										</label>
-										<div className="form-content">
-											<FormItem
-												required
-												name="mirrorImageId"
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+								<li className="display-flex form-li">
+									<label className="form-name">
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											镜像仓库
+										</span>
+									</label>
+									<div className="form-content">
+										<FormItem
+											required
+											name="mirrorImageId"
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																label: item.address,
-																value: item.address
-															};
-														}
-													)}
-													style={{
-														width: '376px'
-													}}
-													disabled={!!middlewareName}
-												/>
-											</FormItem>
-										</div>
-									</li>
-								)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
+												)}
+												style={{
+													width: '376px'
+												}}
+												disabled={!!middlewareName}
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
@@ -1163,17 +1178,36 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 								{mode === 'dledger' && (
 									<li className="display-flex form-li">
 										<label className="form-name">
-											从节点数
+											DLedger组数
+										</label>
+										<div className="form-content">
+											<InputNumber
+												name="组数"
+												value={groupCount}
+												onChange={(value) =>
+													setGroupCount(value)
+												}
+												// min={2}
+												// max={10}
+												disabled={!!middlewareName}
+											/>
+										</div>
+									</li>
+								)}
+								{mode === 'dledger' && (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											副本数
 										</label>
 										<div className="form-content">
 											<InputNumber
 												name="节点数量"
-												defaultValue={3}
+												value={replicaCount}
 												onChange={(value) =>
 													setReplicaCount(value)
 												}
-												min={3}
-												max={10}
+												// min={3}
+												// max={10}
 												disabled={!!middlewareName}
 											/>
 										</div>

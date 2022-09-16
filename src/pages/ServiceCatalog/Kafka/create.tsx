@@ -163,23 +163,22 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	}, [props]);
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					console.log(res);
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) => item.availableDomain !== true
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
 		}
 	}, [project, globalNamespace]);
 	// 全局集群、分区更新
@@ -492,9 +491,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			<ProHeader
 				title="创建Kafka服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					history.goBack();
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				}}
 			/>
 			<ProContent>
@@ -514,6 +514,9 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -526,9 +529,22 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}
@@ -987,50 +1003,47 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										</FormItem>
 									</div>
 								</li>
-								{mirrorList.length && (
-									<li className="display-flex">
-										<label className="form-name">
-											<span
-												className="ne-required"
-												style={{ marginRight: 8 }}
-											>
-												镜像仓库
-											</span>
-										</label>
-										<div className="form-content">
-											<FormItem
-												name="mirrorImageId"
-												required
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+								<li className="display-flex">
+									<label className="form-name">
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											镜像仓库
+										</span>
+									</label>
+									<div className="form-content">
+										<FormItem
+											name="mirrorImageId"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																value: item.address,
-																label: item.address
-															};
-														}
-													)}
-													style={{
-														width: '100%'
-													}}
-												/>
-											</FormItem>
-										</div>
-									</li>
-								)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															value: item.address,
+															label: item.address
+														};
+													}
+												)}
+												style={{
+													width: '100%'
+												}}
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>

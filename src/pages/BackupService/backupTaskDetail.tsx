@@ -11,31 +11,25 @@ import {
 	getBackups,
 	editBackupTasks,
 	deleteBackups,
-	getBackupTasks
+	getBackupTasks,
+	deleteBackupTasks,
+	addIncBackup,
+	getIncBackup
 } from '@/services/backup';
 import storage from '@/utils/storage';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
-import { statusBackupRender, nullRender } from '@/utils/utils';
+import { statusBackupRender } from '@/utils/utils';
 import { getCanReleaseMiddleware } from '@/services/middleware';
 import { weekMap, backupTaskStatus } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
-import { notification, Modal } from 'antd';
+import { notification, Modal, Button, Switch } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import EditTime from './editTime';
+import EditIncrTime from './editIncrTime';
 
 const LinkButton = Actions.LinkButton;
 
-const info = {
-	title: '基础信息',
-	phrase: '',
-	sourceName: '',
-	position: '',
-	backupTime: '',
-	cron: '',
-	retentionTime: '',
-	limitRecord: ''
-};
 const dataType = [
 	{ label: '天', value: 'day', max: 3650 },
 	{ label: '周', value: 'week', max: 521 },
@@ -48,12 +42,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 	} = props;
 	const history = useHistory();
 	const params: any = useParams();
-	const [data, setData] = useState();
+	const [data, setData] = useState<any>([]);
 	const [visible, setVisible] = useState<boolean>(false);
+	const [incrVisible, setIncrVisible] = useState<boolean>(false);
 	const [modalType, setModalType] = useState<string>('');
+	const [info, setInfo] = useState<any>({
+		title: '基础信息',
+		phrase: '',
+		sourceName: '',
+		position: '',
+		creationTime: '',
+		cron: '',
+		retentionTime: '',
+		dateUnit: '',
+		limitRecord: '',
+		endTime: ''
+	});
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
-	const InfoConfig = [
+	const backupDetail = storage.getLocal('backupDetail');
+	const [infoConfig, setInfoConfig] = useState<any>([
 		{
 			dataIndex: 'title',
 			render: (val: string) => (
@@ -67,8 +75,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 		{
 			dataIndex: 'phrase',
 			label: '状态情况',
-			render: (val: string) =>
-				statusBackupRender(val, 0, storage.getLocal('backupDetail'))
+			render: (val: string) => statusBackupRender(val, 0, backupDetail)
 		},
 		{
 			dataIndex: 'sourceName',
@@ -84,9 +91,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			label: '备份方式',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
-					{storage.getLocal('backupDetail').backupMode !== 'single'
-						? '周期'
-						: '单次'}
+					{backupDetail.schedule ? '周期' : '单次'}
 					{val
 						? val.indexOf('? ?') !== -1
 							? `（每周${val
@@ -134,28 +139,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 		},
 		{
 			dataIndex:
-				storage.getLocal('backupDetail').sourceType === 'mysql'
+				backupDetail.sourceType === 'mysql' && backupDetail.mysqlBackup
 					? 'limitRecord'
 					: 'retentionTime',
 			label:
-				storage.getLocal('backupDetail').sourceType === 'mysql'
+				backupDetail.sourceType === 'mysql' && backupDetail.mysqlBackup
 					? '备份保留个数'
 					: '备份保留时间',
-			render: (val: string) => (
-				<div className="text-overflow-one" title={val}>
-					{val}
-					{storage.getLocal('backupDetail').dateUnit
-						? dataType.find(
-								(item) =>
-									item.value ===
-									storage.getLocal('backupDetail').dateUnit
-						  )?.label
+			// dataIndex: 'retentionTime',
+			// label: '备份保留时间',
+			render: (val: any) => (
+				<div
+					className="text-overflow-one"
+					title={!val || typeof val === 'number' ? val : val[0]}
+				>
+					{!val || typeof val === 'number' ? val : val[0]}
+					{backupDetail.dateUnit && val
+						? dataType.find((item) => item.value === val[1])?.label
 						: ''}
-					{storage.getLocal('backupDetail').backupMode === 'single'
-						? '--'
-						: ''}
-					{storage.getLocal('backupDetail').backupMode !==
-					'single' ? (
+					{backupDetail.schedule ? '' : '--'}
+					{backupDetail.schedule ? (
 						<EditOutlined
 							style={{ marginLeft: 8, color: '#226EE7' }}
 							onClick={() => {
@@ -177,7 +180,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 			)
 		},
 		{
-			dataIndex: 'backupTime',
+			dataIndex: 'creationTime',
 			label: '创建时间',
 			render: (val: string) => (
 				<div className="text-overflow-one" title={val}>
@@ -185,27 +188,84 @@ function BackupTaskDetail(props: any): JSX.Element {
 				</div>
 			)
 		}
-	];
+	]);
+
+	const increment = {
+		dataIndex: 'pause',
+		label: '是否开启增量',
+		render: (val: string) => (
+			<div className="text-overflow-one">
+				{val === 'off' ? '已开启' : '未开启'}
+				<Switch
+					checked={val === 'off'}
+					size="small"
+					style={{ marginLeft: 8 }}
+					onChange={(checked) => {
+						if (checked) {
+							setIncrVisible(true);
+							setModalType('add');
+						} else {
+							const sendData = {
+								backupName: params.backupName,
+								clusterId: params.clusterId,
+								namespace: params.namespace,
+								type: params.type,
+								time: backupDetail.time,
+								cron: backupDetail.cron,
+								retentionTime: backupDetail.retentionTime[0],
+								dateUnit: backupDetail.dateUnit,
+								turnOff: true,
+								increment: true,
+								pause: 'on'
+							};
+							editBackupTasks(sendData).then((res) => {
+								getBasicInfo();
+							});
+						}
+					}}
+				/>
+			</div>
+		)
+	};
+
+	const time = {
+		dataIndex: 'time',
+		label: '备份间隔时间',
+		render: (val: string) => (
+			<div className="text-overflow-one">
+				{(val?.substring(0, val?.length - 1) || '') + '分/次'}
+				{basicData.pause === 'off' ? (
+					<EditOutlined
+						style={{ marginLeft: 8, color: '#226EE7' }}
+						onClick={() => {
+							setIncrVisible(true);
+							setModalType('edit');
+						}}
+					/>
+				) : null}
+			</div>
+		)
+	};
+
+	const endTime = {
+		dataIndex: 'endTime',
+		label: '最近一次备份时间',
+		render: (val: string) => (
+			<div className="text-overflow-one" title={val}>
+				{val || '--'}
+			</div>
+		)
+	};
 
 	useEffect(() => {
-		storage.getLocal('backupDetail') &&
-			setBasicData({
-				title: '基础信息',
-				cron: storage.getLocal('backupDetail').cron,
-				phrase: storage.getLocal('backupDetail').phrase,
-				sourceName: storage.getLocal('backupDetail')?.sourceName,
-				position: storage.getLocal('backupDetail').position,
-				backupTime: storage.getLocal('backupDetail').backupTime,
-				retentionTime: storage.getLocal('backupDetail').retentionTime,
-				limitRecord: storage.getLocal('backupDetail').limitRecord
-			});
+		getBasicInfo();
 	}, []);
 
 	useEffect(() => {
 		if (cluster.id !== undefined && namespace.name !== undefined) {
 			getData();
 			getCanReleaseMiddleware({
-				clusterId: cluster.id,
+				clusterId: params.clusterId,
 				type: params.type
 			}).then((res) => {
 				if (res.success) {
@@ -220,11 +280,42 @@ function BackupTaskDetail(props: any): JSX.Element {
 		}
 	}, [cluster.id, namespace.name]);
 
+	useEffect(() => {
+		const list = [...infoConfig];
+		if (params.type === 'mysql' || params.type === 'postgresql') {
+			console.log(basicData.mysqlBackup);
+
+			if (basicData.mysqlBackup) {
+				list.find((item) => item.dataIndex === 'pause') &&
+					list.splice(5, 1);
+			} else {
+				!list.find((item) => item.dataIndex === 'pause') &&
+					list.splice(5, 0, increment);
+			}
+			if (basicData.pause === 'off') {
+				!list.find((item) => item.dataIndex === 'time') &&
+					list.splice(6, 0, time);
+				!list.find((item) => item.dataIndex === 'endTime') &&
+					list.splice(7, 0, endTime);
+			} else {
+				list.find((item) => item.dataIndex === 'time') &&
+					list.splice(6, 1);
+				list.find((item) => item.dataIndex === 'endTime') &&
+					list.splice(6, 1);
+			}
+			backupDetail.schedule && setInfoConfig(list);
+
+			// basicData?.pause === 'off'
+			// 	? setInfoConfig(list)
+			// 	: setInfoConfig(infoConfig);
+		}
+	}, [basicData]);
+
 	const getData = () => {
 		getBackups({
 			backupName: params.backupName,
-			clusterId: cluster.id,
-			namespace: storage.getLocal('backupDetail').namespace,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
 			type: params.type
 		}).then((res) => {
 			if (res.success) {
@@ -238,25 +329,17 @@ function BackupTaskDetail(props: any): JSX.Element {
 		});
 	};
 
-	const releaseMiddleware = (record: any) => {
-		switch (record.sourceType) {
+	const releaseMiddleware = () => {
+		switch (backupDetail.sourceType) {
 			case 'mysql':
 				history.push(
-					`/serviceList/mysql/MySQL/mysqlCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${record.backupFileName}/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.backupFileName}/${backupDetail.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/mysql/MySQL');
 				break;
 			case 'postgresql':
 				history.push(
-					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${record.backupFileName}/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/postgresql/PostgreSQL/postgresqlCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -265,21 +348,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 				break;
 			case 'redis':
 				history.push(
-					`/serviceList/redis/Redis/redisCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/redis/Redis/redisCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/redis/Redis');
 				break;
 			case 'elasticsearch':
 				history.push(
-					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/elasticsearch/Elasticsearch/elasticsearchCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession(
 					'menuPath',
@@ -288,11 +363,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 				break;
 			case 'rocketmq':
 				history.push(
-					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${
-						middlewareInfo?.chartVersion
-					}/${record.sourceName}/backup/${
-						storage.getLocal('backupDetail').namespace
-					}`
+					`/serviceList/rocketmq/rocketMQ/rocketmqCreate/${middlewareInfo?.chartVersion}/${backupDetail.sourceName}/backup/${backupDetail.namespace}`
 				);
 				storage.setSession('menuPath', 'serviceList/rocketmq/rocketMQ');
 				break;
@@ -303,60 +374,18 @@ function BackupTaskDetail(props: any): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
-					// disabled={record.phrase !== 'Success'}
-					onClick={() => releaseMiddleware(record)}
-					// onClick={() => {
-					// 	if (record.sourceType === 'mysql') {
-					// 		history.push(
-					// 			`/serviceList/mysql/MySQL/mysqlCreate/${middlewareInfo?.chartVersion}/${record.sourceName}/${record.backupFileName}/${record.namespace}`
-					// 		);
-					// 	} else {
-					// 		const result = {
-					// 			clusterId: cluster.id,
-					// 			namespace: namespace.name,
-					// 			middlewareName:
-					// 				storage.getLocal('backupDetail').sourceName,
-					// 			type: storage.getLocal('backupDetail')
-					// 				.sourceType,
-					// 			cron: storage.getLocal('backupDetail').cron,
-					// 			backupName:
-					// 				storage.getLocal('backupDetail').backupName,
-					// 			addressName:
-					// 				storage.getLocal('backupDetail').addressName
-					// 		};
-					// 		applyBackup(result).then((res) => {
-					// 			if (res.success) {
-					// 				notification.success({
-					// 					message: '成功',
-					// 					description: '恢复成功'
-					// 				});
-					// 			} else {
-					// 				notification.error({
-					// 					message: '失败',
-					// 					description: res.errorMsg
-					// 				});
-					// 			}
-					// 		});
-					// 	}
-					// }}
-				>
-					克隆服务
-				</LinkButton>
-				<LinkButton
+					disabled={index === 0}
 					onClick={() => {
 						Modal.confirm({
 							title: '操作确认',
 							content: '备份记录删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const result = {
-									clusterId: cluster.id,
-									namespace:
-										storage.getLocal('backupDetail')
-											.namespace || namespace.name,
+									clusterId: params.clusterId,
+									namespace: params.namespace,
 									type: record.sourceType,
 									backupId: record.backupId,
-									crName: record.crName,
-									addressName: record.addressName
+									backupName: record.backupName
 								};
 								deleteBackups(result).then((res) => {
 									if (res.success) {
@@ -383,26 +412,53 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 	const getBasicInfo = () => {
 		const sendData = {
-			keyword: storage.getLocal('backupDetail').taskName,
-			clusterId: cluster.id,
-			namespace: storage.getLocal('backupDetail').namespace,
-			middlewareName: params?.middlewareName || '',
-			type: params?.type || ''
+			keyword: backupDetail.taskName,
+			clusterId: params.clusterId,
+			namespace: params.namespace
 		};
 		getBackupTasks(sendData).then((res) => {
 			if (res.success) {
-				setBasicData({
-					title: '基础信息',
-					cron: res.data[0]?.cron,
-					phrase: res.data[0]?.phrase,
-					sourceName: res.data[0]?.sourceName,
-					position: res.data[0]?.position,
-					backupTime: res.data[0]?.backupTime,
-					retentionTime: res.data[0]?.retentionTime,
-					limitRecord: res.data[0]?.limitRecord
+				getIncBackup({
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					backupName: params.backupName
+				}).then((result) => {
+					if (result.success) {
+						const data = {
+							cron: res.data[0]?.cron,
+							phrase: res.data[0]?.phrase,
+							sourceName: res.data[0]?.sourceName,
+							position: res.data[0]?.position,
+							creationTime: res.data[0]?.creationTime,
+							retentionTime: [
+								res.data[0]?.retentionTime,
+								res.data[0]?.dateUnit
+							],
+							mysqlBackup: res.data[0]?.mysqlBackup,
+							dateUnit: res.data[0]?.dateUnit,
+							limitRecord: res.data[0]?.limitRecord,
+							endTime: result.data?.endTime,
+							startTime: result.data?.startTime,
+							time: result.data?.time,
+							pause: result.data?.pause
+						};
+						setBasicData({
+							title: '基础信息',
+							...data
+						});
+						storage.setLocal('backupDetail', {
+							...backupDetail,
+							...data
+						});
+						setVisible(false);
+						setIncrVisible(false);
+					} else {
+						notification.error({
+							message: '失败',
+							description: result.errorMsg
+						});
+					}
 				});
-				storage.setLocal('backupDetail', res.data[0]);
-				setVisible(false);
 			} else {
 				notification.error({
 					message: '失败',
@@ -411,33 +467,133 @@ function BackupTaskDetail(props: any): JSX.Element {
 			}
 		});
 	};
-	const onCreate = (cron: any) => {
+	const onCreate = (data: any) => {
 		const sendData = {
 			backupName: params.backupName,
-			clusterId: cluster.id,
-			namespace:
-				storage.getLocal('backupDetail').namespace || namespace.name,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
 			type: params.type,
-			...cron
+			increment: backupDetail.increment,
+			time: backupDetail.time,
+			...data
 		};
+		if (backupDetail.mysqlBackup) {
+			delete sendData.increment;
+			delete sendData.time;
+		}
 		editBackupTasks(sendData).then((res) => {
 			getBasicInfo();
 		});
 	};
+	const onIncrCreate = (data: any) => {
+		if (modalType === 'add') {
+			const sendData = {
+				backupName: params.backupName,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				increment: backupDetail.increment,
+				pause: 'off',
+				...data
+			};
+			addIncBackup(sendData).then((res) => {
+				getBasicInfo();
+			});
+		} else {
+			const sendData = {
+				backupName: params.backupName,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				type: params.type,
+				...data
+			};
+			editBackupTasks(sendData).then((res) => {
+				getBasicInfo();
+			});
+		}
+	};
 	return (
 		<ProPage>
 			<ProHeader
-				title={`${storage.getLocal('backupDetail').taskName}（${
+				title={`${backupDetail.taskName}（${
 					backupTaskStatus.find(
-						(item) =>
-							item.value ===
-							storage.getLocal('backupDetail').phrase
+						(item) => item.value === backupDetail.phrase
 					)?.text
 				}）`}
 				onBack={() => history.goBack()}
+				extra={
+					<>
+						<Button
+							type="primary"
+							onClick={() => {
+								if (backupDetail.schedule) {
+									history.push(
+										`/backupService/backupRecovery/${
+											params.clusterId || cluster.id
+										}/${params.namespace}/${
+											backupDetail.backupName
+										}/${backupDetail.sourceType}`
+									);
+								} else {
+									releaseMiddleware();
+								}
+							}}
+						>
+							克隆服务
+						</Button>
+						<Button
+							type="primary"
+							danger
+							onClick={() => {
+								Modal.confirm({
+									title: '操作确认',
+									content:
+										'备份任务删除后将无法恢复，请确认执行',
+									onOk: () => {
+										const sendData = {
+											clusterId:
+												backupDetail.clusterId ||
+												cluster.id,
+											namespace: params.namespace,
+											type: backupDetail.sourceType,
+											cron: backupDetail.cron || '',
+											backupName: backupDetail.backupName,
+											backupId: backupDetail.backupId,
+											schedule: backupDetail.schedule,
+											addressName:
+												backupDetail.addressName,
+											backupFileName:
+												backupDetail.backupFileName ||
+												''
+										};
+										deleteBackupTasks(sendData).then(
+											(res) => {
+												if (res.success) {
+													notification.success({
+														message: '成功',
+														description:
+															'备份任务删除成功'
+													});
+												} else {
+													notification.error({
+														message: '失败',
+														description:
+															res.errorMsg
+													});
+												}
+											}
+										);
+										history.goBack();
+									}
+								});
+							}}
+						>
+							删除任务
+						</Button>
+					</>
+				}
 			/>
 			<ProContent>
-				<DataFields dataSource={basicData} items={InfoConfig} />
+				<DataFields dataSource={basicData} items={infoConfig} />
 				<ProTable
 					dataSource={data}
 					showRefresh
@@ -445,26 +601,42 @@ function BackupTaskDetail(props: any): JSX.Element {
 					rowKey="recordName"
 				>
 					<ProTable.Column title="备份记录" dataIndex="recordName" />
-					{/* <ProTable.Column
-						title="备份使用量(GB)"
-						dataIndex="percent"
-						render={nullRender}
-					/> */}
+					<ProTable.Column
+						title="状态"
+						dataIndex="phrase"
+						render={statusBackupRender}
+						filterMultiple={false}
+						filters={[
+							backupTaskStatus[0],
+							backupTaskStatus[1],
+							backupTaskStatus[2]
+						]}
+						onFilter={(value, record: any) =>
+							record.phrase === value
+						}
+					/>
 					<ProTable.Column
 						title="备份时间"
-						dataIndex="backupTime"
+						dataIndex="creationTime"
 						sorter={(a: any, b: any) =>
-							moment(a.backupTime).unix() -
-							moment(b.backupTime).unix()
+							moment(a.creationTime).unix() -
+							moment(b.creationTime).unix()
 						}
 					/>
 					<ProTable.Column title="操作" render={actionRender} />
 				</ProTable>
 				<EditTime
-					data={storage.getLocal('backupDetail')}
+					data={backupDetail}
 					visible={visible}
 					onCreate={onCreate}
 					onCancel={() => setVisible(false)}
+					type={modalType}
+				/>
+				<EditIncrTime
+					data={backupDetail}
+					visible={incrVisible}
+					onCreate={onIncrCreate}
+					onCancel={() => setIncrVisible(false)}
 					type={modalType}
 				/>
 			</ProContent>

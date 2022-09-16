@@ -82,7 +82,10 @@ export default function FormSelectOrRadios(
 						name={props.variable}
 						initialValue={props.defaultValue}
 					>
-						<Select onChange={handleChange}>
+						<Select
+							dropdownMatchSelectWidth={false}
+							onChange={handleChange}
+						>
 							{props.options?.map((item) => (
 								<Option key={item} value={item}>
 									{item}
@@ -142,13 +145,18 @@ export default function FormSelectOrRadios(
 				</label>
 				<div className={`form-content`}>
 					<div className="display-flex mb-24">
-						<SelectBlock
-							options={options}
-							currentValue={value}
-							onCallBack={(value: any) =>
-								handleSelectBlock(value)
-							}
-						/>
+						<FormItem
+							name="version"
+							initialValue={props.defaultValue}
+						>
+							<SelectBlock
+								options={options}
+								currentValue={value}
+								onCallBack={(value: any) =>
+									handleSelectBlock(value)
+								}
+							/>
+						</FormItem>
 					</div>
 					{props.showSubQuestionIf === value ? (
 						<div className="dynamic-second-form-box">

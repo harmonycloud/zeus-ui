@@ -66,8 +66,8 @@ export default function StorageManagement(): JSX.Element {
 			}
 		});
 	};
-	const handleSearch = (e: any) => {
-		getData(e.target.value);
+	const handleSearch = (value: string) => {
+		getData(value);
 	};
 	const handleChange = (value: string, type: string) => {
 		setStorages([]);
@@ -92,6 +92,7 @@ export default function StorageManagement(): JSX.Element {
 				<Select
 					defaultValue="*"
 					style={{ width: 120 }}
+					dropdownMatchSelectWidth={false}
 					onChange={(value: string) => handleChange(value, 'cluster')}
 				>
 					<Option value="*">全部</Option>
@@ -107,6 +108,7 @@ export default function StorageManagement(): JSX.Element {
 				<Select
 					defaultValue=""
 					style={{ width: 120 }}
+					dropdownMatchSelectWidth={false}
 					onChange={(value: string) => handleChange(value, 'type')}
 				>
 					<Option value="">全部</Option>
@@ -157,7 +159,7 @@ export default function StorageManagement(): JSX.Element {
 					{storages.map((item: StorageItem, index: number) => {
 						return (
 							<ListCard
-								key={item.name}
+								key={`${item.name}-${item.clusterId}`}
 								title={item.aliasName}
 								subTitle={item.volumeType}
 								icon={

@@ -265,6 +265,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 			rocketMQAccountList?: rocketMQAccount[];
 		};
 		replicas?: number;
+		group?: number;
 	};
 	mirrorImageId?: any;
 	ingresses?: any;

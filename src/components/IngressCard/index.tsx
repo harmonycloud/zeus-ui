@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, notification } from 'antd';
+import { useHistory } from 'react-router';
 import MidCard from '../MidCard';
 import InstallIngressForm from './InstallIngress';
 import AccessIngressForm from './AccessIngress';
 import { deleteIngress } from '@/services/common';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
+import SelectedType from './selectedType';
+import AccessTraefik from './AccessTraefik';
+import InstallTraefik from './InstallTraefik';
 
 interface IngressCardProps {
 	status: number;
@@ -19,15 +23,21 @@ const { confirm } = Modal;
 const IngressCard = (props: IngressCardProps) => {
 	const { status, title, onRefresh, clusterId, data, createTime, seconds } =
 		props;
+	const history = useHistory();
 	const [installVisible, setInstallVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
-
+	const [selectedVisible, setSelectedVisible] = useState<boolean>(false);
+	const [way, setWay] = useState<string>('');
+	const [traefikInstallVisible, setTraefikInstallVisible] =
+		useState<boolean>(false);
+	const [traefikAccessVisible, setTraefikAccessVisible] =
+		useState<boolean>(false);
 	const uninstallComponent = (type = 'install') => {
 		confirm({
 			title: '操作确认',
 			content: `确认是否${
 				type === 'install' ? '卸载' : '取消接入'
-			}该服务暴露`,
+			}该负载均衡`,
 			okText: '确定',
 			cancelText: '取消',
 			onOk: () => {
@@ -38,7 +48,7 @@ const IngressCard = (props: IngressCardProps) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: `该服务暴露${
+							description: `该负载均衡${
 								type === 'install' ? '卸载' : '取消接入'
 							}成功`
 						});
@@ -53,7 +63,32 @@ const IngressCard = (props: IngressCardProps) => {
 			}
 		});
 	};
-
+	const onCreate = (type: string) => {
+		switch (type) {
+			case 'traefik':
+				if (way === 'install') {
+					setTraefikInstallVisible(true);
+				} else {
+					setTraefikAccessVisible(true);
+				}
+				break;
+			case 'nginx':
+				if (way === 'install') {
+					setInstallVisible(true);
+				} else {
+					setAccessVisible(true);
+				}
+				break;
+			default:
+				break;
+		}
+		setSelectedVisible(false);
+	};
+	const toDetail = () => {
+		history.push(
+			`/systemManagement/systemAlarm/ingress/${clusterId}/${data?.ingressClassName}/${data?.type}`
+		);
+	};
 	const childrenRender = () => {
 		switch (status) {
 			case -1:
@@ -64,8 +99,16 @@ const IngressCard = (props: IngressCardProps) => {
 						leftClass="link"
 						rightClass="link"
 						actionCount={2}
-						leftHandle={() => setInstallVisible(true)}
-						rightHandle={() => setAccessVisible(true)}
+						leftHandle={() => {
+							setWay('install');
+							setSelectedVisible(true);
+						}}
+						rightHandle={() => {
+							setWay('access');
+							setSelectedVisible(true);
+						}}
+						// leftHandle={() => setInstallVisible(true)}
+						// rightHandle={() => setAccessVisible(true)}
 						status={-1}
 						addTitle="新增负载均衡"
 						createTime={createTime}
@@ -104,10 +147,15 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="编辑"
 						rightClass="link"
 						leftHandle={() => uninstallComponent('access')}
-						rightHandle={() => setAccessVisible(true)}
+						rightHandle={() => {
+							data?.type === 'nginx'
+								? setAccessVisible(true)
+								: setTraefikAccessVisible(true);
+						}}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			case 2:
@@ -143,10 +191,15 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="编辑"
 						rightClass="link"
 						leftHandle={() => uninstallComponent('install')}
-						rightHandle={() => setAccessVisible(true)}
+						rightHandle={() => {
+							data?.type === 'nginx'
+								? setAccessVisible(true)
+								: setTraefikAccessVisible(true);
+						}}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			case 4:
@@ -162,10 +215,15 @@ const IngressCard = (props: IngressCardProps) => {
 						rightText="编辑"
 						rightClass="link"
 						leftHandle={() => uninstallComponent('install')}
-						rightHandle={() => setAccessVisible(true)}
+						rightHandle={() => {
+							data?.type === 'nginx'
+								? setAccessVisible(true)
+								: setTraefikAccessVisible(true);
+						}}
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			case 5:
@@ -201,6 +259,7 @@ const IngressCard = (props: IngressCardProps) => {
 						titleStyle={{ fontSize: '12px' }}
 						createTime={createTime}
 						seconds={seconds}
+						onClick={toDetail}
 					/>
 				);
 			default:
@@ -225,6 +284,30 @@ const IngressCard = (props: IngressCardProps) => {
 					onCancel={() => setInstallVisible(false)}
 					onRefresh={onRefresh}
 					clusterId={clusterId}
+				/>
+			)}
+			{traefikAccessVisible && (
+				<AccessTraefik
+					visible={traefikAccessVisible}
+					clusterId={clusterId}
+					onCancel={() => setTraefikAccessVisible(false)}
+					onRefresh={onRefresh}
+					data={data}
+				/>
+			)}
+			{traefikInstallVisible && (
+				<InstallTraefik
+					clusterId={clusterId}
+					onRefresh={onRefresh}
+					visible={traefikInstallVisible}
+					onCancel={() => setTraefikInstallVisible(false)}
+				/>
+			)}
+			{selectedVisible && (
+				<SelectedType
+					visible={selectedVisible}
+					onCancel={() => setSelectedVisible(false)}
+					onCreate={onCreate}
 				/>
 			)}
 		</>

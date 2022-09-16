@@ -187,7 +187,7 @@ axios.interceptors.response.use(
 		return response;
 	},
 	(err) => {
-		// console.log(err);
+		console.log(err);
 		NProgress.done();
 		if (err && err.response) {
 			err.message =
@@ -195,8 +195,6 @@ axios.interceptors.response.use(
 		} else {
 			err.message = '连接服务器失败!';
 		}
-		// console.log(err.message);
-		// console.log(err.response);
 		notification.error({
 			message: '错误',
 			description: err?.response?.data?.errorMsg || err.message

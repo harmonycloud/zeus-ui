@@ -149,6 +149,7 @@ export default function DataBaseForm(props: FormProps): JSX.Element {
 						disabled={data ? true : false}
 						placeholder="请选择"
 						style={{ width: '100%' }}
+						dropdownMatchSelectWidth={false}
 					>
 						{charsetList.map((item: string) => {
 							return (

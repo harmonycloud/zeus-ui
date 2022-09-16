@@ -11,7 +11,6 @@ function ColumnsModal<T>(props: ColumnsModalProps<T>): JSX.Element {
 		onOk(checked);
 	};
 	const onChange = (value: ColumnsType<T>) => {
-		console.log(value);
 		setChecked(value);
 	};
 	return (

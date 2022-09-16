@@ -34,14 +34,14 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 	const [searchType, setSearchType] = useState('');
 	const [keyword, setKeyword] = useState('');
 
-	useEffect(() => {
-		getData(
-			1,
-			10,
-			transTime.local2gmt2(rangeTime[0]),
-			transTime.local2gmt2(rangeTime[1])
-		);
-	}, []);
+	// useEffect(() => {
+	// 	getData(
+	// 		1,
+	// 		10,
+	// 		transTime.local2gmt2(rangeTime[0]),
+	// 		transTime.local2gmt2(rangeTime[1])
+	// 	);
+	// }, []);
 
 	const getData = (
 		current: number,
@@ -172,6 +172,7 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 								value={searchType}
 								onChange={onFilterChange}
 								style={{ width: '100%' }}
+								dropdownMatchSelectWidth={false}
 							>
 								{searchTypes.map((item) => (
 									<Option key={item.value} value={item.value}>

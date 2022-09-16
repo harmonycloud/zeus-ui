@@ -15,7 +15,7 @@ import {
 	getMiddlewareResource,
 	getNodeResource,
 	getNamespaceResource,
-	getCluster
+	getClusterCpuAndMemory
 } from '@/services/common';
 import transBg from '@/assets/images/trans-bg.svg';
 import { paramsProps } from '../detail';
@@ -110,26 +110,20 @@ const Overview = () => {
 				});
 			}
 		});
-		getCluster({ clusterId: id, detail: true }).then((res) => {
+		getClusterCpuAndMemory({ clusterId: id }).then((res) => {
 			if (res.success) {
-				setClusterQuota(res.data.clusterQuotaDTO || {});
-				const cpuRate = res.data.clusterQuotaDTO
-					? Number(res.data.clusterQuotaDTO?.usedCpu) /
-					  Number(res.data.clusterQuotaDTO?.totalCpu)
+				setClusterQuota(res.data || {});
+				const cpuRate = res.data
+					? Number(res.data?.usedCpu) / Number(res.data?.totalCpu)
 					: 0;
 				const option1Temp = getGaugeOption(cpuRate, 'CPU(核)');
 				setOption1(option1Temp);
-				const memoryRate = res.data.clusterQuotaDTO
-					? Number(res.data.clusterQuotaDTO?.usedMemory) /
-					  Number(res.data.clusterQuotaDTO?.totalMemory)
+				const memoryRate = res.data
+					? Number(res.data?.usedMemory) /
+					  Number(res.data?.totalMemory)
 					: 0;
 				const option2Temp = getGaugeOption(memoryRate, '内存(GB)');
 				setOption2(option2Temp);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
 			}
 		});
 		return () => {
@@ -232,13 +226,13 @@ const Overview = () => {
 		if (value === 'True') {
 			return (
 				<>
-					<CheckCircleFilled style={{ color: '#00A700' }} /> 成功
+					<CheckCircleFilled style={{ color: '#00A700' }} /> 正常
 				</>
 			);
 		} else {
 			return (
 				<>
-					<CloseCircleFilled style={{ color: '#C80000' }} /> 失败
+					<CloseCircleFilled style={{ color: '#C80000' }} /> 异常
 				</>
 			);
 		}
@@ -624,8 +618,8 @@ const Overview = () => {
 						render={statusRender}
 						filterMultiple={false}
 						filters={[
-							{ text: '成功', value: 'True' },
-							{ text: '失败', value: 'False' }
+							{ text: '正常', value: 'True' },
+							{ text: '异常', value: 'False' }
 						]}
 						onFilter={(
 							value: string | number | boolean,

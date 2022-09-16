@@ -57,7 +57,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 		middlewareName,
 		clusterId,
 		namespace,
-		data: { stdoutEnabled }
+		data: { stdoutEnabled, filelogEnabled }
 	} = props.data;
 	const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 	const [logs, setLogs] = useState<string>('');
@@ -90,6 +90,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(
 		stdoutEnabled || false
 	);
+	const [logFile, setLogFile] = useState<boolean>(filelogEnabled || false);
 	const [switchVisible, setSwitchVisible] = useState<boolean>(false);
 
 	const changePod = (value: string) => {
@@ -105,6 +106,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 	};
 	useEffect(() => {
 		setStandardLog(props.data.data.stdoutEnabled);
+		setLogFile(props.data.data.filelogEnabled);
 	}, [props.data.data.stdoutEnabled]);
 
 	useEffect(() => {
@@ -366,7 +368,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 										lineHeight: '18px'
 									}}
 								>
-									安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+									通过logpilot采集出来的实时日志
 								</span>
 							}
 						>
@@ -412,6 +414,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 									value={pod}
 									onChange={changePod}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value="all">全部</Option>
 									{podList.map((item, index) => (
@@ -437,6 +440,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 									value={container}
 									onChange={changeContainr}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value="all">全部</Option>
 									{containerList.map((item, index) => (
@@ -459,6 +463,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 									value={searchType}
 									onChange={changeSearchType}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									{searchTypes.map((item) => (
 										<Option
@@ -573,6 +578,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 							visible={switchVisible}
 							source="standard"
 							flag={standardLog}
+							withFlag={logFile}
 							data={{
 								clusterId,
 								namespace,

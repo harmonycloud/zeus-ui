@@ -11,10 +11,8 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 	const { RangePicker } = DatePicker;
 	const { timeSelect, source = 'default', style = {} } = props;
 	const [isSelect, setIsSelect] = useState<boolean>(false);
-	const [startTime, setStartTime] = useState<any>(
-		moment().subtract(1, 'hours')
-	);
-	const [endTime, setEndTime] = useState<any>(moment());
+	const [startTime, setStartTime] = useState<any>();
+	const [endTime, setEndTime] = useState<any>();
 	const [timeQuantum, setTimeQuantum] = useState<any>();
 
 	const onChange = (value: any) => {
@@ -50,6 +48,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 							onChange={onTypeChange}
 							defaultValue={isSelect}
 							bordered={false}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={false}>日期选择</Option>
 							<Option value={true}>时间段</Option>
@@ -67,6 +66,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 							onChange={onTypeChange}
 							defaultValue={isSelect}
 							bordered={false}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={false}>日期选择</Option>
 							<Option value={true}>时间段</Option>
@@ -92,6 +92,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 									onChange={onTypeChange}
 									defaultValue={isSelect}
 									bordered={false}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value={false}>日期选择</Option>
 									<Option value={true}>时间段</Option>
@@ -115,6 +116,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 									onChange={onTypeChange}
 									defaultValue={isSelect}
 									bordered={false}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value={false}>日期选择</Option>
 									<Option value={true}>时间段</Option>

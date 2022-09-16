@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-import { Button, notification, Modal } from 'antd';
+import { Button, notification, Modal, Alert } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import { getValueYaml, updateValueYaml } from '@/services/middleware';
 import CodeMirror from 'codemirror';
@@ -202,11 +202,16 @@ const YamlEdit = () => {
 	return (
 		<ProPage>
 			<ProHeader
-				// hasBackArrow
 				title="yaml文件详情"
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
+				<Alert
+					message="此处修改可能导致部署配置与实际部署配置内容不匹配，请谨慎操作！"
+					type="warning"
+					showIcon
+					style={{ marginBottom: 16 }}
+				/>
 				<div className="yaml-edit-btn-content">
 					<Button
 						className="yaml-btn"

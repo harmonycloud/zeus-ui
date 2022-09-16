@@ -124,10 +124,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '5.0',
 			value: '5.0'
+		},
+		{
+			label: '6.2',
+			value: '6.2'
 		}
 	];
 	const [mode, setMode] = useState<string>('cluster');
-	const modeList = [
+	const [modeList, setModeList] = useState([
 		{
 			label: '集群模式',
 			value: 'cluster'
@@ -144,7 +148,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			label: '读写分离模式',
 			value: 'readWriteProxy'
 		}
-	];
+	]);
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
 	const [sentinelMode, setSentinelMode] = useState<string>('1s-1m');
 	const clusterModeList = [
@@ -222,6 +226,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	const [selectNamespace, setSelectNamespace] = useState<string>();
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -242,24 +247,56 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) => item.availableDomain !== true
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
+		}
+		if (globalNamespace.availableDomain) {
+			setModeList([
+				{
+					label: '哨兵模式',
+					value: 'sentinel'
+				},
+				{
+					label: '读写分离模式',
+					value: 'readWriteProxy'
+				}
+			]);
+			setMode('sentinel');
 		}
 	}, [project, globalNamespace]);
+
+	useEffect(() => {
+		if (
+			namespaceList.find((item) => item.name === selectNamespace)
+				?.availableDomain
+		) {
+			setModeList([
+				{
+					label: '哨兵模式',
+					value: 'sentinel'
+				},
+				{
+					label: '读写分离模式',
+					value: 'readWriteProxy'
+				}
+			]);
+			setMode('sentinel');
+		}
+	}, [selectNamespace]);
 
 	const modifyQuota = (key: string) => {
 		// setNodeModify({
@@ -351,7 +388,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -451,9 +488,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
+					backupName: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -607,6 +642,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.redis.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.redis.storageClassQuota,
@@ -773,6 +809,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
+													value={selectNamespace}
+													onChange={(value) =>
+														setSelectNamespace(
+															value
+														)
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -784,10 +829,49 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
+																	// disabled={
+																	// 	item.availableDomain
+																	// }
 																>
-																	{
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		25
+																			? item.aliasName.substring(
+																					0,
+																					25
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																		{item.availableDomain ? (
+																			<span className="available-domain">
+																				可用区
+																			</span>
+																		) : null}
+																	</p>
+																	{/* {item.availableDomain ? (
+																		<Popover
+																			content={
+																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
+																			}
+																		>
+																			<p>
+																				{
+																					item.aliasName
+																				}
+																				<span className="available-domain">
+																					可用区
+																				</span>
+																			</p>
+																		</Popover>
+																	) : (
 																		item.aliasName
-																	}
+																	)} */}
 																</Select.Option>
 															);
 														}
@@ -1192,10 +1276,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem>
+										<FormItem name="pwd">
 											<Input
 												type="password"
-												name="pwd"
 												placeholder="请输入初始密码，输入空则由平台随机生成"
 												disabled={!!middlewareName}
 											/>
@@ -1211,43 +1294,40 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									{mirrorList.length && (
-										<div
-											className="form-content"
-											style={{ flex: '0 0 376px' }}
-										>
-											<FormItem
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												name="mirrorImageId"
-												initialValue={
-													mirrorList[0].address
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																label: item.address,
-																value: item.address
-															};
-														}
-													)}
-													style={{
-														width: '100%'
-													}}
-													disabled={!!middlewareName}
-												/>
-											</FormItem>
-										</div>
-									)}
+											]}
+											name="mirrorImageId"
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
+												)}
+												style={{
+													width: '100%'
+												}}
+												disabled={!!middlewareName}
+											/>
+										</FormItem>
+									</div>
 								</li>
 							</ul>
 						</div>
@@ -1262,9 +1342,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									<div
 										className={`form-content ${styles['redis-mode']}`}
 									>
-										{/* <div>
-
-										</div> */}
 										<Select
 											value={mode}
 											onChange={(value) => setMode(value)}
@@ -1273,15 +1350,18 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												marginBottom: 12
 											}}
 											disabled={!!middlewareName}
+											dropdownMatchSelectWidth={false}
 										>
-											{modeList.map((item, index) => (
-												<Select.Option
-													key={index}
-													value={item.value}
-												>
-													{item.label}
-												</Select.Option>
-											))}
+											{modeList.map(
+												(item: any, index: number) => (
+													<Select.Option
+														key={index}
+														value={item.value}
+													>
+														{item.label}
+													</Select.Option>
+												)
+											)}
 										</Select>
 										{mode === 'cluster' ||
 										mode === 'agent' ? (
@@ -1337,6 +1417,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													width: 182
 												}}
 												disabled={!!middlewareName}
+												dropdownMatchSelectWidth={false}
 											>
 												{sentinelModeList.map(
 													(item, index) => (

@@ -193,7 +193,7 @@ export default function AddBackupPosition(): JSX.Element {
 								message: '请输入位置名称'
 							},
 							{
-								pattern: new RegExp(pattern.storageName),
+								pattern: new RegExp(pattern.backupName),
 								message:
 									'任务名称由中文、大写字母、小写字母和数字组成，长度不超过15个字符'
 							}
@@ -271,7 +271,7 @@ export default function AddBackupPosition(): JSX.Element {
 								]}
 							>
 								<Input
-									style={{ width: '250px' }}
+									style={{ width: '220px' }}
 									placeholder="请输入地址"
 									disabled={!!params.id}
 								/>
@@ -296,16 +296,16 @@ export default function AddBackupPosition(): JSX.Element {
 								rules={[
 									{
 										required: true,
-										message: '请输入路径'
+										message: '请输入存储桶'
 									},
 									{
 										pattern: /^\/[a-zA-Z0-9]*$/,
-										message: '路径不符合规则'
+										message: '存储桶不符合规则'
 									}
 								]}
 							>
 								<Input
-									placeholder="路径 如：/path"
+									placeholder="存储桶 如：/path"
 									disabled={!!params.id}
 								/>
 							</Form.Item>
@@ -374,6 +374,7 @@ export default function AddBackupPosition(): JSX.Element {
 											clusterId: value
 										});
 									}}
+									dropdownMatchSelectWidth={false}
 									onBlur={() => {
 										selectClusterId &&
 											!selectClusterIds.find(

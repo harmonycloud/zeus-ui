@@ -47,6 +47,7 @@ export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
 							marginRight: 8,
 							width: 150
 						}}
+						dropdownMatchSelectWidth={false}
 					>
 						{storageClassList.map((item: StorageItem) => {
 							return (

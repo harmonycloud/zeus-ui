@@ -130,7 +130,9 @@ const runStatus: runParams = {
 	namespace: '',
 	storageClassName: '',
 	storageType: '',
-	hostNetwork: ''
+	hostNetwork: '',
+	group: 0,
+	replicas: 0
 };
 
 const events: eventsParams = {
@@ -189,11 +191,31 @@ const modelConfig = {
 	dataIndex: 'model',
 	label: '模式'
 };
+const replicasConfig = {
+	dataIndex: 'replicas',
+	label: '副本数',
+	render: (val: number) => val || '--'
+};
+const groupConfig = {
+	dataIndex: 'group',
+	label: 'DLedger组数',
+	render: (val: number) => val || '--'
+};
 const namespaceConfig = {
 	dataIndex: 'namespaceAliasName',
 	label: '所在分区',
-	render: (val: string, dataSource: any) =>
-		`${val || dataSource.namespace}(${dataSource.namespace})`
+	render: (val: string, dataSource: any) => {
+		return (
+			<div
+				className="text-overflow-one"
+				title={`${val || dataSource.namespace}(${
+					dataSource.namespace
+				})`}
+			>
+				{`${val || dataSource.namespace}(${dataSource.namespace})`}
+			</div>
+		);
+	}
 };
 const storageClassNameConfig = {
 	dataIndex: 'storageClassName',
@@ -256,6 +278,18 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					modelConfig,
 					namespaceConfig,
 					storageClassNameConfig
+			  ]
+			: data.mode === 'dledger'
+			? [
+					titleConfig,
+					healthConfig,
+					createTimeConfig,
+					modelConfig,
+					groupConfig,
+					replicasConfig,
+					namespaceConfig,
+					storageClassNameConfig,
+					hostNetworkConfig
 			  ]
 			: [
 					titleConfig,
@@ -462,12 +496,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					label: data.labels || '',
 					hostAffinity: `${
 						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
 							data.nodeAffinity
 								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
 					}(${
-						data.nodeAffinity && data.nodeAffinity[0].required
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity[0].required
 							? '强制'
 							: '非强制'
 					})`,
@@ -514,6 +551,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				password: data.password || '',
 				kafkaDTO: data.kafkaDTO
 			});
+			const storageClassName =
+				data.type === 'elasticsearch'
+					? data.quota?.master.storageClassAliasName || ''
+					: data.quota?.[data.type].storageClassAliasName;
+			const storageType =
+				data.type === 'elasticsearch'
+					? data.quota?.master.storageClassName || ''
+					: data.quota?.[data.type].storageClassName;
 			setRunData({
 				title: '运行状态',
 				status: data.status || 'Failed',
@@ -521,15 +566,11 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				model: modeText(data),
 				namespace: data.namespace || '',
 				namespaceAliasName: data.namespaceAliasName,
-				storageClassName:
-					data.quota && data.quota[data.type]
-						? data.quota[data.type].storageClassAliasName || ''
-						: '',
-				storageType:
-					data.quota && data.quota[data.type]
-						? data.quota[data.type].storageClassName || ''
-						: '',
-				hostNetwork: data.hostNetwork
+				storageClassName: storageClassName,
+				storageType: storageType,
+				hostNetwork: data.hostNetwork,
+				group: data.rocketMQParam?.group,
+				replicas: data.rocketMQParam?.replicas
 			});
 			setAclData({
 				title: '访问权限控制认证',
@@ -754,6 +795,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							value={eventType}
 							onChange={(val) => setEventType(val)}
 							disabled={!eventList.length}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={'All'}>全部状态</Option>
 							<Option value={'Normal'}>正常</Option>
@@ -764,6 +806,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							value={kind}
 							onChange={(val) => setKind(val)}
 							disabled={!eventList.length}
+							dropdownMatchSelectWidth={false}
 						>
 							<Option value={'All'}>全部类型</Option>
 							<Option value={'Pod'}>Pod</Option>

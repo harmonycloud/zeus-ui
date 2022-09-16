@@ -38,7 +38,7 @@ export const getBackupConfig = (params: listParams) => {
 	return Axios.get(BACKUP.backups, params);
 };
 export const addBackupConfig = (params: listParams) => {
-	return Axios.post(BACKUP.backups, params);
+	return Axios.json(BACKUP.backups, params, {}, 'POST');
 };
 export const updateBackupConfig = (params: listParams) => {
 	return Axios.put(BACKUP.backups, params);
@@ -86,8 +86,16 @@ export const getBackupTasks = (params: any) => {
 	return Axios.get(BACKUP.backupTask, params);
 };
 export const editBackupTasks = (params: any) => {
-	return Axios.put(BACKUP.backupTask, params);
+	return Axios.json(BACKUP.backupTask, params, {}, 'PUT');
 };
 export const deleteBackupTasks = (params: any) => {
 	return Axios.delete(BACKUP.backupTask, params);
+};
+
+export const addIncBackup = (params: any) => {
+	return Axios.post(BACKUP.incBackup, params);
+};
+
+export const getIncBackup = (params: any) => {
+	return Axios.get(BACKUP.incBackup, params);
 };

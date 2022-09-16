@@ -271,6 +271,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								onChange={(value: any) => {
 									updateValue(value, record);
 								}}
+								dropdownMatchSelectWidth={false}
 							>
 								{selectList &&
 									selectList.map((item) => {
@@ -296,6 +297,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 								onChange={(value: any) => {
 									updateValue(value, record);
 								}}
+								dropdownMatchSelectWidth={false}
 							>
 								{selectList &&
 									selectList.map((item) => {
@@ -502,7 +504,7 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				width={310}
 			/>
 			<ProTable.Column
-				title="修改目标值"
+				title="目标值"
 				dataIndex="modifiedValue"
 				render={modifyValueRender}
 				width={410}

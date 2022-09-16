@@ -14,7 +14,8 @@ import {
 	Input,
 	Select,
 	Card,
-	notification
+	notification,
+	Switch
 } from 'antd';
 import { api } from '@/api.json';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
@@ -32,7 +33,7 @@ import {
 	addBackupConfig
 } from '@/services/backup';
 import moment from 'moment';
-import { weekMap } from '@/utils/const';
+import { weekMap, minutes } from '@/utils/const';
 import { StoreState } from '@/types';
 import { connect } from 'react-redux';
 import './index.scss';
@@ -100,9 +101,10 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [dataSelect, setDataSelect] = useState<string>('day');
 	const [formData, setFormData] = useState<any>();
 	const [formWayData, setFormWayData] = useState<any>();
-	const [tableData, setTableData] = useState<any[]>([]);
+	const [tableData, setTableData] = useState<any>({ '': [] });
 	const [addressList, setAddressList] = useState<any>();
 	const [selectAddress, setSelectAddress] = useState<any>();
+	const [incrementChecked, setIncrementChecked] = useState<boolean>(false);
 
 	const next = () => {
 		if (current === 0) {
@@ -170,13 +172,14 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	}, []);
 
 	useEffect(() => {
-		setTableData([]);
+		setTableData({ '': [] });
 		if (selectText) {
 			getServiceList({
 				type: params.name || selectText,
 				keyword: searchText
 			}).then((res) => {
-				setTableData(res.data);
+				console.log({ [params.name || selectText]: res.data });
+				setTableData({ [params.name || selectText]: res.data });
 				// setSelectedRowKeys([res.data[0]?.name]);
 				// setSelectedRow(res.data[0]);
 			});
@@ -226,7 +229,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 							showRefresh
 							onRefresh={() => setSearchText('')}
 							columns={columns}
-							dataSource={tableData}
+							dataSource={tableData[params.name || selectText]}
 							selectedRow={selectedRow}
 							setSelectedRow={setSelectedRow}
 							selectedRowKeys={selectedRowKeys}
@@ -325,6 +328,59 @@ function AddBackupTask(props: StoreState): JSX.Element {
 								</RadioGroup>
 							</Form.Item>
 							{backupWay === 'time' ? (
+								<Form.Item
+									label="备份保留时间"
+									name="retentionTime"
+									rules={[
+										{
+											required: true,
+											message: '备份保留时间不能为空'
+										},
+										{
+											max: dataType.find(
+												(item: any) =>
+													item.value === dataSelect
+											)?.max,
+											type: 'number',
+											message: '保留时间最长为10年'
+										},
+										{
+											min: 0,
+											type: 'number',
+											message: '保留时间不能小于0'
+										}
+									]}
+								>
+									<InputNumber
+										type="inline"
+										min={1}
+										addonAfter={
+											<Select
+												value={dataSelect}
+												onChange={(value) => {
+													setDataSelect(value);
+													form.validateFields([
+														'dateUnit'
+													]);
+												}}
+												dropdownMatchSelectWidth={false}
+											>
+												{dataType?.map((item: any) => {
+													return (
+														<Select.Option
+															key={item.value}
+															value={item.value}
+														>
+															{item.label}
+														</Select.Option>
+													);
+												})}
+											</Select>
+										}
+									/>
+								</Form.Item>
+							) : null}
+							{/* {backupWay === 'time' ? (
 								params.type === 'mysql' ||
 								selectedRow?.type === 'mysql' ? (
 									<Form.Item
@@ -380,6 +436,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 															'dateUnit'
 														]);
 													}}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{dataType?.map(
 														(item: any) => {
@@ -402,28 +461,29 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										/>
 									</Form.Item>
 								)
-							) : // <Form.Item
-							// 	label="备份规则"
-							// 	name="rule"
-							// 	rules={[
-							// 		{
-							// 			required: true,
-							// 			message: '请选择备时间'
-							// 		}
-							// 	]}
-							// 	initialValue="now"
-							// >
-							// 	<RadioGroup
-							// 		value={backupTime}
-							// 		onChange={(e) =>
-							// 			setBackupTime(e.target.value)
-							// 		}
-							// 	>
-							// 		<Radio value="now">立即备份</Radio>
-							// 		<Radio value="onetime">定时备份</Radio>
-							// 	</RadioGroup>
-							// </Form.Item>
-							null}
+							) :
+							<Form.Item
+								label="备份规则"
+								name="rule"
+								rules={[
+									{
+										required: true,
+										message: '请选择备时间'
+									}
+								]}
+								initialValue="now"
+							>
+								<RadioGroup
+									value={backupTime}
+									onChange={(e) =>
+										setBackupTime(e.target.value)
+									}
+								>
+									<Radio value="now">立即备份</Radio>
+									<Radio value="onetime">定时备份</Radio>
+								</RadioGroup>
+							</Form.Item>
+							null} */}
 							{backupWay === 'time' ||
 							backupTime === 'onetime' ? (
 								<>
@@ -502,7 +562,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									</Form.Item>
 									<Form.Item
 										label="备份时间"
-										name="time"
+										name="backupTime"
 										rules={[
 											{
 												required: true,
@@ -512,10 +572,62 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									>
 										<TimePicker
 											showNow={false}
-											// minuteStep={30}
 											format="HH:mm"
 										/>
 									</Form.Item>
+									{selectedRow?.type === 'mysql' ||
+									params.type === 'mysql' ||
+									selectedRow?.type === 'postgresql' ||
+									params.type === 'postgresql' ? (
+										<Form.Item
+											label="是否开启增量备份"
+											name="increment"
+											initialValue={false}
+											valuePropName="checked"
+											required
+										>
+											<Switch
+												checked={incrementChecked}
+												onChange={(checked) =>
+													setIncrementChecked(checked)
+												}
+											/>
+										</Form.Item>
+									) : null}
+									{incrementChecked ? (
+										<Form.Item
+											label="增量备份间隔时间"
+											name="time"
+											rules={[
+												{
+													required: true,
+													message:
+														'请选择增量备份间隔时间'
+												}
+											]}
+											extra="分/次"
+											className="pause-extra"
+										>
+											<Select
+												style={{
+													width: 150,
+													marginRight: 8
+												}}
+											>
+												{minutes.map((item) => {
+													return (
+														<Select.Option
+															key={item}
+															value={item}
+														>
+															{item}
+														</Select.Option>
+													);
+												})}
+												分/次
+											</Select>
+										</Form.Item>
+									) : null}
 								</>
 							) : null}
 						</Form>
@@ -620,25 +732,25 @@ function AddBackupTask(props: StoreState): JSX.Element {
 											{formData.rule !== 'now'
 												? `（${
 														moment(
-															formData.time
+															formData.backupTime
 														).get('hour') >= 10
 															? moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('hour')
 															: '0' +
 															  moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('hour')
 												  }:${
 														moment(
-															formData.time
+															formData.backupTime
 														).get('minute') >= 10
 															? moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('minute')
 															: '0' +
 															  moment(
-																	formData.time
+																	formData.backupTime
 															  ).get('minute')
 												  }）`
 												: ''}
@@ -666,7 +778,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 									>
 										<span>备份位置：</span>
 										<Form.Item
-											name="addressName"
+											name="addressId"
 											rules={[
 												{
 													required: true,
@@ -681,6 +793,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 													setSelectAddress(value);
 												}}
 												style={{ width: '150px' }}
+												dropdownMatchSelectWidth={false}
 											>
 												{addressList?.map(
 													(item: any) => {
@@ -709,28 +822,27 @@ function AddBackupTask(props: StoreState): JSX.Element {
 
 	const handleSubmit = () => {
 		formWay.validateFields().then((values) => {
-			const minute = moment(formData.time).get('minute');
-			const hour = moment(formData.time).get('hour');
+			const minute = moment(formData.backupTime).get('minute');
+			const hour = moment(formData.backupTime).get('hour');
 			const week = formData.cycle?.join(',');
 			const cron = `${minute} ${hour} ? ? ${week}`;
 			const sendData = {
 				...values,
+				...formData,
 				clusterId: selectedRow?.clusterId || cluster.id,
 				namespace: params.namespace || selectedRow.namespace,
 				middlewareName: params.middlewareName || selectedRow.name,
-				type: selectedRow?.type || params.type
+				type: selectedRow?.type || params.type,
+				time: formData.time + 'm'
 			};
-			if (params.type === 'mysql' || selectedRow?.type === 'mysql') {
-				sendData.limitRecord = formData.limitRecord;
-			} else {
-				sendData.retentionTime = formData.retentionTime;
+			if (formData.way === 'time') {
+				sendData.cron = cron;
 			}
 			if (formData.retentionTime) {
 				sendData.dateUnit = dataSelect;
 			}
-			if (formData.way === 'time') {
-				sendData.cron = cron;
-			}
+			delete sendData.cycle;
+			delete sendData.backupTime;
 			addBackupConfig(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

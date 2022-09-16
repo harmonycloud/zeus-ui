@@ -265,7 +265,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -313,9 +313,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					cron: storage.getLocal('backupDetail').cron,
-					backupName: storage.getLocal('backupDetail').backupName,
-					addressName: storage.getLocal('backupDetail').addressName
+					backupName: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -555,6 +553,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					res.data.quota.master.memory,
 					'Gi'
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.master.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.master.storageClassQuota,
@@ -570,23 +569,22 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	};
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					console.log(res);
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) => item.availableDomain !== true
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
 		}
 	}, [project, globalNamespace]);
 	// 模式变更
@@ -752,6 +750,9 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -764,9 +765,22 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}
@@ -1164,9 +1178,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 									<div
 										className={`form-content ${styles['input-flex-length']}`}
 									>
-										<FormItem>
+										<FormItem name="pwd">
 											<Input.Password
-												name="pwd"
 												placeholder="请输入初始密码，输入为空则由平台随机生成"
 												disabled={!!middlewareName}
 											/>
@@ -1182,43 +1195,40 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									{mirrorList.length && (
-										<div
-											className="form-content"
-											style={{ flex: '0 0 376px' }}
-										>
-											<FormItem
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												name="mirrorImageId"
-												initialValue={
-													mirrorList[0].address
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																label: item.address,
-																value: item.address
-															};
-														}
-													)}
-													style={{
-														width: '100%'
-													}}
-													disabled={!!middlewareName}
-												/>
-											</FormItem>
-										</div>
-									)}
+											]}
+											name="mirrorImageId"
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
+												)}
+												style={{
+													width: '100%'
+												}}
+												disabled={!!middlewareName}
+											/>
+										</FormItem>
+									</div>
 								</li>
 							</ul>
 						</div>

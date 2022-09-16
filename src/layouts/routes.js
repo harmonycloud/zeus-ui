@@ -52,6 +52,7 @@ import AllotRole from '@/pages/RoleManage/allotRole';
 import BackupTask from '@/pages/BackupService/proBackupTask';
 import AddBackupTask from '@/pages/BackupService/addBackupTask';
 import BackupTaskDetail from '@/pages/BackupService/backupTaskDetail';
+import BackupRecovery from '@/pages/BackupService/backupRecovery';
 import BackupPosition from '@/pages/BackupService/backupPosition';
 import AddBackupPosition from '@/pages/BackupService/addBackupPosition';
 import StorageManagement from '@/pages/StorageManagement';
@@ -61,11 +62,16 @@ import ServiceIngress from '@/pages/ServiceIngress';
 import AddEsIngress from '@/pages/ServiceListDetail/ServiceIngress/addEsIngress';
 import AddServiceIngress from '@/pages/ServiceListDetail/ServiceIngress/addServiceIngress';
 import AddServiceDetailIngress from '@/pages/ServiceListDetail/ServiceIngress/addIngress';
-
+import ActiveActive from '@/pages/ActiveActive';
+import ActiveDetail from '@/pages/ActiveActive/activeDetail';
+import AreaConfig from '@/pages/ActiveActive/AreaConfig';
+import AreaDetail from '@/pages/ActiveActive/AreaDetail';
+import IngressDetail from '@/components/IngressCard/IngressDetail';
+import EditYaml from '@/components/IngressCard/editYaml';
 const Routes = withRouter((props) => {
 	return (
 		<>
-			<MdBreadcrumb pathname={props.location.pathname} />
+			{/* <MdBreadcrumb pathname={props.location.pathname} /> */}
 			<Switch>
 				<Route
 					path="/"
@@ -162,7 +168,7 @@ const Routes = withRouter((props) => {
 				/>
 				{/* pgsql备份跳转使用 */}
 				<Route
-					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/backup/:backupFileName/:namespace"
+					path="/serviceList/:chartName/:aliasName/postgresqlCreate/:chartVersion/:middlewareName/backup/:namespace"
 					component={PostgreSQLCreate}
 					exact
 				/>
@@ -263,6 +269,11 @@ const Routes = withRouter((props) => {
 					component={AddServiceIngress}
 					exact
 				/>
+				<Route
+					path="/serviceList/:name/:aliasName/externalAccess/addExternalAccess/:middlewareName/:type/:chartVersion/:namespace"
+					component={AddServiceAvailableForm}
+					exact
+				/>
 				{/* <Route
 					path="/serviceAvailable/addServiceAvailable"
 					component={AddServiceAvailableForm}
@@ -332,12 +343,17 @@ const Routes = withRouter((props) => {
 					exact
 				/>
 				<Route
-					path="/backupService/backupTask/detail/:backupName/:type"
+					path="/backupService/backupTask/detail/:clusterId/:namespace/:backupName/:type"
 					component={BackupTaskDetail}
 					exact
 				/>
 				<Route
-					path="/serviceList/:name/:aliasName/:currentTab/backupTaskDetail/:middlewareName/:type/:chartVersion/:namespace/:backupName"
+					path="/backupService/backupRecovery/:clusterId/:namespace/:backupName/:type"
+					component={BackupRecovery}
+					exact
+				/>
+				<Route
+					path="/serviceList/:name/:aliasName/:currentTab/backupTaskDetail/:middlewareName/:type/:chartVersion/:namespace/:clusterId/:backupName"
 					component={BackupTaskDetail}
 					exact
 				/>
@@ -481,6 +497,34 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/dataOverview/personlization"
 					component={Personlization}
+					exact
+				/>
+				{/* 同城双活 */}
+				<Route path="/activeActive" component={ActiveActive} exact />
+				<Route
+					path="/activeActive/:id/:nickname"
+					component={ActiveDetail}
+					exact
+				/>
+				<Route
+					path="/activeActive/active-active/:id/:nickname/:areaName/:aliasName"
+					component={AreaConfig}
+					exact
+				/>
+				<Route
+					path="/activeActive/active-detail/:id/:nickname/:areaName/:aliasName"
+					component={AreaDetail}
+					exact
+				/>
+				{/* 负载均衡详情 */}
+				<Route
+					path="/systemManagement/systemAlarm/ingress/:clusterId/:ingressClassName/:type"
+					component={IngressDetail}
+					exact
+				/>
+				<Route
+					path="/systemManagement/systemAlarm/ingress/:clusterId/:ingressClassName"
+					component={EditYaml}
 					exact
 				/>
 			</Switch>

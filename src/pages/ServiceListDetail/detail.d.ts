@@ -206,6 +206,8 @@ export interface runParams {
 	createTime: string;
 	model: string;
 	namespace: string;
+	group: number;
+	replicas: number;
 	storageClassName: string;
 	storageType: string;
 	hostNetwork?: any;
@@ -348,6 +350,7 @@ export interface PodItem {
 	restartCount: number;
 	role: string;
 	status: string;
+	nodeZone: string;
 }
 export interface PodSendData {
 	clusterId: string;
@@ -475,6 +478,7 @@ export interface ConsoleDataProps {
 	podName: string;
 	type: string;
 	name: string;
+	role?: string;
 }
 export interface consoleProps {
 	visible: boolean;

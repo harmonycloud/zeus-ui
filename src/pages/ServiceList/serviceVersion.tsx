@@ -218,7 +218,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					content:
 						'经系统检测，该版本的中间件还未安装，请到中间件市场进行升级安装',
 					okText: '我知道了',
-					cancelText: '现在去升级',
+					cancelText: '立即升级',
 					onOk() {
 						originData.forEach((item: any, i: number) => {
 							if (i === index) {
@@ -230,7 +230,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 					},
 					onCancel() {
 						history.push(
-							`/middlewareRepository/versionManagement/${type}`
+							`/middlewareRepository/versionManagement/${type}/${cluster.id}`
 						);
 					}
 				});
@@ -292,7 +292,7 @@ function ServiceVersion(props: versionProps): JSX.Element {
 			/>
 			<ProContent>
 				<Alert
-					type="warning"
+					type="info"
 					showIcon={true}
 					message="本系统范围内其它集群使用过的中间件版本，都可以自主选择是否安装升级到更新版本"
 				/>

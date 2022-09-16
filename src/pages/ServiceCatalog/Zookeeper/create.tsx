@@ -106,19 +106,11 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 	// * 日志-end
 	// * Zookeeper配置-start
-	const [version, setVersion] = useState<string>('3.7.0');
+	const [version, setVersion] = useState<string>('3.6');
 	const versionList = [
 		{
-			label: '3.7.0',
-			value: '3.7.0'
-		},
-		{
-			label: '3.6.3',
-			value: '3.6.3'
-		},
-		{
-			label: '3.5.9',
-			value: '3.5.9'
+			label: '3.6',
+			value: '3.6'
 		}
 	];
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
@@ -179,23 +171,22 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 	}, [props]);
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					console.log(res);
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) => item.availableDomain !== true
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
 		}
 	}, [project, globalNamespace]);
 	// 全局集群、分区更新
@@ -491,9 +482,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 			<ProHeader
 				title="创建Zookeeper服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					window.history.back();
 				}}
 			/>
 			<ProContent>
@@ -512,7 +501,10 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 											<FormItem required name="namespace">
 												<Select
 													placeholder="请选择命名空间"
-													style={{ width: '100%' }}
+													style={{ width: '380px' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -525,9 +517,22 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}
@@ -897,50 +902,47 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 										/>
 									</div>
 								</li>
-								{mirrorList.length && (
-									<li className="display-flex">
-										<label className="form-name">
-											<span
-												className="ne-required"
-												style={{ marginRight: 8 }}
-											>
-												镜像仓库
-											</span>
-										</label>
-										<div className="form-content">
-											<FormItem
-												name="mirrorImageId"
-												required
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+								<li className="display-flex">
+									<label className="form-name">
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											镜像仓库
+										</span>
+									</label>
+									<div className="form-content">
+										<FormItem
+											name="mirrorImageId"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																value: item.address,
-																label: item.address
-															};
-														}
-													)}
-													style={{
-														width: '380px'
-													}}
-												/>
-											</FormItem>
-										</div>
-									</li>
-								)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															value: item.address,
+															label: item.address
+														};
+													}
+												)}
+												style={{
+													width: '380px'
+												}}
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>

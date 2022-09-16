@@ -214,6 +214,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							onChange={(value: any) => {
 								updateValue(value, record);
 							}}
+							dropdownMatchSelectWidth={false}
 						>
 							{selectList &&
 								selectList.map((item) => {
@@ -235,6 +236,7 @@ function UseTemplate(props: UseTemplateProps): JSX.Element {
 							onChange={(value: any) => {
 								updateValue(value, record);
 							}}
+							dropdownMatchSelectWidth={false}
 						>
 							{selectList &&
 								selectList.map((item) => {

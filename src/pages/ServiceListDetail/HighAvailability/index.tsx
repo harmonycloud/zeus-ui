@@ -165,15 +165,14 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			name: data.name,
 			namespace: namespace,
 			clusterId: clusterId,
-			type: data.type
+			type: data.type,
+			role: record.role
 		};
-		if (data.type == 'mysql') {
-			setCurrentContainer('mysql');
-		} else if (data.type === 'redis') {
+		if (data.type === 'redis') {
 			if (record.role === 'master' || record.role === 'slave') {
 				setCurrentContainer('redis-cluster');
 			} else {
-				setCurrentContainer('sentinel');
+				setCurrentContainer(strArr[0]);
 			}
 		} else {
 			setCurrentContainer(strArr[0]);
@@ -248,7 +247,19 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			if (res.success) {
 				notification.success({
 					message: '成功',
-					description: '切换中, 3s 后获取数据'
+					description: (
+						<span>
+							已完成切换：
+							<br /> {pods[0].podName}:{' '}
+							{pods[0].role === 'master'
+								? '主节点 -> 从节点'
+								: '从节点 -> 主节点'}{' '}
+							<br /> {pods[1].podName}:{' '}
+							{pods[1].role === 'master'
+								? '主节点 -> 从节点'
+								: '从节点 -> 主节点'}
+						</span>
+					)
 				});
 				setTimeout(function () {
 					onRefresh('highAvailability');
@@ -501,6 +512,14 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			</>
 		)
 	};
+	const nodeNameRender = (value: string, record: PodItem) => {
+		return (
+			<span>
+				{value}
+				{record.nodeZone ? `(${record.nodeZone})` : ''}
+			</span>
+		);
+	};
 
 	return (
 		<div>
@@ -508,7 +527,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				<DefaultPicture />
 			) : (
 				<>
-					{type === 'mysql' ? (
+					{type === 'mysql' && data.mode === '1m-1s' ? (
 						<>
 							<div className="title-content">
 								<div className="blue-line"></div>
@@ -538,6 +557,15 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									checked={switchValue}
 									onChange={onChange}
 								/>
+							</div>
+							<div
+								className="display-flex switch-master flex-align"
+								style={{ marginTop: 12 }}
+							>
+								<span style={{ marginRight: 32 }}>
+									上一次切换时间
+								</span>
+								<label>{data.lastAutoSwitchTime || '/'}</label>
 							</div>
 							<div className="detail-divider" />
 						</>
@@ -578,7 +606,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						<ProTable.Column
 							title="所在主机"
 							dataIndex="nodeName"
-							width={150}
+							width={220}
+							render={nodeNameRender}
 						/>
 						<ProTable.Column
 							title="节点类型"

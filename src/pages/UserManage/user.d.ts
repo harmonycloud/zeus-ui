@@ -19,6 +19,14 @@ export interface roleProps {
 	status: string | null;
 }
 export interface usersProps extends resProps {
+	data: {
+		total?: number;
+		current?: number;
+		pageSize?: number;
+		list: userProps[];
+	};
+}
+export interface usersDataProps extends resProps {
 	data: userProps[];
 }
 export interface updateProps extends resProps {

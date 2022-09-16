@@ -103,6 +103,7 @@ export default function FormStorageClass(
 						style={{ width: '390px' }}
 						onChange={handleChange}
 						value={value}
+						dropdownMatchSelectWidth={false}
 					>
 						{storageClassList.map((item: StorageItem, index) => (
 							<Option

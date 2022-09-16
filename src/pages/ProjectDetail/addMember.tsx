@@ -111,6 +111,7 @@ export default function AddMember(props: AddMemberProps): JSX.Element {
 			<Select
 				onChange={(value: any) => roleChange(value, record)}
 				style={{ width: '100%' }}
+				dropdownMatchSelectWidth={false}
 			>
 				{roles.map((item: roleProps) => {
 					if (item.id !== 1) {

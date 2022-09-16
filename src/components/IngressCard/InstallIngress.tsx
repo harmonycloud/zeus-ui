@@ -124,6 +124,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 			}
 			const sendData = {
 				clusterId,
+				type: 'nginx',
 				...values
 			};
 			if (affinity.flag) {
@@ -186,7 +187,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 	};
 	return (
 		<Modal
-			title="安装负载均衡"
+			title="安装Nginx"
 			width={640}
 			visible={visible}
 			onCancel={onCancel}
@@ -196,10 +197,10 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 		>
 			<Form {...formItemLayout} labelAlign="left" form={form}>
 				<FormItem
-					label="ingress名称"
+					label="Nginx名称"
 					required
 					rules={[
-						{ required: true, message: '请输入Ingress名称' },
+						{ required: true, message: '请输入Nginx名称' },
 						{
 							pattern: new RegExp(pattern.ingressName),
 							message: '请输入由小写字母数字及“-”组成的1-40个字符'
@@ -207,7 +208,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 					]}
 					name="ingressClassName"
 				>
-					<Input placeholder="请输入Ingress名称" />
+					<Input placeholder="请输入Nginx名称" />
 				</FormItem>
 				<FormItem label="VIP配置" required name="address">
 					<div className="display-flex flex-align">

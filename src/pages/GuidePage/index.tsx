@@ -20,7 +20,11 @@ interface GuideProps {
 const GuidePage = (props: GuideProps) => {
 	const [current, setCurrent] = useState<string>('1');
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const { cluster, clusterList: globalClusterList } = props.globalVar;
+	const {
+		cluster,
+		clusterList: globalClusterList,
+		project
+	} = props.globalVar;
 	const history = useHistory();
 	useEffect(() => {
 		setIsAdmin(
@@ -29,64 +33,67 @@ const GuidePage = (props: GuideProps) => {
 			)
 		);
 	}, [JSON.parse(storage.getLocal('role'))]);
-	// useEffect(() => {
-	// 	getClusters({ detail: true }).then((res) => {
-	// 		if (res.success) {
-	// 			if (res.data.length > 0) {
-	// 				setCurrent('2');
-	// 			} else {
-	// 				setCurrent('1');
-	// 			}
-	// 		} else {
-	// 			notification.error({
-	// 				message: '失败',
-	// 				description: res.errorMsg
-	// 			});
-	// 		}
-	// 	});
-	// 	if (globalClusterList.length === 0) {
-	// 		setCurrent('1');
-	// 	} else {
-	// 		getComponents({ clusterId: cluster.id })
-	// 			.then((res) => {
-	// 				if (res.success) {
-	// 					const middlewareControllerStatus = res.data.find(
-	// 						(item: ComponentProp) =>
-	// 							item.component === 'middleware-controller'
-	// 					).status;
-	// 					if (middlewareControllerStatus === 3) {
-	// 						setCurrent('2');
-	// 					} else {
-	// 						setCurrent('1');
-	// 					}
-	// 				} else {
-	// 					notification.error({
-	// 						message: '失败',
-	// 						description: res.errorMsg
-	// 					});
-	// 					setCurrent('2');
-	// 				}
-	// 			})
-	// 			.finally(() => {
-	// 				getProjects({ key: '' }).then((res) => {
-	// 					console.log(res);
-	// 					if (res.success) {
-	// 						if (res.data.length > 0) {
-	// 							setCurrent('3');
-	// 						} else {
-	// 							setCurrent('2');
-	// 						}
-	// 					} else {
-	// 						notification.error({
-	// 							message: '失败',
-	// 							description: res.errorMsg
-	// 						});
-	// 						setCurrent('2');
-	// 					}
-	// 				});
-	// 			});
-	// 	}
-	// }, [props]);
+	useEffect(() => {
+		getProjects({ key: '' }).then((res) => {
+			if (res.success) {
+				if (res.data.length > 0) {
+					setCurrent('2');
+				} else {
+					setCurrent('1');
+				}
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+				setCurrent('1');
+			}
+		});
+		if (JSON.stringify(project) === '{}') {
+			setCurrent('1');
+		} else {
+			getClusters({ detail: true })
+				.then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							setCurrent('3');
+						} else {
+							setCurrent('2');
+						}
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				})
+				.finally(() => {
+					if (JSON.stringify(cluster) !== '{}') {
+						getComponents({ clusterId: cluster.id }).then((res) => {
+							if (res.success) {
+								const middlewareControllerStatus =
+									res.data.find(
+										(item: ComponentProp) =>
+											item.component ===
+											'middleware-controller'
+									).status;
+								if (middlewareControllerStatus === 3) {
+									setCurrent('3');
+								} else {
+									setCurrent('2');
+								}
+							} else {
+								notification.error({
+									message: '失败',
+									description: res.errorMsg
+								});
+								setCurrent('2');
+							}
+						});
+					}
+				});
+		}
+	}, [props]);
 	return (
 		<ProPage>
 			<ProHeader title="初始化操作引导" />
@@ -113,7 +120,7 @@ const GuidePage = (props: GuideProps) => {
 									1
 								</div>
 								<div className="guide-page-img-info">
-									添加集群
+									创建项目并绑定资源
 								</div>
 								<div
 									className="guide-page-line"
@@ -129,14 +136,14 @@ const GuidePage = (props: GuideProps) => {
 									}
 								></div>
 							</div>
-							<div>
-								添加集群用以发布中间件。
+							<div className="guide-page-desc">
+								业务范围以项目区分，通过项目管理中间件。
 								{isAdmin && (
 									<span
 										className="name-link"
 										onClick={() => {
 											history.push(
-												'/systemManagement/resourcePoolManagement/addResourcePool/addOther'
+												'/systemManagement/projectManagement'
 											);
 										}}
 									>
@@ -146,12 +153,7 @@ const GuidePage = (props: GuideProps) => {
 							</div>
 						</div>
 						<div className="guide-page-img-item">
-							<img
-								src={step2}
-								width={200}
-								height={200}
-								style={{ marginLeft: 50 }}
-							/>
+							<img src={step2} width={200} height={200} />
 							<div className="guide-page-img-title">
 								<div
 									className="guide-page-img-icon"
@@ -168,7 +170,7 @@ const GuidePage = (props: GuideProps) => {
 									2
 								</div>
 								<div className="guide-page-img-info">
-									安装或接入集群组件及中间件
+									添加集群
 								</div>
 								<div
 									className="guide-page-line-2"
@@ -183,7 +185,7 @@ const GuidePage = (props: GuideProps) => {
 								></div>
 							</div>
 							<div className="guide-page-desc">
-								平台运行需要依赖各类组件，并且上架默认推荐版本中间件，便可以发布中间服务。
+								添加集群用以发布中间件。
 								{isAdmin && (
 									<span
 										className={
@@ -194,7 +196,7 @@ const GuidePage = (props: GuideProps) => {
 										onClick={() => {
 											if (current !== '0') {
 												history.push(
-													`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
+													'/systemManagement/resourcePoolManagement/addResourcePool/addOther'
 												);
 											}
 										}}
@@ -222,11 +224,11 @@ const GuidePage = (props: GuideProps) => {
 									3
 								</div>
 								<div className="guide-page-img-info">
-									创建项目并绑定资源
+									安装或接入集群组件及中间件
 								</div>
 							</div>
-							<div>
-								业务范围以项目区分，通过项目管理中间件。
+							<div className="guide-page-desc">
+								平台运行需要依赖各类组件，并且上架默认推荐版本中间件，便可以发布中间服务。
 								{isAdmin && (
 									<span
 										className={
@@ -240,7 +242,7 @@ const GuidePage = (props: GuideProps) => {
 												current === '3'
 											) {
 												history.push(
-													'/systemManagement/projectManagement'
+													`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
 												);
 											}
 										}}

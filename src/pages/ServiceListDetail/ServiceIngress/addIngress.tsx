@@ -10,7 +10,10 @@ import {
 	Switch,
 	Button,
 	Divider,
-	Alert
+	Alert,
+	Row,
+	Col,
+	Tag
 } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import { ServiceIngressAddParams, ServiceNameItem } from '../detail';
@@ -74,6 +77,12 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 	const [serviceIngress] = useState<serviceAvailableItemProps>(
 		storage.getSession('serviceIngress')
 	);
+	const [ingressClassName, setIngressClassName] = useState<{
+		value: string;
+		type: string;
+		startPort: number;
+		endPort: number;
+	}>();
 	useEffect(() => {
 		if (serviceIngress) {
 			setExposeType(
@@ -111,7 +120,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				exposePort: Number(serviceIngress.serviceList?.[0].exposePort),
 				networkModel: serviceIngress.networkModel,
 				domain: serviceIngress.rules?.[0].domain,
-				path: serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path
+				path: serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path,
+				domainPath: `${serviceIngress.rules?.[0].domai}-${serviceIngress.rules?.[0]?.ingressHttpPaths?.[0]?.path}`
 			});
 		}
 		return () => {
@@ -166,19 +176,31 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 			}
 			setServiceNames(list);
 			!serviceIngress && setCurServiceName(list[0]);
+		} else if (name === 'minio') {
+			const list = [
+				{
+					label: '服务连接',
+					name: 'client',
+					icon: 'icon-fuwulianjie'
+				}
+			];
+			setServiceNames(list);
+			!serviceIngress && setCurServiceName(list[0]);
 		}
 	}, [name]);
 	useEffect(() => {
-		getIngresses({ clusterId: clusterId }).then((res) => {
-			if (res.success) {
-				setIngresses(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
+		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
+			(res) => {
+				if (res.success) {
+					setIngresses(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
 			}
-		});
+		);
 	}, []);
 	const handleClick = (record: ServiceNameItem) => {
 		setCurServiceName(record);
@@ -330,12 +352,16 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 						protocol: exposeType === 'TCP' ? 'TCP' : null,
 						serviceList: [
 							{
-								serviceName: `${middlewareName}-${
-									name === 'kafka' ? 'manager' : 'console'
+								serviceName: `${middlewareName}${
+									name === 'kafka'
+										? '-manager'
+										: name === 'rocketmq'
+										? '-console'
+										: ''
 								}-svc`,
 								exposePort: values.exposePort,
-								servicePort: name === 'kafka' ? 9000 : 8080,
-								targetPort: name === 'kafka' ? 9000 : 8080,
+								servicePort: name === 'rocketmq' ? 8080 : 9000,
+								targetPort: name === 'rocketmq' ? 8080 : 9000,
 								...old
 							}
 						]
@@ -358,13 +384,15 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 								ingressHttpPaths: [
 									{
 										path: values.path,
-										serviceName: `${middlewareName}-${
+										serviceName: `${middlewareName}${
 											name === 'kafka'
-												? 'manager'
-												: 'console'
+												? '-manager'
+												: name === 'rocketmq'
+												? '-console'
+												: ''
 										}-svc`,
 										servicePort:
-											name === 'kafka' ? 9000 : 8080
+											name === 'rocketmq' ? 8080 : 9000
 									}
 								]
 							}
@@ -393,6 +421,15 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 			});
 		});
 	};
+	const handleIngressChange = (value: string) => {
+		const cur = ingresses.find((item) => item.ingressClassName === value);
+		setIngressClassName({
+			value: value,
+			type: cur?.type as string,
+			startPort: Number(cur?.startPort || 0),
+			endPort: Number(cur?.endPort || 0)
+		});
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -400,14 +437,16 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 				onBack={() => window.history.back()}
 			/>
 			<ProContent>
-				{enableExternal === 'false' && mode !== 'dledger' && (
-					<Alert
-						message="您好！选择集群外访问服务暴露后需要重启服务！"
-						type="info"
-						showIcon
-						style={{ marginBottom: 8 }}
-					/>
-				)}
+				{name !== 'minio' &&
+					enableExternal === 'false' &&
+					mode !== 'dledger' && (
+						<Alert
+							message="您好！选择集群外访问服务暴露后需要重启服务！"
+							type="info"
+							showIcon
+							style={{ marginBottom: 8 }}
+						/>
+					)}
 				<Form {...formItemLayout410} form={form} labelAlign="left">
 					<h2>暴露服务</h2>
 					<FormItem required name="serviceName" label="暴露服务">
@@ -482,8 +521,11 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 									]}
 								>
 									<Select
+										value={ingressClassName?.value}
 										placeholder="请选择负载均衡"
 										disabled={!!serviceIngress}
+										dropdownMatchSelectWidth={false}
+										onChange={handleIngressChange}
 									>
 										{ingresses.map(
 											(item: IngressItemProps) => {
@@ -496,7 +538,21 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 															item.ingressClassName
 														}
 													>
-														{item.ingressClassName}
+														<div className="flex-space-between">
+															{
+																item.ingressClassName
+															}
+															<Tag
+																color={
+																	item.type ===
+																	'nginx'
+																		? 'cyan'
+																		: 'green'
+																}
+															>
+																{item.type}
+															</Tag>
+														</div>
 													</Option>
 												);
 											}
@@ -518,22 +574,49 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											{
 												max:
 													exposeType === 'TCP'
-														? 65535
+														? ingressClassName?.type ===
+														  'traefik'
+															? ingressClassName.endPort
+															: 65535
 														: 32767,
-												min: 30000,
+												min:
+													ingressClassName?.type ===
+													'traefik'
+														? ingressClassName.startPort
+														: 30000,
 												type: 'number',
-												message: `请输入30000-${
+												message: `请输入${
+													ingressClassName?.type ===
+													'traefik'
+														? ingressClassName.startPort
+														: 30000
+												}-${
 													exposeType === 'TCP'
-														? 65535
+														? ingressClassName?.type ===
+														  'traefik'
+															? ingressClassName.endPort
+															: 65535
 														: 32767
 												}以内的端口`
 											}
 										]}
 									>
 										<InputNumber
-											placeholder="请填写proxy端口"
 											disabled={!!serviceIngress}
-											style={{ width: '260px' }}
+											placeholder={`请输入${
+												ingressClassName?.type ===
+												'traefik'
+													? ingressClassName.startPort
+													: 30000
+											}-${
+												exposeType === 'TCP'
+													? ingressClassName?.type ===
+													  'traefik'
+														? ingressClassName.endPort
+														: 65535
+													: 32767
+											}以内的端口`}
+											style={{ width: 250 }}
 										/>
 									</FormItem>
 									<FormItem
@@ -548,22 +631,49 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											{
 												max:
 													exposeType === 'TCP'
-														? 65535
+														? ingressClassName?.type ===
+														  'traefik'
+															? ingressClassName.endPort
+															: 65535
 														: 32767,
-												min: 30000,
+												min:
+													ingressClassName?.type ===
+													'traefik'
+														? ingressClassName.startPort
+														: 30000,
 												type: 'number',
-												message: `请输入30000-${
+												message: `请输入${
+													ingressClassName?.type ===
+													'traefik'
+														? ingressClassName.startPort
+														: 30000
+												}-${
 													exposeType === 'TCP'
-														? 65535
+														? ingressClassName?.type ===
+														  'traefik'
+															? ingressClassName.endPort
+															: 65535
 														: 32767
 												}以内的端口`
 											}
 										]}
 									>
 										<InputNumber
-											placeholder="请填写proxy-1端口"
 											disabled={!!serviceIngress}
-											style={{ width: '260px' }}
+											placeholder={`请输入${
+												ingressClassName?.type ===
+												'traefik'
+													? ingressClassName.startPort
+													: 30000
+											}-${
+												exposeType === 'TCP'
+													? ingressClassName?.type ===
+													  'traefik'
+														? ingressClassName.endPort
+														: 65535
+													: 32767
+											}以内的端口`}
+											style={{ width: 250 }}
 										/>
 									</FormItem>
 								</>
@@ -591,8 +701,18 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 												required
 												rules={[
 													{
-														min: 30000,
-														max: 65535,
+														max:
+															exposeType === 'TCP'
+																? ingressClassName?.type ===
+																  'traefik'
+																	? ingressClassName.endPort
+																	: 65535
+																: 32767,
+														min:
+															ingressClassName?.type ===
+															'traefik'
+																? ingressClassName.startPort
+																: 30000,
 														type: 'number',
 														message:
 															'请输入符合规定的端口号'
@@ -605,14 +725,41 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 												]}
 											>
 												<InputNumber
-													placeholder="请输入30000-65535以内的端口"
-													style={{ width: '260px' }}
+													placeholder={`请输入${
+														ingressClassName?.type ===
+														'traefik'
+															? ingressClassName.startPort
+															: 30000
+													}-${
+														exposeType === 'TCP'
+															? ingressClassName?.type ===
+															  'traefik'
+																? ingressClassName.endPort
+																: 65535
+															: 32767
+													}以内的端口`}
+													style={{ width: 250 }}
 												/>
 											</FormItem>
 										);
 									})}
 								</div>
 							)}
+							{exposeType === 'TCP' &&
+								!autoConfig &&
+								ingressClassName?.type === 'traefik' && (
+									<Row>
+										<Col span={4}></Col>
+										<Col span={10}>
+											<div>
+												当前负载均衡相关端口组为
+												{ingressClassName?.startPort}-
+												{ingressClassName?.endPort}
+												,请在端口组范围内选择端口
+											</div>
+										</Col>
+									</Row>
+								)}
 						</>
 					)}
 					{/* 选择管理页面 */}
@@ -621,7 +768,8 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					) ||
 						curServiceName?.name.includes(
 							`${middlewareName}-manager-svc`
-						)) && (
+						) ||
+						curServiceName?.name === 'client') && (
 						<>
 							<h2>暴露配置</h2>
 							<FormItem
@@ -643,16 +791,19 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 							</FormItem>
 							{networkIngress === 4 && (
 								<>
-									<div className="ingress-four-tcp-or-NodePort">
-										<SelectBlock
-											disabled={!!serviceIngress}
-											options={fourNetworkIngress}
-											currentValue={exposeType}
-											onCallBack={(value: any) =>
-												setExposeType(value)
-											}
-										/>
-									</div>
+									<Row style={{ marginBottom: 24 }}>
+										<Col span={4}></Col>
+										<Col span={10}>
+											<SelectBlock
+												disabled={!!serviceIngress}
+												options={fourNetworkIngress}
+												currentValue={exposeType}
+												onCallBack={(value: any) =>
+													setExposeType(value)
+												}
+											/>
+										</Col>
+									</Row>
 									{exposeType === 'TCP' && (
 										<FormItem
 											name="ingressClassName"
@@ -666,8 +817,11 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											]}
 										>
 											<Select
+												value={ingressClassName?.value}
 												placeholder="请选择负载均衡"
 												disabled={!!serviceIngress}
+												dropdownMatchSelectWidth={false}
+												onChange={handleIngressChange}
 											>
 												{ingresses.map(
 													(
@@ -682,9 +836,23 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 																	item.ingressClassName
 																}
 															>
-																{
-																	item.ingressClassName
-																}
+																<div className="flex-space-between">
+																	{
+																		item.ingressClassName
+																	}
+																	<Tag
+																		color={
+																			item.type ===
+																			'nginx'
+																				? 'cyan'
+																				: 'green'
+																		}
+																	>
+																		{
+																			item.type
+																		}
+																	</Tag>
+																</div>
 															</Option>
 														);
 													}
@@ -704,22 +872,70 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 											{
 												max:
 													exposeType === 'TCP'
-														? 65535
+														? ingressClassName?.type ===
+														  'traefik'
+															? ingressClassName.endPort
+															: 65535
 														: 32767,
-												min: 30000,
+												min:
+													ingressClassName?.type ===
+													'traefik'
+														? ingressClassName.startPort
+														: 30000,
 												type: 'number',
-												message: `请输入30000-${
+												message: `请输入${
+													ingressClassName?.type ===
+													'traefik'
+														? ingressClassName.startPort
+														: 30000
+												}-${
 													exposeType === 'TCP'
-														? 65535
+														? ingressClassName?.type ===
+														  'traefik'
+															? ingressClassName.endPort
+															: 65535
 														: 32767
 												}以内的端口`
 											}
 										]}
 									>
 										<InputNumber
-											style={{ width: '160px' }}
+											placeholder={`请输入${
+												ingressClassName?.type ===
+												'traefik'
+													? ingressClassName.startPort
+													: 30000
+											}-${
+												exposeType === 'TCP'
+													? ingressClassName?.type ===
+													  'traefik'
+														? ingressClassName.endPort
+														: 65535
+													: 32767
+											}以内的端口`}
+											style={{ width: 250 }}
 										/>
 									</FormItem>
+									{exposeType === 'TCP' &&
+										ingressClassName?.type ===
+											'traefik' && (
+											<Row>
+												<Col span={4}></Col>
+												<Col span={10}>
+													<div>
+														当前负载均衡相关端口组为
+														{
+															ingressClassName?.startPort
+														}
+														-
+														{
+															ingressClassName?.endPort
+														}
+														,请在端口组范围内选择端口
+													</div>
+												</Col>
+											</Row>
+										)}
 								</>
 							)}
 							{networkIngress === 7 && (
@@ -738,6 +954,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										<Select
 											placeholder="请选择负载均衡"
 											disabled={!!serviceIngress}
+											dropdownMatchSelectWidth={false}
 										>
 											{ingresses.map(
 												(item: IngressItemProps) => {
@@ -750,9 +967,21 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 																item.ingressClassName
 															}
 														>
-															{
-																item.ingressClassName
-															}
+															<div className="flex-space-between">
+																{
+																	item.ingressClassName
+																}
+																<Tag
+																	color={
+																		item.type ===
+																		'nginx'
+																			? 'cyan'
+																			: 'green'
+																	}
+																>
+																	{item.type}
+																</Tag>
+															</div>
 														</Option>
 													);
 												}

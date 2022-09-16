@@ -13,7 +13,8 @@ import {
 	Table,
 	Spin,
 	Popover,
-	Progress
+	Progress,
+	Empty
 } from 'antd';
 import {
 	ReloadOutlined,
@@ -257,6 +258,7 @@ function PlatformOverview(props: any): JSX.Element {
 									}}
 									onChange={(value) => setType(value)}
 									defaultValue="全部"
+									dropdownMatchSelectWidth={false}
 								>
 									{poolList.length &&
 										poolList.map((item: poolListItem) => {
@@ -482,12 +484,17 @@ function PlatformOverview(props: any): JSX.Element {
 											}
 										)
 									) : (
-										<Spin
+										<Empty
 											style={{
 												width: '100%',
-												height: '70px',
-												lineHeight: '70px'
+												padding: 0
 											}}
+											image={Empty.PRESENTED_IMAGE_SIMPLE}
+											description={
+												<div>
+													该集群暂无服务，请前往服务列表发布
+												</div>
+											}
 										/>
 									)}
 								</div>

@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
-import { Button, Divider, Form, InputNumber, Select, notification } from 'antd';
+import {
+	Button,
+	Divider,
+	Form,
+	InputNumber,
+	Select,
+	notification,
+	Tag,
+	Row,
+	Col
+} from 'antd';
 import SelectCard from '@/components/SelectCard';
 import { getIngresses } from '@/services/common';
 import { addIngress } from '@/services/ingress';
@@ -33,7 +43,12 @@ export default function AddIngress(): JSX.Element {
 		storage.getSession('serviceIngress')
 	);
 	const [data, setData] = useState<any>();
-
+	const [ingressClassName, setIngressClassName] = useState<{
+		value: string;
+		type: string;
+		startPort: number;
+		endPort: number;
+	}>();
 	const ingressTypeList = [
 		{
 			label: '只读',
@@ -58,7 +73,9 @@ export default function AddIngress(): JSX.Element {
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'redis') {
 			return data?.readWriteProxy?.enabled
-				? [ingressTypeList[1]]
+				? mode === 'sentinel'
+					? [ingressTypeList[2]]
+					: [ingressTypeList[1]]
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'postgresql') {
 			return [ingressTypeList[0], ingressTypeList[1]];
@@ -73,16 +90,18 @@ export default function AddIngress(): JSX.Element {
 		}
 	};
 	useEffect(() => {
-		getIngresses({ clusterId: clusterId }).then((res) => {
-			if (res.success) {
-				setIngresses(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
+		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
+			(res) => {
+				if (res.success) {
+					setIngresses(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
 			}
-		});
+		);
 		getData(clusterId, namespace);
 	}, []);
 	useEffect(() => {
@@ -122,7 +141,8 @@ export default function AddIngress(): JSX.Element {
 				setData(res.data);
 				name === 'redis' &&
 					res.data.readWriteProxy?.enabled &&
-					setIngressType('rw');
+					mode === 'sentinel' &&
+					setIngressType('proxy');
 			} else {
 				notification.error({
 					message: '失败',
@@ -145,8 +165,18 @@ export default function AddIngress(): JSX.Element {
 			}
 		} else if (name === 'redis') {
 			if (data.readWriteProxy.enabled) {
-				servicePort = 7617;
-				service = `${middlewareName}-predixy`;
+				if (mode === 'sentinel') {
+					servicePort = ingressType === 'proxy' ? 7617 : 6379;
+					service =
+						ingressType === 'read'
+							? `${middlewareName}-readonly`
+							: ingressType === 'proxy'
+							? `${middlewareName}-predixy`
+							: middlewareName;
+				} else {
+					servicePort = 7617;
+					service = `${middlewareName}-predixy`;
+				}
 			} else {
 				servicePort = 6379;
 				service =
@@ -223,6 +253,15 @@ export default function AddIngress(): JSX.Element {
 			});
 		});
 	};
+	const handleIngressChange = (value: string) => {
+		const cur = ingresses.find((item) => item.ingressClassName === value);
+		setIngressClassName({
+			value: value,
+			type: cur?.type as string,
+			startPort: Number(cur?.startPort || 0),
+			endPort: Number(cur?.endPort || 0)
+		});
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -288,6 +327,9 @@ export default function AddIngress(): JSX.Element {
 							<Select
 								placeholder="请选择负载均衡"
 								disabled={!!serviceIngress}
+								dropdownMatchSelectWidth={false}
+								value={ingressClassName?.value}
+								onChange={handleIngressChange}
 							>
 								{ingresses.map((item: IngressItemProps) => {
 									return (
@@ -295,7 +337,18 @@ export default function AddIngress(): JSX.Element {
 											key={item.ingressClassName}
 											value={item.ingressClassName}
 										>
-											{item.ingressClassName}
+											<div className="flex-space-between">
+												{item.ingressClassName}
+												<Tag
+													color={
+														item.type === 'nginx'
+															? 'cyan'
+															: 'green'
+													}
+												>
+													{item.type}
+												</Tag>
+											</div>
 										</Select.Option>
 									);
 								})}
@@ -312,26 +365,66 @@ export default function AddIngress(): JSX.Element {
 							},
 							{
 								type: 'number',
-								min: 30000,
-								max: exposeType === 'TCP' ? 65535 : 32767,
-								message: `对外端口不能小于30000，大于${
-									exposeType === 'TCP' ? 65535 : 32767
-								}`
+								min:
+									ingressClassName?.type === 'traefik'
+										? ingressClassName.startPort
+										: 30000,
+								max:
+									exposeType === 'TCP'
+										? ingressClassName?.type === 'traefik'
+											? ingressClassName.endPort
+											: 65535
+										: 32767,
+								message: `请输入${
+									ingressClassName?.type === 'traefik'
+										? ingressClassName.startPort
+										: 30000
+								}-${
+									exposeType === 'TCP'
+										? ingressClassName?.type === 'traefik'
+											? ingressClassName.endPort
+											: 65535
+										: 32767
+								}以内的端口`
 							}
 						]}
 					>
 						<InputNumber
-							placeholder="对外端口"
-							style={{ width: 182 }}
+							placeholder={`请输入${
+								ingressClassName?.type === 'traefik'
+									? ingressClassName.startPort
+									: 30000
+							}-${
+								exposeType === 'TCP'
+									? ingressClassName?.type === 'traefik'
+										? ingressClassName.endPort
+										: 65535
+									: 32767
+							}以内的端口`}
+							style={{ width: 250 }}
 						/>
 					</Form.Item>
+					{exposeType === 'TCP' &&
+						ingressClassName?.type === 'traefik' && (
+							<Row>
+								<Col span={3}></Col>
+								<Col span={10}>
+									<div>
+										当前负载均衡相关端口组为
+										{ingressClassName?.startPort}-
+										{ingressClassName?.endPort}
+										,请在端口组范围内选择端口
+									</div>
+								</Col>
+							</Row>
+						)}
 					<Divider style={{ marginTop: 40 }} />
 					<Button
 						type="primary"
 						onClick={handleSubmit}
 						style={{ marginRight: 16 }}
 					>
-						确认
+						确定
 					</Button>
 					<Button onClick={() => window.history.back()}>取消</Button>
 				</Form>

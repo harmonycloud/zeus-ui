@@ -32,9 +32,9 @@ function EditTime(props: editTimeProps): JSX.Element {
 	useEffect(() => {
 		if (data.cron) {
 			const cron =
-				data.cron.indexOf('? ?') !== -1
-					? data.cron.split(' ? ? ')
-					: data.cron.split(' * * ');
+				data?.cron.indexOf('? ?') !== -1
+					? data?.cron.split(' ? ? ')
+					: data?.cron.split(' * * ');
 			data &&
 				setChecks(
 					cron[1].split(',').map((item: string) => Number(item))
@@ -60,8 +60,10 @@ function EditTime(props: editTimeProps): JSX.Element {
 							.join(':'),
 						'HH:mm'
 					),
-					limitRecord: data.limitRecord,
-					retentionTime: data.retentionTime
+					limitRecord: data?.limitRecord,
+					retentionTime:
+						data?.retentionTime &&
+						(data?.retentionTime[0] || data?.retentionTime)
 				});
 			data && setDateUnit(data.dateUnit);
 		}
@@ -78,40 +80,81 @@ function EditTime(props: editTimeProps): JSX.Element {
 					const week = values.cycle?.join(',');
 					const cron = `${minute} ${hour} ? ? ${week}`;
 					if (type === 'way') {
-						if (data.sourceType === 'mysql') {
-							onCreate({
+						// if (data.sourceType === 'mysql') {
+						// 	onCreate({
+						// 		cron,
+						// 		keepAlive:
+						// 			data.sourceType === 'mysql'
+						// 				? data.limitRecord
+						// 				: data.retentionTime
+						// 	});
+						// } else {
+						// 	onCreate({
+						// 		cron,
+						// 		dateUnit: data.dateUnit,
+						// 		keepAlive:
+						// 			data.sourceType === 'mysql'
+						// 				? data.limitRecord
+						// 				: data.retentionTime
+						// 	});
+						// }
+						let sendData: any;
+						if (data.sourceType === 'mysql' && data.mysqlBackup) {
+							sendData = {
 								cron,
-								keepAlive:
-									data.sourceType === 'mysql'
-										? data.limitRecord
-										: data.retentionTime
-							});
+								// increment: data.increment,
+								mysqlBackup: true,
+								limitRecord: data.limitRecord
+							};
 						} else {
-							onCreate({
+							sendData = {
 								cron,
-								dateUnit: data.dateUnit,
-								keepAlive:
-									data.sourceType === 'mysql'
-										? data.limitRecord
-										: data.retentionTime
-							});
+								dateUnit: dateUnit,
+								increment: data.increment,
+								retentionTime: data.retentionTime[0]
+							};
 						}
+						// const sendData: any = {
+						// 	cron,
+						// 	dateUnit: data.dateUnit,
+						// 	increment: data.increment,
+						// 	retentionTime: data.retentionTime[0]
+						// };
+						if (data.pause === 'off') {
+							sendData.time = data.time;
+						}
+						onCreate(sendData);
 					} else {
-						if (data.sourceType === 'mysql') {
-							onCreate({
+						let sendData: any;
+						if (data.sourceType === 'mysql' && data.mysqlBackup) {
+							sendData = {
 								cron: data.cron,
-								keepAlive: values.limitRecord
-							});
+								// increment: data.increment,
+								mysqlBackup: true,
+								limitRecord: values.limitRecord
+							};
 						} else {
-							onCreate({
+							sendData = {
 								cron: data.cron,
-								keepAlive: values.retentionTime,
-								dateUnit
-							});
+								dateUnit: dateUnit,
+								increment: data.increment,
+								retentionTime: values.retentionTime
+							};
 						}
+						// const sendData: any = {
+						// 	cron: data.cron,
+						// 	dateUnit: dateUnit,
+						// 	increment: data.increment,
+						// 	retentionTime: values.retentionTime
+						// };
+						if (data.pause === 'off') {
+							sendData.time = data.time;
+						}
+						onCreate(sendData);
 					}
 				});
 			}}
+			forceRender
 			onCancel={onCancel}
 			width={720}
 		>
@@ -188,7 +231,9 @@ function EditTime(props: editTimeProps): JSX.Element {
 						</Form.Item>
 					</>
 				) : null}
-				{type !== 'way' && data.sourceType === 'mysql' ? (
+				{type !== 'way' &&
+				data.sourceType === 'mysql' &&
+				data.mysqlBackup ? (
 					<Form.Item
 						label="备份保留个数"
 						name="limitRecord"
@@ -207,7 +252,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 						<InputNumber style={{ width: 160 }} />
 					</Form.Item>
 				) : null}
-				{type !== 'way' && data.sourceType !== 'mysql' ? (
+				{type !== 'way' && !data.mysqlBackup ? (
 					<Form.Item
 						label="备份保留时间"
 						name="retentionTime"
@@ -232,6 +277,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 					>
 						<InputNumber
 							type="inline"
+							min={1}
 							addonAfter={
 								<Select
 									value={dateUnit}
@@ -239,6 +285,7 @@ function EditTime(props: editTimeProps): JSX.Element {
 										setDateUnit(value);
 										form.validateFields(['dateUnit']);
 									}}
+									dropdownMatchSelectWidth={false}
 								>
 									{dataType?.map((item: any) => {
 										return (

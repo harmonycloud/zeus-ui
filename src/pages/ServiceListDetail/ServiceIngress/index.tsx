@@ -97,7 +97,11 @@ export default function ServiceDetailIngress(
 				disabled={judgeDisabled().flag}
 				onClick={() => {
 					// kfk mq 的添加服务暴露页不同
-					if (name === 'kafka' || name === 'rocketmq') {
+					if (
+						name === 'kafka' ||
+						name === 'rocketmq' ||
+						name === 'minio'
+					) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${brokerNum}/${
 								dataSource.length > 0
@@ -109,9 +113,18 @@ export default function ServiceDetailIngress(
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 						);
-					} else {
+					} else if (
+						name === 'mysql' ||
+						name === 'redis' ||
+						name === 'postgresql' ||
+						name === 'zookeeper'
+					) {
 						history.push(
 							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+						);
+					} else {
+						history.push(
+							`/serviceList/${name}/${aliasName}/externalAccess/addExternalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
 						);
 					}
 				}}
@@ -380,13 +393,26 @@ export default function ServiceDetailIngress(
 														history.push(
 															`/serviceList/${name}/${aliasName}/externalAccess/edit/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
 														);
-													} else {
+													} else if (
+														name === 'mysql' ||
+														name === 'redis' ||
+														name === 'postgresql' ||
+														name === 'zookeeper'
+													) {
 														storage.setSession(
 															'serviceIngress',
 															item
 														);
 														history.push(
 															`/serviceList/${name}/${aliasName}/externalAccess/edit/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+														);
+													} else {
+														storage.setLocal(
+															'availableRecord',
+															item
+														);
+														history.push(
+															`/serviceList/${name}/${aliasName}/externalAccess/addExternalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
 														);
 													}
 												}}

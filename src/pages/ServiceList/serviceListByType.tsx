@@ -32,7 +32,8 @@ import {
 	serviceProps,
 	serviceListProps,
 	middlewareProps,
-	ListParamsProps
+	ListParamsProps,
+	ShowDataSourceParams
 } from './service.list';
 import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
@@ -54,7 +55,8 @@ const ServiceListByType = (props: serviceListProps) => {
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
-	const [showDataSource, setShowDataSource] = useState<serviceProps[]>([]);
+	const [showDataSource, setShowDataSource] =
+		useState<ShowDataSourceParams>();
 	const [backupCheck, setBackupCheck] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
 	const [cantRelease, setCantRelease] = useState<boolean>(false);
@@ -162,7 +164,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		) {
 			if (mounted) {
 				setDataSource(undefined);
-				setShowDataSource([]);
+				setShowDataSource({ '': [] });
 				setLoadingVisible(true);
 				getList({
 					projectId: project.projectId,
@@ -173,12 +175,18 @@ const ServiceListByType = (props: serviceListProps) => {
 				})
 					.then((res) => {
 						if (res.success) {
+							console.log(res.data);
 							if (res.data.length > 0) {
 								setDataSource(res.data[0]);
-								setShowDataSource(res.data[0].serviceList);
+								setShowDataSource({
+									[res.data[0].name]: res.data[0].serviceList
+								});
+								console.log({
+									[res.data[0].name]: res.data[0].serviceList
+								});
 							} else {
 								setDataSource(undefined);
-								setShowDataSource([]);
+								setShowDataSource({ '': [] });
 							}
 						} else {
 							notification.error({
@@ -193,14 +201,14 @@ const ServiceListByType = (props: serviceListProps) => {
 			}
 		}
 		return () => {
-			setShowDataSource([]);
+			setShowDataSource({ '': [] });
 			mounted = false;
 		};
 	}, [cluster, namespace, name]);
 	const getData = () => {
 		setLoadingVisible(true);
 		setDataSource(undefined);
-		setShowDataSource([]);
+		setShowDataSource({ '': [] });
 		getList({
 			projectId: project.projectId,
 			clusterId: cluster.id,
@@ -212,10 +220,15 @@ const ServiceListByType = (props: serviceListProps) => {
 				if (res.success) {
 					if (res.data.length > 0) {
 						setDataSource(res.data[0]);
-						setShowDataSource(res.data[0].serviceList);
+						setShowDataSource({
+							[res.data[0].name]: res.data[0].serviceList
+						});
+						console.log({
+							[res.data[0].name]: res.data[0].serviceList
+						});
 					} else {
 						setDataSource(undefined);
-						setShowDataSource([]);
+						setShowDataSource({ '': [] });
 					}
 				} else {
 					notification.error({
@@ -268,12 +281,12 @@ const ServiceListByType = (props: serviceListProps) => {
 		setBackupCheck(e.target.checked);
 		let list = dataSource?.serviceList || [];
 		if (e.target.checked) {
-			list = showDataSource.filter(
-				(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
-			);
+			list =
+				showDataSource?.[name].filter(
+					(item) => item?.mysqlDTO?.openDisasterRecoveryMode === true
+				) || [];
 		}
-
-		setShowDataSource(list);
+		setShowDataSource({ [name]: list });
 	};
 	const releaseMiddleware = () => {
 		if (middlewareInfo?.official) {
@@ -484,6 +497,42 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			}
+		} else if (namespace.availableDomain) {
+			if (name !== 'mysql' && name !== 'redis') {
+				return {
+					primary: (
+						<Tooltip title="当前中间件不支持同城双活">
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={namespace.availableDomain}
+							>
+								发布服务
+							</Button>
+						</Tooltip>
+					)
+				};
+			} else {
+				return {
+					primary: (
+						<Button
+							onClick={releaseMiddleware}
+							type="primary"
+							disabled={!middlewareInfo}
+						>
+							发布服务
+						</Button>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
+					)
+				};
+			}
 		} else {
 			if (name === 'mysql') {
 				return {
@@ -567,7 +616,69 @@ const ServiceListByType = (props: serviceListProps) => {
 		if (roleFlag.operateFlag && !roleFlag.deleteFlag) {
 			return (
 				<Actions>
+					{(name === 'kafka' ||
+						name === 'rocketmq' ||
+						name === 'elasticsearch') && (
+						<LinkButton
+							onClick={() => {
+								const sendData = {
+									clusterId: cluster.id,
+									namespace: record.namespace,
+									middlewareName: record.name,
+									type: record.type
+								};
+								getPlatformAdd(sendData).then((res) => {
+									if (res.success) {
+										if (res.data) {
+											window.open(
+												`${window.location.protocol.toLowerCase()}//${
+													res.data
+												}`,
+												'_blank'
+											);
+										} else {
+											const sn =
+												record.type === 'elasticsearch'
+													? `${record.name}-kibana`
+													: record.type === 'rocketmq'
+													? `${record.name}-console-svc`
+													: `${record.name}-manager-svc`;
+											notification.error({
+												message: '失败',
+												description: `请前往服务暴露页面暴露管理页面服务`
+											});
+										}
+									} else {
+										notification.info({
+											message: '提醒',
+											description: res.errorMsg
+										});
+									}
+								});
+							}}
+						>
+							<span>服务控制台</span>
+						</LinkButton>
+					)}
 					<LinkButton
+						onClick={() =>
+							history.push(
+								`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
+							)
+						}
+					>
+						<span>版本管理</span>
+					</LinkButton>
+				</Actions>
+			);
+		}
+		return (
+			<Actions>
+				{(name === 'kafka' ||
+					name === 'rocketmq' ||
+					name === 'elasticsearch') && (
+					<LinkButton
+						disabled={!roleFlag.operateFlag}
 						onClick={() => {
 							const sendData = {
 								clusterId: cluster.id,
@@ -594,84 +705,29 @@ const ServiceListByType = (props: serviceListProps) => {
 												: `${record.name}-manager-svc`;
 										notification.error({
 											message: '失败',
-											description: `请先前往“服务暴露”暴露该服务的${sn}服务`
+											description: `请前往服务暴露页面暴露管理页面服务`
 										});
 									}
 								} else {
-									notification.error({
-										message: '失败',
+									notification.info({
+										message: '提醒',
 										description: res.errorMsg
 									});
 								}
 							});
 						}}
 					>
-						<span>服务控制台</span>
-					</LinkButton>
-					<LinkButton
-						onClick={() =>
-							history.push(
-								`/serviceList/${name}/${aliasName}/serverVersion/${record.name}/${record.type}/${record.namespace}`
-							)
-						}
-					>
-						<span>版本管理</span>
-					</LinkButton>
-				</Actions>
-			);
-		}
-		return (
-			<Actions>
-				<LinkButton
-					disabled={!roleFlag.operateFlag}
-					onClick={() => {
-						const sendData = {
-							clusterId: cluster.id,
-							namespace: record.namespace,
-							middlewareName: record.name,
-							type: record.type
-						};
-						getPlatformAdd(sendData).then((res) => {
-							if (res.success) {
-								console.log(res);
-								if (res.data) {
-									window.open(
-										`${window.location.protocol.toLowerCase()}//${
-											res.data
-										}`,
-										'_blank'
-									);
-								} else {
-									const sn =
-										record.type === 'elasticsearch'
-											? `${record.name}-kibana`
-											: record.type === 'rocketmq'
-											? `${record.name}-console-svc`
-											: `${record.name}-manager-svc`;
-									notification.error({
-										message: '失败',
-										description: `请先前往“服务暴露”暴露该服务的${sn}服务`
-									});
-								}
-							} else {
-								notification.error({
-									message: '失败',
-									description: res.errorMsg
-								});
+						<span
+							title={
+								!roleFlag.operateFlag
+									? '当前用户无改操作的权限'
+									: ''
 							}
-						});
-					}}
-				>
-					<span
-						title={
-							!roleFlag.operateFlag
-								? '当前用户无改操作的权限'
-								: ''
-						}
-					>
-						服务控制台
-					</span>
-				</LinkButton>
+						>
+							服务控制台
+						</span>
+					</LinkButton>
+				)}
 				<LinkButton
 					disabled={!roleFlag.operateFlag}
 					onClick={() =>
@@ -897,7 +953,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			/>
 			<ProContent>
 				<ProTable
-					dataSource={showDataSource}
+					dataSource={showDataSource?.[name] || []}
 					showColumnSetting
 					showRefresh
 					onRefresh={getData}

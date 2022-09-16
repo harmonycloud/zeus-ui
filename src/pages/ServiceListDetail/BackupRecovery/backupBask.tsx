@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, notification, Tooltip } from 'antd';
+import { Button, Modal, notification, Select, Space } from 'antd';
 import moment from 'moment';
 import { useHistory, useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import {
 	getBackupTasks,
-	addBackupConfig,
 	deleteBackupTasks,
 	getServiceList
 } from '@/services/backup';
@@ -14,9 +13,11 @@ import { statusBackupRender } from '@/utils/utils';
 import { backupTaskStatus } from '@/utils/const';
 import storage from '@/utils/storage';
 import { BackupRecordItem } from './backup';
+import { getClusters } from '@/services/common';
+import { clusterType } from '@/types';
 
-const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
+const { Option } = Select;
 export default function List(props: any): JSX.Element {
 	const { clusterId, namespace, data } = props;
 	const params: any = useParams();
@@ -24,8 +25,24 @@ export default function List(props: any): JSX.Element {
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
 	const [serviceList, setServiceList] = useState<any>([]);
 	const [isLvm, setIsLvm] = useState<boolean>(true);
+	const [clusterList, setClusterList] = useState<clusterType[]>([]);
+	const [currentCluster, setCurrentCluster] = useState<clusterType>();
 	const history = useHistory();
-
+	useEffect(() => {
+		if (!data) {
+			getClusters({ detail: true }).then((res) => {
+				if (res.success) {
+					setClusterList(res.data);
+					setCurrentCluster(res.data[0]);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, []);
 	useEffect(() => {
 		if (clusterId !== undefined && namespace !== undefined) {
 			getData('');
@@ -43,11 +60,29 @@ export default function List(props: any): JSX.Element {
 		}
 		params.type && !data.isAllLvmStorage && setIsLvm(false);
 	}, [clusterId, namespace]);
+	useEffect(() => {
+		if (!data) {
+			if (currentCluster) {
+				getData('');
+				getServiceList().then((res) => {
+					res.data?.length ? setDisabled(false) : setDisabled(true);
+					setServiceList(
+						res.data.map((item: any) => {
+							return {
+								text: item.name,
+								value: item.name
+							};
+						})
+					);
+				});
+			}
+		}
+	}, [currentCluster]);
 
 	const getData = (keyword: string) => {
 		const sendData = {
 			keyword,
-			clusterId,
+			clusterId: clusterId ? clusterId : currentCluster?.id,
 			namespace,
 			middlewareName: params?.middlewareName || '',
 			type: params?.type || ''
@@ -84,8 +119,7 @@ export default function List(props: any): JSX.Element {
 
 	const actionRender = (
 		value: any,
-		// record: BackupRecordItem,
-		record: any,
+		record: BackupRecordItem,
 		index: number
 	) => {
 		return (
@@ -99,13 +133,16 @@ export default function List(props: any): JSX.Element {
 							content: '备份任务删除后将无法恢复，请确认执行',
 							onOk: () => {
 								const sendData = {
-									clusterId,
+									clusterId: clusterId
+										? clusterId
+										: currentCluster?.id,
 									namespace: record.namespace,
 									type: record.sourceType,
 									cron: record.cron || '',
 									backupName: record.backupName,
 									backupId: record.backupId,
 									addressName: record.addressName,
+									schedule: record.schedule,
 									backupFileName: record.backupFileName || ''
 								};
 								deleteBackupTasks(sendData)
@@ -135,36 +172,58 @@ export default function List(props: any): JSX.Element {
 		);
 	};
 
+	const onChange = (value: string) => {
+		const ct = clusterList.find((item) => item.id === value);
+		setCurrentCluster(ct);
+	};
+
 	const Operation = {
 		primary: (
-			<Button
-				onClick={() => {
-					if (disabled) {
-						notification.error({
-							message: '提示',
-							description: '当前集群下没有服务，没有备份对象'
-						});
-					} else if (!isLvm) {
-						notification.error({
-							message: '提示',
-							description: '存储不使用Lvm时，无法创建备份任务'
-						});
-					} else {
-						if (params.type) {
-							history.push(
-								`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
-							);
+			<Space>
+				<Button
+					onClick={() => {
+						if (disabled) {
+							notification.error({
+								message: '提示',
+								description: '当前集群下没有服务，没有备份对象'
+							});
+						} else if (!isLvm) {
+							notification.error({
+								message: '提示',
+								description: '存储不使用Lvm时，无法创建备份任务'
+							});
 						} else {
-							history.push(
-								'/backupService/backupTask/addBackupTask'
-							);
+							if (params.type) {
+								history.push(
+									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
+								);
+							} else {
+								history.push(
+									'/backupService/backupTask/addBackupTask'
+								);
+							}
 						}
-					}
-				}}
-				type="primary"
-			>
-				新增
-			</Button>
+					}}
+					type="primary"
+				>
+					新增
+				</Button>
+				{!data && (
+					<Select
+						dropdownMatchSelectWidth={false}
+						onChange={onChange}
+						value={currentCluster?.id}
+					>
+						{clusterList.map((item: clusterType) => {
+							return (
+								<Option value={item.id} key={item.id}>
+									{item.nickname}
+								</Option>
+							);
+						})}
+					</Select>
+				)}
+			</Space>
 		)
 	};
 
@@ -176,14 +235,26 @@ export default function List(props: any): JSX.Element {
 					if (record.status === 'Deleted' || !record.status) return;
 					if (params.type) {
 						history.push(
-							`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/backupTaskDetail/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}/${record.backupName}`
+							`/serviceList/${params.name}/${params.aliasName}/${
+								params.currentTab
+							}/backupTaskDetail/${params.middlewareName}/${
+								params.type
+							}/${params.chartVersion}/${params.namespace}/${
+								clusterId ? clusterId : currentCluster?.id
+							}/${record.backupName}`
 						);
 					} else {
 						history.push(
-							`/backupService/backupTask/detail/${record.backupName}/${record.sourceType}`
+							`/backupService/backupTask/detail/${
+								clusterId ? clusterId : currentCluster?.id
+							}/${record.namespace}/${record.backupName}/${
+								record.sourceType
+							}`
 						);
 					}
-					storage.setLocal('backupDetail', record);
+					storage.setLocal('backupDetail', {
+						...record
+					});
 				}}
 			>
 				{value}
@@ -263,10 +334,8 @@ export default function List(props: any): JSX.Element {
 				/>
 				<ProTable.Column
 					title="备份方式"
-					dataIndex="backupMode"
-					render={(value) =>
-						value === 'single' ? '单次备份' : '周期备份'
-					}
+					dataIndex="schedule"
+					render={(value) => (!value ? '单次备份' : '周期备份')}
 					width={120}
 					filterMultiple={false}
 					filters={[
@@ -279,12 +348,12 @@ export default function List(props: any): JSX.Element {
 				/>
 				<ProTable.Column title="备份位置" dataIndex="position" />
 				<ProTable.Column
-					title="备份时间"
-					dataIndex="backupTime"
+					title="创建时间"
+					dataIndex="creationTime"
 					width={160}
 					sorter={(a: BackupRecordItem, b: BackupRecordItem) =>
-						moment(a.backupTime).unix() -
-						moment(b.backupTime).unix()
+						moment(a.creationTime).unix() -
+						moment(b.creationTime).unix()
 					}
 				/>
 				<ProTable.Column

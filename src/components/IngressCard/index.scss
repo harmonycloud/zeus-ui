@@ -8,3 +8,29 @@
 	padding: $padding-sm;
 	border-radius: $border-radius-lg;
 }
+.ingress-type-content {
+	display: flex;
+	justify-content: center;
+	column-gap: 60px;
+	.ingress-type-box {
+		width: 100px;
+		height: 100px;
+		display: flex;
+		border: 1px solid $border-color;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		&:hover{
+			color: $blue-6;
+			border-color: $blue-6;
+		}
+	}
+}
+.ingress-type-box-active {
+	color: $blue-6;
+	border-color: $blue-6 !important;
+}
+.conflict-port-checkbox {
+	margin-left: 8px;
+}

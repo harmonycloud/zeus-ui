@@ -54,6 +54,7 @@ export default function Console(props: consoleProps): JSX.Element {
 							style={{ width: '100%' }}
 							value={mysqlDatabaseContainer[0]}
 							onChange={(value: any) => setContainer(value)}
+							dropdownMatchSelectWidth={false}
 						>
 							{mysqlDatabaseContainer.map(
 								(item: string, index: number) => {
@@ -78,6 +79,7 @@ export default function Console(props: consoleProps): JSX.Element {
 							style={{ width: '100%' }}
 							value={redisDatabaseContainer[0]}
 							onChange={(value: any) => setContainer(value)}
+							dropdownMatchSelectWidth={false}
 						>
 							{redisDatabaseContainer.map(
 								(item: string, index: number) => {
@@ -103,6 +105,7 @@ export default function Console(props: consoleProps): JSX.Element {
 						style={{ width: '100%' }}
 						value={container}
 						onChange={(value: any) => setContainer(value)}
+						dropdownMatchSelectWidth={false}
 					>
 						{containers.map((item: string, index: number) => {
 							return (
@@ -116,7 +119,25 @@ export default function Console(props: consoleProps): JSX.Element {
 			);
 		}
 	};
-
+	const judgeRadioGroup = () => {
+		console.log(data);
+		if (data.type === 'mysql' && data.role === 'master') {
+			return true;
+		} else if (data.type === 'mysql' && data.role === 'slave') {
+			return true;
+		} else if (data.type === 'redis' && data.role === 'master') {
+			return true;
+		} else if (data.type === 'redis' && data.role === 'slave') {
+			return true;
+		} else if (
+			data.type === 'redis' &&
+			data.podName.includes(`${data.name}-shard`)
+		) {
+			return true;
+		} else {
+			return false;
+		}
+	};
 	return (
 		<Modal
 			title="实例控制台"
@@ -128,9 +149,7 @@ export default function Console(props: consoleProps): JSX.Element {
 			// style={{ width: '400px' }}
 		>
 			<Form labelAlign="left" {...formItemLayout} form={form}>
-				{(data.type === 'mysql' ||
-					(data.type === 'redis' &&
-						currentContainer !== 'sentinel')) && (
+				{judgeRadioGroup() && (
 					<FormItem name="source" initialValue={'container'}>
 						<RadioGroup
 							options={list}

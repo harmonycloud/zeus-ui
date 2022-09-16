@@ -17,7 +17,8 @@ import {
 	Result,
 	InputNumber,
 	Tooltip,
-	Tag
+	Tag,
+	DatePicker
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -27,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
 import styles from './pgsql.module.scss';
+import moment from 'moment';
 import {
 	getNodePort,
 	getNodeTaint,
@@ -55,6 +57,8 @@ import {
 	AutoCompleteOptionItem
 } from '@/types/comment';
 import { StoreState } from '@/types';
+import storage from '@/utils/storage';
+import { applyBackup } from '@/services/backup';
 // * 外接动态表单相关
 import { getAspectFrom } from '@/services/common';
 
@@ -145,7 +149,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		}
 	];
 	const [mode, setMode] = useState<string>('1m-1s');
-	const modeList = [
+	const [modeList, setModeList] = useState([
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -158,7 +162,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			label: '单实例',
 			value: '1m-0s'
 		}
-	];
+	]);
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
@@ -182,6 +186,60 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	// * root密码
 	const [pgsqlPwd, setPgsqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
+	// * 备份
+	const backupDetail = storage.getLocal('backupDetail');
+	const disabledDate = (current: any) => {
+		// Can not select days before today and today
+		return (
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current >
+				moment(
+					new Date(new Date(backupDetail?.endTime).getTime() + 1000)
+				)
+		);
+	};
+	const range = (start: number, end: number) => {
+		const result = [];
+		for (let i = start; i < end; i++) {
+			result.push(i);
+		}
+		return result;
+	};
+
+	const disabledDateTime = (date: any) => {
+		if (
+			moment(date).format('YYYY-MM-DD') ===
+			backupDetail?.startTime?.substring(0, 10)
+		)
+			return {
+				disabledHours: () =>
+					range(0, moment(backupDetail?.startTime).hour() + 1),
+				disabledMinutes: () =>
+					range(0, moment(backupDetail?.startTime).minute() + 1),
+				disabledSeconds: () =>
+					range(0, moment(backupDetail?.startTime).second() + 1)
+			};
+		else if (
+			moment(date).format('YYYY-MM-DD') ===
+			backupDetail?.endTime?.substring(0, 10)
+		) {
+			return {
+				disabledHours: () =>
+					range(moment(backupDetail?.endTime).hour() - 1, 60),
+				disabledMinutes: () =>
+					range(moment(backupDetail?.endTime).minute() - 1, 60),
+				disabledSeconds: () =>
+					range(moment(backupDetail?.endTime).second() - 1, 60)
+			};
+		} else {
+			return {
+				disabledHours: () => range(0, 0),
+				disabledMinutes: () => range(0, 0),
+				disabledSeconds: () => range(0, 0)
+			};
+		}
+	};
+
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -197,27 +255,43 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				max: memoryMax
 			});
 		}
+		if (globalNamespace.availableDomain) {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
+				},
+				{
+					label: '单实例',
+					value: '1m-0s'
+				}
+			]);
+			setMode('1m-1s');
+		}
 	}, [props]);
 
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					console.log(res);
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) => item.availableDomain !== true
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			);
+			});
 		}
 	}, [project, globalNamespace]);
 
@@ -247,11 +321,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				quota: {
 					postgresql: {
 						num:
-							mode === '1m-1s'
-								? 1
-								: mode === '1m'
-								? 0
-								: replicaCount,
+							mode.charAt(3) === 'n'
+								? replicaCount
+								: Number(mode.charAt(3)),
 						storageClassName: values.storageClass.split('/')[0],
 						storageClassQuota: values.storageQuota
 					}
@@ -288,7 +360,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -310,10 +382,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (namespace) {
 				sendData.namespace = namespace;
 			}
-			if (backupFileName) {
-				sendData.middlewareName = middlewareName;
-				sendData.backupFileName = backupFileName;
-			}
+			// if (backupFileName) {
+			// 	sendData.middlewareName = middlewareName;
+			// 	sendData.backupFileName = backupFileName;
+			// }
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
@@ -342,6 +414,31 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			} else if (instanceSpec === 'Customize') {
 				sendData.quota.postgresql.cpu = values.cpu;
 				sendData.quota.postgresql.memory = values.memory + 'Gi';
+			}
+			if (middlewareName) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					type: backupDetail.sourceType,
+					backupName: backupDetail.backupName,
+					restoreTime: moment(values.restoreTime).format(
+						'YYYY-MM-DD HH:mm:ss'
+					)
+				};
+				applyBackup(result).then((res) => {
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
+				});
 			}
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
@@ -395,7 +492,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				setVersion(res.data.version);
 			}
 			form.setFieldsValue({
-				name: backupFileName ? res.data.name + '-backup' : '',
+				name: res.data.name + '-backup',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
@@ -405,6 +502,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.postgresql.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.postgresql.storageClassQuota,
@@ -423,7 +521,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	useEffect(() => {
 		if (JSON.stringify(globalNamespace) !== '{}') {
 			// 克隆服务
-			if (backupFileName) {
+			if (middlewareName) {
 				getMiddlewareDetailAndSetForm(middlewareName);
 			}
 		}
@@ -599,9 +697,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			<ProHeader
 				title="发布PostgreSQL服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					history.goBack();
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				}}
 			/>
 			<ProContent>
@@ -630,6 +729,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												<Select
 													placeholder="请选择命名空间"
 													style={{ width: '100%' }}
+													dropdownMatchSelectWidth={
+														false
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -642,9 +744,22 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		item.name
 																	}
 																>
-																	{
-																		item.aliasName
-																	}
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		30
+																			? item.aliasName.substring(
+																					0,
+																					30
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																	</p>
 																</Select.Option>
 															);
 														}
@@ -779,7 +894,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									values={affinityLabels}
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
-									disabled={!!backupFileName}
+									disabled={!!middlewareName}
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
@@ -805,7 +920,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													marginLeft: 16,
 													verticalAlign: 'middle'
 												}}
-												disabled={!!backupFileName}
+												disabled={!!middlewareName}
 											/>
 										</div>
 										{tolerations.flag ? (
@@ -941,7 +1056,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setVersion(value)
 											}
-											disabled={!!backupFileName}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1017,7 +1132,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													value={pgsqlPwd}
 													placeholder="请输入root密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
-													disabled={!!backupFileName}
+													disabled={!!middlewareName}
 												/>
 											</FormItem>
 										</Tooltip>
@@ -1032,43 +1147,40 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											镜像仓库
 										</span>
 									</label>
-									{mirrorList.length && (
-										<div
-											className="form-content"
-											style={{ flex: '0 0 376px' }}
-										>
-											<FormItem
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												name="mirrorImageId"
-												initialValue={
-													mirrorList[0].address
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item: any) => {
-															return {
-																label: item.address,
-																value: item.address
-															};
-														}
-													)}
-													style={{
-														width: '100%'
-													}}
-													disabled={!!backupFileName}
-												/>
-											</FormItem>
-										</div>
-									)}
+											]}
+											name="mirrorImageId"
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item: any) => {
+														return {
+															label: item.address,
+															value: item.address
+														};
+													}
+												)}
+												style={{
+													width: '100%'
+												}}
+												disabled={!!middlewareName}
+											/>
+										</FormItem>
+									</div>
 								</li>
 							</ul>
 						</div>
@@ -1094,7 +1206,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setMode(value)
 											}
-											disabled={!!backupFileName}
+											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1113,7 +1225,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												value={replicaCount}
 												max={6}
 												min={2}
-												disabled={!!backupFileName}
+												disabled={!!middlewareName}
 											/>
 										</div>
 									</li>
@@ -1131,7 +1243,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
-											disabled={!!backupFileName}
+											disabled={!!middlewareName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1187,7 +1299,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	placeholder="请输入自定义CPU配额，单位为Core"
 																	disabled={
-																		!!backupFileName
+																		!!middlewareName
 																	}
 																/>
 															</FormItem>
@@ -1223,7 +1335,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																	}}
 																	placeholder="请输入自定义内存配额，单位为Gi"
 																	disabled={
-																		!!backupFileName
+																		!!middlewareName
 																	}
 																/>
 															</FormItem>
@@ -1235,78 +1347,72 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									</div>
 								</li>
 								<StorageQuota clusterId={globalCluster.id} />
-								{/* <li className="display-flex">
-									<label className="form-name">
-										<span className="ne-required">
-											存储配额
-										</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<FormItem
-											rules={[
-												{
-													required: true,
-													message: '请选择存储类型'
-												}
-											]}
-											name="storageClass"
-										>
-											<Select
-												style={{
-													marginRight: 8,
-													width: 150
-												}}
-												placeholder="请选择"
-											>
-												{storageClassList.map(
-													(item, index) => {
-														return (
-															<Select.Option
-																key={index}
-																value={
-																	item.name
-																}
-															>
-																{item.name}
-															</Select.Option>
-														);
-													}
-												)}
-											</Select>
-										</FormItem>
-										<FormItem
-											rules={[
-												{
-													required: true,
-													message:
-														'请输入存储配额大小（GB）'
-												},
-												{
-													pattern: new RegExp(
-														pattern.posInt
-													),
-													message:
-														'请输入小于21位的正整数'
-												}
-											]}
-											name="storageQuota"
-											initialValue={5}
-										>
-											<InputNumber
-												style={{
-													width: '100%'
-												}}
-												placeholder="请输入存储配额大小"
-												addonAfter="GB"
-											/>
-										</FormItem>
-									</div>
-								</li> */}
 							</ul>
 						</div>
 					</FormBlock>
+					{middlewareName && backupDetail.recoveryType === 'time' ? (
+						<FormBlock title="恢复配置">
+							<div className={styles['basic-info']}>
+								<div>
+									可恢复的时间范围:{' '}
+									{backupDetail
+										? (backupDetail?.startTime || '--') +
+										  '-' +
+										  (backupDetail?.endTime || '--')
+										: '--'}
+								</div>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												选择恢复的时间点
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择恢复的时间点'
+													}
+												]}
+												name="restoreTime"
+											>
+												<DatePicker
+													showTime
+													showNow={false}
+													disabledDate={disabledDate}
+													// disabledTime={
+													// 	disabledDateTime
+													// }
+												/>
+											</FormItem>
+										</div>
+									</li>
+									{/* <li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												冲突处理
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required name="backType">
+												<Radio.Group defaultValue="x">
+													<Radio value="x">
+														遇到同名对象失败
+													</Radio>
+													<Radio value="y">
+														遇到同名对象则重命名
+													</Radio>
+												</Radio.Group>
+											</FormItem>
+										</div>
+									</li> */}
+								</ul>
+							</div>
+						</FormBlock>
+					) : null}
 					{childrenRender(
 						customForm,
 						form,

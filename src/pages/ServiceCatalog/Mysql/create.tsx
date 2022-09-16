@@ -17,7 +17,10 @@ import {
 	Cascader,
 	Tooltip,
 	AutoComplete,
-	Tag
+	Tag,
+	Popover,
+	Radio,
+	DatePicker
 } from 'antd';
 import {
 	getNodePort,
@@ -31,11 +34,12 @@ import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import { getProjectNamespace } from '@/services/project';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
 import transUnit from '@/utils/transUnit';
-import { applyBackup } from '@/services/backup';
+import { applyBackup, getIncBackup } from '@/services/backup';
 import pattern from '@/utils/pattern';
 // * 外接动态表单相关
 import { getCustomFormKeys, childrenRender } from '@/utils/utils';
 import Affinity from '@/components/Affinity';
+import moment from 'moment';
 
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import {
@@ -63,6 +67,7 @@ import {
 	QuestionCircleOutlined
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
+import storage from '@/utils/storage';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -75,14 +80,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		project
 	} = props.globalVar;
 	const params: CreateParams = useParams();
-	console.log(params);
 	const {
 		chartName,
 		chartVersion,
 		middlewareName,
 		backupFileName,
 		aliasName,
-		namespace
+		namespace,
+		backup
 	} = params;
 	const { state } = props.location;
 	const [form] = Form.useForm();
@@ -157,7 +162,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		}
 	];
 	const [mode, setMode] = useState<string>('1m-1s');
-	const modeList = [
+	const [modeList, setModeList] = useState([
 		{
 			label: '一主一从',
 			value: '1m-1s'
@@ -166,7 +171,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			label: '一主多从',
 			value: '1m-ns'
 		}
-	];
+	]);
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
@@ -196,11 +201,65 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	const [selectNamespace, setSelectNamespace] = useState<string>();
 	// * root密码
 	const [mysqlPwd, setMysqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	// * 读写分离模式
 	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
+	// * 备份
+	const backupDetail = storage.getLocal('backupDetail');
+	const disabledDate = (current: any) => {
+		// Can not select days before today and today
+		return (
+			current < moment(new Date(backupDetail?.startTime)) ||
+			current >
+				moment(
+					new Date(new Date(backupDetail?.endTime).getTime() + 1000)
+				)
+		);
+	};
+	const range = (start: number, end: number) => {
+		const result = [];
+		for (let i = start; i < end; i++) {
+			result.push(i);
+		}
+		return result;
+	};
+
+	const disabledDateTime = (date: any) => {
+		if (
+			moment(date).format('YYYY-MM-DD') ===
+			backupDetail?.startTime?.substring(0, 10)
+		)
+			return {
+				disabledHours: () =>
+					range(0, moment(backupDetail?.startTime).hour() + 1),
+				disabledMinutes: () =>
+					range(0, moment(backupDetail?.startTime).minute() + 1),
+				disabledSeconds: () =>
+					range(0, moment(backupDetail?.startTime).second())
+			};
+		else if (
+			moment(date).format('YYYY-MM-DD') ===
+			backupDetail?.endTime?.substring(0, 10)
+		) {
+			return {
+				disabledHours: () =>
+					range(moment(backupDetail?.endTime).hour(), 60),
+				disabledMinutes: () =>
+					range(moment(backupDetail?.endTime).minute(), 60),
+				disabledSeconds: () =>
+					range(moment(backupDetail?.endTime).second(), 60)
+			};
+		} else {
+			return {
+				disabledHours: () => range(0, 0),
+				disabledMinutes: () => range(0, 0),
+				disabledSeconds: () => range(0, 0)
+			};
+		}
+	};
 
 	useEffect(() => {
 		getClusters().then((res) => {
@@ -225,32 +284,55 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				});
 			}
 		});
+		if (globalNamespace.availableDomain) {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
+				}
+			]);
+			setMode('1m-1s');
+		}
 	}, []);
 
 	useEffect(() => {
-		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
-			getProjectNamespace({ projectId: project.projectId }).then(
-				(res) => {
-					if (res.success) {
-						const list = res.data.filter(
-							(item: NamespaceItem) =>
-								item.clusterId === globalCluster.id
-						);
-						setNamespaceList(list);
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
+		if (
+			namespaceList.find((item) => item.name === selectNamespace)
+				?.availableDomain
+		) {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
 				}
-			);
+			]);
+			setMode('1m-1s');
+		}
+	}, [selectNamespace]);
+
+	useEffect(() => {
+		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
+			getProjectNamespace({
+				projectId: project.projectId,
+				clusterId: globalCluster.id
+			}).then((res) => {
+				if (res.success) {
+					const list = res.data.filter(
+						(item: NamespaceItem) =>
+							item.clusterId === globalCluster.id
+					);
+					setNamespaceList(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
 		}
 	}, [project, globalNamespace]);
 
 	useEffect(() => {
-		console.log(globalNamespace);
-
 		if (globalNamespace.quotas) {
 			const cpuMax =
 				Number(globalNamespace.quotas.cpu[1]) -
@@ -301,11 +383,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				},
 				mysqlDTO: {
 					replicaCount:
-						mode !== '1m-ns'
-							? mode === '1m-1s'
-								? 1
-								: 0
-							: replicaCount,
+						mode.charAt(3) === 'n'
+							? replicaCount
+							: Number(mode.charAt(3)),
 					openDisasterRecoveryMode: backupFlag,
 					type: mode === '1m-1s' ? 'master-master' : 'master-slave'
 				},
@@ -343,7 +423,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: affinity.checked,
+							required: item.checked,
 							namespace: globalNamespace.name
 						};
 					});
@@ -401,7 +481,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData.namespace = namespace;
 			}
 			// 克隆服务
-			if (backupFileName) {
+			if (storage.getLocal('backupDetail').backupFileName) {
 				sendData.middlewareName = middlewareName;
 				sendData.backupFileName = backupFileName;
 			}
@@ -415,11 +495,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					mode === '1m-1s' ? 'master-master' : 'master-slave';
 				sendData.mysqlDTO.isSource = true;
 				sendData.mysqlDTO.replicaCount =
-					mode !== '1m-ns'
-						? mode === '1m-1s'
-							? 1
-							: 0
-						: replicaCount;
+					mode.charAt(3) === 'n'
+						? replicaCount
+						: Number(mode.charAt(3));
 				sendData.relationMiddleware = {
 					chartName: chartName,
 					chartVersion: chartVersion,
@@ -493,11 +571,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					},
 					mysqlDTO: {
 						replicaCount:
-							mode !== '1m-ns'
-								? mode === '1m-1s'
-									? 1
-									: 0
-								: replicaCount,
+							mode.charAt(3) === 'n'
+								? replicaCount
+								: Number(mode.charAt(3)),
 						openDisasterRecoveryMode: true,
 						relationName: values.name,
 						relationAliasName: values.aliasName,
@@ -547,7 +623,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							(item) => {
 								return {
 									label: item.label,
-									required: affinity.checked,
+									required: item.checked,
 									namespace: globalNamespace.name
 								};
 							}
@@ -590,6 +666,32 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				sendData = sendDataTemp;
 			}
 			// console.log(sendData);
+			if (backup) {
+				const result = {
+					clusterId: globalCluster.id,
+					namespace: namespace,
+					middlewareName: values.name,
+					restoreTime: moment(values.restoreTime).format(
+						'YYYY-MM-DD HH:mm:ss'
+					),
+					type: storage.getLocal('backupDetail').sourceType,
+					backupName: backupDetail.backupName
+				};
+				applyBackup(result).then((res) => {
+					// * 恢复服务时，需要调用发布接口和备份接口
+					// if (res.success) {
+					// 	notification.success({
+					// 		message: '成功',
+					// 		description: '克隆成功'
+					// 	});
+					// } else {
+					// 	notification.error({
+					// 		message: '失败',
+					// 		description: res.errorMsg
+					// 	});
+					// }
+				});
+			}
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);
 				addDisasterIns(sendData).then((res) => {
@@ -698,6 +800,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				);
 			}
 			if (res.data.mode) {
+				if (res.data.mode === '1m-0s') {
+					setReadWriteProxy(res.data.mode);
+				}
 				setMode(res.data.mode);
 			}
 			if (res.data.charSet) {
@@ -718,6 +823,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
 				),
+				mirrorImageId: res.data.mirrorImage,
 				storageClass: res.data.quota.mysql.storageClassName,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
@@ -968,9 +1074,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			<ProHeader
 				title="发布MySQL服务"
 				onBack={() => {
-					history.push({
-						pathname: `/serviceList/${chartName}/${aliasName}`
-					});
+					history.goBack();
+					// history.push({
+					// 	pathname: `/serviceList/${chartName}/${aliasName}`
+					// });
 				}}
 			/>
 			<ProContent>
@@ -1087,7 +1194,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<FormItem required name="namespace">
-												<Select placeholder="请选择命名空间">
+												<Select
+													dropdownMatchSelectWidth={
+														false
+													}
+													placeholder="请选择命名空间"
+													value={selectNamespace}
+													onChange={(value) =>
+														setSelectNamespace(
+															value
+														)
+													}
+												>
 													{namespaceList.map(
 														(item) => {
 															return (
@@ -1098,10 +1216,49 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
+																	// disabled={
+																	// 	item.availableDomain
+																	// }
 																>
-																	{
+																	<p
+																		title={
+																			item.aliasName
+																		}
+																	>
+																		{item
+																			.aliasName
+																			.length >
+																		25
+																			? item.aliasName.substring(
+																					0,
+																					25
+																			  ) +
+																			  '...'
+																			: item.aliasName}
+																		{item.availableDomain ? (
+																			<span className="available-domain">
+																				可用区
+																			</span>
+																		) : null}
+																	</p>
+																	{/* {item.availableDomain ? (
+																		<Popover
+																			content={
+																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
+																			}
+																		>
+																			<p>
+																				{
+																					item.aliasName
+																				}
+																				<span className="available-domain">
+																					可用区
+																				</span>
+																			</p>
+																		</Popover>
+																	) : (
 																		item.aliasName
-																	}
+																	)} */}
 																</Select.Option>
 															);
 														}
@@ -1610,39 +1767,36 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</span>
 									</label>
 									<div className="form-content">
-										{mirrorList.length && (
-											<FormItem
-												name="mirrorImageId"
-												required
-												rules={[
-													{
-														required: true,
-														message:
-															'请选择镜像仓库'
-													}
-												]}
-												initialValue={
-													mirrorList[0].address
+										<FormItem
+											name="mirrorImageId"
+											required
+											rules={[
+												{
+													required: true,
+													message: '请选择镜像仓库'
 												}
-											>
-												<AutoComplete
-													placeholder="请选择"
-													allowClear={true}
-													options={mirrorList.map(
-														(item) => {
-															return {
-																value: item.address,
-																label: item.address
-															};
-														}
-													)}
-													style={{
-														width: '380px'
-													}}
-													disabled={!!backupFileName}
-												/>
-											</FormItem>
-										)}
+											]}
+											initialValue={
+												mirrorList?.[0]?.address
+											}
+										>
+											<AutoComplete
+												placeholder="请选择"
+												allowClear={true}
+												options={mirrorList.map(
+													(item) => {
+														return {
+															value: item.address,
+															label: item.address
+														};
+													}
+												)}
+												style={{
+													width: '380px'
+												}}
+												disabled={!!backupFileName}
+											/>
+										</FormItem>
 									</div>
 								</li>
 							</ul>
@@ -1664,8 +1818,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										<Select
 											value={readWriteProxy}
 											onChange={(val) => {
-												val === '1m-0s' &&
-													setMode('1m-0s');
+												val === '1m-0s'
+													? setMode('1m-0s')
+													: setMode(
+															modeList[0].value
+													  );
 												setReadWriteProxy(val);
 											}}
 											style={{
@@ -1680,9 +1837,16 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<Select.Option key="true">
 												读写分离模式
 											</Select.Option>
-											<Select.Option key="1m-0s">
-												单实例模式
-											</Select.Option>
+											{globalNamespace.availableDomain ||
+											namespaceList.find(
+												(item) =>
+													item.name ===
+													selectNamespace
+											)?.availableDomain ? null : (
+												<Select.Option key="1m-0s">
+													单实例模式
+												</Select.Option>
+											)}
 										</Select>
 										{readWriteProxy !== '1m-0s' ? (
 											<div className={`display-flex`}>
@@ -1840,7 +2004,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					{!state || !state.disasterOriginName ? (
+					{(!state || !state.disasterOriginName) &&
+					!globalNamespace.availableDomain ? (
 						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
 								<ul className="form-layout">
@@ -1988,6 +2153,69 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</div>
 						</FormBlock>
 					) : null}
+					{backup && backupDetail.recoveryType === 'time' ? (
+						<FormBlock title="恢复配置">
+							<div className={styles['basic-info']}>
+								<div>
+									可恢复的时间范围:{' '}
+									{backupDetail
+										? (backupDetail?.startTime || '--') +
+										  ' —— ' +
+										  (backupDetail?.endTime || '--')
+										: '--'}
+								</div>
+								<ul className="form-layout">
+									<li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												选择恢复的时间点
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem
+												rules={[
+													{
+														required: true,
+														message:
+															'请选择恢复的时间点'
+													}
+												]}
+												name="restoreTime"
+											>
+												<DatePicker
+													showNow={false}
+													showTime
+													disabledDate={disabledDate}
+													// disabledTime={
+													// 	disabledDateTime
+													// }
+												/>
+											</FormItem>
+										</div>
+									</li>
+									{/* <li className="display-flex">
+										<label className="form-name">
+											<span className="ne-required">
+												冲突处理
+											</span>
+										</label>
+										<div className="form-content">
+											<FormItem required name="backType">
+												<Radio.Group defaultValue="x">
+													<Radio value="x">
+														遇到同名对象失败
+													</Radio>
+													<Radio value="y">
+														遇到同名对象则重命名
+													</Radio>
+												</Radio.Group>
+											</FormItem>
+										</div>
+									</li> */}
+								</ul>
+							</div>
+						</FormBlock>
+					) : null}
 					{childrenRender(
 						customForm,
 						form,
@@ -2003,14 +2231,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						>
 							提交
 						</Button>
-						<Button
-							type="default"
-							onClick={() =>
-								history.push({
-									pathname: `/serviceList/${chartName}/${aliasName}`
-								})
-							}
-						>
+						<Button onClick={() => window.history.back()}>
 							取消
 						</Button>
 					</div>

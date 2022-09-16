@@ -43,6 +43,7 @@ export interface NamespaceResourceProps {
 	};
 	registered: boolean;
 	phase: string;
+	availableDomain: boolean;
 }
 export interface ClusterQuotaDTO {
 	clusterNum: number;
@@ -81,6 +82,9 @@ export interface IngressItemProps {
 	id: number;
 	createTime: string | null;
 	seconds: number;
+	type: string | null;
+	startPort: string | null;
+	endPort: string | null;
 }
 
 export interface MirrorParams {

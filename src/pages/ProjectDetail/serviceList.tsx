@@ -31,19 +31,8 @@ const Search = Input.Search;
 const RadioGroup = Radio.Group;
 type SelectOption = AutoCompleteOptionItem;
 function ServiceList(props: ServiceListProps): JSX.Element {
-	const {
-		globalVar,
-		setCluster,
-		setNamespace,
-		setRefreshCluster,
-		setProject
-	} = props;
-	const {
-		clusterList: globalClusterList,
-		namespaceList: globalNamespaceList,
-		project,
-		namespace: globalNamespace
-	} = globalVar;
+	const { globalVar, setCluster } = props;
+	const { clusterList: globalClusterList } = globalVar;
 	const history = useHistory();
 	const [tableDataSource, setTableDataSource] = useState<
 		MiddlewareTableItem[]

@@ -61,7 +61,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 		middlewareName,
 		clusterId,
 		namespace,
-		data: { filelogEnabled }
+		data: { filelogEnabled, stdoutEnabled }
 	} = props.data;
 	// *------------显示-------------------
 	// * 日志显示是否全屏
@@ -99,9 +99,13 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 
 	const [switchVisible, setSwitchVisible] = useState<boolean>(false);
 	const [logFile, setLogFile] = useState<boolean>(filelogEnabled || false);
+	const [standardLog, setStandardLog] = useState<boolean>(
+		stdoutEnabled || false
+	);
 
 	useEffect(() => {
 		setLogFile(props.data.data.filelogEnabled);
+		setStandardLog(props.data.data.stdoutEnabled);
 	}, [props.data.data.filelogEnabled]);
 	// * 当logList发生变化是去更新logs内容
 	useEffect(() => {
@@ -361,7 +365,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 										lineHeight: '18px'
 									}}
 								>
-									安装日志采集组件ES后，开启日志收集按钮，会将该类型日志存储于ES中，若您现在不开启，发布完之后再开启，将导致服务重启。
+									直接落在磁盘上但没有输出到stout的日志
 								</span>
 							}
 						>
@@ -407,6 +411,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 									value={pod}
 									onChange={changePod}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value="all">全部</Option>
 									{podList.map((item, index) => (
@@ -432,6 +437,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 									value={container}
 									onChange={changeContainr}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									<Option value="all">全部</Option>
 									{containerList.map((item, index) => (
@@ -454,6 +460,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 									value={searchType}
 									onChange={changeSearchType}
 									style={{ width: '100%' }}
+									dropdownMatchSelectWidth={false}
 								>
 									{searchTypes.map((item) => (
 										<Option
@@ -566,6 +573,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 							visible={switchVisible}
 							source="logfile"
 							flag={logFile}
+							withFlag={standardLog}
 							data={{
 								clusterId,
 								namespace,
