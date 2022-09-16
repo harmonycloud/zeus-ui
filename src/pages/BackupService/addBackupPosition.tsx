@@ -296,16 +296,16 @@ export default function AddBackupPosition(): JSX.Element {
 								rules={[
 									{
 										required: true,
-										message: '请输入路径'
+										message: '请输入存储桶'
 									},
 									{
 										pattern: /^\/[a-zA-Z0-9]*$/,
-										message: '路径不符合规则'
+										message: '存储桶不符合规则'
 									}
 								]}
 							>
 								<Input
-									placeholder="路径 如：/path"
+									placeholder="存储桶 如：/path"
 									disabled={!!params.id}
 								/>
 							</Form.Item>
