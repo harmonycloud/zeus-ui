@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, notification, Popover, Modal } from 'antd';
+import {
+	Button,
+	notification,
+	Popover,
+	Modal,
+	TablePaginationConfig
+} from 'antd';
 import moment from 'moment';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import Actions from '@/components/Actions';
@@ -22,6 +28,9 @@ const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 function UserManage(): JSX.Element {
 	const [dataSource, setDataSource] = useState<userProps[]>([]);
+	const [total, setTotal] = useState<number>();
+	const [current, setCurrent] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(10);
 	const [keyword, setKeyword] = useState<string>('');
 	const [visible, setVisible] = useState<boolean>(false);
 	const [updateData, setUpdateData] = useState<userProps>();
@@ -40,36 +49,44 @@ function UserManage(): JSX.Element {
 	}, []);
 	useEffect(() => {
 		let mounted = true;
-		getUserList({ keyword: keyword }).then((res) => {
-			if (res.success) {
-				if (mounted) {
-					setDataSource(res.data);
+		getUserList({ keyword: keyword, current: current, size: 10 }).then(
+			(res) => {
+				if (res.success) {
+					if (mounted) {
+						setTotal(res.data.total);
+						setCurrent(1);
+						setDataSource(res.data.list);
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
 			}
-		});
+		);
 		return () => {
 			mounted = false;
 		};
 	}, []);
-	const onRefresh: (value: string) => void = (value) => {
-		getUserList({ keyword: value }).then((res) => {
-			if (res.success) {
-				setDataSource(res.data);
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
+	const onRefresh: (value: string, current: number) => void = (value) => {
+		getUserList({ keyword: value, current: current, size: 10 }).then(
+			(res) => {
+				if (res.success) {
+					setTotal(res.data.total);
+					setDataSource(res.data.list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
 			}
-		});
+		);
 	};
 	const handleSearch: (value: string) => void = (value: string) => {
-		onRefresh(value);
+		setKeyword(value);
+		onRefresh(value, current);
 	};
 	const edit: (record: userProps) => void = (record: userProps) => {
 		setUpdateData(record);
@@ -97,7 +114,7 @@ function UserManage(): JSX.Element {
 							message: '成功',
 							description: '该用户删除成功'
 						});
-						onRefresh(keyword);
+						onRefresh(keyword, current);
 					} else {
 						notification.error({
 							message: '失败',
@@ -263,6 +280,30 @@ function UserManage(): JSX.Element {
 			</Button>
 		)
 	};
+	const onTableChange = (
+		pagination: TablePaginationConfig,
+		filters: any,
+		sorter: any
+	) => {
+		setCurrent(pagination.current || 1);
+		setTotal(pagination.total);
+		getUserList({
+			keyword: keyword,
+			current: pagination.current || 1,
+			size: 10,
+			order: sorter.order
+		}).then((res) => {
+			if (res.success) {
+				setTotal(res.data.total);
+				setDataSource(res.data.list);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -274,7 +315,7 @@ function UserManage(): JSX.Element {
 					dataSource={dataSource}
 					showRefresh
 					showColumnSetting
-					onRefresh={() => onRefresh(keyword)}
+					onRefresh={() => onRefresh(keyword, current)}
 					rowKey="userName"
 					search={{
 						placeholder:
@@ -283,6 +324,12 @@ function UserManage(): JSX.Element {
 						style: { width: '360px' }
 					}}
 					operation={Operation}
+					pagination={{
+						total: total,
+						current: current,
+						pageSize: pageSize
+					}}
+					onChange={onTableChange}
 				>
 					<ProTable.Column title="登录账户" dataIndex="userName" />
 					<ProTable.Column title="用户名" dataIndex="aliasName" />
@@ -300,10 +347,7 @@ function UserManage(): JSX.Element {
 						title="创建时间"
 						dataIndex="createTime"
 						render={createTimeRender}
-						sorter={(a: userProps, b: userProps) =>
-							moment(a.createTime).unix() -
-							moment(b.createTime).unix()
-						}
+						sorter={true}
 					/>
 					<ProTable.Column
 						title="关联角色"
@@ -322,7 +366,7 @@ function UserManage(): JSX.Element {
 					visible={visible}
 					onCreate={() => {
 						setVisible(false);
-						onRefresh(keyword);
+						onRefresh(keyword, current);
 					}}
 					onCancel={() => setVisible(false)}
 					data={isEdit ? updateData : null}

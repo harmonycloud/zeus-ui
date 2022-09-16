@@ -6,7 +6,8 @@ import {
 	userProps,
 	rolesProps,
 	updateProps,
-	sendDataParams
+	sendDataParams,
+	usersDataProps
 } from '@/pages/UserManage/user';
 
 export const postLogin = (params: any) => {
@@ -46,7 +47,10 @@ export const getRsaKey = () => {
 // * 获取用户列表
 export const getUserList: (params: {
 	keyword: string;
-}) => Promise<usersProps> = (params: { keyword: string }) => {
+	current?: number;
+	size?: number;
+	order?: string;
+}) => Promise<any> = (params: { keyword: string }) => {
 	return Axios.get(USER.getUserList, params);
 };
 // * 删除用户
