@@ -271,7 +271,7 @@ export default function AddBackupPosition(): JSX.Element {
 								]}
 							>
 								<Input
-									style={{ width: '250px' }}
+									style={{ width: '220px' }}
 									placeholder="请输入地址"
 									disabled={!!params.id}
 								/>
