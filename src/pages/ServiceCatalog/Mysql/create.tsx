@@ -1216,9 +1216,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
-																	// disabled={
-																	// 	item.availableDomain
-																	// }
 																>
 																	<p
 																		title={
@@ -1241,24 +1238,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																			</span>
 																		) : null}
 																	</p>
-																	{/* {item.availableDomain ? (
-																		<Popover
-																			content={
-																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
-																			}
-																		>
-																			<p>
-																				{
-																					item.aliasName
-																				}
-																				<span className="available-domain">
-																					可用区
-																				</span>
-																			</p>
-																		</Popover>
-																	) : (
-																		item.aliasName
-																	)} */}
 																</Select.Option>
 															);
 														}
