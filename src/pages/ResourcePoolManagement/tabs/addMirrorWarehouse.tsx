@@ -131,7 +131,7 @@ const AddMirrorWarehouse = (props: AddMirrorWarehouseProps) => {
 								required: true,
 								message: '请输入主机地址'
 							},
-							{ max: 32, message: '主机地址不能超过32位' }
+							{ max: 200, message: '主机地址不能超过200位' }
 						]}
 					>
 						<Input placeholder="请输入harbor主机地址" />
