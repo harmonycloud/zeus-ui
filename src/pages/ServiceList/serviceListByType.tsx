@@ -498,7 +498,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (namespace.availableDomain) {
-			if (name !== 'mysql' && name !== 'redis') {
+			if (name !== 'mysql' && name !== 'redis' && name !== 'postgresql') {
 				return {
 					primary: (
 						<Tooltip title="当前中间件不支持同城双活">
