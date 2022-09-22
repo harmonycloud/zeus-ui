@@ -315,6 +315,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 						storage.setSession('menuPath', res.data[0].url);
 					} else {
 						if (
+							storage.getSession('menuPath') &&
 							child.every(
 								(item: any) =>
 									item.key !== storage.getSession('menuPath')
