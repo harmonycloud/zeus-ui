@@ -89,7 +89,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	// * 用户信息
 	const [nickName, setNickName] = useState<string>('');
 	const [role, setRole] = useState<User>();
-	const personalization = storage.getSession('personalization');
+	const personalization = storage.getLocal('personalization');
 	useEffect(() => {
 		if (
 			storage.getLocal('token') &&
@@ -417,7 +417,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 										: '14px'
 							}}
 						>
-							{personalization?.platformAliasName}
+							{personalization.platformAliasName}
 						</div>
 						<MyMenu items={items} />
 					</aside>
