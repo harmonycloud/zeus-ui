@@ -89,6 +89,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	// * 用户信息
 	const [nickName, setNickName] = useState<string>('');
 	const [role, setRole] = useState<User>();
+	const personalization = storage.getSession('personalization');
 	useEffect(() => {
 		if (
 			storage.getLocal('token') &&
@@ -406,8 +407,17 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				/>
 				<div className="zeus-mid-content">
 					<aside style={{ width: collapsed ? '0px' : '200px' }}>
-						<div className="zeus-mid-title">
-							谐云云原生中间件管理平台
+						<div
+							className="zeus-mid-title"
+							style={{
+								fontSize:
+									personalization?.platformAliasName?.length >
+									10
+										? '12px'
+										: '14px'
+							}}
+						>
+							{personalization?.platformAliasName}
 						</div>
 						<MyMenu items={items} />
 					</aside>
