@@ -153,6 +153,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 															event.target.value
 														);
 													}}
+													value={proSearch}
 												/>
 												<Divider
 													style={{
