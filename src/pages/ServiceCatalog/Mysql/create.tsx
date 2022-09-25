@@ -186,6 +186,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [relationNamespace, setRelationNamespace] = useState<string>();
 	const [originData, setOriginData] = useState<middlewareDetailProps>();
 	const [reClusterFlag, setReClusterFlag] = useState<boolean>(false);
+	const [relationMirrorList, setRelationMirrorList] = useState<MirrorItem[]>(
+		[]
+	);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 
@@ -514,10 +517,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					stdoutEnabled: standardLog,
 					nodeAffinity: sendData.nodeAffinity,
 					tolerations: sendData.tolerations,
+					relationMirrorImageId:
+						mirrorList
+							.find(
+								(item: MirrorItem) =>
+									item.address ===
+									values.relationMirrorImageId
+							)
+							?.id.toString() || '',
 					quota: {
 						mysql: {
-							storageClassName: values.storageClass.split('/')[0],
-							storageClassQuota: values.storageQuota
+							storageClassName:
+								values.relationStorageClass.split('/')[0],
+							storageClassQuota: values.relationStorageQuota
 						}
 					}
 				};
@@ -604,10 +616,18 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
 								storageClassName:
-									values.storageClass.split('/')[0],
-								storageClassQuota: values.storageQuota
+									values.relationStorageClass.split('/')[0],
+								storageClassQuota: values.relationStorageClass
 							}
-						}
+						},
+						relationMirrorImageId:
+							mirrorList
+								.find(
+									(item: MirrorItem) =>
+										item.address ===
+										values.relationMirrorImageId
+								)
+								?.id.toString() || ''
 					}
 				};
 				// 主机亲和
@@ -758,12 +778,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				clusterId: globalCluster.id
 			}).then((res) => {
 				if (res.success) {
-					// const list = res.data.list.map((item: MirrorItem) => {
-					// 	return {
-					// 		label: item.address,
-					// 		value: item.address
-					// 	};
-					// });
 					setMirrorList(res.data.list);
 				}
 			});
@@ -935,6 +949,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleChange = (value: any, data: any) => {
 		setRelationClusterId(value[0]);
+		getMirror({
+			clusterId: value[0]
+		}).then((res) => {
+			if (res.success) {
+				setRelationMirrorList(res.data.list);
+			}
+		});
+		form.setFieldsValue({ relationStorageClass: '' });
 		if (value[0] === globalCluster.id) {
 			setReClusterFlag(true);
 		} else {
@@ -2153,6 +2175,51 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 												</div>
 											</li>
+											<li className="display-flex">
+												<label className="form-name">
+													<span
+														className="ne-required"
+														style={{
+															marginRight: 8
+														}}
+													>
+														镜像仓库
+													</span>
+												</label>
+												<div className="form-content">
+													<FormItem
+														name="relationMirrorImageId"
+														required
+														rules={[
+															{
+																required: true,
+																message:
+																	'请选择镜像仓库'
+															}
+														]}
+													>
+														<AutoComplete
+															placeholder="请选择"
+															allowClear={true}
+															options={relationMirrorList.map(
+																(item) => {
+																	return {
+																		value: item.address,
+																		label: item.address
+																	};
+																}
+															)}
+															style={{
+																width: '380px'
+															}}
+														/>
+													</FormItem>
+												</div>
+											</li>
+											<StorageQuota
+												clusterId={relationClusterId}
+												type="relation"
+											/>
 										</>
 									)}
 								</ul>

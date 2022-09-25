@@ -54,7 +54,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
-	console.log(globalClusterList);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] =
 		useState<ShowDataSourceParams>();
@@ -406,6 +405,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
+		console.log(namespace);
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
 			if (name === 'mysql') {
 				return {

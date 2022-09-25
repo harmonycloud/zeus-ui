@@ -242,8 +242,20 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 					return item.name === JSON.parse(jsonLocalNamespace).name;
 				})
 			) {
-				setCurrentNamespace(JSON.parse(jsonLocalNamespace));
-				setNamespace(JSON.parse(jsonLocalNamespace));
+				setCurrentNamespace(
+					list.find((item: any) => {
+						return (
+							item.name === JSON.parse(jsonLocalNamespace).name
+						);
+					})
+				);
+				setNamespace(
+					list.find((item: any) => {
+						return (
+							item.name === JSON.parse(jsonLocalNamespace).name
+						);
+					})
+				);
 			} else {
 				setCurrentNamespace(list[0]);
 				setNamespace(list[0]);
