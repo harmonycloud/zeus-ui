@@ -367,7 +367,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					);
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/serviceList${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
+						pathname: `/serviceList/${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
 						state: {
 							flag: true
 						}

@@ -518,7 +518,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					nodeAffinity: sendData.nodeAffinity,
 					tolerations: sendData.tolerations,
 					mirrorImageId:
-						mirrorList
+						relationMirrorList
 							.find(
 								(item: MirrorItem) =>
 									item.address ===
@@ -621,7 +621,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							}
 						},
 						mirrorImageId:
-							mirrorList
+							relationMirrorList
 								.find(
 									(item: MirrorItem) =>
 										item.address ===
