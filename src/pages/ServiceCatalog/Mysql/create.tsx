@@ -2000,7 +2000,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<StorageQuota clusterId={globalCluster.id} />
+								<StorageQuota
+									clusterId={
+										originData
+											? relationClusterId
+											: globalCluster.id
+									}
+								/>
 							</ul>
 						</div>
 					</FormBlock>

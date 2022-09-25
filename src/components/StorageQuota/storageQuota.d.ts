@@ -1,3 +1,3 @@
 export interface StorageQuotaProps {
-	clusterId: string;
+	clusterId?: string;
 }

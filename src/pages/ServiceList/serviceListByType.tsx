@@ -54,6 +54,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		clusterList: globalClusterList,
 		namespaceList: globalNamespaceList
 	} = props.globalVar;
+	console.log(globalClusterList);
 	const [dataSource, setDataSource] = useState<serviceListItemProps>();
 	const [showDataSource, setShowDataSource] =
 		useState<ShowDataSourceParams>();
@@ -774,17 +775,20 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 		setCluster(cs[0]);
 		storage.setLocal('cluster', JSON.stringify(cs[0]));
-		const ns = globalNamespaceList.filter(
-			(item) => item.name === record.mysqlDTO.relationNamespace
+		// const ns = globalNamespaceList.filter(
+		// 	(item) => item.name === record.mysqlDTO.relationNamespace
+		// );
+		setNamespace({ name: '*', aliasName: '全部' });
+		storage.setLocal(
+			'namespace',
+			JSON.stringify({ name: '*', aliasName: '全部' })
 		);
-		setNamespace(ns[0]);
-		storage.setLocal('namespace', JSON.stringify(ns[0]));
 		setRefreshCluster(true);
 		history.push({
 			pathname: `/serviceList/${name}/${aliasName}/basicInfo/${
 				record.mysqlDTO.relationName
 			}/${record.mysqlDTO.type || 'mysql'}/${record.chartVersion}/${
-				record.namespace
+				record.mysqlDTO.relationNamespace
 			}`,
 			state: {
 				flag: true
