@@ -517,7 +517,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					stdoutEnabled: standardLog,
 					nodeAffinity: sendData.nodeAffinity,
 					tolerations: sendData.tolerations,
-					relationMirrorImageId:
+					mirrorImageId:
 						mirrorList
 							.find(
 								(item: MirrorItem) =>
@@ -620,7 +620,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								storageClassQuota: values.relationStorageClass
 							}
 						},
-						relationMirrorImageId:
+						mirrorImageId:
 							mirrorList
 								.find(
 									(item: MirrorItem) =>

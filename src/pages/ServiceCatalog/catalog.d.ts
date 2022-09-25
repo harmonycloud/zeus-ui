@@ -69,7 +69,7 @@ export interface RelationMiddlewareParams extends CommonSendDataParams {
 	charSet: string;
 	port: number;
 	password: string;
-	relationMirrorImageId?: string;
+	mirrorImageId?: string;
 	quota: {
 		mysql: {
 			storageClassName: string;

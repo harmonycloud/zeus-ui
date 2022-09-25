@@ -405,7 +405,6 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
-		console.log(namespace);
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
 			if (name === 'mysql') {
 				return {

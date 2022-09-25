@@ -56,6 +56,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	} = globalVar;
 	const history = useHistory();
 	const params: DetailParams = useParams();
+	console.log(params);
 	const {
 		middlewareName,
 		type,
@@ -76,6 +77,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 
 	useEffect(() => {
 		if (JSON.stringify(globalVar.cluster) !== '{}') {
+			console.log(namespace);
 			getData(globalVar.cluster.id, namespace);
 		}
 	}, [globalVar.cluster.id, middlewareName]);
@@ -103,6 +105,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	}, [project]);
 
 	const getData = (clusterId: string, namespace: string) => {
+		console.log(clusterId, namespace);
 		const sendData = {
 			clusterId,
 			namespace,
@@ -357,14 +360,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		}).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
-					const ns = res.data.filter(
-						(item: any) =>
-							item.name === data?.mysqlDTO.relationNamespace
+					setNamespace({ name: '*', aliasName: '全部' });
+					storage.setLocal(
+						'namespace',
+						JSON.stringify({ name: '*', aliasName: '全部' })
 					);
-					if (globalNamespace.name !== '*') {
-						setNamespace(ns[0]);
-						storage.setLocal('namespace', JSON.stringify(ns[0]));
-					}
 					setRefreshCluster(true);
 					history.push({
 						pathname: `/serviceList${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
