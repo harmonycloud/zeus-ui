@@ -58,7 +58,10 @@ export default function DataBase(props: any): JSX.Element {
 	}
 	return (
 		<ProPage>
-			<ProContent menu={<ConsoleMenu />} style={{ margin: 0 }}>
+			<ProContent
+				menu={<ConsoleMenu />}
+				style={{ margin: 0, padding: 0 }}
+			>
 				{childrenRender(selectedKey[0])}
 			</ProContent>
 		</ProPage>

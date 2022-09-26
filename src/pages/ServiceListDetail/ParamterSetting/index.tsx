@@ -93,7 +93,10 @@ export default function ParamterSetting(
 	}
 	return (
 		<ProPage>
-			<ProContent menu={<ConsoleMenu />} style={{ margin: 0 }}>
+			<ProContent
+				menu={<ConsoleMenu />}
+				style={{ margin: 0, padding: 0 }}
+			>
 				{childrenRender(selectedKey[0])}
 			</ProContent>
 		</ProPage>
