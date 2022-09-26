@@ -616,16 +616,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
 								storageClassName:
-									values.relationStorageClass?.split('/')[0],
-								storageClassQuota: values.relationStorageQuota
+									values.storageClass?.split('/')[0],
+								storageClassQuota: values.storageQuota
 							}
 						},
 						mirrorImageId:
 							relationMirrorList
 								.find(
 									(item: MirrorItem) =>
-										item.address ===
-										values.relationMirrorImageId
+										item.address === values.mirrorImageId
 								)
 								?.id.toString() || ''
 					}
@@ -838,7 +837,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
 				),
 				mirrorImageId: res.data.mirrorImage,
-				storageClass: res.data.quota.mysql.storageClassName,
+				storageClass: `${res.data.quota.mysql.storageClassName}/${res.data.quota.mysql.storageClassAliasName}`,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
 					'Gi'
@@ -908,7 +907,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					originData?.quota.mysql.memory,
 					'Gi'
 				),
-				storageClass: originData?.quota.mysql.storageClassName,
+				storageClass: `${originData?.quota.mysql.storageClassName}/${originData?.quota.mysql.storageClassAliasName}`,
 				storageQuota: transUnit.removeUnit(
 					originData?.quota.mysql.storageClassQuota,
 					'Gi'
@@ -1010,6 +1009,31 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		);
 	}
 	if (successFlag) {
+		if (state && state.disasterOriginName) {
+			return (
+				<ProPage>
+					<ProContent>
+						<Result
+							status="success"
+							title="发布成功"
+							extra={[
+								<Button
+									key="list"
+									type="primary"
+									onClick={() => {
+										history.push({
+											pathname: `/serviceList/${chartName}/${aliasName}/disaster/${originData?.name}/${chartName}/${chartVersion}/${originData?.namespace}`
+										});
+									}}
+								>
+									返回
+								</Button>
+							]}
+						/>
+					</ProContent>
+				</ProPage>
+			);
+		}
 		return (
 			<ProPage>
 				<ProContent>
@@ -1097,9 +1121,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				title="发布MySQL服务"
 				onBack={() => {
 					history.goBack();
-					// history.push({
-					// 	pathname: `/serviceList/${chartName}/${aliasName}`
-					// });
 				}}
 			/>
 			<ProContent>
@@ -1136,7 +1157,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														style={{
 															width: '378px'
 														}}
-														value={namespace}
+														value={
+															state.disasterOriginName
+														}
 													/>
 												</FormItem>
 											</div>
