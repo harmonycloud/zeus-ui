@@ -265,10 +265,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主三从',
 					value: '1m-3s'
-				},
-				{
-					label: '单实例',
-					value: '1m-0s'
 				}
 			]);
 			setMode('1m-1s');
@@ -283,9 +279,28 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主一从',
 					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
 				}
 			]);
 			setMode('1m-1s');
+		} else if (globalNamespace.name === '*') {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
+				},
+				{
+					label: '单实例',
+					value: '1m-0s'
+				}
+			]);
 		}
 	}, [selectNamespace]);
 

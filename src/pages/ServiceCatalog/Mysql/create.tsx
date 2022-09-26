@@ -289,6 +289,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主一从',
 					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
 				}
 			]);
 			setMode('1m-1s');
@@ -304,6 +308,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主一从',
 					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
 				}
 			]);
 			setMode('1m-1s');
