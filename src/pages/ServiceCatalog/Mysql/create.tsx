@@ -616,8 +616,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
 								storageClassName:
-									values.relationStorageClass.split('/')[0],
-								storageClassQuota: values.relationStorageClass
+									values.relationStorageClass?.split('/')[0],
+								storageClassQuota: values.relationStorageQuota
 							}
 						},
 						mirrorImageId:
