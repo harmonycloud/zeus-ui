@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { Button, Modal, Tabs, notification, Alert } from 'antd';
@@ -55,8 +55,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		namespace: globalNamespace
 	} = globalVar;
 	const history = useHistory();
+	const location = useLocation<{ flag: boolean }>();
 	const params: DetailParams = useParams();
-	console.log(params);
 	const {
 		middlewareName,
 		type,
@@ -74,13 +74,23 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		currentTab || 'basicInfo'
 	);
 	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+	useEffect(() => {
+		if (location?.state?.flag) {
+			window.location.reload();
+		}
+	}, [location?.state?.flag]);
 
 	useEffect(() => {
-		if (JSON.stringify(globalVar.cluster) !== '{}') {
-			console.log(namespace);
+		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
 		}
-	}, [globalVar.cluster.id, middlewareName]);
+	}, []);
+
+	useEffect(() => {
+		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
+			getData(globalVar.cluster.id, namespace);
+		}
+	}, [globalNamespace.name]);
 
 	useEffect(() => {
 		setActiveKey(currentTab);
@@ -105,7 +115,6 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	}, [project]);
 
 	const getData = (clusterId: string, namespace: string) => {
-		console.log(clusterId, namespace);
 		const sendData = {
 			clusterId,
 			namespace,
