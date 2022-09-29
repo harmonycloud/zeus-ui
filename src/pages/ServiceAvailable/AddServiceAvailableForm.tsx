@@ -11,7 +11,8 @@ import {
 	Button,
 	Cascader,
 	InputNumber,
-	notification
+	notification,
+	Tag
 } from 'antd';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
@@ -24,7 +25,11 @@ import { StoreState } from '@/types/index';
 import { getList } from '@/services/serviceList';
 import { serviceListItemProps } from '@/pages/ServiceList/service.list';
 import { filtersProps } from '@/types/comment';
-import { getIngresses } from '@/services/common';
+import {
+	getIngresses,
+	getIngressTCPPort,
+	getNodePort
+} from '@/services/common';
 import { addIngress } from '@/services/ingress';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import storage from '@/utils/storage';
@@ -72,6 +77,14 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	const record = storage.getLocal('availableRecord');
 	const [initService, setInitService] = useState<string[]>([]);
 	const [newNamespace, setNewNamespace] = useState<string>();
+	const [ingressClassName, setIngressClassName] = useState<{
+		value: string;
+		type: string;
+		startPort: number;
+		endPort: number;
+	}>();
+	const [ingressPortArray, setIngressPortArray] = useState<string[]>([]);
+	const [nodePortArray, setNodePortArray] = useState<string[]>([]);
 	const history = useHistory();
 
 	useEffect(() => {
@@ -240,6 +253,16 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 	}, [namespace, cluster]);
 
 	useEffect(() => {
+		getIngressTCPPort().then((res) => {
+			if (res.success) {
+				setIngressPortArray(res.data.split('-'));
+			}
+		});
+		getNodePort().then((res) => {
+			if (res.success) {
+				setNodePortArray(res.data.split('-'));
+			}
+		});
 		return () => {
 			storage.getLocal('availableRecord') &&
 				storage.removeLocal('availableRecord');
@@ -324,7 +347,15 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 		});
 		setHttpList(list);
 	};
-
+	const handleIngressChange = (value: string) => {
+		const cur = ingresses.find((item) => item.ingressClassName === value);
+		setIngressClassName({
+			value: value,
+			type: cur?.type as string,
+			startPort: Number(cur?.startPort || 0),
+			endPort: Number(cur?.endPort || 0)
+		});
+	};
 	const onCreate = (values: any) => {
 		let old = {};
 		let edit = {};
@@ -579,10 +610,12 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 							>
 								<Select
 									placeholder="请选择一个ingress"
-									style={{ width: '200px' }}
+									style={{ width: '250px' }}
 									disabled={
 										record && record.protocol === 'TCP'
 									}
+									value={ingressClassName?.value}
+									onChange={handleIngressChange}
 									dropdownMatchSelectWidth={false}
 								>
 									{ingresses.map(
@@ -594,7 +627,19 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 														item.ingressClassName
 													}
 												>
-													{item.ingressClassName}
+													<div className="flex-space-between">
+														{item.ingressClassName}
+														<Tag
+															color={
+																item.type ===
+																'nginx'
+																	? 'cyan'
+																	: 'green'
+															}
+														>
+															{item.type}
+														</Tag>
+													</div>
 												</Option>
 											);
 										}
@@ -628,26 +673,63 @@ function AddServiceAvailableForm(props: any): JSX.Element {
 									},
 									{
 										type: 'number',
-										min: 30000,
+										min:
+											exposedWay === 'Ingress'
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.startPort
+													: Number(
+															ingressPortArray[0]
+													  )
+												: Number(nodePortArray[0]),
 										max:
 											exposedWay === 'Ingress'
-												? 65535
-												: 32000,
-										message: `对外端口不能小于30000，大于${
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.endPort
+													: Number(
+															ingressPortArray[1]
+													  )
+												: Number(nodePortArray[1]),
+										message: `对外端口不能小于${
 											exposedWay === 'Ingress'
-												? 65535
-												: 32000
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.startPort
+													: Number(
+															ingressPortArray[0]
+													  )
+												: Number(nodePortArray[0])
+										}，大于${
+											exposedWay === 'Ingress'
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.endPort
+													: Number(
+															ingressPortArray[1]
+													  )
+												: Number(nodePortArray[1])
 										}`
 									}
 								]}
 								labelAlign="left"
 							>
 								<InputNumber
-									placeholder={
+									placeholder={`端口范围：${
 										exposedWay === 'Ingress'
-											? '端口范围：30000-65535'
-											: '端口范围：30000-32767'
-									}
+											? ingressClassName?.type ===
+											  'traefik'
+												? ingressClassName.startPort
+												: Number(ingressPortArray[0])
+											: Number(nodePortArray[0])
+									}-${
+										exposedWay === 'Ingress'
+											? ingressClassName?.type ===
+											  'traefik'
+												? ingressClassName.endPort
+												: Number(ingressPortArray[1])
+											: Number(nodePortArray[1])
+									}`}
 									style={{ width: '200px' }}
 								/>
 							</FormItem>

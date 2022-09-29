@@ -143,6 +143,7 @@ const events: eventsParams = {
 const modelMap = {
 	MasterSlave: '一主一从',
 	'1m-1s': '一主一从',
+	'1m-3s': '一主三从',
 	'1m-ns': '一主多从',
 	'1m-0s': '单实例',
 	simple: 'N主',

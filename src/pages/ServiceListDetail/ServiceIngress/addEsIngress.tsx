@@ -14,7 +14,11 @@ import {
 } from 'antd';
 import { IconFont } from '@/components/IconFont';
 import { useParams, useHistory } from 'react-router';
-import { getIngresses } from '@/services/common';
+import {
+	getIngresses,
+	getIngressTCPPort,
+	getNodePort
+} from '@/services/common';
 import { ProHeader, ProPage, ProContent } from '@/components/ProPage';
 import {
 	HttpPathItem,
@@ -64,6 +68,8 @@ export default function AddEsIngress(): JSX.Element {
 		startPort: number;
 		endPort: number;
 	}>();
+	const [ingressPortArray, setIngressPortArray] = useState<string[]>([]);
+	const [nodePortArray, setNodePortArray] = useState<string[]>([]);
 	const [form] = Form.useForm();
 	useEffect(() => {
 		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
@@ -78,6 +84,16 @@ export default function AddEsIngress(): JSX.Element {
 				}
 			}
 		);
+		getIngressTCPPort().then((res) => {
+			if (res.success) {
+				setIngressPortArray(res.data.split('-'));
+			}
+		});
+		getNodePort().then((res) => {
+			if (res.success) {
+				setNodePortArray(res.data.split('-'));
+			}
+		});
 	}, []);
 	useEffect(() => {
 		if (serviceIngress) {
@@ -509,40 +525,57 @@ export default function AddEsIngress(): JSX.Element {
 												? ingressClassName?.type ===
 												  'traefik'
 													? ingressClassName.endPort
-													: 65535
-												: 32767,
+													: Number(
+															ingressPortArray[1]
+													  )
+												: Number(nodePortArray[1]),
 										min:
-											ingressClassName?.type === 'traefik'
-												? ingressClassName.startPort
-												: 30000,
+											exposeType === 'TCP'
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.startPort
+													: Number(
+															ingressPortArray[0]
+													  )
+												: Number(nodePortArray[0]),
 										type: 'number',
 										message: `请输入${
-											ingressClassName?.type === 'traefik'
-												? ingressClassName.startPort
-												: 30000
+											exposeType === 'TCP'
+												? ingressClassName?.type ===
+												  'traefik'
+													? ingressClassName.startPort
+													: Number(
+															ingressPortArray[0]
+													  )
+												: Number(nodePortArray[0])
 										}-${
 											exposeType === 'TCP'
 												? ingressClassName?.type ===
 												  'traefik'
 													? ingressClassName.endPort
-													: 65535
-												: 32767
+													: Number(
+															ingressPortArray[1]
+													  )
+												: Number(nodePortArray[1])
 										}以内的端口`
 									}
 								]}
 							>
 								<InputNumber
 									placeholder={`请输入${
-										ingressClassName?.type === 'traefik'
-											? ingressClassName.startPort
-											: 30000
+										exposeType === 'TCP'
+											? ingressClassName?.type ===
+											  'traefik'
+												? ingressClassName.startPort
+												: Number(ingressPortArray[0])
+											: Number(nodePortArray[0])
 									}-${
 										exposeType === 'TCP'
 											? ingressClassName?.type ===
 											  'traefik'
 												? ingressClassName.endPort
-												: 65535
-											: 32767
+												: Number(ingressPortArray[1])
+											: Number(nodePortArray[1])
 									}以内的端口`}
 									style={{ width: 250 }}
 								/>

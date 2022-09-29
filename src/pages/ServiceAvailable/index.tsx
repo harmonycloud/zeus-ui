@@ -558,7 +558,6 @@ function ServiceAvailable(props: serviceAvailableProps) {
 						width={100}
 					/>
 				</ProTable>
-				{console.log(showDataSource)}
 			</ProContent>
 		</ProPage>
 	);

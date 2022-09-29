@@ -144,3 +144,13 @@ export const getMidImagePath = (params: {
 export const getClusterCpuAndMemory = (params: { clusterId: string }) => {
 	return Axios.get(COMMON.getClusterCpuAndMemory, params);
 };
+
+// * 获取Ingress TCP 端口范围
+export const getIngressTCPPort = () => {
+	return Axios.get(COMMON.getIngressTCPPort);
+};
+
+// * 获取NodePrt 端口范围
+export const getNodePort = () => {
+	return Axios.get(COMMON.getNodePort);
+};
