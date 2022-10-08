@@ -446,7 +446,18 @@ function Personlization(props: { activeKey: string | undefined }): JSX.Element {
 						{ max: 20, message: '长度不能超过20个字符' }
 					]}
 				>
-					<Input placeholder="我是浏览器标题，字数限制在20字符" />
+					<Input placeholder="请输入浏览器标题，长度限制在20个字符" />
+				</Form.Item>
+				<Form.Item
+					label="菜单标题"
+					name="platformAliasName"
+					labelAlign="left"
+					rules={[
+						{ required: true, message: '请输入菜单标题' },
+						{ max: 13, message: '长度不能超过13个字符' }
+					]}
+				>
+					<Input placeholder="请输入菜单标题，长度限制在13个字符" />
 				</Form.Item>
 				<h2>恢复初始化设置</h2>
 				<Form.Item

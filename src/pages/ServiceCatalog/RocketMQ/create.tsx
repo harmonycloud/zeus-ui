@@ -1113,7 +1113,6 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: '376px'
 												}}
-												disabled={!!middlewareName}
 											/>
 										</FormItem>
 									</div>

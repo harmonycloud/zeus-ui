@@ -12,7 +12,6 @@ import {
 	setGlobalClusterList,
 	setGlobalNamespaceList
 } from '@/redux/globalVar/var';
-import { setMenuRefresh } from '@/redux/menu/menu';
 import { disabledRoute, hideRoute, projectHideRoute } from '@/utils/const';
 import { StoreState } from '@/types/index';
 import { NavbarProps } from './navbar';
@@ -154,6 +153,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 															event.target.value
 														);
 													}}
+													value={proSearch}
 												/>
 												<Divider
 													style={{
@@ -347,6 +347,5 @@ export default connect(mapStateToProps, {
 	setProject,
 	setRefreshCluster,
 	setGlobalClusterList,
-	setGlobalNamespaceList,
-	setMenuRefresh
+	setGlobalNamespaceList
 })(Navbar);
