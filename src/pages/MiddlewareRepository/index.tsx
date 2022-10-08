@@ -43,7 +43,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 	const [timer, setTimer] = useState();
 	const location = useLocation();
 	useEffect(() => {
-		getClusters({ detail: true }).then((res) => {
+		getClusters().then((res) => {
 			if (res.success) {
 				setClusterList(res.data);
 				setCurrentCluster(res.data[0]);
@@ -302,7 +302,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 																			currentCluster.id
 																		);
 																	},
-																	5
+																	3
 																)
 															);
 														}

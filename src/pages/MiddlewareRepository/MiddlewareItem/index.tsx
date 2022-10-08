@@ -21,7 +21,6 @@ import OperatorInstallForm from '@/components/OperatorInstallForm/index';
 import { MiddlewareType } from '../index';
 
 import './index.scss';
-import { log } from 'console';
 
 const statusIconRender = (value: number) => {
 	switch (value) {
@@ -124,9 +123,9 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			if (res.success) {
 				notification.success({
 					message: '成功',
-					description: '中间件安装成功，5秒后刷新数据'
+					description: '中间件安装成功，3秒后刷新数据'
 				});
-				setMenuRefresh(true);
+				setMenuRefresh(true, clusterId);
 				setVisible(false);
 				onRefresh();
 			} else {
@@ -153,9 +152,9 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: '中间件卸载成功，5秒后刷新数据'
+							description: '中间件卸载成功，3秒后刷新数据'
 						});
-						setMenuRefresh(true);
+						setMenuRefresh(true, clusterId);
 						onRefresh();
 					} else {
 						notification.error({

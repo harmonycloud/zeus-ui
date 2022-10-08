@@ -163,7 +163,8 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 								message: '成功',
 								description: '已升级到该版本'
 							});
-							setMenuRefresh && setMenuRefresh(true);
+							setMenuRefresh &&
+								setMenuRefresh(true, params.clusterId);
 						} else {
 							Modal.error({
 								title: '失败',

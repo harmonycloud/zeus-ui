@@ -23,14 +23,14 @@ export interface middlewareItemProps extends middlewareProps {
 	clusterId: string;
 	onRefresh: () => void;
 	menu: menuReduxProps;
-	setMenuRefresh: (flag: boolean) => void;
+	setMenuRefresh: (flag: boolean, clusterId: string) => void;
 }
 export interface middlewareListProps {
 	[propsName: string]: middlewareProps[];
 }
 export interface middlewareRepositoryProps {
 	globalVar: globalVarProps;
-	setMenuRefresh?: (flag: boolean) => void;
+	setMenuRefresh?: (flag: boolean, clusterId: string) => void;
 }
 export interface paramsProps {
 	type: string;
