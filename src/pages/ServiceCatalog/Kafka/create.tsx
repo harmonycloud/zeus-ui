@@ -964,10 +964,12 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 												style={{ width: '95px' }}
 												value={kfkDTO.zkPort}
 												placeholder="端口"
-												onChange={(value: number) =>
+												onChange={(
+													value: number | null
+												) =>
 													setKfkDTO({
 														...kfkDTO,
-														zkPort: value
+														zkPort: value as number
 													})
 												}
 												min={0}
@@ -1089,8 +1091,10 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										<InputNumber
 											min={3}
 											value={customCluster}
-											onChange={(value: number) =>
-												setCustomCluster(value)
+											onChange={(value: number | null) =>
+												setCustomCluster(
+													value as number
+												)
 											}
 											max={10}
 										/>

@@ -669,6 +669,20 @@ const ServiceListByType = (props: serviceListProps) => {
 					>
 						<span>版本管理</span>
 					</LinkButton>
+					{(name === 'mysql' ||
+						name === 'redis' ||
+						name === 'postgresql') && (
+						<LinkButton
+							onClick={() => {
+								window.open(
+									'#/operationalPanel/sqlConsole',
+									'_blank'
+								);
+							}}
+						>
+							运维面板
+						</LinkButton>
+					)}
 				</Actions>
 			);
 		}
@@ -746,6 +760,20 @@ const ServiceListByType = (props: serviceListProps) => {
 						版本管理
 					</span>
 				</LinkButton>
+				{(name === 'mysql' ||
+					name === 'redis' ||
+					name === 'postgresql') && (
+					<LinkButton
+						onClick={() => {
+							window.open(
+								'#/operationalPanel/sqlConsole',
+								'_blank'
+							);
+						}}
+					>
+						运维面板
+					</LinkButton>
+				)}
 				<LinkButton
 					disabled={!roleFlag.deleteFlag}
 					onClick={() => deleteFn(record)}

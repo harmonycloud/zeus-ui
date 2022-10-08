@@ -244,7 +244,6 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 				</label>
 				<div className={`form-content`}>
 					{Object.keys(posts).map((item: string) => {
-						console.log(posts);
 						return (
 							<div key={item} style={{ marginBottom: 8 }}>
 								<span
@@ -265,8 +264,12 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 									max={
 										exposedWay === 'Ingress' ? 65535 : 32767
 									}
-									onChange={(value) =>
-										onChange(value, 'exposePort', item)
+									onChange={(value: any) =>
+										onChange(
+											value as number,
+											'exposePort',
+											item
+										)
 									}
 									style={{ width: '200px' }}
 								/>

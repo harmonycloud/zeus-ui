@@ -852,7 +852,7 @@ function CreateAlarm(): JSX.Element {
 												value={item.threshold}
 												onChange={(value) => {
 													onChange(
-														value,
+														value || '0',
 														item,
 														'threshold'
 													);
@@ -871,7 +871,7 @@ function CreateAlarm(): JSX.Element {
 												max="1140"
 												onChange={(value) => {
 													onChange(
-														value,
+														value || '0',
 														item,
 														'alertTime'
 													);
@@ -888,7 +888,7 @@ function CreateAlarm(): JSX.Element {
 												max="1000"
 												onChange={(value) => {
 													onChange(
-														value,
+														value || '0',
 														item,
 														'alertTimes'
 													);

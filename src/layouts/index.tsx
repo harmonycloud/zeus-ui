@@ -36,6 +36,7 @@ import { setMenuRefresh } from '@/redux/menu/menu';
 import backupService from '@/assets/images/backupService.svg';
 import myProject from '@/assets/images/myProject.svg';
 import './layout.scss';
+import OperationPanel from '@/pages/OperationPanel';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -393,6 +394,19 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			<Route path="/terminal/:url" component={MidTerminal} exact />
 		</Router>
 	);
+	// * 运维面板页面
+	const operationalPanel = () => (
+		<Router>
+			<Route
+				path="/operationalPanel/:currentTab"
+				component={OperationPanel}
+				exact
+			/>
+		</Router>
+	);
+	if (window.location.href.includes('operationalPanel')) {
+		return operationalPanel();
+	}
 	// * 没有token时，跳转到登陆页
 	if (!storage.getLocal('token')) {
 		return redirectToLogin();

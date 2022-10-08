@@ -1261,8 +1261,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											<InputNumber
 												name="从节点数量字段"
 												defaultValue={2}
-												onChange={(value: number) =>
-													setReplicaCount(value)
+												onChange={(
+													value: number | null
+												) =>
+													setReplicaCount(
+														value as number
+													)
 												}
 												value={replicaCount}
 												max={6}

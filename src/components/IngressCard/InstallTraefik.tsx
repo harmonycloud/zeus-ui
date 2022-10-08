@@ -126,15 +126,17 @@ export default function InstallTraefik(
 	const onChange = (e: CheckboxChangeEvent) => {
 		setSkipPortConflict(e.target.checked);
 	};
-	const onInputNumberChange = (value: number) => {
-		setStartPort(value);
-		if (value >= 30000 && value <= 65435) {
+	const onInputNumberChange = (value: number | null) => {
+		setStartPort(value as number);
+		if ((value as number) >= 30000 && (value as number) <= 65435) {
 			setPorts(undefined);
-			checkTraefikPort({ clusterId, startPort: value }).then((res) => {
-				if (res.success) {
-					setPorts(res.data);
+			checkTraefikPort({ clusterId, startPort: value as number }).then(
+				(res) => {
+					if (res.success) {
+						setPorts(res.data);
+					}
 				}
-			});
+			);
 		}
 	};
 	const onOk = () => {

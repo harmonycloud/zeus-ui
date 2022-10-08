@@ -68,6 +68,7 @@ import AreaConfig from '@/pages/ActiveActive/AreaConfig';
 import AreaDetail from '@/pages/ActiveActive/AreaDetail';
 import IngressDetail from '@/components/IngressCard/IngressDetail';
 import EditYaml from '@/components/IngressCard/editYaml';
+import OperationPanel from '@/pages/OperationPanel';
 const Routes = withRouter((props) => {
 	return (
 		<>
@@ -525,6 +526,12 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/systemManagement/systemAlarm/ingress/:clusterId/:ingressClassName"
 					component={EditYaml}
+					exact
+				/>
+				{/* 中间件操作面板页面相关 */}
+				<Route
+					path="/operationalPanel"
+					component={OperationPanel}
 					exact
 				/>
 			</Switch>
