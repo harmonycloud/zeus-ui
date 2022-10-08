@@ -186,6 +186,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [relationNamespace, setRelationNamespace] = useState<string>();
 	const [originData, setOriginData] = useState<middlewareDetailProps>();
 	const [reClusterFlag, setReClusterFlag] = useState<boolean>(false);
+	const [relationMirrorList, setRelationMirrorList] = useState<MirrorItem[]>(
+		[]
+	);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 
@@ -289,6 +292,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主一从',
 					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
 				}
 			]);
 			setMode('1m-1s');
@@ -304,6 +311,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主一从',
 					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
 				}
 			]);
 			setMode('1m-1s');
@@ -514,10 +525,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					stdoutEnabled: standardLog,
 					nodeAffinity: sendData.nodeAffinity,
 					tolerations: sendData.tolerations,
+					mirrorImageId:
+						relationMirrorList
+							.find(
+								(item: MirrorItem) =>
+									item.address ===
+									values.relationMirrorImageId
+							)
+							?.id.toString() || '',
 					quota: {
 						mysql: {
-							storageClassName: values.storageClass.split('/')[0],
-							storageClassQuota: values.storageQuota
+							storageClassName:
+								values.relationStorageClass.split('/')[0],
+							storageClassQuota: values.relationStorageQuota
 						}
 					}
 				};
@@ -604,10 +624,17 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
 								storageClassName:
-									values.storageClass.split('/')[0],
+									values.storageClass?.split('/')[0],
 								storageClassQuota: values.storageQuota
 							}
-						}
+						},
+						mirrorImageId:
+							relationMirrorList
+								.find(
+									(item: MirrorItem) =>
+										item.address === values.mirrorImageId
+								)
+								?.id.toString() || ''
 					}
 				};
 				// 主机亲和
@@ -758,12 +785,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				clusterId: globalCluster.id
 			}).then((res) => {
 				if (res.success) {
-					// const list = res.data.list.map((item: MirrorItem) => {
-					// 	return {
-					// 		label: item.address,
-					// 		value: item.address
-					// 	};
-					// });
 					setMirrorList(res.data.list);
 				}
 			});
@@ -824,7 +845,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
 				),
 				mirrorImageId: res.data.mirrorImage,
-				storageClass: res.data.quota.mysql.storageClassName,
+				storageClass: `${res.data.quota.mysql.storageClassName}/${res.data.quota.mysql.storageClassAliasName}`,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
 					'Gi'
@@ -894,7 +915,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					originData?.quota.mysql.memory,
 					'Gi'
 				),
-				storageClass: originData?.quota.mysql.storageClassName,
+				storageClass: `${originData?.quota.mysql.storageClassName}/${originData?.quota.mysql.storageClassAliasName}`,
 				storageQuota: transUnit.removeUnit(
 					originData?.quota.mysql.storageClassQuota,
 					'Gi'
@@ -935,6 +956,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleChange = (value: any, data: any) => {
 		setRelationClusterId(value[0]);
+		getMirror({
+			clusterId: value[0]
+		}).then((res) => {
+			if (res.success) {
+				setRelationMirrorList(res.data.list);
+			}
+		});
+		form.setFieldsValue({ relationStorageClass: '' });
 		if (value[0] === globalCluster.id) {
 			setReClusterFlag(true);
 		} else {
@@ -988,6 +1017,31 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 		);
 	}
 	if (successFlag) {
+		if (state && state.disasterOriginName) {
+			return (
+				<ProPage>
+					<ProContent>
+						<Result
+							status="success"
+							title="发布成功"
+							extra={[
+								<Button
+									key="list"
+									type="primary"
+									onClick={() => {
+										history.push({
+											pathname: `/serviceList/${chartName}/${aliasName}/disaster/${originData?.name}/${chartName}/${chartVersion}/${originData?.namespace}`
+										});
+									}}
+								>
+									返回
+								</Button>
+							]}
+						/>
+					</ProContent>
+				</ProPage>
+			);
+		}
 		return (
 			<ProPage>
 				<ProContent>
@@ -1075,9 +1129,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				title="发布MySQL服务"
 				onBack={() => {
 					history.goBack();
-					// history.push({
-					// 	pathname: `/serviceList/${chartName}/${aliasName}`
-					// });
 				}}
 			/>
 			<ProContent>
@@ -1114,7 +1165,9 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														style={{
 															width: '378px'
 														}}
-														value={namespace}
+														value={
+															state.disasterOriginName
+														}
 													/>
 												</FormItem>
 											</div>
@@ -1216,9 +1269,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																	value={
 																		item.name
 																	}
-																	// disabled={
-																	// 	item.availableDomain
-																	// }
 																>
 																	<p
 																		title={
@@ -1241,24 +1291,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																			</span>
 																		) : null}
 																	</p>
-																	{/* {item.availableDomain ? (
-																		<Popover
-																			content={
-																				'当前无法选择可用区命名空间，如需要发布可用区请切换到对应可用区命名空间'
-																			}
-																		>
-																			<p>
-																				{
-																					item.aliasName
-																				}
-																				<span className="available-domain">
-																					可用区
-																				</span>
-																			</p>
-																		</Popover>
-																	) : (
-																		item.aliasName
-																	)} */}
 																</Select.Option>
 															);
 														}
@@ -1794,7 +1826,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												style={{
 													width: '380px'
 												}}
-												disabled={!!backupFileName}
 											/>
 										</FormItem>
 									</div>
@@ -2000,7 +2031,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<StorageQuota clusterId={globalCluster.id} />
+								<StorageQuota
+									clusterId={
+										originData
+											? relationClusterId
+											: globalCluster.id
+									}
+								/>
 							</ul>
 						</div>
 					</FormBlock>
@@ -2147,6 +2184,51 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 												</div>
 											</li>
+											<li className="display-flex">
+												<label className="form-name">
+													<span
+														className="ne-required"
+														style={{
+															marginRight: 8
+														}}
+													>
+														镜像仓库
+													</span>
+												</label>
+												<div className="form-content">
+													<FormItem
+														name="relationMirrorImageId"
+														required
+														rules={[
+															{
+																required: true,
+																message:
+																	'请选择镜像仓库'
+															}
+														]}
+													>
+														<AutoComplete
+															placeholder="请选择"
+															allowClear={true}
+															options={relationMirrorList.map(
+																(item) => {
+																	return {
+																		value: item.address,
+																		label: item.address
+																	};
+																}
+															)}
+															style={{
+																width: '380px'
+															}}
+														/>
+													</FormItem>
+												</div>
+											</li>
+											<StorageQuota
+												clusterId={relationClusterId}
+												type="relation"
+											/>
 										</>
 									)}
 								</ul>

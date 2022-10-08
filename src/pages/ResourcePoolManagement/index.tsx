@@ -17,6 +17,8 @@ import storage from '@/utils/storage';
 import { setRefreshCluster } from '@/redux/globalVar/var';
 import { getIsAccessGYT } from '@/services/common';
 import './index.scss';
+import LineLoading from '@/components/LineLoading';
+import MemoryItem from './memoryItem';
 
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
@@ -28,9 +30,11 @@ function ResourcePoolManagement(
 ): JSX.Element {
 	const { setRefreshCluster } = props;
 	const [clusterList, setClusterList] = useState<clusterType[]>([]);
+	const [cpuAndMemoryList, setCpuAndMemoryList] = useState<clusterType[]>([]);
 	const [key, setKey] = useState<string>('');
 	const [isAccess, setIsAccess] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [isRefresh, setIsRefresh] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		getIsAccessGYT().then((res) => {
@@ -46,19 +50,7 @@ function ResourcePoolManagement(
 			.then((res) => {
 				if (res.success) {
 					if (mounted) {
-						const list = res.data.map((item: clusterType) => {
-							getClusterCpuAndMemory({ clusterId: item.id }).then(
-								(r) => {
-									if (r.success) {
-										item.clusterQuotaDTO = r.data;
-									}
-								}
-							);
-							return item;
-						});
-						setTimeout(() => {
-							setClusterList(list);
-						}, 1000);
+						setClusterList(res.data);
 					}
 				} else {
 					notification.error({
@@ -79,19 +71,8 @@ function ResourcePoolManagement(
 		getClusters({ detail: true, key })
 			.then((res) => {
 				if (res.success) {
-					const list = res.data.map((item: clusterType) => {
-						getClusterCpuAndMemory({ clusterId: item.id }).then(
-							(r) => {
-								if (r.success) {
-									item.clusterQuotaDTO = r.data;
-								}
-							}
-						);
-						return item;
-					});
-					setTimeout(() => {
-						setClusterList(list);
-					}, 1000);
+					setClusterList(res.data);
+					setIsRefresh(!isRefresh);
 				}
 			})
 			.finally(() => {
@@ -187,40 +168,25 @@ function ResourcePoolManagement(
 		);
 	};
 	const cpuRender = (value: string, record: clusterType, index: number) => {
-		console.log(record);
-		const percentage = record.clusterQuotaDTO
-			? (Number(record.clusterQuotaDTO?.usedCpu) /
-					Number(record.clusterQuotaDTO?.totalCpu)) *
-			  100
-			: 0;
 		return (
-			<div>
-				<div className="cpu-content">
-					<img src={transBg} />
-					<div className="cpu-content-line">
-						<div
-							style={{
-								height: 16,
-								width: `${percentage}%`,
-								backgroundImage:
-									'linear-gradient(to right bottom, rgb(127, 177, 255), rgb(122, 212, 255))'
-							}}
-						></div>
-					</div>
-					<div style={{ color: '#49A9E1' }}>
-						{percentage.toFixed(0)}%
-					</div>
-				</div>
-				<div>
-					{record.clusterQuotaDTO
-						? Number(record.clusterQuotaDTO?.usedCpu).toFixed(1)
-						: '-'}
-					/
-					{record.clusterQuotaDTO
-						? Number(record.clusterQuotaDTO?.totalCpu).toFixed(1)
-						: '-'}
-				</div>
-			</div>
+			<MemoryItem
+				clusterId={record.id}
+				type="cpu"
+				isRefresh={isRefresh}
+			/>
+		);
+	};
+	const memoryRender = (
+		value: string,
+		record: clusterType,
+		index: number
+	) => {
+		return (
+			<MemoryItem
+				clusterId={record.id}
+				type="memory"
+				isRefresh={isRefresh}
+			/>
 		);
 	};
 	const clusterNameRender = (value: string, record: any, index: number) => {
@@ -253,46 +219,6 @@ function ResourcePoolManagement(
 			>
 				{record.attributes.nsCount}
 			</span>
-		);
-	};
-	const memoryRender = (
-		value: string,
-		record: clusterType,
-		index: number
-	) => {
-		const percentage = record.clusterQuotaDTO
-			? (Number(record.clusterQuotaDTO?.usedMemory) /
-					Number(record.clusterQuotaDTO?.totalMemory)) *
-			  100
-			: 0;
-		return (
-			<div>
-				<div className="cpu-content">
-					<img src={transBg} />
-					<div className="cpu-content-line">
-						<div
-							style={{
-								height: 16,
-								width: `${percentage}%`,
-								backgroundImage:
-									'linear-gradient(to right bottom, rgb(248, 163, 89), rgb(252, 201, 116))'
-							}}
-						></div>
-					</div>
-					<div style={{ color: '#F8A359' }}>
-						{percentage.toFixed(0)}%
-					</div>
-				</div>
-				<div>
-					{record.clusterQuotaDTO
-						? Number(record.clusterQuotaDTO?.usedMemory).toFixed(1)
-						: '-'}
-					/
-					{record.clusterQuotaDTO
-						? Number(record.clusterQuotaDTO?.totalMemory).toFixed(1)
-						: '-'}
-				</div>
-			</div>
 		);
 	};
 	const createTimeRender = (

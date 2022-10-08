@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import { Button, Modal, Tabs, notification, Alert } from 'antd';
@@ -55,6 +55,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		namespace: globalNamespace
 	} = globalVar;
 	const history = useHistory();
+	const location = useLocation<{ flag: boolean }>();
 	const params: DetailParams = useParams();
 	const {
 		middlewareName,
@@ -73,12 +74,23 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		currentTab || 'basicInfo'
 	);
 	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+	useEffect(() => {
+		if (location?.state?.flag) {
+			window.location.reload();
+		}
+	}, [location?.state?.flag]);
 
 	useEffect(() => {
-		if (JSON.stringify(globalVar.cluster) !== '{}') {
+		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
 		}
-	}, [globalVar.cluster.id, middlewareName]);
+	}, []);
+
+	useEffect(() => {
+		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
+			getData(globalVar.cluster.id, namespace);
+		}
+	}, [globalNamespace.name]);
 
 	useEffect(() => {
 		setActiveKey(currentTab);
@@ -357,17 +369,14 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		}).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
-					const ns = res.data.filter(
-						(item: any) =>
-							item.name === data?.mysqlDTO.relationNamespace
+					setNamespace({ name: '*', aliasName: '全部' });
+					storage.setLocal(
+						'namespace',
+						JSON.stringify({ name: '*', aliasName: '全部' })
 					);
-					if (globalNamespace.name !== '*') {
-						setNamespace(ns[0]);
-						storage.setLocal('namespace', JSON.stringify(ns[0]));
-					}
 					setRefreshCluster(true);
 					history.push({
-						pathname: `/serviceList${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
+						pathname: `/serviceList/${name}/${aliasName}/basicInfo/${data?.mysqlDTO.relationName}/mysql/${chartVersion}/${data?.mysqlDTO.relationNamespace}`,
 						state: {
 							flag: true
 						}

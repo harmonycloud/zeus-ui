@@ -24,7 +24,7 @@ import {
 import { TolerationLabelItem } from '../FormTolerations/formTolerations';
 import { AutoCompleteOptionItem } from '@/types/comment';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { installIngress } from '@/services/common';
+import { installIngress, getIngressTCPPort } from '@/services/common';
 import { getNodePort, getNodeTaint } from '@/services/middleware';
 import { getVIPs, checkTraefikPort } from '@/services/ingress';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
@@ -78,6 +78,7 @@ export default function InstallTraefik(
 	const [skipPortConflict, setSkipPortConflict] = useState<boolean>(false);
 	const [startPort, setStartPort] = useState<number>();
 	const [ports, setPorts] = useState<string>();
+	const [nodeArray, setNodeArray] = useState<string[]>([]);
 	useEffect(() => {
 		getNodePort({ clusterId }).then((res) => {
 			if (res.success) {
@@ -104,6 +105,12 @@ export default function InstallTraefik(
 		getVIPs({ clusterId }).then((res) => {
 			if (res.success) {
 				setVIPs(res.data);
+			}
+		});
+		getIngressTCPPort().then((res) => {
+			console.log(res.data.split('-'));
+			if (res.success) {
+				setNodeArray(res.data.split('-'));
 			}
 		});
 	}, []);
@@ -553,10 +560,10 @@ export default function InstallTraefik(
 					rules={[
 						{ required: true, message: '请输入起始服务端口' },
 						{
-							min: 30000,
+							min: Number(nodeArray[0]),
 							type: 'number',
-							max: 65435,
-							message: '请输入30000-65435范围内的端口号'
+							max: Number(nodeArray[1]),
+							message: `请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`
 						}
 					]}
 				>
@@ -566,10 +573,10 @@ export default function InstallTraefik(
 						rules={[
 							{ required: true, message: '请输入起始服务端口' },
 							{
-								min: 30000,
+								min: Number(nodeArray[0]),
 								type: 'number',
-								max: 65435,
-								message: '请输入30000-65435范围内的端口号'
+								max: Number(nodeArray[1]),
+								message: `请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`
 							}
 						]}
 					>
@@ -577,7 +584,7 @@ export default function InstallTraefik(
 							value={startPort}
 							onChange={onInputNumberChange}
 							style={{ width: '330px', marginRight: 8 }}
-							placeholder="请输入30000-65435范围内的端口号"
+							placeholder={`请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`}
 						/>
 					</FormItem>
 					<FormItem noStyle name="skipPortConflict">

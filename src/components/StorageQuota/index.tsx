@@ -10,7 +10,7 @@ import pattern from '@/utils/pattern';
 
 const FormItem = Form.Item;
 export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
-	const { clusterId } = props;
+	const { clusterId, type } = props;
 	const [storageClassList, setStorageClassList] = useState<StorageItem[]>([]);
 	useEffect(() => {
 		if (clusterId) {
@@ -32,7 +32,11 @@ export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
 			</label>
 			<div className={`form-content display-flex`}>
 				<FormItem
-					name="storageClass"
+					name={
+						type === 'relation'
+							? 'relationStorageClass'
+							: 'storageClass'
+					}
 					required
 					rules={[
 						{
@@ -72,7 +76,11 @@ export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
 							message: '请输入存储配额大小（GB）'
 						}
 					]}
-					name="storageQuota"
+					name={
+						type === 'relation'
+							? 'relationStorageQuota'
+							: 'storageQuota'
+					}
 					initialValue={5}
 					style={{ width: '320px' }}
 				>

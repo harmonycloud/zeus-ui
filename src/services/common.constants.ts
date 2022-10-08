@@ -29,3 +29,5 @@ export const isAccessGYT = `${api}/user/useOpenUserCenter`;
 export const getMidImage = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/middlewareImage`;
 // * 获取集群cpu，内存信息
 export const getClusterCpuAndMemory = `${api}/clusters/{clusterId}/monitoring`;
+export const getIngressTCPPort = `${api}/port/ingressTcp`;
+export const getNodePort = `${api}/port/nodePort`;

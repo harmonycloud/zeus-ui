@@ -253,16 +253,6 @@ export default function EditProjectForm(
 					rules={[
 						{ required: true, message: '请输入项目名称' },
 						{
-							min: 2,
-							message:
-								'由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符'
-						},
-						{
-							max: 40,
-							message:
-								'由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符'
-						},
-						{
 							pattern: new RegExp(pattern.projectName),
 							message:
 								'由小写字母数字及“-”组成，且必须以小写字母开头及不能以“-”结尾的2-40个字符'

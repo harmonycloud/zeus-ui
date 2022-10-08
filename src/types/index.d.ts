@@ -60,6 +60,7 @@ export interface globalVarProps {
 }
 export interface menuReduxProps {
 	flag: boolean;
+	clusterId: string;
 }
 export interface paramReduxProps {
 	name: string;

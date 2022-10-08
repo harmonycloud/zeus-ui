@@ -237,7 +237,7 @@ export default function AddStorage(): JSX.Element {
 								{
 									pattern: new RegExp(pattern.storageName),
 									message:
-										'存储中文名称由中文、大写字母、小写字母和数字组成，长度不超过10个字符'
+										'存储中文名称由中文、大写字母、小写字母、数字以及“./-”组成，长度不超过32个字符'
 								}
 							]}
 							name="aliasName"

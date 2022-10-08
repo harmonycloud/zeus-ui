@@ -1,38 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu, MenuProps } from 'antd';
 import { useHistory, useLocation } from 'react-router';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { IconFont } from '@/components/IconFont';
-import { getMenu } from '@/services/user';
-import { menuReduxProps, StoreState } from '@/types';
-import { setMenuRefresh } from '@/redux/menu/menu';
-import { ResMenuItem, MenuInfo, SelectInfo } from '@/types/comment';
+import { StoreState } from '@/types';
+import { MenuInfo, SelectInfo } from '@/types/comment';
 import storage from '@/utils/storage';
 import './menu.scss';
 
 interface MyMenuProps {
 	// clusterId: string;
 	items: MenuItem[];
-	menu: menuReduxProps;
-	setMenuRefresh: (flag: boolean) => void;
 }
 type MenuItem = Required<MenuProps>['items'][number];
-function getItem(
-	label: React.ReactNode,
-	key: React.Key,
-	icon?: React.ReactNode,
-	children?: MenuItem[]
-): MenuItem {
-	return {
-		key,
-		icon,
-		children,
-		label
-	} as MenuItem;
-}
 function MyMenu(props: MyMenuProps): JSX.Element {
-	const { items, menu, setMenuRefresh } = props;
+	const { items } = props;
 	const history = useHistory();
 	const location = useLocation();
 	const { pathname } = location;
@@ -95,6 +77,4 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 const mapStateToProps = (state: StoreState) => ({
 	menu: state.menu
 });
-export default connect(mapStateToProps, {
-	setMenuRefresh
-})(MyMenu);
+export default connect(mapStateToProps)(MyMenu);

@@ -183,6 +183,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const [errorData, setErrorData] = useState<string>('');
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
+	const [selectNamespace, setSelectNamespace] = useState<string>();
 	// * root密码
 	const [pgsqlPwd, setPgsqlPwd] = useState<string>('');
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
@@ -264,15 +265,44 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				{
 					label: '一主三从',
 					value: '1m-3s'
+				}
+			]);
+			setMode('1m-1s');
+		}
+	}, [props]);
+	useEffect(() => {
+		if (
+			namespaceList.find((item) => item.name === selectNamespace)
+				?.availableDomain
+		) {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
+				}
+			]);
+			setMode('1m-1s');
+		} else if (globalNamespace.name === '*') {
+			setModeList([
+				{
+					label: '一主一从',
+					value: '1m-1s'
+				},
+				{
+					label: '一主三从',
+					value: '1m-3s'
 				},
 				{
 					label: '单实例',
 					value: '1m-0s'
 				}
 			]);
-			setMode('1m-1s');
 		}
-	}, [props]);
+	}, [selectNamespace]);
 
 	useEffect(() => {
 		if (JSON.stringify(project) !== '{}' && globalNamespace.name === '*') {
@@ -282,7 +312,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					const list = res.data.filter(
-						(item: NamespaceItem) => item.availableDomain !== true
+						(item: NamespaceItem) =>
+							item.clusterId === globalCluster.id
 					);
 					setNamespaceList(list);
 				} else {
@@ -698,9 +729,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				title="发布PostgreSQL服务"
 				onBack={() => {
 					history.goBack();
-					// history.push({
-					// 	pathname: `/serviceList/${chartName}/${aliasName}`
-					// });
 				}}
 			/>
 			<ProContent>
@@ -732,6 +760,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 													dropdownMatchSelectWidth={
 														false
 													}
+													value={selectNamespace}
+													onChange={(value) =>
+														setSelectNamespace(
+															value
+														)
+													}
 												>
 													{namespaceList.map(
 														(item) => {
@@ -759,6 +793,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																			  ) +
 																			  '...'
 																			: item.aliasName}
+																		{item.availableDomain ? (
+																			<span className="available-domain">
+																				可用区
+																			</span>
+																		) : null}
 																	</p>
 																</Select.Option>
 															);
@@ -1060,7 +1099,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										/>
 									</div>
 								</li>
-								<li className="display-flex form-li">
+								<li
+									className="display-flex form-li"
+									style={{ width: '800px' }}
+								>
 									<label className="form-name">
 										<span>postgres密码</span>
 									</label>
