@@ -1,9 +1,7 @@
 import React from 'react';
-import { Modal, Form, Input, Select } from 'antd';
+import { Modal, Form, Input, Checkbox } from 'antd';
 import { AddAccountProps } from '../index.d';
 import { formItemLayout618 } from '@/utils/const';
-
-const { Option } = Select;
 // TODO 新增和编辑表单复用
 // TODO 账号名和密码的正则校验确认
 // TODO 新增成功后的列表刷新
@@ -36,17 +34,8 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 				>
 					<Input.Password />
 				</Form.Item>
-				<Form.Item
-					label="角色选择"
-					name="role"
-					rules={[{ required: true, message: '请选择角色' }]}
-				>
-					<Select>
-						<Option value="admin">管理员</Option>
-						<Option value="dba">DBA</Option>
-						<Option value="operator">运维人员</Option>
-						<Option value="normal">普通人员</Option>
-					</Select>
+				<Form.Item label="授权权限" name="auth">
+					<Checkbox checked={false} />
 				</Form.Item>
 			</Form>
 		</Modal>

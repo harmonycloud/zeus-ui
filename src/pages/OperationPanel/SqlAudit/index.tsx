@@ -9,7 +9,7 @@ import {
 	Pagination
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import type { PaginationProps } from 'antd';
+import type { PaginationProps, RadioChangeEvent } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
@@ -65,6 +65,7 @@ export default function SqlAudit(): JSX.Element {
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();
 	const [pageSize, setPageSize] = useState<number>(10);
+	const [executionTime, setExecutionTime] = useState<string>('');
 	const onSearch = (value: string) => console.log(value);
 	const onRefresh = () => console.log('refresh');
 	const showTotal: PaginationProps['showTotal'] = (total) => `共 ${total} 条`;
@@ -78,6 +79,9 @@ export default function SqlAudit(): JSX.Element {
 		console.log(page);
 		setCurrent(page);
 	};
+	const handleRadioChange = (e: RadioChangeEvent) => {
+		setExecutionTime(e.target.value);
+	};
 	return (
 		<main className="sql-audit-main">
 			<Search
@@ -88,14 +92,17 @@ export default function SqlAudit(): JSX.Element {
 			<div className="sql-audit-filter-content">
 				<Space align="center">
 					<label>执行时间</label>
-					<Radio.Group>
+					<Radio.Group
+						onChange={handleRadioChange}
+						value={executionTime}
+					>
 						<Radio.Button value="1day">近1天</Radio.Button>
 						<Radio.Button value="3day">近3天</Radio.Button>
 						<Radio.Button value="7day">近7天</Radio.Button>
 						<Radio.Button value="1month">近1月</Radio.Button>
 						<Radio.Button value="custom">自定义</Radio.Button>
 					</Radio.Group>
-					<RangePicker />
+					{executionTime === 'custom' && <RangePicker />}
 				</Space>
 				<Button
 					type="default"

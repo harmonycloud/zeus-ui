@@ -11,19 +11,25 @@ import {
 } from 'antd';
 import { useHistory, useParams } from 'react-router';
 import type { ColumnsType } from 'antd/es/table';
-import type { PaginationProps } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
+import type { PaginationProps, RadioChangeEvent } from 'antd';
+import {
+	CheckOutlined,
+	CloseOutlined,
+	ReloadOutlined
+} from '@ant-design/icons';
 import AddAccount from './AddAccount';
 import { ParamsProps } from '../index.d';
-
+import Actions from '@/components/Actions';
+import AuthorizationForm from './AuthorizatioinForm';
+const LinkButton = Actions.LinkButton;
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 interface DataType {
 	id: number;
 	account: string;
-	role: string;
 	auth: string;
-	status: string;
+	canAuth: boolean;
+	status: boolean;
 	lastTime: string;
 }
 
@@ -35,14 +41,15 @@ export default function AccountMag(): JSX.Element {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [addOpen, setAddOpen] = useState<boolean>(false);
 	const [authOpen, setAuthOpen] = useState<boolean>(false);
+	const [executionTime, setExecutionTime] = useState<string>('');
 	const [dataSource, setDataSource] = useState([
 		{
 			id: 1,
 			account: 'aaa',
-			role: 'admin',
-			status: 'false',
+			status: true,
 			lastTime: '2022-10-09',
-			auth: 'aaa'
+			auth: 'aaa',
+			canAuth: true
 		}
 	]);
 	const columns: ColumnsType<DataType> = [
@@ -50,17 +57,6 @@ export default function AccountMag(): JSX.Element {
 			title: '账号名',
 			dataIndex: 'account',
 			key: 'account'
-		},
-		{
-			title: '角色',
-			dataIndex: 'role',
-			key: 'role',
-			filters: [
-				{ text: '管理员', value: 'admin' },
-				{ text: 'DBA', value: 'dba' },
-				{ text: '运维人员', value: 'operator' },
-				{ text: '普通人员', value: 'normal' }
-			]
 		},
 		{
 			title: '权限',
@@ -80,10 +76,19 @@ export default function AccountMag(): JSX.Element {
 			)
 		},
 		{
+			title: '能否授权',
+			dataIndex: 'canAuth',
+			key: 'canAuth',
+			render: (text) => {
+				if (text) return <CheckOutlined />;
+				return <CloseOutlined />;
+			}
+		},
+		{
 			title: '启/禁用',
 			dataIndex: 'status',
 			key: 'status',
-			render: () => <Switch />
+			render: (text) => <Switch checked={text} />
 		},
 		{
 			title: '最后登录时间',
@@ -93,7 +98,14 @@ export default function AccountMag(): JSX.Element {
 		{
 			title: '操作',
 			dataIndex: 'action',
-			key: 'action'
+			key: 'action',
+			render: (_, record) => (
+				<Actions>
+					<LinkButton>编辑</LinkButton>
+					<LinkButton>重置密码</LinkButton>
+					<LinkButton>删除</LinkButton>
+				</Actions>
+			)
 		}
 	];
 	const onSearch = (value: string) => console.log(value);
@@ -108,6 +120,9 @@ export default function AccountMag(): JSX.Element {
 	const onChange: PaginationProps['onChange'] = (page) => {
 		setCurrent(page);
 	};
+	const handleRadioChange = (e: RadioChangeEvent) => {
+		setExecutionTime(e.target.value);
+	};
 	return (
 		<main className="account-mag-main">
 			<div className="account-mag-action-content">
@@ -115,7 +130,9 @@ export default function AccountMag(): JSX.Element {
 					<Button type="primary" onClick={() => setAddOpen(true)}>
 						新增
 					</Button>
-					<Button type="default">授权</Button>
+					<Button type="default" onClick={() => setAuthOpen(true)}>
+						授权
+					</Button>
 				</Space>
 			</div>
 			<Search
@@ -126,14 +143,17 @@ export default function AccountMag(): JSX.Element {
 			<div className="account-mag-filter-content">
 				<Space align="center">
 					<label>执行时间</label>
-					<Radio.Group>
+					<Radio.Group
+						onChange={handleRadioChange}
+						value={executionTime}
+					>
 						<Radio.Button value="1day">近1天</Radio.Button>
 						<Radio.Button value="3day">近3天</Radio.Button>
 						<Radio.Button value="7day">近7天</Radio.Button>
 						<Radio.Button value="1month">近1月</Radio.Button>
 						<Radio.Button value="custom">自定义</Radio.Button>
 					</Radio.Group>
-					<RangePicker />
+					{executionTime === 'custom' && <RangePicker />}
 				</Space>
 				<Button
 					type="default"
@@ -142,7 +162,12 @@ export default function AccountMag(): JSX.Element {
 				/>
 			</div>
 			<div className="account-mag-table-content">
-				<Table size="small" columns={columns} dataSource={dataSource} />
+				<Table
+					rowKey="id"
+					size="small"
+					columns={columns}
+					dataSource={dataSource}
+				/>
 				<div className="account-mag-pagination-content">
 					<Pagination
 						size="small"
@@ -159,6 +184,13 @@ export default function AccountMag(): JSX.Element {
 			</div>
 			{addOpen && (
 				<AddAccount open={addOpen} onCancel={() => setAddOpen(false)} />
+			)}
+			{authOpen && (
+				<AuthorizationForm
+					open={authOpen}
+					onCancel={() => setAuthOpen(false)}
+					type={params.type}
+				/>
 			)}
 		</main>
 	);

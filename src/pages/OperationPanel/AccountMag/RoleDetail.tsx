@@ -50,7 +50,6 @@ export default function RoleDetail(): JSX.Element {
 			/>
 			<ProContent>
 				<Space className="mb-8">
-					<Button type="primary">延期权限</Button>
 					<Button>释放权限</Button>
 				</Space>
 				<Table dataSource={[]} columns={columns} />
