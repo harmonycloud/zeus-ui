@@ -526,6 +526,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 							type="primary"
 							onClick={() => {
 								if (backupDetail.schedule) {
+									// * 周期备份
 									history.push(
 										`/backupService/backupRecovery/${
 											params.clusterId || cluster.id
@@ -534,6 +535,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 										}/${backupDetail.sourceType}`
 									);
 								} else {
+									// * 立即备份
 									releaseMiddleware();
 								}
 							}}

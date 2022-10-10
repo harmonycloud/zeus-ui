@@ -698,9 +698,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					clusterId: globalCluster.id,
 					namespace: namespace,
 					middlewareName: values.name,
-					restoreTime: moment(values.restoreTime).format(
-						'YYYY-MM-DD HH:mm:ss'
-					),
+					restoreTime: backupDetail.schedule
+						? moment(values.restoreTime).format(
+								'YYYY-MM-DD HH:mm:ss'
+						  )
+						: '',
 					type: storage.getLocal('backupDetail').sourceType,
 					backupName: backupDetail.backupName
 				};
