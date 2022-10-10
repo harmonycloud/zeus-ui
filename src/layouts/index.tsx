@@ -37,6 +37,7 @@ import backupService from '@/assets/images/backupService.svg';
 import myProject from '@/assets/images/myProject.svg';
 import './layout.scss';
 import OperationPanel from '@/pages/OperationPanel';
+import RoleDetail from '@/pages/OperationPanel/AccountMag/RoleDetail';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -398,8 +399,13 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	const operationalPanel = () => (
 		<Router>
 			<Route
-				path="/operationalPanel/:currentTab"
+				path="/operationalPanel/:currentTab/:type/:name"
 				component={OperationPanel}
+				exact
+			/>
+			<Route
+				path="/operationalPanel/:currentTab/:type/:name/roleDetail/:userName"
+				component={RoleDetail}
 				exact
 			/>
 		</Router>

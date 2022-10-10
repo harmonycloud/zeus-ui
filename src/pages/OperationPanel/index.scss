@@ -1,0 +1,24 @@
+
+.account-mag-main,
+.sql-audit-main {
+	padding: $padding-sm 24px;
+	.account-mag-action-content {
+		margin-bottom: $margin;
+	}
+	.account-mag-filter-content,
+	.sql-audit-filter-content {
+		margin-top: $margin;
+		display: flex;
+		justify-content: space-between;
+	}
+	.account-mag-pagination-content,
+	.account-mag-table-content,
+	.sql-audit-pagination-content,
+	.sql-audit-table-content{
+		margin-top: $margin;
+	}
+	.account-mag-pagination-content,
+	.sql-audit-pagination-content {
+		float: right;
+	}
+}

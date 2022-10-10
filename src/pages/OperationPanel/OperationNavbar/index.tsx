@@ -26,7 +26,9 @@ export default function OperationNavbar(): JSX.Element {
 	const personalization = storage.getLocal('personalization');
 	const onClick: MenuProps['onClick'] = (e) => {
 		setCurrent(e.key);
-		history.push(`/operationalPanel/${e.key}`);
+		history.push(
+			`/operationalPanel/${e.key}/${params.type}/${params.name}`
+		);
 	};
 	return (
 		<div className="operation-navbar">
