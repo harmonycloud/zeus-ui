@@ -253,7 +253,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					const list = res.data.filter(
-						(item: NamespaceItem) => item.availableDomain !== true
+						(item: NamespaceItem) =>
+							item.clusterId === globalCluster.id
 					);
 					setNamespaceList(list);
 				} else {
