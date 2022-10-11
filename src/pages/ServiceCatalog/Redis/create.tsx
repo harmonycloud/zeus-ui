@@ -447,6 +447,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			} else {
 				if (nodeObj) {
+					console.log(nodeObj);
 					sendData.quota = { redis: {} };
 					for (const key in nodeObj) {
 						if (!nodeObj[key].disabled) {
@@ -671,11 +672,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				sentinel: {
 					disabled: false,
 					title: '哨兵节点',
-					num: res.data.quota.redis.num,
+					num: res.data.quota.sentinel.num,
 					specId: '1',
-					cpu: Number(res.data.quota.redis.cpu),
+					cpu: Number(res.data.quota.sentinel.cpu),
 					memory: Number(
-						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+						transUnit.removeUnit(
+							res.data.quota.sentinel.memory,
+							'Gi'
+						)
 					)
 				}
 			});

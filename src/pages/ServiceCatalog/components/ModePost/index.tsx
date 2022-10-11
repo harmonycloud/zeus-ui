@@ -154,7 +154,7 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 			ingresses: [data]
 		});
 	}, [data]);
-	const onChange = (value: string | number, type: string, item?: string) => {
+	const onChange = (value: any, type: string, item?: string) => {
 		switch (type) {
 			case 'exposedWay':
 				setExposedWay(value as string);

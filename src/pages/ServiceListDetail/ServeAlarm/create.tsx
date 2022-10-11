@@ -118,7 +118,7 @@ function CreateAlarm(): JSX.Element {
 		});
 	};
 
-	const onChange = (value: string, record: ServiceRuleItem, type: string) => {
+	const onChange = (value: any, record: ServiceRuleItem, type: string) => {
 		if (type === 'alert') {
 			const listTemp = alarms;
 			const filterItem: AlarmItem[] = listTemp.filter(

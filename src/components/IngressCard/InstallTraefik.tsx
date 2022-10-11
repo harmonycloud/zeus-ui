@@ -126,7 +126,7 @@ export default function InstallTraefik(
 	const onChange = (e: CheckboxChangeEvent) => {
 		setSkipPortConflict(e.target.checked);
 	};
-	const onInputNumberChange = (value: number) => {
+	const onInputNumberChange = (value: any) => {
 		setStartPort(value);
 		if (value >= 30000 && value <= 65435) {
 			setPorts(undefined);

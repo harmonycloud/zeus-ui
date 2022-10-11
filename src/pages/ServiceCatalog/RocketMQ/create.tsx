@@ -1184,7 +1184,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												name="组数"
 												value={groupCount}
 												onChange={(value) =>
-													setGroupCount(value)
+													setGroupCount(
+														value as number
+													)
 												}
 												// min={2}
 												// max={10}
@@ -1203,7 +1205,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												name="节点数量"
 												value={replicaCount}
 												onChange={(value) =>
-													setReplicaCount(value)
+													setReplicaCount(
+														value as number
+													)
 												}
 												// min={3}
 												// max={10}
