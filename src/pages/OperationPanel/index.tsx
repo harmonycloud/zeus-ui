@@ -7,6 +7,7 @@ import OperatorHeader from './OperatorHeader';
 import './index.scss';
 import AccountMag from './AccountMag';
 import SqlConsole from './SqlConsole';
+import DatabaseMag from './DatabaseMag';
 
 export default function OperationPanel(): JSX.Element {
 	const params: ParamsProps = useParams();
@@ -21,6 +22,8 @@ export default function OperationPanel(): JSX.Element {
 				return <AccountMag />;
 			case 'sqlAudit':
 				return <SqlAudit />;
+			case 'databaseMag':
+				return <DatabaseMag />;
 			default:
 				break;
 		}
@@ -29,8 +32,7 @@ export default function OperationPanel(): JSX.Element {
 		<div className="zeus-mid-layout">
 			<OperationNavbar />
 			<div className="zeus-mid-content">
-				{(params.currentTab === 'accountMag' ||
-					params.currentTab === 'sqlAudit') && <OperatorHeader />}
+				{params.currentTab !== 'sqlConsole' && <OperatorHeader />}
 				{childrenRender()}
 			</div>
 		</div>

@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Input, Layout, Tree } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Input, Layout, Tree, Tabs, Dropdown, Menu } from 'antd';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
 const { Content, Sider } = Layout;
-const tableTree = [
+const initialItems = [
+	{ label: 'Tab 1', children: 'Content of Tab 1', key: '1', closable: false },
+	{ label: 'Tab 2', children: 'Content of Tab 2', key: '2' },
 	{
-		title: 'table01',
-		key: `0-0`,
-		icon: <IconFont type="icon-biaoge" />
-	},
-	{
-		title: 'table02',
-		key: '0-1',
-		icon: <IconFont type="icon-biaoge" />
+		label: 'Tab 3',
+		children: 'Content of Tab 3',
+		key: '3'
 	}
 ];
 const updateTreeData = (
@@ -37,15 +34,41 @@ const updateTreeData = (
 		}
 		return node;
 	});
-// * mysql sql console
+const menu = (
+	<Menu
+		items={[
+			{
+				label: '1st menu item',
+				key: '1'
+			},
+			{
+				label: '2nd menu item',
+				key: '2'
+			},
+			{
+				label: '3rd menu item',
+				key: '3'
+			}
+		]}
+	/>
+);
+// * sql窗口 模版
 export default function SqlConsole(): JSX.Element {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [treeData, setTreeData] = useState<DataNode[]>([]);
+	const [activeKey, setActiveKey] = useState(initialItems[0].key);
+	const [items, setItems] = useState(initialItems);
+	const newTabIndex = useRef(0);
+
 	useEffect(() => {
 		// * 获取数据库列表的数据
 		const init = [
 			{
-				title: 'test',
+				title: (
+					<Dropdown overlay={menu} trigger={['contextMenu']}>
+						<span>test</span>
+					</Dropdown>
+				),
 				key: '0',
 				icon: <IconFont type="icon-database" />
 			},
@@ -64,6 +87,7 @@ export default function SqlConsole(): JSX.Element {
 	}, []);
 	const onLoadData = ({ key, children }: any) =>
 		new Promise<void>((resolve) => {
+			console.log(key, children);
 			if (children) {
 				resolve();
 				return;
@@ -78,9 +102,49 @@ export default function SqlConsole(): JSX.Element {
 				resolve();
 			}, 1000);
 		});
+	const onChange = (newActiveKey: string) => {
+		setActiveKey(newActiveKey);
+	};
+	const add = () => {
+		const newActiveKey = `newTab${newTabIndex.current++}`;
+		const newPanes = [...items];
+		newPanes.push({
+			label: 'New Tab',
+			children: 'Content of new Tab',
+			key: newActiveKey
+		});
+		setItems(newPanes);
+		setActiveKey(newActiveKey);
+	};
 
+	const remove = (targetKey: string) => {
+		let newActiveKey = activeKey;
+		let lastIndex = -1;
+		items.forEach((item, i) => {
+			if (item.key === targetKey) {
+				lastIndex = i - 1;
+			}
+		});
+		const newPanes = items.filter((item) => item.key !== targetKey);
+		if (newPanes.length && newActiveKey === targetKey) {
+			if (lastIndex >= 0) {
+				newActiveKey = newPanes[lastIndex].key;
+			} else {
+				newActiveKey = newPanes[0].key;
+			}
+		}
+		setItems(newPanes);
+		setActiveKey(newActiveKey);
+	};
+	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
+		if (action === 'add') {
+			add();
+		} else {
+			remove(targetKey);
+		}
+	};
 	return (
-		<Layout style={{ minHeight: '100vh' }}>
+		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
 			<Sider
 				className="sql-console-sider"
 				collapsed={collapsed}
@@ -109,8 +173,17 @@ export default function SqlConsole(): JSX.Element {
 					<Tree showIcon treeData={treeData} loadData={onLoadData} />
 				</div>
 			</Sider>
-			<Content>
+			<Content className="sql-console-content">
 				<OperatorHeader />
+				<Tabs
+					className="sql-console-tabs-content"
+					size="small"
+					type="editable-card"
+					onChange={onChange}
+					activeKey={activeKey}
+					onEdit={onEdit}
+					items={items}
+				/>
 			</Content>
 		</Layout>
 	);

@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps } from 'antd';
 import { useParams, useHistory } from 'react-router';
 import storage from '@/utils/storage';
 import { ParamsProps } from '../index.d';
 import './index.scss';
-const items: MenuProps['items'] = [
+let items: MenuProps['items'] = [
 	{
 		label: 'SQL窗口',
 		key: 'sqlConsole'
+	},
+	{
+		label: '数据库管理',
+		key: 'databaseMag'
 	},
 	{
 		label: '账号管理',
@@ -24,6 +28,11 @@ export default function OperationNavbar(): JSX.Element {
 	const [current, setCurrent] = useState<string>(params.currentTab);
 	// 设置logo
 	const personalization = storage.getLocal('personalization');
+	useEffect(() => {
+		if (params.type === 'redis') {
+			items = items?.filter((item) => item?.key !== 'accountMag');
+		}
+	}, []);
 	const onClick: MenuProps['onClick'] = (e) => {
 		setCurrent(e.key);
 		history.push(

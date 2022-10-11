@@ -1,4 +1,5 @@
 
+.database-mag-main,
 .account-mag-main,
 .sql-audit-main {
 	padding: $padding-sm 24px;
@@ -44,7 +45,9 @@
 			background: transparent !important;
 		}
 	}
-	// .ant-layout-sider-zero-width-trigger {
-	// 	top: 40% !important;
-	// }
+}
+.sql-console-content {
+	.sql-console-tabs-content {
+		padding: 0px 24px;
+	}
 }

@@ -10,3 +10,7 @@ export interface AddAccountProps {
 	open: boolean;
 	onCancel: () => void;
 }
+export interface AddDatabaseProps {
+	open: boolean;
+	onCancel: () => void;
+}

@@ -22,7 +22,7 @@
 		"@types/react-split-pane": "^0.1.67",
 		"@typescript-eslint/eslint-plugin": "^4.28.3",
 		"@typescript-eslint/parser": "^4.28.3",
-		"antd": "^4.20.0",
+		"antd": "^4.23.0",
 		"axios": "^0.21.1",
 		"babel-plugin-import": "^1.13.3",
 		"codemirror": "^5.64.0",
