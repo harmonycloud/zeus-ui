@@ -22,3 +22,29 @@
 		float: right;
 	}
 }
+.sql-console-sider {
+	background-color: #F5F5F5 !important;
+	.ant-layout-sider-trigger {
+		border-top: 1px solid $black-6;
+		background-color: #F5F5F5 !important;
+	}
+	.sql-console-sider-title-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: $padding-lg;
+		font-size: $font-2;
+		font-weight: $font-weight-lg;
+		height: 50px;
+		border-bottom: 1px solid $black-6;
+	}
+	.sql-console-sider-search {
+		padding: $padding-lg;
+		.ant-tree {
+			background: transparent !important;
+		}
+	}
+	// .ant-layout-sider-zero-width-trigger {
+	// 	top: 40% !important;
+	// }
+}

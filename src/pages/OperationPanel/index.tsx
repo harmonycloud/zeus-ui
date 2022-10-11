@@ -6,6 +6,7 @@ import SqlAudit from './SqlAudit';
 import OperatorHeader from './OperatorHeader';
 import './index.scss';
 import AccountMag from './AccountMag';
+import SqlConsole from './SqlConsole';
 
 export default function OperationPanel(): JSX.Element {
 	const params: ParamsProps = useParams();
@@ -15,7 +16,7 @@ export default function OperationPanel(): JSX.Element {
 	const childrenRender = () => {
 		switch (params.currentTab) {
 			case 'sqlConsole':
-				return <div>这是sql窗口页面</div>;
+				return <SqlConsole />;
 			case 'accountMag':
 				return <AccountMag />;
 			case 'sqlAudit':
@@ -28,7 +29,8 @@ export default function OperationPanel(): JSX.Element {
 		<div className="zeus-mid-layout">
 			<OperationNavbar />
 			<div className="zeus-mid-content">
-				<OperatorHeader />
+				{(params.currentTab === 'accountMag' ||
+					params.currentTab === 'sqlAudit') && <OperatorHeader />}
 				{childrenRender()}
 			</div>
 		</div>
