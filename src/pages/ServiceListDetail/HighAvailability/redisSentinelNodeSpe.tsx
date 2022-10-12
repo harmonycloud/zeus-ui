@@ -41,6 +41,10 @@ export default function RedisSentinelNodeSpe(props: RedisSentinelNodeSpeProps) {
 
 	useEffect(() => {
 		const { redis, sentinel } = data.quota;
+		delete redis.limitCpu;
+		delete redis.limitMemory;
+		delete sentinel.limitCpu;
+		delete sentinel.limitMemory;
 		redis.title = 'Redis节点';
 		sentinel.title = '哨兵节点';
 		redis.cpu = Number(redis.cpu);
