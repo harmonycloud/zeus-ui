@@ -5,9 +5,10 @@ import type { DataNode } from 'antd/es/tree';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
 import ExecutionTable from '../components/ExectionTable';
+import CodeConsole from '../components/CodeConsole';
 const { Content, Sider } = Layout;
 const initialItems = [
-	{ label: 'Tab 1', children: <ExecutionTable />, key: '1', closable: false },
+	{ label: 'Tab 1', children: <CodeConsole />, key: '1', closable: false },
 	{ label: 'Tab 2', children: 'Content of Tab 2', key: '2' },
 	{
 		label: 'Tab 3',

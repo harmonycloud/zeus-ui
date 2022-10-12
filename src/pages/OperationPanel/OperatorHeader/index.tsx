@@ -8,7 +8,7 @@ export default function OperatorHeader(): JSX.Element {
 			title="test-mysql"
 			extra={
 				<div>
-					权限/账户：账户名称
+					账户：账户名称
 					<span className="name-link ml-12">
 						<span
 							onClick={() => {
