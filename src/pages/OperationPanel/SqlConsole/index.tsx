@@ -4,9 +4,10 @@ import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
+import ExecutionTable from '../components/ExectionTable';
 const { Content, Sider } = Layout;
 const initialItems = [
-	{ label: 'Tab 1', children: 'Content of Tab 1', key: '1', closable: false },
+	{ label: 'Tab 1', children: <ExecutionTable />, key: '1', closable: false },
 	{ label: 'Tab 2', children: 'Content of Tab 2', key: '2' },
 	{
 		label: 'Tab 3',

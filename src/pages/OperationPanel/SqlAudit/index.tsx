@@ -111,20 +111,22 @@ export default function SqlAudit(): JSX.Element {
 				/>
 			</div>
 			<div className="sql-audit-table-content">
-				<Table size="small" columns={columns} dataSource={[]} />
-				<div className="sql-audit-pagination-content">
-					<Pagination
-						size="small"
-						current={current}
-						total={total}
-						pageSize={pageSize}
-						onShowSizeChange={onShowSizeChange}
-						onChange={onChange}
-						showTotal={showTotal}
-						showSizeChanger
-						showQuickJumper
-					/>
-				</div>
+				<Table
+					size="small"
+					columns={columns}
+					dataSource={[]}
+					pagination={{
+						size: 'small',
+						current: current,
+						total: total,
+						pageSize: pageSize,
+						onShowSizeChange: onShowSizeChange,
+						onChange: onChange,
+						showTotal: showTotal,
+						showSizeChanger: true,
+						showQuickJumper: true
+					}}
+				/>
 			</div>
 		</main>
 	);

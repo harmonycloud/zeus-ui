@@ -738,3 +738,22 @@ table.table-list tbody .ant-space-item label span tr span:nth-child(1) {
 .zeus-nav > .ant-popover-content > .ant-popover-inner > .ant-popover-inner-content {
 	padding: 0px !important;
 }
+/* * 小圆点状态显示 */
+.circle-success-status,
+.circle-failed-status {
+	position: relative;
+}
+.circle-success-status::before,
+.circle-failed-status::before {
+	content: '';
+	position: absolute;
+	top: 6.5px;
+	left: 5px;
+	width: 8px;
+	height: 8px;
+	border-radius: 4px;
+	background-color: #ff4d4f;
+}
+.circle-success-status::before {
+	background-color: #52C41A;
+}

@@ -167,20 +167,18 @@ export default function AccountMag(): JSX.Element {
 					size="small"
 					columns={columns}
 					dataSource={dataSource}
+					pagination={{
+						size: 'small',
+						current: current,
+						total: total,
+						pageSize: pageSize,
+						onShowSizeChange: onShowSizeChange,
+						onChange: onChange,
+						showTotal: showTotal,
+						showSizeChanger: true,
+						showQuickJumper: true
+					}}
 				/>
-				<div className="account-mag-pagination-content">
-					<Pagination
-						size="small"
-						current={current}
-						total={total}
-						pageSize={pageSize}
-						onShowSizeChange={onShowSizeChange}
-						onChange={onChange}
-						showTotal={showTotal}
-						showSizeChanger
-						showQuickJumper
-					/>
-				</div>
 			</div>
 			{addOpen && (
 				<AddAccount open={addOpen} onCancel={() => setAddOpen(false)} />
