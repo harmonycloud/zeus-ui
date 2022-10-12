@@ -1,4 +1,3 @@
-
 .database-mag-main,
 .account-mag-main,
 .sql-audit-main {
@@ -45,5 +44,36 @@
 .sql-console-content {
 	.sql-console-tabs-content {
 		padding: 0px 24px;
+		height: 100%;
+		.ant-tabs-content {
+			height: 100%;
+			.ant-tabs-tabpane-active {
+				height: 100%;
+			}
+		}
+	}
+}
+.code-console-main {
+	height: 100%;
+	.code-console-action-content {
+		width: 100%;
+		height: 34px;
+		background:#222222;
+		margin-top: 16px;
+		border-radius: 4px 4px 0 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: $padding-sm 22px $padding-sm;
+	}
+	#code-console-content {
+		height: 100%;
+		.CodeMirror{
+			height: 100% !important;
+			overflow-y: auto !important;
+			.CodeMirror-gutter-wrapper {
+				left: -24px !important;
+			}
+		}
 	}
 }

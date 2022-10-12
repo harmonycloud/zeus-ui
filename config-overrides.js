@@ -7,7 +7,7 @@ const {
 	overrideDevServer,
 	adjustStyleLoaders,
 	addWebpackResolve,
-	addLessLoader
+	addLessLoader,
 } = require('customize-cra');
 
 const allowCORS = () => (config) => {
