@@ -1,15 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Input, Layout, Tree, Tabs, Dropdown, Menu } from 'antd';
+import {
+	Button,
+	Input,
+	Layout,
+	Tree,
+	Tabs,
+	Dropdown,
+	Menu,
+	MenuProps
+} from 'antd';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
 import ExecutionTable from '../components/ExectionTable';
 import CodeConsole from '../components/CodeConsole';
+import { MenuInfo } from '@/types/comment';
+import TableDetail from '../components/TableDetail';
+import TableInfo from '../components/TableInfo';
 const { Content, Sider } = Layout;
 const initialItems = [
 	{ label: 'Tab 1', children: <CodeConsole />, key: '1', closable: false },
-	{ label: 'Tab 2', children: 'Content of Tab 2', key: '2' },
+	{ label: 'Tab 2', children: <TableInfo />, key: '2' },
 	{
 		label: 'Tab 3',
 		children: 'Content of Tab 3',
@@ -36,24 +48,7 @@ const updateTreeData = (
 		}
 		return node;
 	});
-const menu = (
-	<Menu
-		items={[
-			{
-				label: '1st menu item',
-				key: '1'
-			},
-			{
-				label: '2nd menu item',
-				key: '2'
-			},
-			{
-				label: '3rd menu item',
-				key: '3'
-			}
-		]}
-	/>
-);
+
 // * sql窗口 模版
 export default function SqlConsole(): JSX.Element {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -61,13 +56,61 @@ export default function SqlConsole(): JSX.Element {
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
 	const [items, setItems] = useState(initialItems);
 	const newTabIndex = useRef(0);
-
+	// * 添加标签页通用方法
+	const add = (label: string, children: any) => {
+		const newActiveKey = `newTab${newTabIndex.current++}`;
+		const newPanes = [...items];
+		newPanes.push({
+			label: label,
+			children: children,
+			key: newActiveKey
+		});
+		setItems(newPanes);
+		setActiveKey(newActiveKey);
+	};
+	// * 表详情添加
+	const tableDetailAdd = (label: string) => {
+		add(label, <TableDetail />);
+	};
+	const handleMenuClick = (e: MenuInfo, i: string) => {
+		console.log('click', e);
+		console.log(i);
+		tableDetailAdd(i);
+	};
+	const menu = (i: any) => {
+		return (
+			<Menu
+				onClick={(info: MenuInfo) => handleMenuClick(info, i)}
+				items={[
+					{
+						label: '表详情',
+						key: '1'
+					},
+					{
+						label: '查询',
+						key: '2'
+					},
+					{
+						label: '导出建表语句',
+						key: '3'
+					},
+					{
+						label: '导出数据库表结构',
+						key: '4'
+					}
+				]}
+			/>
+		);
+	};
 	useEffect(() => {
 		// * 获取数据库列表的数据
 		const init = [
 			{
 				title: (
-					<Dropdown overlay={menu} trigger={['contextMenu']}>
+					<Dropdown
+						overlay={() => menu('test')}
+						trigger={['contextMenu']}
+					>
 						<span>test</span>
 					</Dropdown>
 				),
@@ -107,17 +150,6 @@ export default function SqlConsole(): JSX.Element {
 	const onChange = (newActiveKey: string) => {
 		setActiveKey(newActiveKey);
 	};
-	const add = () => {
-		const newActiveKey = `newTab${newTabIndex.current++}`;
-		const newPanes = [...items];
-		newPanes.push({
-			label: 'New Tab',
-			children: 'Content of new Tab',
-			key: newActiveKey
-		});
-		setItems(newPanes);
-		setActiveKey(newActiveKey);
-	};
 
 	const remove = (targetKey: string) => {
 		let newActiveKey = activeKey;
@@ -140,7 +172,7 @@ export default function SqlConsole(): JSX.Element {
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
 		if (action === 'add') {
-			add();
+			add('new TAb', null);
 		} else {
 			remove(targetKey);
 		}
