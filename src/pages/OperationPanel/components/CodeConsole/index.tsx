@@ -7,13 +7,14 @@ import 'codemirror/addon/display/placeholder';
 import 'codemirror/addon/hint/sql-hint';
 import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/hint/show-hint.css';
-import { Button, Space } from 'antd';
 // import { format } from 'sql-formatter';
+import { Button, Space } from 'antd';
 import { IconFont } from '@/components/IconFont';
 
 export default function CodeConsole(): JSX.Element {
 	const codeRef = useRef<any>(null);
 	const [value, setValue] = useState('SELECT * from');
+	const [codeMirrorInstance, setCodeMirrorInstance] = useState<any>();
 	const completeAfter = (editor: any) => {
 		const spaces = Array(editor.getOption('indentUnit')).join(';');
 		editor.replaceSelection(spaces);
@@ -58,6 +59,8 @@ export default function CodeConsole(): JSX.Element {
 		CodeMirrorInstance.on('change', (editor, change) => {
 			setValue(editor.getValue());
 		});
+		console.log(CodeMirrorInstance);
+		setCodeMirrorInstance(CodeMirrorInstance);
 	};
 	const exec = () => {
 		console.log(value);
@@ -72,11 +75,24 @@ export default function CodeConsole(): JSX.Element {
 						</Button>
 						<Button
 							size="small"
-							// onClick={() => setValue((value))}
+							onClick={() => {
+								codeMirrorInstance.setValue(
+									window.sqlFormatter.format(value)
+								);
+								setValue(window.sqlFormatter.format(value));
+							}}
 						>
 							格式编排
 						</Button>
-						<Button size="small">清空</Button>
+						<Button
+							size="small"
+							onClick={() => {
+								codeMirrorInstance.setValue('');
+								setValue('');
+							}}
+						>
+							清空
+						</Button>
 					</Space>
 				</div>
 				<IconFont

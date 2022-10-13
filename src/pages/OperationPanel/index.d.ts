@@ -14,3 +14,8 @@ export interface AddDatabaseProps {
 	open: boolean;
 	onCancel: () => void;
 }
+declare global {
+	interface Window {
+		sqlFormatter: any;
+	}
+}

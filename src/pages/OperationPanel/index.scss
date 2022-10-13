@@ -44,7 +44,7 @@
 .sql-console-content {
 	.sql-console-tabs-content {
 		padding: 0px 24px;
-		height: 100%;
+		height: calc(100% - 36px - 72px);
 		.ant-tabs-content {
 			height: 100%;
 			.ant-tabs-tabpane-active {
@@ -67,7 +67,7 @@
 		padding: $padding-sm 22px $padding-sm;
 	}
 	#code-console-content {
-		height: 100%;
+		height: calc(100% - 36px);
 		.CodeMirror{
 			height: 100% !important;
 			overflow-y: auto !important;
