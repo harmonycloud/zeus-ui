@@ -18,13 +18,14 @@ import CodeConsole from '../components/CodeConsole';
 import { MenuInfo } from '@/types/comment';
 import TableDetail from '../components/TableDetail';
 import TableInfo from '../components/TableInfo';
+import ColInfo from '../components/ColInfo';
 const { Content, Sider } = Layout;
 const initialItems = [
 	{ label: 'Tab 1', children: <CodeConsole />, key: '1', closable: false },
 	{ label: 'Tab 2', children: <TableInfo />, key: '2' },
 	{
 		label: 'Tab 3',
-		children: 'Content of Tab 3',
+		children: <ColInfo />,
 		key: '3'
 	}
 ];
@@ -73,8 +74,6 @@ export default function SqlConsole(): JSX.Element {
 		add(label, <TableDetail />);
 	};
 	const handleMenuClick = (e: MenuInfo, i: string) => {
-		console.log('click', e);
-		console.log(i);
 		tableDetailAdd(i);
 	};
 	const menu = (i: any) => {
