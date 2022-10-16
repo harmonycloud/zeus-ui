@@ -1,5 +1,5 @@
 import { Button, Space, Table } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditableRow from './EditableRow';
 import { EditableCell } from './EditableCell';
 import './index.scss';
@@ -8,6 +8,13 @@ interface EditTableProps {
 	defaultColumns: any;
 	originData: any;
 	basicData: any;
+	moveUpVisible?: boolean;
+	moveDownVisible?: boolean;
+	incrementVisible?: boolean;
+	saveVisible?: boolean;
+	cancelVisible?: boolean;
+	returnValues?: (values: any) => void;
+	changedData?: any;
 }
 function swapArray(arr: any[], index1: number, index2: number) {
 	arr[index1] = arr.splice(index2, 1, arr[index1])[0];
@@ -24,8 +31,18 @@ function zIndexUp(arr: any[], index: number) {
 	}
 }
 export default function EditTable(props: EditTableProps): JSX.Element {
-	const { defaultColumns, originData, basicData } = props;
-	console.log(defaultColumns, originData);
+	const {
+		defaultColumns,
+		originData,
+		basicData,
+		moveUpVisible,
+		moveDownVisible,
+		incrementVisible,
+		saveVisible = true,
+		cancelVisible = true,
+		returnValues,
+		changedData
+	} = props;
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [dataSource, setDataSource] = useState([...originData]);
 	const components = {
@@ -34,8 +51,28 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			cell: EditableCell
 		}
 	};
+	useEffect(() => {
+		if (changedData) {
+			console.log(changedData);
+			const newData = [...dataSource];
+			const index = [...dataSource].findIndex(
+				(item) => item.key === selectedRowKeys[0]
+			);
+			const item = dataSource[index];
+			newData.splice(index, 1, {
+				...item,
+				...changedData
+			});
+			setDataSource([...newData]);
+		}
+	}, [changedData]);
 	const handleAdd = () => {
-		setDataSource([...dataSource, basicData]);
+		const tempData = {
+			...basicData,
+			key: Math.random() * 1000000
+		};
+		setDataSource([...dataSource, tempData]);
+		setSelectedRowKeys([tempData.key]);
 	};
 	const handleSave = (row: any) => {
 		const newData = [...dataSource];
@@ -46,6 +83,7 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			...row
 		});
 		setDataSource(newData);
+		returnValues && returnValues(newData);
 	};
 	const moveUp = (key: React.Key) => {
 		const newData = [...dataSource];
@@ -60,10 +98,14 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		setDataSource(newData);
 	};
 	const insertion = (key: React.Key) => {
+		const tempData = {
+			...basicData,
+			key: Math.random() * 1000000
+		};
 		const newData = [...dataSource];
 		const index = newData.findIndex((item) => item.key === key);
-		newData.splice(index + 1, 0, basicData);
-		setSelectedRowKeys([basicData.key]);
+		newData.splice(index + 1, 0, tempData);
+		setSelectedRowKeys([tempData.key]);
 		setDataSource(newData);
 	};
 	const handleDelete = (key: React.Key) => {
@@ -81,6 +123,10 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				editable: col.editable,
 				dataIndex: col.dataIndex,
 				title: col.title,
+				colType: col.componentType,
+				checked: record.key === selectedRowKeys[0],
+				options:
+					col.componentType === 'select' ? col.selectOptions : [],
 				handleSave
 			})
 		};
@@ -90,14 +136,15 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 	};
 	const selectRow = (record: any) => {
 		let selectedRowKeysTemp = [...selectedRowKeys];
-		if (selectedRowKeysTemp.indexOf(record.key) >= 0) {
-			selectedRowKeysTemp.splice(
-				selectedRowKeysTemp.indexOf(record.key),
-				1
-			);
-		} else {
-			selectedRowKeysTemp = [record.key];
-		}
+		// * 选择当前取消选择
+		// if (selectedRowKeysTemp.indexOf(record.key) >= 0) {
+		// 	selectedRowKeysTemp.splice(
+		// 		selectedRowKeysTemp.indexOf(record.key),
+		// 		1
+		// 	);
+		// } else {
+		selectedRowKeysTemp = [record.key];
+		// }
 		setSelectedRowKeys(selectedRowKeysTemp);
 	};
 	const rowSelection = {
@@ -119,21 +166,30 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				>
 					删除
 				</Button>
-				<Button onClick={() => moveUp(selectedRowKeys[0])} size="small">
-					上移
-				</Button>
-				<Button
-					onClick={() => moveDown(selectedRowKeys[0])}
-					size="small"
-				>
-					下移
-				</Button>
-				<Button
-					size="small"
-					onClick={() => insertion(selectedRowKeys[0])}
-				>
-					插入
-				</Button>
+				{moveUpVisible && (
+					<Button
+						onClick={() => moveUp(selectedRowKeys[0])}
+						size="small"
+					>
+						上移
+					</Button>
+				)}
+				{moveDownVisible && (
+					<Button
+						onClick={() => moveDown(selectedRowKeys[0])}
+						size="small"
+					>
+						下移
+					</Button>
+				)}
+				{incrementVisible && (
+					<Button
+						size="small"
+						onClick={() => insertion(selectedRowKeys[0])}
+					>
+						插入
+					</Button>
+				)}
 			</Space>
 			<Table
 				className="mb-8"
@@ -157,16 +213,22 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				})}
 			/>
 			<Space>
-				<Button
-					size="small"
-					type="primary"
-					onClick={() => {
-						console.log(dataSource);
-					}}
-				>
-					保存
-				</Button>
-				<Button size="small">取消</Button>
+				{saveVisible && (
+					<Button
+						size="small"
+						type="primary"
+						onClick={() => {
+							const list = dataSource.map((item, index) => {
+								item.indexInTable = index + 1;
+								return item;
+							});
+							console.log(list);
+						}}
+					>
+						保存
+					</Button>
+				)}
+				{cancelVisible && <Button size="small">取消</Button>}
 			</Space>
 		</div>
 	);

@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Form, Input, InputRef } from 'antd';
+import { Checkbox, Form, Input, InputNumber, InputRef, Select } from 'antd';
 import type { FormInstance } from 'antd/es/form';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { DefaultOptionType } from 'antd/lib/select';
+// import EditableContext from './EditableRow';
 export const EditableContext = React.createContext<FormInstance<any> | null>(
 	null
 );
@@ -11,7 +14,10 @@ interface EditableCellProps {
 	children: React.ReactNode;
 	dataIndex: any;
 	record: any;
+	colType: string;
+	checked: boolean;
 	handleSave: (record: any) => void;
+	options: DefaultOptionType[];
 }
 export const EditableCell: React.FC<EditableCellProps> = ({
 	title,
@@ -19,50 +25,134 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 	children,
 	dataIndex,
 	record,
+	colType,
+	checked,
 	handleSave,
+	options,
 	...restProps
 }) => {
-	const [editing, setEditing] = useState(false);
 	const inputRef = useRef<InputRef>(null);
 	const form = useContext(EditableContext)!;
 
 	useEffect(() => {
-		if (editing) {
-			inputRef.current!.focus();
+		if (checked) {
+			form.setFieldsValue({ [dataIndex]: record[dataIndex] });
+			// TODO 第一个光标focus
+			// inputRef.current!.focus();
 		}
-	}, [editing]);
-
-	const toggleEdit = () => {
-		setEditing(!editing);
-		form.setFieldsValue({ [dataIndex]: record[dataIndex] });
-	};
+	}, [checked]);
 
 	const save = async () => {
 		try {
 			const values = await form.validateFields();
-			toggleEdit();
 			handleSave({ ...record, ...values });
 		} catch (errInfo) {
 			console.log('Save failed:', errInfo);
 		}
 	};
-
+	const handleCheckboxChange = (
+		e: CheckboxChangeEvent,
+		dataIndexTemp: string
+	) => {
+		form.setFieldValue(dataIndexTemp, e.target.checked);
+		save();
+	};
+	const handleSelectChange = (value: any, dataIndexTemp: string) => {
+		form.setFieldValue(dataIndexTemp, value);
+		save();
+	};
+	const handleInputNumber = (value: any, dataIndexTemp: string) => {
+		form.setFieldValue(dataIndexTemp, value);
+		save();
+	};
 	let childNode = children;
-
+	const childNodeRender = () => {
+		switch (colType) {
+			case 'string':
+				return (
+					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+						<Input
+							ref={inputRef}
+							onPressEnter={save}
+							onBlur={save}
+						/>
+					</Form.Item>
+				);
+			case 'checkbox':
+				return (
+					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+						<Checkbox
+							onChange={(e: CheckboxChangeEvent) =>
+								handleCheckboxChange(e, dataIndex)
+							}
+							defaultChecked={record[dataIndex]}
+						/>
+					</Form.Item>
+				);
+			case 'select':
+				return (
+					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+						<Select
+							onChange={(value: any) =>
+								handleSelectChange(value, dataIndex)
+							}
+							options={options}
+						/>
+					</Form.Item>
+				);
+			case 'number':
+				return (
+					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+						<InputNumber
+							onChange={(value: any) =>
+								handleInputNumber(value, dataIndex)
+							}
+						/>
+					</Form.Item>
+				);
+			default:
+				return (
+					<div
+						className="editable-cell-value-wrap"
+						style={{ paddingRight: 24 }}
+					>
+						{children}
+					</div>
+				);
+		}
+	};
+	const unCheckedChildNodeRender = () => {
+		switch (colType) {
+			case 'checkbox':
+				return (
+					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+						<Checkbox
+							onChange={(e: CheckboxChangeEvent) =>
+								handleCheckboxChange(e, dataIndex)
+							}
+							checked={record[dataIndex]}
+						/>
+					</Form.Item>
+				);
+			default:
+				return (
+					<div
+						className="editable-cell-value-wrap"
+						style={{ paddingRight: 24 }}
+					>
+						{children}
+					</div>
+				);
+		}
+	};
 	if (editable) {
-		childNode = editing ? (
-			<Form.Item style={{ margin: 0 }} name={dataIndex}>
-				<Input ref={inputRef} onPressEnter={save} onBlur={save} />
-			</Form.Item>
-		) : (
-			<div
-				className="editable-cell-value-wrap"
-				style={{ paddingRight: 24 }}
-				onClick={toggleEdit}
-			>
-				{children}
-			</div>
-		);
+		childNode = checked ? childNodeRender() : unCheckedChildNodeRender();
+		// <div
+		// 	className="editable-cell-value-wrap"
+		// 	style={{ paddingRight: 24 }}
+		// >
+		// 	{children}
+		// </div>
 	}
 
 	return <td {...restProps}>{childNode}</td>;

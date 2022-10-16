@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
 
 const basicData = {
-	indexInTable: 1,
-	columnName: 'id',
-	columnType: 'int',
+	columnName: '',
+	columnType: '',
 	length: '0',
 	nullable: false,
 	primaryKey: true,
-	description: 'lalalal'
+	description: ''
 };
 export default function ColInfo(): JSX.Element {
 	const [originData, setOriginData] = useState([
 		{
-			indexInTable: 1,
+			key: 0,
 			columnName: 'id',
 			columnType: 'int',
 			length: '0',
@@ -26,7 +25,8 @@ export default function ColInfo(): JSX.Element {
 		{
 			title: '序号',
 			dataIndex: 'indexInTable',
-			key: 'indexInTable'
+			key: 'indexInTable',
+			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
 			title: '列名',
@@ -55,6 +55,7 @@ export default function ColInfo(): JSX.Element {
 			key: 'nullable',
 			editable: true,
 			componentType: 'checkbox'
+			// render: (text: boolean | undefined) => <Checkbox checked={text} />
 		},
 		{
 			title: '主键',
@@ -62,6 +63,7 @@ export default function ColInfo(): JSX.Element {
 			key: 'primaryKey',
 			editable: true,
 			componentType: 'checkbox'
+			// render: (text: boolean | undefined) => <Checkbox checked={text} />
 		},
 		{
 			title: '备注',
@@ -76,6 +78,9 @@ export default function ColInfo(): JSX.Element {
 			defaultColumns={columns}
 			originData={originData}
 			basicData={basicData}
+			moveDownVisible
+			moveUpVisible
+			incrementVisible
 		/>
 	);
 }

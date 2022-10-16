@@ -13,21 +13,51 @@ import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
-import ExecutionTable from '../components/ExectionTable';
 import CodeConsole from '../components/CodeConsole';
 import { MenuInfo } from '@/types/comment';
 import TableDetail from '../components/TableDetail';
 import TableInfo from '../components/TableInfo';
-import ColInfo from '../components/ColInfo';
+import MysqlEditTable from '../components/MysqlEditTable';
+import MysqlSqlConsole from '../components/MysqlSqlConsole';
 const { Content, Sider } = Layout;
-const initialItems = [
-	{ label: 'Tab 1', children: <CodeConsole />, key: '1', closable: false },
-	{ label: 'Tab 2', children: <TableInfo />, key: '2' },
+const tableMenuItems = [
 	{
-		label: 'Tab 3',
-		children: <ColInfo />,
-		key: '3'
+		label: '打开表',
+		key: 'openTable'
+	},
+	{
+		label: '编辑表',
+		key: 'editTable'
+	},
+	{
+		label: '删除表',
+		key: 'deleteTable'
+	},
+	{
+		label: '创建表',
+		key: 'createTable'
+	},
+	{
+		label: '重命名',
+		key: 'rename'
+	},
+	{
+		label: '建表语句',
+		key: 'createSQL'
+	},
+	{
+		label: '导出表结构',
+		key: 'exportTable'
 	}
+];
+const initialItems = [
+	{
+		label: 'Tab 1',
+		children: <MysqlSqlConsole />,
+		key: '1',
+		closable: false
+	},
+	{ label: 'Tab 2', children: <MysqlSqlConsole />, key: '2' }
 ];
 const updateTreeData = (
 	list: DataNode[],
@@ -73,8 +103,28 @@ export default function SqlConsole(): JSX.Element {
 	const tableDetailAdd = (label: string) => {
 		add(label, <TableDetail />);
 	};
+	// * 编辑表添加
+	const editTableAdd = (label: string) => {
+		add(label, <MysqlEditTable />);
+	};
+	// * sqlconsole添加
+	const ConsoleAdd = (label: string) => {
+		add(label, <MysqlSqlConsole />);
+	};
 	const handleMenuClick = (e: MenuInfo, i: string) => {
-		tableDetailAdd(i);
+		switch (e.key) {
+			case 'editTable':
+				editTableAdd(`编辑表:${i}`);
+				return;
+			case 'tableInfo':
+				tableDetailAdd(`表详情:${i}`);
+				return;
+			case 'inquire':
+				ConsoleAdd(i);
+				return;
+			default:
+				break;
+		}
 	};
 	const menu = (i: any) => {
 		return (
@@ -83,21 +133,29 @@ export default function SqlConsole(): JSX.Element {
 				items={[
 					{
 						label: '表详情',
-						key: '1'
+						key: 'tableInfo'
 					},
 					{
 						label: '查询',
-						key: '2'
+						key: 'inquire'
 					},
 					{
 						label: '导出建表语句',
-						key: '3'
+						key: 'exportTableSQL'
 					},
 					{
 						label: '导出数据库表结构',
-						key: '4'
+						key: 'exportDatabase'
 					}
 				]}
+			/>
+		);
+	};
+	const tableMenu = (i: any) => {
+		return (
+			<Menu
+				items={tableMenuItems}
+				onClick={(info: MenuInfo) => handleMenuClick(info, i)}
 			/>
 		);
 	};
@@ -139,7 +197,17 @@ export default function SqlConsole(): JSX.Element {
 			setTimeout(() => {
 				setTreeData((origin) =>
 					updateTreeData(origin, key, [
-						{ title: 'Child Node', key: `${key}-0` },
+						{
+							title: (
+								<Dropdown
+									overlay={() => tableMenu('table1')}
+									trigger={['contextMenu']}
+								>
+									<span>table1</span>
+								</Dropdown>
+							),
+							key: `${key}-0`
+						},
 						{ title: 'Child Node', key: `${key}-1` }
 					])
 				);
