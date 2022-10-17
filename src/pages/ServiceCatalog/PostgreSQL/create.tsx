@@ -1224,6 +1224,26 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</FormItem>
 									</div>
 								</li>
+								<li className="display-flex">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											目录分盘
+										</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem>
+											<Switch
+												size="small"
+												style={{
+													verticalAlign: 'middle'
+												}}
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
