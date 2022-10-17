@@ -131,6 +131,7 @@ export default function ExecutionTable(): JSX.Element {
 				<RangePicker />
 			</Space>
 			<Table
+				rowKey="id"
 				size="small"
 				dataSource={dataSource}
 				columns={columns}

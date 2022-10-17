@@ -42,6 +42,7 @@
 	}
 }
 .sql-console-content {
+	position: relative;
 	.sql-console-tabs-content {
 		padding: 0px 24px;
 		height: calc(100% - 36px - 72px);

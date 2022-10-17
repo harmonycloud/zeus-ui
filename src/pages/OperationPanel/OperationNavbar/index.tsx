@@ -30,7 +30,12 @@ export default function OperationNavbar(): JSX.Element {
 	const personalization = storage.getLocal('personalization');
 	useEffect(() => {
 		if (params.type === 'redis') {
-			items = items?.filter((item) => item?.key !== 'accountMag');
+			items = items?.filter(
+				(item) => item?.key !== 'accountMag' && item?.key !== 'sqlAudit'
+			);
+		}
+		if (params.type === 'postgresql') {
+			items = items?.filter((item) => item?.key !== 'sqlAudit');
 		}
 	}, []);
 	const onClick: MenuProps['onClick'] = (e) => {

@@ -14,6 +14,10 @@ export interface AddDatabaseProps {
 	open: boolean;
 	onCancel: () => void;
 }
+export interface AddPgDatabaseProps {
+	open: boolean;
+	onCancel: () => void;
+}
 declare global {
 	interface Window {
 		sqlFormatter: any;
