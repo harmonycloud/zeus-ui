@@ -436,11 +436,6 @@ export const mysqlDataList = [
 // * redis 哨兵版本
 export const redisSentinelDataList = [
 	{
-		id: '1',
-		cpu: '2 Core',
-		memory: '0.256 Gi'
-	},
-	{
 		id: '2',
 		cpu: '2 Core',
 		memory: '1 Gi'

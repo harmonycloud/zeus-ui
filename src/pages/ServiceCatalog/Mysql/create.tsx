@@ -69,6 +69,49 @@ import {
 import StorageQuota from '@/components/StorageQuota';
 import storage from '@/utils/storage';
 
+export const mysqlNewList = [
+	{
+		value: '1',
+		label: (
+			<div>
+				<p>CPU: 1Core</p>
+				<p>内存: 2Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '2',
+		label: (
+			<div>
+				<p>CPU: 2Core</p>
+				<p>内存: 8Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '3',
+		label: (
+			<div>
+				<p>CPU: 4Core</p>
+				<p>内存: 16Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '4',
+		label: (
+			<div>
+				<p>CPU: 8Core</p>
+				<p>内存: 32Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '5',
+		label: <div style={{ lineHeight: '28px' }}>自定义</div>
+	}
+];
+
 const { Item: FormItem } = Form;
 const Password = Input.Password;
 const MysqlCreate: (props: CreateProps) => JSX.Element = (
@@ -174,6 +217,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	]);
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
+	const [newSpecId, setNewSpecId] = useState<string>('1');
+	const [proxySpecId, setProxySpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
 	const [maxMemory, setMaxMemory] = useState<{ max: number }>(); // 自定义memory的最大值
 	const [replicaCount, setReplicaCount] = useState(2); // * 一主多从
@@ -455,7 +500,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 			// 配额
-			if (instanceSpec === 'General') {
+			if (instanceSpec === 'General' && readWriteProxy !== 'true') {
 				switch (specId) {
 					case '1':
 						sendData.quota.mysql.cpu = 2;
@@ -484,7 +529,28 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					default:
 						break;
 				}
-			} else if (instanceSpec === 'Customize') {
+			} else if (readWriteProxy === 'true') {
+				switch (specId) {
+					case '1':
+						sendData.quota.mysql.cpu = 1;
+						sendData.quota.mysql.memory = '2Gi';
+						break;
+					case '2':
+						sendData.quota.mysql.cpu = 2;
+						sendData.quota.mysql.memory = '8Gi';
+						break;
+					case '3':
+						sendData.quota.mysql.cpu = 4;
+						sendData.quota.mysql.memory = '16Gi';
+						break;
+					case '4':
+						sendData.quota.mysql.cpu = 8;
+						sendData.quota.mysql.memory = '32Gi';
+						break;
+					default:
+						break;
+				}
+			} else if (instanceSpec === 'Customize' || newSpecId === '5') {
 				sendData.quota.mysql.cpu = values.cpu;
 				sendData.quota.mysql.memory = values.memory + 'Gi';
 			}
@@ -1917,124 +1983,262 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</div>
 									</li>
 								) : null}
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>节点规格</span>
-									</label>
-									<div
-										className={`form-content display-flex ${styles['instance-spec-content']}`}
-									>
-										<SelectBlock
-											options={instanceSpecList}
-											currentValue={instanceSpec}
-											onCallBack={(value: any) =>
-												setInstanceSpec(value)
-											}
-											disabled={!!backupFileName}
-										/>
-										{instanceSpec === 'General' ? (
-											<div
-												style={{
-													width: 652,
-													marginTop: 16
-												}}
-											>
-												<TableRadio
-													id={specId}
-													isMysql={true}
-													onCallBack={(value: any) =>
-														setSpecId(value)
+								{readWriteProxy !== 'true' ? (
+									<li className="display-flex form-li">
+										<label className="form-name">
+											<span>节点规格</span>
+										</label>
+										<div
+											className={`form-content display-flex ${styles['instance-spec-content']}`}
+										>
+											<SelectBlock
+												options={instanceSpecList}
+												currentValue={instanceSpec}
+												onCallBack={(value: any) =>
+													setInstanceSpec(value)
+												}
+												disabled={!!backupFileName}
+											/>
+											{instanceSpec === 'General' ? (
+												<div
+													style={{
+														width: 652,
+														marginTop: 16
+													}}
+												>
+													<TableRadio
+														id={specId}
+														isMysql={true}
+														onCallBack={(
+															value: any
+														) => setSpecId(value)}
+														dataList={mysqlDataList}
+													/>
+												</div>
+											) : null}
+											{instanceSpec === 'Customize' ? (
+												<div
+													className={
+														styles['spec-custom']
 													}
-													dataList={mysqlDataList}
+												>
+													<ul className="form-layout">
+														<li className="display-flex">
+															<label className="form-name">
+																<span className="ne-required">
+																	CPU
+																</span>
+															</label>
+															<div className="form-content">
+																<FormItem
+																	name="cpu"
+																	rules={[
+																		{
+																			required:
+																				true,
+																			message:
+																				'请输入自定义CPU配额，单位为Core'
+																		},
+																		{
+																			min: 0.1,
+																			type: 'number',
+																			message: `最小为0.1`
+																		}
+																	]}
+																	required
+																>
+																	<InputNumber
+																		style={{
+																			width: '100%'
+																		}}
+																		step={
+																			0.1
+																		}
+																		placeholder="请输入自定义CPU配额，单位为Core"
+																		disabled={
+																			!!backupFileName
+																		}
+																	/>
+																</FormItem>
+															</div>
+														</li>
+														<li className="display-flex">
+															<label className="form-name">
+																<span className="ne-required">
+																	内存
+																</span>
+															</label>
+															<div className="form-content">
+																<FormItem
+																	rules={[
+																		{
+																			required:
+																				true,
+																			message:
+																				'请输入自定义内存配额，单位为Core'
+																		},
+																		{
+																			min: 0.1,
+																			type: 'number',
+																			message: `最小为0.1`
+																		}
+																	]}
+																	required
+																	name="memory"
+																>
+																	<InputNumber
+																		style={{
+																			width: '100%'
+																		}}
+																		step={
+																			0.1
+																		}
+																		placeholder="请输入自定义内存配额，单位为Gi"
+																		disabled={
+																			!!backupFileName
+																		}
+																	/>
+																</FormItem>
+															</div>
+														</li>
+													</ul>
+												</div>
+											) : null}
+										</div>
+									</li>
+								) : (
+									<>
+										<li className="display-flex form-li">
+											<label className="form-name">
+												<span>普通节点规格</span>
+											</label>
+											<div
+												className={`form-content display-flex ${styles['instance-spec-content']}`}
+											>
+												<SelectBlock
+													options={mysqlNewList}
+													currentValue={newSpecId}
+													onCallBack={(value: any) =>
+														setNewSpecId(value)
+													}
+													disabled={!!backupFileName}
+												/>
+												{newSpecId === '5' ? (
+													<div
+														className={
+															styles[
+																'spec-custom'
+															]
+														}
+													>
+														<ul className="form-layout">
+															<li className="display-flex">
+																<label className="form-name">
+																	<span className="ne-required">
+																		CPU
+																	</span>
+																</label>
+																<div className="form-content">
+																	<FormItem
+																		name="cpu"
+																		rules={[
+																			{
+																				required:
+																					true,
+																				message:
+																					'请输入自定义CPU配额，单位为Core'
+																			},
+																			{
+																				min: 0.1,
+																				type: 'number',
+																				message: `最小为0.1`
+																			}
+																		]}
+																		required
+																	>
+																		<InputNumber
+																			style={{
+																				width: '100%'
+																			}}
+																			step={
+																				0.1
+																			}
+																			placeholder="请输入自定义CPU配额，单位为Core"
+																			disabled={
+																				!!backupFileName
+																			}
+																		/>
+																	</FormItem>
+																</div>
+															</li>
+															<li className="display-flex">
+																<label className="form-name">
+																	<span className="ne-required">
+																		内存
+																	</span>
+																</label>
+																<div className="form-content">
+																	<FormItem
+																		rules={[
+																			{
+																				required:
+																					true,
+																				message:
+																					'请输入自定义内存配额，单位为Core'
+																			},
+																			{
+																				min: 0.1,
+																				type: 'number',
+																				message: `最小为0.1`
+																			}
+																		]}
+																		required
+																		name="memory"
+																	>
+																		<InputNumber
+																			style={{
+																				width: '100%'
+																			}}
+																			step={
+																				0.1
+																			}
+																			placeholder="请输入自定义内存配额，单位为Gi"
+																			disabled={
+																				!!backupFileName
+																			}
+																		/>
+																	</FormItem>
+																</div>
+															</li>
+														</ul>
+													</div>
+												) : null}
+											</div>
+										</li>
+										<li className="display-flex form-li">
+											<label className="form-name">
+												<span>proxy节点规格</span>
+											</label>
+											<div
+												className={`form-content display-flex ${styles['instance-spec-content']}`}
+											>
+												<SelectBlock
+													options={[
+														mysqlNewList[0],
+														mysqlNewList[1],
+														mysqlNewList[2],
+														mysqlNewList[3]
+													]}
+													currentValue={proxySpecId}
+													onCallBack={(value: any) =>
+														setProxySpecId(value)
+													}
+													disabled={!!backupFileName}
 												/>
 											</div>
-										) : null}
-										{instanceSpec === 'Customize' ? (
-											<div
-												className={
-													styles['spec-custom']
-												}
-											>
-												<ul className="form-layout">
-													<li className="display-flex">
-														<label className="form-name">
-															<span className="ne-required">
-																CPU
-															</span>
-														</label>
-														<div className="form-content">
-															<FormItem
-																name="cpu"
-																rules={[
-																	{
-																		required:
-																			true,
-																		message:
-																			'请输入自定义CPU配额，单位为Core'
-																	},
-																	{
-																		min: 0.1,
-																		type: 'number',
-																		message: `最小为0.1`
-																	}
-																]}
-																required
-															>
-																<InputNumber
-																	style={{
-																		width: '100%'
-																	}}
-																	step={0.1}
-																	placeholder="请输入自定义CPU配额，单位为Core"
-																	disabled={
-																		!!backupFileName
-																	}
-																/>
-															</FormItem>
-														</div>
-													</li>
-													<li className="display-flex">
-														<label className="form-name">
-															<span className="ne-required">
-																内存
-															</span>
-														</label>
-														<div className="form-content">
-															<FormItem
-																rules={[
-																	{
-																		required:
-																			true,
-																		message:
-																			'请输入自定义内存配额，单位为Core'
-																	},
-																	{
-																		min: 0.1,
-																		type: 'number',
-																		message: `最小为0.1`
-																	}
-																]}
-																required
-																name="memory"
-															>
-																<InputNumber
-																	style={{
-																		width: '100%'
-																	}}
-																	step={0.1}
-																	placeholder="请输入自定义内存配额，单位为Gi"
-																	disabled={
-																		!!backupFileName
-																	}
-																/>
-															</FormItem>
-														</div>
-													</li>
-												</ul>
-											</div>
-										) : null}
-									</div>
-								</li>
+										</li>
+									</>
+								)}
 								<StorageQuota
 									clusterId={
 										originData
