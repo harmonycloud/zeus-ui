@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Collapse, notification, Modal, Input } from 'antd';
+import { Collapse, notification, Modal, Input, Alert } from 'antd';
 import { useHistory } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import { CloseOutlined } from '@ant-design/icons';
@@ -113,6 +113,15 @@ export default function ActiveActive(): JSX.Element {
 				subTitle="针对不同集群内的可用区进行管理"
 			/>
 			<ProContent className="active-active-box">
+				<Alert
+					message={
+						'当kubernetes集群版本低于1.7时无法使用双活功能，请升级kubernetes集群版本'
+					}
+					type="warning"
+					showIcon
+					closable
+					style={{ marginBottom: 16 }}
+				/>
 				{(panel1Visible || panelVisible) && (
 					<Collapse className="site-collapse-custom-collapse">
 						{panelVisible && (
