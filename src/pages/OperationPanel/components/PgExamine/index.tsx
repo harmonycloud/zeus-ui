@@ -1,5 +1,6 @@
-import EditTable from '@/components/EditTable';
 import React from 'react';
+import EditTable from '@/components/EditTable';
+import { PgExamineProps } from '../../index.d';
 
 const basicData = {
 	name: '',
@@ -8,7 +9,8 @@ const basicData = {
 	unVerification: '',
 	remark: ''
 };
-export default function PgExamine(): JSX.Element {
+export default function PgExamine(props: PgExamineProps): JSX.Element {
+	const { originData, handleChange } = props;
 	const columns = [
 		{
 			title: '序号',
@@ -52,11 +54,15 @@ export default function PgExamine(): JSX.Element {
 			componentType: 'string'
 		}
 	];
+	const onChange = (values: any) => {
+		handleChange(values);
+	};
 	return (
 		<EditTable
-			originData={[]}
+			originData={originData}
 			defaultColumns={columns}
 			basicData={basicData}
+			returnValues={onChange}
 		/>
 	);
 }

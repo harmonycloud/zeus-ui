@@ -1,6 +1,6 @@
-import EditTable from '@/components/EditTable';
 import React from 'react';
-
+import EditTable from '@/components/EditTable';
+import { PgForeignKeyInfoProps } from '../../index.d';
 const basicData = {
 	foreignKeyName: '',
 	includeCol: '',
@@ -22,12 +22,16 @@ const updateAction = [
 	{ label: 'CASCADE', value: 'CASCADE' },
 	{ label: 'SET NULL', value: 'SET NULL' }
 ];
-export default function PgForeignKeyInfo(): JSX.Element {
+export default function PgForeignKeyInfo(
+	props: PgForeignKeyInfoProps
+): JSX.Element {
+	const { originData, handleChange } = props;
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
+			width: 60,
 			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
@@ -35,6 +39,7 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'foreignKeyName',
 			key: 'foreignKeyName',
 			editable: true,
+			width: 150,
 			componentType: 'string'
 		},
 		{
@@ -42,6 +47,7 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'includeCol',
 			key: 'includeCol',
 			editable: true,
+			width: 200,
 			componentType: 'select',
 			selectOptions: []
 		},
@@ -50,6 +56,7 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'referenceTable',
 			key: 'referenceTable',
 			editable: true,
+			width: 150,
 			componentType: 'select',
 			selectOptions: []
 		},
@@ -58,6 +65,7 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'referenceCol',
 			key: 'referenceCol',
 			editable: true,
+			width: 150,
 			componentType: 'select',
 			selectOptions: []
 		},
@@ -66,6 +74,7 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'canDelay',
 			key: 'canDelay',
 			editable: true,
+			width: 200,
 			componentType: 'radio'
 		},
 		{
@@ -73,6 +82,7 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'deleteAction',
 			key: 'deleteAction',
 			editable: true,
+			width: 150,
 			componentType: 'select',
 			selectOptions: deleteAction
 		},
@@ -81,15 +91,20 @@ export default function PgForeignKeyInfo(): JSX.Element {
 			dataIndex: 'updateAction',
 			key: 'updateAction',
 			editable: true,
+			width: 150,
 			componentType: 'select',
 			selectOptions: updateAction
 		}
 	];
+	const onChange = (values: any) => {
+		handleChange(values);
+	};
 	return (
 		<EditTable
 			basicData={basicData}
-			originData={[]}
+			originData={originData}
 			defaultColumns={columns}
+			returnValues={onChange}
 		/>
 	);
 }

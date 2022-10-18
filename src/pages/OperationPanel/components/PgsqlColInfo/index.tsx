@@ -1,5 +1,6 @@
-import EditTable from '@/components/EditTable';
 import React, { useState } from 'react';
+import EditTable from '@/components/EditTable';
+import { PgsqlColInfoProps } from '../../index.d';
 
 const basicData = {
 	columnName: '',
@@ -12,21 +13,8 @@ const basicData = {
 	description: '',
 	rule: ''
 };
-export default function PgsqlColInfo(): JSX.Element {
-	const [dataSource, setDataSource] = useState([
-		{
-			key: '1',
-			columnName: 'ss',
-			columnType: 'ss',
-			isArray: false,
-			nullable: true,
-			primaryKey: false,
-			default: 'ss',
-			length: 's',
-			description: 's',
-			rule: 'ss'
-		}
-	]);
+export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
+	const { originData, handleChange } = props;
 	const columns = [
 		{
 			title: '序号',
@@ -108,12 +96,15 @@ export default function PgsqlColInfo(): JSX.Element {
 			componentType: 'select'
 		}
 	];
+	const onChange = (values: any) => {
+		handleChange(values);
+	};
 	return (
 		<EditTable
-			originData={dataSource}
+			originData={originData}
 			defaultColumns={columns}
 			basicData={basicData}
-			scroll={{ x: 1100 }}
+			returnValues={onChange}
 		/>
 	);
 }

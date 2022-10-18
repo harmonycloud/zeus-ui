@@ -21,7 +21,9 @@ export interface AddPgDatabaseProps {
 export interface MysqlEditTableProps {
 	isEdit?: boolean;
 }
-
+export interface PgsqlEditTableProps {
+	isEdit?: boolean;
+}
 export interface MysqlTableInfoProps {
 	isEdit: boolean;
 	handleChange: (values: any) => void;
@@ -37,6 +39,34 @@ export interface MysqlIndexInfoProps {
 }
 export interface MysqlForeignKeyInfoProps {
 	originData: any[];
+	handleChange: (values: any) => void;
+}
+export interface PgsqlTableInfoProps {
+	isEdit: boolean;
+	handleChange: (values: any) => void;
+}
+export interface PgsqlColInfoProps {
+	originData: any[];
+	handleChange: (values: any) => void;
+}
+export interface PgForeignKeyInfoProps {
+	originData: any[];
+	handleChange: (values: any) => void;
+}
+export interface PgExclusivenessProps {
+	originData: any[];
+	handleChange: (values: any) => void;
+}
+export interface PgUniquenessProps {
+	originData: any[];
+	handleChange: (values: any) => void;
+}
+export interface PgExamineProps {
+	originData: any[];
+	handleChange: (values: any) => void;
+}
+export interface PgInheritProps {
+	isEdit: boolean;
 	handleChange: (values: any) => void;
 }
 declare global {

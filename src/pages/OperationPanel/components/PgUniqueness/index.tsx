@@ -1,12 +1,14 @@
 import EditTable from '@/components/EditTable';
 import React from 'react';
+import { PgUniquenessProps } from '../../index.d';
 
 const basicData = {
 	name: '',
 	field: '',
 	canDelay: ''
 };
-export default function PgUniqueness(): JSX.Element {
+export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
+	const { originData, handleChange } = props;
 	const columns = [
 		{
 			title: '序号',
@@ -36,11 +38,15 @@ export default function PgUniqueness(): JSX.Element {
 			componentType: 'radio'
 		}
 	];
+	const onChange = (values: any) => {
+		handleChange(values);
+	};
 	return (
 		<EditTable
-			originData={[]}
+			originData={originData}
 			defaultColumns={columns}
 			basicData={basicData}
+			returnValues={onChange}
 		/>
 	);
 }
