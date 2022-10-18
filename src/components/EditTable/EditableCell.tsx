@@ -114,7 +114,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 				return (
 					<div
 						className="editable-cell-value-wrap"
-						style={{ paddingRight: 24 }}
+						// style={{ paddingRight: 24 }}
 					>
 						{children}
 					</div>
@@ -138,7 +138,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 				return (
 					<div
 						className="editable-cell-value-wrap"
-						style={{ paddingRight: 24 }}
+						// style={{ paddingRight: 24 }}
 					>
 						{children}
 					</div>

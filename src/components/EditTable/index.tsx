@@ -15,6 +15,7 @@ interface EditTableProps {
 	cancelVisible?: boolean;
 	returnValues?: (values: any) => void;
 	changedData?: any;
+	[propName: string]: any;
 }
 function swapArray(arr: any[], index1: number, index2: number) {
 	arr[index1] = arr.splice(index2, 1, arr[index1])[0];
@@ -41,8 +42,10 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		saveVisible = true,
 		cancelVisible = true,
 		returnValues,
-		changedData
+		changedData,
+		...resTableProps
 	} = props;
+	console.log(resTableProps);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [dataSource, setDataSource] = useState([...originData]);
 	const components = {
@@ -113,6 +116,7 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		setDataSource(newData);
 	};
 	const tableColumns = defaultColumns.map((col: any) => {
+		console.log(col);
 		if (!col.editable) {
 			return col;
 		}
@@ -128,7 +132,8 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				options:
 					col.componentType === 'select' ? col.selectOptions : [],
 				handleSave
-			})
+			}),
+			width: col.width
 		};
 	});
 	const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -196,7 +201,6 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				size="small"
 				components={components}
 				rowClassName={() => 'editable-row'}
-				bordered
 				dataSource={dataSource}
 				rowSelection={{
 					type: 'radio',
@@ -211,6 +215,7 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				onRow={(record) => ({
 					onClick: () => selectRow(record)
 				})}
+				{...resTableProps}
 			/>
 			<Space>
 				{saveVisible && (

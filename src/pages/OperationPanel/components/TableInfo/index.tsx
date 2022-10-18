@@ -25,7 +25,7 @@ const rowFormatOptions = [
 export default function TableInfo(): JSX.Element {
 	const [form] = Form.useForm();
 	const save = () => {
-		console.log(save);
+		console.log('save');
 	};
 	return (
 		<>
