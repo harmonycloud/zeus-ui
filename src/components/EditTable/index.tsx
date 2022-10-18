@@ -1,4 +1,4 @@
-import { Button, Space, Table } from 'antd';
+import { Button, Divider, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import EditableRow from './EditableRow';
 import { EditableCell } from './EditableCell';
@@ -11,8 +11,6 @@ interface EditTableProps {
 	moveUpVisible?: boolean;
 	moveDownVisible?: boolean;
 	incrementVisible?: boolean;
-	saveVisible?: boolean;
-	cancelVisible?: boolean;
 	returnValues?: (values: any) => void;
 	changedData?: any;
 	[propName: string]: any;
@@ -39,13 +37,10 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		moveUpVisible,
 		moveDownVisible,
 		incrementVisible,
-		saveVisible = true,
-		cancelVisible = true,
 		returnValues,
 		changedData,
 		...resTableProps
 	} = props;
-	console.log(resTableProps);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [dataSource, setDataSource] = useState([...originData]);
 	const components = {
@@ -116,7 +111,6 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		setDataSource(newData);
 	};
 	const tableColumns = defaultColumns.map((col: any) => {
-		console.log(col);
 		if (!col.editable) {
 			return col;
 		}
@@ -217,24 +211,6 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				})}
 				{...resTableProps}
 			/>
-			<Space>
-				{saveVisible && (
-					<Button
-						size="small"
-						type="primary"
-						onClick={() => {
-							const list = dataSource.map((item, index) => {
-								item.indexInTable = index + 1;
-								return item;
-							});
-							console.log(list);
-						}}
-					>
-						保存
-					</Button>
-				)}
-				{cancelVisible && <Button size="small">取消</Button>}
-			</Space>
 		</div>
 	);
 }

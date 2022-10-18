@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
+import { MysqlColInfoProps } from '../../index.d';
 
 const basicData = {
 	columnName: '',
@@ -9,23 +10,14 @@ const basicData = {
 	primaryKey: true,
 	description: ''
 };
-export default function ColInfo(): JSX.Element {
-	const [originData, setOriginData] = useState([
-		{
-			key: 0,
-			columnName: 'id',
-			columnType: 'int',
-			length: '0',
-			nullable: false,
-			primaryKey: true,
-			description: 'lalalal'
-		}
-	]);
+export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
+	const { originData, handleChange } = props;
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
+			width: 80,
 			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
@@ -33,6 +25,7 @@ export default function ColInfo(): JSX.Element {
 			dataIndex: 'columnName',
 			key: 'columnName',
 			editable: true,
+			width: 250,
 			componentType: 'string'
 		},
 		{
@@ -40,6 +33,7 @@ export default function ColInfo(): JSX.Element {
 			dataIndex: 'columnType',
 			key: 'columnType',
 			editable: true,
+			width: 250,
 			componentType: 'select'
 		},
 		{
@@ -47,23 +41,24 @@ export default function ColInfo(): JSX.Element {
 			dataIndex: 'length',
 			key: 'length',
 			editable: true,
-			componentType: 'string'
+			width: 100,
+			componentType: 'number'
 		},
 		{
 			title: '可空',
 			dataIndex: 'nullable',
 			key: 'nullable',
 			editable: true,
+			width: 80,
 			componentType: 'checkbox'
-			// render: (text: boolean | undefined) => <Checkbox checked={text} />
 		},
 		{
 			title: '主键',
 			dataIndex: 'primaryKey',
 			key: 'primaryKey',
 			editable: true,
+			width: 80,
 			componentType: 'checkbox'
-			// render: (text: boolean | undefined) => <Checkbox checked={text} />
 		},
 		{
 			title: '备注',
@@ -73,6 +68,9 @@ export default function ColInfo(): JSX.Element {
 			componentType: 'string'
 		}
 	];
+	const onChange = (list: any[]) => {
+		handleChange(list);
+	};
 	return (
 		<EditTable
 			defaultColumns={columns}
@@ -81,6 +79,7 @@ export default function ColInfo(): JSX.Element {
 			moveDownVisible
 			moveUpVisible
 			incrementVisible
+			returnValues={onChange}
 		/>
 	);
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
 import IncludeColsForm from './IncludeColsForm';
-
+import { MysqlIndexInfoProps } from '../../index.d';
 const basicData = {
 	indexName: '',
 	includeCols: [],
@@ -18,16 +18,10 @@ const indexWayOptions = [
 	{ label: 'BTree', value: 'BTree' },
 	{ label: 'Hash', value: 'Hash' }
 ];
-export default function IndexInfo(): JSX.Element {
-	const [originData, setOriginData] = useState([
-		{
-			key: 0,
-			indexName: 'fff',
-			includeCols: ['fdadf(50)', 'ddff(69)'],
-			indexType: 'Normal',
-			indexWay: '--'
-		}
-	]);
+export default function MysqlIndexInfo(
+	props: MysqlIndexInfoProps
+): JSX.Element {
+	const { originData, handleChange } = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [changedData, setChangeData] = useState<any>();
 	const columns = [
@@ -35,6 +29,7 @@ export default function IndexInfo(): JSX.Element {
 			title: '序号',
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
+			width: 80,
 			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
@@ -42,6 +37,7 @@ export default function IndexInfo(): JSX.Element {
 			dataIndex: 'indexName',
 			key: 'indexName',
 			editable: true,
+			width: 150,
 			componentType: 'string'
 		},
 		{
@@ -63,6 +59,7 @@ export default function IndexInfo(): JSX.Element {
 			dataIndex: 'indexType',
 			key: 'indexType',
 			editable: true,
+			width: 150,
 			componentType: 'select',
 			selectOptions: indexTypeOptions
 		},
@@ -71,6 +68,7 @@ export default function IndexInfo(): JSX.Element {
 			dataIndex: 'indexWay',
 			key: 'indexWay',
 			editable: true,
+			width: 150,
 			componentType: 'select',
 			selectOptions: indexWayOptions
 		}
@@ -81,6 +79,9 @@ export default function IndexInfo(): JSX.Element {
 		);
 		setChangeData({ includeCols: listData });
 	};
+	const onChange = (values: any) => {
+		handleChange(values);
+	};
 	return (
 		<>
 			<EditTable
@@ -88,6 +89,7 @@ export default function IndexInfo(): JSX.Element {
 				originData={originData}
 				basicData={basicData}
 				changedData={changedData}
+				returnValues={onChange}
 			/>
 			{open && (
 				<IncludeColsForm

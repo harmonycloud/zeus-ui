@@ -59,8 +59,6 @@ export default function IncludeColsForm({
 				originData={[]}
 				defaultColumns={columns}
 				basicData={{ colInfo: '', length: '' }}
-				saveVisible={false}
-				cancelVisible={false}
 				returnValues={getValues}
 			/>
 		</Modal>

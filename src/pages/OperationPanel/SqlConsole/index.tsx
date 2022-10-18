@@ -84,7 +84,7 @@ const initialItems = [
 		key: '1',
 		closable: false
 	},
-	{ label: 'Tab 2', children: <MysqlSqlConsole />, key: '2' }
+	{ label: 'Tab 2', children: <MysqlEditTable />, key: '2' }
 ];
 const updateTreeData = (
 	list: DataNode[],
@@ -108,7 +108,10 @@ const updateTreeData = (
 	});
 const paneProps: SplitPaneProps = {
 	split: 'vertical',
-	minSize: 200
+	minSize: 200,
+	style: {
+		height: '84%'
+	}
 };
 // * sql窗口 模版
 export default function SqlConsole(): JSX.Element {
@@ -510,6 +513,7 @@ export default function SqlConsole(): JSX.Element {
 						</div>
 						<Tabs
 							className="sql-console-tabs-content"
+							style={{ height: 'calc(100% - 36px)' }}
 							size="small"
 							type="editable-card"
 							onChange={onChange}

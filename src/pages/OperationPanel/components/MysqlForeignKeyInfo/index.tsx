@@ -1,6 +1,6 @@
-import EditTable from '@/components/EditTable';
 import React from 'react';
-
+import EditTable from '@/components/EditTable';
+import { MysqlForeignKeyInfoProps } from '../../index.d';
 const basicData = {
 	foreignKeyName: '',
 	includeCol: '',
@@ -22,7 +22,10 @@ const updateAction = [
 	{ label: 'CASCADE', value: 'CASCADE' },
 	{ label: 'SET NULL', value: 'SET NULL' }
 ];
-export default function ForeignKeyInfo(): JSX.Element {
+export default function MysqlForeignKeyInfo(
+	props: MysqlForeignKeyInfoProps
+): JSX.Element {
+	const { originData, handleChange } = props;
 	const columns = [
 		{
 			title: '序号',
@@ -86,11 +89,15 @@ export default function ForeignKeyInfo(): JSX.Element {
 			selectOptions: updateAction
 		}
 	];
+	const onChange = (values: any) => {
+		handleChange(values);
+	};
 	return (
 		<EditTable
 			basicData={basicData}
-			originData={[]}
+			originData={originData}
 			defaultColumns={columns}
+			returnValues={onChange}
 		/>
 	);
 }
