@@ -399,12 +399,12 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	const operationalPanel = () => (
 		<Router>
 			<Route
-				path="/operationalPanel/:currentTab/:type/:name"
+				path="/operationalPanel/:currentTab/:projectId/:clusterId/:namespace/:type/:name"
 				component={OperationPanel}
 				exact
 			/>
 			<Route
-				path="/operationalPanel/:currentTab/:type/:name/roleDetail/:userName"
+				path="/operationalPanel/:currentTab/:projectId/:clusterId/:namespace/:type/:name/roleDetail/:userName"
 				component={RoleDetail}
 				exact
 			/>

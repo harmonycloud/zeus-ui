@@ -19,9 +19,10 @@ import { MenuInfo } from '@/types/comment';
 import TableDetail from '../components/TableDetail';
 import MysqlEditTable from '../components/MysqlEditTable';
 import MysqlSqlConsole from '../components/MysqlSqlConsole';
-import { ParamsProps } from '../index.d';
+import { ParamsProps, SqlConsoleProps } from '../index.d';
 import ModeMag from '../ModeMag';
 import PgsqlEditTable from '../components/PgsqlEditTable';
+
 const { Content, Sider } = Layout;
 const tableMenuItems = [
 	{
@@ -114,7 +115,8 @@ const paneProps: SplitPaneProps = {
 	}
 };
 // * sql窗口 模版
-export default function SqlConsole(): JSX.Element {
+export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
+	const { currentUser, setOpen } = props;
 	const params: ParamsProps = useParams();
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [treeData, setTreeData] = useState<DataNode[]>([]);
@@ -489,7 +491,16 @@ export default function SqlConsole(): JSX.Element {
 				)}
 			</Sider>
 			<Content className="sql-console-content">
-				<OperatorHeader />
+				<OperatorHeader
+					currentUser={currentUser}
+					loginOut={() => {
+						if (currentUser) {
+							setOpen(false);
+						} else {
+							window.close();
+						}
+					}}
+				/>
 				{params.type === 'mysql' && (
 					<Tabs
 						className="sql-console-tabs-content"

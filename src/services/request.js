@@ -7,6 +7,7 @@ import cache from '@/utils/storage';
 
 const baseURL = 'http://localhost:3000/api/';
 const TOKEN = 'token';
+const MWTOKEN = 'mwToken';
 const USERTOKEN = 'usertoken';
 
 const pending = []; // 声明一个数组用于存储每个ajax请求的队列
@@ -76,6 +77,9 @@ axios.interceptors.request.use(
 			config.url += `${separator}noCache=${new Date().getTime()}`;
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
+		config.headers.mwToken = cache.getLocal(MWTOKEN)
+			? cache.getLocal(MWTOKEN)
+			: '';
 		config.headers.authType = cache.getLocal(TOKEN) ? 1 : 0;
 		config.headers.projectId =
 			cache.getLocal('project') &&

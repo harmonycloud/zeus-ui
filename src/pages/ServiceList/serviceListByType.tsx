@@ -675,7 +675,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<LinkButton
 							onClick={() => {
 								window.open(
-									`#/operationalPanel/sqlConsole/${name}/${record.name}`,
+									`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${namespace.name}/${name}/${record.name}`,
 									'_blank'
 								);
 							}}
@@ -766,7 +766,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					<LinkButton
 						onClick={() => {
 							window.open(
-								`#/operationalPanel/sqlConsole/${name}/${record.name}`,
+								`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${namespace.name}/${name}/${record.name}`,
 								'_blank'
 							);
 						}}
