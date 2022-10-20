@@ -5,7 +5,11 @@ import Actions from '@/components/Actions';
 import AddDatabase from './AddDatabase';
 import { DatabaseItem, ParamsProps } from '../index.d';
 import AddPgDatabase from './AddPgDatabase';
-import { getDatabases, deleteDatabase } from '@/services/operatorPanel';
+import {
+	getDatabases,
+	deleteDatabase,
+	getAllDatabase
+} from '@/services/operatorPanel';
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 
@@ -19,6 +23,15 @@ export default function DatabaseMag(): JSX.Element {
 	useEffect(() => {
 		if (params.type === 'mysql') {
 			getMysqlData();
+		} else {
+			getAllDatabase({
+				middlewareName: params.name,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				type: params.type
+			}).then((res) => {
+				console.log(res);
+			});
 		}
 	}, []);
 	const columns = [
@@ -97,18 +110,18 @@ export default function DatabaseMag(): JSX.Element {
 	const pgsqlColumns = [
 		{
 			title: '数据库名称',
-			dataIndex: 'name',
-			key: 'name'
+			dataIndex: 'databaseName',
+			key: 'databaseName'
 		},
 		{
 			title: '字符集',
-			dataIndex: 'characterSet',
-			key: 'characterSet'
+			dataIndex: 'encoding',
+			key: 'encoding'
 		},
 		{
 			title: '表空间',
-			dataIndex: 'tableSpace',
-			key: 'tableSpace'
+			dataIndex: 'tablespace',
+			key: 'tablespace'
 		},
 		{
 			title: '所有者',

@@ -1,15 +1,65 @@
 import React from 'react';
-import { Modal, Form, Input, Checkbox } from 'antd';
-import { AddAccountProps } from '../index.d';
+import { Modal, Form, Input, Checkbox, notification } from 'antd';
+import {
+	AddAccountProps,
+	mysqlCreateUserParamsProps,
+	pgsqlCreateUserParamsProps
+} from '../index.d';
 import { formItemLayout618 } from '@/utils/const';
+import { createUsers } from '@/services/operatorPanel';
 // TODO 新增和编辑表单复用
 // TODO 账号名和密码的正则校验确认
 // TODO 新增成功后的列表刷新
 export default function AddAccount(props: AddAccountProps): JSX.Element {
-	const { open, onCancel } = props;
+	const {
+		open,
+		onCancel,
+		clusterId,
+		namespace,
+		middlewareName,
+		type,
+		onRefresh
+	} = props;
 	const [form] = Form.useForm();
 	const onOk = () => {
 		console.log('click ok');
+		form.validateFields().then((values) => {
+			const mysqlSendData: mysqlCreateUserParamsProps = {
+				clusterId,
+				namespace,
+				middlewareName,
+				type,
+				...values
+			};
+			const pgsqlSendData: pgsqlCreateUserParamsProps = {
+				clusterId,
+				namespace,
+				middlewareName,
+				type,
+				username: values.user,
+				password: values.password,
+				inherit: values.grantAble
+			};
+			const sendData = type === 'mysql' ? mysqlSendData : pgsqlSendData;
+			onCancel();
+			createUsers(sendData)
+				.then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '用户创建成功!'
+						});
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				})
+				.finally(() => {
+					onRefresh();
+				});
+		});
 	};
 	return (
 		<Modal
@@ -22,7 +72,7 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 			<Form form={form} labelAlign="left" {...formItemLayout618}>
 				<Form.Item
 					label="账号名"
-					name="account"
+					name="user"
 					rules={[{ required: true, message: '请填写账号名' }]}
 				>
 					<Input />
@@ -34,8 +84,8 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 				>
 					<Input.Password />
 				</Form.Item>
-				<Form.Item label="授权权限" name="auth">
-					<Checkbox checked={false} />
+				<Form.Item label="授权权限" name="grantAble">
+					<Checkbox />
 				</Form.Item>
 			</Form>
 		</Modal>

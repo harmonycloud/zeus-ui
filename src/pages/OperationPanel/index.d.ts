@@ -1,4 +1,5 @@
 import { resProps } from '@/types/comment';
+import { number } from 'echarts';
 export interface ParamsProps {
 	currentTab: string;
 	type: string;
@@ -13,6 +14,11 @@ export interface RoleDetailParamsProps extends ParamsProps {
 export interface AddAccountProps {
 	open: boolean;
 	onCancel: () => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	type: string;
+	onRefresh: (keyword?: string) => void;
 }
 export interface AddDatabaseProps {
 	open: boolean;
@@ -118,6 +124,125 @@ export interface DatabaseItem {
 	character: string;
 	collate: string;
 }
+export interface PgsqslDatabaseItem {
+	collate: string;
+	comment: string;
+	databaseName: string;
+	encoding: string;
+	oid: string;
+	owner: string;
+	tablespace: string;
+}
 export interface GetDatabasesRes extends resProps {
 	data: DatabaseItem[];
+}
+export interface MysqlTableItem {
+	tableName: string;
+	charset: string;
+	collate: string;
+	rows: number;
+	autoIncrement: number;
+	minRows: number;
+	maxRows: number;
+	comment: null | string;
+}
+export interface SendDataParamsProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+}
+export interface AllSendDataParamsProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	type: string;
+}
+export interface deleteUserParamsProps extends AllSendDataParamsProps {
+	username: string;
+}
+export interface mysqlCreateUserParamsProps extends AllSendDataParamsProps {
+	user: string;
+	password: string;
+	grantAble: boolean;
+}
+export interface pgsqlCreateUserParamsProps extends AllSendDataParamsProps {
+	username: string;
+	inherit: boolean;
+	password: string;
+}
+export interface getAllUserParamsProps extends AllSendDataParamsProps {
+	keyword: string;
+}
+export interface updateParamsProps extends SendDataParamsProps {
+	db: string;
+	character: string;
+	collate: string;
+}
+export interface deleteParamsProps extends SendDataParamsProps {
+	database: string;
+}
+export interface getCollationParamsProps extends SendDataParamsProps {
+	charset: string;
+}
+export interface charSetResProps extends resProps {
+	data: string[];
+}
+export interface getTablesParamsProps extends SendDataParamsProps {
+	database: string;
+}
+export interface getTablesResProps extends resProps {
+	data: MysqlTableItem[];
+}
+export interface getColParamsProps extends getTablesParamsProps {
+	table: string;
+}
+export interface MysqlColItem {
+	autoIncrement: boolean;
+	charset: string;
+	collate: string;
+	column: string;
+	columnDefault: string;
+	columnType: string | null;
+	comment: string;
+	dateType: string;
+	primary: boolean;
+	nullable: boolean;
+	primaryKey: boolean;
+	size: number;
+}
+export interface getColsResProps extends resProps {
+	data: MysqlColItem[];
+}
+export interface MysqlUserItem {
+	accountLocked: boolean;
+	grantAble: boolean;
+	id: string;
+	lastLoginTime: string;
+	password: string;
+	user: string;
+}
+export interface authorityItem {
+	authority: string;
+	database: string;
+	grantAble: boolean;
+	schema: string;
+	table: string;
+}
+export interface PgsqlUserItem {
+	authorityList: authorityItem[];
+	id: string;
+	inherit: boolean;
+	lastLoginTime: string;
+	password: string;
+	usable: boolean;
+	username: string;
+}
+export interface getMysqlUserResProps extends resProps {
+	data: MysqlUserItem[];
+}
+export interface getPgsqlUserResProps extends resProps {
+	data: PgsqlUserItem[];
+}
+export interface TableDetailProps {
+	dbName: string;
 }

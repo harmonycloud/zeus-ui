@@ -1,14 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-	Button,
-	Input,
-	Layout,
-	Tree,
-	Tabs,
-	Dropdown,
-	Menu,
-	MenuProps
-} from 'antd';
+import { Button, Input, Layout, Tree, Tabs, Dropdown, Menu } from 'antd';
 import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
@@ -19,9 +10,15 @@ import { MenuInfo } from '@/types/comment';
 import TableDetail from '../components/TableDetail';
 import MysqlEditTable from '../components/MysqlEditTable';
 import MysqlSqlConsole from '../components/MysqlSqlConsole';
-import { ParamsProps, SqlConsoleProps } from '../index.d';
+import {
+	ParamsProps,
+	SqlConsoleProps,
+	MysqlTableItem,
+	MysqlColItem
+} from '../index.d';
 import ModeMag from '../ModeMag';
 import PgsqlEditTable from '../components/PgsqlEditTable';
+import { getDatabases, getDbTables, getCols } from '@/services/operatorPanel';
 
 const { Content, Sider } = Layout;
 const tableMenuItems = [
@@ -150,7 +147,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'tableInfo': // * mysql 表详情
-				add(`表详情:${i}`, <TableDetail />);
+				add(`表详情:${i}`, <TableDetail dbName={i} />);
 				return;
 			case 'inquire': // * mysql sqlconsole
 				add(i, <MysqlSqlConsole />);
@@ -191,25 +188,43 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	useEffect(() => {
 		// * 获取数据库列表的数据 - mysql
-		const initMysql = [
-			{
-				title: (
-					<Dropdown
-						overlay={() => menu('test')}
-						trigger={['contextMenu']}
-					>
-						<span>test</span>
-					</Dropdown>
-				),
-				key: '0',
-				icon: <IconFont type="icon-database" />
-			},
-			{
-				title: 'mysql1',
-				key: '1',
-				icon: <IconFont type="icon-database" />
-			}
-		];
+		const sendData = {
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name
+		};
+		if (params.type === 'mysql') {
+			getDatabases(sendData).then((res) => {
+				if (res.success) {
+					if (res.data.length > 0) {
+						const list = res.data.map((item, index) => {
+							const result: any = {};
+							result.title = (
+								<Dropdown
+									overlay={() => menu(item.db)}
+									trigger={['contextMenu']}
+								>
+									<span
+										title={item.db}
+										className="text-overflow"
+										style={{ width: '140px' }}
+									>
+										{item.db}
+									</span>
+								</Dropdown>
+							);
+							result.key = index + '';
+							result.value = item.db;
+							result.icon = <IconFont type="icon-database" />;
+							return result;
+						});
+						setTreeData(list);
+					} else {
+						setTreeData([]);
+					}
+				}
+			});
+		}
 		// * 获取数据库列表数据 - pgsql
 		const initPgsql = [
 			{
@@ -250,97 +265,139 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				icon: <IconFont type="icon-biaoge" />
 			}
 		];
-		setTreeData(initMysql);
 		setPgTreeData(initPgsql);
 		setPgTableTreeData(initPgTable);
 	}, []);
-	const mysqlOnLoadData = ({ key, children }: any) =>
+	const mysqlOnLoadData = ({ key, value, children }: any) =>
 		new Promise<void>((resolve) => {
-			console.log(key, children);
+			console.log(key, value, children);
 			if (children) {
 				resolve();
 				return;
 			}
 			if (key.includes('-')) {
 				// * 当前加载的树为表格的情况
-				setTimeout(() => {
-					setTreeData((origin) =>
-						updateTreeData(origin, key, [
-							{
-								title: '列(2)',
-								key: `${key}-0`,
-								icon: <IconFont type="icon-liebiao" />,
-								children: [
+				const array = key.split('-');
+				const sendData = {
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name,
+					database: array[0],
+					table: value
+				};
+				getCols(sendData).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const list = res.data.map(
+								(item: MysqlColItem, index) => {
+									const result: any = {};
+									result.title = (
+										<span
+											title={item.column}
+											className="text-overflow"
+											style={{
+												width: '80px',
+												display: 'block'
+											}}
+										>
+											{item.column}
+										</span>
+									);
+									result.key = `${key}-0-${index}`;
+									result.icon = (
+										<IconFont type="icon-liebiao" />
+									);
+									result.isLeaf = true;
+									return result;
+								}
+							);
+							setTreeData((origin) =>
+								updateTreeData(origin, key, [
 									{
-										title: 'User',
-										key: `${key}-0-0`,
+										title: `列(${list.length})`,
+										key: `${key}-0`,
 										icon: <IconFont type="icon-liebiao" />,
-										isLeaf: true
-									}
-								]
-							},
-							{
-								title: '索引',
-								key: `${key}-1`,
-								icon: (
-									<IconFont
-										style={{ fontSize: 21 }}
-										type="icon-lianjiesuoyin"
-									/>
-								),
-								children: [
+										children: list
+									},
 									{
-										title: 'index01',
-										key: `${key}-1-0`,
+										title: '索引',
+										key: `${key}-1`,
 										icon: (
 											<IconFont
 												style={{ fontSize: 21 }}
 												type="icon-lianjiesuoyin"
 											/>
-										),
-										isLeaf: true
+										)
 									}
-								]
-							}
-						])
-					);
-					resolve();
+								])
+							);
+							resolve();
+						} else {
+							setTreeData((origin) =>
+								updateTreeData(origin, key, [])
+							);
+							resolve();
+						}
+					} else {
+						resolve();
+						return;
+					}
 				});
 			} else {
-				setTimeout(() => {
-					setTreeData((origin) =>
-						updateTreeData(origin, key, [
-							{
-								title: (
-									<Dropdown
-										overlay={() => tableMenu('table1')}
-										trigger={['contextMenu']}
-									>
-										<span>table1</span>
-									</Dropdown>
-								),
-								key: `${key}-0`,
-								icon: (
-									<IconFont
-										style={{ fontSize: 16 }}
-										type="icon-biaoge"
-									/>
-								)
-							},
-							{
-								title: 'table2',
-								key: `${key}-1`,
-								icon: (
-									<IconFont
-										style={{ fontSize: 16 }}
-										type="icon-biaoge"
-									/>
-								)
-							}
-						])
-					);
-					resolve();
-				}, 1000);
+				const sendData = {
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name,
+					database: value
+				};
+				getDbTables(sendData).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const list = res.data.map(
+								(item: MysqlTableItem, index) => {
+									const result: any = {};
+									result.title = (
+										<Dropdown
+											overlay={() =>
+												tableMenu(item.tableName)
+											}
+											trigger={['contextMenu']}
+										>
+											<span
+												title={item.tableName}
+												className="text-overflow"
+												style={{ width: '120px' }}
+											>
+												{item.tableName}
+											</span>
+										</Dropdown>
+									);
+									result.key = `${value}-${index}`;
+									result.value = item.tableName;
+									result.icon = (
+										<IconFont
+											style={{ fontSize: 16 }}
+											type="icon-biaoge"
+										/>
+									);
+									return result;
+								}
+							);
+							setTreeData((origin) =>
+								updateTreeData(origin, key, list)
+							);
+							resolve();
+						} else {
+							setTreeData((origin) =>
+								updateTreeData(origin, key, [])
+							);
+							resolve();
+						}
+					} else {
+						resolve();
+						return;
+					}
+				});
 			}
 		});
 	const pgsqlOnLoadData = ({ key, children }: any) =>
@@ -463,7 +520,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					fontSize: '12px'
 				}}
 				trigger={collapsed ? <RightOutlined /> : <LeftOutlined />}
-				width={208}
+				width={230}
 			>
 				<div className="sql-console-sider-title-content">
 					<div>Mysql控制台</div>
@@ -471,17 +528,30 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				</div>
 				{params.type === 'mysql' && (
 					<div className="sql-console-sider-search">
-						<Input.Search />
-						<Tree
-							showIcon
-							treeData={treeData}
-							loadData={mysqlOnLoadData}
+						<Input.Search
+							placeholder="请输入关键字搜索"
+							style={{ marginBottom: 8, paddingRight: 16 }}
 						/>
+						<div className="sql-console-tree-content">
+							<Tree
+								showIcon
+								treeData={treeData}
+								loadData={mysqlOnLoadData}
+								height={
+									document.getElementsByClassName(
+										'sql-console-tree-content'
+									)[0]?.clientHeight
+								}
+							/>
+						</div>
 					</div>
 				)}
 				{params.type === 'postgresql' && (
 					<div className="sql-console-sider-search">
-						<Input.Search placeholder="请输入关键字搜索" />
+						<Input.Search
+							style={{ marginBottom: 8 }}
+							placeholder="请输入关键字搜索"
+						/>
 						<Tree
 							showIcon
 							treeData={pgTreeData}
@@ -515,7 +585,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				{params.type === 'postgresql' && (
 					<SplitPane {...paneProps}>
 						<div style={{ padding: 16 }}>
-							<Input.Search placeholder="请输入关键字搜索" />
+							<Input.Search
+								style={{ marginBottom: 8 }}
+								placeholder="请输入关键字搜索"
+							/>
 							<Tree
 								showIcon
 								treeData={pgTableTreeData}

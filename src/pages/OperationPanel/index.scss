@@ -35,9 +35,24 @@
 		border-bottom: 1px solid $black-6;
 	}
 	.sql-console-sider-search {
-		padding: $padding-lg;
-		.ant-tree {
-			background: transparent !important;
+		padding: $padding-lg 0 $padding-lg $padding-lg;
+		height: calc(100% - 80px);
+		.sql-console-tree-content {
+			max-height: calc(100% - 40px);
+			min-height: calc(100% - 40px);
+			.ant-tree {
+				background: transparent !important;
+				.ant-tree-list {
+					.ant-tree-treenode {
+						.ant-tree-node-content-wrapper {
+							display: flex;
+							.ant-dropdown-trigger {
+								display: block;
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

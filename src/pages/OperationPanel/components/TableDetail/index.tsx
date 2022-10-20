@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import { Table, Tabs } from 'antd';
+import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
+import { MysqlTableItem, ParamsProps, TableDetailProps } from '../../index.d';
+import { getDbTables } from '@/services/operatorPanel';
+import { useEffect } from 'react';
+import ColTable from './colTable';
+import IndexTable from './indexTable';
+
 const LinkButton = Actions.LinkButton;
-export default function TableDetail(): JSX.Element {
-	const [dataSource, setDataSource] = useState([
-		{ id: 1, tableName: 'test', characterSet: 'utf8', rows: 21 }
-	]);
-	const [data, setData] = useState([
-		{
-			uid: 1,
-			fieldName: 'name',
-			type: 'string',
-			description: 'dddd',
-			isNull: false,
-			increment: true,
-			default: ''
-		}
-	]);
+
+export default function TableDetail(props: TableDetailProps): JSX.Element {
+	const { dbName } = props;
+	const params: ParamsProps = useParams();
+	const [dataSource, setDataSource] = useState<MysqlTableItem[]>([]);
+	useEffect(() => {
+		const sendData = {
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			database: dbName
+		};
+		getDbTables(sendData).then((res) => {
+			if (res.success) {
+				setDataSource(res.data);
+			}
+		});
+	}, []);
 	const columns = [
 		{
 			title: '表名',
@@ -25,18 +35,20 @@ export default function TableDetail(): JSX.Element {
 		},
 		{
 			title: '字符集',
-			dataIndex: 'characterSet',
-			key: 'characterSet'
+			dataIndex: 'charset',
+			key: 'charset'
 		},
 		{
 			title: '行数',
 			dataIndex: 'rows',
-			key: 'rows'
+			key: 'rows',
+			width: 80
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
 			key: 'action',
+			width: 250,
 			render: () => (
 				<Actions>
 					<LinkButton>打开</LinkButton>
@@ -46,59 +58,48 @@ export default function TableDetail(): JSX.Element {
 			)
 		}
 	];
-	const colTable = () => {
-		const columns = [
-			{ title: '#', dataIndex: 'uid', key: 'uid' },
-			{ title: '字段名', dataIndex: 'fieldName', key: 'fieldName' },
-			{ title: '类型', dataIndex: 'type', key: 'type' },
-			{ title: '描述', dataIndex: 'description', key: 'description' },
-			{ title: '可空', dataIndex: 'isNull', key: 'isNull' },
-			{ title: '自增', dataIndex: 'increment', key: 'increment' },
-			{ title: '默认值', dataIndex: 'default', key: 'default' }
-		];
-		return (
-			<Table
-				size="small"
-				rowKey="uid"
-				columns={columns}
-				dataSource={data}
-				pagination={false}
-			/>
-		);
-	};
-	const indexTable = () => {
-		const columns = [
-			{ title: '#', dataIndex: 'uid', key: 'uid' },
-			{ title: '索引名', dataIndex: 'indexName', key: 'indexName' },
-			{ title: '索引类型', dataIndex: 'indexType', key: 'indexType' },
-			{ title: '包含列', dataIndex: 'includeCol', key: 'includeCol' },
-			{ title: '备注', dataIndex: 'remark', key: 'remark' }
-		];
-		return (
-			<Table
-				dataSource={[]}
-				rowKey="uid"
-				columns={columns}
-				pagination={false}
-			/>
-		);
-	};
-	const expandedRowRender = () => {
+
+	const expandedRowRender = (record: MysqlTableItem) => {
 		return (
 			<Tabs
 				style={{ paddingLeft: '45px' }}
 				type="card"
 				size="small"
 				items={[
-					{ label: '列', key: 'col', children: colTable() },
-					{ label: '索引', key: 'index', children: indexTable() }
+					{
+						label: '列',
+						key: 'col',
+						children: (
+							<ColTable
+								record={record}
+								clusterId={params.clusterId}
+								namespace={params.namespace}
+								middlewareName={params.name}
+								dbName={dbName}
+							/>
+						)
+					},
+					{
+						label: '索引',
+						key: 'index',
+						children: (
+							<IndexTable
+								record={record}
+								clusterId={params.clusterId}
+								namespace={params.namespace}
+								middlewareName={params.name}
+								dbName={dbName}
+							/>
+						)
+					}
 				]}
 			/>
 		);
 	};
 	return (
 		<Table
-			rowKey="id"
+			size="small"
+			rowKey="tableName"
 			expandable={{ expandedRowRender }}
 			dataSource={dataSource}
 			columns={columns}
