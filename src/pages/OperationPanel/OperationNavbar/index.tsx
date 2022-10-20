@@ -29,6 +29,9 @@ export default function OperationNavbar(): JSX.Element {
 	// 设置logo
 	const personalization = storage.getLocal('personalization');
 	useEffect(() => {
+		setCurrent(params.currentTab);
+	}, [params.currentTab]);
+	useEffect(() => {
 		if (params.type === 'redis') {
 			items = items?.filter(
 				(item) => item?.key !== 'accountMag' && item?.key !== 'sqlAudit'
@@ -41,7 +44,7 @@ export default function OperationNavbar(): JSX.Element {
 	const onClick: MenuProps['onClick'] = (e) => {
 		setCurrent(e.key);
 		history.push(
-			`/operationalPanel/${e.key}/${params.type}/${params.name}`
+			`/operationalPanel/${e.key}/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`
 		);
 	};
 	return (

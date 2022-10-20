@@ -17,6 +17,11 @@ export interface AddAccountProps {
 export interface AddDatabaseProps {
 	open: boolean;
 	onCancel: () => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	editData: DatabaseItem | undefined;
+	onRefresh: () => void;
 }
 export interface AddPgDatabaseProps {
 	open: boolean;
@@ -86,6 +91,7 @@ export interface LoginConsoleProps {
 	namespace: string;
 	middlewareName: string;
 	middlewareType: string;
+	onCreate: (values: consoleUser) => void;
 }
 export interface OperatorHeaderProps {
 	currentUser: consoleUser | undefined;
@@ -102,5 +108,16 @@ declare global {
 }
 
 export interface AuthLoginRes extends resProps {
-	mwToken: string;
+	data: {
+		mwToken: string;
+		username: string;
+	};
+}
+export interface DatabaseItem {
+	db: string;
+	character: string;
+	collate: string;
+}
+export interface GetDatabasesRes extends resProps {
+	data: DatabaseItem[];
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import OperationNavbar from './OperationNavbar';
 import { consoleUser, ParamsProps } from './index.d';
 import SqlAudit from './SqlAudit';
@@ -12,13 +12,15 @@ import LoginConsole from './OperatorHeader/LoginConsole';
 
 export default function OperationPanel(): JSX.Element {
 	const params: ParamsProps = useParams();
-	// TODO 每个中间件的账户的数据结构确认
-	// TODO 进入页面前确认登陆用户
+	const history = useHistory();
 	const [open, setOpen] = useState<boolean>(false);
 	const [currentUser, setCurrentUser] = useState<consoleUser>();
 	useEffect(() => {
 		if (!currentUser) {
 			setOpen(true);
+			history.push(
+				`/operationalPanel/sqlConsole/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`
+			);
 		}
 	}, []);
 	const childrenRender = () => {
@@ -39,6 +41,10 @@ export default function OperationPanel(): JSX.Element {
 			default:
 				break;
 		}
+	};
+	const onCreate = (values: consoleUser) => {
+		setCurrentUser(values);
+		setOpen(false);
 	};
 	return (
 		<div className="zeus-mid-layout">
@@ -61,7 +67,14 @@ export default function OperationPanel(): JSX.Element {
 			{open && (
 				<LoginConsole
 					open={open}
-					onCancel={() => setOpen(false)}
+					onCancel={() => {
+						if (currentUser) {
+							setOpen(false);
+						} else {
+							window.close();
+						}
+					}}
+					onCreate={onCreate}
 					currentUser={currentUser}
 					projectId={params.projectId}
 					clusterId={params.clusterId}

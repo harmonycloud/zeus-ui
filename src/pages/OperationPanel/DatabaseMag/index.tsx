@@ -1,48 +1,89 @@
-import React, { useState } from 'react';
-import { Button, Table, Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Modal, notification } from 'antd';
 import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import AddDatabase from './AddDatabase';
-import { ParamsProps } from '../index.d';
+import { DatabaseItem, ParamsProps } from '../index.d';
 import AddPgDatabase from './AddPgDatabase';
+import { getDatabases, deleteDatabase } from '@/services/operatorPanel';
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 
 // * 数据库的定义
 export default function DatabaseMag(): JSX.Element {
 	const params: ParamsProps = useParams();
-	const [dataSource, setDataSource] = useState<any[]>([]);
+	const [mysqlDataSource, setMysqlDataSource] = useState<DatabaseItem[]>([]);
 	const [open, setOpen] = useState<boolean>(false);
 	const [pgOpen, setPgOpen] = useState<boolean>(false);
+	const [mysqlEditData, setMysqlEditData] = useState<DatabaseItem>();
+	useEffect(() => {
+		if (params.type === 'mysql') {
+			getMysqlData();
+		}
+	}, []);
 	const columns = [
 		{
 			title: '数据库名称',
-			dataIndex: 'name',
-			key: 'name'
+			dataIndex: 'db',
+			key: 'db',
+			width: '25%'
 		},
 		{
 			title: '字符集',
-			dataIndex: 'characterSet',
-			key: 'characterSet'
+			dataIndex: 'character',
+			key: 'character',
+			width: '25%'
 		},
 		{
 			title: '校验规则',
-			dataIndex: 'rules',
-			key: 'rules'
+			dataIndex: 'collate',
+			key: 'collate',
+			width: '25%'
 		},
 		{
 			title: '操作',
 			key: 'action',
-			render: () => (
+			width: '25%',
+			render: (text: any, record: DatabaseItem) => (
 				<Actions>
-					<LinkButton onClick={() => setOpen(true)}>编辑</LinkButton>
+					<LinkButton
+						onClick={() => {
+							setMysqlEditData(record);
+							setOpen(true);
+						}}
+					>
+						编辑
+					</LinkButton>
 					<LinkButton
 						onClick={() => {
 							confirm({
 								title: '操作确认',
 								content: '请确认是否删除该数据库？',
 								onOk: () => {
-									console.log('click ok');
+									const sendData = {
+										clusterId: params.clusterId,
+										namespace: params.namespace,
+										middlewareName: params.name,
+										database: record.db
+									};
+									deleteDatabase(sendData)
+										.then((res) => {
+											if (res.success) {
+												notification.success({
+													message: '成功',
+													description:
+														'数据库删除成功！'
+												});
+											} else {
+												notification.error({
+													message: '失败',
+													description: res.errorMsg
+												});
+											}
+										})
+										.finally(() => {
+											getMysqlData();
+										});
 								}
 							});
 						}}
@@ -98,6 +139,17 @@ export default function DatabaseMag(): JSX.Element {
 			)
 		}
 	];
+	const getMysqlData = () => {
+		getDatabases({
+			middlewareName: params.name,
+			clusterId: params.clusterId,
+			namespace: params.namespace
+		}).then((res) => {
+			if (res.success) {
+				setMysqlDataSource(res.data);
+			}
+		});
+	};
 	return (
 		<main className="database-mag-main">
 			<Button
@@ -110,12 +162,20 @@ export default function DatabaseMag(): JSX.Element {
 				新增
 			</Button>
 			<Table
-				rowKey="id"
-				dataSource={dataSource}
+				rowKey="db"
+				dataSource={mysqlDataSource}
 				columns={params.type === 'mysql' ? columns : pgsqlColumns}
 			/>
 			{open && (
-				<AddDatabase open={open} onCancel={() => setOpen(false)} />
+				<AddDatabase
+					open={open}
+					onCancel={() => setOpen(false)}
+					clusterId={params.clusterId}
+					namespace={params.namespace}
+					middlewareName={params.name}
+					editData={mysqlEditData}
+					onRefresh={getMysqlData}
+				/>
 			)}
 			{pgOpen && (
 				<AddPgDatabase

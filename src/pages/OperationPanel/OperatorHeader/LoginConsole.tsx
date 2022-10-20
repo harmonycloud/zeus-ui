@@ -17,7 +17,8 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 		clusterId,
 		namespace,
 		middlewareName,
-		middlewareType
+		middlewareType,
+		onCreate
 	} = props;
 	const [form] = Form.useForm();
 	const [data, setData] = useState<serviceListItemProps>();
@@ -40,6 +41,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 				clusterId,
 				middlewareName: values.middlewareName,
 				type: middlewareType,
+				namespace: namespace,
 				username: values.username,
 				password: values.password
 			};
@@ -49,6 +51,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 						message: '成功',
 						description: '登录成功'
 					});
+					onCreate(res.data);
 				} else {
 					notification.error({
 						message: '失败',
@@ -89,7 +92,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					name="password"
 					rules={[{ required: true, message: '请输入密码' }]}
 				>
-					<Input placeholder="请输入" />
+					<Input.Password placeholder="请输入" />
 				</Form.Item>
 			</Form>
 		</Modal>
