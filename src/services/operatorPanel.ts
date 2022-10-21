@@ -4,7 +4,9 @@ import {
 	AllSendDataParamsProps,
 	AuthLoginRes,
 	charSetResProps,
+	createSchemaParamsProps,
 	deleteParamsProps,
+	deleteSchemaParamsProps,
 	deleteUserParamsProps,
 	getAllUserParamsProps,
 	getCollationParamsProps,
@@ -12,7 +14,10 @@ import {
 	getColsResProps,
 	GetDatabasesRes,
 	getMysqlUserResProps,
+	getPgDatabaseRes,
 	getPgsqlUserResProps,
+	getSchemasParamsProps,
+	GetSchemasRes,
 	getTablesParamsProps,
 	getTablesResProps,
 	mysqlCreateUserParamsProps,
@@ -85,10 +90,33 @@ export const getMysqlUsers: (
 ) => Promise<getMysqlUserResProps> = (params: SendDataParamsProps) => {
 	return Axios.get(URL.getMysqlUsers, params);
 };
-
+export const getSchemas: (
+	params: getSchemasParamsProps
+) => Promise<GetSchemasRes> = (params: getSchemasParamsProps) => {
+	return Axios.get(URL.getSchemas, params);
+};
+export const createSchemas: (
+	params: createSchemaParamsProps
+) => Promise<resProps> = (params: createSchemaParamsProps) => {
+	return Axios.json(URL.getSchemas, params);
+};
+export const deleteSchemas: (
+	params: deleteSchemaParamsProps
+) => Promise<resProps> = (params: deleteSchemaParamsProps) => {
+	return Axios.delete(URL.updateSchemas, params);
+};
+export const updateSchemas: (
+	params: createSchemaParamsProps
+) => Promise<resProps> = (params: createSchemaParamsProps) => {
+	return Axios.json(URL.updateSchemas, params, {}, 'PUT');
+};
+// *--------------------------------------------------
+// * mysql & pgsql 合并接口 可能与上面接口存在重复
 export const getAllDatabase: (
 	params: AllSendDataParamsProps
-) => Promise<PgsqslDatabaseItem> = (params: AllSendDataParamsProps) => {
+) => Promise<getPgDatabaseRes | GetDatabasesRes> = (
+	params: AllSendDataParamsProps
+) => {
 	return Axios.get(URL.getAllDatabases, params);
 };
 

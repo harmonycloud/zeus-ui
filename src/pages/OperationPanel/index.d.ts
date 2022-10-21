@@ -136,6 +136,9 @@ export interface PgsqslDatabaseItem {
 export interface GetDatabasesRes extends resProps {
 	data: DatabaseItem[];
 }
+export interface getPgDatabaseRes extends resProps {
+	data: PgsqslDatabaseItem[];
+}
 export interface MysqlTableItem {
 	tableName: string;
 	charset: string;
@@ -157,6 +160,18 @@ export interface AllSendDataParamsProps {
 	middlewareName: string;
 	type: string;
 }
+export interface getSchemasParamsProps extends SendDataParamsProps {
+	databaseName: string;
+}
+export interface deleteSchemaParamsProps extends getSchemasParamsProps {
+	schemaName: string;
+}
+export interface createSchemaParamsProps extends getSchemasParamsProps {
+	comment: string;
+	owner: string;
+	schemaName: string;
+}
+
 export interface deleteUserParamsProps extends AllSendDataParamsProps {
 	username: string;
 }
@@ -245,4 +260,27 @@ export interface getPgsqlUserResProps extends resProps {
 }
 export interface TableDetailProps {
 	dbName: string;
+}
+export interface SchemaItem {
+	comment: string;
+	databaseName: string;
+	oid: string;
+	owner: string;
+	schemaName: string;
+}
+export interface GetSchemasRes extends resProps {
+	data: SchemaItem[];
+}
+export interface ModeMagProps {
+	dbName: string;
+}
+export interface CreateModeProps {
+	open: boolean;
+	onCancel: () => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	databaseName: string;
+	onRefresh: () => void;
+	editData: SchemaItem | undefined;
 }

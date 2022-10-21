@@ -22,8 +22,8 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 	} = props;
 	const [form] = Form.useForm();
 	const onOk = () => {
-		console.log('click ok');
 		form.validateFields().then((values) => {
+			console.log(values);
 			const mysqlSendData: mysqlCreateUserParamsProps = {
 				clusterId,
 				namespace,
@@ -84,7 +84,11 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 				>
 					<Input.Password />
 				</Form.Item>
-				<Form.Item label="授权权限" name="grantAble">
+				<Form.Item
+					label="授权权限"
+					name="grantAble"
+					valuePropName="checked"
+				>
 					<Checkbox />
 				</Form.Item>
 			</Form>

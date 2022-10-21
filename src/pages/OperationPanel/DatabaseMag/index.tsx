@@ -3,7 +3,7 @@ import { Button, Table, Modal, notification } from 'antd';
 import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import AddDatabase from './AddDatabase';
-import { DatabaseItem, ParamsProps } from '../index.d';
+import { DatabaseItem, ParamsProps, PgsqslDatabaseItem } from '../index.d';
 import AddPgDatabase from './AddPgDatabase';
 import {
 	getDatabases,
@@ -16,23 +16,23 @@ const { confirm } = Modal;
 // * 数据库的定义
 export default function DatabaseMag(): JSX.Element {
 	const params: ParamsProps = useParams();
-	const [mysqlDataSource, setMysqlDataSource] = useState<DatabaseItem[]>([]);
+	const [dataSource, setDataSource] = useState<
+		DatabaseItem[] | PgsqslDatabaseItem[]
+	>([]);
 	const [open, setOpen] = useState<boolean>(false);
 	const [pgOpen, setPgOpen] = useState<boolean>(false);
 	const [mysqlEditData, setMysqlEditData] = useState<DatabaseItem>();
 	useEffect(() => {
-		if (params.type === 'mysql') {
-			getMysqlData();
-		} else {
-			getAllDatabase({
-				middlewareName: params.name,
-				clusterId: params.clusterId,
-				namespace: params.namespace,
-				type: params.type
-			}).then((res) => {
-				console.log(res);
-			});
-		}
+		getAllDatabase({
+			middlewareName: params.name,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			type: params.type
+		}).then((res) => {
+			if (res.success) {
+				setDataSource(res.data);
+			}
+		});
 	}, []);
 	const columns = [
 		{
@@ -57,11 +57,11 @@ export default function DatabaseMag(): JSX.Element {
 			title: '操作',
 			key: 'action',
 			width: '25%',
-			render: (text: any, record: DatabaseItem) => (
+			render: (text: any, record: DatabaseItem | PgsqslDatabaseItem) => (
 				<Actions>
 					<LinkButton
 						onClick={() => {
-							setMysqlEditData(record);
+							setMysqlEditData(record as DatabaseItem);
 							setOpen(true);
 						}}
 					>
@@ -77,7 +77,7 @@ export default function DatabaseMag(): JSX.Element {
 										clusterId: params.clusterId,
 										namespace: params.namespace,
 										middlewareName: params.name,
-										database: record.db
+										database: (record as DatabaseItem).db
 									};
 									deleteDatabase(sendData)
 										.then((res) => {
@@ -159,7 +159,7 @@ export default function DatabaseMag(): JSX.Element {
 			namespace: params.namespace
 		}).then((res) => {
 			if (res.success) {
-				setMysqlDataSource(res.data);
+				setDataSource(res.data);
 			}
 		});
 	};
@@ -174,9 +174,9 @@ export default function DatabaseMag(): JSX.Element {
 			>
 				新增
 			</Button>
-			<Table
-				rowKey="db"
-				dataSource={mysqlDataSource}
+			<Table<DatabaseItem | PgsqslDatabaseItem>
+				rowKey={params.type === 'mysql' ? 'db' : 'oid'}
+				dataSource={dataSource}
 				columns={params.type === 'mysql' ? columns : pgsqlColumns}
 			/>
 			{open && (

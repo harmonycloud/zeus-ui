@@ -19,6 +19,12 @@ export const getCols = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql
 // export const gerIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}`
 // * 查询用户列表
 export const getMysqlUsers = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/users`;
+// * pgsql 获取模式列表 / 创建模式
+export const getSchemas = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas`;
+// * pgsql 删除模式 / 编辑模式 / 获取模式详情
+export const updateSchemas = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}`;
+// *--------------------------------------------------
+// * mysql & pgsql 合并接口 可能与上面接口存在重复
 // * 合并 查询数据库列表
 export const getAllDatabases = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/databases`;
 // * 合并 获取用户列表
@@ -26,4 +32,4 @@ export const getUsers = `${api}/clusters/{clusterId}/namespaces/{namespace}/{typ
 // * 合并 删除用户
 export const deleteUser = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users/{username}`;
 // * 合并 新增用户
-export const createUser = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middleware}/user`;
+export const createUser = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users`;

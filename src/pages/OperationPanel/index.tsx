@@ -9,6 +9,7 @@ import AccountMag from './AccountMag';
 import SqlConsole from './SqlConsole';
 import DatabaseMag from './DatabaseMag';
 import LoginConsole from './OperatorHeader/LoginConsole';
+import storage from '@/utils/storage';
 
 export default function OperationPanel(): JSX.Element {
 	const params: ParamsProps = useParams();
@@ -44,6 +45,7 @@ export default function OperationPanel(): JSX.Element {
 	};
 	const onCreate = (values: consoleUser) => {
 		setCurrentUser(values);
+		storage.setLocal('mwToken', values.mwToken);
 		setOpen(false);
 	};
 	return (
