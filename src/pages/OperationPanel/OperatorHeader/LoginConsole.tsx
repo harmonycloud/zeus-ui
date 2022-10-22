@@ -8,6 +8,8 @@ import {
 	serviceListItemProps,
 	serviceProps
 } from '@/pages/ServiceList/service.list';
+import { encrypt } from '@/utils/utils';
+import storage from '@/utils/storage';
 const { Option } = Select;
 export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 	const {
@@ -43,7 +45,9 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 				type: middlewareType,
 				namespace: namespace,
 				username: values.username,
-				password: values.password
+				password:
+					encrypt(values.password, storage.getSession('rsa')) ||
+					values.password
 			};
 			authLogin(sendData).then((res) => {
 				if (res.success) {

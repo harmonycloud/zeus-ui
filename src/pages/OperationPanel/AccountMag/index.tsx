@@ -7,7 +7,14 @@ import AddAccount from './AddAccount';
 import { MysqlUserItem, ParamsProps, PgsqlUserItem } from '../index.d';
 import Actions from '@/components/Actions';
 import AuthorizationForm from './AuthorizatioinForm';
-import { getUsers, deleteUsers } from '@/services/operatorPanel';
+import {
+	getUsers,
+	deleteUsers,
+	resetMysqlPassword,
+	resetPgsqlPassword,
+	enableMysqlUser,
+	enablePgsqlUser
+} from '@/services/operatorPanel';
 const LinkButton = Actions.LinkButton;
 const { Search } = Input;
 const { confirm } = Modal;
@@ -21,6 +28,7 @@ export default function AccountMag(): JSX.Element {
 	const [authOpen, setAuthOpen] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<MysqlUserItem[]>();
 	const [pgsqlDataSource, setPgsqlDataSource] = useState<PgsqlUserItem[]>();
+	const [userData, setUserData] = useState<MysqlUserItem | PgsqlUserItem>();
 	useEffect(() => {
 		getData();
 	}, []);
@@ -59,6 +67,107 @@ export default function AccountMag(): JSX.Element {
 			}
 		});
 	};
+	const handleReset = (record: MysqlUserItem | PgsqlUserItem) => {
+		confirm({
+			title: '操作确认',
+			content: '您的密码将被重置为zeus123.com，是否确认重置密码？',
+			onOk: () => {
+				if (params.type === 'mysql') {
+					return resetMysqlPassword({
+						clusterId: params.clusterId,
+						namespace: params.namespace,
+						middlewareName: params.name,
+						username: (record as MysqlUserItem).user
+					}).then((res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '用户密码重置成功'
+							});
+						} else {
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
+						}
+					});
+				} else {
+					return resetPgsqlPassword({
+						clusterId: params.clusterId,
+						namespace: params.namespace,
+						middlewareName: params.name,
+						username: (record as PgsqlUserItem).username
+					}).then((res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '用户密码重置成功'
+							});
+						} else {
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
+						}
+					});
+				}
+			}
+		});
+	};
+	const handleChange = (
+		checked: boolean,
+		record: MysqlUserItem | PgsqlUserItem
+	) => {
+		if (params.type === 'mysql') {
+			enableMysqlUser({
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				username: (record as MysqlUserItem).user,
+				lock: checked ? 'unlock' : 'lock'
+			})
+				.then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: `用户${checked ? '禁用' : '启用'}成功`
+						});
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				})
+				.finally(() => {
+					getData();
+				});
+		} else {
+			enablePgsqlUser({
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				username: (record as PgsqlUserItem).username,
+				enable: checked
+			})
+				.then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: `用户${checked ? '启用' : '禁用'}成功`
+						});
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				})
+				.finally(() => {
+					getData();
+				});
+		}
+	};
 	const columns = [
 		{
 			title: '账号名',
@@ -75,6 +184,8 @@ export default function AccountMag(): JSX.Element {
 					onClick={() => {
 						history.push(
 							`/operationalPanel/${params.currentTab}/${
+								params.projectId
+							}/${params.clusterId}/${params.namespace}/${
 								params.type
 							}/${params.name}/roleDetail/${
 								params.type === 'mysql'
@@ -90,8 +201,8 @@ export default function AccountMag(): JSX.Element {
 		},
 		{
 			title: '能否授权',
-			dataIndex: 'grantAble',
-			key: 'grantAble',
+			dataIndex: params.type === 'mysql' ? 'grantAble' : 'inherit',
+			key: params.type === 'mysql' ? 'grantAble' : 'inherit',
 			render: (text: any) => {
 				if (text) return <CheckOutlined />;
 				return <CloseOutlined />;
@@ -101,7 +212,14 @@ export default function AccountMag(): JSX.Element {
 			title: '启/禁用',
 			dataIndex: params.type === 'mysql' ? 'accountLocked' : 'usable',
 			key: params.type === 'mysql' ? 'accountLocked' : 'usable',
-			render: (text: any) => <Switch checked={text} />
+			render: (text: any, record: MysqlUserItem | PgsqlUserItem) => (
+				<Switch
+					checked={text}
+					onChange={(checked: boolean) =>
+						handleChange(checked, record)
+					}
+				/>
+			)
 		},
 		{
 			title: '操作',
@@ -109,8 +227,9 @@ export default function AccountMag(): JSX.Element {
 			key: 'action',
 			render: (text: any, record: MysqlUserItem | PgsqlUserItem) => (
 				<Actions>
-					<LinkButton>编辑</LinkButton>
-					<LinkButton>重置密码</LinkButton>
+					<LinkButton onClick={() => handleReset(record)}>
+						重置密码
+					</LinkButton>
 					<LinkButton onClick={() => handleDelete(record)}>
 						删除
 					</LinkButton>
@@ -146,6 +265,16 @@ export default function AccountMag(): JSX.Element {
 	const onChange: PaginationProps['onChange'] = (page) => {
 		setCurrent(page);
 	};
+	const rowSelection = {
+		onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+			setUserData(selectedRows[0]);
+			console.log(
+				`selectedRowKeys: ${selectedRowKeys}`,
+				'selectedRows: ',
+				selectedRows
+			);
+		}
+	};
 	return (
 		<main className="account-mag-main">
 			<div className="account-mag-action-content">
@@ -153,7 +282,11 @@ export default function AccountMag(): JSX.Element {
 					<Button type="primary" onClick={() => setAddOpen(true)}>
 						新增
 					</Button>
-					<Button type="default" onClick={() => setAuthOpen(true)}>
+					<Button
+						disabled={userData ? false : true}
+						type="default"
+						onClick={() => setAuthOpen(true)}
+					>
 						授权
 					</Button>
 				</Space>
@@ -165,23 +298,27 @@ export default function AccountMag(): JSX.Element {
 			/>
 			<div className="account-mag-table-content">
 				<Table<MysqlUserItem | PgsqlUserItem>
-					rowKey="user"
+					rowKey={params.type === 'mysql' ? 'user' : 'username'}
 					size="small"
 					columns={columns}
 					dataSource={
 						params.type === 'mysql' ? dataSource : pgsqlDataSource
 					}
-					pagination={{
-						size: 'small',
-						current: current,
-						total: total,
-						pageSize: pageSize,
-						onShowSizeChange: onShowSizeChange,
-						onChange: onChange,
-						showTotal: showTotal,
-						showSizeChanger: true,
-						showQuickJumper: true
+					rowSelection={{
+						type: 'radio',
+						...rowSelection
 					}}
+					// pagination={{
+					// 	size: 'small',
+					// 	current: current,
+					// 	total: total,
+					// 	pageSize: pageSize,
+					// 	onShowSizeChange: onShowSizeChange,
+					// 	onChange: onChange,
+					// 	showTotal: showTotal,
+					// 	showSizeChanger: true,
+					// 	showQuickJumper: true
+					// }}
 				/>
 			</div>
 			{addOpen && (
@@ -200,6 +337,11 @@ export default function AccountMag(): JSX.Element {
 					open={authOpen}
 					onCancel={() => setAuthOpen(false)}
 					type={params.type}
+					clusterId={params.clusterId}
+					namespace={params.namespace}
+					middlewareName={params.name}
+					user={userData}
+					onRefresh={getData}
 				/>
 			)}
 		</main>

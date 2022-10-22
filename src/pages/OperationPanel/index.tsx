@@ -19,9 +19,9 @@ export default function OperationPanel(): JSX.Element {
 	useEffect(() => {
 		if (!currentUser) {
 			// setOpen(true);
-			history.push(
-				`/operationalPanel/sqlConsole/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`
-			);
+			// history.push(
+			// 	`/operationalPanel/sqlConsole/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`
+			// );
 		}
 	}, []);
 	const childrenRender = () => {

@@ -1,47 +1,113 @@
-import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
-import React from 'react';
-import { Table, Space, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Table, Space, Button, notification } from 'antd';
 import { useParams } from 'react-router';
-import type { ColumnsType } from 'antd/es/table';
-import { RoleDetailParamsProps } from '../index.d';
+import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
+import {
+	MysqlUserAuthItem,
+	PgsqlUserAuthItem,
+	RoleDetailParamsProps
+} from '../index.d';
+import { getUserAuth, cancelAuth } from '@/services/operatorPanel';
 
-interface DataType {
-	id: number;
-	database: string;
-	role: string;
-	openTime: string;
-	deadline: string;
-	lastActionTime: string;
-}
-const columns: ColumnsType<DataType> = [
+const columns = [
 	{
 		title: '数据库',
 		dataIndex: 'database',
 		key: 'database'
 	},
 	{
+		title: '模式',
+		dataIndex: 'schema',
+		key: 'schema'
+	},
+	{
+		title: '数据表',
+		dataIndex: 'table',
+		key: 'table'
+	},
+	{
 		title: '权限类型',
-		dataIndex: 'role',
-		key: 'role'
+		dataIndex: 'authority',
+		key: 'authority'
+	}
+];
+const mysqlColumns = [
+	{
+		title: '数据库',
+		dataIndex: 'db',
+		key: 'db'
 	},
 	{
-		title: '开通时间',
-		dataIndex: 'openTime',
-		key: 'openTime'
+		title: '数据表',
+		dataIndex: 'table',
+		key: 'table'
 	},
 	{
-		title: '到期时间',
-		dataIndex: 'deadline',
-		key: 'deadline'
-	},
-	{
-		title: '上次操作时间',
-		dataIndex: 'lastActionTime',
-		key: 'lastActionTime'
+		title: '权限类型',
+		dataIndex: 'privilege',
+		key: 'privilege'
 	}
 ];
 export default function RoleDetail(): JSX.Element {
 	const params: RoleDetailParamsProps = useParams();
+	const [dataSource, setDataSource] = useState<
+		PgsqlUserAuthItem[] | MysqlUserAuthItem[]
+	>([]);
+	const [selectedAuths, setSelectedAuths] = useState<
+		PgsqlUserAuthItem[] | MysqlUserAuthItem[]
+	>([]);
+	useEffect(() => {
+		getData();
+	}, []);
+	const getData = () => {
+		getUserAuth({
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			type: params.type,
+			username: params.userName
+		}).then((res) => {
+			if (res.success) {
+				setDataSource(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+	const rowSelection = {
+		onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+			setSelectedAuths(selectedRows);
+		}
+	};
+	const releaseAuth = () => {
+		cancelAuth({
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			type: params.type,
+			username: params.userName,
+			authorityList: selectedAuths
+		})
+			.then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '权限释放成功！'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			})
+			.finally(() => {
+				getData();
+			});
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -50,9 +116,16 @@ export default function RoleDetail(): JSX.Element {
 			/>
 			<ProContent>
 				<Space className="mb-8">
-					<Button>释放权限</Button>
+					<Button onClick={releaseAuth}>释放权限</Button>
 				</Space>
-				<Table dataSource={[]} columns={columns} />
+				<Table<PgsqlUserAuthItem | MysqlUserAuthItem>
+					dataSource={dataSource}
+					columns={params.type === 'mysql' ? mysqlColumns : columns}
+					rowSelection={{
+						type: 'checkbox',
+						...rowSelection
+					}}
+				/>
 			</ProContent>
 		</ProPage>
 	);

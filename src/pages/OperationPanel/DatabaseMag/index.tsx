@@ -5,11 +5,7 @@ import Actions from '@/components/Actions';
 import AddDatabase from './AddDatabase';
 import { DatabaseItem, ParamsProps, PgsqslDatabaseItem } from '../index.d';
 import AddPgDatabase from './AddPgDatabase';
-import {
-	getDatabases,
-	deleteDatabase,
-	getAllDatabase
-} from '@/services/operatorPanel';
+import { getAllDatabase, deleteAllDatabase } from '@/services/operatorPanel';
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 
@@ -22,7 +18,11 @@ export default function DatabaseMag(): JSX.Element {
 	const [open, setOpen] = useState<boolean>(false);
 	const [pgOpen, setPgOpen] = useState<boolean>(false);
 	const [mysqlEditData, setMysqlEditData] = useState<DatabaseItem>();
+	const [pgsqlEditData, setPgsqlEditData] = useState<PgsqslDatabaseItem>();
 	useEffect(() => {
+		getAllData();
+	}, []);
+	const getAllData = () => {
 		getAllDatabase({
 			middlewareName: params.name,
 			clusterId: params.clusterId,
@@ -31,9 +31,14 @@ export default function DatabaseMag(): JSX.Element {
 		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
-	}, []);
+	};
 	const columns = [
 		{
 			title: '数据库名称',
@@ -71,15 +76,19 @@ export default function DatabaseMag(): JSX.Element {
 						onClick={() => {
 							confirm({
 								title: '操作确认',
-								content: '请确认是否删除该数据库？',
+								content: `请确认是否删除${
+									(record as DatabaseItem).db
+								}数据库？`,
 								onOk: () => {
 									const sendData = {
 										clusterId: params.clusterId,
 										namespace: params.namespace,
 										middlewareName: params.name,
-										database: (record as DatabaseItem).db
+										databaseName: (record as DatabaseItem)
+											.db,
+										type: 'mysql'
 									};
-									deleteDatabase(sendData)
+									deleteAllDatabase(sendData)
 										.then((res) => {
 											if (res.success) {
 												notification.success({
@@ -95,7 +104,7 @@ export default function DatabaseMag(): JSX.Element {
 											}
 										})
 										.finally(() => {
-											getMysqlData();
+											getAllData();
 										});
 								}
 							});
@@ -132,16 +141,45 @@ export default function DatabaseMag(): JSX.Element {
 			title: '操作',
 			dataIndex: 'action',
 			key: 'action',
-			render: () => (
+			render: (text: any, record: DatabaseItem | PgsqslDatabaseItem) => (
 				<Actions>
-					<LinkButton>编辑</LinkButton>
+					<LinkButton
+						onClick={() => {
+							setPgsqlEditData(record as PgsqslDatabaseItem);
+							setPgOpen(true);
+						}}
+					>
+						编辑
+					</LinkButton>
 					<LinkButton
 						onClick={() => {
 							confirm({
 								title: '操作确认',
-								content: '请确认是否删除该数据库？',
+								content: `请确认是否删除${
+									(record as PgsqslDatabaseItem).databaseName
+								}数据库？`,
 								onOk: () => {
-									console.log('click ok');
+									return deleteAllDatabase({
+										clusterId: params.clusterId,
+										namespace: params.namespace,
+										middlewareName: params.name,
+										databaseName: (
+											record as PgsqslDatabaseItem
+										).databaseName,
+										type: 'postgresql'
+									}).then((res) => {
+										if (res.success) {
+											notification.success({
+												message: '成功',
+												description: '数据库删除成功'
+											});
+										} else {
+											notification.error({
+												message: '失败',
+												description: res.errorMsg
+											});
+										}
+									});
 								}
 							});
 						}}
@@ -152,17 +190,6 @@ export default function DatabaseMag(): JSX.Element {
 			)
 		}
 	];
-	const getMysqlData = () => {
-		getDatabases({
-			middlewareName: params.name,
-			clusterId: params.clusterId,
-			namespace: params.namespace
-		}).then((res) => {
-			if (res.success) {
-				setDataSource(res.data);
-			}
-		});
-	};
 	return (
 		<main className="database-mag-main">
 			<Button
@@ -177,6 +204,7 @@ export default function DatabaseMag(): JSX.Element {
 			<Table<DatabaseItem | PgsqslDatabaseItem>
 				rowKey={params.type === 'mysql' ? 'db' : 'oid'}
 				dataSource={dataSource}
+				size="small"
 				columns={params.type === 'mysql' ? columns : pgsqlColumns}
 			/>
 			{open && (
@@ -187,13 +215,18 @@ export default function DatabaseMag(): JSX.Element {
 					namespace={params.namespace}
 					middlewareName={params.name}
 					editData={mysqlEditData}
-					onRefresh={getMysqlData}
+					onRefresh={getAllData}
 				/>
 			)}
 			{pgOpen && (
 				<AddPgDatabase
 					open={pgOpen}
 					onCancel={() => setPgOpen(false)}
+					clusterId={params.clusterId}
+					namespace={params.namespace}
+					middlewareName={params.name}
+					editData={pgsqlEditData}
+					onRefresh={getAllData}
 				/>
 			)}
 		</main>

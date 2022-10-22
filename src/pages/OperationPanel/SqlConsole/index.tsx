@@ -1,5 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Input, Layout, Tree, Tabs, Dropdown, Menu } from 'antd';
+import {
+	Button,
+	Input,
+	Layout,
+	Tree,
+	Tabs,
+	Dropdown,
+	Menu,
+	notification
+} from 'antd';
 import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
@@ -22,12 +31,12 @@ import {
 import ModeMag from '../ModeMag';
 import PgsqlEditTable from '../components/PgsqlEditTable';
 import {
-	getDatabases,
 	getDbTables,
 	getCols,
 	getAllDatabase,
 	getSchemas
 } from '@/services/operatorPanel';
+import PgTableDetail from '../components/PgTableDetail';
 
 const { Content, Sider } = Layout;
 const tableMenuItems = [
@@ -135,6 +144,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const newTabIndex = useRef(0);
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
+		console.log(newTabIndex);
 		const newActiveKey = `newTab${newTabIndex.current++}`;
 		const newPanes = [...items];
 		newPanes.push({
@@ -145,7 +155,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		setItems(newPanes);
 		setActiveKey(newActiveKey);
 	};
-	const handleMenuClick = (e: MenuInfo, i: string) => {
+	const handleMenuClick = (e: MenuInfo, i: string, s?: string) => {
 		switch (e.key) {
 			case 'editTable': // * mysql 编辑表
 				add(
@@ -158,7 +168,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'tableInfo': // * mysql 表详情
-				add(`表详情:${i}`, <TableDetail dbName={i} />);
+				add(
+					`表详情:${i}`,
+					params.type === 'mysql' ? (
+						<TableDetail dbName={i} />
+					) : (
+						<PgTableDetail schemaName={i} dbName={s || ''} />
+					)
+				);
 				return;
 			case 'inquire': // * mysql sqlconsole
 				add(i, <MysqlSqlConsole />);
@@ -171,10 +188,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	// * mysql database menu
-	const menu = (i: any) => {
+	const menu = (i: any, schemas?: string) => {
 		return (
 			<Menu
-				onClick={(info: MenuInfo) => handleMenuClick(info, i)}
+				onClick={(info: MenuInfo) => handleMenuClick(info, i, schemas)}
 				items={databaseMenuItems}
 			/>
 		);
@@ -236,6 +253,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					} else {
 						setTreeData([]);
 					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		} else {
@@ -280,6 +302,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					} else {
 						setPgTreeData([]);
 					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
 			});
 		}
@@ -456,7 +483,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								const result: any = {};
 								result.title = (
 									<Dropdown
-										overlay={() => menu(item.schemaName)}
+										overlay={() =>
+											menu(item.schemaName, value)
+										}
 										trigger={['contextMenu']}
 									>
 										<span>{item.schemaName}</span>
@@ -605,6 +634,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								loadData={pgsqlOnLoadData}
 							/>
 						</div>
+					</div>
+				)}
+				{params.type === 'redis' && (
+					<div
+						className="sql-console-sider-search"
+						style={{ paddingRight: 16 }}
+					>
+						DB0(50)
 					</div>
 				)}
 			</Sider>

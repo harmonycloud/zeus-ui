@@ -3,26 +3,42 @@ import * as URL from './operatorPanel.constants';
 import {
 	AllSendDataParamsProps,
 	AuthLoginRes,
+	cancelAuthParamsProps,
 	charSetResProps,
+	createPgDatabaseParamsProps,
 	createSchemaParamsProps,
+	deleteAllDatabaseProps,
 	deleteParamsProps,
+	deletePgTableParamsProps,
 	deleteSchemaParamsProps,
 	deleteUserParamsProps,
+	enableMysqlUserParamsProps,
+	enablePgsqlUserParamsProps,
 	getAllUserParamsProps,
 	getCollationParamsProps,
 	getColParamsProps,
 	getColsResProps,
 	GetDatabasesRes,
+	GetEncodingRes,
 	getMysqlUserResProps,
+	getPgColParamsProps,
+	getPgColRes,
 	getPgDatabaseRes,
+	getPgsqlTableRes,
 	getPgsqlUserResProps,
 	getSchemasParamsProps,
 	GetSchemasRes,
 	getTablesParamsProps,
 	getTablesResProps,
+	getUserAuthParamsProps,
+	mysqlAuthDatabaseParamsProps,
 	mysqlCreateUserParamsProps,
+	MysqlUserAuthRes,
+	pgsqlAuthParamsProps,
 	pgsqlCreateUserParamsProps,
+	PgsqlUserAuthRes,
 	PgsqslDatabaseItem,
+	resetPasswordParamsProps,
 	SendDataParamsProps,
 	updateParamsProps
 } from '@/pages/OperationPanel/index.d';
@@ -110,6 +126,71 @@ export const updateSchemas: (
 ) => Promise<resProps> = (params: createSchemaParamsProps) => {
 	return Axios.json(URL.updateSchemas, params, {}, 'PUT');
 };
+export const getPgTables: (
+	params: deleteSchemaParamsProps
+) => Promise<getPgsqlTableRes> = (params: deleteSchemaParamsProps) => {
+	return Axios.get(URL.getPgTables, params);
+};
+export const deletePgTables: (
+	params: deletePgTableParamsProps
+) => Promise<resProps> = (params: deletePgTableParamsProps) => {
+	return Axios.delete(URL.deletePgTable, params);
+};
+export const getPgCols: (
+	params: getPgColParamsProps
+) => Promise<getPgColRes> = (params: getPgColParamsProps) => {
+	return Axios.get(URL.getPgCols, params);
+};
+export const getEncoding: (
+	params: SendDataParamsProps
+) => Promise<GetEncodingRes> = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getEncoding, params);
+};
+export const createPgDatabase: (
+	params: createPgDatabaseParamsProps
+) => Promise<resProps> = (params: createPgDatabaseParamsProps) => {
+	return Axios.json(URL.createPgDatabase, params);
+};
+export const updatePgDatabase: (
+	params: createPgDatabaseParamsProps
+) => Promise<resProps> = (params: createPgDatabaseParamsProps) => {
+	return Axios.json(URL.updatePgDatabase, params, {}, 'PUT');
+};
+export const resetMysqlPassword: (
+	params: resetPasswordParamsProps
+) => Promise<resProps> = (params: resetPasswordParamsProps) => {
+	return Axios.put(URL.resetMysqlPassword, params);
+};
+export const resetPgsqlPassword: (
+	params: resetPasswordParamsProps
+) => Promise<resProps> = (params: resetPasswordParamsProps) => {
+	return Axios.post(URL.resetPgsqlPassword, params);
+};
+export const enablePgsqlUser: (
+	params: enablePgsqlUserParamsProps
+) => Promise<resProps> = (params: enablePgsqlUserParamsProps) => {
+	return Axios.get(URL.enablePgsqlUser, params, {}, 'POST');
+};
+export const enableMysqlUser: (
+	params: enableMysqlUserParamsProps
+) => Promise<resProps> = (params: enableMysqlUserParamsProps) => {
+	return Axios.put(URL.enalbeMysqlUser, params);
+};
+export const mysqlAuthDatabase: (
+	params: mysqlAuthDatabaseParamsProps
+) => Promise<resProps> = (params: mysqlAuthDatabaseParamsProps) => {
+	return Axios.json(URL.mysqlAuthDatabase, params, {}, 'PUT');
+};
+export const mysqlAuthTable: (
+	params: mysqlAuthDatabaseParamsProps
+) => Promise<resProps> = (params: mysqlAuthDatabaseParamsProps) => {
+	return Axios.json(URL.mysqlAuthTable, params, {}, 'PUT');
+};
+export const pgsqlAuthData: (
+	params: pgsqlAuthParamsProps
+) => Promise<resProps> = (params: pgsqlAuthParamsProps) => {
+	return Axios.json(URL.pgsqlAuth, params, {}, 'POST');
+};
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 export const getAllDatabase: (
@@ -118,6 +199,11 @@ export const getAllDatabase: (
 	params: AllSendDataParamsProps
 ) => {
 	return Axios.get(URL.getAllDatabases, params);
+};
+export const deleteAllDatabase: (
+	params: deleteAllDatabaseProps
+) => Promise<resProps> = (params: deleteAllDatabaseProps) => {
+	return Axios.delete(URL.deleteAllDatabases, params);
 };
 
 export const getUsers: (
@@ -138,4 +224,16 @@ export const createUsers: (
 	params: mysqlCreateUserParamsProps | pgsqlCreateUserParamsProps
 ) => {
 	return Axios.json(URL.createUser, params);
+};
+export const getUserAuth: (
+	params: getUserAuthParamsProps
+) => Promise<PgsqlUserAuthRes | MysqlUserAuthRes> = (
+	params: getUserAuthParamsProps
+) => {
+	return Axios.get(URL.getUserAuth, params);
+};
+export const cancelAuth: (
+	params: cancelAuthParamsProps
+) => Promise<resProps> = (params: cancelAuthParamsProps) => {
+	return Axios.json(URL.cancelAuth, params, {}, 'DELETE');
 };

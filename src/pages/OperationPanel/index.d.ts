@@ -1,5 +1,4 @@
 import { resProps } from '@/types/comment';
-import { number } from 'echarts';
 export interface ParamsProps {
 	currentTab: string;
 	type: string;
@@ -32,6 +31,11 @@ export interface AddDatabaseProps {
 export interface AddPgDatabaseProps {
 	open: boolean;
 	onCancel: () => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	editData: PgsqslDatabaseItem | undefined;
+	onRefresh: () => void;
 }
 export interface MysqlEditTableProps {
 	isEdit?: boolean;
@@ -149,6 +153,27 @@ export interface MysqlTableItem {
 	maxRows: number;
 	comment: null | string;
 }
+export interface PgsqlTableItem {
+	collate: string;
+	columnDtoList: null;
+	databaseName: string;
+	description: string;
+	encoding: string;
+	fillFactor: string;
+	oid: string;
+	owner: string;
+	schemaName: string;
+	tableCheckList: null;
+	tableExclusionList: null;
+	tableForeignKeyList: null;
+	tableInheritList: null;
+	tableName: string;
+	tableUniqueList: null;
+	tablespace: string;
+}
+export interface getPgsqlTableRes extends resProps {
+	data: PgsqlTableItem[];
+}
 export interface SendDataParamsProps {
 	clusterId: string;
 	namespace: string;
@@ -160,11 +185,19 @@ export interface AllSendDataParamsProps {
 	middlewareName: string;
 	type: string;
 }
+export interface getPgColParamsProps extends SendDataParamsProps {
+	databaseName: string;
+	schemaName: string;
+	tableName: string;
+}
 export interface getSchemasParamsProps extends SendDataParamsProps {
 	databaseName: string;
 }
 export interface deleteSchemaParamsProps extends getSchemasParamsProps {
 	schemaName: string;
+}
+export interface deletePgTableParamsProps extends deleteSchemaParamsProps {
+	tableName: string;
 }
 export interface createSchemaParamsProps extends getSchemasParamsProps {
 	comment: string;
@@ -187,6 +220,9 @@ export interface pgsqlCreateUserParamsProps extends AllSendDataParamsProps {
 }
 export interface getAllUserParamsProps extends AllSendDataParamsProps {
 	keyword: string;
+}
+export interface deleteAllDatabaseProps extends AllSendDataParamsProps {
+	databaseName: string;
 }
 export interface updateParamsProps extends SendDataParamsProps {
 	db: string;
@@ -261,6 +297,10 @@ export interface getPgsqlUserResProps extends resProps {
 export interface TableDetailProps {
 	dbName: string;
 }
+export interface PgTableDetailProps {
+	dbName: string;
+	schemaName: string;
+}
 export interface SchemaItem {
 	comment: string;
 	databaseName: string;
@@ -283,4 +323,90 @@ export interface CreateModeProps {
 	databaseName: string;
 	onRefresh: () => void;
 	editData: SchemaItem | undefined;
+}
+
+export interface GetEncodingRes extends resProps {
+	data: string[];
+}
+export interface PgsqlColItem {
+	array: boolean;
+	collate: string;
+	column: string;
+	comment: string;
+	databaseName: string;
+	dateType: string;
+	defaultValue: string;
+	encoding: string;
+	inc: boolean;
+	nullable: boolean;
+	num: string;
+	oid: string;
+	owner: string;
+	primaryKey: boolean;
+	schemaName: string;
+	size: string;
+	tableName: string;
+}
+export interface getPgColRes extends resProps {
+	data: PgsqlColItem[];
+}
+export interface createPgDatabaseParamsProps extends SendDataParamsProps {
+	databaseName: string;
+	encoding: string;
+	owner: string;
+	tablespace: string;
+}
+export interface resetPasswordParamsProps extends SendDataParamsProps {
+	username: string;
+}
+export interface enablePgsqlUserParamsProps extends SendDataParamsProps {
+	username: string;
+	enable: boolean;
+}
+export interface enableMysqlUserParamsProps extends SendDataParamsProps {
+	username: string;
+	lock: string;
+}
+export interface getUserAuthParamsProps extends AllSendDataParamsProps {
+	username: string;
+}
+export interface PgsqlUserAuthItem {
+	authority: string;
+	database: string;
+	grantAble: boolean;
+	schema: string;
+	table: string;
+}
+export interface PgsqlUserAuthRes extends resProps {
+	data: PgsqlUserAuthItem[];
+}
+export interface MysqlUserAuthItem {
+	db: string;
+	privilege: string;
+	privilegeType: number;
+	table: string;
+	username: string;
+	grantAble: boolean;
+}
+export interface MysqlUserAuthRes extends resProps {
+	data: MysqlUserAuthItem[];
+}
+export interface mysqlAuthDatabaseParamsProps extends SendDataParamsProps {
+	database: string;
+	db: string;
+	privilegeType: number;
+	grantAble: boolean;
+	table?: string;
+}
+export interface pgsqlAuthParamsProps extends SendDataParamsProps {
+	username: string;
+	database: string;
+	schema?: string | null;
+	table?: string | null;
+	authority: string;
+	grantAble: boolean;
+}
+export interface cancelAuthParamsProps extends AllSendDataParamsProps {
+	username: string;
+	authorityList: PgsqlUserAuthItem[] | MysqlUserAuthItem[];
 }

@@ -77,9 +77,11 @@ axios.interceptors.request.use(
 			config.url += `${separator}noCache=${new Date().getTime()}`;
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
-		config.headers.mwToken = cache.getLocal(MWTOKEN)
-			? cache.getLocal(MWTOKEN)
-			: '';
+		config.headers.mwToken =
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvc3RncmVzIiwicGFzc3dvcmQiOiJYOUZoVG5tcFRKIiwiZXhwIjoxNjY2NDQ5MDU0LCJpc3MiOiJteS1wcm9qZWN0In0.TY42OC9SnDX0NcxImVHNZPu97nTQxbpYtazRvABij1Y';
+		// config.headers.mwToken = cache.getLocal(MWTOKEN)
+		// 	? cache.getLocal(MWTOKEN)
+		// 	: '';
 		config.headers.authType = cache.getLocal(TOKEN) ? 1 : 0;
 		config.headers.projectId =
 			cache.getLocal('project') &&
