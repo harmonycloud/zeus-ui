@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	AutoComplete,
 	Button,
@@ -82,6 +82,7 @@ export default function InstallTraefik(
 	const [nodeArray, setNodeArray] = useState<string[]>([]);
 	const [traefikPortList, setTraefikPortList] = useState<any[]>([]);
 	const [portRange, setPortRange] = useState<any>();
+	const indexRef = useRef(0);
 	useEffect(() => {
 		getNodePort({ clusterId }).then((res) => {
 			if (res.success) {
@@ -242,8 +243,19 @@ export default function InstallTraefik(
 				endPort: value[1],
 				startPort: value[0]
 			};
+			if (traefikPortList.length === 0) {
+				setPortRange(result);
+				return;
+			}
 			traefikPortList.forEach((item) => {
-				if (result.startPort < item.endPort) {
+				if (
+					(result.startPort >= item.startPort &&
+						result.startPort <= item.endPort) ||
+					(result.endPort >= item.startPort &&
+						result.endPort <= item.endPort) ||
+					(result.startPort <= item.startPort &&
+						result.endPort >= item.endPort)
+				) {
 					notification.error({
 						message: '失败',
 						description: '端口范围设置错误！'
@@ -252,6 +264,17 @@ export default function InstallTraefik(
 				}
 			});
 			setPortRange(result);
+			// for (let index = 0; index < traefikPortList.length; index++) {
+			// 	const element = traefikPortList[index];
+			// 	if (
+			// 		result.endPort < element.startPort ||
+			// 		result.startPort > element.endPort
+			// 	) {
+			// 		setPortRange(result);
+			// 		break;
+			// 	}
+			// 	setPortRange({});
+			// }
 		}
 	};
 
@@ -591,14 +614,37 @@ export default function InstallTraefik(
 							<Button
 								onClick={() => {
 									if (JSON.stringify(portRange) !== '{}') {
-										for (
-											let index = 0;
-											index < traefikPortList.length;
-											index++
-										) {
+										if (traefikPortList.length === 0) {
+											checkTraefikPort({
+												clusterId,
+												startPort: portRange.startPort,
+												endPort: portRange.endPort
+											}).then((res) => {
+												if (res.success) {
+													const result = portRange;
+													result.ports = res.data;
+													setTraefikPortList([
+														...traefikPortList,
+														result
+													]);
+												}
+											});
+											return;
+										}
+										traefikPortList.forEach((item) => {
 											if (
-												portRange.startPort <
-												traefikPortList[index].endPort
+												(portRange.startPort >=
+													item.startPort &&
+													portRange.startPort <=
+														item.endPort) ||
+												(portRange.endPort >=
+													item.startPort &&
+													portRange.endPort <=
+														item.endPort) ||
+												(portRange.startPort <=
+													item.startPort &&
+													portRange.endPort >=
+														item.endPort)
 											) {
 												notification.error({
 													message: '失败',
@@ -607,7 +653,7 @@ export default function InstallTraefik(
 												});
 												return;
 											}
-										}
+										});
 										checkTraefikPort({
 											clusterId,
 											startPort: portRange.startPort,
