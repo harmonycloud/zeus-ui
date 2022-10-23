@@ -362,6 +362,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			console.log(values);
+			let storageClassTemp = '';
+			if (typeof values.storageClass === 'string') {
+				storageClassTemp = values.storageClass.split('/')[0];
+			} else {
+				storageClassTemp = values.storageClass
+					.map((item: string) => item.split('/')[0])
+					.join(',');
+			}
 			let sendData: MysqlSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -388,7 +397,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				},
 				quota: {
 					mysql: {
-						storageClassName: values.storageClass.split('/')[0],
+						storageClassName: storageClassTemp,
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -498,6 +507,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 			// 灾备服务-源服务和备服务同时创建
 			if (backupFlag) {
+				let relactionStorageClassTemp = '';
+				if (typeof values.relationStorageClass === 'string') {
+					relactionStorageClassTemp =
+						values.relationStorageClass.split('/')[0];
+				} else {
+					relactionStorageClassTemp = values.relationStorageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 				sendData.mysqlDTO.relationName = values.relationName;
 				sendData.mysqlDTO.relationAliasName = values.relationAliasName;
 				sendData.mysqlDTO.relationClusterId = relationClusterId;
@@ -535,8 +553,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							?.id.toString() || '',
 					quota: {
 						mysql: {
-							storageClassName:
-								values.relationStorageClass.split('/')[0],
+							storageClassName: relactionStorageClassTemp,
 							storageClassQuota: values.relationStorageQuota
 						}
 					}
@@ -557,6 +574,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 			// 灾备服务-在已有源服务上创建备服务
 			if (state && state.disasterOriginName && originData) {
+				let disStorageClassTemp = '';
+				if (typeof values.storageClass === 'string') {
+					disStorageClassTemp = values.storageClass.split('/')[0];
+				} else {
+					disStorageClassTemp = values.storageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 				const sendDataTemp: MysqlSendDataTempParams = {
 					chartName: chartName,
 					chartVersion: originData.chartVersion,
@@ -623,8 +648,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							mysql: {
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
-								storageClassName:
-									values.storageClass?.split('/')[0],
+								storageClassName: disStorageClassTemp,
 								storageClassQuota: values.storageQuota
 							}
 						},
@@ -692,7 +716,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}
 				sendData = sendDataTemp;
 			}
-			// console.log(sendData);
 			if (history.location.pathname.includes('backup')) {
 				const result = {
 					clusterId: globalCluster.id,
@@ -721,6 +744,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);
 				addDisasterIns(sendData).then((res) => {
@@ -835,6 +859,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				setVersion(res.data.version);
 			}
 			res.data.readWriteProxy?.enabled && setReadWriteProxy('true');
+			let storageClassTemp: string | string[];
+			if (res.data.quota.mysql.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					res.data.quota.mysql.storageClassAliasName.split(',');
+				storageClassTemp = res.data.quota.mysql.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassTemp = `${res.data.quota.mysql.storageClassName}/${res.data.quota.mysql.storageClassAliasName}`;
+			}
 			form.setFieldsValue({
 				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,
@@ -847,7 +884,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
 				),
 				mirrorImageId: res.data.mirrorImage,
-				storageClass: `${res.data.quota.mysql.storageClassName}/${res.data.quota.mysql.storageClassAliasName}`,
+				storageClass: storageClassTemp,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
 					'Gi'
@@ -905,6 +942,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				setCharSet(originData.charSet);
 			}
 			setInstanceSpec('Customize');
+			let storageClassTemp: string | string[];
+			if (originData?.quota.mysql.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					originData.quota.mysql.storageClassAliasName.split(',');
+				storageClassTemp = originData.quota.mysql.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassTemp = `${originData?.quota.mysql.storageClassName}/${originData?.quota.mysql.storageClassAliasName}`;
+			}
 			form.setFieldsValue({
 				aliasName: originData?.aliasName,
 				labels: originData?.labels,
@@ -917,7 +967,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					originData?.quota.mysql.memory,
 					'Gi'
 				),
-				storageClass: `${originData?.quota.mysql.storageClassName}/${originData?.quota.mysql.storageClassAliasName}`,
+				storageClass: storageClassTemp,
 				storageQuota: transUnit.removeUnit(
 					originData?.quota.mysql.storageClassQuota,
 					'Gi'
@@ -993,6 +1043,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 			setDataSource([...dataSource]);
 		});
+	};
+	const judgeActiveActive = (namespaceTemp: string) => {
+		const temp = namespaceList.filter((item) => {
+			if (item.name === namespaceTemp) {
+				return item;
+			}
+		});
+		return temp[0]?.availableDomain || false;
 	};
 	// * 结果页相关
 	if (commitFlag) {
@@ -2038,6 +2096,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										originData
 											? relationClusterId
 											: globalCluster.id
+									}
+									isActiveActive={
+										globalNamespace.name === '*'
+											? judgeActiveActive(
+													form.getFieldValue(
+														'namespace'
+													)
+											  )
+											: globalNamespace.availableDomain
 									}
 								/>
 							</ul>

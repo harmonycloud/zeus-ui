@@ -50,9 +50,12 @@ export default function AddIngress(): JSX.Element {
 	const [ingressClassName, setIngressClassName] = useState<{
 		value: string;
 		type: string;
-		startPort: number;
-		endPort: number;
-	}>();
+		traefikPortList: any[];
+	}>({
+		value: '',
+		type: '',
+		traefikPortList: []
+	});
 	const [ingressPortArray, setIngressPortArray] = useState<string[]>([]);
 	const [nodePortArray, setNodePortArray] = useState<string[]>([]);
 	const ingressTypeList = [
@@ -210,6 +213,23 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
+			for (
+				let index = 0;
+				index < ingressClassName?.traefikPortList.length;
+				index++
+			) {
+				const element = ingressClassName?.traefikPortList[index];
+				if (
+					values.exposePort < element.startPort ||
+					values.exposePort > element.endPort
+				) {
+					notification.error({
+						message: '失败',
+						description: '请输入规定范围以内的端口!'
+					});
+					return;
+				}
+			}
 			let sendData: any = {
 				clusterId,
 				namespace,
@@ -272,8 +292,7 @@ export default function AddIngress(): JSX.Element {
 		setIngressClassName({
 			value: value,
 			type: cur?.type as string,
-			startPort: Number(cur?.startPort || 0),
-			endPort: Number(cur?.endPort || 0)
+			traefikPortList: cur?.traefikPortList || []
 		});
 	};
 	return (
@@ -376,51 +395,11 @@ export default function AddIngress(): JSX.Element {
 							{
 								required: true,
 								message: '请输入对外端口'
-							},
-							{
-								type: 'number',
-								min:
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.startPort
-											: Number(ingressPortArray[0])
-										: Number(nodePortArray[0]),
-								max:
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.endPort
-											: Number(ingressPortArray[1])
-										: Number(nodePortArray[1]),
-								message: `请输入${
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.startPort
-											: Number(ingressPortArray[0])
-										: Number(nodePortArray[0])
-								}-${
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.endPort
-											: Number(ingressPortArray[1])
-										: Number(nodePortArray[1])
-								}以内的端口`
 							}
 						]}
 					>
 						<InputNumber
-							placeholder={`请输入${
-								exposeType === 'TCP'
-									? ingressClassName?.type === 'traefik'
-										? ingressClassName.startPort
-										: Number(ingressPortArray[0])
-									: Number(nodePortArray[0])
-							}-${
-								exposeType === 'TCP'
-									? ingressClassName?.type === 'traefik'
-										? ingressClassName.endPort
-										: Number(ingressPortArray[1])
-									: Number(nodePortArray[1])
-							}以内的端口`}
+							placeholder={`请输入规定范围以内的端口`}
 							style={{ width: 250 }}
 						/>
 					</Form.Item>
@@ -431,8 +410,12 @@ export default function AddIngress(): JSX.Element {
 								<Col span={10}>
 									<div>
 										当前负载均衡相关端口组为
-										{ingressClassName?.startPort}-
-										{ingressClassName?.endPort}
+										{ingressClassName.traefikPortList
+											.map(
+												(item) =>
+													`${item.startPort}-${item.endPort}`
+											)
+											.join(',')}
 										,请在端口组范围内选择端口
 									</div>
 								</Col>

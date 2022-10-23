@@ -55,7 +55,7 @@ export interface CreateValuesParams {
 	labels: string;
 	annotations: string;
 	description: string;
-	storageClass: string;
+	storageClass: string | string[];
 	storageQuota: string;
 	cpu: number;
 	memory: number;
@@ -230,7 +230,7 @@ export interface NodeObjParams {
 		specId: string;
 		cpu: number;
 		memory: number;
-		storageClass: string;
+		storageClass: string | string[];
 		storageQuota: number;
 	};
 	sentinel: {

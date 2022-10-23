@@ -409,10 +409,18 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 			if (mode === 'cluster' || mode === 'agent') {
+				let storageClassNameTemp = '';
+				if (typeof values.storageClass === 'string') {
+					storageClassNameTemp = values.storageClass.split('/')[0];
+				} else {
+					storageClassNameTemp = values.storageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 				sendData.quota = {
 					redis: {
 						num: clusterMode === '3s-3m' ? 6 : 10,
-						storageClassName: values.storageClass.split('/')[0],
+						storageClassName: storageClassNameTemp,
 						storageClassQuota: values.storageQuota
 					}
 				};
@@ -450,6 +458,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					console.log(nodeObj);
 					sendData.quota = { redis: {} };
 					for (const key in nodeObj) {
+						let storageClassNameTemp = '';
+						if (typeof nodeObj[key].storageClass === 'string') {
+							storageClassNameTemp =
+								nodeObj[key].storageClass?.split('/')[0];
+						} else {
+							storageClassNameTemp = nodeObj[key].storageClass
+								?.map((item: string) => item.split('/')[0])
+								.join(',');
+						}
 						if (!nodeObj[key].disabled) {
 							if (nodeObj[key].storageClass === '') {
 								modifyQuota(key);
@@ -472,8 +489,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													item.value === sentinelMode
 										  )?.num
 										: nodeObj[key].num,
-								storageClassName:
-									nodeObj[key].storageClass?.split('/')[0],
+								storageClassName: storageClassNameTemp,
 								storageClassQuota: nodeObj[key].storageQuota
 							};
 						}
@@ -651,6 +667,19 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					'Gi'
 				)
 			});
+			let storageClassName: string | string[];
+			if (res.data.quota.redis.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					res.data.quota.redis.storageClassAliasName.split(',');
+				storageClassName = res.data.quota.redis.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassName = `${res.data.quota.redis.storageClassName}/${res.data.quota.redis.storageClassAliasName}`;
+			}
 			setNodeObj({
 				redis: {
 					disabled: false,
@@ -661,7 +690,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					memory: Number(
 						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 					),
-					storageClass: res.data.quota.redis.storageClassName,
+					storageClass: storageClassName,
 					storageQuota: Number(
 						transUnit.removeUnit(
 							res.data.quota.redis.storageClassQuota,
@@ -689,6 +718,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 		});
+	};
+	const judgeActiveActive = (namespaceTemp: string) => {
+		const temp = namespaceList.filter((item) => {
+			if (item.name === namespaceTemp) {
+				return item;
+			}
+		});
+		return temp[0]?.availableDomain || false;
 	};
 	// * 结果页相关
 	if (commitFlag) {
@@ -1470,6 +1507,16 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	[key]: values
 																});
 															}}
+															isActiveActive={
+																globalNamespace.name ===
+																'*'
+																	? judgeActiveActive(
+																			form.getFieldValue(
+																				'namespace'
+																			)
+																	  )
+																	: globalNamespace.availableDomain
+															}
 														/>
 													)
 												)}

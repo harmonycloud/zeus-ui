@@ -11,7 +11,7 @@ export interface modeItemProps {
 		memory: number;
 		num: number;
 		specId: string;
-		storageClass: string;
+		storageClass: string | string[];
 		storageQuota: number;
 		title: string;
 	};
@@ -20,15 +20,24 @@ export interface modeItemProps {
 	type: string;
 	onChange: (value: modeItemProps['data']) => void;
 	middlewareType: string;
+	isActiveActive?: boolean;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
-	const { data, clusterId, namespace, type, onChange, middlewareType } =
-		props;
+	const {
+		data,
+		clusterId,
+		namespace,
+		type,
+		onChange,
+		middlewareType,
+		isActiveActive
+	} = props;
 	const params: any = useParams();
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
 	const onCreate = (value: any) => {
+		console.log(value);
 		onChange(value);
 		setModifyData({
 			...modifyData,
@@ -103,8 +112,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						{data.storageClass && data.storageClass !== '' && (
 							<li>
 								<span>
-									{data.storageClass ||
-										data.storageClass.split('/')[1]}
+									{typeof data.storageClass === 'string'
+										? data.storageClass
+										: data.storageClass.join(',')}
 									：
 								</span>
 								<span>{data.storageQuota} GB</span>
@@ -133,6 +143,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						type={type}
 						onChange={onChange}
 						inputChange={inputChange}
+						isActiveActive={isActiveActive}
 					/>
 				)}
 			</div>

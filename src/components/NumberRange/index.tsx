@@ -3,10 +3,11 @@ import './index.scss';
 interface NumberRangeProps {
 	unit: string;
 	numberRange: (value: string[]) => void;
+	style?: React.CSSProperties;
 }
 
 export default function NumberRange(props: NumberRangeProps): JSX.Element {
-	const { unit, numberRange } = props;
+	const { unit, numberRange, style } = props;
 	const [start, setStart] = useState<string>('');
 	const [end, setEnd] = useState<string>('');
 	const handleChange = (
@@ -26,7 +27,7 @@ export default function NumberRange(props: NumberRangeProps): JSX.Element {
 	};
 
 	return (
-		<div id="number-range">
+		<div id="number-range" style={style}>
 			<input
 				className="number-range-input left"
 				type="number"
@@ -42,7 +43,7 @@ export default function NumberRange(props: NumberRangeProps): JSX.Element {
 				onChange={(e) => handleChange(e, 'end')}
 				onBlur={onBlur}
 			></input>
-			<div className="number-range-unit">{unit}</div>
+			{unit && <div className="number-range-unit">{unit}</div>}
 		</div>
 	);
 }

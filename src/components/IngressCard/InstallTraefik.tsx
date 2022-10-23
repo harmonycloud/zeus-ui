@@ -29,6 +29,7 @@ import { getNodePort, getNodeTaint } from '@/services/middleware';
 import { getVIPs, checkTraefikPort } from '@/services/ingress';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import './index.scss';
+import NumberRange from '../NumberRange';
 
 interface InstallTraefikProps {
 	visible: boolean;
@@ -79,6 +80,8 @@ export default function InstallTraefik(
 	const [startPort, setStartPort] = useState<number>();
 	const [ports, setPorts] = useState<string>();
 	const [nodeArray, setNodeArray] = useState<string[]>([]);
+	const [traefikPortList, setTraefikPortList] = useState<any[]>([]);
+	const [portRange, setPortRange] = useState<any>();
 	useEffect(() => {
 		getNodePort({ clusterId }).then((res) => {
 			if (res.success) {
@@ -148,7 +151,8 @@ export default function InstallTraefik(
 				clusterId,
 				...values,
 				type: 'traefik',
-				skipPortConflict: skipPortConflict
+				skipPortConflict: skipPortConflict,
+				traefikPortList: traefikPortList
 			};
 			if (!skipPortConflict) {
 				if (ports && ports !== '[]') {
@@ -223,6 +227,31 @@ export default function InstallTraefik(
 			setVIPNoAlive(true);
 		} else {
 			setVIPNoAlive(false);
+		}
+	};
+	const numberRange = (value: string[]) => {
+		if (value[0] !== '' && value[1] !== '') {
+			if (Number(value[0]) > Number(value[1])) {
+				notification.error({
+					message: '失败',
+					description: '端口范围设置错误！'
+				});
+				return;
+			}
+			let result: any = {
+				endPort: value[1],
+				startPort: value[0]
+			};
+			traefikPortList.forEach((item) => {
+				if (result.startPort < item.endPort) {
+					notification.error({
+						message: '失败',
+						description: '端口范围设置错误！'
+					});
+					result = {};
+				}
+			});
+			setPortRange(result);
 		}
 	};
 
@@ -545,50 +574,64 @@ export default function InstallTraefik(
 						</FormItem>
 					</>
 				)}
-				<FormItem
-					label={
-						<Space>
-							<span>起始服务端口</span>
-							<Tooltip title="默认选择从起始服务端口开始的100个端口为服务端口组">
-								<QuestionCircleOutlined
-									style={{ marginRight: 8 }}
-								/>
-							</Tooltip>
-						</Space>
-					}
-					required
-					rules={[
-						{ required: true, message: '请输入起始服务端口' },
-						{
-							min: Number(nodeArray[0]),
-							type: 'number',
-							max: Number(nodeArray[1]),
-							message: `请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`
-						}
-					]}
-				>
-					<FormItem
-						noStyle
-						name="startPort"
-						rules={[
-							{ required: true, message: '请输入起始服务端口' },
-							{
-								min: Number(nodeArray[0]),
-								type: 'number',
-								max: Number(nodeArray[1]),
-								message: `请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`
-							}
-						]}
-					>
-						<InputNumber
+				<FormItem label="服务端口选择" required>
+					<FormItem noStyle name="rangePort">
+						{/* <InputNumber
 							value={startPort}
 							onChange={onInputNumberChange}
 							style={{ width: '330px', marginRight: 8 }}
 							placeholder={`请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`}
-						/>
+						/> */}
+						<Space>
+							<NumberRange
+								style={{ width: '300px' }}
+								unit={''}
+								numberRange={numberRange}
+							/>
+							<Button
+								onClick={() => {
+									if (JSON.stringify(portRange) !== '{}') {
+										for (
+											let index = 0;
+											index < traefikPortList.length;
+											index++
+										) {
+											if (
+												portRange.startPort <
+												traefikPortList[index].endPort
+											) {
+												notification.error({
+													message: '失败',
+													description:
+														'端口范围设置错误！'
+												});
+												return;
+											}
+										}
+										checkTraefikPort({
+											clusterId,
+											startPort: portRange.startPort,
+											endPort: portRange.endPort
+										}).then((res) => {
+											if (res.success) {
+												const result = portRange;
+												result.ports = res.data;
+												setTraefikPortList([
+													...traefikPortList,
+													result
+												]);
+											}
+										});
+									}
+								}}
+								shape="default"
+								icon={<PlusOutlined />}
+							/>
+						</Space>
 					</FormItem>
 					<FormItem noStyle name="skipPortConflict">
 						<Checkbox
+							style={{ marginLeft: 24 }}
 							checked={skipPortConflict}
 							onChange={onChange}
 						>
@@ -596,7 +639,71 @@ export default function InstallTraefik(
 						</Checkbox>
 					</FormItem>
 				</FormItem>
-				{startPort && startPort >= 30000 && startPort <= 65435 && (
+				{traefikPortList.length > 0 && (
+					<Row>
+						<Col span={3}></Col>
+						<Col span={21}>
+							<div className="tag-box">
+								<Space wrap>
+									{traefikPortList.map((item: any) => (
+										<Tag
+											key={`${item.startPort}-${item.endPort}`}
+											closable
+											style={{
+												padding: '4px 10px'
+											}}
+											onClose={() => {
+												const list =
+													traefikPortList.filter(
+														(i) =>
+															`${i.startPort}-${i.endPort}` !==
+															`${item.startPort}-${item.endPort}`
+													);
+												setTraefikPortList(list);
+											}}
+										>
+											{item.startPort}-{item.endPort}
+										</Tag>
+									))}
+								</Space>
+							</div>
+						</Col>
+					</Row>
+				)}
+				{traefikPortList.length > 0 &&
+					traefikPortList.map((item, index) => {
+						return (
+							<Row key={index}>
+								<Col span={5}></Col>
+								<Col>
+									<div>
+										当前选择的服务端口组是
+										{item.startPort}-{item.endPort}
+									</div>
+									{item.ports === '[]' && (
+										<div>其中没有端口被占用！</div>
+									)}
+									{item.ports &&
+										!skipPortConflict &&
+										item.ports !== '[]' && (
+											<div style={{ color: '#ff4d4f' }}>
+												其中{item.ports}
+												端口号被占用，请重新输入
+											</div>
+										)}
+									{item.ports &&
+										skipPortConflict &&
+										item.ports !== '[]' && (
+											<div style={{ color: '#ff4d4f' }}>
+												其中{item.ports}
+												端口号被占用，已跳过冲突端口
+											</div>
+										)}
+								</Col>
+							</Row>
+						);
+					})}
+				{/* (
 					<Row>
 						<Col span={5}></Col>
 						<Col>
@@ -620,7 +727,7 @@ export default function InstallTraefik(
 							)}
 						</Col>
 					</Row>
-				)}
+				)} */}
 			</Form>
 		</Modal>
 	);

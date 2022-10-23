@@ -332,6 +332,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			let storageClassTemp = '';
+			if (typeof values.storageClass === 'string') {
+				storageClassTemp = values.storageClass.split('/')[0];
+			} else {
+				storageClassTemp = values.storageClass
+					.map((item: string) => item.split('/')[0])
+					.join(',');
+			}
 			const sendData: PostgresqlSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -355,7 +363,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 							mode.charAt(3) === 'n'
 								? replicaCount
 								: Number(mode.charAt(3)),
-						storageClassName: values.storageClass.split('/')[0],
+						storageClassName: storageClassTemp,
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -446,6 +454,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				sendData.quota.postgresql.cpu = values.cpu;
 				sendData.quota.postgresql.memory = values.memory + 'Gi';
 			}
+			// console.log(sendData);
 			if (middlewareName) {
 				const result = {
 					clusterId: globalCluster.id,
@@ -524,6 +533,19 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			let storageClassTemp: string | string[];
+			if (res.data.quota.postgresql.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					res.data.quota.postgresql.storageClassAliasName.split(',');
+				storageClassTemp = res.data.quota.postgresql.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassTemp = `${res.data.quota.postgresql.storageClassName}/${res.data.quota.postgresql.storageClassAliasName}`;
+			}
 			form.setFieldsValue({
 				name: res.data.name + '-backup',
 				labels: res.data.labels,
@@ -536,7 +558,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
 				),
 				mirrorImageId: res.data.mirrorImage,
-				storageClass: res.data.quota.postgresql.storageClassName,
+				storageClass: storageClassTemp,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.postgresql.storageClassQuota,
 					'Gi'
@@ -617,6 +639,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 	}, [globalCluster, globalNamespace]);
+	const judgeActiveActive = (namespaceTemp: string) => {
+		const temp = namespaceList.filter((item) => {
+			if (item.name === namespaceTemp) {
+				return item;
+			}
+		});
+		return temp[0]?.availableDomain || false;
+	};
 	// * 结果页相关
 	if (commitFlag) {
 		return (
@@ -1390,7 +1420,18 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<StorageQuota clusterId={globalCluster.id} />
+								<StorageQuota
+									clusterId={globalCluster.id}
+									isActiveActive={
+										globalNamespace.name === '*'
+											? judgeActiveActive(
+													form.getFieldValue(
+														'namespace'
+													)
+											  )
+											: globalNamespace.availableDomain
+									}
+								/>
 							</ul>
 						</div>
 					</FormBlock>

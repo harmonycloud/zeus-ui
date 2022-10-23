@@ -1,6 +1,6 @@
-const apiUrl = 'http://10.10.103.237:31088/api';
-const userUrl = 'http://10.10.103.237:31088/api';
-const wsUrl = 'wss://10.10.103.237:31088/ws';
+const apiUrl = 'http://10.10.102.125:31088/api';
+const userUrl = 'http://10.10.102.125:31088/api';
+const wsUrl = 'wss://10.10.102.125:31088/ws';
 // const apiUrl = 'http://10.10.136.64:8089';
 // const userUrl = 'http://10.10.136.64:8089';
 // const wsUrl = 'ws://10.10.136.64:8089/ws';

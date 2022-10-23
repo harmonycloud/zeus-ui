@@ -35,7 +35,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		namespace,
 		type,
 		inputChange,
-		middlewareType
+		middlewareType,
+		isActiveActive
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [storageClassList, setStorageClassList] = useState<
@@ -60,7 +61,6 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 	}, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
 			const value = { ...modifyData, ...values };
 			onCreate(value);
 		});
@@ -266,7 +266,10 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 						</div>
 					</li>
 					{type !== 'kibana' && type !== 'sentinel' && (
-						<StorageQuota clusterId={clusterId} />
+						<StorageQuota
+							clusterId={clusterId}
+							isActiveActive={isActiveActive}
+						/>
 					)}
 				</ul>
 			</Form>
