@@ -261,6 +261,21 @@ export interface MysqlColItem {
 	primaryKey: boolean;
 	size: number;
 }
+export interface includesCol {
+	columnName: string;
+	indexType: string;
+	keyName: string;
+	subPart: number;
+}
+export interface IndexItem {
+	index: string;
+	indexColumns: includesCol[];
+	storageType: string;
+	type: string;
+}
+export interface getIndexRes extends resProps {
+	data: IndexItem[];
+}
 export interface getColsResProps extends resProps {
 	data: MysqlColItem[];
 }
@@ -332,6 +347,7 @@ export interface PgsqlColItem {
 	array: boolean;
 	collate: string;
 	column: string;
+	columnName: string;
 	comment: string;
 	databaseName: string;
 	dateType: string;

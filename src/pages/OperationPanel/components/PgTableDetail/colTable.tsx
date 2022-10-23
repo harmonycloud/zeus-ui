@@ -1,7 +1,8 @@
-import { Table } from 'antd';
+import { notification, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { MysqlColItem, PgsqlTableItem } from '../../index.d';
+import { PgsqlColItem, PgsqlTableItem } from '../../index.d';
 import { CheckOutlined } from '@ant-design/icons';
+import { getPgCols } from '@/services/operatorPanel';
 interface ColTableProps {
 	record: PgsqlTableItem;
 	clusterId: string;
@@ -11,20 +12,34 @@ interface ColTableProps {
 }
 export default function ColTable(props: ColTableProps): JSX.Element {
 	const { record, clusterId, namespace, middlewareName, dbName } = props;
-	const [data, setData] = useState<MysqlColItem[]>([]);
+	const [data, setData] = useState<PgsqlColItem[]>([]);
 	useEffect(() => {
-		// TODO pgsql 列数据获取
+		getPgCols({
+			clusterId,
+			namespace,
+			middlewareName,
+			databaseName: dbName,
+			schemaName: record.schemaName,
+			tableName: record.tableName
+		}).then((res) => {
+			if (res.success) {
+				setData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
 	}, []);
 	const columns = [
 		{
 			title: '#',
-			dataIndex: 'uid',
-			key: 'uid',
-			width: 50,
-			render: (text: any, record: MysqlColItem, index: number) =>
-				index + 1
+			dataIndex: 'num',
+			key: 'num',
+			width: 50
 		},
-		{ title: '字段名', dataIndex: 'column', key: 'column' },
+		{ title: '字段名', dataIndex: 'columnName', key: 'columnName' },
 		{
 			title: '类型',
 			dataIndex: 'dateType',
@@ -42,20 +57,21 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 		},
 		{
 			title: '自增',
-			dataIndex: 'autoIncrement',
-			key: 'autoIncrement',
+			dataIndex: 'inc',
+			key: 'inc',
 			width: 80,
 			render: (text: any) => text && <CheckOutlined />
 		},
-		{ title: '默认值', dataIndex: 'columnDefault', key: 'columnDefault' }
+		{ title: '默认值', dataIndex: 'defaultValue', key: 'defaultValue' }
 	];
 	return (
 		<Table
 			size="small"
-			rowKey="uid"
+			rowKey="columnName"
 			columns={columns}
 			dataSource={data}
 			pagination={false}
+			scroll={{ y: 200 }}
 		/>
 	);
 }

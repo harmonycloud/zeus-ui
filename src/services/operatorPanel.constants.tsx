@@ -16,7 +16,7 @@ export const getDbTables = `${api}/clusters/{clusterId}/namespaces/{namespace}/m
 // * 查看表所有列
 export const getCols = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/columns`;
 // * 查看表所有索引
-// export const gerIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}`
+export const gerIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
 // * 查询用户列表
 export const getMysqlUsers = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/users`;
 // * pgsql 获取模式列表 / 创建模式

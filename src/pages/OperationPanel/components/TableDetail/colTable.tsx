@@ -68,6 +68,7 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 			columns={columns}
 			dataSource={data}
 			pagination={false}
+			scroll={{ y: 200 }}
 		/>
 	);
 }

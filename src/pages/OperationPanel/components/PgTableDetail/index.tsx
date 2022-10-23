@@ -22,7 +22,6 @@ export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 			schemaName
 		};
 		getPgTables(sendData).then((res) => {
-			console.log(res);
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
@@ -96,6 +95,12 @@ export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 			expandable={{ expandedRowRender }}
 			dataSource={dataSource}
 			columns={columns}
+			scroll={{
+				y:
+					document.getElementsByClassName(
+						'ant-tabs-content-holder'
+					)[0].clientHeight - 50
+			}}
 		/>
 	);
 }

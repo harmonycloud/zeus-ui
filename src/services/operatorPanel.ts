@@ -20,6 +20,7 @@ import {
 	getColsResProps,
 	GetDatabasesRes,
 	GetEncodingRes,
+	getIndexRes,
 	getMysqlUserResProps,
 	getPgColParamsProps,
 	getPgColRes,
@@ -100,6 +101,11 @@ export const getCols: (
 	params: getColParamsProps
 ) => Promise<getColsResProps> = (params: getColParamsProps) => {
 	return Axios.get(URL.getCols, params);
+};
+export const gerIndexs: (params: getColParamsProps) => Promise<getIndexRes> = (
+	params: getColParamsProps
+) => {
+	return Axios.get(URL.gerIndexs, params);
 };
 export const getMysqlUsers: (
 	params: SendDataParamsProps

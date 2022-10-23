@@ -103,6 +103,12 @@ export default function TableDetail(props: TableDetailProps): JSX.Element {
 			expandable={{ expandedRowRender }}
 			dataSource={dataSource}
 			columns={columns}
+			scroll={{
+				y:
+					document.getElementsByClassName(
+						'ant-tabs-content-holder'
+					)[0].clientHeight - 70
+			}}
 		/>
 	);
 }
