@@ -189,6 +189,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [relationMirrorList, setRelationMirrorList] = useState<MirrorItem[]>(
 		[]
 	);
+	const [relationActive, setRelationActive] = useState<boolean>(false);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 
@@ -1007,6 +1008,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalNamespace]);
 
 	const handleChange = (value: any, data: any) => {
+		console.log(value, data);
 		setRelationClusterId(value[0]);
 		getMirror({
 			clusterId: value[0]
@@ -1015,12 +1017,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				setRelationMirrorList(res.data.list);
 			}
 		});
-		form.setFieldsValue({ relationStorageClass: '' });
+		// form.setFieldsValue({ relationStorageClass: null });
 		if (value[0] === globalCluster.id) {
 			setReClusterFlag(true);
 		} else {
 			setReClusterFlag(false);
 		}
+		setRelationActive(data[1].availableDomain);
 		setRelationNamespace(value[1]);
 	};
 	const onLoadData = (selectedOptions: any) => {
@@ -1035,7 +1038,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				targetOption.children = res.data.map((item: namespaceType) => {
 					return {
 						label: item.aliasName || item.name,
-						value: item.name
+						value: item.name,
+						availableDomain: item.availableDomain
 					};
 				});
 			} else {
@@ -2155,7 +2159,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									</li>
 									{backupFlag && (
 										<>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span className="ne-required">
 														灾备服务集群
@@ -2191,7 +2198,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													)}
 												</div>
 											</li>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span className="ne-required">
 														服务名称
@@ -2221,7 +2231,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 												</div>
 											</li>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span>显示名称</span>
 												</label>
@@ -2253,7 +2266,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 												</div>
 											</li>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span
 														className="ne-required"
@@ -2297,6 +2313,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<StorageQuota
 												clusterId={relationClusterId}
 												type="relation"
+												isActiveActive={relationActive}
 											/>
 										</>
 									)}
