@@ -9,7 +9,8 @@ import {
 	Popover,
 	Space,
 	Spin,
-	Table
+	Table,
+	Alert
 } from 'antd';
 import { ListCard, ListCardItem, ListPanel } from '@/components/ListCard';
 import ArrowLine from '@/components/ArrowLine';
@@ -335,6 +336,13 @@ export default function ServiceDetailIngress(
 	}
 	return (
 		<>
+			<Alert
+				message={'请单击服务暴露项展开并查看已暴露的域名或IP+端口号'}
+				type="info"
+				showIcon
+				closable
+				style={{ marginBottom: '16px' }}
+			/>
 			<Spin spinning={spinning}>
 				<ProList operation={Operation}>
 					{dataSource.map((item: serviceAvailableItemProps) => {

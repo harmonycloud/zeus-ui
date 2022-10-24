@@ -267,6 +267,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 		};
 		replicas?: number;
 		group?: number;
+		autoCreateTopicEnable: boolean;
 	};
 	mirrorImageId?: any;
 	ingresses?: any;
