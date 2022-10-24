@@ -233,7 +233,7 @@ const getGaugeOption = (data: number, name: string) => {
 						]
 					}
 				},
-				center: ['50%', '70%'],
+				center: ['50%', '75%'],
 				radius: '145%',
 				pointer: {
 					icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
