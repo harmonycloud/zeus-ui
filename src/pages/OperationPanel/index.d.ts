@@ -272,6 +272,7 @@ export interface IndexItem {
 	indexColumns: includesCol[];
 	storageType: string;
 	type: string;
+	comment: string;
 }
 export interface getIndexRes extends resProps {
 	data: IndexItem[];

@@ -10,6 +10,7 @@ import {
 } from '@/pages/ServiceList/service.list';
 import { encrypt } from '@/utils/utils';
 import storage from '@/utils/storage';
+import { getRsaKey } from '@/services/user';
 const { Option } = Select;
 export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 	const {
@@ -24,6 +25,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 	} = props;
 	const [form] = Form.useForm();
 	const [data, setData] = useState<serviceListItemProps>();
+	const [publicKey, setPublicKey] = useState<string>('');
 	useEffect(() => {
 		getList({
 			projectId: projectId,
@@ -36,9 +38,17 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 				setData(res.data[0]);
 			}
 		});
+		getRsaKey().then((res) => {
+			if (res.success) {
+				const pub = `-----BEGIN PUBLIC KEY-----${res.data}-----END PUBLIC KEY-----`;
+				storage.setSession('rsa', pub);
+				setPublicKey(pub);
+			}
+		});
 	}, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
+			console.log(storage.getSession('rsa'));
 			const sendData = {
 				clusterId,
 				middlewareName: values.middlewareName,
@@ -49,6 +59,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					encrypt(values.password, storage.getSession('rsa')) ||
 					values.password
 			};
+			console.log(sendData);
 			authLogin(sendData).then((res) => {
 				if (res.success) {
 					notification.success({

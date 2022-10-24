@@ -18,7 +18,7 @@ export default function IndexTable(props: IndexTableProps): JSX.Element {
 		{ title: '索引名', dataIndex: 'index', key: 'index' },
 		{ title: '索引类型', dataIndex: 'type', key: 'type' },
 		{ title: '包含列', dataIndex: 'includeCol', key: 'includeCol' },
-		{ title: '备注', dataIndex: 'remark', key: 'remark' }
+		{ title: '备注', dataIndex: 'comment', key: 'comment' }
 	];
 	useEffect(() => {
 		gerIndexs({
@@ -41,7 +41,7 @@ export default function IndexTable(props: IndexTableProps): JSX.Element {
 	return (
 		<Table
 			dataSource={data}
-			rowKey="uid"
+			rowKey="index"
 			columns={columns}
 			pagination={false}
 			scroll={{ y: 200 }}

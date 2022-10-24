@@ -26,7 +26,8 @@ import {
 	MysqlColItem,
 	DatabaseItem,
 	PgsqslDatabaseItem,
-	SchemaItem
+	SchemaItem,
+	PgsqlTableItem
 } from '../index.d';
 import ModeMag from '../ModeMag';
 import PgsqlEditTable from '../components/PgsqlEditTable';
@@ -34,9 +35,12 @@ import {
 	getDbTables,
 	getCols,
 	getAllDatabase,
-	getSchemas
+	getSchemas,
+	getPgTables
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
+import { Key } from 'rc-table/lib/interface';
+import OpenTable from '../components/OpenTable';
 
 const { Content, Sider } = Layout;
 const tableMenuItems = [
@@ -131,6 +135,7 @@ const paneProps: SplitPaneProps = {
 };
 // * sql窗口 模版
 // ! TODO 对模式，数据库，列，表等删除后，左边树图的刷新
+// ! TODO pgsql 进入页面默认选择的schema中，table为空的情况
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
 	const params: ParamsProps = useParams();
@@ -141,10 +146,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
 	const [items, setItems] = useState(initialItems);
 	const [pgsqlExpandedKeys, setPgslqExpandedKeys] = useState<string[]>([]);
+	const [selectDatabase, setSelectDatabase] = useState<string>('');
+	const [selectSchema, setSelectSchema] = useState<string>('');
 	const newTabIndex = useRef(0);
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
-		console.log(newTabIndex);
 		const newActiveKey = `newTab${newTabIndex.current++}`;
 		const newPanes = [...items];
 		newPanes.push({
@@ -182,6 +188,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				return;
 			case 'modeMag': // * pgsql 模式管理
 				add(i, <ModeMag dbName={i} />);
+				return;
+			case 'openTable':
+				add(i, <OpenTable dbName={selectDatabase} tableName={i} />);
 				return;
 			default:
 				break;
@@ -246,6 +255,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							);
 							result.key = index + '';
 							result.value = (item as DatabaseItem).db;
+							result.type = 'database';
 							result.icon = <IconFont type="icon-database" />;
 							return result;
 						});
@@ -295,10 +305,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							result.value = (
 								item as PgsqslDatabaseItem
 							).databaseName;
+							result.type = 'database';
 							result.icon = <IconFont type="icon-database" />;
 							return result;
 						});
+						console.log(list);
 						setPgTreeData(list);
+						setPgslqExpandedKeys([list[0].key]);
+						setSelectDatabase(list[0].value);
 					} else {
 						setPgTreeData([]);
 					}
@@ -310,28 +324,51 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				}
 			});
 		}
-		// * 获取表数据 - pgsql
-		const initPgTable = [
-			{
-				title: (
-					<Dropdown
-						overlay={() => tableMenu('table1')}
-						trigger={['contextMenu']}
-					>
-						<span>table1</span>
-					</Dropdown>
-				),
-				key: '0',
-				icon: <IconFont type="icon-biaoge" />
-			},
-			{
-				title: 'table2',
-				key: '1',
-				icon: <IconFont type="icon-biaoge" />
-			}
-		];
-		setPgTableTreeData(initPgTable);
 	}, []);
+	useEffect(() => {
+		// * 获取表数据 - pgsql
+		if (selectSchema && selectDatabase) {
+			getPgTables({
+				clusterId: params.clusterId,
+				schemaName: selectSchema,
+				databaseName: selectDatabase,
+				namespace: params.namespace,
+				middlewareName: params.name
+			}).then((res) => {
+				if (res.success) {
+					if (res.data.length > 0) {
+						const list = res.data.map(
+							(item: PgsqlTableItem, index: number) => {
+								const result: any = {};
+								result.title = (
+									<Dropdown
+										overlay={() =>
+											tableMenu(item.tableName)
+										}
+										trigger={['contextMenu']}
+									>
+										<span>{item.tableName}</span>
+									</Dropdown>
+								);
+								result.key = index + '';
+								result.icon = <IconFont type="icon-biaoge" />;
+								result.value = item.schemaName;
+								return result;
+							}
+						);
+						setPgTableTreeData(list);
+					} else {
+						setPgTableTreeData([]);
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [selectDatabase, selectSchema]);
 	const mysqlOnLoadData = ({ key, value, children }: any) =>
 		new Promise<void>((resolve) => {
 			console.log(key, value, children);
@@ -368,6 +405,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										</span>
 									);
 									result.key = `${key}-0-${index}`;
+
 									result.icon = (
 										<IconFont type="icon-liebiao" />
 									);
@@ -438,6 +476,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									);
 									result.key = `${value}-${index}`;
 									result.value = item.tableName;
+									result.type = 'table';
 									result.icon = (
 										<IconFont
 											style={{ fontSize: 16 }}
@@ -498,10 +537,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										type="icon-shuzhi"
 									/>
 								);
+								result.value = item.schemaName;
+								result.type = 'schema';
 								result.isLeaf = true;
 								return result;
 							}
 						);
+						setSelectSchema(list[0].value);
 						setPgTreeData((origin) =>
 							updateTreeData(origin, key, list)
 						);
@@ -548,7 +590,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const onChange = (newActiveKey: string) => {
 		setActiveKey(newActiveKey);
 	};
-
 	const remove = (targetKey: string) => {
 		let newActiveKey = activeKey;
 		let lastIndex = -1;
@@ -573,6 +614,15 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			add('new TAb', null);
 		} else {
 			remove(targetKey);
+		}
+	};
+	const pgsqlOnSelect = (selectedKeys: Key[], e: any) => {
+		console.log(selectedKeys, e);
+		if (e.node.type === 'database') {
+			setSelectDatabase(e.node.value);
+			setPgslqExpandedKeys(selectedKeys as string[]);
+		} else {
+			setSelectSchema(e.node.value);
 		}
 	};
 	return (
@@ -632,6 +682,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								showIcon
 								treeData={pgTreeData}
 								loadData={pgsqlOnLoadData}
+								expandedKeys={pgsqlExpandedKeys}
+								onSelect={pgsqlOnSelect}
+								height={
+									document.getElementsByClassName(
+										'sql-console-tree-content'
+									)[0]?.clientHeight
+								}
 							/>
 						</div>
 					</div>
@@ -669,15 +726,20 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				)}
 				{params.type === 'postgresql' && (
 					<SplitPane {...paneProps}>
-						<div style={{ padding: 16 }}>
+						<div style={{ padding: '16px 0px 16px 16px' }}>
 							<Input.Search
-								style={{ marginBottom: 8 }}
+								style={{ marginBottom: 8, paddingRight: 16 }}
 								placeholder="请输入关键字搜索"
 							/>
 							<Tree
 								showIcon
 								treeData={pgTableTreeData}
 								loadData={pgTableOnLoadData}
+								height={
+									document.getElementsByClassName(
+										'sql-console-tree-content'
+									)[0]?.clientHeight - 50
+								}
 							/>
 						</div>
 						<Tabs
