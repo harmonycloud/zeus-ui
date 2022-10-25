@@ -42,6 +42,9 @@ export interface MysqlEditTableProps {
 }
 export interface PgsqlEditTableProps {
 	isEdit?: boolean;
+	dbName: string;
+	schemaName: string;
+	tableName?: string;
 }
 export interface MysqlTableInfoProps {
 	isEdit: boolean;
@@ -63,25 +66,27 @@ export interface MysqlForeignKeyInfoProps {
 export interface PgsqlTableInfoProps {
 	isEdit: boolean;
 	handleChange: (values: any) => void;
+	dbName: string;
+	schemaName: string;
 }
 export interface PgsqlColInfoProps {
-	originData: any[];
+	originData: PgsqlColItem[];
 	handleChange: (values: any) => void;
 }
 export interface PgForeignKeyInfoProps {
-	originData: any[];
+	originData: pgsqlForeignKeyItem[];
 	handleChange: (values: any) => void;
 }
 export interface PgExclusivenessProps {
-	originData: any[];
+	originData: exclusionItem[];
 	handleChange: (values: any) => void;
 }
 export interface PgUniquenessProps {
-	originData: any[];
+	originData: pgsqlUniqueItem[];
 	handleChange: (values: any) => void;
 }
 export interface PgExamineProps {
-	originData: any[];
+	originData: tableCheckItem[];
 	handleChange: (values: any) => void;
 }
 export interface PgInheritProps {
@@ -426,4 +431,76 @@ export interface pgsqlAuthParamsProps extends SendDataParamsProps {
 export interface cancelAuthParamsProps extends AllSendDataParamsProps {
 	username: string;
 	authorityList: PgsqlUserAuthItem[] | MysqlUserAuthItem[];
+}
+export interface getPgsqlExcelParamsProps extends SendDataParamsProps {
+	databaseName: string;
+	schemaName: string;
+	tableName: string;
+}
+export interface getMysqlExcelParamsProps extends SendDataParamsProps {
+	database: string;
+	table: string;
+}
+export interface pgsqlTableDetail {
+	collate: string;
+	columnDtoList: PgsqlColItem[];
+	databaseName: string;
+	description: string;
+	encoding: string;
+	fillFactor: string;
+	oid: string;
+	owner: string;
+	schemaName: string;
+	tableCheckList: tableCheckItem[];
+	tableExclusionList: exclusionItem[];
+	tableForeignKeyList: pgsqlForeignKeyItem[];
+	tableInheritList: inheritItem[];
+	tableName: string;
+	tableUniqueList: pgsqlUniqueItem[];
+	tablespace: string;
+}
+export interface pgsqlTableDetailRes extends resProps {
+	data: pgsqlTableDetail;
+}
+export interface tableCheckItem {
+	name: string;
+	noInherit: boolean;
+	notValid: boolean;
+	oid: string;
+	operator: string;
+}
+export interface exclusionItem {
+	columnName: string;
+	deferrablity: string;
+	indexMethod: string;
+	name: string;
+	oid: string;
+	operator: string;
+	symbol: string;
+}
+export interface pgsqlForeignKeyItem {
+	columnName: string;
+	deferrablity: string;
+	name: string;
+	oid: string;
+	onDelete: string;
+	onUpdate: string;
+	operator: string;
+	targetColumn: string;
+	targetSchema: string;
+	targetTable: string;
+}
+export interface inheritItem {
+	databaseName: string;
+	oid: string;
+	operator: string;
+	schemaName: string;
+	tableName: string;
+}
+export interface pgsqlUniqueItem {
+	columnName: string;
+	deferrablity: string;
+	name: string;
+	oid: string;
+	operator: string;
 }

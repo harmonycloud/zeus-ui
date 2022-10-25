@@ -78,10 +78,10 @@ axios.interceptors.request.use(
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
 		config.headers.mwToken =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvc3RncmVzIiwicGFzc3dvcmQiOiJYOUZoVG5tcFRKIiwiZXhwIjoxNjY2NjgzMDU3LCJpc3MiOiJteS1wcm9qZWN0In0.fkH8iKgjCI5tyJwHIG3w8Er_2DNPcsCM_TKY5X4JUnY';
-		config.headers.mwToken = cache.getSession(MWTOKEN)
-			? cache.getSession(MWTOKEN)
-			: '';
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvc3RncmVzIiwicGFzc3dvcmQiOiJoQ0R2MWNDd3RsIiwiZXhwIjoxNjY2NzY0OTg0LCJpc3MiOiJteS1wcm9qZWN0In0.qYG0VysewSL5-EcPownv_zXeGI7lhOwY4UAQqkmUwoI';
+		// config.headers.mwToken = cache.getSession(MWTOKEN)
+		// 	? cache.getSession(MWTOKEN)
+		// 	: '';
 		config.headers.authType = cache.getLocal(TOKEN) ? 1 : 0;
 		config.headers.projectId =
 			cache.getLocal('project') &&

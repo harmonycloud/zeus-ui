@@ -17,6 +17,8 @@ export const getDbTables = `${api}/clusters/{clusterId}/namespaces/{namespace}/m
 export const getCols = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/columns`;
 // * 查看表所有索引
 export const gerIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
+// * mysql 删除数据表
+export const deleteMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
 // * 查询用户列表
 export const getMysqlUsers = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/users`;
 // * pgsql 获取模式列表 / 创建模式
@@ -49,7 +51,16 @@ export const mysqlAuthDatabase = `${api}/clusters/{clusterId}/namespaces/{namesp
 export const mysqlAuthTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/privilege`;
 // * pgsql 授权
 export const pgsqlAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/users/{username}/authority`;
-
+// * pgsql 导出数据表结构
+export const getPgsqlExcel = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/excel`;
+// * pgsql 导出建表语句
+export const getPgsqlSQL = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/sql`;
+// * mysql 导出数据表结构
+export const getMysqlExcel = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/excelFile`;
+// * mysql 导出建表语句
+export const getMysqlSQL = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/scriptFile`;
+// * pgsql 获取表详情
+export const getPgsqlTableDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}`;
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 // * 合并 查询数据库列表

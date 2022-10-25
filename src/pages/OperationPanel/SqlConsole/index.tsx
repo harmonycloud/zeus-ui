@@ -7,7 +7,8 @@ import {
 	Tabs,
 	Dropdown,
 	Menu,
-	notification
+	notification,
+	Modal
 } from 'antd';
 import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
@@ -36,12 +37,19 @@ import {
 	getCols,
 	getAllDatabase,
 	getSchemas,
-	getPgTables
+	getPgTables,
+	deletePgTables,
+	deleteMysqlTable,
+	getMysqlExcel,
+	getMysqlSQL,
+	getPgsqlExcel,
+	getPgsqlSQL
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
 import { Key } from 'rc-table/lib/interface';
 import OpenTable from '../components/OpenTable';
 
+const { confirm } = Modal;
 const { Content, Sider } = Layout;
 const tableMenuItems = [
 	{
@@ -66,7 +74,7 @@ const tableMenuItems = [
 	},
 	{
 		label: '建表语句',
-		key: 'createSQL'
+		key: 'exportSQL'
 	},
 	{
 		label: '导出表结构',
@@ -81,14 +89,6 @@ const databaseMenuItems = [
 	{
 		label: '查询',
 		key: 'inquire'
-	},
-	{
-		label: '导出建表语句',
-		key: 'exportTableSQL'
-	},
-	{
-		label: '导出数据库表结构',
-		key: 'exportDatabase'
 	}
 ];
 const pgMenuItems = [
@@ -161,7 +161,53 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		setItems(newPanes);
 		setActiveKey(newActiveKey);
 	};
-	const handleMenuClick = (e: MenuInfo, i: string, s?: string) => {
+	// * 导出sql语句
+	const exportSQL = (i: string, fatherNode: string) => {
+		let _url: string;
+		if (params.type === 'mysql') {
+			_url = getMysqlSQL({
+				database: fatherNode,
+				table: i,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			});
+		} else {
+			_url = getPgsqlSQL({
+				databaseName: selectDatabase,
+				schemaName: selectSchema,
+				tableName: i,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			});
+		}
+		window.open(_url);
+	};
+	// * 导出数据表结构
+	const exportTable = (i: string, fatherNode: string) => {
+		let _url: string;
+		if (params.type === 'mysql') {
+			_url = getMysqlExcel({
+				database: fatherNode,
+				table: i,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			});
+		} else {
+			_url = getPgsqlExcel({
+				databaseName: selectDatabase,
+				schemaName: selectSchema,
+				tableName: i,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			});
+		}
+		window.open(_url);
+	};
+	const handleMenuClick = (e: MenuInfo, i: string, fatherNode?: string) => {
 		switch (e.key) {
 			case 'editTable': // * mysql 编辑表
 				add(
@@ -169,7 +215,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					params.type === 'mysql' ? (
 						<MysqlEditTable />
 					) : (
-						<PgsqlEditTable />
+						<PgsqlEditTable
+							dbName={selectDatabase}
+							schemaName={selectSchema}
+							tableName={i}
+						/>
 					)
 				);
 				return;
@@ -179,7 +229,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					params.type === 'mysql' ? (
 						<TableDetail dbName={i} />
 					) : (
-						<PgTableDetail schemaName={i} dbName={s || ''} />
+						<PgTableDetail
+							schemaName={i}
+							dbName={fatherNode || ''}
+						/>
 					)
 				);
 				return;
@@ -191,6 +244,75 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				return;
 			case 'openTable':
 				add(i, <OpenTable dbName={selectDatabase} tableName={i} />);
+				return;
+			case 'deleteTAble':
+				confirm({
+					title: '操作确认',
+					content: `请确认是否删除${i}表格`,
+					onOk: () => {
+						if (params.type === 'mysql') {
+							deleteMysqlTable({
+								table: i,
+								database: fatherNode || '',
+								clusterId: params.clusterId,
+								namespace: params.namespace,
+								middlewareName: params.name
+							}).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '数据表删除成功！'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						} else {
+							deletePgTables({
+								tableName: i,
+								schemaName: selectSchema,
+								databaseName: selectDatabase,
+								clusterId: params.clusterId,
+								namespace: params.namespace,
+								middlewareName: params.name
+							}).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '数据表删除成功！'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						}
+					}
+				});
+				return;
+			case 'exportSQL':
+				exportSQL(i, fatherNode || '');
+				return;
+			case 'exportTable':
+				exportTable(i, fatherNode || '');
+				return;
+			case 'createTable':
+				add(
+					'创建表',
+					params.type === 'mysql' ? (
+						<MysqlEditTable />
+					) : (
+						<PgsqlEditTable
+							dbName={selectDatabase}
+							schemaName={selectSchema}
+						/>
+					)
+				);
 				return;
 			default:
 				break;
@@ -206,11 +328,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		);
 	};
 	// * mysql table menu
-	const tableMenu = (i: any) => {
+	const tableMenu = (i: any, tableName?: string) => {
 		return (
 			<Menu
 				items={tableMenuItems}
-				onClick={(info: MenuInfo) => handleMenuClick(info, i)}
+				onClick={(info: MenuInfo) =>
+					handleMenuClick(info, i, tableName)
+				}
 			/>
 		);
 	};
@@ -405,7 +529,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										</span>
 									);
 									result.key = `${key}-0-${index}`;
-
 									result.icon = (
 										<IconFont type="icon-liebiao" />
 									);
@@ -461,7 +584,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									result.title = (
 										<Dropdown
 											overlay={() =>
-												tableMenu(item.tableName)
+												tableMenu(item.tableName, value)
 											}
 											trigger={['contextMenu']}
 										>
@@ -617,7 +740,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const pgsqlOnSelect = (selectedKeys: Key[], e: any) => {
-		console.log(selectedKeys, e);
 		if (e.node.type === 'database') {
 			setSelectDatabase(e.node.value);
 			setPgslqExpandedKeys(selectedKeys as string[]);

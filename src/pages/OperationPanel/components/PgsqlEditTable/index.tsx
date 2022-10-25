@@ -1,47 +1,58 @@
-import React, { useState } from 'react';
-import { Button, Divider, Space, Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
+import { Button, Divider, notification, Space, Tabs } from 'antd';
 import PgInherit from '../PgInherit';
 import PgsqlTableInfo from '../PgsqlTableInfo';
 import PgsqlColInfo from '../PgsqlColInfo';
 import PgExamine from '../PgExamine';
 import PgUniqueness from '../PgUniqueness';
 import PgForeignKeyInfo from '../PgForeignKeyInfo';
-import { PgsqlEditTableProps } from '../../index.d';
+import {
+	ParamsProps,
+	PgsqlEditTableProps,
+	pgsqlTableDetail
+} from '../../index.d';
 import PgExclusiveness from '../PgExclusiveness';
+import { getPgsqlTableDetail } from '@/services/operatorPanel';
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
-	const { isEdit } = props;
+	const { isEdit, schemaName, dbName, tableName } = props;
+	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
-	const [originData, setOriginData] = useState({
-		info: {},
-		colInfo: [
-			{
-				key: '1',
-				columnName: 'ss',
-				columnType: 'ss',
-				isArray: false,
-				nullable: true,
-				primaryKey: false,
-				default: 'ss',
-				length: 's',
-				description: 's',
-				rule: 'ss'
-			}
-		],
-		foreignKeyInfo: [],
-		exclusiveness: [],
-		uniqueness: [],
-		examine: []
-	});
+	const [originData, setOriginData] = useState<pgsqlTableDetail>();
+	const [data, setData] = useState<pgsqlTableDetail>();
+	useEffect(() => {
+		if (tableName) {
+			getPgsqlTableDetail({
+				databaseName: dbName,
+				tableName: tableName,
+				schemaName: schemaName,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			}).then((res) => {
+				if (res.success) {
+					setOriginData(res.data);
+					setData(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, []);
 	const onChange = (key: string) => {
 		setActiveKey(key);
 	};
 	const infoChange = (values: any, dataIndex: string) => {
-		setOriginData({
-			...originData,
-			[dataIndex]: values
-		});
+		console.log(values, dataIndex);
+		// setOriginData({
+		// 	...originData,
+		// 	[dataIndex]: values
+		// });
 	};
 	const childrenRender = (type: string) => {
 		const componentRender = () => {
@@ -53,50 +64,52 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'info')
 							}
+							dbName={dbName}
+							schemaName={schemaName}
 						/>
 					);
 				case 'colInfo':
 					return (
 						<PgsqlColInfo
-							originData={originData.colInfo}
+							originData={data?.columnDtoList || []}
 							handleChange={(values: any) =>
-								infoChange(values, 'info')
+								infoChange(values, 'columnDtoList')
 							}
 						/>
 					);
 				case 'foreignKeyInfo':
 					return (
 						<PgForeignKeyInfo
-							originData={originData.foreignKeyInfo}
+							originData={data?.tableForeignKeyList || []}
 							handleChange={(values: any) =>
-								infoChange(values, 'foreignKeyInfo')
+								infoChange(values, 'tableForeignKeyList')
 							}
 						/>
 					);
 				case 'exclusiveness':
 					return (
 						<PgExclusiveness
-							originData={originData.exclusiveness}
+							originData={data?.tableExclusionList || []}
 							handleChange={(values: any) =>
-								infoChange(values, 'exclusiveness')
+								infoChange(values, 'tableExclusionList')
 							}
 						/>
 					);
 				case 'uniqueness':
 					return (
 						<PgUniqueness
-							originData={originData.uniqueness}
+							originData={data?.tableUniqueList || []}
 							handleChange={(values: any) =>
-								infoChange(values, 'uniqueness')
+								infoChange(values, 'tableUniqueList')
 							}
 						/>
 					);
 				case 'examine':
 					return (
 						<PgExamine
-							originData={originData.examine}
+							originData={data?.tableCheckList || []}
 							handleChange={(values: any) =>
-								infoChange(values, 'examine')
+								infoChange(values, 'tableCheckList')
 							}
 						/>
 					);

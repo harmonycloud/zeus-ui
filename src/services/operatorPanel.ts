@@ -21,10 +21,12 @@ import {
 	GetDatabasesRes,
 	GetEncodingRes,
 	getIndexRes,
+	getMysqlExcelParamsProps,
 	getMysqlUserResProps,
 	getPgColParamsProps,
 	getPgColRes,
 	getPgDatabaseRes,
+	getPgsqlExcelParamsProps,
 	getPgsqlTableRes,
 	getPgsqlUserResProps,
 	getSchemasParamsProps,
@@ -37,6 +39,7 @@ import {
 	MysqlUserAuthRes,
 	pgsqlAuthParamsProps,
 	pgsqlCreateUserParamsProps,
+	pgsqlTableDetailRes,
 	PgsqlUserAuthRes,
 	PgsqslDatabaseItem,
 	resetPasswordParamsProps,
@@ -106,6 +109,11 @@ export const gerIndexs: (params: getColParamsProps) => Promise<getIndexRes> = (
 	params: getColParamsProps
 ) => {
 	return Axios.get(URL.gerIndexs, params);
+};
+export const deleteMysqlTable: (
+	params: getColParamsProps
+) => Promise<resProps> = (params: getColParamsProps) => {
+	return Axios.delete(URL.deleteMysqlTable, params);
 };
 export const getMysqlUsers: (
 	params: SendDataParamsProps
@@ -196,6 +204,35 @@ export const pgsqlAuthData: (
 	params: pgsqlAuthParamsProps
 ) => Promise<resProps> = (params: pgsqlAuthParamsProps) => {
 	return Axios.json(URL.pgsqlAuth, params, {}, 'POST');
+};
+export const getPgsqlExcel: (params: getPgsqlExcelParamsProps) => string = (
+	params: getPgsqlExcelParamsProps
+) => {
+	const { restUrl } = Axios.restfulAPI(URL.getPgsqlExcel, params);
+	return restUrl;
+};
+export const getPgsqlSQL: (params: getPgsqlExcelParamsProps) => string = (
+	params: getPgsqlExcelParamsProps
+) => {
+	const { restUrl } = Axios.restfulAPI(URL.getPgsqlSQL, params);
+	return restUrl;
+};
+export const getMysqlExcel: (params: getMysqlExcelParamsProps) => string = (
+	params: getMysqlExcelParamsProps
+) => {
+	const { restUrl } = Axios.restfulAPI(URL.getMysqlExcel, params);
+	return restUrl;
+};
+export const getMysqlSQL: (params: getMysqlExcelParamsProps) => string = (
+	params: getMysqlExcelParamsProps
+) => {
+	const { restUrl } = Axios.restfulAPI(URL.getMysqlSQL, params);
+	return restUrl;
+};
+export const getPgsqlTableDetail: (
+	params: getPgsqlExcelParamsProps
+) => Promise<pgsqlTableDetailRes> = (params: getPgsqlExcelParamsProps) => {
+	return Axios.get(URL.getPgsqlTableDetail, params);
 };
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
