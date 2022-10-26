@@ -8,7 +8,12 @@ import {
 	getPgsqlData,
 	getMysqlData
 } from '@/services/operatorPanel';
-import { ParamsProps, PgsqlColItem } from '../../index.d';
+import {
+	MysqlColItem,
+	OrderDtoItem,
+	ParamsProps,
+	PgsqlColItem
+} from '../../index.d';
 
 interface OpenTableProps {
 	dbName: string;
@@ -24,14 +29,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
 			width: 80,
-			fixed: 'left',
-			render: (text: any, record: any, index: number) => index + 1
+			fixed: 'left'
 		}
 	]);
 	const [dataSource, setDataSource] = useState<any[]>([]);
 	const [current, setCurrent] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [total, setTotal] = useState<number>();
+	const [orderDtoList, setOrderDtoList] = useState<OrderDtoItem[]>([]);
 	useEffect(() => {
 		if (params.type === 'mysql') {
 			getCols({
@@ -42,8 +47,23 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 				table: tableName
 			}).then((res) => {
 				if (res.success) {
-					// TODO
-					console.log(res);
+					const list = res.data.map((item: MysqlColItem) => {
+						const result: any = {};
+						result.title = item.column;
+						result.dataIndex = item.column;
+						result.key = item.column;
+						result.width = 150;
+						result.sorter = true;
+						return result;
+					});
+					setColumns([...columns, ...list]);
+					const orderTemps = res.data.map((item: MysqlColItem) => {
+						const result: any = {};
+						result.column = item.column;
+						result.order = '';
+						return result;
+					});
+					setOrderDtoList(orderTemps);
 				}
 			});
 		} else {
@@ -62,9 +82,17 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 						result.dataIndex = item.column;
 						result.key = item.column;
 						result.width = 150;
+						result.sorter = true;
 						return result;
 					});
 					setColumns([...columns, ...list]);
+					const orderTemps = res.data.map((item: PgsqlColItem) => {
+						const result: any = {};
+						result.column = item.column;
+						result.order = '';
+						return result;
+					});
+					setOrderDtoList(orderTemps);
 				}
 			});
 		}
@@ -82,8 +110,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 				orderDtoList: []
 			}).then((res) => {
 				if (res.success) {
-					setTotal(res.data.length);
-					setDataSource(res.data);
+					let list = [];
+					list = res.data.map((item: MysqlColItem, index: number) => {
+						const result: any = item;
+						result.indexInTable = index + 1;
+						return result;
+					});
+					setTotal(list.length);
+					setDataSource(list);
 				}
 			});
 		} else {
@@ -99,8 +133,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 				orderDtoList: []
 			}).then((res) => {
 				if (res.success) {
-					setTotal(res.data.length);
-					setDataSource(res.data.data);
+					let list = [];
+					list = res.data.map((item: PgsqlColItem, index: number) => {
+						const result: any = item;
+						result.indexInTable = index + 1;
+						return result;
+					});
+					setTotal(list.length);
+					setDataSource(list);
 				}
 			});
 		}
@@ -110,10 +150,75 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 		current,
 		pageSize
 	) => {
+		// TODO
 		console.log(current, pageSize);
 	};
 	const onChange: PaginationProps['onChange'] = (page) => {
 		setCurrent(page);
+	};
+	const handleTableChange = (
+		pagination: any,
+		filters: any,
+		sorter: any,
+		extra: any
+	) => {
+		console.log(sorter);
+		const list = [...orderDtoList].map((item: OrderDtoItem) => {
+			if (item.column === sorter.columnKey) {
+				item.order = sorter.order || '';
+			}
+			return item;
+		});
+		setOrderDtoList(list);
+		getData(list);
+	};
+	const getData = (orderList: OrderDtoItem[]) => {
+		if (params.type === 'mysql') {
+			getMysqlData({
+				clusterId: params.clusterId,
+				database: dbName,
+				middlewareName: params.name,
+				namespace: params.namespace,
+				table: tableName,
+				index: current,
+				pageSize: pageSize,
+				orderDtoList: orderList
+			}).then((res) => {
+				if (res.success) {
+					let list = [];
+					list = res.data.map((item: MysqlColItem, index: number) => {
+						const result: any = item;
+						result.indexInTable = index + 1;
+						return result;
+					});
+					setTotal(list.length);
+					setDataSource(list);
+				}
+			});
+		} else {
+			getPgsqlData({
+				clusterId: params.clusterId,
+				databaseName: dbName,
+				middlewareName: params.name,
+				namespace: params.namespace,
+				tableName: tableName,
+				schemaName: schemaName,
+				index: current,
+				pageSize: pageSize,
+				orderDtoList: orderList
+			}).then((res) => {
+				if (res.success) {
+					let list = [];
+					list = res.data.map((item: PgsqlColItem, index: number) => {
+						const result: any = item;
+						result.indexInTable = index + 1;
+						return result;
+					});
+					setTotal(list.length);
+					setDataSource(list);
+				}
+			});
+		}
 	};
 	return (
 		<div style={{ width: '100%' }}>
@@ -121,8 +226,9 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 				size="small"
 				dataSource={dataSource}
 				columns={columns}
-				rowKey="columnName"
+				rowKey="indexInTable"
 				scroll={{ x: 150 * columns.length + 180 }}
+				onChange={handleTableChange}
 				pagination={{
 					size: 'small',
 					current: current,

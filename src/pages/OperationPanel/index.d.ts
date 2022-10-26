@@ -504,3 +504,7 @@ export interface pgsqlUniqueItem {
 	oid: string;
 	operator: string;
 }
+export interface OrderDtoItem {
+	column: string;
+	order: string;
+}

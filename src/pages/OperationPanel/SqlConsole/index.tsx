@@ -8,7 +8,8 @@ import {
 	Dropdown,
 	Menu,
 	notification,
-	Modal
+	Modal,
+	Form
 } from 'antd';
 import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
@@ -43,11 +44,14 @@ import {
 	getMysqlExcel,
 	getMysqlSQL,
 	getPgsqlExcel,
-	getPgsqlSQL
+	getPgsqlSQL,
+	updatePgTable,
+	updateMysqlTable
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
 import { Key } from 'rc-table/lib/interface';
 import OpenTable from '../components/OpenTable';
+import { formItemLayout618 } from '@/utils/const';
 
 const { confirm } = Modal;
 const { Content, Sider } = Layout;
@@ -70,7 +74,7 @@ const tableMenuItems = [
 	},
 	{
 		label: '重命名',
-		key: 'rename'
+		key: 'renameTable'
 	},
 	{
 		label: '建表语句',
@@ -133,15 +137,16 @@ const paneProps: SplitPaneProps = {
 		height: '84%'
 	},
 	pane2Style: {
-		width: 'calc(100% - 200px)'
+		width: 'calc(100% - 200px)',
+		overflow: 'auto'
 	}
 };
 // * sql窗口 模版
 // ! TODO 对模式，数据库，列，表等删除后，左边树图的刷新
-// ! TODO pgsql 进入页面默认选择的schema中，table为空的情况
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
 	const params: ParamsProps = useParams();
+	const [form] = Form.useForm();
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [treeData, setTreeData] = useState<DataNode[]>([]);
 	const [pgTreeData, setPgTreeData] = useState<DataNode[]>([]);
@@ -259,7 +264,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					)
 				);
 				return;
-			case 'deleteTAble':
+			case 'deleteTable':
 				confirm({
 					title: '操作确认',
 					content: `请确认是否删除${i}表格`,
@@ -327,6 +332,65 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						/>
 					)
 				);
+				return;
+			case '':
+				confirm({
+					title: '重命名',
+					content: (
+						<Form
+							form={form}
+							{...formItemLayout618}
+							labelAlign="left"
+						>
+							<Form.Item name="newTableName" label="表名称">
+								<Input />
+							</Form.Item>
+						</Form>
+					),
+					onOk: () => {
+						const sendData: any = {
+							clusterId: params.clusterId,
+							namespace: params.namespace,
+							middlewareName: params.name
+						};
+						if (params.type === 'mysql') {
+							sendData.table = i;
+							sendData.database = fatherNode;
+							sendData.tableName =
+								form.getFieldValue('newTableName');
+							updateMysqlTable(sendData).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '表格重命名成功！'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						} else {
+							sendData.databaseName = selectDatabase;
+							sendData.table = i;
+							sendData.schemaName = selectSchema;
+							updatePgTable(sendData).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '表格重命名成功！'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						}
+					}
+				});
 				return;
 			default:
 				break;
