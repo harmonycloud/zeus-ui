@@ -15,11 +15,12 @@ const basicData = {
 };
 export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 	const { originData, handleChange } = props;
+	console.log(originData);
 	const columns = [
 		{
 			title: '序号',
-			dataIndex: 'indexInTable',
-			key: 'indexInTable',
+			dataIndex: 'num',
+			key: 'num',
 			width: 100,
 			render: (text: any, record: any, index: number) => index + 1
 		},
@@ -33,16 +34,16 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		},
 		{
 			title: '类型',
-			dataIndex: 'columnType',
-			key: 'columnType',
+			dataIndex: 'dateType',
+			key: 'dateType',
 			editable: true,
 			width: 150,
 			componentType: 'select'
 		},
 		{
 			title: '数组',
-			dataIndex: 'isArray',
-			key: 'isArray',
+			dataIndex: 'array',
+			key: 'array',
 			editable: true,
 			width: 50,
 			componentType: 'checkbox'
@@ -65,32 +66,32 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		},
 		{
 			title: '默认值',
-			dataIndex: 'default',
-			key: 'default',
+			dataIndex: 'defaultValue',
+			key: 'defaultValue',
 			editable: true,
 			width: 150,
 			componentType: 'string'
 		},
 		{
 			title: '长度',
-			dataIndex: 'length',
-			key: 'length',
+			dataIndex: 'size',
+			key: 'size',
 			editable: true,
 			width: 100,
 			componentType: 'string'
 		},
 		{
 			title: '备注',
-			dataIndex: 'description',
-			key: 'description',
+			dataIndex: 'comment',
+			key: 'comment',
 			editable: true,
 			width: 150,
 			componentType: 'string'
 		},
 		{
 			title: '校验规则',
-			dataIndex: 'rule',
-			key: 'rule',
+			dataIndex: 'collate',
+			key: 'collate',
 			editable: true,
 			width: 150,
 			componentType: 'select'

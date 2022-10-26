@@ -60,12 +60,12 @@ export default function PgsqlEditTable(
 				case 'basicInfo':
 					return (
 						<PgsqlTableInfo
-							isEdit={isEdit || false}
 							handleChange={(values: any) =>
 								infoChange(values, 'info')
 							}
 							dbName={dbName}
 							schemaName={schemaName}
+							data={data}
 						/>
 					);
 				case 'colInfo':
@@ -98,7 +98,7 @@ export default function PgsqlEditTable(
 				case 'uniqueness':
 					return (
 						<PgUniqueness
-							originData={data?.tableUniqueList || []}
+							originData={data}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableUniqueList')
 							}
@@ -116,7 +116,7 @@ export default function PgsqlEditTable(
 				case 'inherit':
 					return (
 						<PgInherit
-							isEdit={isEdit || false}
+							data={data}
 							handleChange={(values: any) =>
 								infoChange(values, 'inherit')
 							}

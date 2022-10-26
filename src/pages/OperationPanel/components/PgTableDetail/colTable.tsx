@@ -10,7 +10,7 @@ interface ColTableProps {
 	middlewareName: string;
 	dbName: string;
 }
-export default function ColTable(props: ColTableProps): JSX.Element {
+export default function PgColTable(props: ColTableProps): JSX.Element {
 	const { record, clusterId, namespace, middlewareName, dbName } = props;
 	const [data, setData] = useState<PgsqlColItem[]>([]);
 	useEffect(() => {
@@ -23,6 +23,7 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 			tableName: record.tableName
 		}).then((res) => {
 			if (res.success) {
+				console.log(res);
 				setData(res.data);
 			} else {
 				notification.error({

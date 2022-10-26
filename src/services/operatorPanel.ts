@@ -234,6 +234,12 @@ export const getPgsqlTableDetail: (
 ) => Promise<pgsqlTableDetailRes> = (params: getPgsqlExcelParamsProps) => {
 	return Axios.get(URL.getPgsqlTableDetail, params);
 };
+export const getMysqlData = (params: any) => {
+	return Axios.json(URL.getMysqlData, params, {}, 'POST');
+};
+export const getPgsqlData = (params: any) => {
+	return Axios.json(URL.getPgsqlData, params, {}, 'POST');
+};
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 export const getAllDatabase: (
