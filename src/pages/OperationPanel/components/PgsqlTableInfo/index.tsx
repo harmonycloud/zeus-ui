@@ -18,7 +18,8 @@ const { Option } = Select;
 export default function PgsqlTableInfo(
 	props: PgsqlTableInfoProps
 ): JSX.Element {
-	const { isEdit, handleChange, dbName } = props;
+	const { handleChange, dbName, data } = props;
+	console.log(data);
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
 	const [schemas, setSchemas] = useState<SchemaItem[]>([]);
@@ -47,10 +48,18 @@ export default function PgsqlTableInfo(
 		});
 	}, []);
 	useEffect(() => {
-		if (isEdit) {
-			// TODO 编辑回显
+		console.log(data);
+		if (data) {
+			form.setFieldsValue({
+				tableName: data.tableName,
+				owner: data.owner,
+				schemaName: data.schemaName,
+				tablespace: data.tablespace,
+				fillFactor: data.fillFactor,
+				description: data.description
+			});
 		}
-	}, [isEdit]);
+	}, [data]);
 	const onValuesChange = (changedValues: any, allValues: any) => {
 		handleChange(allValues);
 	};

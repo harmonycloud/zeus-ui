@@ -64,10 +64,10 @@ export interface MysqlForeignKeyInfoProps {
 	handleChange: (values: any) => void;
 }
 export interface PgsqlTableInfoProps {
-	isEdit: boolean;
 	handleChange: (values: any) => void;
 	dbName: string;
 	schemaName: string;
+	data: pgsqlTableDetail | undefined;
 }
 export interface PgsqlColInfoProps {
 	originData: PgsqlColItem[];
@@ -82,7 +82,7 @@ export interface PgExclusivenessProps {
 	handleChange: (values: any) => void;
 }
 export interface PgUniquenessProps {
-	originData: pgsqlUniqueItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 }
 export interface PgExamineProps {
@@ -90,7 +90,7 @@ export interface PgExamineProps {
 	handleChange: (values: any) => void;
 }
 export interface PgInheritProps {
-	isEdit: boolean;
+	data: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 }
 export interface consoleUser {

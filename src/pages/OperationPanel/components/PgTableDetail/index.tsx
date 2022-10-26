@@ -5,7 +5,7 @@ import Actions from '@/components/Actions';
 import { ParamsProps, PgsqlTableItem, PgTableDetailProps } from '../../index.d';
 import { getPgTables } from '@/services/operatorPanel';
 import { useEffect } from 'react';
-import ColTable from './colTable';
+import PgColTable from './colTable';
 
 const LinkButton = Actions.LinkButton;
 
@@ -75,7 +75,7 @@ export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 						label: '列',
 						key: 'col',
 						children: (
-							<ColTable
+							<PgColTable
 								record={record}
 								clusterId={params.clusterId}
 								namespace={params.namespace}

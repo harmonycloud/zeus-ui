@@ -131,6 +131,9 @@ const paneProps: SplitPaneProps = {
 	minSize: 200,
 	style: {
 		height: '84%'
+	},
+	pane2Style: {
+		width: 'calc(100% - 200px)'
 	}
 };
 // * sql窗口 模版
@@ -243,7 +246,18 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(i, <ModeMag dbName={i} />);
 				return;
 			case 'openTable':
-				add(i, <OpenTable dbName={selectDatabase} tableName={i} />);
+				add(
+					i,
+					params.type === 'mysql' ? (
+						<OpenTable dbName={fatherNode || ''} tableName={i} />
+					) : (
+						<OpenTable
+							dbName={selectDatabase}
+							tableName={i}
+							schemaName={selectSchema}
+						/>
+					)
+				);
 				return;
 			case 'deleteTAble':
 				confirm({
@@ -349,106 +363,108 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	useEffect(() => {
 		// * 获取数据库列表的数据 - mysql
-		const sendData = {
-			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params.name,
-			type: params.type
-		};
-		if (params.type === 'mysql') {
-			getAllDatabase(sendData).then((res) => {
-				if (res.success) {
-					if (res.data.length > 0) {
-						const list = res.data.map((item, index) => {
-							const result: any = {};
-							result.title = (
-								<Dropdown
-									overlay={() =>
-										menu((item as DatabaseItem).db)
-									}
-									trigger={['contextMenu']}
-								>
-									<span
-										title={(item as DatabaseItem).db}
-										className="text-overflow"
-										style={{ width: '140px' }}
-									>
-										{(item as DatabaseItem).db}
-									</span>
-								</Dropdown>
-							);
-							result.key = index + '';
-							result.value = (item as DatabaseItem).db;
-							result.type = 'database';
-							result.icon = <IconFont type="icon-database" />;
-							return result;
-						});
-						setTreeData(list);
-					} else {
-						setTreeData([]);
-					}
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
-			});
-		} else {
-			getAllDatabase(sendData).then((res) => {
-				if (res.success) {
-					if (res.data.length > 0) {
-						const list = res.data.map((item, index) => {
-							const result: any = {};
-							result.title = (
-								<Dropdown
-									overlay={() =>
-										pgMenu(
-											(item as PgsqslDatabaseItem)
-												.databaseName
-										)
-									}
-									trigger={['contextMenu']}
-								>
-									<span
-										title={
-											(item as PgsqslDatabaseItem)
-												.databaseName
+		if (currentUser) {
+			const sendData = {
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				type: params.type
+			};
+			if (params.type === 'mysql') {
+				getAllDatabase(sendData).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const list = res.data.map((item, index) => {
+								const result: any = {};
+								result.title = (
+									<Dropdown
+										overlay={() =>
+											menu((item as DatabaseItem).db)
 										}
-										className="text-overflow"
-										style={{ width: '140px' }}
+										trigger={['contextMenu']}
 									>
-										{
-											(item as PgsqslDatabaseItem)
-												.databaseName
-										}
-									</span>
-								</Dropdown>
-							);
-							result.key = index + '';
-							result.value = (
-								item as PgsqslDatabaseItem
-							).databaseName;
-							result.type = 'database';
-							result.icon = <IconFont type="icon-database" />;
-							return result;
-						});
-						console.log(list);
-						setPgTreeData(list);
-						setPgslqExpandedKeys([list[0].key]);
-						setSelectDatabase(list[0].value);
+										<span
+											title={(item as DatabaseItem).db}
+											className="text-overflow"
+											style={{ width: '140px' }}
+										>
+											{(item as DatabaseItem).db}
+										</span>
+									</Dropdown>
+								);
+								result.key = index + '';
+								result.value = (item as DatabaseItem).db;
+								result.type = 'database';
+								result.icon = <IconFont type="icon-database" />;
+								return result;
+							});
+							setTreeData(list);
+						} else {
+							setTreeData([]);
+						}
 					} else {
-						setPgTreeData([]);
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
 					}
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
-			});
+				});
+			} else {
+				getAllDatabase(sendData).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const list = res.data.map((item, index) => {
+								const result: any = {};
+								result.title = (
+									<Dropdown
+										overlay={() =>
+											pgMenu(
+												(item as PgsqslDatabaseItem)
+													.databaseName
+											)
+										}
+										trigger={['contextMenu']}
+									>
+										<span
+											title={
+												(item as PgsqslDatabaseItem)
+													.databaseName
+											}
+											className="text-overflow"
+											style={{ width: '140px' }}
+										>
+											{
+												(item as PgsqslDatabaseItem)
+													.databaseName
+											}
+										</span>
+									</Dropdown>
+								);
+								result.key = index + '';
+								result.value = (
+									item as PgsqslDatabaseItem
+								).databaseName;
+								result.type = 'database';
+								result.icon = <IconFont type="icon-database" />;
+								return result;
+							});
+							console.log(list);
+							setPgTreeData(list);
+							setPgslqExpandedKeys([list[0].key]);
+							setSelectDatabase(list[0].value);
+						} else {
+							setPgTreeData([]);
+						}
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				});
+			}
 		}
-	}, []);
+	}, [currentUser]);
 	useEffect(() => {
 		// * 获取表数据 - pgsql
 		if (selectSchema && selectDatabase) {
@@ -866,7 +882,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						</div>
 						<Tabs
 							className="sql-console-tabs-content"
-							style={{ height: 'calc(100% - 36px)' }}
+							style={{
+								height: 'calc(100% - 36px)',
+								width: '100%'
+							}}
 							size="small"
 							type="editable-card"
 							onChange={onChange}
