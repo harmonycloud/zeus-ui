@@ -24,6 +24,49 @@ interface storageClassListItem {
 	[propName: string]: any;
 }
 
+export const redisNewList = [
+	{
+		value: '1',
+		label: (
+			<div>
+				<p>CPU: 1Core</p>
+				<p>内存: 2Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '2',
+		label: (
+			<div>
+				<p>CPU: 2Core</p>
+				<p>内存: 8Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '3',
+		label: (
+			<div>
+				<p>CPU: 4Core</p>
+				<p>内存: 16Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '4',
+		label: (
+			<div>
+				<p>CPU: 8Core</p>
+				<p>内存: 32Gi</p>
+			</div>
+		)
+	},
+	{
+		value: '5',
+		label: <div style={{ lineHeight: '28px' }}>自定义</div>
+	}
+];
+
 const FormItem = Form.Item;
 const EditQuotaForm = (props: EditQuotaFormProps) => {
 	const {
@@ -34,10 +77,12 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		clusterId,
 		namespace,
 		type,
+		mode,
 		inputChange,
 		middlewareType
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
+	const [proxySpecId, setProxySpecId] = useState<string>('1');
 	const [storageClassList, setStorageClassList] = useState<
 		storageClassListItem[]
 	>([]);
@@ -66,7 +111,6 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		});
 	};
 	const checkGeneral = (value: any) => {
-		console.log(value);
 		switch (value) {
 			case '1':
 				setModifyData({
@@ -120,13 +164,57 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				break;
 		}
 	};
+	const newCheckGeneral = (value: any) => {
+		switch (value) {
+			case '1':
+				setModifyData({
+					...modifyData,
+					cpu: 2,
+					memory: 1,
+					specId: value
+				});
+				break;
+			case '2':
+				setModifyData({
+					...modifyData,
+					cpu: 2,
+					memory: 8,
+					specId: value
+				});
+				break;
+			case '3':
+				setModifyData({
+					...modifyData,
+					cpu: 4,
+					memory: 16,
+					specId: value
+				});
+				break;
+			case '4':
+				setModifyData({
+					...modifyData,
+					cpu: 8,
+					memory: 32,
+					specId: value
+				});
+				break;
+			case '5':
+				setModifyData({
+					...modifyData,
+					specId: value
+				});
+				break;
+			default:
+				break;
+		}
+	};
 	return (
 		<Modal
 			title="实例配置"
 			visible={visible}
 			onCancel={onCancel}
 			onOk={onOk}
-			width={820}
+			width="auto"
 			centered
 		>
 			<Form form={form}>
@@ -161,110 +249,225 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 					</FormItem>
 				) : null}
 				<ul className="form-layout">
-					<li className="display-flex form-li">
-						<label className="form-name">
-							<span>节点规格</span>
-						</label>
-						<div className="form-content display-flex instance-spec-content">
-							<SelectBlock
-								options={instanceSpecList}
-								currentValue={instanceSpec}
-								onCallBack={(value: any) => {
-									setInstanceSpec(value);
-								}}
-							/>
-							{instanceSpec === 'General' ? (
-								<div
-									style={{
-										width: 652,
-										marginTop: 16
+					{mode !== 'readWriteProxy' ? (
+						<li className="display-flex form-li">
+							<label className="form-name">
+								<span>节点规格</span>
+							</label>
+							<div className="form-content display-flex instance-spec-content">
+								<SelectBlock
+									options={instanceSpecList}
+									currentValue={instanceSpec}
+									onCallBack={(value: any) => {
+										setInstanceSpec(value);
 									}}
-								>
-									<TableRadio
-										id={modifyData.specId}
+								/>
+								{instanceSpec === 'General' ? (
+									<div
+										style={{
+											width: 652,
+											marginTop: 16
+										}}
+									>
+										<TableRadio
+											id={modifyData.specId}
+											onCallBack={(value: any) =>
+												checkGeneral(value)
+											}
+											dataList={
+												middlewareType ===
+												'elasticsearch'
+													? esDataList
+													: redisSentinelDataList
+											}
+										/>
+									</div>
+								) : null}
+								{instanceSpec === 'Customize' ? (
+									<div className="spec-custom">
+										<ul className="form-layout">
+											<li className="display-flex">
+												<label className="form-name">
+													<span className="ne-required">
+														CPU
+													</span>
+												</label>
+												<div className="form-content">
+													<FormItem
+														rules={[
+															{
+																type: 'number',
+																min: 0.1,
+																message:
+																	'最小为0.1'
+															},
+															{
+																required: true,
+																message:
+																	'请输入自定义CPU配额，单位为Core'
+															}
+														]}
+														name="cpu"
+													>
+														<InputNumber
+															step={0.1}
+															style={{
+																width: '100%'
+															}}
+															placeholder="请输入自定义CPU配额，单位为Core"
+														/>
+													</FormItem>
+												</div>
+											</li>
+											<li className="display-flex">
+												<label className="form-name">
+													<span className="ne-required">
+														内存
+													</span>
+												</label>
+												<div className="form-content">
+													<FormItem
+														rules={[
+															{
+																type: 'number',
+																min: 0.1,
+																message:
+																	'最小为0.1'
+															},
+															{
+																required: true,
+																message:
+																	'请输入自定义内存配额，单位为Core'
+															}
+														]}
+														name="memory"
+													>
+														<InputNumber
+															step={0.1}
+															style={{
+																width: '100%'
+															}}
+															placeholder="请输入自定义内存配额，单位为Gi"
+														/>
+													</FormItem>
+												</div>
+											</li>
+										</ul>
+									</div>
+								) : null}
+							</div>
+						</li>
+					) : (
+						<>
+							<li className="display-flex form-li">
+								<label className="form-name">
+									<span>普通节点规格</span>
+								</label>
+								<div className="form-content display-flex instance-spec-content">
+									<SelectBlock
+										options={redisNewList}
+										currentValue={modifyData.specId}
 										onCallBack={(value: any) =>
-											checkGeneral(value)
+											newCheckGeneral(value)
 										}
-										dataList={
-											middlewareType === 'elasticsearch'
-												? esDataList
-												: redisSentinelDataList
+									/>
+									{modifyData.specId === '5' ? (
+										<div className="spec-custom">
+											<ul className="form-layout">
+												<li className="display-flex">
+													<label className="form-name">
+														<span className="ne-required">
+															CPU
+														</span>
+													</label>
+													<div className="form-content">
+														<FormItem
+															rules={[
+																{
+																	type: 'number',
+																	min: 0.1,
+																	message:
+																		'最小为0.1'
+																},
+																{
+																	required:
+																		true,
+																	message:
+																		'请输入自定义CPU配额，单位为Core'
+																}
+															]}
+															name="cpu"
+														>
+															<InputNumber
+																step={0.1}
+																style={{
+																	width: '100%'
+																}}
+																placeholder="请输入自定义CPU配额，单位为Core"
+															/>
+														</FormItem>
+													</div>
+												</li>
+												<li className="display-flex">
+													<label className="form-name">
+														<span className="ne-required">
+															内存
+														</span>
+													</label>
+													<div className="form-content">
+														<FormItem
+															rules={[
+																{
+																	type: 'number',
+																	min: 0.1,
+																	message:
+																		'最小为0.1'
+																},
+																{
+																	required:
+																		true,
+																	message:
+																		'请输入自定义内存配额，单位为Core'
+																}
+															]}
+															name="memory"
+														>
+															<InputNumber
+																step={0.1}
+																style={{
+																	width: '100%'
+																}}
+																placeholder="请输入自定义内存配额，单位为Gi"
+															/>
+														</FormItem>
+													</div>
+												</li>
+											</ul>
+										</div>
+									) : null}
+								</div>
+							</li>
+							<li className="display-flex form-li">
+								<label className="form-name">
+									<span>proxy节点规格</span>
+								</label>
+								<div className="form-content display-flex instance-spec-content">
+									<SelectBlock
+										options={[
+											redisNewList[0],
+											redisNewList[1],
+											redisNewList[2],
+											redisNewList[3]
+										]}
+										currentValue={proxySpecId}
+										onCallBack={(value: any) =>
+											setProxySpecId(value)
 										}
 									/>
 								</div>
-							) : null}
-							{instanceSpec === 'Customize' ? (
-								<div className="spec-custom">
-									<ul className="form-layout">
-										<li className="display-flex">
-											<label className="form-name">
-												<span className="ne-required">
-													CPU
-												</span>
-											</label>
-											<div className="form-content">
-												<FormItem
-													rules={[
-														{
-															type: 'number',
-															min: 0.1,
-															message: '最小为0.1'
-														},
-														{
-															required: true,
-															message:
-																'请输入自定义CPU配额，单位为Core'
-														}
-													]}
-													name="cpu"
-												>
-													<InputNumber
-														step={0.1}
-														style={{
-															width: '100%'
-														}}
-														placeholder="请输入自定义CPU配额，单位为Core"
-													/>
-												</FormItem>
-											</div>
-										</li>
-										<li className="display-flex">
-											<label className="form-name">
-												<span className="ne-required">
-													内存
-												</span>
-											</label>
-											<div className="form-content">
-												<FormItem
-													rules={[
-														{
-															type: 'number',
-															min: 0.1,
-															message: '最小为0.1'
-														},
-														{
-															required: true,
-															message:
-																'请输入自定义内存配额，单位为Core'
-														}
-													]}
-													name="memory"
-												>
-													<InputNumber
-														step={0.1}
-														style={{
-															width: '100%'
-														}}
-														placeholder="请输入自定义内存配额，单位为Gi"
-													/>
-												</FormItem>
-											</div>
-										</li>
-									</ul>
-								</div>
-							) : null}
-						</div>
-					</li>
+							</li>
+						</>
+					)}
 					{type !== 'kibana' && type !== 'sentinel' && (
 						<StorageQuota clusterId={clusterId} />
 					)}

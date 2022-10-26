@@ -15,6 +15,7 @@ export interface modeItemProps {
 		storageQuota: number;
 		title: string;
 	};
+	mode?: string;
 	clusterId: string;
 	namespace: string;
 	type: string;
@@ -22,7 +23,7 @@ export interface modeItemProps {
 	middlewareType: string;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
-	const { data, clusterId, namespace, type, onChange, middlewareType } =
+	const { data, clusterId, namespace, type, mode, onChange, middlewareType } =
 		props;
 	const params: any = useParams();
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
@@ -131,6 +132,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						clusterId={clusterId}
 						namespace={namespace}
 						type={type}
+						mode={mode}
 						onChange={onChange}
 						inputChange={inputChange}
 					/>

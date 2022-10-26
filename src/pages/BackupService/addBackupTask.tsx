@@ -650,9 +650,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										message: '请输入备份任务名称'
 									},
 									{
-										max: 10,
+										max: 32,
 										type: 'string',
-										message: '备份任务名称不能超过10个字'
+										message: '备份任务名称长度不能超过32'
 									}
 								]}
 							>

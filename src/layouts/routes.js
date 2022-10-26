@@ -69,6 +69,7 @@ import AreaDetail from '@/pages/ActiveActive/AreaDetail';
 import IngressDetail from '@/components/IngressCard/IngressDetail';
 import EditYaml from '@/components/IngressCard/editYaml';
 import OperationPanel from '@/pages/OperationPanel';
+import AuthorManage from '@/pages/AuthorManage/index';
 const Routes = withRouter((props) => {
 	return (
 		<>
@@ -534,6 +535,7 @@ const Routes = withRouter((props) => {
 					component={OperationPanel}
 					exact
 				/>
+				<Route path="/authorManage" component={AuthorManage} exact />
 			</Switch>
 		</>
 	);
