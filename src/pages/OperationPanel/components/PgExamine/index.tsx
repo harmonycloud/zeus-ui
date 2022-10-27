@@ -9,6 +9,7 @@ const basicData = {
 	unVerification: '',
 	remark: ''
 };
+// * 检查约束
 export default function PgExamine(props: PgExamineProps): JSX.Element {
 	const { originData, handleChange } = props;
 	const columns = [
@@ -27,31 +28,24 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 		},
 		{
 			title: '检查',
-			dataIndex: 'examine',
-			key: 'examine',
+			dataIndex: 'text',
+			key: 'text',
 			editable: true,
 			componentType: 'string'
 		},
 		{
 			title: '非继承',
-			dataIndex: 'unInherit',
-			key: 'unInherit',
+			dataIndex: 'noInherit',
+			key: 'noInherit',
 			editable: true,
 			componentType: 'checkbox'
 		},
 		{
 			title: '不验证',
-			dataIndex: 'unVerification',
-			key: 'unVerification',
+			dataIndex: 'notValid',
+			key: 'notValid',
 			editable: true,
 			componentType: 'checkbox'
-		},
-		{
-			title: '备注',
-			dataIndex: 'remark',
-			key: 'remark',
-			editable: true,
-			componentType: 'string'
 		}
 	];
 	const onChange = (values: any) => {

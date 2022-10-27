@@ -12,6 +12,7 @@ interface EditTableProps {
 	moveDownVisible?: boolean;
 	incrementVisible?: boolean;
 	returnValues?: (values: any) => void;
+	returnSelectValues?: (value: any) => void;
 	changedData?: any;
 	[propName: string]: any;
 }
@@ -38,6 +39,7 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		moveDownVisible,
 		incrementVisible,
 		returnValues,
+		returnSelectValues,
 		changedData,
 		...resTableProps
 	} = props;
@@ -81,6 +83,8 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			...row
 		});
 		setDataSource(newData);
+		returnSelectValues &&
+			returnSelectValues(newData.find((item) => row.key === item.key));
 		returnValues && returnValues(newData);
 	};
 	const moveUp = (key: React.Key) => {

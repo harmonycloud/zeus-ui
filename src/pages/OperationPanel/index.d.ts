@@ -72,14 +72,23 @@ export interface PgsqlTableInfoProps {
 export interface PgsqlColInfoProps {
 	originData: PgsqlColItem[];
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgForeignKeyInfoProps {
-	originData: pgsqlForeignKeyItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	databaseName: string;
+	schemaName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgExclusivenessProps {
-	originData: exclusionItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	databaseName: string;
 }
 export interface PgUniquenessProps {
 	originData: pgsqlTableDetail | undefined;
@@ -92,6 +101,11 @@ export interface PgExamineProps {
 export interface PgInheritProps {
 	data: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	databaseName: string;
+	schemaName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface consoleUser {
 	username: string;
@@ -507,4 +521,7 @@ export interface pgsqlUniqueItem {
 export interface OrderDtoItem {
 	column: string;
 	order: string;
+}
+export interface getPgDataTypeRes extends resProps {
+	data: string[];
 }

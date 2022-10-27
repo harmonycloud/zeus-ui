@@ -1,35 +1,41 @@
 import React, { useState } from 'react';
-import { Radio, RadioChangeEvent, Space } from 'antd';
+import { RadioChangeEvent, Select } from 'antd';
 import EditTable from '@/components/EditTable';
 import {
 	PgsqlColItem,
+	pgsqlForeignKeyItem,
 	pgsqlUniqueItem,
 	PgUniquenessProps
 } from '../../index.d';
 
+const { Option } = Select;
 const basicData = {
 	name: '',
-	field: '',
-	canDelay: ''
+	columnName: '',
+	deferrablity: ''
 };
+interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
+	key: string;
+}
+// * 唯一约束
 export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 	const { originData, handleChange } = props;
-	const [radioValue, setRadioValue] = useState<any>();
-	const [columnNames, setColumnNames] = useState(
+	const [columnNames] = useState(
 		originData?.columnDtoList?.map((item: PgsqlColItem) => {
-			return { value: item.columnName, text: item.columnName };
+			return { value: item.column, text: item.column };
 		})
 	);
-	const handleRadioChange = (e: RadioChangeEvent) => {
-		console.log(e);
-		setRadioValue(e.target.value);
-	};
+	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
+		originData?.tableForeignKeyList.map((item) => {
+			return { ...item, key: item.name };
+		}) || []
+	);
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
-			width: 100,
+			width: 80,
 			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
@@ -49,19 +55,18 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 		},
 		{
 			title: '可延迟/延期',
-			dataIndex: 'canDelay',
-			key: 'canDelay',
-			render: (text: any, record: pgsqlUniqueItem) => (
-				<Radio.Group onChange={handleRadioChange} value={radioValue}>
-					<Space direction="vertical">
-						<Radio value="DEFERRABLE INITIALLY DEFERRED">
-							可延迟
-						</Radio>
-						<Radio value="DEFERRABLE INITIALLY IMMEDIATE">
-							延期
-						</Radio>
-					</Space>
-				</Radio.Group>
+			dataIndex: 'deferrablity',
+			key: 'deferrablity',
+			render: (text: any, record: EditPgsqlForeignKeyItem) => (
+				<Select style={{ width: 120 }} dropdownMatchSelectWidth={false}>
+					<Option value="NOT DEFERRABLE">不可延迟</Option>
+					<Option value="DEFERRABLE INITIALLY IMMEDIATE">
+						可延迟不可延期
+					</Option>
+					<Option value="DEFERRABLE INITIALLY DEFERRED">
+						可延迟且可延期
+					</Option>
+				</Select>
 			)
 		}
 	];
@@ -70,8 +75,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 	};
 	return (
 		<EditTable
-			rowKey="name"
-			originData={originData?.tableUniqueList}
+			originData={dataSource}
 			defaultColumns={columns}
 			basicData={basicData}
 			returnValues={onChange}

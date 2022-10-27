@@ -26,6 +26,7 @@ import {
 	getPgColParamsProps,
 	getPgColRes,
 	getPgDatabaseRes,
+	getPgDataTypeRes,
 	getPgsqlExcelParamsProps,
 	getPgsqlTableRes,
 	getPgsqlUserResProps,
@@ -245,6 +246,14 @@ export const updatePgTable = (params: any) => {
 };
 export const updateMysqlTable = (params: any) => {
 	return Axios.json(URL.updateMysqlTable, params);
+};
+export const getPgsqlDataType: (
+	params: SendDataParamsProps
+) => Promise<getPgDataTypeRes> = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getPgsqlDataType, params);
+};
+export const getPgsqlCollate = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getPgsqlCollate, params);
 };
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复

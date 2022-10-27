@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { PgForeignKeyInfoProps } from '../../index.d';
+import { PgForeignKeyInfoProps, pgsqlForeignKeyItem } from '../../index.d';
+import IncludeColsForm from './IncludeColsForm';
+import { Select } from 'antd';
 const basicData = {
 	foreignKeyName: '',
 	includeCol: '',
@@ -22,10 +24,30 @@ const updateAction = [
 	{ label: 'CASCADE', value: 'CASCADE' },
 	{ label: 'SET NULL', value: 'SET NULL' }
 ];
+interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
+	key: string;
+}
+const { Option } = Select;
+// * 外键信息
 export default function PgForeignKeyInfo(
 	props: PgForeignKeyInfoProps
 ): JSX.Element {
-	const { originData, handleChange } = props;
+	const {
+		originData,
+		handleChange,
+		databaseName,
+		schemaName,
+		clusterId,
+		namespace,
+		middlewareName
+	} = props;
+	const [open, setOpen] = useState<boolean>(false);
+	const [dataSource, setDataSource] = useState<EditPgsqlForeignKeyItem[]>(
+		originData?.tableForeignKeyList.map((item) => {
+			return { ...item, key: item.name };
+		}) || []
+	);
+	const [changedData, setChangeData] = useState<any>();
 	const columns = [
 		{
 			title: '序号',
@@ -48,34 +70,35 @@ export default function PgForeignKeyInfo(
 			key: 'includeCol',
 			editable: true,
 			width: 200,
-			componentType: 'select',
-			selectOptions: []
-		},
-		{
-			title: '参考表',
-			dataIndex: 'referenceTable',
-			key: 'referenceTable',
-			editable: true,
-			width: 150,
-			componentType: 'select',
-			selectOptions: []
-		},
-		{
-			title: '参考列',
-			dataIndex: 'referenceCol',
-			key: 'referenceCol',
-			editable: true,
-			width: 150,
-			componentType: 'select',
-			selectOptions: []
+			render: (text: any, record: EditPgsqlForeignKeyItem) => (
+				<span
+					onClick={() => setOpen(true)}
+					style={{ cursor: 'pointer' }}
+				>
+					编辑
+					{/* {record?.includeCols?.join(',')} */}
+				</span>
+			)
 		},
 		{
 			title: '可延迟/延期',
-			dataIndex: 'canDelay',
-			key: 'canDelay',
-			editable: true,
+			dataIndex: 'deferrablity',
+			key: 'deferrablity',
 			width: 200,
-			componentType: 'radio'
+			render: () => (
+				<Select
+					style={{ width: '100%' }}
+					dropdownMatchSelectWidth={false}
+				>
+					<Option value="NOT DEFERRABLE">不可延迟</Option>
+					<Option value="DEFERRABLE INITIALLY IMMEDIATE">
+						可延迟不可延期
+					</Option>
+					<Option value="DEFERRABLE INITIALLY DEFERRED">
+						可延迟且可延期
+					</Option>
+				</Select>
+			)
 		},
 		{
 			title: '删除时',
@@ -99,12 +122,37 @@ export default function PgForeignKeyInfo(
 	const onChange = (values: any) => {
 		handleChange(values);
 	};
+	const onCreate = (values: any) => {
+		const listData = values
+			.map(
+				(item: any) =>
+					`${item.colInfo} -> ${item.targetTable}(${item.targetColumn})`
+			)
+			.join(',');
+		setChangeData({ includeCols: listData });
+	};
 	return (
-		<EditTable
-			basicData={basicData}
-			originData={originData}
-			defaultColumns={columns}
-			returnValues={onChange}
-		/>
+		<>
+			<EditTable
+				basicData={basicData}
+				originData={dataSource}
+				defaultColumns={columns}
+				changedData={changedData}
+				returnValues={onChange}
+			/>
+			{open && (
+				<IncludeColsForm
+					open={open}
+					onCancel={() => setOpen(false)}
+					onCreate={onCreate}
+					data={originData}
+					databaseName={databaseName}
+					schemaName={schemaName}
+					clusterId={clusterId}
+					namespace={namespace}
+					middlewareName={middlewareName}
+				/>
+			)}
+		</>
 	);
 }

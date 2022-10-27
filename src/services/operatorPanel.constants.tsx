@@ -69,6 +69,10 @@ export const getPgsqlData = `${api}/clusters/{clusterId}/namespaces/{namespace}/
 export const updatePgTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{table}`;
 // * mysql 修改表接口
 export const updateMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
+// * pgsql 获取数据类型
+export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/dataType`;
+// * pgsql 获取校验规则
+export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/collate`;
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 // * 合并 查询数据库列表

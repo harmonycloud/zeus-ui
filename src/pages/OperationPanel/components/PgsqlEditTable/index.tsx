@@ -75,24 +75,33 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'columnDtoList')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'foreignKeyInfo':
 					return (
 						<PgForeignKeyInfo
-							originData={data?.tableForeignKeyList || []}
+							originData={data}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableForeignKeyList')
 							}
+							databaseName={dbName}
+							schemaName={schemaName}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'exclusiveness':
 					return (
 						<PgExclusiveness
-							originData={data?.tableExclusionList || []}
+							originData={data}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableExclusionList')
 							}
+							databaseName={dbName}
 						/>
 					);
 				case 'uniqueness':
@@ -120,6 +129,11 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'inherit')
 							}
+							databaseName={dbName}
+							schemaName={schemaName}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				default:
