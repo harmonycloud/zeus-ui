@@ -49,10 +49,16 @@ export default function PgsqlEditTable(
 	};
 	const infoChange = (values: any, dataIndex: string) => {
 		console.log(values, dataIndex);
+		if (dataIndex === 'info') {
+			setOriginData({ ...originData, ...values });
+		}
 		// setOriginData({
 		// 	...originData,
 		// 	[dataIndex]: values
 		// });
+	};
+	const save = () => {
+		console.log(originData);
 	};
 	const childrenRender = (type: string) => {
 		const componentRender = () => {
@@ -145,7 +151,9 @@ export default function PgsqlEditTable(
 				{componentRender()}
 				<Divider />
 				<Space>
-					<Button type="primary">保存</Button>
+					<Button type="primary" onClick={save}>
+						保存
+					</Button>
 					<Button>取消</Button>
 				</Space>
 			</div>
