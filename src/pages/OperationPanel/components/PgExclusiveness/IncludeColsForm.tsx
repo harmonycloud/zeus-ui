@@ -37,7 +37,7 @@ export default function IncludeColsForm(props: IncludesColProps): JSX.Element {
 	);
 	const [returnData, setReturnData] = useState([]);
 	const [dataSource] = useState(
-		selectRow?.contentList.map((item: any, index: number) => {
+		selectRow?.contentList?.map((item: any, index: number) => {
 			return { ...item, key: index };
 		}) || []
 	);

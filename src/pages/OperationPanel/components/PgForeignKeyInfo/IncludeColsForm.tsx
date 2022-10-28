@@ -40,7 +40,7 @@ export default function IncludeColsForm(
 	const [returnData, setReturnData] = useState([]);
 	const [cols, setCols] = useState<AutoCompleteOptionItem[]>([]);
 	const [dataSource, setDataSource] = useState(
-		selectRow?.contentList.map((item: any, index: number) => {
+		selectRow?.contentList?.map((item: any, index: number) => {
 			return { ...item, key: index };
 		}) || []
 	);

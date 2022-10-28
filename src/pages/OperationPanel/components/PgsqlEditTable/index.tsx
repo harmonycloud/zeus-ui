@@ -13,7 +13,7 @@ import {
 	pgsqlTableDetail
 } from '../../index.d';
 import PgExclusiveness from '../PgExclusiveness';
-import { getPgsqlTableDetail } from '@/services/operatorPanel';
+import { getPgsqlTableDetail, createPgTable } from '@/services/operatorPanel';
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
@@ -33,7 +33,6 @@ export default function PgsqlEditTable(
 			}).then((res) => {
 				if (res.success) {
 					setOriginData(res.data);
-					// setData(res.data);
 				} else {
 					notification.error({
 						message: '失败',
@@ -54,7 +53,7 @@ export default function PgsqlEditTable(
 		if (dataIndex === 'info') {
 			setOriginData({ ...originData, ...values });
 		} else if (dataIndex === 'inherit') {
-			const list = values.tablesName.map((item: string) => {
+			const list = values?.tablesName?.map((item: string) => {
 				const result: any = {};
 				result.databaseName = dbName;
 				result.schemaName = values.schemaName;
@@ -62,16 +61,39 @@ export default function PgsqlEditTable(
 				return result;
 			});
 			setOriginData({ ...originData, tableInheritList: list });
+		} else if (dataIndex === 'tableUniqueList') {
+			const list = values.map((item: any) => {
+				item.columnName = item.columnName.join(',');
+				return item;
+			});
+			setOriginData({ ...originData, tableUniqueList: list });
 		} else {
 			setOriginData({ ...originData, ...result });
 		}
-		// setOriginData({
-		// 	...originData,
-		// 	[dataIndex]: values
-		// });
 	};
 	const save = () => {
-		console.log(originData);
+		const sendData = {
+			...originData,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			databaseName: dbName,
+			schemaName
+		};
+		console.log(sendData);
+		createPgTable(sendData).then((res) => {
+			if (res.success) {
+				notification.success({
+					message: '成功',
+					description: '创建成功!'
+				});
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
 	};
 	const childrenRender = (type: string) => {
 		const componentRender = () => {

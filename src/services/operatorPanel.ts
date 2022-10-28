@@ -146,6 +146,11 @@ export const getPgTables: (
 ) => Promise<getPgsqlTableRes> = (params: deleteSchemaParamsProps) => {
 	return Axios.get(URL.getPgTables, params);
 };
+export const createPgTable: (params: any) => Promise<resProps> = (
+	params: any
+) => {
+	return Axios.json(URL.getPgTables, params, {}, 'POST');
+};
 export const deletePgTables: (
 	params: deletePgTableParamsProps
 ) => Promise<resProps> = (params: deletePgTableParamsProps) => {

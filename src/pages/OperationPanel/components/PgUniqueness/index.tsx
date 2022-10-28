@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
-import { RadioChangeEvent, Select } from 'antd';
 import EditTable from '@/components/EditTable';
 import {
 	PgsqlColItem,
-	pgsqlForeignKeyItem,
 	pgsqlUniqueItem,
 	PgUniquenessProps
 } from '../../index.d';
 
-const { Option } = Select;
 const basicData = {
 	name: '',
-	columnName: '',
+	columnName: [],
 	deferrablity: ''
 };
 const deferrablityOptions = [
@@ -19,19 +16,21 @@ const deferrablityOptions = [
 	{ label: '可延迟不可延期', value: 'DEFERRABLE INITIALLY IMMEDIATE' },
 	{ label: '可延迟且可延期', value: 'DEFERRABLE INITIALLY DEFERRED' }
 ];
-interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
+interface EditPgsqlUniqueItem extends pgsqlUniqueItem {
 	key: string;
 }
 // * 唯一约束
 export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 	const { originData, handleChange } = props;
+	console.log(originData);
 	const [columnNames] = useState(
 		originData?.columnDtoList?.map((item: PgsqlColItem) => {
-			return { value: item.column, text: item.column };
+			return { value: item.column, label: item.column };
 		})
 	);
-	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
-		originData?.tableForeignKeyList?.map((item) => {
+	console.log(columnNames);
+	const [dataSource] = useState<EditPgsqlUniqueItem[]>(
+		originData?.tableUniqueList?.map((item) => {
 			return { ...item, key: item.name };
 		}) || []
 	);
@@ -56,7 +55,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 			dataIndex: 'columnName',
 			key: 'columnName',
 			editable: true,
-			componentType: 'select',
+			componentType: 'mulSelect',
 			selectOptions: columnNames
 		},
 		{

@@ -100,6 +100,18 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 						/>
 					</Form.Item>
 				);
+			case 'mulSelect':
+				return (
+					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+						<Select
+							onChange={(value: any) =>
+								handleSelectChange(value, dataIndex)
+							}
+							mode="multiple"
+							options={options}
+						/>
+					</Form.Item>
+				);
 			case 'number':
 				return (
 					<Form.Item style={{ margin: 0 }} name={dataIndex}>

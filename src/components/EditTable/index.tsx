@@ -128,7 +128,10 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				colType: col.componentType,
 				checked: record.key === selectedRowKeys[0],
 				options:
-					col.componentType === 'select' ? col.selectOptions : [],
+					col.componentType === 'select' ||
+					col.componentType === 'mulSelect'
+						? col.selectOptions
+						: [],
 				handleSave
 			}),
 			width: col.width
