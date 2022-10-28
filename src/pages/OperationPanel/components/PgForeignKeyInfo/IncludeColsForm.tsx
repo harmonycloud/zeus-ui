@@ -32,13 +32,20 @@ export default function IncludeColsForm(
 		schemaName,
 		selectRow
 	} = props;
+	console.log(selectRow);
+	console.log(data);
 	const [columnsOption] = useState<AutoCompleteOptionItem[]>(
-		data?.columnDtoList.map((item: PgsqlColItem) => {
+		data?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { label: item.column, value: item.column };
 		}) || []
 	);
 	const [returnData, setReturnData] = useState([]);
 	const [cols, setCols] = useState<AutoCompleteOptionItem[]>([]);
+	const [dataSource, setDataSource] = useState(
+		selectRow?.contentList.map((item: any, index: number) => {
+			return { ...item, key: index };
+		}) || []
+	);
 	useEffect(() => {
 		if (selectRow && selectRow?.targetTable) {
 			getPgCols({
@@ -72,8 +79,8 @@ export default function IncludeColsForm(
 		},
 		{
 			title: '包含列',
-			dataIndex: 'colInfo',
-			key: 'colInfo',
+			dataIndex: 'columnName',
+			key: 'columnName',
 			editable: true,
 			width: 200,
 			componentType: 'select',
@@ -102,9 +109,9 @@ export default function IncludeColsForm(
 			onOk={onOk}
 		>
 			<EditTable
-				originData={[]}
+				originData={dataSource}
 				defaultColumns={columns}
-				basicData={{ colInfo: '', targetTable: '', targetColumn: '' }}
+				basicData={{ columnName: '', targetColumn: '' }}
 				returnValues={getValues}
 			/>
 		</Modal>

@@ -26,7 +26,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 		})
 	);
 	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
-		originData?.tableForeignKeyList.map((item) => {
+		originData?.tableForeignKeyList?.map((item) => {
 			return { ...item, key: item.name };
 		}) || []
 	);

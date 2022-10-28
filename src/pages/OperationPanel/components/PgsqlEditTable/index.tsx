@@ -21,7 +21,6 @@ export default function PgsqlEditTable(
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<pgsqlTableDetail>();
-	const [data, setData] = useState<pgsqlTableDetail>();
 	useEffect(() => {
 		if (tableName) {
 			getPgsqlTableDetail({
@@ -34,7 +33,7 @@ export default function PgsqlEditTable(
 			}).then((res) => {
 				if (res.success) {
 					setOriginData(res.data);
-					setData(res.data);
+					// setData(res.data);
 				} else {
 					notification.error({
 						message: '失败',
@@ -49,8 +48,13 @@ export default function PgsqlEditTable(
 	};
 	const infoChange = (values: any, dataIndex: string) => {
 		console.log(values, dataIndex);
+		const result = {
+			[dataIndex]: values
+		};
 		if (dataIndex === 'info') {
 			setOriginData({ ...originData, ...values });
+		} else {
+			setOriginData({ ...originData, ...result });
 		}
 		// setOriginData({
 		// 	...originData,
@@ -71,13 +75,13 @@ export default function PgsqlEditTable(
 							}
 							dbName={dbName}
 							schemaName={schemaName}
-							data={data}
+							data={originData}
 						/>
 					);
 				case 'colInfo':
 					return (
 						<PgsqlColInfo
-							originData={data?.columnDtoList || []}
+							originData={originData?.columnDtoList || []}
 							handleChange={(values: any) =>
 								infoChange(values, 'columnDtoList')
 							}
@@ -89,7 +93,7 @@ export default function PgsqlEditTable(
 				case 'foreignKeyInfo':
 					return (
 						<PgForeignKeyInfo
-							originData={data}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableForeignKeyList')
 							}
@@ -103,7 +107,7 @@ export default function PgsqlEditTable(
 				case 'exclusiveness':
 					return (
 						<PgExclusiveness
-							originData={data}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableExclusionList')
 							}
@@ -113,7 +117,7 @@ export default function PgsqlEditTable(
 				case 'uniqueness':
 					return (
 						<PgUniqueness
-							originData={data}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableUniqueList')
 							}
@@ -122,7 +126,7 @@ export default function PgsqlEditTable(
 				case 'examine':
 					return (
 						<PgExamine
-							originData={data?.tableCheckList || []}
+							originData={originData?.tableCheckList || []}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableCheckList')
 							}
@@ -131,7 +135,7 @@ export default function PgsqlEditTable(
 				case 'inherit':
 					return (
 						<PgInherit
-							data={data}
+							data={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'inherit')
 							}

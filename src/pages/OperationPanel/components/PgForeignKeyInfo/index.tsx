@@ -11,12 +11,11 @@ import { AutoCompleteOptionItem } from '@/types/comment';
 import { getPgTables } from '@/services/operatorPanel';
 const basicData = {
 	foreignKeyName: '',
-	includeCol: '',
-	referenceLib: '',
-	referenceTable: '',
-	referenceCol: '',
-	deleteAction: '',
-	updateAction: ''
+	contentList: [],
+	targetTable: '',
+	deferrablity: '',
+	onDelete: '',
+	onUpdate: ''
 };
 const deleteAction = [
 	{ label: 'RESTRICT', value: 'RESTRICT' },
@@ -47,9 +46,10 @@ export default function PgForeignKeyInfo(
 		namespace,
 		middlewareName
 	} = props;
+	console.log(originData);
 	const [open, setOpen] = useState<boolean>(false);
-	const [dataSource, setDataSource] = useState<EditPgsqlForeignKeyItem[]>(
-		originData?.tableForeignKeyList.map((item) => {
+	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
+		originData?.tableForeignKeyList?.map((item) => {
 			return { ...item, key: item.name };
 		}) || []
 	);
@@ -100,8 +100,8 @@ export default function PgForeignKeyInfo(
 		},
 		{
 			title: '包含列',
-			dataIndex: 'includeCol',
-			key: 'includeCol',
+			dataIndex: 'contentList',
+			key: 'contentList',
 			editable: true,
 			width: 200,
 			render: (text: any, record: EditPgsqlForeignKeyItem) => (
@@ -110,7 +110,12 @@ export default function PgForeignKeyInfo(
 					style={{ cursor: 'pointer' }}
 				>
 					编辑
-					{/* {record?.includeCols?.join(',')} */}
+					{record?.contentList
+						?.map(
+							(item) =>
+								`${item.columnName} -> (${item.targetColumn})`
+						)
+						.join(',')}
 				</span>
 			)
 		},
@@ -136,8 +141,8 @@ export default function PgForeignKeyInfo(
 		},
 		{
 			title: '删除时',
-			dataIndex: 'deleteAction',
-			key: 'deleteAction',
+			dataIndex: 'onDelete',
+			key: 'onDelete',
 			editable: true,
 			width: 150,
 			componentType: 'select',
@@ -145,8 +150,8 @@ export default function PgForeignKeyInfo(
 		},
 		{
 			title: '更新时',
-			dataIndex: 'updateAction',
-			key: 'updateAction',
+			dataIndex: 'onUpdate',
+			key: 'onUpdate',
 			editable: true,
 			width: 150,
 			componentType: 'select',
@@ -157,13 +162,7 @@ export default function PgForeignKeyInfo(
 		handleChange(values);
 	};
 	const onCreate = (values: any) => {
-		const listData = values
-			.map(
-				(item: any) =>
-					`${item.colInfo} -> ${item.targetTable}(${item.targetColumn})`
-			)
-			.join(',');
-		setChangeData({ includeCols: listData });
+		setChangeData({ contentList: values });
 	};
 	const getSelectValues = (value: any) => {
 		console.log(value);

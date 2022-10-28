@@ -366,7 +366,7 @@ export interface GetEncodingRes extends resProps {
 }
 export interface PgsqlColItem {
 	array: boolean;
-	collate: string;
+	collate: string | undefined;
 	column: string;
 	columnName: string;
 	comment: string;
@@ -457,22 +457,22 @@ export interface getMysqlExcelParamsProps extends SendDataParamsProps {
 	table: string;
 }
 export interface pgsqlTableDetail {
-	collate: string;
-	columnDtoList: PgsqlColItem[];
-	databaseName: string;
-	description: string;
-	encoding: string;
-	fillFactor: string;
-	oid: string;
-	owner: string;
-	schemaName: string;
-	tableCheckList: tableCheckItem[];
-	tableExclusionList: exclusionItem[];
-	tableForeignKeyList: pgsqlForeignKeyItem[];
-	tableInheritList: inheritItem[];
-	tableName: string;
-	tableUniqueList: pgsqlUniqueItem[];
-	tablespace: string;
+	collate?: string;
+	columnDtoList?: PgsqlColItem[];
+	databaseName?: string;
+	description?: string;
+	encoding?: string;
+	fillFactor?: string;
+	oid?: string;
+	owner?: string;
+	schemaName?: string;
+	tableCheckList?: tableCheckItem[];
+	tableExclusionList?: exclusionItem[];
+	tableForeignKeyList?: pgsqlForeignKeyItem[];
+	tableInheritList?: inheritItem[];
+	tableName?: string;
+	tableUniqueList?: pgsqlUniqueItem[];
+	tablespace?: string;
 }
 export interface pgsqlTableDetailRes extends resProps {
 	data: pgsqlTableDetail;
@@ -493,8 +493,13 @@ export interface exclusionItem {
 	operator: string;
 	symbol: string;
 }
+export interface ForeignKeyContentItem {
+	columnName: string;
+	targetColumn: string;
+}
 export interface pgsqlForeignKeyItem {
 	columnName: string;
+	contentList: ForeignKeyContentItem[];
 	deferrablity: string;
 	name: string;
 	oid: string;

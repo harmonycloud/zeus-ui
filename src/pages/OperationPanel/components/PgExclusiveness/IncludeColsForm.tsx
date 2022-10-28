@@ -29,7 +29,7 @@ const orderOptions = [{ text: 'DESC', value: 'DESC' }];
 export default function IncludeColsForm(props: IncludesColProps): JSX.Element {
 	const { open, onCancel, onCreate, data } = props;
 	const [columnsOption] = useState<AutoCompleteOptionItem[]>(
-		data?.columnDtoList.map((item: PgsqlColItem) => {
+		data?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { label: item.column, value: item.column };
 		}) || []
 	);

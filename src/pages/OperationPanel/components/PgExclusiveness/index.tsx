@@ -18,7 +18,7 @@ export default function PgExclusiveness(
 	const { originData, handleChange } = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditExclusionItem[]>(
-		originData?.tableExclusionList.map((item) => {
+		originData?.tableExclusionList?.map((item) => {
 			return { ...item, key: item.name };
 		}) || []
 	);
