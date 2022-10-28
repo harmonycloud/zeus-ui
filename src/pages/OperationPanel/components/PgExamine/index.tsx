@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { PgExamineProps } from '../../index.d';
+import { PgExamineProps, tableCheckItem } from '../../index.d';
 
 const basicData = {
 	name: '',
-	examine: '',
-	unInherit: '',
-	unVerification: '',
-	remark: ''
+	text: '',
+	noInherit: false,
+	notValid: false
 };
+interface EditTableCheckItem extends tableCheckItem {
+	key: string;
+}
 // * 检查约束
 export default function PgExamine(props: PgExamineProps): JSX.Element {
 	const { originData, handleChange } = props;
+	const [dataSource] = useState<EditTableCheckItem[]>(
+		originData.map((item: tableCheckItem) => {
+			return { ...item, key: item.name };
+		}) || []
+	);
 	const columns = [
 		{
 			title: '序号',
@@ -53,7 +60,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 	};
 	return (
 		<EditTable
-			originData={originData}
+			originData={dataSource}
 			defaultColumns={columns}
 			basicData={basicData}
 			returnValues={onChange}

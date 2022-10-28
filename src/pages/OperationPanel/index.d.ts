@@ -484,8 +484,14 @@ export interface tableCheckItem {
 	oid: string;
 	operator: string;
 }
+export interface ExclusionContentItem {
+	columnName: string;
+	order: string;
+	symbol: string;
+}
 export interface exclusionItem {
 	columnName: string;
+	contentList: ExclusionContentItem[];
 	deferrablity: string;
 	indexMethod: string;
 	name: string;

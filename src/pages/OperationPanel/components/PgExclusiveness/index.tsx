@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { exclusionItem, PgExclusivenessProps } from '../../index.d';
+import {
+	ExclusionContentItem,
+	exclusionItem,
+	PgExclusivenessProps
+} from '../../index.d';
 import IncludeColsForm from './IncludeColsForm';
 const accessModeOptions = [
 	{ label: 'btree', value: 'btree' },
@@ -23,6 +27,7 @@ export default function PgExclusiveness(
 		}) || []
 	);
 	const [changedData, setChangeData] = useState<any>();
+	const [selectRow, setSelectRow] = useState<any>({});
 	const columns = [
 		{
 			title: '序号',
@@ -41,8 +46,8 @@ export default function PgExclusiveness(
 		},
 		{
 			title: '包含列',
-			dataIndex: 'includeCol',
-			key: 'includeCol',
+			dataIndex: 'contentList',
+			key: 'contentList',
 			width: 250,
 			render: (text: any, record: EditExclusionItem) => (
 				<span
@@ -50,7 +55,12 @@ export default function PgExclusiveness(
 					style={{ cursor: 'pointer' }}
 				>
 					编辑
-					{/* {record?.includeCols?.join(',')} */}
+					{record?.contentList
+						?.map(
+							(item: ExclusionContentItem) =>
+								`${item.columnName}->${item.order}(${item.symbol})`
+						)
+						.join(';')}
 				</span>
 			)
 		},
@@ -65,25 +75,26 @@ export default function PgExclusiveness(
 		}
 	];
 	const onChange = (values: any) => {
+		// change 上层originData
 		handleChange(values);
 	};
 	const onCreate = (values: any) => {
-		console.log(values);
-		const listData = values
-			.map(
-				(item: any) => `${item.field} -> ${item.order}(${item.symbol})`
-			)
-			.join(',');
-		setChangeData({ includeCols: listData });
+		// change editTable的显示
+		setChangeData({ contentList: values });
+		setSelectRow({ ...selectRow, contentList: values });
+	};
+	const getSelectValues = (value: any) => {
+		setSelectRow(value);
 	};
 	return (
 		<>
 			<EditTable
 				defaultColumns={columns}
 				originData={dataSource}
-				basicData={{ name: '', includeCol: '', indexMethod: '' }}
+				basicData={{ name: '', contentList: [], indexMethod: '' }}
 				changedData={changedData}
 				returnValues={onChange}
+				returnSelectValues={getSelectValues}
 			/>
 			{open && (
 				<IncludeColsForm
@@ -91,6 +102,7 @@ export default function PgExclusiveness(
 					onCancel={() => setOpen(false)}
 					onCreate={onCreate}
 					data={originData}
+					selectRow={selectRow}
 				/>
 			)}
 		</>

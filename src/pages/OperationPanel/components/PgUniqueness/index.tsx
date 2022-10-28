@@ -14,6 +14,11 @@ const basicData = {
 	columnName: '',
 	deferrablity: ''
 };
+const deferrablityOptions = [
+	{ label: '不可延迟', value: 'NOT DEFERRABLE' },
+	{ label: '可延迟不可延期', value: 'DEFERRABLE INITIALLY IMMEDIATE' },
+	{ label: '可延迟且可延期', value: 'DEFERRABLE INITIALLY DEFERRED' }
+];
 interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
 	key: string;
 }
@@ -42,6 +47,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 			title: '名称',
 			dataIndex: 'name',
 			key: 'name',
+			width: 200,
 			editable: true,
 			componentType: 'string'
 		},
@@ -57,17 +63,10 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 			title: '可延迟/延期',
 			dataIndex: 'deferrablity',
 			key: 'deferrablity',
-			render: (text: any, record: EditPgsqlForeignKeyItem) => (
-				<Select style={{ width: 120 }} dropdownMatchSelectWidth={false}>
-					<Option value="NOT DEFERRABLE">不可延迟</Option>
-					<Option value="DEFERRABLE INITIALLY IMMEDIATE">
-						可延迟不可延期
-					</Option>
-					<Option value="DEFERRABLE INITIALLY DEFERRED">
-						可延迟且可延期
-					</Option>
-				</Select>
-			)
+			width: 200,
+			editable: true,
+			componentType: 'select',
+			selectOptions: deferrablityOptions
 		}
 	];
 	const onChange = (values: any) => {

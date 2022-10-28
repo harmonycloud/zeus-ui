@@ -9,6 +9,7 @@ interface IncludesColProps {
 	onCancel: () => void;
 	onCreate: (value: any) => void;
 	data: pgsqlTableDetail | undefined;
+	selectRow: any;
 }
 const symbolOptions = [
 	{ text: '&&', value: '&&' },
@@ -27,14 +28,19 @@ const symbolOptions = [
 ];
 const orderOptions = [{ text: 'DESC', value: 'DESC' }];
 export default function IncludeColsForm(props: IncludesColProps): JSX.Element {
-	const { open, onCancel, onCreate, data } = props;
+	const { open, onCancel, onCreate, data, selectRow } = props;
+	console.log(selectRow);
 	const [columnsOption] = useState<AutoCompleteOptionItem[]>(
 		data?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { label: item.column, value: item.column };
 		}) || []
 	);
 	const [returnData, setReturnData] = useState([]);
-
+	const [dataSource] = useState(
+		selectRow?.contentList.map((item: any, index: number) => {
+			return { ...item, key: index };
+		}) || []
+	);
 	const onOk = () => {
 		onCreate(returnData);
 		onCancel();
@@ -49,8 +55,8 @@ export default function IncludeColsForm(props: IncludesColProps): JSX.Element {
 		},
 		{
 			title: '字段',
-			dataIndex: 'field',
-			key: 'field',
+			dataIndex: 'columnName',
+			key: 'columnName',
 			editable: true,
 			width: 200,
 			componentType: 'select',
@@ -88,8 +94,8 @@ export default function IncludeColsForm(props: IncludesColProps): JSX.Element {
 		>
 			<EditTable
 				defaultColumns={columns}
-				originData={[]}
-				basicData={{ field: '', order: '', symbol: '' }}
+				originData={dataSource}
+				basicData={{ columnName: '', order: '', symbol: '' }}
 				returnValues={getValues}
 			/>
 		</Modal>

@@ -73,7 +73,7 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 					))}
 				</Select>
 			</Form.Item>
-			<Form.Item label="表名（多选）">
+			<Form.Item label="表名（多选）" name="tablesName">
 				<Select mode="multiple">
 					{tables.map((item: PgsqlTableItem) => (
 						<Option value={item.tableName} key={item.tableName}>

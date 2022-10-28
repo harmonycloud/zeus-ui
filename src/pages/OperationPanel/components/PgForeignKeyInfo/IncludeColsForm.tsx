@@ -32,8 +32,6 @@ export default function IncludeColsForm(
 		schemaName,
 		selectRow
 	} = props;
-	console.log(selectRow);
-	console.log(data);
 	const [columnsOption] = useState<AutoCompleteOptionItem[]>(
 		data?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { label: item.column, value: item.column };

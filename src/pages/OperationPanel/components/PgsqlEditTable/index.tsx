@@ -53,6 +53,15 @@ export default function PgsqlEditTable(
 		};
 		if (dataIndex === 'info') {
 			setOriginData({ ...originData, ...values });
+		} else if (dataIndex === 'inherit') {
+			const list = values.tablesName.map((item: string) => {
+				const result: any = {};
+				result.databaseName = dbName;
+				result.schemaName = values.schemaName;
+				result.tableName = item;
+				return result;
+			});
+			setOriginData({ ...originData, tableInheritList: list });
 		} else {
 			setOriginData({ ...originData, ...result });
 		}

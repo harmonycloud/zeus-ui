@@ -29,6 +29,11 @@ const updateAction = [
 	{ label: 'CASCADE', value: 'CASCADE' },
 	{ label: 'SET NULL', value: 'SET NULL' }
 ];
+const deferrablityOptions = [
+	{ label: '不可延迟', value: 'NOT DEFERRABLE' },
+	{ label: '可延迟不可延期', value: 'DEFERRABLE INITIALLY IMMEDIATE' },
+	{ label: '可延迟且可延期', value: 'DEFERRABLE INITIALLY DEFERRED' }
+];
 interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
 	key: string;
 }
@@ -124,20 +129,9 @@ export default function PgForeignKeyInfo(
 			dataIndex: 'deferrablity',
 			key: 'deferrablity',
 			width: 200,
-			render: () => (
-				<Select
-					style={{ width: '100%' }}
-					dropdownMatchSelectWidth={false}
-				>
-					<Option value="NOT DEFERRABLE">不可延迟</Option>
-					<Option value="DEFERRABLE INITIALLY IMMEDIATE">
-						可延迟不可延期
-					</Option>
-					<Option value="DEFERRABLE INITIALLY DEFERRED">
-						可延迟且可延期
-					</Option>
-				</Select>
-			)
+			editable: true,
+			componentType: 'select',
+			selectOptions: deferrablityOptions
 		},
 		{
 			title: '删除时',
@@ -163,9 +157,9 @@ export default function PgForeignKeyInfo(
 	};
 	const onCreate = (values: any) => {
 		setChangeData({ contentList: values });
+		setSelectRow({ ...selectRow, contentList: values });
 	};
 	const getSelectValues = (value: any) => {
-		console.log(value);
 		setSelectRow(value);
 	};
 	return (
