@@ -328,6 +328,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				return '运行正常';
 			case 'Creating':
 				return '启动中';
+			case 'Recover':
+				return '恢复中';
 			case undefined:
 				return '';
 			default:
