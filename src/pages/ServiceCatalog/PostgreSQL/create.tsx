@@ -508,7 +508,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		}).then((res) => {
 			if (!res.data) return;
 			setInstanceSpec('Customize');
-			if (res.data.nodeAffinity) {
+			if (res.data?.nodeAffinity?.length > 0) {
 				setAffinity({
 					flag: true,
 					label: '',
@@ -516,7 +516,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				});
 				setAffinityLabels(res.data?.nodeAffinity || []);
 			}
-			if (res.data.tolerations) {
+			if (res.data?.tolerations?.length > 0) {
 				setTolerations({
 					flag: true,
 					label: ''
