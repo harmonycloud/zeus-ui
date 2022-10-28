@@ -1,4 +1,4 @@
-import { gerIndexs } from '@/services/operatorPanel';
+import { getIndexs } from '@/services/operatorPanel';
 import { notification, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { IndexItem, MysqlTableItem } from '../../index.d';
@@ -21,7 +21,7 @@ export default function IndexTable(props: IndexTableProps): JSX.Element {
 		{ title: '备注', dataIndex: 'comment', key: 'comment' }
 	];
 	useEffect(() => {
-		gerIndexs({
+		getIndexs({
 			clusterId,
 			namespace,
 			middlewareName,

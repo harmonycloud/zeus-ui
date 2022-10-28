@@ -26,11 +26,13 @@ const rowFormatOptions = [
 export default function MysqlTableInfo(
 	props: MysqlTableInfoProps
 ): JSX.Element {
-	const { isEdit, handleChange } = props;
+	const { handleChange, originData } = props;
 	const [form] = Form.useForm();
 	useEffect(() => {
-		if (isEdit) {
-			// TODO 编辑状态时，表单回显
+		if (originData) {
+			form.setFieldsValue({
+				//  TODO 编辑表字段回显
+			});
 		}
 	}, []);
 	const onValuesChange = (changedFields: any, allFields: any) => {
@@ -47,28 +49,11 @@ export default function MysqlTableInfo(
 			<Form.Item
 				label="表名"
 				name="tableName"
-				rules={[
-					{ required: true, message: '请输入表名' },
-					{
-						max: 100,
-						type: 'string',
-						message: '表名长度不超过100'
-					}
-				]}
+				rules={[{ required: true, message: '请输入表名' }]}
 			>
 				<Input placeholder="请输入表名" />
 			</Form.Item>
-			<Form.Item
-				label="备注"
-				name="remark"
-				rules={[
-					{
-						max: 100,
-						type: 'string',
-						message: '备注长度不超过100'
-					}
-				]}
-			>
+			<Form.Item label="备注" name="comment">
 				<Input placeholder="请输入备注" />
 			</Form.Item>
 			<Form.Item
@@ -79,25 +64,16 @@ export default function MysqlTableInfo(
 			>
 				<Select options={storageEngineOptions} />
 			</Form.Item>
-			<Form.Item
-				label="字符集"
-				name="characterSet"
-				required
-				initialValue="utf8mb3"
-			>
+			<Form.Item label="字符集" name="charset" required>
 				<Select options={[]} />
 			</Form.Item>
-			<Form.Item
-				label="校验规则"
-				name="rules"
-				initialValue="utf8_general_ci"
-			>
+			<Form.Item label="校验规则" name="collate">
 				<Select options={[]} />
 			</Form.Item>
-			<Form.Item label="自增值" name="increment">
+			<Form.Item label="自增值" name="autoIncrement">
 				<InputNumber style={{ width: '100%' }} />
 			</Form.Item>
-			<Form.Item label="行格式" name="rowFormat" initialValue="DYNAMIC">
+			<Form.Item label="行格式" name="rowFormat">
 				<Select options={rowFormatOptions} />
 			</Form.Item>
 		</Form>

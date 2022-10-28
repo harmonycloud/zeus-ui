@@ -15,6 +15,7 @@ interface IncludeColsFormProps {
 	middlewareName: string;
 	databaseName: string;
 	schemaName: string;
+	selectRow: any;
 }
 export default function IncludeColsForm(
 	props: IncludeColsFormProps
@@ -28,7 +29,8 @@ export default function IncludeColsForm(
 		namespace,
 		middlewareName,
 		databaseName,
-		schemaName
+		schemaName,
+		selectRow
 	} = props;
 	const [columnsOption] = useState<AutoCompleteOptionItem[]>(
 		data?.columnDtoList.map((item: PgsqlColItem) => {
@@ -36,33 +38,9 @@ export default function IncludeColsForm(
 		}) || []
 	);
 	const [returnData, setReturnData] = useState([]);
-	const [tables, setTables] = useState<AutoCompleteOptionItem[]>([]);
-	const [selectRow, setSelectRow] = useState<any>({});
-	const [cols, setCols] = useState<any>({});
+	const [cols, setCols] = useState<AutoCompleteOptionItem[]>([]);
 	useEffect(() => {
-		getPgTables({
-			clusterId,
-			namespace,
-			middlewareName,
-			databaseName: databaseName,
-			schemaName: schemaName
-		}).then((res) => {
-			if (res.success) {
-				setTables(
-					res.data.map((item: PgsqlTableItem) => {
-						return { label: item.tableName, value: item.tableName };
-					})
-				);
-			}
-		});
-	}, []);
-	useEffect(() => {
-		const listCols = Object.keys(cols);
-		if (
-			selectRow &&
-			selectRow?.targetTable &&
-			!listCols.includes(selectRow.targetTable)
-		) {
+		if (selectRow && selectRow?.targetTable) {
 			getPgCols({
 				clusterId,
 				namespace,
@@ -75,10 +53,7 @@ export default function IncludeColsForm(
 					const list = res.data.map((item: PgsqlColItem) => {
 						return { label: item.column, value: item.column };
 					});
-					setCols({
-						...cols,
-						[selectRow.targetTable]: list
-					});
+					setCols(list);
 				}
 			});
 		}
@@ -105,31 +80,18 @@ export default function IncludeColsForm(
 			selectOptions: columnsOption
 		},
 		{
-			title: '参考表',
-			dataIndex: 'targetTable',
-			key: 'targetTable',
-			editable: true,
-			width: 200,
-			componentType: 'select',
-			selectOptions: tables
-		},
-		{
 			title: '参考列',
 			dataIndex: 'targetColumn',
 			key: 'targetColumn',
 			editable: true,
 			width: 200,
 			componentType: 'select',
-			selectOptions: cols[selectRow?.targetTable] || []
+			selectOptions: cols
 		}
 	];
 	const getValues = (values: any) => {
 		console.log(values);
 		setReturnData(values);
-	};
-	const getSelectValues = (value: any) => {
-		console.log(value);
-		setSelectRow(value);
 	};
 	return (
 		<Modal
@@ -144,7 +106,6 @@ export default function IncludeColsForm(
 				defaultColumns={columns}
 				basicData={{ colInfo: '', targetTable: '', targetColumn: '' }}
 				returnValues={getValues}
-				returnSelectValues={getSelectValues}
 			/>
 		</Modal>
 	);

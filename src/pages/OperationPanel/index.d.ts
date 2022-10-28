@@ -38,7 +38,8 @@ export interface AddPgDatabaseProps {
 	onRefresh: () => void;
 }
 export interface MysqlEditTableProps {
-	isEdit?: boolean;
+	tableName?: string;
+	dbName: string;
 }
 export interface PgsqlEditTableProps {
 	isEdit?: boolean;
@@ -47,8 +48,8 @@ export interface PgsqlEditTableProps {
 	tableName?: string;
 }
 export interface MysqlTableInfoProps {
-	isEdit: boolean;
 	handleChange: (values: any) => void;
+	originData: MysqlTableDetail | undefined;
 }
 export interface MysqlColInfoProps {
 	originData: any[];
@@ -56,11 +57,11 @@ export interface MysqlColInfoProps {
 }
 
 export interface MysqlIndexInfoProps {
-	originData: any[];
+	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 }
 export interface MysqlForeignKeyInfoProps {
-	originData: any[];
+	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 }
 export interface PgsqlTableInfoProps {
@@ -524,4 +525,24 @@ export interface OrderDtoItem {
 }
 export interface getPgDataTypeRes extends resProps {
 	data: string[];
+}
+export interface MysqlTableDetail {
+	autoIncrement: number;
+	charset: string;
+	collate: string;
+	columns: MysqlColItem[];
+	comment: string;
+	foreignKeys: MysqlForeignItem[];
+	indices: IndexItem[];
+	maxRows: null;
+	minRows: null;
+	rowFormat: null;
+	rows: number;
+	tableName: string;
+}
+export interface MysqlForeignItem {
+	column: string;
+	foreignKey: string;
+	referenceTable: string;
+	referencedColumn: string;
 }

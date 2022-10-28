@@ -106,10 +106,10 @@ export const getCols: (
 ) => Promise<getColsResProps> = (params: getColParamsProps) => {
 	return Axios.get(URL.getCols, params);
 };
-export const gerIndexs: (params: getColParamsProps) => Promise<getIndexRes> = (
+export const getIndexs: (params: getColParamsProps) => Promise<getIndexRes> = (
 	params: getColParamsProps
 ) => {
-	return Axios.get(URL.gerIndexs, params);
+	return Axios.get(URL.getIndexs, params);
 };
 export const deleteMysqlTable: (
 	params: getColParamsProps
@@ -252,8 +252,13 @@ export const getPgsqlDataType: (
 ) => Promise<getPgDataTypeRes> = (params: SendDataParamsProps) => {
 	return Axios.get(URL.getPgsqlDataType, params);
 };
-export const getPgsqlCollate = (params: SendDataParamsProps) => {
+export const getPgsqlCollate: (
+	params: SendDataParamsProps
+) => Promise<getPgDataTypeRes> = (params: SendDataParamsProps) => {
 	return Axios.get(URL.getPgsqlCollate, params);
+};
+export const getMysqlDetail = (params: getMysqlExcelParamsProps) => {
+	return Axios.get(URL.getMysqlDetail, params);
 };
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复

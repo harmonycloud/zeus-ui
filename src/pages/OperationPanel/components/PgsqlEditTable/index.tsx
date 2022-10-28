@@ -17,7 +17,7 @@ import { getPgsqlTableDetail } from '@/services/operatorPanel';
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
-	const { isEdit, schemaName, dbName, tableName } = props;
+	const { schemaName, dbName, tableName } = props;
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<pgsqlTableDetail>();

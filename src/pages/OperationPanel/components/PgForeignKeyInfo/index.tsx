@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { PgForeignKeyInfoProps, pgsqlForeignKeyItem } from '../../index.d';
+import {
+	PgForeignKeyInfoProps,
+	pgsqlForeignKeyItem,
+	PgsqlTableItem
+} from '../../index.d';
 import IncludeColsForm from './IncludeColsForm';
 import { Select } from 'antd';
+import { AutoCompleteOptionItem } from '@/types/comment';
+import { getPgTables } from '@/services/operatorPanel';
 const basicData = {
 	foreignKeyName: '',
 	includeCol: '',
@@ -47,7 +53,26 @@ export default function PgForeignKeyInfo(
 			return { ...item, key: item.name };
 		}) || []
 	);
+	const [tables, setTables] = useState<AutoCompleteOptionItem[]>([]);
 	const [changedData, setChangeData] = useState<any>();
+	const [selectRow, setSelectRow] = useState<any>({});
+	useEffect(() => {
+		getPgTables({
+			clusterId,
+			namespace,
+			middlewareName,
+			databaseName: databaseName,
+			schemaName: schemaName
+		}).then((res) => {
+			if (res.success) {
+				setTables(
+					res.data.map((item: PgsqlTableItem) => {
+						return { label: item.tableName, value: item.tableName };
+					})
+				);
+			}
+		});
+	}, []);
 	const columns = [
 		{
 			title: '序号',
@@ -63,6 +88,15 @@ export default function PgForeignKeyInfo(
 			editable: true,
 			width: 150,
 			componentType: 'string'
+		},
+		{
+			title: '参考表',
+			dataIndex: 'targetTable',
+			key: 'targetTable',
+			editable: true,
+			width: 200,
+			componentType: 'select',
+			selectOptions: tables
 		},
 		{
 			title: '包含列',
@@ -131,6 +165,10 @@ export default function PgForeignKeyInfo(
 			.join(',');
 		setChangeData({ includeCols: listData });
 	};
+	const getSelectValues = (value: any) => {
+		console.log(value);
+		setSelectRow(value);
+	};
 	return (
 		<>
 			<EditTable
@@ -139,6 +177,7 @@ export default function PgForeignKeyInfo(
 				defaultColumns={columns}
 				changedData={changedData}
 				returnValues={onChange}
+				returnSelectValues={getSelectValues}
 			/>
 			{open && (
 				<IncludeColsForm
@@ -151,6 +190,7 @@ export default function PgForeignKeyInfo(
 					clusterId={clusterId}
 					namespace={namespace}
 					middlewareName={middlewareName}
+					selectRow={selectRow}
 				/>
 			)}
 		</>

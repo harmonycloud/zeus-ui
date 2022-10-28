@@ -1,48 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Divider, Space, Tabs } from 'antd';
-import { MysqlEditTableProps } from '../../index.d';
+import {
+	MysqlEditTableProps,
+	MysqlTableDetail,
+	ParamsProps
+} from '../../index.d';
 import MysqlTableInfo from '../MysqlTableInfo';
 import MysqlColInfo from '../MysqlColInfo';
 import MysqlIndexInfo from '../MysqlIndexInfo';
 import MysqlForeignKeyInfo from '../MysqlForeignKeyInfo';
+import { getMysqlDetail } from '@/services/operatorPanel';
+import { useParams } from 'react-router';
 
 export default function MysqlEditTable(
 	props: MysqlEditTableProps
 ): JSX.Element {
-	const { isEdit } = props;
+	const { tableName, dbName } = props;
+	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
-	const [originData, setOriginData] = useState({
-		info: {},
-		colInfo: [
-			{
-				key: 0,
-				columnName: 'id',
-				columnType: 'int',
-				length: '0',
-				nullable: false,
-				primaryKey: true,
-				description: 'lalalal'
-			}
-		],
-		indexInfo: [
-			{
-				key: 0,
-				indexName: 'fff',
-				includeCols: ['fdadf(50)', 'ddff(69)'],
-				indexType: 'Normal',
-				indexWay: '--'
-			}
-		],
-		foreignKeyInfo: []
-	});
+	const [originData, setOriginData] = useState<MysqlTableDetail>();
+	useEffect(() => {
+		if (tableName) {
+			getMysqlDetail({
+				database: dbName,
+				table: tableName,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			}).then((res) => {
+				if (res.success) {
+					setOriginData(res.data);
+				}
+			});
+		}
+	}, [tableName]);
 	const onChange = (key: string) => {
 		setActiveKey(key);
 	};
 	const infoChange = (values: any, dataIndex: string) => {
-		setOriginData({
-			...originData,
-			[dataIndex]: values
-		});
+		console.log(values, dataIndex);
+		// setOriginData({
+		// 	...originData,
+		// 	[dataIndex]: values
+		// });
 	};
 	const save = () => {
 		console.log('click save', originData);
@@ -53,36 +53,36 @@ export default function MysqlEditTable(
 				case 'basicInfo':
 					return (
 						<MysqlTableInfo
-							isEdit={isEdit || false}
 							handleChange={(values: any) =>
 								infoChange(values, 'info')
 							}
+							originData={originData}
 						/>
 					);
 				case 'colInfo':
 					return (
 						<MysqlColInfo
-							originData={originData.colInfo}
+							originData={originData?.columns || []}
 							handleChange={(values: any) =>
-								infoChange(values, 'colInfo')
+								infoChange(values, 'columns')
 							}
 						/>
 					);
 				case 'indexInfo':
 					return (
 						<MysqlIndexInfo
-							originData={originData.indexInfo}
+							originData={originData}
 							handleChange={(values: any) =>
-								infoChange(values, 'indexInfo')
+								infoChange(values, 'indices')
 							}
 						/>
 					);
 				case 'foreignKeyInfo':
 					return (
 						<MysqlForeignKeyInfo
-							originData={originData.foreignKeyInfo}
+							originData={originData}
 							handleChange={(values: any) =>
-								infoChange(values, 'foreignKeyInfo')
+								infoChange(values, 'foreignKeys')
 							}
 						/>
 					);

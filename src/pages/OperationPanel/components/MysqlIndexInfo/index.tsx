@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
 import IncludeColsForm from './IncludeColsForm';
-import { MysqlIndexInfoProps } from '../../index.d';
+import { IndexItem, MysqlIndexInfoProps } from '../../index.d';
 const basicData = {
-	indexName: '',
-	includeCols: [],
-	indexType: '',
-	indexWay: ''
+	index: '',
+	indexColumns: [],
+	storageType: '',
+	type: ''
 };
 const indexTypeOptions = [
 	{ label: 'Normal', value: 'Normal' },
@@ -18,12 +18,21 @@ const indexWayOptions = [
 	{ label: 'BTree', value: 'BTree' },
 	{ label: 'Hash', value: 'Hash' }
 ];
+interface EditIndexItem extends IndexItem {
+	key: string;
+}
 export default function MysqlIndexInfo(
 	props: MysqlIndexInfoProps
 ): JSX.Element {
 	const { originData, handleChange } = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [changedData, setChangeData] = useState<any>();
+	const [selectRow, setSelectRow] = useState<any>({});
+	const [dataSource, setDataSource] = useState<EditIndexItem[]>(
+		originData?.indices.map((item) => {
+			return { ...item, key: item.index };
+		}) || []
+	);
 	const columns = [
 		{
 			title: '序号',
@@ -34,30 +43,30 @@ export default function MysqlIndexInfo(
 		},
 		{
 			title: '索引名',
-			dataIndex: 'indexName',
-			key: 'indexName',
+			dataIndex: 'index',
+			key: 'index',
 			editable: true,
 			width: 150,
 			componentType: 'string'
 		},
 		{
 			title: '包含列',
-			dataIndex: 'includeCols',
-			key: 'includeCols',
-			componentType: 'includeCols',
+			dataIndex: 'indexColumns',
+			key: 'indexColumns',
 			render: (_text: any, record: any) => (
 				<span
 					onClick={() => setOpen(true)}
 					style={{ cursor: 'pointer' }}
 				>
-					{record.includeCols.join(',')}
+					编辑
+					{/* {record.indexColumns.join(',')} */}
 				</span>
 			)
 		},
 		{
 			title: '索引类型',
-			dataIndex: 'indexType',
-			key: 'indexType',
+			dataIndex: 'storageType',
+			key: 'storageType',
 			editable: true,
 			width: 150,
 			componentType: 'select',
@@ -65,8 +74,8 @@ export default function MysqlIndexInfo(
 		},
 		{
 			title: '索引方式',
-			dataIndex: 'indexWay',
-			key: 'indexWay',
+			dataIndex: 'type',
+			key: 'type',
 			editable: true,
 			width: 150,
 			componentType: 'select',
@@ -82,20 +91,27 @@ export default function MysqlIndexInfo(
 	const onChange = (values: any) => {
 		handleChange(values);
 	};
+	const getSelectValue = (value: any) => {
+		console.log(value);
+		setSelectRow(value);
+	};
 	return (
 		<>
 			<EditTable
 				defaultColumns={columns}
-				originData={originData}
+				originData={dataSource}
 				basicData={basicData}
 				changedData={changedData}
 				returnValues={onChange}
+				returnSelectValues={getSelectValue}
 			/>
 			{open && (
 				<IncludeColsForm
 					open={open}
 					onCancel={() => setOpen(false)}
 					onCreate={onCreate}
+					columns={originData?.columns || []}
+					data={selectRow}
 				/>
 			)}
 		</>

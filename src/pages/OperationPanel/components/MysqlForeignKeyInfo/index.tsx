@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { MysqlForeignKeyInfoProps } from '../../index.d';
+import { MysqlForeignItem, MysqlForeignKeyInfoProps } from '../../index.d';
+import { AutoCompleteOptionItem } from '@/types/comment';
 const basicData = {
-	foreignKeyName: '',
-	includeCol: '',
+	foreignKey: '',
+	column: '',
 	referenceLib: '',
 	referenceTable: '',
-	referenceCol: '',
+	referencedColumn: '',
 	deleteAction: '',
 	updateAction: ''
 };
@@ -22,10 +23,24 @@ const updateAction = [
 	{ label: 'CASCADE', value: 'CASCADE' },
 	{ label: 'SET NULL', value: 'SET NULL' }
 ];
+interface EditMysqlForeignItem extends MysqlForeignItem {
+	key: string;
+}
 export default function MysqlForeignKeyInfo(
 	props: MysqlForeignKeyInfoProps
 ): JSX.Element {
 	const { originData, handleChange } = props;
+	const [dataSource] = useState<EditMysqlForeignItem[]>(
+		originData?.foreignKeys.map((item) => {
+			return { ...item, key: item.foreignKey };
+		}) || []
+	);
+	const [columnOptions] = useState<AutoCompleteOptionItem[]>(
+		originData?.columns.map((item) => {
+			return { label: item.column, value: item.column };
+		}) || []
+	);
+
 	const columns = [
 		{
 			title: '序号',
@@ -35,18 +50,18 @@ export default function MysqlForeignKeyInfo(
 		},
 		{
 			title: '外键名',
-			dataIndex: 'foreignKeyName',
-			key: 'foreignKeyName',
+			dataIndex: 'foreignKey',
+			key: 'foreignKey',
 			editable: true,
 			componentType: 'string'
 		},
 		{
 			title: '包含列',
-			dataIndex: 'includeCol',
-			key: 'includeCol',
+			dataIndex: 'column',
+			key: 'column',
 			editable: true,
 			componentType: 'select',
-			selectOptions: []
+			selectOptions: columnOptions
 		},
 		{
 			title: '参考库',
@@ -66,8 +81,8 @@ export default function MysqlForeignKeyInfo(
 		},
 		{
 			title: '参考列',
-			dataIndex: 'referenceCol',
-			key: 'referenceCol',
+			dataIndex: 'referencedColumn',
+			key: 'referencedColumn',
 			editable: true,
 			componentType: 'select',
 			selectOptions: []
@@ -95,7 +110,7 @@ export default function MysqlForeignKeyInfo(
 	return (
 		<EditTable
 			basicData={basicData}
-			originData={originData}
+			originData={dataSource}
 			defaultColumns={columns}
 			returnValues={onChange}
 		/>

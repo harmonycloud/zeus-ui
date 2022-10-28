@@ -29,7 +29,8 @@ import {
 	DatabaseItem,
 	PgsqslDatabaseItem,
 	SchemaItem,
-	PgsqlTableItem
+	PgsqlTableItem,
+	IndexItem
 } from '../index.d';
 import ModeMag from '../ModeMag';
 import PgsqlEditTable from '../components/PgsqlEditTable';
@@ -46,7 +47,8 @@ import {
 	getPgsqlExcel,
 	getPgsqlSQL,
 	updatePgTable,
-	updateMysqlTable
+	updateMysqlTable,
+	getIndexs
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
 import { Key } from 'rc-table/lib/interface';
@@ -107,8 +109,7 @@ const initialItems = [
 		children: <MysqlSqlConsole />,
 		key: '1',
 		closable: false
-	},
-	{ label: 'Tab 2', children: <MysqlEditTable />, key: '2' }
+	}
 ];
 const updateTreeData = (
 	list: DataNode[],
@@ -152,7 +153,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [pgTreeData, setPgTreeData] = useState<DataNode[]>([]);
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
-	const [items, setItems] = useState(initialItems);
+	const [items, setItems] = useState<any[]>(initialItems);
 	const [pgsqlExpandedKeys, setPgslqExpandedKeys] = useState<string[]>([]);
 	const [selectDatabase, setSelectDatabase] = useState<string>('');
 	const [selectSchema, setSelectSchema] = useState<string>('');
@@ -221,7 +222,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					`编辑表:${i}`,
 					params.type === 'mysql' ? (
-						<MysqlEditTable />
+						<MysqlEditTable
+							tableName={i}
+							dbName={fatherNode || ''}
+						/>
 					) : (
 						<PgsqlEditTable
 							dbName={selectDatabase}
@@ -324,7 +328,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					'创建表',
 					params.type === 'mysql' ? (
-						<MysqlEditTable />
+						<MysqlEditTable dbName={fatherNode || ''} />
 					) : (
 						<PgsqlEditTable
 							dbName={selectDatabase}
@@ -573,14 +577,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			});
 		}
 	}, [selectDatabase, selectSchema]);
-	const mysqlOnLoadData = ({ key, value, children }: any) =>
+	const mysqlOnLoadData = ({ key, value, type, children }: any) =>
 		new Promise<void>((resolve) => {
-			console.log(key, value, children);
+			console.log(key, type, value, children);
 			if (children) {
 				resolve();
 				return;
 			}
-			if (key.includes('-')) {
+			if (type === 'table') {
 				// * 当前加载的树为表格的情况
 				const array = key.split('-');
 				const sendData = {
@@ -612,30 +616,93 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									result.icon = (
 										<IconFont type="icon-liebiao" />
 									);
+									result.value = item.column;
 									result.isLeaf = true;
 									return result;
 								}
 							);
+							const lt = [
+								{
+									title: `列(${list.length})`,
+									key: `${key}-0`,
+									icon: <IconFont type="icon-liebiao" />,
+									children: list,
+									type: 'column'
+								},
+								{
+									title: '索引',
+									key: `${key}-1`,
+									icon: (
+										<IconFont
+											style={{ fontSize: 21 }}
+											type="icon-lianjiesuoyin"
+										/>
+									),
+									value: value,
+									type: 'index'
+								}
+							];
 							setTreeData((origin) =>
-								updateTreeData(origin, key, [
-									{
-										title: `列(${list.length})`,
-										key: `${key}-0`,
-										icon: <IconFont type="icon-liebiao" />,
-										children: list
-									},
-									{
-										title: '索引',
-										key: `${key}-1`,
-										icon: (
-											<IconFont
-												style={{ fontSize: 21 }}
-												type="icon-lianjiesuoyin"
-											/>
-										)
-									}
-								])
+								updateTreeData(origin, key, lt)
 							);
+							resolve();
+						} else {
+							setTreeData((origin) =>
+								updateTreeData(origin, key, [])
+							);
+							resolve();
+						}
+					} else {
+						resolve();
+						return;
+					}
+				});
+			} else if (type === 'index') {
+				const array = key.split('-');
+				getIndexs({
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name,
+					database: array[0],
+					table: value
+				}).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const list = res.data.map(
+								(item: IndexItem, index) => {
+									const result: any = {};
+									result.title = (
+										<span
+											title={item.index}
+											className="text-overflow"
+											style={{
+												width: '80px',
+												display: 'block'
+											}}
+										>
+											{item.index}
+										</span>
+									);
+									result.key = `${key}-1-${index}`;
+									result.icon = (
+										<IconFont type="icon-liebiao" />
+									);
+									result.value = item.index;
+									result.isLeaf = true;
+									return result;
+								}
+							);
+							setTreeData((origin) => {
+								// const l = origin.map((item) => {
+								// 	item?.children?.map((i) => {
+								// 		if (i.key === key) {
+								// 			i.title = `索引(${list.length})`;
+								// 		}
+								// 	});
+								// 	return item;
+								// });
+								return updateTreeData(origin, key, list);
+							});
 							resolve();
 						} else {
 							setTreeData((origin) =>

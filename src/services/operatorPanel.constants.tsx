@@ -16,7 +16,7 @@ export const getDbTables = `${api}/clusters/{clusterId}/namespaces/{namespace}/m
 // * 查看表所有列
 export const getCols = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/columns`;
 // * 查看表所有索引
-export const gerIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
+export const getIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
 // * mysql 删除数据表
 export const deleteMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
 // * 查询用户列表
@@ -73,6 +73,9 @@ export const updateMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespa
 export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/dataType`;
 // * pgsql 获取校验规则
 export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/collate`;
+// * mysql 获取表格详情
+export const getMysqlDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
+
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 // * 合并 查询数据库列表
