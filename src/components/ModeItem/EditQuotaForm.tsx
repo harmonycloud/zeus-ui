@@ -72,7 +72,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: middlewareType === 'elasticsearch' ? 4 : 0.256,
+					memory: middlewareType === 'elasticsearch' ? 4 : 1,
 					specId: value
 				});
 				break;
@@ -80,7 +80,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: middlewareType === 'elasticsearch' ? 8 : 1,
+					memory: middlewareType === 'elasticsearch' ? 8 : 2,
 					specId: value
 				});
 				break;
@@ -88,7 +88,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
-					memory: middlewareType === 'elasticsearch' ? 8 : 2,
+					memory: 8,
 					specId: value
 				});
 				break;
@@ -96,7 +96,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
-					memory: middlewareType === 'elasticsearch' ? 16 : 8,
+					memory: 16,
 					specId: value
 				});
 				break;
@@ -104,14 +104,6 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 8 : 2,
-					memory: middlewareType === 'elasticsearch' ? 32 : 16,
-					specId: value
-				});
-				break;
-			case '6':
-				setModifyData({
-					...modifyData,
-					cpu: 2,
 					memory: 32,
 					specId: value
 				});

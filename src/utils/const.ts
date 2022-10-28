@@ -438,30 +438,25 @@ export const redisSentinelDataList = [
 	{
 		id: '1',
 		cpu: '2 Core',
-		memory: '0.256 Gi'
+		memory: '1 Gi'
 	},
 	{
 		id: '2',
 		cpu: '2 Core',
-		memory: '1 Gi'
+		memory: '2 Gi'
 	},
 	{
 		id: '3',
 		cpu: '2 Core',
-		memory: '2 Gi'
+		memory: '8 Gi'
 	},
 	{
 		id: '4',
 		cpu: '2 Core',
-		memory: '8 Gi'
-	},
-	{
-		id: '5',
-		cpu: '2 Core',
 		memory: '16 Gi'
 	},
 	{
-		id: '6',
+		id: '5',
 		cpu: '2 Core',
 		memory: '32 Gi'
 	}

@@ -190,7 +190,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			num: 3,
 			specId: '1',
 			cpu: 2,
-			memory: 0.256,
+			memory: 1,
 			storageClass: '',
 			storageQuota: 0
 		},
@@ -200,7 +200,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			num: 3,
 			specId: '1',
 			cpu: 2,
-			memory: 0.256
+			memory: 1
 		}
 	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
