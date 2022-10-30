@@ -2103,11 +2103,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									}
 									isActiveActive={
 										globalNamespace.name === '*'
-											? judgeActiveActive(
-													form.getFieldValue(
-														'namespace'
-													)
-											  )
+											? !namespace
+												? judgeActiveActive(
+														form.getFieldValue(
+															'namespace'
+														)
+												  )
+												: namespace
 											: globalNamespace.availableDomain
 									}
 								/>

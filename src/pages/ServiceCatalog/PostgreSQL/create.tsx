@@ -1423,11 +1423,13 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									clusterId={globalCluster.id}
 									isActiveActive={
 										globalNamespace.name === '*'
-											? judgeActiveActive(
-													form.getFieldValue(
-														'namespace'
-													)
-											  )
+											? !namespace
+												? judgeActiveActive(
+														form.getFieldValue(
+															'namespace'
+														)
+												  )
+												: namespace
 											: globalNamespace.availableDomain
 									}
 								/>
