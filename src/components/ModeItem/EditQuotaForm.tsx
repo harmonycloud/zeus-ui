@@ -36,7 +36,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		type,
 		inputChange,
 		middlewareType,
-		isActiveActive
+		isActiveActive,
+		disabled
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [storageClassList, setStorageClassList] = useState<
@@ -58,7 +59,21 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				});
 			}
 		});
+		if (disabled) {
+			setInstanceSpec('Customize');
+		}
 	}, []);
+	useEffect(() => {
+		if (data) {
+			form.setFieldsValue({
+				cpu: data.cpu,
+				memory: data.memory,
+				storageClass:
+					data.storageClass === '' ? undefined : data.storageClass,
+				storageQuota: data.storageQuota
+			});
+		}
+	}, [data]);
 	const onOk = () => {
 		form.validateFields().then((values) => {
 			const value = { ...modifyData, ...values };
@@ -66,7 +81,6 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		});
 	};
 	const checkGeneral = (value: any) => {
-		console.log(value);
 		switch (value) {
 			case '1':
 				setModifyData({
@@ -164,6 +178,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 								onCallBack={(value: any) => {
 									setInstanceSpec(value);
 								}}
+								disabled={disabled}
 							/>
 							{instanceSpec === 'General' ? (
 								<div
@@ -215,6 +230,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 														style={{
 															width: '100%'
 														}}
+														disabled={disabled}
 														placeholder="请输入自定义CPU配额，单位为Core"
 													/>
 												</FormItem>
@@ -247,6 +263,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 														style={{
 															width: '100%'
 														}}
+														disabled={disabled}
 														placeholder="请输入自定义内存配额，单位为Gi"
 													/>
 												</FormItem>

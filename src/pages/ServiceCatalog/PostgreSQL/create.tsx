@@ -551,8 +551,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
-				mysqlPort: res.data.port,
-				mysqlPwd: res.data.password,
+				pgsqlPwd: res.data.password,
 				cpu: Number(res.data.quota.postgresql.cpu),
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')

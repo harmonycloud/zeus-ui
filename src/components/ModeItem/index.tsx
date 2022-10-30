@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
 import { Input } from 'antd';
 import EditQuotaForm from './EditQuotaForm';
 import './index.scss';
@@ -21,6 +20,7 @@ export interface modeItemProps {
 	onChange: (value: modeItemProps['data']) => void;
 	middlewareType: string;
 	isActiveActive?: boolean;
+	disabled?: boolean;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
 	const {
@@ -30,9 +30,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		type,
 		onChange,
 		middlewareType,
-		isActiveActive
+		isActiveActive,
+		disabled
 	} = props;
-	const params: any = useParams();
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -45,6 +45,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		});
 		setVisible(false);
 	};
+	useEffect(() => {
+		setModifyData(data);
+	}, [data]);
 	useEffect(() => {
 		onChange(modifyData);
 	}, [modifyData]);
@@ -144,6 +147,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						onChange={onChange}
 						inputChange={inputChange}
 						isActiveActive={isActiveActive}
+						disabled={disabled}
 					/>
 				)}
 			</div>

@@ -655,7 +655,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				annotations: res.data.annotations,
 				description: res.data.description,
 				mirrorImage: res.data.mirrorImage,
-				password: res.data.password,
+				pwd: res.data.password,
 				cpu: Number(res.data.quota.redis.cpu),
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
@@ -720,11 +720,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		});
 	};
 	const judgeActiveActive = (namespaceTemp: string) => {
+		console.log(namespaceTemp);
 		const temp = namespaceList.filter((item) => {
 			if (item.name === namespaceTemp) {
 				return item;
 			}
 		});
+		console.log(temp);
 		return temp[0]?.availableDomain || false;
 	};
 	// * 结果页相关
@@ -1319,8 +1321,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										style={{ flex: '0 0 376px' }}
 									>
 										<FormItem name="pwd">
-											<Input
-												type="password"
+											<Input.Password
 												placeholder="请输入初始密码，输入空则由平台随机生成"
 												disabled={!!middlewareName}
 											/>
@@ -1507,14 +1508,21 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	[key]: values
 																});
 															}}
+															disabled={
+																!!middlewareName
+															}
 															isActiveActive={
 																globalNamespace.name ===
 																'*'
-																	? judgeActiveActive(
-																			form.getFieldValue(
-																				'namespace'
-																			)
-																	  )
+																	? !namespace
+																		? judgeActiveActive(
+																				form.getFieldValue(
+																					'namespace'
+																				)
+																		  )
+																		: judgeActiveActive(
+																				namespace
+																		  )
 																	: globalNamespace.availableDomain
 															}
 														/>
