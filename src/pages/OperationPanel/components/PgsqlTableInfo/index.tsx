@@ -18,7 +18,7 @@ const { Option } = Select;
 export default function PgsqlTableInfo(
 	props: PgsqlTableInfoProps
 ): JSX.Element {
-	const { handleChange, dbName, data } = props;
+	const { handleChange, dbName, data, schemaName } = props;
 	console.log(data);
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
@@ -94,7 +94,7 @@ export default function PgsqlTableInfo(
 					))}
 				</Select>
 			</Form.Item>
-			<Form.Item label="模式" name="schemaName">
+			<Form.Item label="模式" name="schemaName" initialValue={schemaName}>
 				<Select placeholder="请选择模式">
 					{schemas.map((item: SchemaItem) => (
 						<Option key={item.schemaName} value={item.schemaName}>

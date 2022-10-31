@@ -13,15 +13,14 @@ import {
 	pgsqlTableDetail
 } from '../../index.d';
 import PgExclusiveness from '../PgExclusiveness';
-import { getPgsqlTableDetail } from '@/services/operatorPanel';
+import { getPgsqlTableDetail, createPgTable } from '@/services/operatorPanel';
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
-	const { isEdit, schemaName, dbName, tableName } = props;
+	const { schemaName, dbName, tableName } = props;
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<pgsqlTableDetail>();
-	const [data, setData] = useState<pgsqlTableDetail>();
 	useEffect(() => {
 		if (tableName) {
 			getPgsqlTableDetail({
@@ -34,7 +33,6 @@ export default function PgsqlEditTable(
 			}).then((res) => {
 				if (res.success) {
 					setOriginData(res.data);
-					setData(res.data);
 				} else {
 					notification.error({
 						message: '失败',
@@ -49,10 +47,53 @@ export default function PgsqlEditTable(
 	};
 	const infoChange = (values: any, dataIndex: string) => {
 		console.log(values, dataIndex);
-		// setOriginData({
-		// 	...originData,
-		// 	[dataIndex]: values
-		// });
+		const result = {
+			[dataIndex]: values
+		};
+		if (dataIndex === 'info') {
+			setOriginData({ ...originData, ...values });
+		} else if (dataIndex === 'inherit') {
+			const list = values?.tablesName?.map((item: string) => {
+				const result: any = {};
+				result.databaseName = dbName;
+				result.schemaName = values.schemaName;
+				result.tableName = item;
+				return result;
+			});
+			setOriginData({ ...originData, tableInheritList: list });
+		} else if (dataIndex === 'tableUniqueList') {
+			const list = values.map((item: any) => {
+				item.columnName = item.columnName.join(',');
+				return item;
+			});
+			setOriginData({ ...originData, tableUniqueList: list });
+		} else {
+			setOriginData({ ...originData, ...result });
+		}
+	};
+	const save = () => {
+		const sendData = {
+			...originData,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			databaseName: dbName,
+			schemaName
+		};
+		console.log(sendData);
+		createPgTable(sendData).then((res) => {
+			if (res.success) {
+				notification.success({
+					message: '成功',
+					description: '创建成功!'
+				});
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
 	};
 	const childrenRender = (type: string) => {
 		const componentRender = () => {
@@ -65,40 +106,49 @@ export default function PgsqlEditTable(
 							}
 							dbName={dbName}
 							schemaName={schemaName}
-							data={data}
+							data={originData}
 						/>
 					);
 				case 'colInfo':
 					return (
 						<PgsqlColInfo
-							originData={data?.columnDtoList || []}
+							originData={originData?.columnDtoList || []}
 							handleChange={(values: any) =>
 								infoChange(values, 'columnDtoList')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'foreignKeyInfo':
 					return (
 						<PgForeignKeyInfo
-							originData={data?.tableForeignKeyList || []}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableForeignKeyList')
 							}
+							databaseName={dbName}
+							schemaName={schemaName}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'exclusiveness':
 					return (
 						<PgExclusiveness
-							originData={data?.tableExclusionList || []}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableExclusionList')
 							}
+							databaseName={dbName}
 						/>
 					);
 				case 'uniqueness':
 					return (
 						<PgUniqueness
-							originData={data}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableUniqueList')
 							}
@@ -107,7 +157,7 @@ export default function PgsqlEditTable(
 				case 'examine':
 					return (
 						<PgExamine
-							originData={data?.tableCheckList || []}
+							originData={originData?.tableCheckList || []}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableCheckList')
 							}
@@ -116,10 +166,15 @@ export default function PgsqlEditTable(
 				case 'inherit':
 					return (
 						<PgInherit
-							data={data}
+							data={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'inherit')
 							}
+							databaseName={dbName}
+							schemaName={schemaName}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				default:
@@ -131,7 +186,9 @@ export default function PgsqlEditTable(
 				{componentRender()}
 				<Divider />
 				<Space>
-					<Button type="primary">保存</Button>
+					<Button type="primary" onClick={save}>
+						保存
+					</Button>
 					<Button>取消</Button>
 				</Space>
 			</div>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Radio, RadioChangeEvent, Space } from 'antd';
 import EditTable from '@/components/EditTable';
 import {
 	PgsqlColItem,
@@ -9,33 +8,45 @@ import {
 
 const basicData = {
 	name: '',
-	field: '',
-	canDelay: ''
+	columnName: [],
+	deferrablity: ''
 };
+const deferrablityOptions = [
+	{ label: '不可延迟', value: 'NOT DEFERRABLE' },
+	{ label: '可延迟不可延期', value: 'DEFERRABLE INITIALLY IMMEDIATE' },
+	{ label: '可延迟且可延期', value: 'DEFERRABLE INITIALLY DEFERRED' }
+];
+interface EditPgsqlUniqueItem extends pgsqlUniqueItem {
+	key: string;
+}
+// * 唯一约束
 export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 	const { originData, handleChange } = props;
-	const [radioValue, setRadioValue] = useState<any>();
-	const [columnNames, setColumnNames] = useState(
+	console.log(originData);
+	const [columnNames] = useState(
 		originData?.columnDtoList?.map((item: PgsqlColItem) => {
-			return { value: item.columnName, text: item.columnName };
+			return { value: item.column, label: item.column };
 		})
 	);
-	const handleRadioChange = (e: RadioChangeEvent) => {
-		console.log(e);
-		setRadioValue(e.target.value);
-	};
+	console.log(columnNames);
+	const [dataSource] = useState<EditPgsqlUniqueItem[]>(
+		originData?.tableUniqueList?.map((item) => {
+			return { ...item, key: item.name };
+		}) || []
+	);
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
-			width: 100,
+			width: 80,
 			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
 			title: '名称',
 			dataIndex: 'name',
 			key: 'name',
+			width: 200,
 			editable: true,
 			componentType: 'string'
 		},
@@ -44,25 +55,17 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 			dataIndex: 'columnName',
 			key: 'columnName',
 			editable: true,
-			componentType: 'select',
+			componentType: 'mulSelect',
 			selectOptions: columnNames
 		},
 		{
 			title: '可延迟/延期',
-			dataIndex: 'canDelay',
-			key: 'canDelay',
-			render: (text: any, record: pgsqlUniqueItem) => (
-				<Radio.Group onChange={handleRadioChange} value={radioValue}>
-					<Space direction="vertical">
-						<Radio value="DEFERRABLE INITIALLY DEFERRED">
-							可延迟
-						</Radio>
-						<Radio value="DEFERRABLE INITIALLY IMMEDIATE">
-							延期
-						</Radio>
-					</Space>
-				</Radio.Group>
-			)
+			dataIndex: 'deferrablity',
+			key: 'deferrablity',
+			width: 200,
+			editable: true,
+			componentType: 'select',
+			selectOptions: deferrablityOptions
 		}
 	];
 	const onChange = (values: any) => {
@@ -70,8 +73,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 	};
 	return (
 		<EditTable
-			rowKey="name"
-			originData={originData?.tableUniqueList}
+			originData={dataSource}
 			defaultColumns={columns}
 			basicData={basicData}
 			returnValues={onChange}

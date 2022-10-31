@@ -8,12 +8,14 @@ import {
 	Dropdown,
 	Menu,
 	notification,
-	Modal
+	Modal,
+	Form
 } from 'antd';
 import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
+import redisImg from '@/assets/images/redis-icon.png';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
 import { MenuInfo } from '@/types/comment';
@@ -28,7 +30,8 @@ import {
 	DatabaseItem,
 	PgsqslDatabaseItem,
 	SchemaItem,
-	PgsqlTableItem
+	PgsqlTableItem,
+	IndexItem
 } from '../index.d';
 import ModeMag from '../ModeMag';
 import PgsqlEditTable from '../components/PgsqlEditTable';
@@ -43,11 +46,17 @@ import {
 	getMysqlExcel,
 	getMysqlSQL,
 	getPgsqlExcel,
-	getPgsqlSQL
+	getPgsqlSQL,
+	updatePgTable,
+	updateMysqlTable,
+	getIndexs,
+	getRedisDatabases
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
 import { Key } from 'rc-table/lib/interface';
 import OpenTable from '../components/OpenTable';
+import { formItemLayout618 } from '@/utils/const';
+import RedisDBMag from '../components/RedisDBMag';
 
 const { confirm } = Modal;
 const { Content, Sider } = Layout;
@@ -70,7 +79,7 @@ const tableMenuItems = [
 	},
 	{
 		label: '重命名',
-		key: 'rename'
+		key: 'renameTable'
 	},
 	{
 		label: '建表语句',
@@ -103,8 +112,7 @@ const initialItems = [
 		children: <MysqlSqlConsole />,
 		key: '1',
 		closable: false
-	},
-	{ label: 'Tab 2', children: <MysqlEditTable />, key: '2' }
+	}
 ];
 const updateTreeData = (
 	list: DataNode[],
@@ -133,21 +141,27 @@ const paneProps: SplitPaneProps = {
 		height: '84%'
 	},
 	pane2Style: {
-		width: 'calc(100% - 200px)'
+		width: 'calc(100% - 200px)',
+		overflow: 'auto'
 	}
 };
 // * sql窗口 模版
-// ! TODO 对模式，数据库，列，表等删除后，左边树图的刷新
-// ! TODO pgsql 进入页面默认选择的schema中，table为空的情况
+// TODO 对模式，数据库，列，表，索引等删除，新增，修改后，左边树图的刷新
+// TODO sql窗口 执行列表tab
+// TODO 树图 所有高亮
+// TODO 右侧tab添加、保存（sessionStorage）
+// TODO 执行表格中的sql语句赋值到codemirror中
+// TODO mysql table-index 树状图索引头部数量刷新
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
 	const params: ParamsProps = useParams();
+	const [form] = Form.useForm();
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [treeData, setTreeData] = useState<DataNode[]>([]);
 	const [pgTreeData, setPgTreeData] = useState<DataNode[]>([]);
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
-	const [items, setItems] = useState(initialItems);
+	const [items, setItems] = useState<any[]>(initialItems);
 	const [pgsqlExpandedKeys, setPgslqExpandedKeys] = useState<string[]>([]);
 	const [selectDatabase, setSelectDatabase] = useState<string>('');
 	const [selectSchema, setSelectSchema] = useState<string>('');
@@ -216,7 +230,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					`编辑表:${i}`,
 					params.type === 'mysql' ? (
-						<MysqlEditTable />
+						<MysqlEditTable
+							tableName={i}
+							dbName={fatherNode || ''}
+						/>
 					) : (
 						<PgsqlEditTable
 							dbName={selectDatabase}
@@ -259,7 +276,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					)
 				);
 				return;
-			case 'deleteTAble':
+			case 'deleteTable':
 				confirm({
 					title: '操作确认',
 					content: `请确认是否删除${i}表格`,
@@ -319,7 +336,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					'创建表',
 					params.type === 'mysql' ? (
-						<MysqlEditTable />
+						<MysqlEditTable dbName={fatherNode || ''} />
 					) : (
 						<PgsqlEditTable
 							dbName={selectDatabase}
@@ -327,6 +344,65 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						/>
 					)
 				);
+				return;
+			case '':
+				confirm({
+					title: '重命名',
+					content: (
+						<Form
+							form={form}
+							{...formItemLayout618}
+							labelAlign="left"
+						>
+							<Form.Item name="newTableName" label="表名称">
+								<Input />
+							</Form.Item>
+						</Form>
+					),
+					onOk: () => {
+						const sendData: any = {
+							clusterId: params.clusterId,
+							namespace: params.namespace,
+							middlewareName: params.name
+						};
+						if (params.type === 'mysql') {
+							sendData.table = i;
+							sendData.database = fatherNode;
+							sendData.tableName =
+								form.getFieldValue('newTableName');
+							updateMysqlTable(sendData).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '表格重命名成功！'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						} else {
+							sendData.databaseName = selectDatabase;
+							sendData.table = i;
+							sendData.schemaName = selectSchema;
+							updatePgTable(sendData).then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '成功',
+										description: '表格重命名成功！'
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							});
+						}
+					}
+				});
 				return;
 			default:
 				break;
@@ -409,7 +485,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						});
 					}
 				});
-			} else {
+			} else if (params.type === 'redis') {
 				getAllDatabase(sendData).then((res) => {
 					if (res.success) {
 						if (res.data.length > 0) {
@@ -462,6 +538,15 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						});
 					}
 				});
+			} else {
+				getRedisDatabases({
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name
+				}).then((res) => {
+					console.log(res);
+					// TODO redis databases赋值
+				});
 			}
 		}
 	}, [currentUser]);
@@ -509,14 +594,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			});
 		}
 	}, [selectDatabase, selectSchema]);
-	const mysqlOnLoadData = ({ key, value, children }: any) =>
+	const mysqlOnLoadData = ({ key, value, type, children }: any) =>
 		new Promise<void>((resolve) => {
-			console.log(key, value, children);
+			console.log(key, type, value, children);
 			if (children) {
 				resolve();
 				return;
 			}
-			if (key.includes('-')) {
+			if (type === 'table') {
 				// * 当前加载的树为表格的情况
 				const array = key.split('-');
 				const sendData = {
@@ -548,30 +633,93 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									result.icon = (
 										<IconFont type="icon-liebiao" />
 									);
+									result.value = item.column;
 									result.isLeaf = true;
 									return result;
 								}
 							);
+							const lt = [
+								{
+									title: `列(${list.length})`,
+									key: `${key}-0`,
+									icon: <IconFont type="icon-liebiao" />,
+									children: list,
+									type: 'column'
+								},
+								{
+									title: '索引',
+									key: `${key}-1`,
+									icon: (
+										<IconFont
+											style={{ fontSize: 21 }}
+											type="icon-lianjiesuoyin"
+										/>
+									),
+									value: value,
+									type: 'index'
+								}
+							];
 							setTreeData((origin) =>
-								updateTreeData(origin, key, [
-									{
-										title: `列(${list.length})`,
-										key: `${key}-0`,
-										icon: <IconFont type="icon-liebiao" />,
-										children: list
-									},
-									{
-										title: '索引',
-										key: `${key}-1`,
-										icon: (
-											<IconFont
-												style={{ fontSize: 21 }}
-												type="icon-lianjiesuoyin"
-											/>
-										)
-									}
-								])
+								updateTreeData(origin, key, lt)
 							);
+							resolve();
+						} else {
+							setTreeData((origin) =>
+								updateTreeData(origin, key, [])
+							);
+							resolve();
+						}
+					} else {
+						resolve();
+						return;
+					}
+				});
+			} else if (type === 'index') {
+				const array = key.split('-');
+				getIndexs({
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name,
+					database: array[0],
+					table: value
+				}).then((res) => {
+					if (res.success) {
+						if (res.data.length > 0) {
+							const list = res.data.map(
+								(item: IndexItem, index) => {
+									const result: any = {};
+									result.title = (
+										<span
+											title={item.index}
+											className="text-overflow"
+											style={{
+												width: '80px',
+												display: 'block'
+											}}
+										>
+											{item.index}
+										</span>
+									);
+									result.key = `${key}-1-${index}`;
+									result.icon = (
+										<IconFont type="icon-liebiao" />
+									);
+									result.value = item.index;
+									result.isLeaf = true;
+									return result;
+								}
+							);
+							setTreeData((origin) => {
+								// const l = origin.map((item) => {
+								// 	item?.children?.map((i) => {
+								// 		if (i.key === key) {
+								// 			i.title = `索引(${list.length})`;
+								// 		}
+								// 	});
+								// 	return item;
+								// });
+								return updateTreeData(origin, key, list);
+							});
 							resolve();
 						} else {
 							setTreeData((origin) =>
@@ -763,6 +911,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			setSelectSchema(e.node.value);
 		}
 	};
+	const redisDbClick = (dbName: string) => {
+		console.log(dbName);
+		setSelectDatabase(dbName);
+		add(dbName, <RedisDBMag dbName={dbName} />);
+	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
 			<Sider
@@ -836,7 +989,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						className="sql-console-sider-search"
 						style={{ paddingRight: 16 }}
 					>
-						DB0(50)
+						{/* TODO 循环显示 */}
+						<div
+							className="redis-db-item"
+							onClick={() => redisDbClick('DB0')}
+						>
+							<img src={redisImg} className="mr-8" /> DB0(50)
+						</div>
 					</div>
 				)}
 			</Sider>
@@ -852,6 +1011,17 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					}}
 				/>
 				{params.type === 'mysql' && (
+					<Tabs
+						className="sql-console-tabs-content"
+						size="small"
+						type="editable-card"
+						onChange={onChange}
+						activeKey={activeKey}
+						onEdit={onEdit}
+						items={items}
+					/>
+				)}
+				{params.type === 'redis' && (
 					<Tabs
 						className="sql-console-tabs-content"
 						size="small"

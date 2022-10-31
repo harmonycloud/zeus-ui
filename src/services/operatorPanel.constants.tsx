@@ -16,7 +16,7 @@ export const getDbTables = `${api}/clusters/{clusterId}/namespaces/{namespace}/m
 // * 查看表所有列
 export const getCols = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/columns`;
 // * 查看表所有索引
-export const gerIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
+export const getIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
 // * mysql 删除数据表
 export const deleteMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
 // * 查询用户列表
@@ -65,6 +65,28 @@ export const getPgsqlTableDetail = `${api}/clusters/{clusterId}/namespaces/{name
 export const getMysqlData = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/data`;
 // * pgsql 获取表格数据
 export const getPgsqlData = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/data`;
+// * pgsql 修改表接口
+export const updatePgTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{table}`;
+// * mysql 修改表接口
+export const updateMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
+// * pgsql 获取数据类型
+export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/dataType`;
+// * pgsql 获取校验规则
+export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/collate`;
+// * mysql 获取表格详情
+export const getMysqlDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
+// * redis 获取全部数据库
+export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;
+// * redis 执行cmd
+export const executeCMD = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/cmd`;
+// * redis 查看执行记录
+export const getRedisExecuteRecords = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/cmd/history`;
+// * redis 查询指定库的所有key
+export const getRedisKeys = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys`;
+// * redis 查询指定key的value / 修改key信息/ 保存k-v / 删除key
+export const getRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}`;
+// * redis删除value
+export const deleteRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}/value`;
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 // * 合并 查询数据库列表

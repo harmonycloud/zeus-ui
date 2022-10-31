@@ -38,7 +38,8 @@ export interface AddPgDatabaseProps {
 	onRefresh: () => void;
 }
 export interface MysqlEditTableProps {
-	isEdit?: boolean;
+	tableName?: string;
+	dbName: string;
 }
 export interface PgsqlEditTableProps {
 	isEdit?: boolean;
@@ -47,8 +48,8 @@ export interface PgsqlEditTableProps {
 	tableName?: string;
 }
 export interface MysqlTableInfoProps {
-	isEdit: boolean;
 	handleChange: (values: any) => void;
+	originData: MysqlTableDetail | undefined;
 }
 export interface MysqlColInfoProps {
 	originData: any[];
@@ -56,11 +57,11 @@ export interface MysqlColInfoProps {
 }
 
 export interface MysqlIndexInfoProps {
-	originData: any[];
+	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 }
 export interface MysqlForeignKeyInfoProps {
-	originData: any[];
+	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 }
 export interface PgsqlTableInfoProps {
@@ -72,14 +73,23 @@ export interface PgsqlTableInfoProps {
 export interface PgsqlColInfoProps {
 	originData: PgsqlColItem[];
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgForeignKeyInfoProps {
-	originData: pgsqlForeignKeyItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	databaseName: string;
+	schemaName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgExclusivenessProps {
-	originData: exclusionItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	databaseName: string;
 }
 export interface PgUniquenessProps {
 	originData: pgsqlTableDetail | undefined;
@@ -92,6 +102,11 @@ export interface PgExamineProps {
 export interface PgInheritProps {
 	data: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	databaseName: string;
+	schemaName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface consoleUser {
 	username: string;
@@ -351,7 +366,7 @@ export interface GetEncodingRes extends resProps {
 }
 export interface PgsqlColItem {
 	array: boolean;
-	collate: string;
+	collate: string | undefined;
 	column: string;
 	columnName: string;
 	comment: string;
@@ -442,22 +457,22 @@ export interface getMysqlExcelParamsProps extends SendDataParamsProps {
 	table: string;
 }
 export interface pgsqlTableDetail {
-	collate: string;
-	columnDtoList: PgsqlColItem[];
-	databaseName: string;
-	description: string;
-	encoding: string;
-	fillFactor: string;
-	oid: string;
-	owner: string;
-	schemaName: string;
-	tableCheckList: tableCheckItem[];
-	tableExclusionList: exclusionItem[];
-	tableForeignKeyList: pgsqlForeignKeyItem[];
-	tableInheritList: inheritItem[];
-	tableName: string;
-	tableUniqueList: pgsqlUniqueItem[];
-	tablespace: string;
+	collate?: string;
+	columnDtoList?: PgsqlColItem[];
+	databaseName?: string;
+	description?: string;
+	encoding?: string;
+	fillFactor?: string;
+	oid?: string;
+	owner?: string;
+	schemaName?: string;
+	tableCheckList?: tableCheckItem[];
+	tableExclusionList?: exclusionItem[];
+	tableForeignKeyList?: pgsqlForeignKeyItem[];
+	tableInheritList?: inheritItem[];
+	tableName?: string;
+	tableUniqueList?: pgsqlUniqueItem[];
+	tablespace?: string;
 }
 export interface pgsqlTableDetailRes extends resProps {
 	data: pgsqlTableDetail;
@@ -469,8 +484,14 @@ export interface tableCheckItem {
 	oid: string;
 	operator: string;
 }
+export interface ExclusionContentItem {
+	columnName: string;
+	order: string;
+	symbol: string;
+}
 export interface exclusionItem {
 	columnName: string;
+	contentList: ExclusionContentItem[];
 	deferrablity: string;
 	indexMethod: string;
 	name: string;
@@ -478,8 +499,13 @@ export interface exclusionItem {
 	operator: string;
 	symbol: string;
 }
+export interface ForeignKeyContentItem {
+	columnName: string;
+	targetColumn: string;
+}
 export interface pgsqlForeignKeyItem {
 	columnName: string;
+	contentList: ForeignKeyContentItem[];
 	deferrablity: string;
 	name: string;
 	oid: string;
@@ -503,4 +529,84 @@ export interface pgsqlUniqueItem {
 	name: string;
 	oid: string;
 	operator: string;
+}
+export interface OrderDtoItem {
+	column: string;
+	order: string;
+}
+export interface getPgDataTypeRes extends resProps {
+	data: string[];
+}
+export interface MysqlTableDetail {
+	autoIncrement: number;
+	charset: string;
+	collate: string;
+	columns: MysqlColItem[];
+	comment: string;
+	foreignKeys: MysqlForeignItem[];
+	indices: IndexItem[];
+	maxRows: null;
+	minRows: null;
+	rowFormat: null;
+	rows: number;
+	tableName: string;
+}
+export interface MysqlForeignItem {
+	column: string;
+	foreignKey: string;
+	referenceTable: string;
+	referencedColumn: string;
+}
+export interface RedisCMDParamsProps extends SendDataParamsProps {
+	cmd: string;
+	database: string;
+}
+export interface getExecuteHisParamsProps extends SendDataParamsProps {
+	start: string;
+	end: string;
+	keyword: string;
+	database: string;
+}
+export interface getRedisKeysParamsProps extends SendDataParamsProps {
+	database: string;
+	keyword: string;
+}
+export interface RedisKeyItem {
+	expiration: string;
+	hashValue: {
+		field: string;
+		value: string;
+	};
+	key: string;
+	keyType: string;
+	listDto: {
+		count: number;
+		fromLeft: false;
+		value: string;
+	};
+	value: string;
+	zsetValue: {
+		member: string;
+		score: number;
+	};
+}
+export interface RedisKesRes extends resProps {
+	data: RedisKeyItem[];
+}
+export interface getRedisValueParamsProps extends SendDataParamsProps {
+	database: string;
+	key: string;
+}
+export interface RedisValueRes extends resProps {
+	data: RedisKeyItem;
+}
+export interface updateRedisKeyParamsProps
+	extends getRedisValueParamsProps,
+		RedisKeyItem {
+	newName: string;
+}
+export interface deleteRedisValueParamsProps
+	extends getRedisValueParamsProps,
+		RedisKeyItem {
+	value: string;
 }

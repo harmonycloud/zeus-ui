@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { PgExamineProps } from '../../index.d';
+import { PgExamineProps, tableCheckItem } from '../../index.d';
 
 const basicData = {
 	name: '',
-	examine: '',
-	unInherit: '',
-	unVerification: '',
-	remark: ''
+	text: '',
+	noInherit: false,
+	notValid: false
 };
+interface EditTableCheckItem extends tableCheckItem {
+	key: string;
+}
+// * 检查约束
 export default function PgExamine(props: PgExamineProps): JSX.Element {
 	const { originData, handleChange } = props;
+	const [dataSource] = useState<EditTableCheckItem[]>(
+		originData.map((item: tableCheckItem) => {
+			return { ...item, key: item.name };
+		}) || []
+	);
 	const columns = [
 		{
 			title: '序号',
@@ -27,31 +35,24 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 		},
 		{
 			title: '检查',
-			dataIndex: 'examine',
-			key: 'examine',
+			dataIndex: 'text',
+			key: 'text',
 			editable: true,
 			componentType: 'string'
 		},
 		{
 			title: '非继承',
-			dataIndex: 'unInherit',
-			key: 'unInherit',
+			dataIndex: 'noInherit',
+			key: 'noInherit',
 			editable: true,
 			componentType: 'checkbox'
 		},
 		{
 			title: '不验证',
-			dataIndex: 'unVerification',
-			key: 'unVerification',
+			dataIndex: 'notValid',
+			key: 'notValid',
 			editable: true,
 			componentType: 'checkbox'
-		},
-		{
-			title: '备注',
-			dataIndex: 'remark',
-			key: 'remark',
-			editable: true,
-			componentType: 'string'
 		}
 	];
 	const onChange = (values: any) => {
@@ -59,7 +60,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 	};
 	return (
 		<EditTable
-			originData={originData}
+			originData={dataSource}
 			defaultColumns={columns}
 			basicData={basicData}
 			returnValues={onChange}

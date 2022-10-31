@@ -18,6 +18,7 @@ export default function OperationPanel(): JSX.Element {
 	const [currentUser, setCurrentUser] = useState<consoleUser>();
 	useEffect(() => {
 		if (!currentUser) {
+			// * 打开强刷后登录
 			setOpen(true);
 			// history.push(
 			// 	`/operationalPanel/sqlConsole/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`

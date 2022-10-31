@@ -54,6 +54,10 @@
 				}
 			}
 		}
+		.redis-db-item {
+			cursor: pointer;
+			padding-bottom: 16px;
+		}
 	}
 }
 .sql-console-content {
@@ -142,3 +146,6 @@
   .Resizer.disabled:hover {
 	border-color: transparent;
   }
+.redis-tab-content {
+	height: 100%;
+}

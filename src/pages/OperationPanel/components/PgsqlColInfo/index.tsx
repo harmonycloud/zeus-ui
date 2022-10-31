@@ -1,21 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { PgsqlColInfoProps } from '../../index.d';
-
+import { PgsqlColInfoProps, PgsqlColItem } from '../../index.d';
+import { getPgsqlCollate, getPgsqlDataType } from '@/services/operatorPanel';
+import { AutoCompleteOptionItem } from '@/types/comment';
 const basicData = {
-	columnName: '',
-	columnType: '',
-	isArray: false,
+	column: '',
+	dateType: '',
+	array: false,
 	nullable: true,
 	primaryKey: false,
-	default: '',
-	length: '',
-	description: '',
-	rule: ''
+	defaultValue: '',
+	size: '',
+	comment: '',
+	collate: ''
 };
+interface EditPgsqlColItem extends PgsqlColItem {
+	key: string;
+}
+// * 列信息
 export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
-	const { originData, handleChange } = props;
-	console.log(originData);
+	const { originData, handleChange, clusterId, namespace, middlewareName } =
+		props;
+	const [dataSource, setDataSource] = useState<EditPgsqlColItem[]>(
+		originData.map((item: PgsqlColItem) => {
+			return { ...item, key: item.num };
+		})
+	);
+	const [collates, setCollates] = useState<AutoCompleteOptionItem[]>([]);
+	const [dataTypes, setDataTypes] = useState<AutoCompleteOptionItem[]>([]);
+	useEffect(() => {
+		getPgsqlCollate({
+			clusterId,
+			namespace,
+			middlewareName
+		}).then((res) => {
+			if (res.success) {
+				const list = res.data.map((item: string) => {
+					return {
+						label: item,
+						value: item
+					};
+				});
+				setCollates(list);
+			}
+		});
+		getPgsqlDataType({
+			clusterId,
+			namespace,
+			middlewareName
+		}).then((res) => {
+			if (res.success) {
+				const list = res.data.map((item: string) => {
+					return {
+						label: item,
+						value: item
+					};
+				});
+				setDataTypes(list);
+			}
+		});
+	}, []);
 	const columns = [
 		{
 			title: '序号',
@@ -26,8 +70,8 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		},
 		{
 			title: '列名',
-			dataIndex: 'columnName',
-			key: 'columnName',
+			dataIndex: 'column',
+			key: 'column',
 			editable: true,
 			width: 150,
 			componentType: 'string'
@@ -38,7 +82,8 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			key: 'dateType',
 			editable: true,
 			width: 150,
-			componentType: 'select'
+			componentType: 'select',
+			selectOptions: dataTypes
 		},
 		{
 			title: '数组',
@@ -94,7 +139,8 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			key: 'collate',
 			editable: true,
 			width: 150,
-			componentType: 'select'
+			componentType: 'select',
+			selectOptions: collates
 		}
 	];
 	const onChange = (values: any) => {
@@ -102,7 +148,7 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 	};
 	return (
 		<EditTable
-			originData={originData}
+			originData={dataSource}
 			defaultColumns={columns}
 			basicData={basicData}
 			returnValues={onChange}
