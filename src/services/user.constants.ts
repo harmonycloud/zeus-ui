@@ -42,3 +42,7 @@ export const detail = `${api}/ldap/detail`;
 export const disable = `${api}/ldap/disable`;
 // * 获取服务列表子菜单
 export const getChildMenu = `${api}/user/menu/middlewares`;
+// * license相关
+export const licenseInfo = `${api}/license`;
+// * 发布中间件能力检验
+export const licenseCheck = `${api}/license/check`;

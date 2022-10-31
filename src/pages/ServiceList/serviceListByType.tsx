@@ -39,6 +39,7 @@ import { StoreState, User } from '@/types/index';
 import storage from '@/utils/storage';
 import { states } from '@/utils/const';
 import { serviceListStatusRender, timeRender, nullRender } from '@/utils/utils';
+import { checkLicense } from '@/services/user';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 // --- css样式
 
@@ -74,6 +75,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
+	const [license, setLicense] = useState<boolean>(false);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -116,6 +118,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			operateFlag,
 			deleteFlag
 		});
+		getLicenseCheck();
 	}, []);
 	useEffect(() => {
 		if (JSON.stringify(cluster) !== '{}') {
@@ -205,6 +208,15 @@ const ServiceListByType = (props: serviceListProps) => {
 			mounted = false;
 		};
 	}, [cluster, namespace, name]);
+	const getLicenseCheck = () => {
+		checkLicense({ license: '' }).then((res) => {
+			if (res.success) {
+				setLicense(false);
+			} else {
+				setLicense(true);
+			}
+		});
+	};
 	const getData = () => {
 		setLoadingVisible(true);
 		setDataSource(undefined);
@@ -289,53 +301,63 @@ const ServiceListByType = (props: serviceListProps) => {
 		setShowDataSource({ [name]: list });
 	};
 	const releaseMiddleware = () => {
-		if (middlewareInfo?.official) {
-			switch (middlewareInfo.chartName) {
-				case 'mysql':
-					history.push(
-						`/serviceList/${name}/${aliasName}/mysqlCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				case 'redis':
-					history.push(
-						`/serviceList/${name}/${aliasName}/redisCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				case 'elasticsearch':
-					history.push(
-						`/serviceList/${name}/${aliasName}/elasticsearchCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				case 'rocketmq':
-					history.push(
-						`/serviceList/${name}/${aliasName}/rocketmqCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				case 'kafka':
-					history.push(
-						`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				case 'zookeeper':
-					history.push(
-						`/serviceList/${name}/${aliasName}/zookeeperCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				case 'postgresql':
-					history.push(
-						`/serviceList/${name}/${aliasName}/postgresqlCreate/${middlewareInfo?.chartVersion}`
-					);
-					break;
-				default:
-					history.push(
-						`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
-					);
-					break;
-			}
+		if (license) {
+			confirm({
+				title: '可用余额不足',
+				content:
+					'当前您的可用余额已不足2CPU，如果您想继续使用谐云zeus中间件一体化管理平台，请联系我们申请授权',
+				okText: '立即前往'
+				// onOk: () => {}
+			});
 		} else {
-			history.push(
-				`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
-			);
+			if (middlewareInfo?.official) {
+				switch (middlewareInfo.chartName) {
+					case 'mysql':
+						history.push(
+							`/serviceList/${name}/${aliasName}/mysqlCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					case 'redis':
+						history.push(
+							`/serviceList/${name}/${aliasName}/redisCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					case 'elasticsearch':
+						history.push(
+							`/serviceList/${name}/${aliasName}/elasticsearchCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					case 'rocketmq':
+						history.push(
+							`/serviceList/${name}/${aliasName}/rocketmqCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					case 'kafka':
+						history.push(
+							`/serviceList/${name}/${aliasName}/kafkaCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					case 'zookeeper':
+						history.push(
+							`/serviceList/${name}/${aliasName}/zookeeperCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					case 'postgresql':
+						history.push(
+							`/serviceList/${name}/${aliasName}/postgresqlCreate/${middlewareInfo?.chartVersion}`
+						);
+						break;
+					default:
+						history.push(
+							`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
+						);
+						break;
+				}
+			} else {
+				history.push(
+					`/serviceList/${name}/${aliasName}/dynamicForm/${middlewareInfo?.chartVersion}/${middlewareInfo?.version}`
+				);
+			}
 		}
 	};
 	const recoveryService = (record: serviceProps) => {

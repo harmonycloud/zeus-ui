@@ -17,6 +17,9 @@
 	&:hover {
 		background-color: #edf0f5;
 	}
+	& > span {
+		margin-top: 4px;
+	}
 }
 .nav-user-container {
 	position: relative;

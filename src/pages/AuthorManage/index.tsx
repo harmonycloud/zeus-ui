@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import DataFields from '@/components/DataFields';
 import { IconFont } from '@/components/IconFont';
-import { Button, Input } from 'antd';
+import { Button, Input, notification } from 'antd';
 
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { getGaugeOption } from '@/utils/echartsOption';
 import * as echarts from 'echarts/core';
+import { editLicenseInfo, getLicenseInfo } from '@/services/user';
 
 import './index.scss';
 
@@ -37,7 +38,7 @@ const InfoConfig = [
 		label: '授权类型'
 	},
 	{
-		dataIndex: 'key',
+		dataIndex: 'code',
 		label: '唯一识别码'
 	}
 ];
@@ -48,6 +49,41 @@ function AuthorManage(): JSX.Element {
 	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
 	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
 	const [clusterQuota, setClusterQuota] = useState<any>();
+	const [license, setLicense] = useState<string>('');
+
+	const getData = () => {
+		getLicenseInfo().then((res) => {
+			if (res.success) {
+				setBasicData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+
+	const submit = () => {
+		editLicenseInfo({ license }).then((res) => {
+			if (res.success) {
+				getData();
+				notification.success({
+					message: '成功',
+					description: '授权成功'
+				});
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+
+	useEffect(() => {
+		getData();
+	}, []);
 
 	return (
 		<ProPage className="author-manage">
@@ -143,8 +179,16 @@ function AuthorManage(): JSX.Element {
 					</div>
 				</div>
 				<h2>授权申请</h2>
-				<Input.TextArea placeholder="请输入内容" />
-				<Button type="primary" style={{ marginTop: 8 }}>
+				<Input.TextArea
+					placeholder="请输入内容"
+					value={license}
+					onChange={(e) => setLicense(e.target.value)}
+				/>
+				<Button
+					type="primary"
+					style={{ marginTop: 8 }}
+					onClick={submit}
+				>
 					立即授权
 				</Button>
 				<h2>联系我们</h2>

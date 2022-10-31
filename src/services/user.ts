@@ -130,3 +130,15 @@ export const getLDAP = () => {
 export const disableLDAP = () => {
 	return Axios.put(USER.disable);
 };
+// * 查询license使用信息
+export const getLicenseInfo = () => {
+	return Axios.get(USER.licenseInfo);
+};
+// * license认证
+export const editLicenseInfo = (params: { license: string }) => {
+	return Axios.post(USER.licenseInfo, params);
+};
+// * license认证
+export const checkLicense = (params: { license: string }) => {
+	return Axios.post(USER.licenseCheck, params);
+};
