@@ -5,11 +5,15 @@ import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisKeyItem from '../RedisKeyItem';
 import { deleteRedisKey, getRedisKeys } from '@/services/operatorPanel';
 import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
-import { childrenRender } from '@/utils/utils';
 import KVString from './KVString';
 
 const { confirm } = Modal;
-export default function KVMag(): JSX.Element {
+interface KVMagProps {
+	dbName: string;
+}
+// TODO k-v 关键词搜索
+export default function KVMag(props: KVMagProps): JSX.Element {
+	const { dbName } = props;
 	const params: ParamsProps = useParams();
 	const [keyword, setKeyword] = useState<string>('');
 	const [key, setKey] = useState<RedisKeyItemParams>();
@@ -36,7 +40,7 @@ export default function KVMag(): JSX.Element {
 	}, []);
 	const getData = (keyword: string) => {
 		getRedisKeys({
-			database: '',
+			database: dbName,
 			keyword: keyword,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
@@ -81,9 +85,13 @@ export default function KVMag(): JSX.Element {
 		setKeyword(value);
 		getData(value);
 	};
+	// TODO 添加 k-v
 	const handleAdd = () => console.log('add');
+	// TODO 编辑 k-v
 	const handleEdit = () => console.log('edit');
+	// TODO 查看 k-v
 	const handleView = () => console.log('view');
+	// TODO 查看，编辑页面render （每个类型一个component）
 	const childrenRender = (type: string) => {
 		switch (type) {
 			case 'hash':
@@ -110,6 +118,7 @@ export default function KVMag(): JSX.Element {
 					onChange={(e) => setKeyword(e.target.value)}
 					onSearch={(value: string) => handleSearch(value)}
 				/>
+				{/* TODO 循环 */}
 				<RedisKeyItem
 					onDelete={handleDelete}
 					onRefresh={handleRefresh}

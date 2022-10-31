@@ -146,7 +146,12 @@ const paneProps: SplitPaneProps = {
 	}
 };
 // * sql窗口 模版
-// ! TODO 对模式，数据库，列，表等删除后，左边树图的刷新
+// TODO 对模式，数据库，列，表，索引等删除，新增，修改后，左边树图的刷新
+// TODO sql窗口 执行列表tab
+// TODO 树图 所有高亮
+// TODO 右侧tab添加、保存（sessionStorage）
+// TODO 执行表格中的sql语句赋值到codemirror中
+// TODO mysql table-index 树状图索引头部数量刷新
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
 	const params: ParamsProps = useParams();
@@ -540,6 +545,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					middlewareName: params.name
 				}).then((res) => {
 					console.log(res);
+					// TODO redis databases赋值
 				});
 			}
 		}
@@ -907,7 +913,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	const redisDbClick = (dbName: string) => {
 		console.log(dbName);
-		add(dbName, <RedisDBMag />);
+		setSelectDatabase(dbName);
+		add(dbName, <RedisDBMag dbName={dbName} />);
 	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
@@ -982,6 +989,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						className="sql-console-sider-search"
 						style={{ paddingRight: 16 }}
 					>
+						{/* TODO 循环显示 */}
 						<div
 							className="redis-db-item"
 							onClick={() => redisDbClick('DB0')}

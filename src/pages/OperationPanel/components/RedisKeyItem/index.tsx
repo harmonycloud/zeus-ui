@@ -30,6 +30,7 @@ const databaseMenuItems = [
 		key: 'delete'
 	}
 ];
+// TODO redis keyItem 传参
 export default function RedisKeyItem(props: RedisKeyItemProps): JSX.Element {
 	const { onDelete, onRefresh, onAdd, onEdit, onView } = props;
 	const handleMenuClick = (e: MenuInfo) => {

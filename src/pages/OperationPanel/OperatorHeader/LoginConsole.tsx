@@ -12,6 +12,9 @@ import { encrypt } from '@/utils/utils';
 import storage from '@/utils/storage';
 import { getRsaKey } from '@/services/user';
 const { Option } = Select;
+// TODO 记住密码（cookie）优先级较低
+// TODO redis 登录对接 redis需要判断实例中的version，当version为5时，不用填账号，当version为6时，有一个默认账号，具体找后端
+// ! 运维面板所有相关存储都存在sessionStorage中
 export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 	const {
 		open,
@@ -25,7 +28,6 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 	} = props;
 	const [form] = Form.useForm();
 	const [data, setData] = useState<serviceListItemProps>();
-	const [publicKey, setPublicKey] = useState<string>('');
 	useEffect(() => {
 		getList({
 			projectId: projectId,
@@ -42,7 +44,6 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 			if (res.success) {
 				const pub = `-----BEGIN PUBLIC KEY-----${res.data}-----END PUBLIC KEY-----`;
 				storage.setSession('rsa', pub);
-				setPublicKey(pub);
 			}
 		});
 	}, []);
