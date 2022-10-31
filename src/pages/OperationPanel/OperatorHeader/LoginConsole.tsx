@@ -98,7 +98,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 				<Form.Item
 					label="账号"
 					name="username"
-					rules={[{ required: true, message: '请输入账号' }]}
+					rules={[{ required: false, message: '请输入账号' }]}
 				>
 					<Input placeholder="请输入" />
 				</Form.Item>

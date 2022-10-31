@@ -15,6 +15,7 @@ import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
+import redisImg from '@/assets/images/redis-icon.png';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
 import { MenuInfo } from '@/types/comment';
@@ -48,12 +49,14 @@ import {
 	getPgsqlSQL,
 	updatePgTable,
 	updateMysqlTable,
-	getIndexs
+	getIndexs,
+	getRedisDatabases
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
 import { Key } from 'rc-table/lib/interface';
 import OpenTable from '../components/OpenTable';
 import { formItemLayout618 } from '@/utils/const';
+import RedisDBMag from '../components/RedisDBMag';
 
 const { confirm } = Modal;
 const { Content, Sider } = Layout;
@@ -477,7 +480,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						});
 					}
 				});
-			} else {
+			} else if (params.type === 'redis') {
 				getAllDatabase(sendData).then((res) => {
 					if (res.success) {
 						if (res.data.length > 0) {
@@ -529,6 +532,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							description: res.errorMsg
 						});
 					}
+				});
+			} else {
+				getRedisDatabases({
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name
+				}).then((res) => {
+					console.log(res);
 				});
 			}
 		}
@@ -894,6 +905,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			setSelectSchema(e.node.value);
 		}
 	};
+	const redisDbClick = (dbName: string) => {
+		console.log(dbName);
+		add(dbName, <RedisDBMag />);
+	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
 			<Sider
@@ -967,7 +982,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						className="sql-console-sider-search"
 						style={{ paddingRight: 16 }}
 					>
-						DB0(50)
+						<div
+							className="redis-db-item"
+							onClick={() => redisDbClick('DB0')}
+						>
+							<img src={redisImg} className="mr-8" /> DB0(50)
+						</div>
 					</div>
 				)}
 			</Sider>
@@ -983,6 +1003,17 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					}}
 				/>
 				{params.type === 'mysql' && (
+					<Tabs
+						className="sql-console-tabs-content"
+						size="small"
+						type="editable-card"
+						onChange={onChange}
+						activeKey={activeKey}
+						onEdit={onEdit}
+						items={items}
+					/>
+				)}
+				{params.type === 'redis' && (
 					<Tabs
 						className="sql-console-tabs-content"
 						size="small"

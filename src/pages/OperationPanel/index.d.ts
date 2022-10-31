@@ -557,3 +557,56 @@ export interface MysqlForeignItem {
 	referenceTable: string;
 	referencedColumn: string;
 }
+export interface RedisCMDParamsProps extends SendDataParamsProps {
+	cmd: string;
+	database: string;
+}
+export interface getExecuteHisParamsProps extends SendDataParamsProps {
+	start: string;
+	end: string;
+	keyword: string;
+	database: string;
+}
+export interface getRedisKeysParamsProps extends SendDataParamsProps {
+	database: string;
+	keyword: string;
+}
+export interface RedisKeyItem {
+	expiration: string;
+	hashValue: {
+		field: string;
+		value: string;
+	};
+	key: string;
+	keyType: string;
+	listDto: {
+		count: number;
+		fromLeft: false;
+		value: string;
+	};
+	value: string;
+	zsetValue: {
+		member: string;
+		score: number;
+	};
+}
+export interface RedisKesRes extends resProps {
+	data: RedisKeyItem[];
+}
+export interface getRedisValueParamsProps extends SendDataParamsProps {
+	database: string;
+	key: string;
+}
+export interface RedisValueRes extends resProps {
+	data: RedisKeyItem;
+}
+export interface updateRedisKeyParamsProps
+	extends getRedisValueParamsProps,
+		RedisKeyItem {
+	newName: string;
+}
+export interface deleteRedisValueParamsProps
+	extends getRedisValueParamsProps,
+		RedisKeyItem {
+	value: string;
+}

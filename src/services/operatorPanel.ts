@@ -10,6 +10,7 @@ import {
 	deleteAllDatabaseProps,
 	deleteParamsProps,
 	deletePgTableParamsProps,
+	deleteRedisValueParamsProps,
 	deleteSchemaParamsProps,
 	deleteUserParamsProps,
 	enableMysqlUserParamsProps,
@@ -20,6 +21,7 @@ import {
 	getColsResProps,
 	GetDatabasesRes,
 	GetEncodingRes,
+	getExecuteHisParamsProps,
 	getIndexRes,
 	getMysqlExcelParamsProps,
 	getMysqlUserResProps,
@@ -30,6 +32,8 @@ import {
 	getPgsqlExcelParamsProps,
 	getPgsqlTableRes,
 	getPgsqlUserResProps,
+	getRedisKeysParamsProps,
+	getRedisValueParamsProps,
 	getSchemasParamsProps,
 	GetSchemasRes,
 	getTablesParamsProps,
@@ -43,9 +47,13 @@ import {
 	pgsqlTableDetailRes,
 	PgsqlUserAuthRes,
 	PgsqslDatabaseItem,
+	RedisCMDParamsProps,
+	RedisKesRes,
+	RedisValueRes,
 	resetPasswordParamsProps,
 	SendDataParamsProps,
-	updateParamsProps
+	updateParamsProps,
+	updateRedisKeyParamsProps
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
 
@@ -264,6 +272,49 @@ export const getPgsqlCollate: (
 };
 export const getMysqlDetail = (params: getMysqlExcelParamsProps) => {
 	return Axios.get(URL.getMysqlDetail, params);
+};
+// * -------------------------------------------------
+// * redis
+export const getRedisDatabases = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getRedisDBs, params);
+};
+export const executeCMD: (params: RedisCMDParamsProps) => Promise<resProps> = (
+	params: RedisCMDParamsProps
+) => {
+	return Axios.post(URL.executeCMD, params);
+};
+export const getExecuteHis = (params: getExecuteHisParamsProps) => {
+	return Axios.get(URL.getRedisExecuteRecords, params);
+};
+export const getRedisKeys: (
+	params: getRedisKeysParamsProps
+) => Promise<RedisKesRes> = (params: getRedisKeysParamsProps) => {
+	return Axios.get(URL.getRedisKeys, params);
+};
+export const getRedisValue: (
+	params: getRedisValueParamsProps
+) => Promise<RedisValueRes> = (params: getRedisValueParamsProps) => {
+	return Axios.get(URL.getRedisValue, params);
+};
+export const updateRedisKeys: (
+	params: updateRedisKeyParamsProps
+) => Promise<resProps> = (params: updateRedisKeyParamsProps) => {
+	return Axios.json(URL.getRedisValue, params, {}, 'PUT');
+};
+export const saveRedisKeys: (
+	params: updateRedisKeyParamsProps
+) => Promise<resProps> = (params: updateRedisKeyParamsProps) => {
+	return Axios.json(URL.getRedisValue, params, {}, 'POST');
+};
+export const deleteRedisKey: (
+	params: getRedisValueParamsProps
+) => Promise<resProps> = (params: getRedisValueParamsProps) => {
+	return Axios.delete(URL.getRedisValue, params);
+};
+export const deleteRedisValue: (
+	params: deleteRedisValueParamsProps
+) => Promise<resProps> = (params: deleteRedisValueParamsProps) => {
+	return Axios.json(URL.deleteRedisValue, params, {}, 'POST');
 };
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复

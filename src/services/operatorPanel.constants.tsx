@@ -75,7 +75,18 @@ export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespa
 export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/collate`;
 // * mysql 获取表格详情
 export const getMysqlDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
-
+// * redis 获取全部数据库
+export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;
+// * redis 执行cmd
+export const executeCMD = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/cmd`;
+// * redis 查看执行记录
+export const getRedisExecuteRecords = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/cmd/history`;
+// * redis 查询指定库的所有key
+export const getRedisKeys = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys`;
+// * redis 查询指定key的value / 修改key信息/ 保存k-v / 删除key
+export const getRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}`;
+// * redis删除value
+export const deleteRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}/value`;
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复
 // * 合并 查询数据库列表
