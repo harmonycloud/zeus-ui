@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import storage from '@/utils/storage';
-import { Divider, Input, Select } from 'antd';
+import { Divider, Input, Select, Tooltip } from 'antd';
+import { IconFont } from '@/components/IconFont';
 import User from './User';
 import {
 	setCluster,
@@ -36,6 +37,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		projectHandle
 	} = props;
 	const location = useLocation();
+	const history = useHistory();
 	// * 控制项目
 	const [projectDisAbled, setProjectDisabled] = useState<boolean>(false);
 	const [projectHideFlag, setProjectHideFlag] = useState<boolean>(false);
@@ -328,6 +330,17 @@ function Navbar(props: NavbarProps): JSX.Element {
 						</>
 					)}
 				</div>
+				<Tooltip title="账号管理">
+					<div
+						className="license-icon"
+						onClick={() => history.push('/authorManage')}
+					>
+						<IconFont
+							type="icon-shouquanguanli"
+							style={{ fontSize: 14 }}
+						/>
+					</div>
+				</Tooltip>
 				<User
 					className={styles['module']}
 					nickName={nickName}

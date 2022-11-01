@@ -6,3 +6,13 @@
 	box-shadow: none !important;
 	background-color: $background !important;
 }
+.license-icon{
+	width: 48px;
+	height: 48px;
+	line-height: 48px;
+	text-align: center;
+	cursor: pointer;
+	&:hover{
+		background-color: #edf0f5;
+	}
+}
