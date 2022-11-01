@@ -485,7 +485,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						});
 					}
 				});
-			} else if (params.type === 'redis') {
+			} else if (params.type === 'postgresql') {
 				getAllDatabase(sendData).then((res) => {
 					if (res.success) {
 						if (res.data.length > 0) {
