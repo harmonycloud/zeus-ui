@@ -168,6 +168,23 @@ export default function AddIngress(): JSX.Element {
 			}
 		});
 	};
+	// * 判断当前端口，是否在treafik端口组中
+	const judgePortInTraefikPorts: (port: number | string) => boolean = (
+		port: number | string
+	) => {
+		const cp = Number(port);
+		for (
+			let index = 0;
+			index < ingressClassName?.traefikPortList.length;
+			index++
+		) {
+			const ele = ingressClassName?.traefikPortList[index];
+			if (cp >= ele.startPort && cp <= ele.endPort) {
+				return true;
+			}
+		}
+		return false;
+	};
 
 	const handleSubmit = () => {
 		let service: string, servicePort: number;
@@ -213,22 +230,12 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
-			for (
-				let index = 0;
-				index < ingressClassName?.traefikPortList.length;
-				index++
-			) {
-				const element = ingressClassName?.traefikPortList[index];
-				if (
-					values.exposePort < element.startPort ||
-					values.exposePort > element.endPort
-				) {
-					notification.error({
-						message: '失败',
-						description: '请输入规定范围以内的端口!'
-					});
-					return;
-				}
+			if (!judgePortInTraefikPorts(values.exposePort)) {
+				notification.error({
+					message: '失败',
+					description: '请输入规定范围以内的端口!'
+				});
+				return;
 			}
 			let sendData: any = {
 				clusterId,
