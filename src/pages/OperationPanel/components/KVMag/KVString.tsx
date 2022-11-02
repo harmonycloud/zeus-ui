@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select } from 'antd';
+import { Form, Input, InputNumber, Select, Popconfirm, Button } from 'antd';
 import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
@@ -23,11 +23,81 @@ export default function KVString(): JSX.Element {
 		},
 		{
 			dataIndex: 'key',
-			label: 'key'
+			label: 'key',
+			render: (val: string) => {
+				return (
+					<div className="display-flex flex-align">
+						<div className="text-overflow-one" title={val}>
+							{val}
+						</div>
+						<Popconfirm
+							title={
+								<Form form={form}>
+									<Form.Item name="description">
+										<Input
+											placeholder="请输入"
+											defaultValue={val}
+										/>
+									</Form.Item>
+								</Form>
+							}
+							icon={null}
+							// onConfirm={() =>
+							// 	editDescription(form.getFieldsValue())
+							// }
+						>
+							<EditOutlined
+								style={{
+									marginLeft: 8,
+									cursor: 'pointer',
+									fontSize: 14,
+									color: '#226ee7',
+									verticalAlign: 'middle'
+								}}
+							/>
+						</Popconfirm>
+					</div>
+				);
+			}
 		},
 		{
 			dataIndex: 'expiration',
-			label: '超过时间'
+			label: '超过时间',
+			render: (val: string) => {
+				return (
+					<div className="display-flex flex-align">
+						<div className="text-overflow-one" title={val}>
+							{val}
+						</div>
+						<Popconfirm
+							title={
+								<Form form={form}>
+									<Form.Item name="description">
+										<Input
+											placeholder="请输入"
+											defaultValue={val}
+										/>
+									</Form.Item>
+								</Form>
+							}
+							icon={null}
+							// onConfirm={() =>
+							// 	editDescription(form.getFieldsValue())
+							// }
+						>
+							<EditOutlined
+								style={{
+									marginLeft: 8,
+									cursor: 'pointer',
+									fontSize: 14,
+									color: '#226ee7',
+									verticalAlign: 'middle'
+								}}
+							/>
+						</Popconfirm>
+					</div>
+				);
+			}
 		},
 		{
 			dataIndex: 'keyType',
@@ -35,7 +105,14 @@ export default function KVString(): JSX.Element {
 		},
 		{
 			dataIndex: 'value',
-			label: 'value'
+			label: 'value',
+			render: (value) => {
+				return (
+					<div>
+						{value} <Button type="link">编辑</Button>
+					</div>
+				);
+			}
 		}
 	]);
 
@@ -45,17 +122,18 @@ export default function KVString(): JSX.Element {
 				<div className="title-content">
 					<div className="blue-line"></div>
 					<div className="detail-title mr-8">基本信息</div>
-					<EditOutlined
+					{/* <EditOutlined
 						onClick={() => setIsEdit(!isEdit)}
 						style={{
 							cursor: 'pointer',
 							color: '#226ee7',
 							fontSize: 14
 						}}
-					/>
+					/> */}
 				</div>
 			</div>
-			{!isEdit && <DataFields dataSource={{}} items={items} />}
+			<DataFields dataSource={{}} items={items} />
+			{/* {!isEdit && <DataFields dataSource={{}} items={items} />}
 			{isEdit && (
 				<Form
 					style={{ width: '70%' }}
@@ -76,7 +154,7 @@ export default function KVString(): JSX.Element {
 						/>
 					</Form.Item>
 				</Form>
-			)}
+			)} */}
 		</>
 	);
 }

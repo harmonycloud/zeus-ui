@@ -41,8 +41,8 @@ function UploadMiddlewareForm(props: UploadMiddlewareFormProps) {
 			method: 'POST',
 			body: formData,
 			headers
-		}).then((res) => {
-			if (res.ok) {
+		}).then((res: any) => {
+			if (res.success) {
 				setFileList([]);
 				notification.success({
 					message: '成功',
