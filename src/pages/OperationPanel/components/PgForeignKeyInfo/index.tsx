@@ -56,7 +56,7 @@ export default function PgForeignKeyInfo(
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
 		originData?.tableForeignKeyList?.map((item, index) => {
-			return { ...item, key: index + '' };
+			return { ...item, key: item.name };
 		}) || []
 	);
 	const [tables, setTables] = useState<AutoCompleteOptionItem[]>([]);
@@ -174,8 +174,18 @@ export default function PgForeignKeyInfo(
 			if (storageData.tableForeignKeyList.length === 0) {
 				tp = originData.tableForeignKeyList || [];
 			} else {
-				// const originTemp = originData.
-				tp = [];
+				const originTemp = originData?.tableForeignKeyList?.map(
+					(item) => item.name
+				);
+				const deleteList = storageData.tableForeignKeyList.filter(
+					(item: any) => {
+						if (!originTemp?.includes(item.name)) {
+							item.operator = 'delete';
+							return item;
+						}
+					}
+				);
+				tp = [...(originData.tableForeignKeyList || []), ...deleteList];
 			}
 			console.log({
 				databaseName: originData.databaseName as string,
@@ -186,27 +196,27 @@ export default function PgForeignKeyInfo(
 				middlewareName: middlewareName,
 				tableForeignKeyList: tp
 			});
-			// updatePgsqlForeign({
-			// 	databaseName: originData.databaseName as string,
-			// 	schemaName: originData.schemaName as string,
-			// 	tableName: originData.tableName as string,
-			// 	clusterId: clusterId,
-			// 	namespace: namespace,
-			// 	middlewareName: middlewareName,
-			// 	tableForeignKeyList: originData.tableForeignKeyList
-			// }).then((res) => {
-			// 	if (res.success) {
-			// 		notification.success({
-			// 			message: '成功',
-			// 			description: '外键修改成功！'
-			// 		});
-			// 	} else {
-			// 		notification.error({
-			// 			message: '失败',
-			// 			description: res.errorMsg
-			// 		});
-			// 	}
-			// });
+			updatePgsqlForeign({
+				databaseName: originData.databaseName as string,
+				schemaName: originData.schemaName as string,
+				tableName: originData.tableName as string,
+				clusterId: clusterId,
+				namespace: namespace,
+				middlewareName: middlewareName,
+				tableForeignKeyList: originData.tableForeignKeyList
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '外键修改成功！'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
 		}
 	};
 	return (

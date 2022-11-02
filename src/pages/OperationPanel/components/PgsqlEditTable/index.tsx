@@ -147,6 +147,9 @@ export default function PgsqlEditTable(
 								infoChange(values, 'tableExclusionList')
 							}
 							databaseName={dbName}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'uniqueness':
@@ -156,15 +159,21 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'tableUniqueList')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'examine':
 					return (
 						<PgExamine
-							originData={originData?.tableCheckList || []}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableCheckList')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'inherit':

@@ -90,14 +90,23 @@ export interface PgExclusivenessProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	databaseName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgUniquenessProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgExamineProps {
-	originData: tableCheckItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgInheritProps {
 	data: pgsqlTableDetail | undefined;

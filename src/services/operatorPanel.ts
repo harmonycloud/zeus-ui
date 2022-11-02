@@ -279,6 +279,21 @@ export const updatePgsqlForeign: (
 ) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
 	return Axios.json(URL.updatePgsqlForeign, params, {}, 'PUT');
 };
+export const updatePgsqlExclusion: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlExclusion, params, {}, 'PUT');
+};
+export const updatePgsqlUnique: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlUnique, params, {}, 'PUT');
+};
+export const updatePgsqlCheck: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlCheck, params, {}, 'PUT');
+};
 // * -------------------------------------------------
 // * redis
 export const getRedisDatabases = (params: SendDataParamsProps) => {

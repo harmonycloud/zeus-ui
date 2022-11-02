@@ -77,6 +77,12 @@ export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespac
 export const getMysqlDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
 // * pgsql 增删外键约束
 export const updatePgsqlForeign = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/foreign`;
+// * pgsql 增删排他性约束
+export const updatePgsqlExclusion = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/exclusion`;
+// * pgsql 增删唯一约束
+export const updatePgsqlUnique = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/unique`;
+// * pgsql 增删检查约束
+export const updatePgsqlCheck = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/check`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

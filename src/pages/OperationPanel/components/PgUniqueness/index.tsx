@@ -5,11 +5,15 @@ import {
 	pgsqlUniqueItem,
 	PgUniquenessProps
 } from '../../index.d';
+import { updatePgsqlUnique } from '@/services/operatorPanel';
+import { Button, Divider, notification, Space } from 'antd';
+import storage from '@/utils/storage';
 
 const basicData = {
 	name: '',
 	columnName: [],
-	deferrablity: ''
+	deferrablity: '',
+	operator: 'add'
 };
 const deferrablityOptions = [
 	{ label: '不可延迟', value: 'NOT DEFERRABLE' },
@@ -21,14 +25,13 @@ interface EditPgsqlUniqueItem extends pgsqlUniqueItem {
 }
 // * 唯一约束
 export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
-	const { originData, handleChange } = props;
-	console.log(originData);
+	const { originData, handleChange, clusterId, namespace, middlewareName } =
+		props;
 	const [columnNames] = useState(
 		originData?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { value: item.column, label: item.column };
 		})
 	);
-	console.log(columnNames);
 	const [dataSource] = useState<EditPgsqlUniqueItem[]>(
 		originData?.tableUniqueList?.map((item) => {
 			return { ...item, key: item.name };
@@ -71,12 +74,68 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 	const onChange = (values: any) => {
 		handleChange(values);
 	};
+	const save = () => {
+		if (originData) {
+			const storageData = storage.getSession('pg-table-detail');
+			let tp: pgsqlUniqueItem[];
+			if (storageData.tableUniqueList.length === 0) {
+				tp = originData.tableUniqueList || [];
+			} else {
+				const originTemp = originData?.tableUniqueList?.map(
+					(item) => item.name
+				);
+				const deleteList = storageData.tableUniqueList.filter(
+					(item: any) => {
+						if (!originTemp?.includes(item.name)) {
+							item.operator = 'delete';
+							return item;
+						}
+					}
+				);
+				tp = [...(originData.tableUniqueList || []), ...deleteList];
+			}
+			updatePgsqlUnique({
+				databaseName: originData.databaseName as string,
+				schemaName: originData.schemaName as string,
+				tableName: originData.tableName as string,
+				clusterId: clusterId,
+				namespace: namespace,
+				middlewareName: middlewareName,
+				tableUniqueList: tp
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '唯一约束修改成功!'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
-		<EditTable
-			originData={dataSource}
-			defaultColumns={columns}
-			basicData={basicData}
-			returnValues={onChange}
-		/>
+		<>
+			<EditTable
+				originData={dataSource}
+				defaultColumns={columns}
+				basicData={basicData}
+				returnValues={onChange}
+			/>
+			{originData && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
+		</>
 	);
 }

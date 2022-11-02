@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Select } from 'antd';
+import { Button, Divider, Form, Select, Space } from 'antd';
 import { formItemLayout618 } from '@/utils/const';
 import { PgInheritProps, PgsqlTableItem, SchemaItem } from '../../index.d';
 import { getPgTables, getSchemas } from '@/services/operatorPanel';
@@ -53,35 +53,54 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 			// TODO 编辑回显
 		}
 	}, [data]);
+	const save = () => {
+		// TODO
+	};
 	return (
-		<Form
-			style={{ width: '60%' }}
-			form={form}
-			labelAlign="left"
-			{...formItemLayout618}
-			onValuesChange={onValuesChange}
-		>
-			<Form.Item label="模式" name="schemaName">
-				<Select
-					value={selectSchema}
-					onChange={(value: string) => setSelectSchema(value)}
-				>
-					{schemas.map((item: SchemaItem) => (
-						<Option key={item.schemaName} value={item.schemaName}>
-							{item.schemaName}
-						</Option>
-					))}
-				</Select>
-			</Form.Item>
-			<Form.Item label="表名（多选）" name="tablesName">
-				<Select mode="multiple">
-					{tables.map((item: PgsqlTableItem) => (
-						<Option value={item.tableName} key={item.tableName}>
-							{item.tableName}
-						</Option>
-					))}
-				</Select>
-			</Form.Item>
-		</Form>
+		<>
+			<Form
+				style={{ width: '60%' }}
+				form={form}
+				labelAlign="left"
+				{...formItemLayout618}
+				onValuesChange={onValuesChange}
+			>
+				<Form.Item label="模式" name="schemaName">
+					<Select
+						value={selectSchema}
+						onChange={(value: string) => setSelectSchema(value)}
+					>
+						{schemas.map((item: SchemaItem) => (
+							<Option
+								key={item.schemaName}
+								value={item.schemaName}
+							>
+								{item.schemaName}
+							</Option>
+						))}
+					</Select>
+				</Form.Item>
+				<Form.Item label="表名（多选）" name="tablesName">
+					<Select mode="multiple">
+						{tables.map((item: PgsqlTableItem) => (
+							<Option value={item.tableName} key={item.tableName}>
+								{item.tableName}
+							</Option>
+						))}
+					</Select>
+				</Form.Item>
+			</Form>
+			{data && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
+		</>
 	);
 }
