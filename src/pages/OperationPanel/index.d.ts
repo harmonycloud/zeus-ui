@@ -610,3 +610,10 @@ export interface deleteRedisValueParamsProps
 		RedisKeyItem {
 	value: string;
 }
+export interface updatePgsqlForeignParamsProps
+	extends SendDataParamsProps,
+		pgsqlTableDetail {
+	databaseName: string;
+	schemaName: string;
+	tableName: string;
+}

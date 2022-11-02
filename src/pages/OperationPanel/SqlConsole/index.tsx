@@ -96,6 +96,10 @@ const databaseMenuItems = [
 		key: 'tableInfo'
 	},
 	{
+		label: '创建表',
+		key: 'createTable'
+	},
+	{
 		label: '查询',
 		key: 'inquire'
 	}
@@ -225,6 +229,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		window.open(_url);
 	};
 	const handleMenuClick = (e: MenuInfo, i: string, fatherNode?: string) => {
+		console.log(i, fatherNode);
+		console.log(selectDatabase, selectSchema);
 		switch (e.key) {
 			case 'editTable': // * mysql 编辑表
 				add(
@@ -339,8 +345,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<MysqlEditTable dbName={fatherNode || ''} />
 					) : (
 						<PgsqlEditTable
-							dbName={selectDatabase}
-							schemaName={selectSchema}
+							dbName={fatherNode || ''}
+							schemaName={i}
 						/>
 					)
 				);
@@ -408,22 +414,24 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				break;
 		}
 	};
-	// * mysql database menu
-	const menu = (i: any, schemas?: string) => {
+	// * mysql database menu / pgsql schema menu
+	const menu = (i: any, fatherNode?: string) => {
 		return (
 			<Menu
-				onClick={(info: MenuInfo) => handleMenuClick(info, i, schemas)}
+				onClick={(info: MenuInfo) =>
+					handleMenuClick(info, i, fatherNode)
+				}
 				items={databaseMenuItems}
 			/>
 		);
 	};
 	// * mysql table menu
-	const tableMenu = (i: any, tableName?: string) => {
+	const tableMenu = (i: any, fatherNode: string) => {
 		return (
 			<Menu
 				items={tableMenuItems}
 				onClick={(info: MenuInfo) =>
-					handleMenuClick(info, i, tableName)
+					handleMenuClick(info, i, fatherNode)
 				}
 			/>
 		);
@@ -568,7 +576,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								result.title = (
 									<Dropdown
 										overlay={() =>
-											tableMenu(item.tableName)
+											tableMenu(
+												item.tableName,
+												selectSchema
+											)
 										}
 										trigger={['contextMenu']}
 									>
@@ -912,7 +923,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const redisDbClick = (dbName: string) => {
-		console.log(dbName);
 		setSelectDatabase(dbName);
 		add(dbName, <RedisDBMag dbName={dbName} />);
 	};

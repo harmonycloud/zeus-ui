@@ -53,7 +53,6 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 	};
 	useEffect(() => {
 		if (changedData) {
-			console.log(changedData);
 			const newData = [...dataSource];
 			const index = [...dataSource].findIndex(
 				(item) => item.key === selectedRowKeys[0]
@@ -71,8 +70,10 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			...basicData,
 			key: Math.random() * 1000000
 		};
+		console.log(tempData);
 		setDataSource([...dataSource, tempData]);
 		setSelectedRowKeys([tempData.key]);
+		returnValues && returnValues([...dataSource, tempData]);
 	};
 	const handleSave = (row: any) => {
 		const newData = [...dataSource];
@@ -104,15 +105,20 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			...basicData,
 			key: Math.random() * 1000000
 		};
+		console.log(tempData);
 		const newData = [...dataSource];
 		const index = newData.findIndex((item) => item.key === key);
 		newData.splice(index + 1, 0, tempData);
+		console.log(newData);
 		setSelectedRowKeys([tempData.key]);
 		setDataSource(newData);
+		returnValues && returnValues(newData);
 	};
 	const handleDelete = (key: React.Key) => {
 		const newData = dataSource.filter((item) => item.key !== key);
+		console.log(newData);
 		setDataSource(newData);
+		returnValues && returnValues(newData);
 	};
 	const tableColumns = defaultColumns.map((col: any) => {
 		if (!col.editable) {

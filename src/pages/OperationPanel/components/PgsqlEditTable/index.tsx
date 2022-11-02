@@ -14,10 +14,12 @@ import {
 } from '../../index.d';
 import PgExclusiveness from '../PgExclusiveness';
 import { getPgsqlTableDetail, createPgTable } from '@/services/operatorPanel';
+import storage from '@/utils/storage';
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
 	const { schemaName, dbName, tableName } = props;
+	console.log(props);
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<pgsqlTableDetail>();
@@ -33,6 +35,8 @@ export default function PgsqlEditTable(
 			}).then((res) => {
 				if (res.success) {
 					setOriginData(res.data);
+					// * 待优化 编辑时将数据存储在sessionStorage中，用于编辑对比
+					storage.setSession('pg-table-detail', res.data);
 				} else {
 					notification.error({
 						message: '失败',
@@ -184,13 +188,17 @@ export default function PgsqlEditTable(
 		return (
 			<div>
 				{componentRender()}
-				<Divider />
-				<Space>
-					<Button type="primary" onClick={save}>
-						保存
-					</Button>
-					<Button>取消</Button>
-				</Space>
+				{!tableName && (
+					<>
+						<Divider />
+						<Space>
+							<Button type="primary" onClick={save}>
+								保存
+							</Button>
+							<Button>取消</Button>
+						</Space>
+					</>
+				)}
 			</div>
 		);
 	};

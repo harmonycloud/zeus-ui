@@ -19,22 +19,12 @@ export default function PgsqlTableInfo(
 	props: PgsqlTableInfoProps
 ): JSX.Element {
 	const { handleChange, dbName, data, schemaName } = props;
-	console.log(data);
+	console.log(props);
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
 	const [schemas, setSchemas] = useState<SchemaItem[]>([]);
 	const [users, setUsers] = useState<PgsqlUserItem[]>([]);
 	useEffect(() => {
-		getSchemas({
-			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params.name,
-			databaseName: dbName
-		}).then((res) => {
-			if (res.success) {
-				setSchemas(res.data);
-			}
-		});
 		getUsers({
 			clusterId: params.clusterId,
 			namespace: params.namespace,
@@ -48,7 +38,20 @@ export default function PgsqlTableInfo(
 		});
 	}, []);
 	useEffect(() => {
-		console.log(data);
+		if (dbName) {
+			getSchemas({
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				databaseName: dbName
+			}).then((res) => {
+				if (res.success) {
+					setSchemas(res.data);
+				}
+			});
+		}
+	}, [dbName]);
+	useEffect(() => {
 		if (data) {
 			form.setFieldsValue({
 				tableName: data.tableName,

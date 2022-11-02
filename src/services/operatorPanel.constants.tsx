@@ -75,6 +75,9 @@ export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespa
 export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/collate`;
 // * mysql 获取表格详情
 export const getMysqlDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
+// * pgsql 增删外键约束
+export const updatePgsqlForeign = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/foreign`;
+// * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;
 // * redis 执行cmd

@@ -53,6 +53,7 @@ import {
 	resetPasswordParamsProps,
 	SendDataParamsProps,
 	updateParamsProps,
+	updatePgsqlForeignParamsProps,
 	updateRedisKeyParamsProps
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
@@ -272,6 +273,11 @@ export const getPgsqlCollate: (
 };
 export const getMysqlDetail = (params: getMysqlExcelParamsProps) => {
 	return Axios.get(URL.getMysqlDetail, params);
+};
+export const updatePgsqlForeign: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlForeign, params, {}, 'PUT');
 };
 // * -------------------------------------------------
 // * redis
