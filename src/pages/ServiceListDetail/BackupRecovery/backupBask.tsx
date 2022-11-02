@@ -187,12 +187,14 @@ export default function List(props: any): JSX.Element {
 								message: '提示',
 								description: '当前集群下没有服务，没有备份对象'
 							});
-						} else if (!isLvm) {
-							notification.error({
-								message: '提示',
-								description: '存储不使用Lvm时，无法创建备份任务'
-							});
-						} else {
+						}
+						// else if (!isLvm) {
+						// 	notification.error({
+						// 		message: '提示',
+						// 		description: '存储不使用Lvm时，无法创建备份任务'
+						// 	});
+						// }
+						else {
 							if (params.type) {
 								history.push(
 									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
