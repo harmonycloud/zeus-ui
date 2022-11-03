@@ -680,6 +680,22 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			} else {
 				storageClassName = `${res.data.quota.redis.storageClassName}/${res.data.quota.redis.storageClassAliasName}`;
 			}
+			switch (res.data.quota.redis.num) {
+				case 2:
+					setSentinelMode('1s-1m');
+					break;
+				case 4:
+					setSentinelMode('2s-2m');
+					break;
+				case 8:
+					setSentinelMode('4m-4s');
+					break;
+				case 16:
+					setSentinelMode('8s-8m');
+					break;
+				default:
+					break;
+			}
 			setNodeObj({
 				redis: {
 					disabled: false,
