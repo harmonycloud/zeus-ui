@@ -126,6 +126,7 @@ export default function List(props: any): JSX.Element {
 			<Actions>
 				<Button
 					type="link"
+					disabled={record.phrase === 'Deleting'}
 					onClick={(e) => {
 						e.stopPropagation();
 						confirm({
