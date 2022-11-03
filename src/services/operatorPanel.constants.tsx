@@ -86,7 +86,9 @@ export const updatePgsqlCheck = `${api}/clusters/{clusterId}/namespaces/{namespa
 // * pgsql 增删继承关系
 export const updatePgsqlInherit = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/inherit`;
 // * pgsql 更新table (基本信息tab)
-export const updatePgsqlInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{table}`;
+export const updatePgsqlInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schema}/tables/{table}`;
+// * pgsql 更新列信息
+export const updatePgsqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/columns`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

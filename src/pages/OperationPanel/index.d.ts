@@ -81,6 +81,8 @@ export interface PgsqlColInfoProps {
 	namespace: string;
 	middlewareName: string;
 	tableName: string | undefined;
+	databaseName: string;
+	schemaName: string;
 }
 export interface PgForeignKeyInfoProps {
 	originData: pgsqlTableDetail | undefined;
@@ -641,5 +643,5 @@ export interface updatePgsqlInfoParamsProps
 		pgsqlTableDetail {
 	databaseName: string;
 	table: string;
-	schemaName: string;
+	schema: string;
 }

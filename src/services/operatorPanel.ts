@@ -305,6 +305,11 @@ export const updatePgsqlInfo: (
 ) => Promise<resProps> = (params: updatePgsqlInfoParamsProps) => {
 	return Axios.json(URL.updatePgsqlInfo, params, {}, 'PUT');
 };
+export const updatePgsqlCol: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlCol, params, {}, 'PUT');
+};
 // * -------------------------------------------------
 // * redis
 export const getRedisDatabases = (params: SendDataParamsProps) => {

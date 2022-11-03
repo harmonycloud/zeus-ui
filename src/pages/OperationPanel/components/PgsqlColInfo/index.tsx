@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
 import { PgsqlColInfoProps, PgsqlColItem } from '../../index.d';
-import { getPgsqlCollate, getPgsqlDataType } from '@/services/operatorPanel';
+import {
+	getPgsqlCollate,
+	getPgsqlDataType,
+	updatePgsqlCol
+} from '@/services/operatorPanel';
 import { AutoCompleteOptionItem } from '@/types/comment';
+import { Button, Divider, notification, Space } from 'antd';
 const basicData = {
 	column: '',
 	dateType: '',
@@ -25,8 +30,11 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		clusterId,
 		namespace,
 		middlewareName,
-		tableName
+		tableName,
+		databaseName,
+		schemaName
 	} = props;
+	console.log(props);
 	const [dataSource, setDataSource] = useState<EditPgsqlColItem[]>(
 		originData.map((item: PgsqlColItem) => {
 			return { ...item, key: item.num };
@@ -152,12 +160,50 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 	const onChange = (values: any) => {
 		handleChange(values);
 	};
+	const save = () => {
+		if (tableName && originData) {
+			updatePgsqlCol({
+				databaseName,
+				schemaName,
+				tableName,
+				clusterId,
+				namespace,
+				middlewareName,
+				columnDtoList: originData
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '列信息修改成功!'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
-		<EditTable
-			originData={dataSource}
-			defaultColumns={columns}
-			basicData={basicData}
-			returnValues={onChange}
-		/>
+		<>
+			<EditTable
+				originData={dataSource}
+				defaultColumns={columns}
+				basicData={basicData}
+				returnValues={onChange}
+			/>
+			{tableName && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
+		</>
 	);
 }

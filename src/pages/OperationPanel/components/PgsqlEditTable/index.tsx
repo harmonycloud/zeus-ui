@@ -124,6 +124,8 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'columnDtoList')
 							}
+							databaseName={dbName}
+							schemaName={schemaName}
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}

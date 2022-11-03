@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Button, Divider, Form, Input, InputNumber, Select, Space } from 'antd';
+import {
+	Button,
+	Divider,
+	Form,
+	Input,
+	InputNumber,
+	notification,
+	Select,
+	Space
+} from 'antd';
 import { formItemLayout618 } from '@/utils/const';
 import {
 	ParamsProps,
@@ -8,7 +17,11 @@ import {
 	PgsqlUserItem,
 	SchemaItem
 } from '../../index.d';
-import { getSchemas, getUsers } from '@/services/operatorPanel';
+import {
+	getSchemas,
+	getUsers,
+	updatePgsqlInfo
+} from '@/services/operatorPanel';
 
 const tableSpaceOptions = [
 	{ label: 'pg_default', value: 'pg_default' },
@@ -18,7 +31,16 @@ const { Option } = Select;
 export default function PgsqlTableInfo(
 	props: PgsqlTableInfoProps
 ): JSX.Element {
-	const { handleChange, dbName, data, schemaName, tableName } = props;
+	const {
+		handleChange,
+		dbName,
+		data,
+		schemaName,
+		tableName,
+		clusterId,
+		namespace,
+		middlewareName
+	} = props;
 	console.log(props);
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
@@ -67,9 +89,33 @@ export default function PgsqlTableInfo(
 		handleChange(allValues);
 	};
 	const save = () => {
-		console.log('save');
 		if (tableName && data) {
-			// TODO
+			updatePgsqlInfo({
+				databaseName: dbName,
+				table: tableName,
+				schema: schemaName,
+				clusterId,
+				namespace,
+				middlewareName,
+				tableName: data.tableName,
+				owner: data.owner,
+				schemaName: data.schemaName,
+				tablespace: data.tablespace,
+				fillFactor: data.fillFactor,
+				description: data.description
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '基本信息修改成功!'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
 		}
 	};
 	return (
