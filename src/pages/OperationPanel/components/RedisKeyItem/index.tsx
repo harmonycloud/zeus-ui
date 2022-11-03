@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dropdown, Menu } from 'antd';
 import { MenuInfo } from '@/types/comment';
 import { IconFont } from '@/components/IconFont';
 import { ReloadOutlined } from '@ant-design/icons';
+import { getRedisKeys } from '@/services/operatorPanel';
 import './index.scss';
 
 interface RedisKeyItemProps {
@@ -33,6 +34,7 @@ const databaseMenuItems = [
 // TODO redis keyItem 传参
 export default function RedisKeyItem(props: RedisKeyItemProps): JSX.Element {
 	const { onDelete, onRefresh, onAdd, onEdit, onView } = props;
+	const [keys, setKeys] = useState<any[]>();
 	const handleMenuClick = (e: MenuInfo) => {
 		switch (e.key) {
 			case 'add':

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Modal, notification } from 'antd';
+import { Input, Modal, notification, Button } from 'antd';
 import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisKeyItem from '../RedisKeyItem';
 import { deleteRedisKey, getRedisKeys } from '@/services/operatorPanel';
 import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
+import AddKV from './addKV';
 import KVString from './KVString';
+import KVHash from './KVHash';
 
 const { confirm } = Modal;
 interface KVMagProps {
@@ -15,6 +17,7 @@ interface KVMagProps {
 export default function KVMag(props: KVMagProps): JSX.Element {
 	const { dbName } = props;
 	const params: ParamsProps = useParams();
+	const [isAdd, setIsAdd] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
 	const [key, setKey] = useState<RedisKeyItemParams>();
 	const [keys, setKeys] = useState<RedisKeyItemParams[]>([]);
@@ -86,7 +89,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		getData(value);
 	};
 	// TODO 添加 k-v
-	const handleAdd = () => console.log('add');
+	const handleAdd = () => setIsAdd(true);
 	// TODO 编辑 k-v
 	const handleEdit = () => console.log('edit');
 	// TODO 查看 k-v
@@ -95,6 +98,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	const childrenRender = (type: string) => {
 		switch (type) {
 			case 'hash':
+				return <KVHash />;
 				break;
 			case 'Zset':
 				break;
@@ -109,25 +113,42 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		}
 	};
 	return (
-		<SplitPane {...paneProps}>
-			<div>
-				<Input.Search
-					style={{ marginBottom: 8 }}
-					placeholder="请输入关键字搜索"
-					value={keyword}
-					onChange={(e) => setKeyword(e.target.value)}
-					onSearch={(value: string) => handleSearch(value)}
-				/>
-				{/* TODO 循环 */}
-				<RedisKeyItem
-					onDelete={handleDelete}
-					onRefresh={handleRefresh}
-					onAdd={handleAdd}
-					onEdit={handleEdit}
-					onView={handleView}
-				/>
-			</div>
-			<div>{childrenRender('string')}</div>
-		</SplitPane>
+		<>
+			{!isAdd ? (
+				<SplitPane {...paneProps}>
+					{!isAdd ? (
+						<div>
+							<Button
+								style={{ width: '100%' }}
+								type="primary"
+								onClick={() => setIsAdd(true)}
+							>
+								创建k-v
+							</Button>
+							<Input.Search
+								style={{ margin: '8px 0' }}
+								placeholder="请输入关键字搜索"
+								value={keyword}
+								onChange={(e) => setKeyword(e.target.value)}
+								onSearch={(value: string) =>
+									handleSearch(value)
+								}
+							/>
+							{/* TODO 循环 */}
+							<RedisKeyItem
+								onDelete={handleDelete}
+								onRefresh={handleRefresh}
+								onAdd={handleAdd}
+								onEdit={handleEdit}
+								onView={handleView}
+							/>
+						</div>
+					) : null}
+					<div>{childrenRender('string')}</div>
+				</SplitPane>
+			) : (
+				<AddKV onCancel={() => setIsAdd(false)} />
+			)}
+		</>
 	);
 }

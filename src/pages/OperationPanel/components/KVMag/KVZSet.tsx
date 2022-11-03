@@ -16,7 +16,7 @@ const options = [
 	{ label: 'string', value: 'string' }
 ];
 // TODO 编辑 value单独弹窗编辑
-export default function KVHash(): JSX.Element {
+export default function KVZSet(): JSX.Element {
 	const [form] = Form.useForm();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [items, setItems] = useState<Item[]>([
@@ -93,8 +93,8 @@ export default function KVHash(): JSX.Element {
 				// onChange={onTableChange}
 			>
 				<ProTable.Column title="序号" dataIndex="userName" />
-				<ProTable.Column title="field" dataIndex="aliasName" />
 				<ProTable.Column title="value" dataIndex="email" />
+				<ProTable.Column title="score" dataIndex="aliasName" />
 				<ProTable.Column
 					title="操作"
 					dataIndex="action"

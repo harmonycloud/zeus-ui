@@ -159,6 +159,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [treeData, setTreeData] = useState<DataNode[]>([]);
 	const [pgTreeData, setPgTreeData] = useState<DataNode[]>([]);
+	const [redisListData, setRedisListData] = useState<any>([]);
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
 	const [items, setItems] = useState<any[]>(initialItems);

@@ -133,6 +133,10 @@ export default function KVString(): JSX.Element {
 				</div>
 			</div>
 			<DataFields dataSource={{}} items={items} />
+			<div>
+				<Button type="primary">编辑</Button>
+				<Input.TextArea style={{ height: '100px', marginTop: 8 }} />
+			</div>
 			{/* {!isEdit && <DataFields dataSource={{}} items={items} />}
 			{isEdit && (
 				<Form
