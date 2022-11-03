@@ -111,6 +111,10 @@ export default function PgsqlEditTable(
 							dbName={dbName}
 							schemaName={schemaName}
 							data={originData}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'colInfo':
@@ -123,6 +127,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'foreignKeyInfo':
@@ -137,6 +142,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'exclusiveness':
@@ -150,6 +156,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'uniqueness':
@@ -162,6 +169,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'examine':
@@ -174,6 +182,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'inherit':
@@ -188,6 +197,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				default:

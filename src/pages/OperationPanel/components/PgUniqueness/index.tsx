@@ -25,8 +25,14 @@ interface EditPgsqlUniqueItem extends pgsqlUniqueItem {
 }
 // * 唯一约束
 export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
-	const { originData, handleChange, clusterId, namespace, middlewareName } =
-		props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName
+	} = props;
 	const [columnNames] = useState(
 		originData?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { value: item.column, label: item.column };
@@ -75,7 +81,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 		handleChange(values);
 	};
 	const save = () => {
-		if (originData) {
+		if (tableName && originData) {
 			const storageData = storage.getSession('pg-table-detail');
 			let tp: pgsqlUniqueItem[];
 			if (storageData.tableUniqueList.length === 0) {
@@ -125,7 +131,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 				basicData={basicData}
 				returnValues={onChange}
 			/>
-			{originData && (
+			{tableName && (
 				<>
 					<Divider />
 					<Space>

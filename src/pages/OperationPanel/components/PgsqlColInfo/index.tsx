@@ -19,8 +19,14 @@ interface EditPgsqlColItem extends PgsqlColItem {
 }
 // * 列信息
 export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
-	const { originData, handleChange, clusterId, namespace, middlewareName } =
-		props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName
+	} = props;
 	const [dataSource, setDataSource] = useState<EditPgsqlColItem[]>(
 		originData.map((item: PgsqlColItem) => {
 			return { ...item, key: item.num };

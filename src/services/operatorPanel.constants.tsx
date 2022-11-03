@@ -83,6 +83,10 @@ export const updatePgsqlExclusion = `${api}/clusters/{clusterId}/namespaces/{nam
 export const updatePgsqlUnique = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/unique`;
 // * pgsql 增删检查约束
 export const updatePgsqlCheck = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/check`;
+// * pgsql 增删继承关系
+export const updatePgsqlInherit = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/inherit`;
+// * pgsql 更新table (基本信息tab)
+export const updatePgsqlInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{table}`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

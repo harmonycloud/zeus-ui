@@ -17,8 +17,14 @@ interface EditTableCheckItem extends tableCheckItem {
 }
 // * 检查约束
 export default function PgExamine(props: PgExamineProps): JSX.Element {
-	const { originData, handleChange, clusterId, namespace, middlewareName } =
-		props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName
+	} = props;
 	const [dataSource] = useState<EditTableCheckItem[]>(
 		originData?.tableCheckList?.map((item: tableCheckItem) => {
 			return { ...item, key: item.name };
@@ -64,7 +70,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 		handleChange(values);
 	};
 	const save = () => {
-		if (originData) {
+		if (tableName && originData) {
 			const storageData = storage.getSession('pg-table-detail');
 			let tp: tableCheckItem[];
 			if (storageData.tableCheckList.length === 0) {
@@ -86,7 +92,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 			updatePgsqlCheck({
 				databaseName: originData.databaseName as string,
 				schemaName: originData.schemaName as string,
-				tableName: originData.tableName as string,
+				tableName,
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
@@ -114,7 +120,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 				basicData={basicData}
 				returnValues={onChange}
 			/>
-			{originData && (
+			{tableName && (
 				<>
 					<Divider />
 					<Space>

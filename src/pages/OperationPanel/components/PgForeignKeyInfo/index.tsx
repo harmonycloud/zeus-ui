@@ -50,7 +50,8 @@ export default function PgForeignKeyInfo(
 		schemaName,
 		clusterId,
 		namespace,
-		middlewareName
+		middlewareName,
+		tableName
 	} = props;
 	console.log(originData);
 	const [open, setOpen] = useState<boolean>(false);
@@ -166,9 +167,7 @@ export default function PgForeignKeyInfo(
 	};
 	// * 单独修改外键
 	const save = () => {
-		if (originData) {
-			console.log(originData);
-			console.log(storage.getSession('pg-table-detail'));
+		if (tableName && originData) {
 			const storageData = storage.getSession('pg-table-detail');
 			let tp: pgsqlForeignKeyItem[];
 			if (storageData.tableForeignKeyList.length === 0) {
@@ -187,19 +186,10 @@ export default function PgForeignKeyInfo(
 				);
 				tp = [...(originData.tableForeignKeyList || []), ...deleteList];
 			}
-			console.log({
-				databaseName: originData.databaseName as string,
-				schemaName: originData.schemaName as string,
-				tableName: originData.tableName as string,
-				clusterId: clusterId,
-				namespace: namespace,
-				middlewareName: middlewareName,
-				tableForeignKeyList: tp
-			});
 			updatePgsqlForeign({
 				databaseName: originData.databaseName as string,
 				schemaName: originData.schemaName as string,
-				tableName: originData.tableName as string,
+				tableName,
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
@@ -229,7 +219,7 @@ export default function PgForeignKeyInfo(
 				returnValues={onChange}
 				returnSelectValues={getSelectValues}
 			/>
-			{originData && (
+			{tableName && (
 				<>
 					<Divider />
 					<Space>

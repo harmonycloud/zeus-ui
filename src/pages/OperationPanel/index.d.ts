@@ -69,6 +69,10 @@ export interface PgsqlTableInfoProps {
 	dbName: string;
 	schemaName: string;
 	data: pgsqlTableDetail | undefined;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgsqlColInfoProps {
 	originData: PgsqlColItem[];
@@ -76,6 +80,7 @@ export interface PgsqlColInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgForeignKeyInfoProps {
 	originData: pgsqlTableDetail | undefined;
@@ -85,6 +90,7 @@ export interface PgForeignKeyInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgExclusivenessProps {
 	originData: pgsqlTableDetail | undefined;
@@ -93,6 +99,7 @@ export interface PgExclusivenessProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgUniquenessProps {
 	originData: pgsqlTableDetail | undefined;
@@ -100,6 +107,7 @@ export interface PgUniquenessProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgExamineProps {
 	originData: pgsqlTableDetail | undefined;
@@ -107,6 +115,7 @@ export interface PgExamineProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgInheritProps {
 	data: pgsqlTableDetail | undefined;
@@ -116,6 +125,7 @@ export interface PgInheritProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface consoleUser {
 	username: string;
@@ -625,4 +635,11 @@ export interface updatePgsqlForeignParamsProps
 	databaseName: string;
 	schemaName: string;
 	tableName: string;
+}
+export interface updatePgsqlInfoParamsProps
+	extends SendDataParamsProps,
+		pgsqlTableDetail {
+	databaseName: string;
+	table: string;
+	schemaName: string;
 }

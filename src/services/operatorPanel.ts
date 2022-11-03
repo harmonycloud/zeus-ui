@@ -54,6 +54,7 @@ import {
 	SendDataParamsProps,
 	updateParamsProps,
 	updatePgsqlForeignParamsProps,
+	updatePgsqlInfoParamsProps,
 	updateRedisKeyParamsProps
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
@@ -293,6 +294,16 @@ export const updatePgsqlCheck: (
 	params: updatePgsqlForeignParamsProps
 ) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
 	return Axios.json(URL.updatePgsqlCheck, params, {}, 'PUT');
+};
+export const updatePgsqlInherit: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlInherit, params, {}, 'PUT');
+};
+export const updatePgsqlInfo: (
+	params: updatePgsqlInfoParamsProps
+) => Promise<resProps> = (params: updatePgsqlInfoParamsProps) => {
+	return Axios.json(URL.updatePgsqlInfo, params, {}, 'PUT');
 };
 // * -------------------------------------------------
 // * redis

@@ -22,8 +22,14 @@ interface EditExclusionItem extends exclusionItem {
 export default function PgExclusiveness(
 	props: PgExclusivenessProps
 ): JSX.Element {
-	const { originData, handleChange, clusterId, namespace, middlewareName } =
-		props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName
+	} = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditExclusionItem[]>(
 		originData?.tableExclusionList?.map((item) => {
@@ -91,7 +97,7 @@ export default function PgExclusiveness(
 		setSelectRow(value);
 	};
 	const save = () => {
-		if (originData) {
+		if (tableName && originData) {
 			const storageData = storage.getSession('pg-table-detail');
 			let tp: exclusionItem[];
 			if (storageData.tableExclusionList.length === 0) {
@@ -110,19 +116,10 @@ export default function PgExclusiveness(
 				);
 				tp = [...(originData.tableExclusionList || []), ...deleteList];
 			}
-			console.log({
-				databaseName: originData.databaseName as string,
-				schemaName: originData.schemaName as string,
-				tableName: originData.tableName as string,
-				clusterId: clusterId,
-				namespace: namespace,
-				middlewareName: middlewareName,
-				tableExclusionList: tp
-			});
 			updatePgsqlExclusion({
 				databaseName: originData.databaseName as string,
 				schemaName: originData.schemaName as string,
-				tableName: originData.tableName as string,
+				tableName,
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
@@ -157,7 +154,7 @@ export default function PgExclusiveness(
 				returnValues={onChange}
 				returnSelectValues={getSelectValues}
 			/>
-			{originData && (
+			{tableName && (
 				<>
 					<Divider />
 					<Space>

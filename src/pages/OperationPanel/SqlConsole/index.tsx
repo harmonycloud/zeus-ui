@@ -1044,7 +1044,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				)}
 				{params.type === 'postgresql' && (
 					<SplitPane {...paneProps}>
-						<div style={{ padding: '16px 0px 16px 16px' }}>
+						<div style={{ padding: '0px 0px 16px 16px' }}>
 							<Input.Search
 								style={{ marginBottom: 8, paddingRight: 16 }}
 								placeholder="请输入关键字搜索"
