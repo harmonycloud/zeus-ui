@@ -427,24 +427,28 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				if (instanceSpec === 'General') {
 					switch (specId) {
 						case '1':
-							sendData.quota.redis.cpu = 1;
-							sendData.quota.redis.memory = '2Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '1Gi';
 							break;
 						case '2':
 							sendData.quota.redis.cpu = 2;
-							sendData.quota.redis.memory = '8Gi';
+							sendData.quota.redis.memory = '2Gi';
 							break;
 						case '3':
-							sendData.quota.redis.cpu = 4;
-							sendData.quota.redis.memory = '16Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '4Gi';
 							break;
 						case '4':
-							sendData.quota.redis.cpu = 8;
-							sendData.quota.redis.memory = '32Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '8Gi';
 							break;
 						case '5':
-							sendData.quota.redis.cpu = 16;
-							sendData.quota.redis.memory = '64Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '16Gi';
+							break;
+						case '6':
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '32Gi';
 							break;
 						default:
 							break;

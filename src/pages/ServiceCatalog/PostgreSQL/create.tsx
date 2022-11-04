@@ -441,9 +441,13 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						break;
 					case '4':
 						sendData.quota.postgresql.cpu = 8;
-						sendData.quota.postgresql.memory = '32Gi';
+						sendData.quota.postgresql.memory = '16Gi';
 						break;
 					case '5':
+						sendData.quota.postgresql.cpu = 8;
+						sendData.quota.postgresql.memory = '32Gi';
+						break;
+					case '6':
 						sendData.quota.postgresql.cpu = 16;
 						sendData.quota.postgresql.memory = '64Gi';
 						break;
