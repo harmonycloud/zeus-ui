@@ -29,7 +29,7 @@ export default function MysqlIndexInfo(
 	const [changedData, setChangeData] = useState<any>();
 	const [selectRow, setSelectRow] = useState<any>({});
 	const [dataSource, setDataSource] = useState<EditIndexItem[]>(
-		originData?.indices.map((item) => {
+		originData?.indices?.map((item) => {
 			return { ...item, key: item.index };
 		}) || []
 	);

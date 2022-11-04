@@ -23,6 +23,7 @@ import {
 	GetEncodingRes,
 	getExecuteHisParamsProps,
 	getIndexRes,
+	getMysqlDataTypeRes,
 	getMysqlExcelParamsProps,
 	getMysqlUserResProps,
 	getPgColParamsProps,
@@ -309,6 +310,11 @@ export const updatePgsqlCol: (
 	params: updatePgsqlForeignParamsProps
 ) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
 	return Axios.json(URL.updatePgsqlCol, params, {}, 'PUT');
+};
+export const getMysqlDataType: (
+	params: SendDataParamsProps
+) => Promise<getMysqlDataTypeRes> = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getMysqlDataType, params);
 };
 // * -------------------------------------------------
 // * redis

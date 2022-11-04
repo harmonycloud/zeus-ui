@@ -50,10 +50,16 @@ export interface PgsqlEditTableProps {
 export interface MysqlTableInfoProps {
 	handleChange: (values: any) => void;
 	originData: MysqlTableDetail | undefined;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface MysqlColInfoProps {
 	originData: any[];
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 
 export interface MysqlIndexInfoProps {
@@ -559,18 +565,19 @@ export interface getPgDataTypeRes extends resProps {
 	data: string[];
 }
 export interface MysqlTableDetail {
-	autoIncrement: number;
-	charset: string;
-	collate: string;
-	columns: MysqlColItem[];
-	comment: string;
-	foreignKeys: MysqlForeignItem[];
-	indices: IndexItem[];
-	maxRows: null;
-	minRows: null;
-	rowFormat: null;
-	rows: number;
-	tableName: string;
+	autoIncrement?: number;
+	charset?: string;
+	collate?: string;
+	columns?: MysqlColItem[];
+	comment?: string;
+	engine?: string;
+	foreignKeys?: MysqlForeignItem[];
+	indices?: IndexItem[];
+	maxRows?: null;
+	minRows?: null;
+	rowFormat?: null;
+	rows?: number;
+	tableName?: string;
 }
 export interface MysqlForeignItem {
 	column: string;
@@ -644,4 +651,13 @@ export interface updatePgsqlInfoParamsProps
 	databaseName: string;
 	table: string;
 	schema: string;
+}
+export interface MysqlDataType {
+	autoIncrement: boolean;
+	id: number;
+	name: string;
+	optionsAble: boolean;
+}
+export interface getMysqlDataTypeRes extends resProps {
+	data: MysqlDataType[];
 }

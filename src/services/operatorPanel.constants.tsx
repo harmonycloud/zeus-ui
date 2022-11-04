@@ -89,6 +89,8 @@ export const updatePgsqlInherit = `${api}/clusters/{clusterId}/namespaces/{names
 export const updatePgsqlInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schema}/tables/{table}`;
 // * pgsql 更新列信息
 export const updatePgsqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/columns`;
+// * mysql 获取数据类型列表
+export const getMysqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/datatype`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

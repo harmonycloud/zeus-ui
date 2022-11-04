@@ -39,10 +39,14 @@ export default function MysqlEditTable(
 	};
 	const infoChange = (values: any, dataIndex: string) => {
 		console.log(values, dataIndex);
-		// setOriginData({
-		// 	...originData,
-		// 	[dataIndex]: values
-		// });
+		if (dataIndex === 'basicInfo') {
+			setOriginData({ ...originData, ...values });
+		} else {
+			const result = {
+				[dataIndex]: values
+			};
+			setOriginData({ ...originData, ...result });
+		}
 	};
 	const save = () => {
 		console.log('click save', originData);
@@ -57,6 +61,9 @@ export default function MysqlEditTable(
 								infoChange(values, 'info')
 							}
 							originData={originData}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'colInfo':
@@ -66,6 +73,9 @@ export default function MysqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'columns')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'indexInfo':
@@ -93,13 +103,17 @@ export default function MysqlEditTable(
 		return (
 			<div>
 				{componentRender()}
-				<Divider />
-				<Space>
-					<Button type="primary" onClick={save}>
-						保存
-					</Button>
-					<Button>取消</Button>
-				</Space>
+				{!tableName && (
+					<>
+						<Divider />
+						<Space>
+							<Button type="primary" onClick={save}>
+								保存
+							</Button>
+							<Button>取消</Button>
+						</Space>
+					</>
+				)}
 			</div>
 		);
 	};

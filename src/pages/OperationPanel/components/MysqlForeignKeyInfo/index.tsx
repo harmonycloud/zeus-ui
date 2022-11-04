@@ -31,12 +31,12 @@ export default function MysqlForeignKeyInfo(
 ): JSX.Element {
 	const { originData, handleChange } = props;
 	const [dataSource] = useState<EditMysqlForeignItem[]>(
-		originData?.foreignKeys.map((item) => {
+		originData?.foreignKeys?.map((item) => {
 			return { ...item, key: item.foreignKey };
 		}) || []
 	);
 	const [columnOptions] = useState<AutoCompleteOptionItem[]>(
-		originData?.columns.map((item) => {
+		originData?.columns?.map((item) => {
 			return { label: item.column, value: item.column };
 		}) || []
 	);

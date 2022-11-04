@@ -949,7 +949,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				width={230}
 			>
 				<div className="sql-console-sider-title-content">
-					<div>Mysql控制台</div>
+					<div>{params.name}控制台</div>
 					<Button icon={<ReloadOutlined />} />
 				</div>
 				{params.type === 'mysql' && (

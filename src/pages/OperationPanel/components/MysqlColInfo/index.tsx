@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { MysqlColInfoProps } from '../../index.d';
+import { MysqlColInfoProps, MysqlDataType } from '../../index.d';
+import { getMysqlDataType } from '@/services/operatorPanel';
 
 const basicData = {
 	columnName: '',
@@ -11,7 +12,20 @@ const basicData = {
 	description: ''
 };
 export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
-	const { originData, handleChange } = props;
+	const { originData, handleChange, clusterId, namespace, middlewareName } =
+		props;
+	const [dataTypes, setDataTypes] = useState<MysqlDataType[]>([]);
+	useEffect(() => {
+		getMysqlDataType({
+			clusterId,
+			middlewareName,
+			namespace
+		}).then((res) => {
+			if (res.success) {
+				setDataTypes(res.data);
+			}
+		});
+	}, []);
 	const columns = [
 		{
 			title: '序号',
