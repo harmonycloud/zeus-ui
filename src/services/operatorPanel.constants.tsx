@@ -91,6 +91,9 @@ export const updatePgsqlInfo = `${api}/clusters/{clusterId}/namespaces/{namespac
 export const updatePgsqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/columns`;
 // * mysql 获取数据类型列表
 export const getMysqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/datatype`;
+// * mysql 创建表
+export const createMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/table`;
+
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

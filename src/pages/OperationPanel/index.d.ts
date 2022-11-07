@@ -55,7 +55,7 @@ export interface MysqlTableInfoProps {
 	middlewareName: string;
 }
 export interface MysqlColInfoProps {
-	originData: any[];
+	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	clusterId: string;
 	namespace: string;
@@ -69,6 +69,9 @@ export interface MysqlIndexInfoProps {
 export interface MysqlForeignKeyInfoProps {
 	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgsqlTableInfoProps {
 	handleChange: (values: any) => void;
@@ -660,4 +663,9 @@ export interface MysqlDataType {
 }
 export interface getMysqlDataTypeRes extends resProps {
 	data: MysqlDataType[];
+}
+export interface createMysqlTableParams
+	extends SendDataParamsProps,
+		MysqlTableDetail {
+	database: string;
 }

@@ -1,27 +1,30 @@
 import EditTable from '@/components/EditTable';
 import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { MysqlColItem } from '../../index.d';
+import { MysqlColItem, MysqlTableDetail, IndexItem } from '../../index.d';
 
 interface IncludeColsForm {
 	open: boolean;
 	onCancel: () => void;
 	onCreate: (value: any) => void;
-	data: any;
-	columns: MysqlColItem[];
+	originData: MysqlTableDetail | undefined;
+	selectRow: any;
 }
 export default function IncludeColsForm({
 	open,
 	onCancel,
 	onCreate,
-	data,
-	columns
+	originData,
+	selectRow
 }: IncludeColsForm): JSX.Element {
+	console.log(originData);
+	console.log(selectRow);
 	const [colInfoOption] = useState(
-		columns.map((item: MysqlColItem) => {
+		originData?.columns?.map((item: MysqlColItem) => {
 			return { label: item.column, value: item.column };
-		})
+		}) || []
 	);
+	const [dataSource] = useState([]);
 	const [returnData, setReturnData] = useState([]);
 	const defaultColumns = [
 		{
@@ -32,25 +35,20 @@ export default function IncludeColsForm({
 		},
 		{
 			title: '列信息',
-			dataIndex: 'colInfo',
-			key: 'colInfo',
+			dataIndex: 'columnName',
+			key: 'columnName',
 			editable: true,
 			componentType: 'select',
 			selectOptions: colInfoOption
 		},
 		{
 			title: '长度',
-			dataIndex: 'length',
-			key: 'length',
+			dataIndex: 'subPart',
+			key: 'subPart',
 			editable: true,
 			componentType: 'number'
 		}
 	];
-	useEffect(() => {
-		if (data) {
-			console.log(data);
-		}
-	}, []);
 	const onOk = () => {
 		onCreate(returnData);
 		onCancel();
@@ -67,9 +65,9 @@ export default function IncludeColsForm({
 			onOk={onOk}
 		>
 			<EditTable
-				originData={[]}
+				originData={dataSource}
 				defaultColumns={defaultColumns}
-				basicData={{ colInfo: '', length: '' }}
+				basicData={{ columnName: '', subPart: '' }}
 				returnValues={getValues}
 			/>
 		</Modal>

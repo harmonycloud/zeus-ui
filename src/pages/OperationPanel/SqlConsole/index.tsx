@@ -342,7 +342,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					'创建表',
 					params.type === 'mysql' ? (
-						<MysqlEditTable dbName={fatherNode || ''} />
+						<MysqlEditTable dbName={fatherNode ? fatherNode : i} />
 					) : (
 						<PgsqlEditTable
 							dbName={fatherNode || ''}

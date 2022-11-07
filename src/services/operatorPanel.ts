@@ -5,6 +5,7 @@ import {
 	AuthLoginRes,
 	cancelAuthParamsProps,
 	charSetResProps,
+	createMysqlTableParams,
 	createPgDatabaseParamsProps,
 	createSchemaParamsProps,
 	deleteAllDatabaseProps,
@@ -315,6 +316,11 @@ export const getMysqlDataType: (
 	params: SendDataParamsProps
 ) => Promise<getMysqlDataTypeRes> = (params: SendDataParamsProps) => {
 	return Axios.get(URL.getMysqlDataType, params);
+};
+export const createMysqlTable: (
+	params: createMysqlTableParams
+) => Promise<resProps> = (params: createMysqlTableParams) => {
+	return Axios.json(URL.createMysqlTable, params, {}, 'POST');
 };
 // * -------------------------------------------------
 // * redis

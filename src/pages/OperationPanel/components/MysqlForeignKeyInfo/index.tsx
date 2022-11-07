@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
-import { MysqlForeignItem, MysqlForeignKeyInfoProps } from '../../index.d';
+import {
+	DatabaseItem,
+	MysqlForeignItem,
+	MysqlForeignKeyInfoProps,
+	PgsqslDatabaseItem
+} from '../../index.d';
 import { AutoCompleteOptionItem } from '@/types/comment';
+import { getAllDatabase } from '@/services/operatorPanel';
+import { notification } from 'antd';
 const basicData = {
 	foreignKey: '',
-	column: '',
-	referenceLib: '',
+	details: [],
+	referenceDatabase: '',
 	referenceTable: '',
 	referencedColumn: '',
-	deleteAction: '',
-	updateAction: ''
+	onDeleteOption: '',
+	onUpdateOption: ''
 };
 const deleteAction = [
 	{ label: 'RESTRICT', value: 'RESTRICT' },
@@ -29,7 +36,8 @@ interface EditMysqlForeignItem extends MysqlForeignItem {
 export default function MysqlForeignKeyInfo(
 	props: MysqlForeignKeyInfoProps
 ): JSX.Element {
-	const { originData, handleChange } = props;
+	const { originData, handleChange, clusterId, namespace, middlewareName } =
+		props;
 	const [dataSource] = useState<EditMysqlForeignItem[]>(
 		originData?.foreignKeys?.map((item) => {
 			return { ...item, key: item.foreignKey };
@@ -40,6 +48,31 @@ export default function MysqlForeignKeyInfo(
 			return { label: item.column, value: item.column };
 		}) || []
 	);
+	const [databases, setDatabases] = useState<AutoCompleteOptionItem[]>([]);
+	useEffect(() => {
+		getAllDatabase({
+			middlewareName,
+			clusterId,
+			namespace,
+			type: 'mysql'
+		}).then((res) => {
+			if (res.success) {
+				setDatabases(
+					res.data.map((item: DatabaseItem | PgsqslDatabaseItem) => {
+						return {
+							value: (item as DatabaseItem).db,
+							label: (item as DatabaseItem).db
+						};
+					})
+				);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	}, []);
 
 	const columns = [
 		{
@@ -57,19 +90,19 @@ export default function MysqlForeignKeyInfo(
 		},
 		{
 			title: '包含列',
-			dataIndex: 'column',
-			key: 'column',
+			dataIndex: 'details',
+			key: 'details',
 			editable: true,
-			componentType: 'select',
+			componentType: 'mulSelect',
 			selectOptions: columnOptions
 		},
 		{
 			title: '参考库',
-			dataIndex: 'referenceLib',
-			key: 'referenceLib',
+			dataIndex: 'referenceDatabase',
+			key: 'referenceDatabase',
 			editable: true,
 			componentType: 'select',
-			selectOptions: []
+			selectOptions: databases
 		},
 		{
 			title: '参考表',
@@ -89,16 +122,16 @@ export default function MysqlForeignKeyInfo(
 		},
 		{
 			title: '删除时',
-			dataIndex: 'deleteAction',
-			key: 'deleteAction',
+			dataIndex: 'onDeleteOption',
+			key: 'onDeleteOption',
 			editable: true,
 			componentType: 'select',
 			selectOptions: deleteAction
 		},
 		{
 			title: '更新时',
-			dataIndex: 'updateAction',
-			key: 'updateAction',
+			dataIndex: 'onUpdateOption',
+			key: 'onUpdateOption',
 			editable: true,
 			componentType: 'select',
 			selectOptions: updateAction
