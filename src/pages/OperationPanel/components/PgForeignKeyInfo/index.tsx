@@ -6,16 +6,18 @@ import {
 	PgsqlTableItem
 } from '../../index.d';
 import IncludeColsForm from './IncludeColsForm';
-import { Select } from 'antd';
 import { AutoCompleteOptionItem } from '@/types/comment';
-import { getPgTables } from '@/services/operatorPanel';
+import { getPgTables, updatePgsqlForeign } from '@/services/operatorPanel';
+import { Button, Divider, notification, Space } from 'antd';
+import storage from '@/utils/storage';
 const basicData = {
-	foreignKeyName: '',
+	name: '',
 	contentList: [],
 	targetTable: '',
 	deferrablity: '',
 	onDelete: '',
-	onUpdate: ''
+	onUpdate: '',
+	operator: 'add'
 };
 const deleteAction = [
 	{ label: 'RESTRICT', value: 'RESTRICT' },
@@ -37,7 +39,6 @@ const deferrablityOptions = [
 interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
 	key: string;
 }
-const { Option } = Select;
 // * 外键信息
 export default function PgForeignKeyInfo(
 	props: PgForeignKeyInfoProps
@@ -49,12 +50,13 @@ export default function PgForeignKeyInfo(
 		schemaName,
 		clusterId,
 		namespace,
-		middlewareName
+		middlewareName,
+		tableName
 	} = props;
 	console.log(originData);
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
-		originData?.tableForeignKeyList?.map((item) => {
+		originData?.tableForeignKeyList?.map((item, index) => {
 			return { ...item, key: item.name };
 		}) || []
 	);
@@ -88,8 +90,8 @@ export default function PgForeignKeyInfo(
 		},
 		{
 			title: '外键名',
-			dataIndex: 'foreignKeyName',
-			key: 'foreignKeyName',
+			dataIndex: 'name',
+			key: 'name',
 			editable: true,
 			width: 150,
 			componentType: 'string'
@@ -153,6 +155,7 @@ export default function PgForeignKeyInfo(
 		}
 	];
 	const onChange = (values: any) => {
+		console.log(values);
 		handleChange(values);
 	};
 	const onCreate = (values: any) => {
@@ -161,6 +164,50 @@ export default function PgForeignKeyInfo(
 	};
 	const getSelectValues = (value: any) => {
 		setSelectRow(value);
+	};
+	// * 单独修改外键
+	const save = () => {
+		if (tableName && originData) {
+			const storageData = storage.getSession('pg-table-detail');
+			let tp: pgsqlForeignKeyItem[];
+			if (storageData.tableForeignKeyList.length === 0) {
+				tp = originData.tableForeignKeyList || [];
+			} else {
+				const originTemp = originData?.tableForeignKeyList?.map(
+					(item) => item.name
+				);
+				const deleteList = storageData.tableForeignKeyList.filter(
+					(item: any) => {
+						if (!originTemp?.includes(item.name)) {
+							item.operator = 'delete';
+							return item;
+						}
+					}
+				);
+				tp = [...(originData.tableForeignKeyList || []), ...deleteList];
+			}
+			updatePgsqlForeign({
+				databaseName: originData.databaseName as string,
+				schemaName: originData.schemaName as string,
+				tableName,
+				clusterId: clusterId,
+				namespace: namespace,
+				middlewareName: middlewareName,
+				tableForeignKeyList: originData.tableForeignKeyList
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '外键修改成功！'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
 	};
 	return (
 		<>
@@ -172,6 +219,17 @@ export default function PgForeignKeyInfo(
 				returnValues={onChange}
 				returnSelectValues={getSelectValues}
 			/>
+			{tableName && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
 			{open && (
 				<IncludeColsForm
 					open={open}

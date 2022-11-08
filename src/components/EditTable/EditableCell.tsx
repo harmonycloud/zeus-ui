@@ -16,6 +16,7 @@ interface EditableCellProps {
 	record: any;
 	colType: string;
 	checked: boolean;
+	disabled?: boolean;
 	handleSave: (record: any) => void;
 	options: DefaultOptionType[];
 }
@@ -33,7 +34,6 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
 	const inputRef = useRef<InputRef>(null);
 	const form = useContext(EditableContext)!;
-
 	useEffect(() => {
 		if (checked) {
 			form.setFieldsValue({ [dataIndex]: record[dataIndex] });

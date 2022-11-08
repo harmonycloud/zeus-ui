@@ -14,10 +14,12 @@ import {
 } from '../../index.d';
 import PgExclusiveness from '../PgExclusiveness';
 import { getPgsqlTableDetail, createPgTable } from '@/services/operatorPanel';
+import storage from '@/utils/storage';
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
 	const { schemaName, dbName, tableName } = props;
+	console.log(props);
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<pgsqlTableDetail>();
@@ -33,6 +35,8 @@ export default function PgsqlEditTable(
 			}).then((res) => {
 				if (res.success) {
 					setOriginData(res.data);
+					// * 待优化 编辑时将数据存储在sessionStorage中，用于编辑对比
+					storage.setSession('pg-table-detail', res.data);
 				} else {
 					notification.error({
 						message: '失败',
@@ -107,6 +111,10 @@ export default function PgsqlEditTable(
 							dbName={dbName}
 							schemaName={schemaName}
 							data={originData}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'colInfo':
@@ -116,9 +124,12 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'columnDtoList')
 							}
+							databaseName={dbName}
+							schemaName={schemaName}
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'foreignKeyInfo':
@@ -133,6 +144,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'exclusiveness':
@@ -143,6 +155,10 @@ export default function PgsqlEditTable(
 								infoChange(values, 'tableExclusionList')
 							}
 							databaseName={dbName}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'uniqueness':
@@ -152,15 +168,23 @@ export default function PgsqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'tableUniqueList')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'examine':
 					return (
 						<PgExamine
-							originData={originData?.tableCheckList || []}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'tableCheckList')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				case 'inherit':
@@ -175,6 +199,7 @@ export default function PgsqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
 						/>
 					);
 				default:
@@ -184,13 +209,17 @@ export default function PgsqlEditTable(
 		return (
 			<div>
 				{componentRender()}
-				<Divider />
-				<Space>
-					<Button type="primary" onClick={save}>
-						保存
-					</Button>
-					<Button>取消</Button>
-				</Space>
+				{!tableName && (
+					<>
+						<Divider />
+						<Space>
+							<Button type="primary" onClick={save}>
+								保存
+							</Button>
+							<Button>取消</Button>
+						</Space>
+					</>
+				)}
 			</div>
 		);
 	};

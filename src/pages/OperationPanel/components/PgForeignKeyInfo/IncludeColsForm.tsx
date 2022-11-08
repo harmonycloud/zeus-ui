@@ -39,7 +39,7 @@ export default function IncludeColsForm(
 	);
 	const [returnData, setReturnData] = useState([]);
 	const [cols, setCols] = useState<AutoCompleteOptionItem[]>([]);
-	const [dataSource, setDataSource] = useState(
+	const [dataSource] = useState(
 		selectRow?.contentList?.map((item: any, index: number) => {
 			return { ...item, key: index };
 		}) || []
@@ -95,7 +95,6 @@ export default function IncludeColsForm(
 		}
 	];
 	const getValues = (values: any) => {
-		console.log(values);
 		setReturnData(values);
 	};
 	return (

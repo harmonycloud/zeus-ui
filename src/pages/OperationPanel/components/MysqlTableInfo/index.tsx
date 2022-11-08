@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, InputNumber, Select, Space } from 'antd';
+import { Form, Input, InputNumber, Select } from 'antd';
 import { formItemLayout618 } from '@/utils/const';
 import { MysqlTableInfoProps } from '../../index.d';
+import { getCharset, getCollation } from '@/services/operatorPanel';
 
 const storageEngineOptions = [
 	{ label: 'ROCKSDB', value: 'ROCKSDB' },
@@ -23,15 +24,54 @@ const rowFormatOptions = [
 	{ label: 'FIXED', value: 'FIXED' },
 	{ label: 'REDUNDANT', value: 'REDUNDANT' }
 ];
+const { Option } = Select;
 export default function MysqlTableInfo(
 	props: MysqlTableInfoProps
 ): JSX.Element {
-	const { handleChange, originData } = props;
+	const { handleChange, originData, clusterId, namespace, middlewareName } =
+		props;
 	const [form] = Form.useForm();
+	const [charsets, setCharsets] = useState<string[]>([]);
+	const [currentCharset, setCurrentCharset] = useState<string>('');
+	const [collations, setCollations] = useState<string[]>([]);
+
+	useEffect(() => {
+		const sendData = {
+			clusterId,
+			middlewareName,
+			namespace
+		};
+		getCharset(sendData).then((res) => {
+			if (res.success) {
+				setCharsets(res.data);
+			}
+		});
+	}, []);
+	useEffect(() => {
+		if (currentCharset) {
+			const sendData = {
+				clusterId,
+				middlewareName,
+				namespace,
+				charset: currentCharset
+			};
+			getCollation(sendData).then((res) => {
+				if (res.success) {
+					setCollations(res.data);
+				}
+			});
+		}
+	}, [currentCharset]);
 	useEffect(() => {
 		if (originData) {
 			form.setFieldsValue({
-				//  TODO 编辑表字段回显
+				tableName: originData.tableName,
+				comment: originData.comment,
+				engine: originData.engine,
+				charset: originData.charset,
+				collate: originData.collate,
+				autoIncrement: originData.autoIncrement,
+				rowFormat: originData.rowFormat
 			});
 		}
 	}, []);
@@ -58,17 +98,46 @@ export default function MysqlTableInfo(
 			</Form.Item>
 			<Form.Item
 				label="存储引擎"
-				name="storageEngine"
+				name="engine"
 				initialValue="InnoDB"
 				required
 			>
 				<Select options={storageEngineOptions} />
 			</Form.Item>
 			<Form.Item label="字符集" name="charset" required>
-				<Select options={[]} />
+				<Select
+					placeholder="请选择字符集"
+					onChange={(value: any) => setCurrentCharset(value)}
+					showSearch
+					filterOption={(input, option) =>
+						(option!.children as unknown as string)
+							.toLowerCase()
+							.includes(input.toLowerCase())
+					}
+				>
+					{charsets.map((item: string) => (
+						<Option key={item} value={item}>
+							{item}
+						</Option>
+					))}
+				</Select>
 			</Form.Item>
 			<Form.Item label="校验规则" name="collate">
-				<Select options={[]} />
+				<Select
+					placeholder="请选择校验规则"
+					showSearch
+					filterOption={(input, option) =>
+						(option!.children as unknown as string)
+							.toLowerCase()
+							.includes(input.toLowerCase())
+					}
+				>
+					{collations.map((item: string) => (
+						<Option key={item} value={item}>
+							{item}
+						</Option>
+					))}
+				</Select>
 			</Form.Item>
 			<Form.Item label="自增值" name="autoIncrement">
 				<InputNumber style={{ width: '100%' }} />

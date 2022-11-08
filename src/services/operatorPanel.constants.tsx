@@ -75,6 +75,26 @@ export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespa
 export const getPgsqlCollate = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/collate`;
 // * mysql 获取表格详情
 export const getMysqlDetail = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
+// * pgsql 增删外键约束
+export const updatePgsqlForeign = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/foreign`;
+// * pgsql 增删排他性约束
+export const updatePgsqlExclusion = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/exclusion`;
+// * pgsql 增删唯一约束
+export const updatePgsqlUnique = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/unique`;
+// * pgsql 增删检查约束
+export const updatePgsqlCheck = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/check`;
+// * pgsql 增删继承关系
+export const updatePgsqlInherit = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/inherit`;
+// * pgsql 更新table (基本信息tab)
+export const updatePgsqlInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schema}/tables/{table}`;
+// * pgsql 更新列信息
+export const updatePgsqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/columns`;
+// * mysql 获取数据类型列表
+export const getMysqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/datatype`;
+// * mysql 创建表
+export const createMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/table`;
+
+// * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;
 // * redis 执行cmd

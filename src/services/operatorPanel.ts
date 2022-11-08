@@ -5,6 +5,7 @@ import {
 	AuthLoginRes,
 	cancelAuthParamsProps,
 	charSetResProps,
+	createMysqlTableParams,
 	createPgDatabaseParamsProps,
 	createSchemaParamsProps,
 	deleteAllDatabaseProps,
@@ -23,6 +24,7 @@ import {
 	GetEncodingRes,
 	getExecuteHisParamsProps,
 	getIndexRes,
+	getMysqlDataTypeRes,
 	getMysqlExcelParamsProps,
 	getMysqlUserResProps,
 	getPgColParamsProps,
@@ -53,6 +55,8 @@ import {
 	resetPasswordParamsProps,
 	SendDataParamsProps,
 	updateParamsProps,
+	updatePgsqlForeignParamsProps,
+	updatePgsqlInfoParamsProps,
 	updateRedisKeyParamsProps
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
@@ -267,6 +271,51 @@ export const getPgsqlCollate: (
 };
 export const getMysqlDetail = (params: getMysqlExcelParamsProps) => {
 	return Axios.get(URL.getMysqlDetail, params);
+};
+export const updatePgsqlForeign: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlForeign, params, {}, 'PUT');
+};
+export const updatePgsqlExclusion: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlExclusion, params, {}, 'PUT');
+};
+export const updatePgsqlUnique: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlUnique, params, {}, 'PUT');
+};
+export const updatePgsqlCheck: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlCheck, params, {}, 'PUT');
+};
+export const updatePgsqlInherit: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlInherit, params, {}, 'PUT');
+};
+export const updatePgsqlInfo: (
+	params: updatePgsqlInfoParamsProps
+) => Promise<resProps> = (params: updatePgsqlInfoParamsProps) => {
+	return Axios.json(URL.updatePgsqlInfo, params, {}, 'PUT');
+};
+export const updatePgsqlCol: (
+	params: updatePgsqlForeignParamsProps
+) => Promise<resProps> = (params: updatePgsqlForeignParamsProps) => {
+	return Axios.json(URL.updatePgsqlCol, params, {}, 'PUT');
+};
+export const getMysqlDataType: (
+	params: SendDataParamsProps
+) => Promise<getMysqlDataTypeRes> = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getMysqlDataType, params);
+};
+export const createMysqlTable: (
+	params: createMysqlTableParams
+) => Promise<resProps> = (params: createMysqlTableParams) => {
+	return Axios.json(URL.createMysqlTable, params, {}, 'POST');
 };
 // * -------------------------------------------------
 // * redis

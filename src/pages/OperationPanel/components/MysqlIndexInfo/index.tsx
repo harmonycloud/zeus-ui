@@ -14,7 +14,7 @@ const indexTypeOptions = [
 	{ label: 'Full Text', value: 'Full Text' }
 ];
 const indexWayOptions = [
-	{ label: '--', value: '--' },
+	{ label: '--', value: '' },
 	{ label: 'BTree', value: 'BTree' },
 	{ label: 'Hash', value: 'Hash' }
 ];
@@ -28,8 +28,8 @@ export default function MysqlIndexInfo(
 	const [open, setOpen] = useState<boolean>(false);
 	const [changedData, setChangeData] = useState<any>();
 	const [selectRow, setSelectRow] = useState<any>({});
-	const [dataSource, setDataSource] = useState<EditIndexItem[]>(
-		originData?.indices.map((item) => {
+	const [dataSource] = useState<EditIndexItem[]>(
+		originData?.indices?.map((item) => {
 			return { ...item, key: item.index };
 		}) || []
 	);
@@ -59,7 +59,11 @@ export default function MysqlIndexInfo(
 					style={{ cursor: 'pointer' }}
 				>
 					编辑
-					{/* {record.indexColumns.join(',')} */}
+					{record?.indexColumns
+						?.map(
+							(item: any) => `${item.columnName}(${item.subPart})`
+						)
+						.join(',')}
 				</span>
 			)
 		},
@@ -83,16 +87,12 @@ export default function MysqlIndexInfo(
 		}
 	];
 	const onCreate = (values: any) => {
-		const listData = values.map(
-			(item: any) => `${item.colInfo}(${item.length})`
-		);
-		setChangeData({ includeCols: listData });
+		setChangeData({ indexColumns: values });
 	};
 	const onChange = (values: any) => {
 		handleChange(values);
 	};
 	const getSelectValue = (value: any) => {
-		console.log(value);
 		setSelectRow(value);
 	};
 	return (
@@ -110,8 +110,8 @@ export default function MysqlIndexInfo(
 					open={open}
 					onCancel={() => setOpen(false)}
 					onCreate={onCreate}
-					columns={originData?.columns || []}
-					data={selectRow}
+					originData={originData}
+					selectRow={selectRow}
 				/>
 			)}
 		</>

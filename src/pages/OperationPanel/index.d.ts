@@ -50,10 +50,16 @@ export interface PgsqlEditTableProps {
 export interface MysqlTableInfoProps {
 	handleChange: (values: any) => void;
 	originData: MysqlTableDetail | undefined;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface MysqlColInfoProps {
-	originData: any[];
+	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 
 export interface MysqlIndexInfoProps {
@@ -63,12 +69,19 @@ export interface MysqlIndexInfoProps {
 export interface MysqlForeignKeyInfoProps {
 	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
 }
 export interface PgsqlTableInfoProps {
 	handleChange: (values: any) => void;
 	dbName: string;
 	schemaName: string;
 	data: pgsqlTableDetail | undefined;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgsqlColInfoProps {
 	originData: PgsqlColItem[];
@@ -76,6 +89,9 @@ export interface PgsqlColInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
+	databaseName: string;
+	schemaName: string;
 }
 export interface PgForeignKeyInfoProps {
 	originData: pgsqlTableDetail | undefined;
@@ -85,19 +101,32 @@ export interface PgForeignKeyInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgExclusivenessProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	databaseName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgUniquenessProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgExamineProps {
-	originData: tableCheckItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface PgInheritProps {
 	data: pgsqlTableDetail | undefined;
@@ -107,6 +136,7 @@ export interface PgInheritProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
 }
 export interface consoleUser {
 	username: string;
@@ -538,18 +568,19 @@ export interface getPgDataTypeRes extends resProps {
 	data: string[];
 }
 export interface MysqlTableDetail {
-	autoIncrement: number;
-	charset: string;
-	collate: string;
-	columns: MysqlColItem[];
-	comment: string;
-	foreignKeys: MysqlForeignItem[];
-	indices: IndexItem[];
-	maxRows: null;
-	minRows: null;
-	rowFormat: null;
-	rows: number;
-	tableName: string;
+	autoIncrement?: number;
+	charset?: string;
+	collate?: string;
+	columns?: MysqlColItem[];
+	comment?: string;
+	engine?: string;
+	foreignKeys?: MysqlForeignItem[];
+	indices?: IndexItem[];
+	maxRows?: null;
+	minRows?: null;
+	rowFormat?: null;
+	rows?: number;
+	tableName?: string;
 }
 export interface MysqlForeignItem {
 	column: string;
@@ -609,4 +640,32 @@ export interface deleteRedisValueParamsProps
 	extends getRedisValueParamsProps,
 		RedisKeyItem {
 	value: string;
+}
+export interface updatePgsqlForeignParamsProps
+	extends SendDataParamsProps,
+		pgsqlTableDetail {
+	databaseName: string;
+	schemaName: string;
+	tableName: string;
+}
+export interface updatePgsqlInfoParamsProps
+	extends SendDataParamsProps,
+		pgsqlTableDetail {
+	databaseName: string;
+	table: string;
+	schema: string;
+}
+export interface MysqlDataType {
+	autoIncrement: boolean;
+	id: number;
+	name: string;
+	optionsAble: boolean;
+}
+export interface getMysqlDataTypeRes extends resProps {
+	data: MysqlDataType[];
+}
+export interface createMysqlTableParams
+	extends SendDataParamsProps,
+		MysqlTableDetail {
+	database: string;
 }

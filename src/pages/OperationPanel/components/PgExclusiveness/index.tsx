@@ -5,7 +5,10 @@ import {
 	exclusionItem,
 	PgExclusivenessProps
 } from '../../index.d';
+import { updatePgsqlExclusion } from '@/services/operatorPanel';
 import IncludeColsForm from './IncludeColsForm';
+import { Button, Divider, notification, Space } from 'antd';
+import storage from '@/utils/storage';
 const accessModeOptions = [
 	{ label: 'btree', value: 'btree' },
 	{ label: 'gist', value: 'gist' },
@@ -19,7 +22,14 @@ interface EditExclusionItem extends exclusionItem {
 export default function PgExclusiveness(
 	props: PgExclusivenessProps
 ): JSX.Element {
-	const { originData, handleChange } = props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName
+	} = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditExclusionItem[]>(
 		originData?.tableExclusionList?.map((item) => {
@@ -86,16 +96,75 @@ export default function PgExclusiveness(
 	const getSelectValues = (value: any) => {
 		setSelectRow(value);
 	};
+	const save = () => {
+		if (tableName && originData) {
+			const storageData = storage.getSession('pg-table-detail');
+			let tp: exclusionItem[];
+			if (storageData.tableExclusionList.length === 0) {
+				tp = originData.tableExclusionList || [];
+			} else {
+				const originTemp = originData?.tableExclusionList?.map(
+					(item) => item.name
+				);
+				const deleteList = storageData.tableExclusionList.map(
+					(item: any) => {
+						if (!originTemp?.includes(item.name)) {
+							item.operator = 'delete';
+							return item;
+						}
+					}
+				);
+				tp = [...(originData.tableExclusionList || []), ...deleteList];
+			}
+			updatePgsqlExclusion({
+				databaseName: originData.databaseName as string,
+				schemaName: originData.schemaName as string,
+				tableName,
+				clusterId: clusterId,
+				namespace: namespace,
+				middlewareName: middlewareName,
+				tableExclusionList: tp
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '排他性约束修改成功！'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
 		<>
 			<EditTable
 				defaultColumns={columns}
 				originData={dataSource}
-				basicData={{ name: '', contentList: [], indexMethod: '' }}
+				basicData={{
+					name: '',
+					contentList: [],
+					indexMethod: '',
+					operator: 'add'
+				}}
 				changedData={changedData}
 				returnValues={onChange}
 				returnSelectValues={getSelectValues}
 			/>
+			{tableName && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
 			{open && (
 				<IncludeColsForm
 					open={open}

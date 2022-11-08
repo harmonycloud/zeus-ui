@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Divider, Space, Tabs } from 'antd';
+import { Button, Divider, notification, Space, Tabs } from 'antd';
 import {
 	MysqlEditTableProps,
 	MysqlTableDetail,
@@ -9,7 +9,7 @@ import MysqlTableInfo from '../MysqlTableInfo';
 import MysqlColInfo from '../MysqlColInfo';
 import MysqlIndexInfo from '../MysqlIndexInfo';
 import MysqlForeignKeyInfo from '../MysqlForeignKeyInfo';
-import { getMysqlDetail } from '@/services/operatorPanel';
+import { getMysqlDetail, createMysqlTable } from '@/services/operatorPanel';
 import { useParams } from 'react-router';
 
 export default function MysqlEditTable(
@@ -39,13 +39,38 @@ export default function MysqlEditTable(
 	};
 	const infoChange = (values: any, dataIndex: string) => {
 		console.log(values, dataIndex);
-		// setOriginData({
-		// 	...originData,
-		// 	[dataIndex]: values
-		// });
+		if (dataIndex === 'basicInfo') {
+			setOriginData({ ...originData, ...values });
+		} else {
+			const result = {
+				[dataIndex]: values
+			};
+			setOriginData({ ...originData, ...result });
+		}
 	};
 	const save = () => {
 		console.log('click save', originData);
+		const sendData = {
+			...originData,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			database: dbName
+		};
+		console.log(sendData);
+		createMysqlTable(sendData).then((res) => {
+			if (res.success) {
+				notification.success({
+					message: '成功',
+					description: '创建成功！'
+				});
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
 	};
 	const childrenRender = (type: string) => {
 		const componentRender = () => {
@@ -54,18 +79,24 @@ export default function MysqlEditTable(
 					return (
 						<MysqlTableInfo
 							handleChange={(values: any) =>
-								infoChange(values, 'info')
+								infoChange(values, 'basicInfo')
 							}
 							originData={originData}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'colInfo':
 					return (
 						<MysqlColInfo
-							originData={originData?.columns || []}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'columns')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				case 'indexInfo':
@@ -84,6 +115,9 @@ export default function MysqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'foreignKeys')
 							}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
 						/>
 					);
 				default:
@@ -93,13 +127,17 @@ export default function MysqlEditTable(
 		return (
 			<div>
 				{componentRender()}
-				<Divider />
-				<Space>
-					<Button type="primary" onClick={save}>
-						保存
-					</Button>
-					<Button>取消</Button>
-				</Space>
+				{!tableName && (
+					<>
+						<Divider />
+						<Space>
+							<Button type="primary" onClick={save}>
+								保存
+							</Button>
+							<Button>取消</Button>
+						</Space>
+					</>
+				)}
 			</div>
 		);
 	};

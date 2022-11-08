@@ -365,6 +365,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					return '数据节点';
 				} else if (record.podName.includes('cold')) {
 					return '冷节点';
+				} else {
+					return value;
 				}
 			} else {
 				switch (value) {
@@ -385,7 +387,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					case 'exporter':
 						return 'exporter';
 					default:
-						return '未知';
+						return value;
 				}
 			}
 		}
