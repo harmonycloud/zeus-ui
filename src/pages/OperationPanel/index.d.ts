@@ -603,7 +603,7 @@ export interface RedisValueRes extends resProps {
 export interface updateRedisKeyParamsProps
 	extends getRedisValueParamsProps,
 		RedisKeyItem {
-	newName: string;
+	// newName: string;
 }
 export interface deleteRedisValueParamsProps
 	extends getRedisValueParamsProps,

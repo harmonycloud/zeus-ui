@@ -12,20 +12,23 @@ interface RedisKeyItemProps {
 	onAdd: () => void;
 	onEdit: () => void;
 	onView: () => void;
+	onClick: () => void;
+	active: boolean;
+	data: any;
 }
 const databaseMenuItems = [
-	{
-		label: '查看k-v',
-		key: 'view'
-	},
-	{
-		label: '编辑k-v',
-		key: 'edit'
-	},
-	{
-		label: '新增k-v',
-		key: 'add'
-	},
+	// {
+	// 	label: '查看k-v',
+	// 	key: 'view'
+	// },
+	// {
+	// 	label: '编辑k-v',
+	// 	key: 'edit'
+	// },
+	// {
+	// 	label: '新增k-v',
+	// 	key: 'add'
+	// },
 	{
 		label: '删除k-v',
 		key: 'delete'
@@ -33,7 +36,16 @@ const databaseMenuItems = [
 ];
 // TODO redis keyItem 传参
 export default function RedisKeyItem(props: RedisKeyItemProps): JSX.Element {
-	const { onDelete, onRefresh, onAdd, onEdit, onView } = props;
+	const {
+		onDelete,
+		onRefresh,
+		onAdd,
+		onEdit,
+		onView,
+		onClick,
+		data,
+		active
+	} = props;
 	const [keys, setKeys] = useState<any[]>();
 	const handleMenuClick = (e: MenuInfo) => {
 		switch (e.key) {
@@ -62,15 +74,18 @@ export default function RedisKeyItem(props: RedisKeyItemProps): JSX.Element {
 		);
 	};
 	return (
-		<div className="redis-key-item-content">
+		<div
+			className={`redis-key-item-content ${active ? 'active' : ''}`}
+			onClick={onClick}
+		>
 			<Dropdown overlay={() => menu()} trigger={['contextMenu']}>
-				<div className="text-hidden redis-key-item-label">
+				<div className={`text-hidden redis-key-item-label`}>
 					<IconFont type="icon-biaoshilei_yuechi" className="mr-8" />
-					<span>keyNamssssssssssssse</span>
+					<span>{data.key}</span>
 				</div>
 			</Dropdown>
 			<div className="redis-key-item-action">
-				<ReloadOutlined className="mr-8" onClick={onRefresh} />
+				{/* <ReloadOutlined className="mr-8" onClick={onRefresh} /> */}
 				<IconFont
 					onClick={onDelete}
 					type="icon-shanchu"

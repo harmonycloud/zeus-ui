@@ -1,0 +1,21 @@
+.data-items {
+	display: flex;
+	align-items: center;
+	line-height: 32px;
+}
+.data-item {
+	display: flex;
+	align-items: center;
+	&.item-width {
+		width: 50%;
+	}
+	.label-item {
+		width: 80px;
+	}
+	.ant-form-item {
+		margin-bottom: 0;
+	}
+	.ant-form.ant-form-horizontal {
+		display: flex;
+	}
+}

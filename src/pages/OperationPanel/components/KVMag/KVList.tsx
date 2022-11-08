@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Button } from 'antd';
+import { Form, Input, InputNumber, Select, Button, notification } from 'antd';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
 import { formItemLayout618 } from '@/utils/const';
+import AddValue from './addValue';
+import { useParams } from 'react-router';
+import {
+	saveRedisKeys,
+	updateRedisValue,
+	deleteRedisValue
+} from '@/services/operatorPanel';
+import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
 
 const LinkButton = Actions.LinkButton;
 const options = [
@@ -16,9 +24,16 @@ const options = [
 	{ label: 'string', value: 'string' }
 ];
 // TODO 编辑 value单独弹窗编辑
-export default function KVList(): JSX.Element {
+export default function KVList(props: any): JSX.Element {
 	const [form] = Form.useForm();
+	const { data, database } = props;
+	const params: ParamsProps = useParams();
+	const [record, setRecord] = useState<any>();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
+	const [isLeft, setIsLeft] = useState<boolean>(false);
+	const [visible, setVisible] = useState<boolean>(false);
+	const [editKey, setEditKey] = useState<boolean>(false);
+	const [editTime, setEditTime] = useState<boolean>(false);
 	const [items, setItems] = useState<Item[]>([
 		{
 			dataIndex: '',
@@ -45,10 +60,25 @@ export default function KVList(): JSX.Element {
 	const Operation = {
 		primary: (
 			<div>
-				<Button type="primary">头部新增</Button>
-				<Button type="primary">尾部新增</Button>
-				<Button type="primary">保存</Button>
-				<Button>取消</Button>
+				<Button
+					type="primary"
+					style={{ marginRight: 8 }}
+					onClick={() => {
+						setIsLeft(true);
+						setVisible(true);
+					}}
+				>
+					头部新增
+				</Button>
+				<Button
+					type="primary"
+					onClick={() => {
+						setIsLeft(false);
+						setVisible(true);
+					}}
+				>
+					尾部新增
+				</Button>
 			</div>
 		)
 	};
@@ -56,10 +86,103 @@ export default function KVList(): JSX.Element {
 	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
-				<LinkButton>编辑</LinkButton>
-				<LinkButton>删除</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setRecord(record);
+						setVisible(true);
+					}}
+				>
+					编辑
+				</LinkButton>
+				<LinkButton onClick={() => onDelete(record)}>删除</LinkButton>
 			</Actions>
 		);
+	};
+
+	const onOk = (sendData: any) => {
+		if (record) {
+			updateRedisValue({
+				database,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...data,
+				expiration: null,
+				listValue: {
+					count: 0,
+					formLeft: isLeft,
+					index: record.index - 1,
+					...sendData
+				}
+			}).then((res) => {
+				if (res.success) {
+					setVisible(false);
+					notification.success({
+						message: '成功',
+						description: '修改成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		} else {
+			saveRedisKeys({
+				database,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...data,
+				expiration: null,
+				listValue: {
+					count: 0,
+					formLeft: isLeft,
+					...sendData
+				}
+			}).then((res) => {
+				if (res.success) {
+					setVisible(false);
+					notification.success({
+						message: '成功',
+						description: '新增成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
+
+	const onDelete = (record: any) => {
+		deleteRedisValue({
+			database,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			...data,
+			listValue: {
+				count: 0,
+				...record
+			},
+			value: record.value
+		}).then((res) => {
+			if (res.success) {
+				notification.success({
+					message: '成功',
+					description: '删除成功'
+				});
+			} else {
+				notification.success({
+					message: '成功',
+					description: res.errorMsg
+				});
+			}
+		});
 	};
 
 	return (
@@ -78,13 +201,87 @@ export default function KVList(): JSX.Element {
 					/> */}
 				</div>
 			</div>
-			<DataFields dataSource={{}} items={items} />
+			{/* <DataFields dataSource={{}} items={items} /> */}
+			<div className="data-items">
+				<div className="data-item item-width">
+					<span className="label-item">key:</span>
+					{editKey ? (
+						<Form form={form}>
+							<Form.Item name="description">
+								<Input placeholder="请输入" />
+							</Form.Item>
+							<Button type="link">保存</Button>
+							<Button
+								type="text"
+								onClick={() => setEditKey(false)}
+							>
+								取消
+							</Button>
+						</Form>
+					) : (
+						<div title={data.key || '/'}>
+							{data.key || '/'}
+							<EditOutlined
+								style={{
+									marginLeft: 8,
+									cursor: 'pointer',
+									fontSize: 14,
+									color: '#226ee7',
+									verticalAlign: 'middle'
+								}}
+								onClick={() => setEditKey(true)}
+							/>
+						</div>
+					)}
+				</div>
+				<div className="data-item item-width">
+					<span className="label-item">超出时间:</span>
+					{editTime ? (
+						<Form form={form}>
+							<Form.Item name="description">
+								<InputNumber placeholder="请输入" />
+							</Form.Item>
+							<Button type="link">保存</Button>
+							<Button
+								type="text"
+								onClick={() => setEditTime(false)}
+							>
+								取消
+							</Button>
+						</Form>
+					) : (
+						<div title={data.expiration || '--'}>
+							{data.expiration || '--'}
+							<EditOutlined
+								style={{
+									marginLeft: 8,
+									cursor: 'pointer',
+									fontSize: 14,
+									color: '#226ee7',
+									verticalAlign: 'middle'
+								}}
+								onClick={() => setEditTime(true)}
+							/>
+						</div>
+					)}
+				</div>
+			</div>
+			<div className="data-item item-width">
+				<span className="label-item">数据类型:</span>
+				<div title={data.keyType || '--'}>{data.keyType || '--'}</div>
+			</div>
 			<ProTable
-				// dataSource={dataSource}
+				dataSource={
+					data.listValue
+						? data.listValue.map((item: string) => {
+								return { value: item };
+						  })
+						: []
+				}
 				showRefresh
 				showColumnSetting
 				// onRefresh={() => onRefresh(keyword, current)}
-				rowKey="userName"
+				rowKey="value"
 				operation={Operation}
 				// pagination={{
 				// 	total: total,
@@ -93,15 +290,29 @@ export default function KVList(): JSX.Element {
 				// }}
 				// onChange={onTableChange}
 			>
-				<ProTable.Column title="序号" dataIndex="userName" />
-				<ProTable.Column title="value" dataIndex="email" />
-				<ProTable.Column title="score" dataIndex="aliasName" />
+				<ProTable.Column
+					title="序号"
+					dataIndex="index"
+					render={(value: string, record: any, index: number) =>
+						index + 1
+					}
+				/>
+				<ProTable.Column title="value" dataIndex="value" />
 				<ProTable.Column
 					title="操作"
 					dataIndex="action"
 					render={actionRender}
 				/>
 			</ProTable>
+			{visible && (
+				<AddValue
+					type={data.keyType}
+					onOk={onOk}
+					visible={visible}
+					data={record}
+					onCancel={() => setVisible(false)}
+				/>
+			)}
 			{/* {!isEdit && <DataFields dataSource={{}} items={items} />}
 			{isEdit && (
 				<Form

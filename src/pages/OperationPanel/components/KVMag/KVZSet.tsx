@@ -6,6 +6,7 @@ import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
 import { formItemLayout618 } from '@/utils/const';
+import AddValue from './addValue';
 
 const LinkButton = Actions.LinkButton;
 const options = [
@@ -16,9 +17,13 @@ const options = [
 	{ label: 'string', value: 'string' }
 ];
 // TODO 编辑 value单独弹窗编辑
-export default function KVZSet(): JSX.Element {
+export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
+	const { data, database } = props;
 	const [isEdit, setIsEdit] = useState<boolean>(false);
+	const [visible, setVisible] = useState<boolean>(false);
+	const [editKey, setEditKey] = useState<boolean>(false);
+	const [editTime, setEditTime] = useState<boolean>(false);
 	const [items, setItems] = useState<Item[]>([
 		{
 			dataIndex: '',
@@ -45,9 +50,9 @@ export default function KVZSet(): JSX.Element {
 	const Operation = {
 		primary: (
 			<div>
-				<Button type="primary">新增</Button>
-				<Button type="primary">保存</Button>
-				<Button>取消</Button>
+				<Button type="primary" onClick={() => setVisible(true)}>
+					新增
+				</Button>
 			</div>
 		)
 	};
@@ -55,7 +60,7 @@ export default function KVZSet(): JSX.Element {
 	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
-				<LinkButton>编辑</LinkButton>
+				<LinkButton onClick={() => setVisible(true)}>编辑</LinkButton>
 				<LinkButton>删除</LinkButton>
 			</Actions>
 		);
@@ -77,13 +82,81 @@ export default function KVZSet(): JSX.Element {
 					/> */}
 				</div>
 			</div>
-			<DataFields dataSource={{}} items={items} />
+			{/* <DataFields dataSource={{}} items={items} /> */}
+			<div className="data-items">
+				<div className="data-item item-width">
+					<span className="label-item">key:</span>
+					{editKey ? (
+						<Form form={form}>
+							<Form.Item name="description">
+								<Input placeholder="请输入" />
+							</Form.Item>
+							<Button type="link">保存</Button>
+							<Button
+								type="text"
+								onClick={() => setEditKey(false)}
+							>
+								取消
+							</Button>
+						</Form>
+					) : (
+						<div title={data.key || '/'}>
+							{data.key || '/'}
+							<EditOutlined
+								style={{
+									marginLeft: 8,
+									cursor: 'pointer',
+									fontSize: 14,
+									color: '#226ee7',
+									verticalAlign: 'middle'
+								}}
+								onClick={() => setEditKey(true)}
+							/>
+						</div>
+					)}
+				</div>
+				<div className="data-item item-width">
+					<span className="label-item">超出时间:</span>
+					{editTime ? (
+						<Form form={form}>
+							<Form.Item name="description">
+								<InputNumber placeholder="请输入" />
+							</Form.Item>
+							<Button type="link">保存</Button>
+							<Button
+								type="text"
+								onClick={() => setEditTime(false)}
+							>
+								取消
+							</Button>
+						</Form>
+					) : (
+						<div title={data.expiration || '--'}>
+							{data.expiration || '--'}
+							<EditOutlined
+								style={{
+									marginLeft: 8,
+									cursor: 'pointer',
+									fontSize: 14,
+									color: '#226ee7',
+									verticalAlign: 'middle'
+								}}
+								onClick={() => setEditTime(true)}
+							/>
+						</div>
+					)}
+				</div>
+			</div>
+			<div className="data-item item-width">
+				<span className="label-item">数据类型:</span>
+				<div title={data.keyType || '--'}>{data.keyType || '--'}</div>
+			</div>
 			<ProTable
-				// dataSource={dataSource}
+				dataSource={data.zsetValue || []}
 				showRefresh
 				showColumnSetting
 				// onRefresh={() => onRefresh(keyword, current)}
-				rowKey="userName"
+				rowKey="member"
 				operation={Operation}
 				// pagination={{
 				// 	total: total,
@@ -92,9 +165,15 @@ export default function KVZSet(): JSX.Element {
 				// }}
 				// onChange={onTableChange}
 			>
-				<ProTable.Column title="序号" dataIndex="userName" />
-				<ProTable.Column title="value" dataIndex="email" />
-				<ProTable.Column title="score" dataIndex="aliasName" />
+				<ProTable.Column
+					title="序号"
+					dataIndex="index"
+					render={(value: string, record: any, index: number) =>
+						index + 1
+					}
+				/>
+				<ProTable.Column title="value" dataIndex="member" />
+				<ProTable.Column title="score" dataIndex="score" />
 				<ProTable.Column
 					title="操作"
 					dataIndex="action"

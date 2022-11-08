@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Popconfirm, Button } from 'antd';
+import {
+	Form,
+	Input,
+	InputNumber,
+	Select,
+	Popconfirm,
+	Button,
+	notification
+} from 'antd';
 import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
 import { formItemLayout410 } from '@/utils/const';
+import { saveRedisKeys } from '@/services/operatorPanel';
+import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
+import { useParams } from 'react-router';
 
 const options = [
 	{ label: 'hash', value: 'hash' },
@@ -14,8 +25,35 @@ const options = [
 ];
 // TODO 编辑 value单独弹窗编辑
 export default function AddKV(props: any): JSX.Element {
-	const { onCancel } = props;
+	const { onCancel, onRefresh } = props;
+	const params: ParamsProps = useParams();
 	const [form] = Form.useForm();
+
+	const onCreate = () => {
+		form.validateFields().then((value) => {
+			saveRedisKeys({
+				database: '4',
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...value
+			}).then((res) => {
+				if (res.success) {
+					onCancel();
+					onRefresh();
+					notification.success({
+						message: '成功',
+						description: '新增成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		});
+	};
 
 	return (
 		<>
@@ -48,16 +86,14 @@ export default function AddKV(props: any): JSX.Element {
 						style={{ width: '100%' }}
 					/>
 				</Form.Item>
-				<Form.Item name="expiration" label="value">
-					{/* <InputNumber
-						placeholder="请输入"
-						style={{ width: '100%' }}
-					/> */}
+				{/* <Form.Item name="expiration" label="value">
 					<Button>添加value</Button>
-				</Form.Item>
+				</Form.Item> */}
 			</Form>
 			<div>
-				<Button type="primary">保存</Button>
+				<Button type="primary" onClick={onCreate}>
+					保存
+				</Button>
 				<Button style={{ marginLeft: 8 }} onClick={onCancel}>
 					取消
 				</Button>

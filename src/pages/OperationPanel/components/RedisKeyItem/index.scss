@@ -8,10 +8,11 @@
 	cursor: pointer;
 	.redis-key-item-label {
 		width: 75%;
+
 	}
 	.redis-key-item-action {
 		display: none;
-		width: 35px;
+		// width: 35px;
 	}
 	&:hover {
 		background-color: $blue-1;
@@ -19,5 +20,9 @@
 		.redis-key-item-action {
 			display: block;
 		}
+	}
+	&.active{
+		background-color: $blue-1;
+		color: $blue-base;
 	}
 }

@@ -3,11 +3,19 @@ import { Input, Modal, notification, Button } from 'antd';
 import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisKeyItem from '../RedisKeyItem';
-import { deleteRedisKey, getRedisKeys } from '@/services/operatorPanel';
+import {
+	deleteRedisKey,
+	getRedisKeys,
+	getRedisValue
+} from '@/services/operatorPanel';
 import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
-import AddKV from './addKV';
+import AddKey from './addKey';
 import KVString from './KVString';
 import KVHash from './KVHash';
+import KVList from './KVList';
+import KVSet from './KVSet';
+import KVZset from './KVZSet';
+import './index.scss';
 
 const { confirm } = Modal;
 interface KVMagProps {
@@ -19,8 +27,10 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	const params: ParamsProps = useParams();
 	const [isAdd, setIsAdd] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
-	const [key, setKey] = useState<RedisKeyItemParams>();
+	const [key, setKey] = useState<string>('');
+	const [activeKey, setActiveKey] = useState<string>('');
 	const [keys, setKeys] = useState<RedisKeyItemParams[]>([]);
+	const [detail, setDetail] = useState<any>();
 	const [paneProps] = useState<SplitPaneProps>({
 		split: 'vertical',
 		minSize: 200,
@@ -41,6 +51,9 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	useEffect(() => {
 		getData('');
 	}, []);
+	useEffect(() => {
+		getDetail();
+	}, [key]);
 	const getData = (keyword: string) => {
 		getRedisKeys({
 			database: dbName,
@@ -51,6 +64,20 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		}).then((res) => {
 			if (res.success) {
 				setKeys(res.data);
+				setKey(res.data[0]?.key);
+			}
+		});
+	};
+	const getDetail = () => {
+		getRedisValue({
+			database: dbName,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			key
+		}).then((res) => {
+			if (res.success) {
+				setDetail(res.data);
 			}
 		});
 	};
@@ -60,13 +87,14 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 			content: '请确认是否删除该键值对',
 			onOk: () => {
 				deleteRedisKey({
-					database: '',
-					key: '',
+					database: dbName,
+					key,
 					clusterId: params.clusterId,
 					namespace: params.namespace,
 					middlewareName: params.name
 				}).then((res) => {
 					if (res.success) {
+						getData('');
 						notification.success({
 							message: '成功',
 							description: '键值对删除成功'
@@ -95,19 +123,23 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	// TODO 查看 k-v
 	const handleView = () => console.log('view');
 	// TODO 查看，编辑页面render （每个类型一个component）
+	const handleClick = (item: RedisKeyItemParams) => setKey(item.key);
+	// TODO 查看，编辑页面render （每个类型一个component）
 	const childrenRender = (type: string) => {
 		switch (type) {
 			case 'hash':
-				return <KVHash />;
+				return <KVHash data={detail} database={dbName} />;
 				break;
-			case 'Zset':
+			case 'zset':
+				return <KVZset data={detail} database={dbName} />;
 				break;
 			case 'list':
+				return <KVList data={detail} database={dbName} />;
 				break;
 			case 'set':
-				return <KVString />;
+				return <KVSet data={detail} database={dbName} />;
 			case 'string':
-				return <KVString />;
+				return <KVString data={detail} database={dbName} />;
 			default:
 				break;
 		}
@@ -123,7 +155,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 								type="primary"
 								onClick={() => setIsAdd(true)}
 							>
-								创建k-v
+								创建Key
 							</Button>
 							<Input.Search
 								style={{ margin: '8px 0' }}
@@ -134,20 +166,32 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 									handleSearch(value)
 								}
 							/>
-							{/* TODO 循环 */}
-							<RedisKeyItem
-								onDelete={handleDelete}
-								onRefresh={handleRefresh}
-								onAdd={handleAdd}
-								onEdit={handleEdit}
-								onView={handleView}
-							/>
+							<div>
+								{keys.map((item) => {
+									return (
+										<RedisKeyItem
+											key={item.key}
+											active={item.key === key}
+											data={item}
+											onDelete={handleDelete}
+											onRefresh={handleRefresh}
+											onAdd={handleAdd}
+											onEdit={handleEdit}
+											onView={handleView}
+											onClick={() => handleClick(item)}
+										/>
+									);
+								})}
+							</div>
 						</div>
 					) : null}
-					<div>{childrenRender('string')}</div>
+					<div>{childrenRender(detail?.keyType)}</div>
 				</SplitPane>
 			) : (
-				<AddKV onCancel={() => setIsAdd(false)} />
+				<AddKey
+					onCancel={() => setIsAdd(false)}
+					onRefresh={() => getData('')}
+				/>
 			)}
 		</>
 	);

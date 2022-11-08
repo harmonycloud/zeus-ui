@@ -139,6 +139,9 @@ export const editLicenseInfo = (params: { license: string }) => {
 	return Axios.post(USER.licenseInfo, params);
 };
 // * license认证
-export const checkLicense = (params: { license: string }) => {
-	return Axios.post(USER.licenseCheck, params);
+export const checkLicense = (params: {
+	license: string;
+	clusterId: string;
+}) => {
+	return Axios.get(USER.licenseCheck, params);
 };

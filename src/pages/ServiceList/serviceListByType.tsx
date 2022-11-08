@@ -118,7 +118,6 @@ const ServiceListByType = (props: serviceListProps) => {
 			operateFlag,
 			deleteFlag
 		});
-		getLicenseCheck();
 	}, []);
 	useEffect(() => {
 		if (JSON.stringify(cluster) !== '{}') {
@@ -140,6 +139,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					});
 				}
 			});
+			getLicenseCheck();
 		}
 	}, [cluster]);
 	useEffect(() => {
@@ -209,7 +209,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		};
 	}, [cluster, namespace, name]);
 	const getLicenseCheck = () => {
-		checkLicense({ license: '' }).then((res) => {
+		checkLicense({ license: '', clusterId: cluster.id }).then((res) => {
 			if (res.success) {
 				setLicense(false);
 			} else {
