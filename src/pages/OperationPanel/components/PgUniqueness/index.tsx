@@ -107,6 +107,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
+				oid: originData.oid,
 				tableUniqueList: tp
 			}).then((res) => {
 				if (res.success) {

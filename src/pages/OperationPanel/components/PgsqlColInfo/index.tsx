@@ -35,10 +35,10 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		schemaName
 	} = props;
 	console.log(props);
-	const [dataSource, setDataSource] = useState<EditPgsqlColItem[]>(
-		originData.map((item: PgsqlColItem) => {
+	const [dataSource] = useState<EditPgsqlColItem[]>(
+		originData?.columnDtoList?.map((item: PgsqlColItem) => {
 			return { ...item, key: item.num };
-		})
+		}) || []
 	);
 	const [collates, setCollates] = useState<AutoCompleteOptionItem[]>([]);
 	const [dataTypes, setDataTypes] = useState<AutoCompleteOptionItem[]>([]);
@@ -169,7 +169,8 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 				clusterId,
 				namespace,
 				middlewareName,
-				columnDtoList: originData
+				oid: originData.oid,
+				columnDtoList: originData.columnDtoList
 			}).then((res) => {
 				if (res.success) {
 					notification.success({

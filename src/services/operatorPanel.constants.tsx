@@ -103,6 +103,10 @@ export const updateMysqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace
 export const updateMysqlIndex = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
 // * mysql 修改外键信息
 export const updateMysqlForeign = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/foreignKeys`;
+// * pgsql 执行sql
+export const executePgsqlSql = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/sql`;
+// * mysql 执行sql
+export const executeMysqlSql = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/query`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

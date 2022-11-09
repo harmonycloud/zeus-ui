@@ -123,6 +123,7 @@ export default function PgExclusiveness(
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
+				oid: originData.oid,
 				tableExclusionList: tp
 			}).then((res) => {
 				if (res.success) {

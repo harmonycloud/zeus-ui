@@ -50,7 +50,8 @@ import {
 	updatePgTable,
 	updateMysqlTable,
 	getIndexs,
-	getRedisDatabases
+	getRedisDatabases,
+	getPgCols
 } from '@/services/operatorPanel';
 import PgTableDetail from '../components/PgTableDetail';
 import { Key } from 'rc-table/lib/interface';
@@ -113,7 +114,7 @@ const pgMenuItems = [
 const initialItems = [
 	{
 		label: 'Tab 1',
-		children: <MysqlSqlConsole />,
+		children: <MysqlSqlConsole dbName={''} />,
 		key: '1',
 		closable: false
 	}
@@ -266,12 +267,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'inquire': // * mysql sqlconsole
-				add(i, <MysqlSqlConsole />);
+				add(i, <MysqlSqlConsole dbName={i} />);
 				return;
 			case 'modeMag': // * pgsql 模式管理
 				add(i, <ModeMag dbName={i} />);
 				return;
-			case 'openTable':
+			case 'openTable': // * 打开表
 				add(
 					i,
 					params.type === 'mysql' ? (
@@ -348,13 +349,17 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<MysqlEditTable dbName={fatherNode ? fatherNode : i} />
 					) : (
 						<PgsqlEditTable
-							dbName={fatherNode || ''}
-							schemaName={i}
+							dbName={
+								selectDatabase
+									? selectDatabase
+									: fatherNode || ''
+							}
+							schemaName={selectSchema ? selectSchema : i}
 						/>
 					)
 				);
 				return;
-			case '':
+			case 'renameTable':
 				confirm({
 					title: '重命名',
 					content: (

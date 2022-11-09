@@ -73,6 +73,7 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 				clusterId,
 				namespace,
 				middlewareName,
+				oid: data.oid,
 				tableInheritList: data.tableInheritList
 			}).then((res) => {
 				if (res.success) {

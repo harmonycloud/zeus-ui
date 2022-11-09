@@ -96,6 +96,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
+				oid: originData.oid,
 				tableCheckList: tp
 			}).then((res) => {
 				if (res.success) {

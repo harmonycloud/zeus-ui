@@ -56,9 +56,6 @@ export default function MysqlForeignKeyInfo(
 		originData?.foreignKeys?.map((item, index) => {
 			return {
 				...item,
-				details: item?.details?.map(
-					(item) => (item as MysqlForeignItemDetailItem).column
-				),
 				key: index + ''
 			};
 		}) || []

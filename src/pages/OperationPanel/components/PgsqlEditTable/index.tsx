@@ -120,7 +120,7 @@ export default function PgsqlEditTable(
 				case 'colInfo':
 					return (
 						<PgsqlColInfo
-							originData={originData?.columnDtoList || []}
+							originData={originData}
 							handleChange={(values: any) =>
 								infoChange(values, 'columnDtoList')
 							}

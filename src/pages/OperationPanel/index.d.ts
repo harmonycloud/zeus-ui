@@ -97,7 +97,7 @@ export interface PgsqlTableInfoProps {
 	tableName: string | undefined;
 }
 export interface PgsqlColInfoProps {
-	originData: PgsqlColItem[];
+	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	clusterId: string;
 	namespace: string;
@@ -707,4 +707,24 @@ export interface UpdateMysqlTableParamsProps
 		MysqlTableDetail {
 	database: string;
 	table: string;
+}
+
+interface executeMysqlSqlParamsProps extends SendDataParamsProps {
+	database: string;
+	sql: string;
+}
+
+export interface MysqlSqlConsoleProps {
+	dbName: string;
+}
+
+export interface MysqlCodeConsoleProps {
+	dbName: string;
+	sql: string;
+	setSql: (values: string) => void;
+	handleExecute: () => void;
+}
+
+export interface ExecuteResultTypeOneProps {
+	resData: any;
 }

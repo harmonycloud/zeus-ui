@@ -193,6 +193,7 @@ export default function PgForeignKeyInfo(
 				clusterId: clusterId,
 				namespace: namespace,
 				middlewareName: middlewareName,
+				oid: originData.oid,
 				tableForeignKeyList: originData.tableForeignKeyList
 			}).then((res) => {
 				if (res.success) {

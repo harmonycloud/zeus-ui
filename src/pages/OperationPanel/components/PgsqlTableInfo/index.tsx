@@ -91,6 +91,7 @@ export default function PgsqlTableInfo(
 	const save = () => {
 		if (tableName && data) {
 			updatePgsqlInfo({
+				oid: data.oid,
 				databaseName: dbName,
 				table: tableName,
 				schema: schemaName,

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/sql/sql';
@@ -9,10 +10,14 @@ import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/hint/show-hint.css';
 import { Button, Space } from 'antd';
 import { IconFont } from '@/components/IconFont';
+import { MysqlCodeConsoleProps } from '../../index.d';
 
-export default function CodeConsole(): JSX.Element {
+export default function MysqlCodeConsole(
+	props: MysqlCodeConsoleProps
+): JSX.Element {
+	const { dbName, sql, setSql, handleExecute } = props;
+	console.log(dbName);
 	const codeRef = useRef<any>(null);
-	const [value, setValue] = useState('SELECT * from');
 	const [codeMirrorInstance, setCodeMirrorInstance] = useState<any>();
 	const completeAfter = (editor: any) => {
 		const spaces = Array(editor.getOption('indentUnit')).join(';');
@@ -24,7 +29,6 @@ export default function CodeConsole(): JSX.Element {
 		lineNumbers: true,
 		matchBrackets: true,
 		theme: 'twilight',
-		// autofocus: true,
 		extraKeys: {
 			"';'": completeAfter
 		},
@@ -33,7 +37,7 @@ export default function CodeConsole(): JSX.Element {
 		},
 		lineWrapping: true,
 		mode: 'text/x-sql',
-		value: value
+		value: sql
 	});
 	useEffect(() => {
 		init();
@@ -56,13 +60,13 @@ export default function CodeConsole(): JSX.Element {
 			CodeMirrorInstance.execCommand('autocomplete');
 		});
 		CodeMirrorInstance.on('change', (editor, change) => {
-			setValue(editor.getValue());
+			setSql(editor.getValue());
 		});
 		console.log(CodeMirrorInstance);
 		setCodeMirrorInstance(CodeMirrorInstance);
 	};
 	const exec = () => {
-		console.log(value);
+		handleExecute();
 	};
 	return (
 		<main className="code-console-main">
@@ -76,9 +80,9 @@ export default function CodeConsole(): JSX.Element {
 							size="small"
 							onClick={() => {
 								codeMirrorInstance.setValue(
-									window.sqlFormatter.format(value)
+									window.sqlFormatter.format(sql)
 								);
-								setValue(window.sqlFormatter.format(value));
+								setSql(window.sqlFormatter.format(sql));
 							}}
 						>
 							格式编排
@@ -87,7 +91,7 @@ export default function CodeConsole(): JSX.Element {
 							size="small"
 							onClick={() => {
 								codeMirrorInstance.setValue('');
-								setValue('');
+								setSql('');
 							}}
 						>
 							清空
