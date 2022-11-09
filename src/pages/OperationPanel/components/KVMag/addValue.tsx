@@ -56,7 +56,11 @@ export default function AddValue(props: any): JSX.Element {
 						]}
 						initialValue={data?.field}
 					>
-						<Input placeholder="请输入" disabled={!!data} />
+						<Input
+							placeholder="请输入"
+							disabled={!!data}
+							style={{ width: '100%' }}
+						/>
 					</Form.Item>
 				) : null}
 				<Form.Item
@@ -72,7 +76,10 @@ export default function AddValue(props: any): JSX.Element {
 						data?.value || data?.stringValue || data?.member
 					}
 				>
-					<Input.TextArea placeholder="请输入" />
+					<Input.TextArea
+						placeholder="请输入"
+						style={{ width: '100%' }}
+					/>
 				</Form.Item>
 				{type === 'zset' ? (
 					<Form.Item
@@ -86,7 +93,7 @@ export default function AddValue(props: any): JSX.Element {
 						]}
 						initialValue={data?.score}
 					>
-						<InputNumber />
+						<InputNumber min={0} style={{ width: '100%' }} />
 					</Form.Item>
 				) : null}
 			</Form>

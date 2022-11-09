@@ -167,7 +167,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [redisListData, setRedisListData] = useState<any>([]);
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
-	const [items, setItems] = useState<any[]>(initialItems);
+	const [items, setItems] = useState<any[]>([]);
 	const [pgsqlExpandedKeys, setPgslqExpandedKeys] = useState<string[]>([]);
 	const [selectDatabase, setSelectDatabase] = useState<string>('');
 	const [selectSchema, setSelectSchema] = useState<string>('');
@@ -562,6 +562,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				}).then((res) => {
 					if (res.success) {
 						setRedisListData(res.data);
+						redisDbClick('' + res.data[0]?.db);
 					} else {
 						notification.error({
 							message: '失败',
@@ -963,7 +964,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				width={230}
 			>
 				<div className="sql-console-sider-title-content">
-					<div>{params.name}控制台</div>
+					<div title={params.name + '控制台'}>
+						{params.name}控制台
+					</div>
 					<Button icon={<ReloadOutlined />} />
 				</div>
 				{params.type === 'mysql' && (
@@ -1019,12 +1022,21 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								return (
 									<div
 										key={item.db}
-										className="redis-db-item"
+										className={`redis-db-item ${
+											String(item.db) === selectDatabase
+												? 'active'
+												: ''
+										}`}
 										onClick={() =>
 											redisDbClick('' + item.db)
 										}
 									>
-										<img src={redisImg} className="mr-8" />{' '}
+										{/* <img src={redisImg} className="mr-8" />{' '} */}
+										<IconFont
+											type="icon-database"
+											className="mr-8"
+											style={{ fontSize: 24 }}
+										/>
 										DB-{item.db}({item.size})
 									</div>
 								);

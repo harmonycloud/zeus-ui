@@ -14,8 +14,10 @@ import AddValue from './addValue';
 import {
 	saveRedisKeys,
 	updateRedisValue,
-	deleteRedisValue
+	deleteRedisValue,
+	updateRedisKeys
 } from '@/services/operatorPanel';
+import { nullRender } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
 const options = [
@@ -28,7 +30,7 @@ const options = [
 // TODO 编辑 value单独弹窗编辑
 export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
-	const { data, database, onRefresh } = props;
+	const { data, database, onRefresh, getKeys } = props;
 	const params: ParamsProps = useParams();
 	const [record, setRecord] = useState<any>();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -82,6 +84,35 @@ export default function KVZSet(props: any): JSX.Element {
 				<LinkButton onClick={() => onDelete(record)}>删除</LinkButton>
 			</Actions>
 		);
+	};
+
+	const editKeyHandle = (sendData: any) => {
+		updateRedisKeys({
+			database,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			key: data.key,
+			oldKey: data.key,
+			keyType: data.keyType,
+			expiration: data.expiration,
+			...sendData
+		}).then((res) => {
+			if (res.success) {
+				setEditKey(false);
+				setEditTime(false);
+				getKeys(sendData.key ? sendData.key : data.key);
+				notification.success({
+					message: '成功',
+					description: '修改成功'
+				});
+			} else {
+				notification.success({
+					message: '成功',
+					description: res.errorMsg
+				});
+			}
+		});
 	};
 
 	const onOk = (sendData: any) => {
@@ -148,6 +179,7 @@ export default function KVZSet(props: any): JSX.Element {
 			value: record.value
 		}).then((res) => {
 			if (res.success) {
+				getKeys();
 				onRefresh();
 				notification.success({
 					message: '成功',
@@ -192,10 +224,17 @@ export default function KVZSet(props: any): JSX.Element {
 					<span className="label-item">key:</span>
 					{editKey ? (
 						<Form form={form}>
-							<Form.Item name="description">
+							<Form.Item name="key" initialValue={data?.key}>
 								<Input placeholder="请输入" />
 							</Form.Item>
-							<Button type="link">保存</Button>
+							<Button
+								type="link"
+								onClick={() =>
+									editKeyHandle(form.getFieldsValue())
+								}
+							>
+								保存
+							</Button>
 							<Button
 								type="text"
 								onClick={() => setEditKey(false)}
@@ -223,10 +262,20 @@ export default function KVZSet(props: any): JSX.Element {
 					<span className="label-item">超出时间:</span>
 					{editTime ? (
 						<Form form={form}>
-							<Form.Item name="description">
-								<InputNumber placeholder="请输入" />
+							<Form.Item
+								name="expiration"
+								initialValue={data?.expiration}
+							>
+								<InputNumber min={0} />
 							</Form.Item>
-							<Button type="link">保存</Button>
+							<Button
+								type="link"
+								onClick={() =>
+									editKeyHandle(form.getFieldsValue())
+								}
+							>
+								保存
+							</Button>
 							<Button
 								type="text"
 								onClick={() => setEditTime(false)}
@@ -282,7 +331,11 @@ export default function KVZSet(props: any): JSX.Element {
 						index + 1
 					}
 				/>
-				<ProTable.Column title="value" dataIndex="value" />
+				<ProTable.Column
+					title="value"
+					dataIndex="value"
+					render={nullRender}
+				/>
 				<ProTable.Column
 					title="操作"
 					dataIndex="action"

@@ -2,6 +2,7 @@ import React from 'react';
 import { PageHeader, Modal } from 'antd';
 import { useParams } from 'react-router';
 import { IconFont } from '@/components/IconFont';
+import redisImg from '@/assets/images/redis-icon.png';
 import { OperatorHeaderProps, ParamsProps } from '../index.d';
 
 const { confirm } = Modal;
@@ -14,12 +15,15 @@ export default function OperatorHeader(
 		<PageHeader
 			title={params.name}
 			avatar={{
-				children: (
-					<IconFont
-						style={{ fontSize: 36, lineHeight: '55px' }}
-						type="icon-SQL"
-					/>
-				),
+				children:
+					params.type !== 'redis' ? (
+						<IconFont
+							style={{ fontSize: 36, lineHeight: '55px' }}
+							type="icon-SQL"
+						/>
+					) : (
+						<img src={redisImg} />
+					),
 				shape: 'square',
 				size: 48,
 				style: { background: '#F5F5F5' }

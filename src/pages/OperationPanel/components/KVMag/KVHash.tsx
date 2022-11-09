@@ -16,6 +16,7 @@ import {
 } from '@/services/operatorPanel';
 import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
 import { useParams } from 'react-router';
+import { nullRender } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
 const options = [
@@ -29,7 +30,7 @@ const options = [
 export default function KVHash(props: any): JSX.Element {
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
-	const { data, database, onRefresh } = props;
+	const { data, database, onRefresh, getKeys, setKey } = props;
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
 	const [record, setRecord] = useState<any>();
@@ -86,13 +87,16 @@ export default function KVHash(props: any): JSX.Element {
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
-			...data,
-			hashValue: null,
+			key: data.key,
+			oldKey: data.key,
+			keyType: data.keyType,
+			expiration: data.expiration,
 			...sendData
 		}).then((res) => {
 			if (res.success) {
-				setVisible(false);
-				onRefresh();
+				setEditKey(false);
+				setEditTime(false);
+				getKeys(sendData.key ? sendData.key : data.key);
 				notification.success({
 					message: '成功',
 					description: '修改成功'
@@ -169,6 +173,7 @@ export default function KVHash(props: any): JSX.Element {
 			value: record.value
 		}).then((res) => {
 			if (res.success) {
+				getKeys();
 				onRefresh();
 				notification.success({
 					message: '成功',
@@ -199,10 +204,7 @@ export default function KVHash(props: any): JSX.Element {
 						}}
 					/> */}
 					</div>
-					<Button
-						onClick={onRefresh}
-						style={{ padding: '0 9px', marginRight: '8px' }}
-					>
+					<Button onClick={onRefresh} style={{ padding: '0 9px' }}>
 						<ReloadOutlined />
 					</Button>
 				</div>
@@ -251,10 +253,20 @@ export default function KVHash(props: any): JSX.Element {
 					<span className="label-item">超出时间:</span>
 					{editTime ? (
 						<Form form={form}>
-							<Form.Item name="description">
-								<InputNumber placeholder="请输入" />
+							<Form.Item
+								name="expiration"
+								initialValue={data?.expiration}
+							>
+								<InputNumber min={0} />
 							</Form.Item>
-							<Button type="link">保存</Button>
+							<Button
+								type="link"
+								onClick={() =>
+									editKeyHandle(form.getFieldsValue())
+								}
+							>
+								保存
+							</Button>
 							<Button
 								type="text"
 								onClick={() => setEditTime(false)}
@@ -304,8 +316,16 @@ export default function KVHash(props: any): JSX.Element {
 						index + 1
 					}
 				/>
-				<ProTable.Column title="field" dataIndex="field" />
-				<ProTable.Column title="value" dataIndex="value" />
+				<ProTable.Column
+					title="field"
+					dataIndex="field"
+					render={nullRender}
+				/>
+				<ProTable.Column
+					title="value"
+					dataIndex="value"
+					render={nullRender}
+				/>
 				<ProTable.Column
 					title="操作"
 					dataIndex="action"
