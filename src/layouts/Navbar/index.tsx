@@ -330,14 +330,14 @@ function Navbar(props: NavbarProps): JSX.Element {
 						</>
 					)}
 				</div>
-				<Tooltip title="账号管理">
+				<Tooltip title="授权管理">
 					<div
 						className="license-icon"
 						onClick={() => history.push('/authorManage')}
 					>
 						<IconFont
-							type="icon-shouquanguanli"
-							style={{ fontSize: 14 }}
+							type="icon-shouquan"
+							style={{ fontSize: 20, color: 'rgb(29,29,29)' }}
 						/>
 					</div>
 				</Tooltip>

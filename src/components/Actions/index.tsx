@@ -3,6 +3,7 @@ import { MoreOutlined } from '@ant-design/icons';
 import { ActionsProps, LinkButtonProps } from './actions';
 import { Dropdown, Menu } from 'antd';
 import './index.scss';
+import { log } from 'console';
 
 const Actions = (props: ActionsProps) => {
 	const { children, threshold = 3 } = props;
@@ -62,19 +63,22 @@ const Actions = (props: ActionsProps) => {
 		return (
 			<div className="zeus-actions-content">
 				{l1.map((item: React.ReactNode, index: number) => {
-					return (
-						<LinkButton
-							style={{ marginRight: 8, marginLeft: 8 }}
-							key={index}
-							onClick={(item as ReactElement).props?.onClick}
-							disabled={
-								(item as ReactElement).props?.disabled || false
-							}
-							{...(item as ReactElement).props}
-						>
-							{(item as ReactElement).props?.children}
-						</LinkButton>
-					);
+					if (item !== null && typeof item !== 'boolean') {
+						return (
+							<LinkButton
+								style={{ marginRight: 8, marginLeft: 8 }}
+								key={index}
+								onClick={(item as ReactElement).props?.onClick}
+								disabled={
+									(item as ReactElement).props?.disabled ||
+									false
+								}
+								{...(item as ReactElement).props}
+							>
+								{(item as ReactElement).props?.children}
+							</LinkButton>
+						);
+					}
 				})}
 				<Dropdown trigger={['click']} overlay={<Menu items={menu} />}>
 					<MoreOutlined

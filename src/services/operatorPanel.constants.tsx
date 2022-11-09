@@ -114,7 +114,7 @@ export const getRedisExecuteRecords = `${api}/clusters/{clusterId}/namespaces/{n
 export const getRedisKeys = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys`;
 // * redis 查询指定key的value / 修改key信息/ 保存k-v / 删除key
 export const getRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}`;
-// * redis删除value
+// * redis修改/删除value
 export const deleteRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}/value`;
 // *--------------------------------------------------
 // * mysql & pgsql 合并接口 可能与上面接口存在重复

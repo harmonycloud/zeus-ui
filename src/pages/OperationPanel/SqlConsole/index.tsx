@@ -163,6 +163,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [treeData, setTreeData] = useState<DataNode[]>([]);
 	const [pgTreeData, setPgTreeData] = useState<DataNode[]>([]);
+	const [redisListData, setRedisListData] = useState<any>([]);
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
 	const [activeKey, setActiveKey] = useState(initialItems[0].key);
 	const [items, setItems] = useState<any[]>(initialItems);
@@ -179,6 +180,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			children: children,
 			key: newActiveKey
 		});
+		console.log(label);
+
 		setItems(newPanes);
 		setActiveKey(newActiveKey);
 	};
@@ -552,8 +555,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					namespace: params.namespace,
 					middlewareName: params.name
 				}).then((res) => {
-					console.log(res);
-					// TODO redis databases赋值
+					if (res.success) {
+						setRedisListData(res.data);
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
 				});
 			}
 		}
@@ -924,7 +933,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	const redisDbClick = (dbName: string) => {
 		setSelectDatabase(dbName);
-		add(dbName, <RedisDBMag dbName={dbName} />);
+		add('DB-' + dbName, <RedisDBMag dbName={dbName} />);
 	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
@@ -1000,11 +1009,21 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						style={{ paddingRight: 16 }}
 					>
 						{/* TODO 循环显示 */}
-						<div
-							className="redis-db-item"
-							onClick={() => redisDbClick('DB0')}
-						>
-							<img src={redisImg} className="mr-8" /> DB0(50)
+						<div className="redis-dbs">
+							{redisListData.map((item: any) => {
+								return (
+									<div
+										key={item.db}
+										className="redis-db-item"
+										onClick={() =>
+											redisDbClick('' + item.db)
+										}
+									>
+										<img src={redisImg} className="mr-8" />{' '}
+										DB-{item.db}({item.size})
+									</div>
+								);
+							})}
 						</div>
 					</div>
 				)}

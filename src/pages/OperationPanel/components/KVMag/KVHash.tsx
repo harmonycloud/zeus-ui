@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Button, notification } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, InputNumber, Select, Button, notification } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
+import Actions from '@/components/Actions';
+import ProTable from '@/components/ProTable';
 import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
 import { formItemLayout618 } from '@/utils/const';
-import { dataTool } from 'echarts';
-import { useParams } from 'react-router';
-import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
+import AddValue from './addValue';
 import {
 	saveRedisKeys,
 	updateRedisValue,
-	deleteRedisValue
+	deleteRedisValue,
+	updateRedisKeys
 } from '@/services/operatorPanel';
-import AddValue from './addValue';
+import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
+import { useParams } from 'react-router';
 
+const LinkButton = Actions.LinkButton;
 const options = [
 	{ label: 'hash', value: 'hash' },
 	{ label: 'Zset', value: 'zset' },
@@ -23,23 +26,69 @@ const options = [
 	{ label: 'string', value: 'string' }
 ];
 // TODO 编辑 value单独弹窗编辑
-export default function KVString(props: any): JSX.Element {
-	const { data, database, onRefresh } = props;
+export default function KVHash(props: any): JSX.Element {
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
+	const { data, database, onRefresh } = props;
+	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
+	const [record, setRecord] = useState<any>();
 	const [editKey, setEditKey] = useState<boolean>(false);
 	const [editTime, setEditTime] = useState<boolean>(false);
+	const [items, setItems] = useState<Item[]>([
+		{
+			dataIndex: '',
+			label: ''
+		},
+		{
+			dataIndex: 'key',
+			label: 'key'
+		},
+		{
+			dataIndex: 'expiration',
+			label: '超过时间'
+		},
+		{
+			dataIndex: 'keyType',
+			label: '数据类型'
+		}
+	]);
 
-	const onOk = (sendData: any) => {
-		updateRedisValue({
+	const Operation = {
+		primary: (
+			<div>
+				<Button type="primary" onClick={() => setVisible(true)}>
+					新增
+				</Button>
+			</div>
+		)
+	};
+
+	const actionRender = (value: string, record: any, index: number) => {
+		return (
+			<Actions>
+				<LinkButton
+					onClick={() => {
+						setRecord(record);
+						setVisible(true);
+					}}
+				>
+					编辑
+				</LinkButton>
+				<LinkButton onClick={() => onDelete(record)}>删除</LinkButton>
+			</Actions>
+		);
+	};
+
+	const editKeyHandle = (sendData: any) => {
+		updateRedisKeys({
 			database,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
 			...data,
-			expiration: null,
-			value: sendData.value
+			hashValue: null,
+			...sendData
 		}).then((res) => {
 			if (res.success) {
 				setVisible(false);
@@ -47,6 +96,83 @@ export default function KVString(props: any): JSX.Element {
 				notification.success({
 					message: '成功',
 					description: '修改成功'
+				});
+			} else {
+				notification.success({
+					message: '成功',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+
+	const onOk = (sendData: any) => {
+		if (record) {
+			updateRedisValue({
+				database,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...data,
+				expiration: null,
+				hashValue: { ...sendData }
+			}).then((res) => {
+				if (res.success) {
+					setVisible(false);
+					onRefresh();
+					notification.success({
+						message: '成功',
+						description: '修改成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		} else {
+			saveRedisKeys({
+				database,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...data,
+				expiration: null,
+				hashValue: { ...sendData }
+			}).then((res) => {
+				if (res.success) {
+					setEditKey(false);
+					onRefresh();
+					notification.success({
+						message: '成功',
+						description: '新增成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
+
+	const onDelete = (record: any) => {
+		deleteRedisValue({
+			database,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			...data,
+			hashValue: { ...record },
+			value: record.value
+		}).then((res) => {
+			if (res.success) {
+				onRefresh();
+				notification.success({
+					message: '成功',
+					description: '删除成功'
 				});
 			} else {
 				notification.success({
@@ -87,10 +213,17 @@ export default function KVString(props: any): JSX.Element {
 					<span className="label-item">key:</span>
 					{editKey ? (
 						<Form form={form}>
-							<Form.Item name="description">
+							<Form.Item name="key" initialValue={data.key}>
 								<Input placeholder="请输入" />
 							</Form.Item>
-							<Button type="link">保存</Button>
+							<Button
+								type="link"
+								onClick={() =>
+									editKeyHandle(form.getFieldsValue())
+								}
+							>
+								保存
+							</Button>
 							<Button
 								type="text"
 								onClick={() => setEditKey(false)}
@@ -146,25 +279,45 @@ export default function KVString(props: any): JSX.Element {
 					)}
 				</div>
 			</div>
-			<div className="data-item item-width">
+			<div className="data-item item-width mb">
 				<span className="label-item">数据类型:</span>
 				<div title={data.keyType || '--'}>{data.keyType || '--'}</div>
 			</div>
-			<div className="data-item item-width">
-				<span className="label-item">value:</span>
-				<div title={data.value || '--'}>
-					{data?.stringValue || '--'}{' '}
-					<Button type="link" onClick={() => setVisible(true)}>
-						编辑
-					</Button>
-				</div>
-			</div>
+			<ProTable
+				dataSource={data.hashValue || []}
+				showRefresh
+				showColumnSetting
+				onRefresh={onRefresh}
+				rowKey="field"
+				operation={Operation}
+				// pagination={{
+				// 	total: total,
+				// 	current: current,
+				// 	pageSize: pageSize
+				// }}
+				// onChange={onTableChange}
+			>
+				<ProTable.Column
+					title="序号"
+					dataIndex="index"
+					render={(value: string, record: any, index: number) =>
+						index + 1
+					}
+				/>
+				<ProTable.Column title="field" dataIndex="field" />
+				<ProTable.Column title="value" dataIndex="value" />
+				<ProTable.Column
+					title="操作"
+					dataIndex="action"
+					render={actionRender}
+				/>
+			</ProTable>
 			{visible && (
 				<AddValue
 					type={data.keyType}
 					onOk={onOk}
 					visible={visible}
-					data={{ value: data.stringValue }}
+					data={record}
 					onCancel={() => setVisible(false)}
 				/>
 			)}

@@ -15,7 +15,7 @@ export default function RedisDBMag(props: RedisDBMagProps): JSX.Element {
 			onChange={onChange}
 			items={[
 				{
-					label: 'k-v管理',
+					label: 'K-V管理',
 					key: 'kv',
 					children: <KVMag dbName={dbName} />
 				},

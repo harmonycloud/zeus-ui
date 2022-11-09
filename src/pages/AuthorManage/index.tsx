@@ -44,7 +44,7 @@ const InfoConfig = [
 ];
 
 function AuthorManage(): JSX.Element {
-	const [basicData, setBasicData] = useState(info);
+	const [basicData, setBasicData] = useState<any>(info);
 	const [infoConfig, setInfoConfig] = useState(InfoConfig);
 	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
 	const [option2, setOption2] = useState(getGaugeOption(0, '内存(GB)'));
@@ -55,6 +55,18 @@ function AuthorManage(): JSX.Element {
 		getLicenseInfo().then((res) => {
 			if (res.success) {
 				setBasicData(res.data);
+				const cpuProduceRate = res.data
+					? Number(res.data?.produce?.used) /
+					  Number(res.data?.produce?.total)
+					: 0;
+				const option1Temp = getGaugeOption(cpuProduceRate, 'CPU(核)');
+				setOption1(option1Temp);
+				const cpuTestRate = res.data
+					? Number(res.data?.test?.used) /
+					  Number(res.data?.test?.total)
+					: 0;
+				const option2Temp = getGaugeOption(cpuTestRate, 'CPU(核)');
+				setOption1(option2Temp);
 			} else {
 				notification.error({
 					message: '失败',
@@ -120,23 +132,16 @@ function AuthorManage(): JSX.Element {
 							<div className="info-item">生产环境：</div>
 							<div>
 								CPU限量总额：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
-								C
+								{basicData?.produce?.total}C
 							</div>
 							<div>
 								CPU已使用：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
-								C
+								{basicData?.produce?.used}C
 							</div>
 							<div>
 								CPU剩余额度：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
+								{basicData?.produce?.total -
+									basicData?.produce?.used}
 								C
 							</div>
 						</div>
@@ -156,23 +161,15 @@ function AuthorManage(): JSX.Element {
 							<div className="info-item">测试环境：</div>
 							<div>
 								CPU限量总额：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
-								C
+								{basicData?.test?.total}C
 							</div>
 							<div>
 								CPU已使用：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
-								C
+								{basicData?.test?.used}C
 							</div>
 							<div>
 								CPU剩余额度：
-								{(Number(clusterQuota?.totalCpu) || 0).toFixed(
-									2
-								)}
+								{basicData?.test?.total - basicData?.test?.used}
 								C
 							</div>
 						</div>
