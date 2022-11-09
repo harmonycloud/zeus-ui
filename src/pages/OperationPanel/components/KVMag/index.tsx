@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Modal, notification, Button } from 'antd';
+import { Input, Modal, notification, Button, Empty } from 'antd';
 import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisKeyItem from '../RedisKeyItem';
@@ -54,7 +54,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	useEffect(() => {
 		getDetail();
 	}, [key]);
-	const getData = (keyword: string) => {
+	const getData = (keyword: string, key?: string) => {
 		getRedisKeys({
 			database: dbName,
 			keyword: keyword,
@@ -64,7 +64,8 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		}).then((res) => {
 			if (res.success) {
 				setKeys(res.data);
-				setKey(res.data[0]?.key);
+				key && getDetail();
+				key ? setKey(key) : setKey(res.data[0]?.key);
 			}
 		});
 	};
@@ -133,6 +134,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						data={detail}
 						database={dbName}
 						onRefresh={getDetail}
+						getKeys={(key: string) => getData('', key)}
 					/>
 				);
 				break;
@@ -142,6 +144,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						data={detail}
 						database={dbName}
 						onRefresh={getDetail}
+						getKeys={(key: string) => getData('', key)}
 					/>
 				);
 				break;
@@ -151,6 +154,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						data={detail}
 						database={dbName}
 						onRefresh={getDetail}
+						getKeys={(key: string) => getData('', key)}
 					/>
 				);
 				break;
@@ -160,6 +164,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						data={detail}
 						database={dbName}
 						onRefresh={getDetail}
+						getKeys={(key: string) => getData('', key)}
 					/>
 				);
 			case 'string':
@@ -168,10 +173,16 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						data={detail}
 						database={dbName}
 						onRefresh={getDetail}
+						getKeys={(key: string) => getData('', key)}
 					/>
 				);
 			default:
-				break;
+				return (
+					<Empty
+						description={false}
+						style={{ margin: '150px 8px' }}
+					/>
+				);
 		}
 	};
 	return (

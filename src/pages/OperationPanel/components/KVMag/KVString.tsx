@@ -11,7 +11,8 @@ import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
 import {
 	saveRedisKeys,
 	updateRedisValue,
-	deleteRedisValue
+	deleteRedisValue,
+	updateRedisKeys
 } from '@/services/operatorPanel';
 import AddValue from './addValue';
 
@@ -24,12 +25,42 @@ const options = [
 ];
 // TODO 编辑 value单独弹窗编辑
 export default function KVString(props: any): JSX.Element {
-	const { data, database, onRefresh } = props;
+	const { data, database, onRefresh, getKeys } = props;
 	const [form] = Form.useForm();
+	const [strForm] = Form.useForm();
 	const params: ParamsProps = useParams();
 	const [visible, setVisible] = useState<boolean>(false);
 	const [editKey, setEditKey] = useState<boolean>(false);
 	const [editTime, setEditTime] = useState<boolean>(false);
+
+	const editKeyHandle = (sendData: any) => {
+		updateRedisKeys({
+			database,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			key: data.key,
+			oldKey: data.key,
+			keyType: data.keyType,
+			expiration: data.expiration,
+			...sendData
+		}).then((res) => {
+			if (res.success) {
+				setEditKey(false);
+				setEditTime(false);
+				getKeys(sendData.key ? sendData.key : data.key);
+				notification.success({
+					message: '成功',
+					description: '修改成功'
+				});
+			} else {
+				notification.success({
+					message: '成功',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
 
 	const onOk = (sendData: any) => {
 		updateRedisValue({
@@ -56,6 +87,10 @@ export default function KVString(props: any): JSX.Element {
 			}
 		});
 	};
+
+	useEffect(() => {
+		strForm.setFieldValue('value', data?.stringValue);
+	}, [data]);
 
 	return (
 		<>
@@ -87,10 +122,17 @@ export default function KVString(props: any): JSX.Element {
 					<span className="label-item">key:</span>
 					{editKey ? (
 						<Form form={form}>
-							<Form.Item name="description">
+							<Form.Item name="key" initialValue={data?.key}>
 								<Input placeholder="请输入" />
 							</Form.Item>
-							<Button type="link">保存</Button>
+							<Button
+								type="link"
+								onClick={() =>
+									editKeyHandle(form.getFieldsValue())
+								}
+							>
+								保存
+							</Button>
 							<Button
 								type="text"
 								onClick={() => setEditKey(false)}
@@ -118,10 +160,20 @@ export default function KVString(props: any): JSX.Element {
 					<span className="label-item">超出时间:</span>
 					{editTime ? (
 						<Form form={form}>
-							<Form.Item name="description">
-								<InputNumber placeholder="请输入" />
+							<Form.Item
+								name="expiration"
+								initialValue={data?.expiration}
+							>
+								<InputNumber min={0} />
 							</Form.Item>
-							<Button type="link">保存</Button>
+							<Button
+								type="link"
+								onClick={() =>
+									editKeyHandle(form.getFieldsValue())
+								}
+							>
+								保存
+							</Button>
 							<Button
 								type="text"
 								onClick={() => setEditTime(false)}
@@ -150,15 +202,29 @@ export default function KVString(props: any): JSX.Element {
 				<span className="label-item">数据类型:</span>
 				<div title={data.keyType || '--'}>{data.keyType || '--'}</div>
 			</div>
-			<div className="data-item item-width">
-				<span className="label-item">value:</span>
-				<div title={data.value || '--'}>
-					{data?.stringValue || '--'}{' '}
+			<div className="data-item" style={{ alignItems: 'flex-start' }}>
+				<div className="label-item">value:</div>
+				{/* <div title={data.value || '/'}>
+					{data?.stringValue || '/'}{' '}
 					<Button type="link" onClick={() => setVisible(true)}>
 						编辑
 					</Button>
-				</div>
+				</div> */}
+				<Form form={strForm}>
+					<Form.Item name="value">
+						<Input.TextArea
+							style={{ height: '250px', margin: '8px 0' }}
+						/>
+					</Form.Item>
+				</Form>
 			</div>
+			<Button
+				type="primary"
+				style={{ marginLeft: 80 }}
+				onClick={() => onOk(strForm.getFieldsValue())}
+			>
+				保存
+			</Button>
 			{visible && (
 				<AddValue
 					type={data.keyType}

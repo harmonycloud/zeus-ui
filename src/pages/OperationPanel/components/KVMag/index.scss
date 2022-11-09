@@ -9,7 +9,7 @@
 	&.item-width {
 		width: 50%;
 	}
-	&.mb{
+	&.mb {
 		margin-bottom: 16px;
 	}
 	.label-item {
@@ -21,8 +21,14 @@
 	.ant-form.ant-form-horizontal {
 		display: flex;
 	}
+	.ant-form {
+		width: calc(100% - 80px);
+	}
+	.ant-form-item {
+		width: 100%;
+	}
 }
-.title-container{
+.title-container {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

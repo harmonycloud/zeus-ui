@@ -13,9 +13,9 @@ import './index.scss';
 
 const info = {
 	title: '基础信息',
-	user: '授权用户',
-	type: '授权类型',
-	key: '唯一识别码'
+	user: '',
+	type: '',
+	key: ''
 };
 
 const InfoConfig = [
@@ -31,15 +31,18 @@ const InfoConfig = [
 	},
 	{
 		dataIndex: 'user',
-		label: '授权用户'
+		label: '授权用户',
+		render: (val: string) => val || '/'
 	},
 	{
 		dataIndex: 'type',
-		label: '授权类型'
+		label: '授权类型',
+		render: (val: string) => val || '/'
 	},
 	{
 		dataIndex: 'code',
-		label: '唯一识别码'
+		label: '唯一识别码',
+		render: (val: string) => val || '/'
 	}
 ];
 
@@ -54,7 +57,7 @@ function AuthorManage(): JSX.Element {
 	const getData = () => {
 		getLicenseInfo().then((res) => {
 			if (res.success) {
-				setBasicData(res.data);
+				setBasicData({ ...info, ...res.data });
 				const cpuProduceRate = res.data
 					? Number(res.data?.produce?.used) /
 					  Number(res.data?.produce?.total)
@@ -66,7 +69,7 @@ function AuthorManage(): JSX.Element {
 					  Number(res.data?.test?.total)
 					: 0;
 				const option2Temp = getGaugeOption(cpuTestRate, 'CPU(核)');
-				setOption1(option2Temp);
+				setOption2(option2Temp);
 			} else {
 				notification.error({
 					message: '失败',

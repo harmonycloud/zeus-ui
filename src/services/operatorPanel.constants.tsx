@@ -103,8 +103,10 @@ export const executeCMD = `${api}/clusters/{clusterId}/namespaces/{namespace}/re
 export const getRedisExecuteRecords = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/cmd/history`;
 // * redis 查询指定库的所有key
 export const getRedisKeys = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys`;
-// * redis 查询指定key的value / 修改key信息/ 保存k-v / 删除key
+// * redis 查询指定key的value / 保存k-v / 删除key
 export const getRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}`;
+// * redis 修改key信息（二次处理）
+export const editRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{oldKey}`;
 // * redis修改/删除value
 export const deleteRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}/value`;
 // *--------------------------------------------------
