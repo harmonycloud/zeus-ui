@@ -9,7 +9,7 @@ interface IncludeColsFormProps {
 	open: boolean;
 	onCancel: () => void;
 	onCreate: (values: any) => void;
-	originData: MysqlTableDetail | undefined;
+	originData: any;
 	selectRow: any;
 	clusterId: string;
 	namespace: string;
@@ -34,7 +34,7 @@ export default function IncludeColsForm(
 		}) || []
 	);
 	const [cols, setCols] = useState<AutoCompleteOptionItem[]>([]);
-	const [dataSource] = useState<[]>(
+	const [dataSource] = useState<any[]>(
 		selectRow?.details?.map((item: any, index: number) => {
 			return { ...item, key: index };
 		}) || []
