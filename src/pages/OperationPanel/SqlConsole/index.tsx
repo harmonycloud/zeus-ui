@@ -180,6 +180,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			children: children,
 			key: newActiveKey
 		});
+		console.log(label);
+
 		setItems(newPanes);
 		setActiveKey(newActiveKey);
 	};
@@ -931,7 +933,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	const redisDbClick = (dbName: string) => {
 		setSelectDatabase(dbName);
-		add(dbName, <RedisDBMag dbName={dbName} />);
+		add('DB-' + dbName, <RedisDBMag dbName={dbName} />);
 	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
@@ -1022,12 +1024,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									</div>
 								);
 							})}
-							<div
-								className="redis-db-item"
-								onClick={() => redisDbClick('DB0')}
-							>
-								<img src={redisImg} className="mr-8" /> DB0(50)
-							</div>
 						</div>
 					</div>
 				)}

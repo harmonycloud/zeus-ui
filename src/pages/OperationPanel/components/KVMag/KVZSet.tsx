@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Button } from 'antd';
+import { Form, Input, InputNumber, Select, Button, notification } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import DataFields from '@/components/DataFields';
@@ -7,6 +8,13 @@ import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
 import { formItemLayout618 } from '@/utils/const';
 import AddValue from './addValue';
+import {
+	saveRedisKeys,
+	updateRedisValue,
+	deleteRedisValue
+} from '@/services/operatorPanel';
+import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
+import { useParams } from 'react-router';
 
 const LinkButton = Actions.LinkButton;
 const options = [
@@ -19,8 +27,10 @@ const options = [
 // TODO 编辑 value单独弹窗编辑
 export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
-	const { data, database } = props;
+	const params: ParamsProps = useParams();
+	const { data, database, onRefresh } = props;
 	const [isEdit, setIsEdit] = useState<boolean>(false);
+	const [record, setRecord] = useState<any>();
 	const [visible, setVisible] = useState<boolean>(false);
 	const [editKey, setEditKey] = useState<boolean>(false);
 	const [editTime, setEditTime] = useState<boolean>(false);
@@ -60,19 +70,103 @@ export default function KVZSet(props: any): JSX.Element {
 	const actionRender = (value: string, record: any, index: number) => {
 		return (
 			<Actions>
-				<LinkButton onClick={() => setVisible(true)}>编辑</LinkButton>
-				<LinkButton>删除</LinkButton>
+				<LinkButton
+					onClick={() => {
+						setRecord(record);
+						setVisible(true);
+					}}
+				>
+					编辑
+				</LinkButton>
+				<LinkButton onClick={() => onDelete(record)}>删除</LinkButton>
 			</Actions>
 		);
+	};
+
+	const onOk = (sendData: any) => {
+		if (record) {
+			updateRedisValue({
+				database,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...data,
+				expiration: null,
+				zsetValue: { ...sendData }
+			}).then((res) => {
+				if (res.success) {
+					setVisible(false);
+					onRefresh();
+					notification.success({
+						message: '成功',
+						description: '修改成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		} else {
+			saveRedisKeys({
+				database,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				...data,
+				expiration: null,
+				zsetValue: { ...sendData }
+			}).then((res) => {
+				if (res.success) {
+					setVisible(false);
+					onRefresh();
+					notification.success({
+						message: '成功',
+						description: '新增成功'
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
+
+	const onDelete = (record: any) => {
+		deleteRedisValue({
+			database,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			...data,
+			zsetValue: { ...record }
+		}).then((res) => {
+			if (res.success) {
+				onRefresh();
+				notification.success({
+					message: '成功',
+					description: '删除成功'
+				});
+			} else {
+				notification.success({
+					message: '成功',
+					description: res.errorMsg
+				});
+			}
+		});
 	};
 
 	return (
 		<>
 			<div>
-				<div className="title-content">
-					<div className="blue-line"></div>
-					<div className="detail-title mr-8">基本信息</div>
-					{/* <EditOutlined
+				<div className="title-container">
+					<div className="title-content">
+						<div className="blue-line"></div>
+						<div className="detail-title mr-8">基本信息</div>
+						{/* <EditOutlined
 						onClick={() => setIsEdit(!isEdit)}
 						style={{
 							cursor: 'pointer',
@@ -80,6 +174,13 @@ export default function KVZSet(props: any): JSX.Element {
 							fontSize: 14
 						}}
 					/> */}
+					</div>
+					<Button
+						onClick={onRefresh}
+						style={{ padding: '0 9px', marginRight: '8px' }}
+					>
+						<ReloadOutlined />
+					</Button>
 				</div>
 			</div>
 			{/* <DataFields dataSource={{}} items={items} /> */}
@@ -147,7 +248,7 @@ export default function KVZSet(props: any): JSX.Element {
 					)}
 				</div>
 			</div>
-			<div className="data-item item-width">
+			<div className="data-item item-width mb">
 				<span className="label-item">数据类型:</span>
 				<div title={data.keyType || '--'}>{data.keyType || '--'}</div>
 			</div>
@@ -155,7 +256,7 @@ export default function KVZSet(props: any): JSX.Element {
 				dataSource={data.zsetValue || []}
 				showRefresh
 				showColumnSetting
-				// onRefresh={() => onRefresh(keyword, current)}
+				onRefresh={onRefresh}
 				rowKey="member"
 				operation={Operation}
 				// pagination={{
@@ -180,6 +281,15 @@ export default function KVZSet(props: any): JSX.Element {
 					render={actionRender}
 				/>
 			</ProTable>
+			{visible && (
+				<AddValue
+					type={data.keyType}
+					onOk={onOk}
+					visible={visible}
+					data={record}
+					onCancel={() => setVisible(false)}
+				/>
+			)}
 			{/* {!isEdit && <DataFields dataSource={{}} items={items} />}
 			{isEdit && (
 				<Form

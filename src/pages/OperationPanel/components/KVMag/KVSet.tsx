@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, InputNumber, Select, Button, notification } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import DataFields from '@/components/DataFields';
@@ -26,7 +28,7 @@ const options = [
 // TODO 编辑 value单独弹窗编辑
 export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
-	const { data, database } = props;
+	const { data, database, onRefresh } = props;
 	const params: ParamsProps = useParams();
 	const [record, setRecord] = useState<any>();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -96,6 +98,7 @@ export default function KVZSet(props: any): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					setVisible(false);
+					onRefresh();
 					notification.success({
 						message: '成功',
 						description: '修改成功'
@@ -120,6 +123,7 @@ export default function KVZSet(props: any): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					setVisible(false);
+					onRefresh();
 					notification.success({
 						message: '成功',
 						description: '新增成功'
@@ -144,6 +148,7 @@ export default function KVZSet(props: any): JSX.Element {
 			value: record.value
 		}).then((res) => {
 			if (res.success) {
+				onRefresh();
 				notification.success({
 					message: '成功',
 					description: '删除成功'
@@ -160,10 +165,11 @@ export default function KVZSet(props: any): JSX.Element {
 	return (
 		<>
 			<div>
-				<div className="title-content">
-					<div className="blue-line"></div>
-					<div className="detail-title mr-8">基本信息</div>
-					{/* <EditOutlined
+				<div className="title-container">
+					<div className="title-content">
+						<div className="blue-line"></div>
+						<div className="detail-title mr-8">基本信息</div>
+						{/* <EditOutlined
 						onClick={() => setIsEdit(!isEdit)}
 						style={{
 							cursor: 'pointer',
@@ -171,6 +177,13 @@ export default function KVZSet(props: any): JSX.Element {
 							fontSize: 14
 						}}
 					/> */}
+					</div>
+					<Button
+						onClick={onRefresh}
+						style={{ padding: '0 9px', marginRight: '8px' }}
+					>
+						<ReloadOutlined />
+					</Button>
 				</div>
 			</div>
 			{/* <DataFields dataSource={{}} items={items} /> */}
@@ -206,7 +219,7 @@ export default function KVZSet(props: any): JSX.Element {
 						</div>
 					)}
 				</div>
-				<div className="data-item item-width">
+				<div className="data-item item-width mb">
 					<span className="label-item">超出时间:</span>
 					{editTime ? (
 						<Form form={form}>
@@ -238,7 +251,7 @@ export default function KVZSet(props: any): JSX.Element {
 					)}
 				</div>
 			</div>
-			<div className="data-item item-width">
+			<div className="data-item item-width mb">
 				<span className="label-item">数据类型:</span>
 				<div title={data.keyType || '--'}>{data.keyType || '--'}</div>
 			</div>
@@ -252,7 +265,7 @@ export default function KVZSet(props: any): JSX.Element {
 				}
 				showRefresh
 				showColumnSetting
-				// onRefresh={() => onRefresh(keyword, current)}
+				onRefresh={onRefresh}
 				rowKey="value"
 				operation={Operation}
 				// pagination={{

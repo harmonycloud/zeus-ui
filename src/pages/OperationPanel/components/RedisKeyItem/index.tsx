@@ -30,7 +30,7 @@ const databaseMenuItems = [
 	// 	key: 'add'
 	// },
 	{
-		label: '删除k-v',
+		label: '删除Key',
 		key: 'delete'
 	}
 ];

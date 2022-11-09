@@ -9,6 +9,9 @@
 	&.item-width {
 		width: 50%;
 	}
+	&.mb{
+		margin-bottom: 16px;
+	}
 	.label-item {
 		width: 80px;
 	}
@@ -18,4 +21,9 @@
 	.ant-form.ant-form-horizontal {
 		display: flex;
 	}
+}
+.title-container{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }

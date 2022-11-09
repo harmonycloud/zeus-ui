@@ -128,18 +128,48 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	const childrenRender = (type: string) => {
 		switch (type) {
 			case 'hash':
-				return <KVHash data={detail} database={dbName} />;
+				return (
+					<KVHash
+						data={detail}
+						database={dbName}
+						onRefresh={getDetail}
+					/>
+				);
 				break;
 			case 'zset':
-				return <KVZset data={detail} database={dbName} />;
+				return (
+					<KVZset
+						data={detail}
+						database={dbName}
+						onRefresh={getDetail}
+					/>
+				);
 				break;
 			case 'list':
-				return <KVList data={detail} database={dbName} />;
+				return (
+					<KVList
+						data={detail}
+						database={dbName}
+						onRefresh={getDetail}
+					/>
+				);
 				break;
 			case 'set':
-				return <KVSet data={detail} database={dbName} />;
+				return (
+					<KVSet
+						data={detail}
+						database={dbName}
+						onRefresh={getDetail}
+					/>
+				);
 			case 'string':
-				return <KVString data={detail} database={dbName} />;
+				return (
+					<KVString
+						data={detail}
+						database={dbName}
+						onRefresh={getDetail}
+					/>
+				);
 			default:
 				break;
 		}
@@ -191,6 +221,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				<AddKey
 					onCancel={() => setIsAdd(false)}
 					onRefresh={() => getData('')}
+					database={dbName}
 				/>
 			)}
 		</>

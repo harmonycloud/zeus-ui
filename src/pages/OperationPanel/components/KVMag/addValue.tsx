@@ -60,7 +60,7 @@ export default function AddValue(props: any): JSX.Element {
 					</Form.Item>
 				) : null}
 				<Form.Item
-					name="value"
+					name={type === 'zset' ? 'member' : 'value'}
 					label="Value"
 					rules={[
 						{
@@ -68,7 +68,9 @@ export default function AddValue(props: any): JSX.Element {
 							message: '请输入Value'
 						}
 					]}
-					initialValue={data?.value || data?.stringValue}
+					initialValue={
+						data?.value || data?.stringValue || data?.member
+					}
 				>
 					<Input.TextArea placeholder="请输入" />
 				</Form.Item>

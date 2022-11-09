@@ -21,12 +21,15 @@
 		}
 	}
 
+	.name-link:first-of-type {
+		margin-left: 0 !important;
+	}
 	// span:nth-last-child()::after {
 	// 	content: '';
-		// position: absolute;
-		// width: 1px;
-		// height: 14px;
-		// right: -8px;
-		// border-right: 1px solid $black-7;
+	// position: absolute;
+	// width: 1px;
+	// height: 14px;
+	// right: -8px;
+	// border-right: 1px solid $black-7;
 	// }
 }

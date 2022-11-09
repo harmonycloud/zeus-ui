@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-	Form,
-	Input,
-	InputNumber,
-	Select,
-	Popconfirm,
-	Button,
-	notification
-} from 'antd';
+import { Form, Input, InputNumber, Button, notification } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
 import { EditOutlined } from '@ant-design/icons';
@@ -31,7 +24,7 @@ const options = [
 ];
 // TODO 编辑 value单独弹窗编辑
 export default function KVString(props: any): JSX.Element {
-	const { data, database } = props;
+	const { data, database, onRefresh } = props;
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
 	const [visible, setVisible] = useState<boolean>(false);
@@ -50,6 +43,7 @@ export default function KVString(props: any): JSX.Element {
 		}).then((res) => {
 			if (res.success) {
 				setVisible(false);
+				onRefresh();
 				notification.success({
 					message: '成功',
 					description: '修改成功'
@@ -66,10 +60,11 @@ export default function KVString(props: any): JSX.Element {
 	return (
 		<>
 			<div>
-				<div className="title-content">
-					<div className="blue-line"></div>
-					<div className="detail-title mr-8">基本信息</div>
-					{/* <EditOutlined
+				<div className="title-container">
+					<div className="title-content">
+						<div className="blue-line"></div>
+						<div className="detail-title mr-8">基本信息</div>
+						{/* <EditOutlined
 						onClick={() => setIsEdit(!isEdit)}
 						style={{
 							cursor: 'pointer',
@@ -77,6 +72,13 @@ export default function KVString(props: any): JSX.Element {
 							fontSize: 14
 						}}
 					/> */}
+					</div>
+					<Button
+						onClick={onRefresh}
+						style={{ padding: '0 9px', marginRight: '8px' }}
+					>
+						<ReloadOutlined />
+					</Button>
 				</div>
 			</div>
 			{/* <DataFields dataSource={{}} items={items} /> */}

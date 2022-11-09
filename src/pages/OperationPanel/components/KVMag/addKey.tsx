@@ -25,14 +25,14 @@ const options = [
 ];
 // TODO 编辑 value单独弹窗编辑
 export default function AddKV(props: any): JSX.Element {
-	const { onCancel, onRefresh } = props;
+	const { onCancel, onRefresh, database } = props;
 	const params: ParamsProps = useParams();
 	const [form] = Form.useForm();
 
 	const onCreate = () => {
 		form.validateFields().then((value) => {
 			saveRedisKeys({
-				database: '4',
+				database,
 				clusterId: params.clusterId,
 				namespace: params.namespace,
 				middlewareName: params.name,
@@ -74,10 +74,28 @@ export default function AddKV(props: any): JSX.Element {
 				}}
 				labelAlign="left"
 			>
-				<Form.Item name="key" label="key">
+				<Form.Item
+					name="key"
+					label="key"
+					rules={[
+						{
+							required: true,
+							message: '请输入key'
+						}
+					]}
+				>
 					<Input placeholder="请输入" />
 				</Form.Item>
-				<Form.Item name="keyType" label="数据类型">
+				<Form.Item
+					name="keyType"
+					label="数据类型"
+					rules={[
+						{
+							required: true,
+							message: '请选择数据类型'
+						}
+					]}
+				>
 					<Select options={options} placeholder="请选择数据类型" />
 				</Form.Item>
 				<Form.Item name="expiration" label="超过时间">
