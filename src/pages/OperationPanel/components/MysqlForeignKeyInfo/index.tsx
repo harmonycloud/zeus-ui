@@ -3,15 +3,21 @@ import EditTable from '@/components/EditTable';
 import {
 	DatabaseItem,
 	MysqlForeignItem,
+	MysqlForeignItemDetailItem,
 	MysqlForeignKeyInfoProps,
 	PgsqslDatabaseItem
 } from '../../index.d';
 import { AutoCompleteOptionItem } from '@/types/comment';
-import { getAllDatabase } from '@/services/operatorPanel';
-import { notification } from 'antd';
+import {
+	getAllDatabase,
+	getDbTables,
+	updateMysqlForeign
+} from '@/services/operatorPanel';
+import { Button, Divider, notification, Space } from 'antd';
+import IncludeColsForm from './IncludeColsForm';
 const basicData = {
 	foreignKey: '',
-	details: [],
+	details: undefined,
 	referenceDatabase: '',
 	referenceTable: '',
 	referencedColumn: '',
@@ -36,19 +42,32 @@ interface EditMysqlForeignItem extends MysqlForeignItem {
 export default function MysqlForeignKeyInfo(
 	props: MysqlForeignKeyInfoProps
 ): JSX.Element {
-	const { originData, handleChange, clusterId, namespace, middlewareName } =
-		props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName,
+		databaseName
+	} = props;
+	console.log(originData);
 	const [dataSource] = useState<EditMysqlForeignItem[]>(
-		originData?.foreignKeys?.map((item) => {
-			return { ...item, key: item.foreignKey };
+		originData?.foreignKeys?.map((item, index) => {
+			return {
+				...item,
+				details: item?.details?.map(
+					(item) => (item as MysqlForeignItemDetailItem).column
+				),
+				key: index + ''
+			};
 		}) || []
 	);
-	const [columnOptions] = useState<AutoCompleteOptionItem[]>(
-		originData?.columns?.map((item) => {
-			return { label: item.column, value: item.column };
-		}) || []
-	);
+	const [changedData, setChangeData] = useState<any>();
 	const [databases, setDatabases] = useState<AutoCompleteOptionItem[]>([]);
+	const [tables, setTables] = useState<AutoCompleteOptionItem[]>([]);
+	const [selectRow, setSelectRow] = useState<any>();
+	const [open, setOpen] = useState<boolean>(false);
 	useEffect(() => {
 		getAllDatabase({
 			middlewareName,
@@ -73,12 +92,36 @@ export default function MysqlForeignKeyInfo(
 			}
 		});
 	}, []);
-
+	useEffect(() => {
+		if (selectRow) {
+			if (selectRow.referenceDatabase) {
+				const sendData = {
+					clusterId,
+					namespace,
+					middlewareName,
+					database: selectRow.referenceDatabase
+				};
+				getDbTables(sendData).then((res) => {
+					if (res.success) {
+						setTables(
+							res.data.map((item) => {
+								return {
+									label: item.tableName,
+									value: item.tableName
+								};
+							})
+						);
+					}
+				});
+			}
+		}
+	}, [selectRow?.referenceDatabase]);
 	const columns = [
 		{
 			title: '序号',
 			dataIndex: 'indexInTable',
 			key: 'indexInTable',
+			width: 80,
 			render: (text: any, record: any, index: number) => index + 1
 		},
 		{
@@ -86,15 +129,8 @@ export default function MysqlForeignKeyInfo(
 			dataIndex: 'foreignKey',
 			key: 'foreignKey',
 			editable: true,
+			width: 150,
 			componentType: 'string'
-		},
-		{
-			title: '包含列',
-			dataIndex: 'details',
-			key: 'details',
-			editable: true,
-			componentType: 'mulSelect',
-			selectOptions: columnOptions
 		},
 		{
 			title: '参考库',
@@ -102,6 +138,7 @@ export default function MysqlForeignKeyInfo(
 			key: 'referenceDatabase',
 			editable: true,
 			componentType: 'select',
+			width: 250,
 			selectOptions: databases
 		},
 		{
@@ -110,15 +147,28 @@ export default function MysqlForeignKeyInfo(
 			key: 'referenceTable',
 			editable: true,
 			componentType: 'select',
-			selectOptions: []
+			width: 250,
+			selectOptions: tables
 		},
 		{
-			title: '参考列',
-			dataIndex: 'referencedColumn',
-			key: 'referencedColumn',
-			editable: true,
-			componentType: 'select',
-			selectOptions: []
+			title: '包含列',
+			dataIndex: 'details',
+			key: 'details',
+			width: 250,
+			render: (_text: any, record: any) => (
+				<span
+					onClick={() => setOpen(true)}
+					style={{ cursor: 'pointer' }}
+				>
+					编辑
+					{record?.details
+						?.map(
+							(item: any) =>
+								`${item.column}(${item.referencedColumn})`
+						)
+						.join(',')}
+				</span>
+			)
 		},
 		{
 			title: '删除时',
@@ -126,6 +176,7 @@ export default function MysqlForeignKeyInfo(
 			key: 'onDeleteOption',
 			editable: true,
 			componentType: 'select',
+			width: 150,
 			selectOptions: deleteAction
 		},
 		{
@@ -134,18 +185,78 @@ export default function MysqlForeignKeyInfo(
 			key: 'onUpdateOption',
 			editable: true,
 			componentType: 'select',
+			width: 150,
 			selectOptions: updateAction
 		}
 	];
 	const onChange = (values: any) => {
 		handleChange(values);
 	};
+	const onSelectValue = (values: any) => {
+		setSelectRow(values);
+	};
+	const onCreate = (values: any) => {
+		console.log(values);
+		setChangeData({ details: values });
+	};
+	const save = () => {
+		if (tableName && originData) {
+			updateMysqlForeign({
+				database: databaseName,
+				table: tableName,
+				clusterId,
+				namespace,
+				middlewareName,
+				foreignKeys: originData.foreignKeys
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '外键修改成功!'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
-		<EditTable
-			basicData={basicData}
-			originData={dataSource}
-			defaultColumns={columns}
-			returnValues={onChange}
-		/>
+		<>
+			<EditTable
+				basicData={basicData}
+				originData={dataSource}
+				defaultColumns={columns}
+				returnValues={onChange}
+				returnSelectValues={onSelectValue}
+				changedData={changedData}
+				scroll={{ x: 1530 }}
+			/>
+			{tableName && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
+			{open && (
+				<IncludeColsForm
+					open={open}
+					onCancel={() => setOpen(false)}
+					onCreate={onCreate}
+					originData={originData}
+					selectRow={selectRow}
+					clusterId={clusterId}
+					namespace={namespace}
+					middlewareName={middlewareName}
+				/>
+			)}
+		</>
 	);
 }

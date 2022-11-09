@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
 import { MysqlColInfoProps, MysqlColItem, MysqlDataType } from '../../index.d';
-import { getMysqlDataType } from '@/services/operatorPanel';
-import { AutoCompleteOptionItem } from '@/types/comment';
+import { getMysqlDataType, updateMysqlCol } from '@/services/operatorPanel';
+import { Button, Divider, notification, Space } from 'antd';
 
 const basicData = {
 	column: '',
-	columnType: '',
+	dataType: '',
 	size: '0',
 	nullable: false,
 	primary: true,
@@ -17,8 +17,15 @@ interface EditMysqlColItem extends MysqlColItem {
 	key: string;
 }
 export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
-	const { originData, handleChange, clusterId, namespace, middlewareName } =
-		props;
+	const {
+		originData,
+		handleChange,
+		clusterId,
+		namespace,
+		middlewareName,
+		tableName,
+		databaseName
+	} = props;
 	const [dataSource, setDataSource] = useState<EditMysqlColItem[]>(
 		originData?.columns?.map((item) => {
 			return { ...item, key: item.column };
@@ -61,8 +68,8 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 		},
 		{
 			title: '类型',
-			dataIndex: 'columnType',
-			key: 'columnType',
+			dataIndex: 'dataType',
+			key: 'dataType',
 			editable: true,
 			width: 250,
 			componentType: 'select',
@@ -114,16 +121,53 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 	const onSelectChange = (values: any) => {
 		setSelectRow(values);
 	};
+	const save = () => {
+		if (tableName && originData) {
+			updateMysqlCol({
+				database: databaseName,
+				table: tableName,
+				clusterId,
+				namespace,
+				middlewareName,
+				columns: originData.columns
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '列信息修改成功'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
-		<EditTable
-			defaultColumns={columns}
-			originData={dataSource}
-			basicData={basicData}
-			moveDownVisible
-			moveUpVisible
-			incrementVisible
-			returnValues={onChange}
-			returnSelectValues={onSelectChange}
-		/>
+		<>
+			<EditTable
+				defaultColumns={columns}
+				originData={dataSource}
+				basicData={basicData}
+				moveDownVisible
+				moveUpVisible
+				incrementVisible
+				returnValues={onChange}
+				returnSelectValues={onSelectChange}
+			/>
+			{tableName && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
+		</>
 	);
 }

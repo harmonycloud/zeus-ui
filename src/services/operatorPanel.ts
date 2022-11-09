@@ -25,6 +25,7 @@ import {
 	getExecuteHisParamsProps,
 	getIndexRes,
 	getMysqlDataTypeRes,
+	getMysqlEnginesRes,
 	getMysqlExcelParamsProps,
 	getMysqlUserResProps,
 	getPgColParamsProps,
@@ -54,6 +55,7 @@ import {
 	RedisValueRes,
 	resetPasswordParamsProps,
 	SendDataParamsProps,
+	UpdateMysqlTableParamsProps,
 	updateParamsProps,
 	updatePgsqlForeignParamsProps,
 	updatePgsqlInfoParamsProps,
@@ -321,6 +323,31 @@ export const createMysqlTable: (
 	params: createMysqlTableParams
 ) => Promise<resProps> = (params: createMysqlTableParams) => {
 	return Axios.json(URL.createMysqlTable, params, {}, 'POST');
+};
+export const getMysqlEngine: (
+	params: SendDataParamsProps
+) => Promise<getMysqlEnginesRes> = (params: SendDataParamsProps) => {
+	return Axios.get(URL.getMysqlEngine, params);
+};
+export const updateMysqlTableInfo: (
+	params: UpdateMysqlTableParamsProps
+) => Promise<resProps> = (params: UpdateMysqlTableParamsProps) => {
+	return Axios.json(URL.updateMysqlTableInfo, params, {}, 'PUT');
+};
+export const updateMysqlCol: (
+	params: UpdateMysqlTableParamsProps
+) => Promise<resProps> = (params: UpdateMysqlTableParamsProps) => {
+	return Axios.json(URL.updateMysqlCol, params, {}, 'PUT');
+};
+export const updateMysqlIndex: (
+	params: UpdateMysqlTableParamsProps
+) => Promise<resProps> = (params: UpdateMysqlTableParamsProps) => {
+	return Axios.json(URL.updateMysqlIndex, params, {}, 'PUT');
+};
+export const updateMysqlForeign: (
+	params: UpdateMysqlTableParamsProps
+) => Promise<resProps> = (params: UpdateMysqlTableParamsProps) => {
+	return Axios.json(URL.updateMysqlForeign, params, {}, 'PUT');
 };
 // * -------------------------------------------------
 // * redis
