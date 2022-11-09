@@ -39,8 +39,8 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 		{ title: '字段名', dataIndex: 'column', key: 'column' },
 		{
 			title: '类型',
-			dataIndex: 'dateType',
-			key: 'dateType',
+			dataIndex: 'dataType',
+			key: 'dataType',
 			width: 150,
 			ellipsis: true
 		},

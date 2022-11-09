@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditTable from '@/components/EditTable';
 import IncludeColsForm from './IncludeColsForm';
-import { IndexItem, MysqlIndexInfoProps } from '../../index.d';
+import { IndexItem, MysqlEngineItem, MysqlIndexInfoProps } from '../../index.d';
+import { AutoCompleteOptionItem } from '@/types/comment';
+import { Button, Divider, notification, Space } from 'antd';
+import { updateMysqlIndex } from '@/services/operatorPanel';
 const basicData = {
 	index: '',
 	indexColumns: [],
 	storageType: '',
 	type: ''
 };
-const indexTypeOptions = [
-	{ label: 'Normal', value: 'Normal' },
-	{ label: 'Unique', value: 'Unique' },
-	{ label: 'Full Text', value: 'Full Text' }
-];
-const indexWayOptions = [
-	{ label: '--', value: '' },
-	{ label: 'BTree', value: 'BTree' },
-	{ label: 'Hash', value: 'Hash' }
-];
 interface EditIndexItem extends IndexItem {
 	key: string;
 }
 export default function MysqlIndexInfo(
 	props: MysqlIndexInfoProps
 ): JSX.Element {
-	const { originData, handleChange } = props;
+	const {
+		originData,
+		handleChange,
+		engineData,
+		tableName,
+		clusterId,
+		namespace,
+		middlewareName,
+		databaseName
+	} = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [changedData, setChangeData] = useState<any>();
 	const [selectRow, setSelectRow] = useState<any>({});
@@ -33,6 +35,31 @@ export default function MysqlIndexInfo(
 			return { ...item, key: item.index };
 		}) || []
 	);
+	const [indexTypeOptions, setIndexTypeOptions] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
+	const [indexWayOptions, setIndexWayOptions] = useState<
+		AutoCompleteOptionItem[]
+	>([]);
+	useEffect(() => {
+		if (engineData) {
+			const element = engineData.find(
+				(item: MysqlEngineItem) => item.engine === originData?.engine
+			);
+			if (element) {
+				setIndexTypeOptions(
+					element.storageTypes.map((item: string) => {
+						return { value: item, label: item };
+					})
+				);
+				setIndexWayOptions(
+					element.indexTypes.map((item: string) => {
+						return { value: item, label: item };
+					})
+				);
+			}
+		}
+	}, [engineData]);
 	const columns = [
 		{
 			title: '序号',
@@ -95,6 +122,30 @@ export default function MysqlIndexInfo(
 	const getSelectValue = (value: any) => {
 		setSelectRow(value);
 	};
+	const save = () => {
+		if (tableName && originData) {
+			updateMysqlIndex({
+				database: databaseName,
+				table: tableName,
+				clusterId,
+				namespace,
+				middlewareName,
+				indices: originData.indices
+			}).then((res) => {
+				if (res.success) {
+					notification.success({
+						message: '成功',
+						description: '索引信息修改成功'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
 		<>
 			<EditTable
@@ -105,6 +156,17 @@ export default function MysqlIndexInfo(
 				returnValues={onChange}
 				returnSelectValues={getSelectValue}
 			/>
+			{tableName && (
+				<>
+					<Divider />
+					<Space>
+						<Button type="primary" onClick={save}>
+							保存
+						</Button>
+						<Button>取消</Button>
+					</Space>
+				</>
+			)}
 			{open && (
 				<IncludeColsForm
 					open={open}

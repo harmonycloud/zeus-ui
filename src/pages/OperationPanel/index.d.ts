@@ -53,6 +53,9 @@ export interface MysqlTableInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	engineData: MysqlEngineItem[];
+	tableName: string | undefined;
+	databaseName: string;
 }
 export interface MysqlColInfoProps {
 	originData: MysqlTableDetail | undefined;
@@ -60,11 +63,19 @@ export interface MysqlColInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
+	databaseName: string;
 }
 
 export interface MysqlIndexInfoProps {
 	originData: MysqlTableDetail | undefined;
 	handleChange: (values: any) => void;
+	engineData: MysqlEngineItem[];
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
+	databaseName: string;
 }
 export interface MysqlForeignKeyInfoProps {
 	originData: MysqlTableDetail | undefined;
@@ -72,6 +83,8 @@ export interface MysqlForeignKeyInfoProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
+	tableName: string | undefined;
+	databaseName: string;
 }
 export interface PgsqlTableInfoProps {
 	handleChange: (values: any) => void;
@@ -582,11 +595,22 @@ export interface MysqlTableDetail {
 	rows?: number;
 	tableName?: string;
 }
+export interface MysqlForeignItemDetailItem {
+	column: string;
+	foreignKey: string;
+	referenceTable: string;
+	referencedColumn: string;
+	referenceDatabase: string;
+}
 export interface MysqlForeignItem {
 	column: string;
 	foreignKey: string;
 	referenceTable: string;
 	referencedColumn: string;
+	referenceDatabase: string;
+	onDeleteOption: string;
+	onUpdateOption: string;
+	details: MysqlForeignItemDetailItem[] | string[];
 }
 export interface RedisCMDParamsProps extends SendDataParamsProps {
 	cmd: string;
@@ -668,4 +692,19 @@ export interface createMysqlTableParams
 	extends SendDataParamsProps,
 		MysqlTableDetail {
 	database: string;
+}
+export interface MysqlEngineItem {
+	engine: string;
+	indexTypes: string[];
+	storageTypes: string[];
+	supportForeignKey: boolean;
+}
+export interface getMysqlEnginesRes extends resProps {
+	data: MysqlEngineItem[];
+}
+export interface UpdateMysqlTableParamsProps
+	extends SendDataParamsProps,
+		MysqlTableDetail {
+	database: string;
+	table: string;
 }

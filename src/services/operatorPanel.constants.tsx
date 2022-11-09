@@ -92,8 +92,17 @@ export const updatePgsqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace
 // * mysql 获取数据类型列表
 export const getMysqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/datatype`;
 // * mysql 创建表
-export const createMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/table`;
-
+export const createMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables`;
+// * mysql 查询数据引擎
+export const getMysqlEngine = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/engines`;
+// * mysql 修改表信息
+export const updateMysqlTableInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
+// * mysql 修改列信息
+export const updateMysqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/columns`;
+// * mysql 修改索引信息
+export const updateMysqlIndex = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
+// * mysql 修改外键信息
+export const updateMysqlForeign = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/foreignKeys`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

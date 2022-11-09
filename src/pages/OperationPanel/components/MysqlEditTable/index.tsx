@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Divider, notification, Space, Tabs } from 'antd';
 import {
 	MysqlEditTableProps,
+	MysqlEngineItem,
 	MysqlTableDetail,
 	ParamsProps
 } from '../../index.d';
@@ -9,7 +10,11 @@ import MysqlTableInfo from '../MysqlTableInfo';
 import MysqlColInfo from '../MysqlColInfo';
 import MysqlIndexInfo from '../MysqlIndexInfo';
 import MysqlForeignKeyInfo from '../MysqlForeignKeyInfo';
-import { getMysqlDetail, createMysqlTable } from '@/services/operatorPanel';
+import {
+	getMysqlDetail,
+	createMysqlTable,
+	getMysqlEngine
+} from '@/services/operatorPanel';
 import { useParams } from 'react-router';
 
 export default function MysqlEditTable(
@@ -19,6 +24,23 @@ export default function MysqlEditTable(
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<MysqlTableDetail>();
+	const [engineData, setEngineData] = useState<MysqlEngineItem[]>([]);
+	useEffect(() => {
+		getMysqlEngine({
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name
+		}).then((res) => {
+			if (res.success) {
+				setEngineData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	}, []);
 	useEffect(() => {
 		if (tableName) {
 			getMysqlDetail({
@@ -41,6 +63,20 @@ export default function MysqlEditTable(
 		console.log(values, dataIndex);
 		if (dataIndex === 'basicInfo') {
 			setOriginData({ ...originData, ...values });
+		} else if (dataIndex === 'foreignKeys') {
+			const list = values.map((item: any) => {
+				item.details = item.details?.map((i: any) => {
+					return {
+						column: i.column,
+						foreignKey: item.foreignKey,
+						referenceDatabase: item.referenceDatabase,
+						referenceTable: item.referenceTable,
+						referencedColumn: i.referencedColumn
+					};
+				});
+				return item;
+			});
+			setOriginData({ ...originData, foreignKeys: list });
 		} else {
 			const result = {
 				[dataIndex]: values
@@ -82,9 +118,12 @@ export default function MysqlEditTable(
 								infoChange(values, 'basicInfo')
 							}
 							originData={originData}
+							tableName={tableName}
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							engineData={engineData}
+							databaseName={dbName}
 						/>
 					);
 				case 'colInfo':
@@ -97,6 +136,8 @@ export default function MysqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
+							databaseName={dbName}
 						/>
 					);
 				case 'indexInfo':
@@ -106,6 +147,12 @@ export default function MysqlEditTable(
 							handleChange={(values: any) =>
 								infoChange(values, 'indices')
 							}
+							engineData={engineData}
+							clusterId={params.clusterId}
+							namespace={params.namespace}
+							middlewareName={params.name}
+							tableName={tableName}
+							databaseName={dbName}
 						/>
 					);
 				case 'foreignKeyInfo':
@@ -118,6 +165,8 @@ export default function MysqlEditTable(
 							clusterId={params.clusterId}
 							namespace={params.namespace}
 							middlewareName={params.name}
+							tableName={tableName}
+							databaseName={dbName}
 						/>
 					);
 				default:
