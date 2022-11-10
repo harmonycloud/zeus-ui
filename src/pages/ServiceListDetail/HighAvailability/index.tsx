@@ -366,10 +366,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				} else if (record.podName.includes('cold')) {
 					return '冷节点';
 				} else {
-					return (
-						value?.substring(0, 1).toUpperCase() +
-						value?.substring(1)
-					);
+					return value
+						? value.substring(0, 1).toUpperCase() +
+								value.substring(1)
+						: '未知';
 				}
 			} else {
 				switch (value) {
@@ -390,10 +390,10 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					case 'exporter':
 						return 'Exporter';
 					default:
-						return (
-							value?.substring(0, 1).toUpperCase() +
-							value?.substring(1)
-						);
+						return value
+							? value.substring(0, 1).toUpperCase() +
+									value.substring(1)
+							: '未知';
 				}
 			}
 		}
