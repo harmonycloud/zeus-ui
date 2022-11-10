@@ -352,11 +352,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 
 	const roleRender = (value: string, record: PodItem, index: number) => {
 		if (record.podName.includes('exporter')) {
-			return 'exporter';
+			return 'Exporter';
 		} else {
 			if (data.type === 'elasticsearch') {
 				if (record.podName.includes('kibana')) {
-					return 'kibana';
+					return 'Kibana';
 				} else if (record.podName.includes('client')) {
 					return '协调节点';
 				} else if (record.podName.includes('master')) {
@@ -365,6 +365,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					return '数据节点';
 				} else if (record.podName.includes('cold')) {
 					return '冷节点';
+				} else {
+					return value
+						? value.substring(0, 1).toUpperCase() +
+								value.substring(1)
+						: '未知';
 				}
 			} else {
 				switch (value) {
@@ -379,13 +384,16 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					case 'cold':
 						return '冷节点';
 					case 'kibana':
-						return 'kibana';
+						return 'Kibana';
 					case 'nameserver':
-						return 'nameserver';
+						return 'Nameserver';
 					case 'exporter':
-						return 'exporter';
+						return 'Exporter';
 					default:
-						return '未知';
+						return value
+							? value.substring(0, 1).toUpperCase() +
+									value.substring(1)
+							: '未知';
 				}
 			}
 		}
