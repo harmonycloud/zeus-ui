@@ -257,7 +257,7 @@ export default function KVZSet(props: any): JSX.Element {
 						</div>
 					)}
 				</div>
-				<div className="data-item item-width mb">
+				<div className="data-item item-width">
 					<span className="label-item">超出时间:</span>
 					{editTime ? (
 						<Form form={form}>
@@ -265,7 +265,10 @@ export default function KVZSet(props: any): JSX.Element {
 								name="expiration"
 								initialValue={data?.expiration}
 							>
-								<InputNumber min={0} />
+								<InputNumber
+									min={0}
+									style={{ width: '100%' }}
+								/>
 							</Form.Item>
 							<Button
 								type="link"

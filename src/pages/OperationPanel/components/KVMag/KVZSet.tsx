@@ -262,7 +262,10 @@ export default function KVZSet(props: any): JSX.Element {
 								name="expiration"
 								initialValue={data?.expiration}
 							>
-								<InputNumber min={0} />
+								<InputNumber
+									min={0}
+									style={{ width: '100%' }}
+								/>
 							</Form.Item>
 							<Button
 								type="link"
