@@ -166,9 +166,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [pgTreeData, setPgTreeData] = useState<DataNode[]>([]);
 	const [redisListData, setRedisListData] = useState<any>([]);
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
-	const [activeKey, setActiveKey] = useState(initialItems[0].key);
+	const [activeKey, setActiveKey] = useState('');
 	const [items, setItems] = useState<any[]>([]);
-	const [pgsqlExpandedKeys, setPgslqExpandedKeys] = useState<string[]>([]);
+	const [pgsqlExpandedKeys, setPgsqlExpandedKeys] = useState<string[]>([]);
 	const [selectDatabase, setSelectDatabase] = useState<string>('');
 	const [selectSchema, setSelectSchema] = useState<string>('');
 	const newTabIndex = useRef(0);
@@ -479,6 +479,18 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 											title={(item as DatabaseItem).db}
 											className="text-overflow"
 											style={{ width: '140px' }}
+											onDoubleClick={() =>
+												add(
+													(item as DatabaseItem).db,
+													<MysqlSqlConsole
+														dbName={
+															(
+																item as DatabaseItem
+															).db
+														}
+													/>
+												)
+											}
 										>
 											{(item as DatabaseItem).db}
 										</span>
@@ -542,7 +554,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							});
 							console.log(list);
 							setPgTreeData(list);
-							setPgslqExpandedKeys([list[0].key]);
+							setPgsqlExpandedKeys([list[0].key]);
 							setSelectDatabase(list[0].value);
 						} else {
 							setPgTreeData([]);
@@ -932,7 +944,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const pgsqlOnSelect = (selectedKeys: Key[], e: any) => {
 		if (e.node.type === 'database') {
 			setSelectDatabase(e.node.value);
-			setPgslqExpandedKeys(selectedKeys as string[]);
+			setPgsqlExpandedKeys(selectedKeys as string[]);
 		} else {
 			setSelectSchema(e.node.value);
 		}

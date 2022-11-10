@@ -66,23 +66,34 @@ export default function MysqlSqlConsole(
 	};
 	// * 执行sql语句方法
 	const handleExecute = () => {
-		executeMysqlSql({
-			database: dbName,
-			sql: sql,
-			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params.name
-		}).then((res) => {
-			console.log(res);
-			if (res.success) {
-				if (sql.includes('SELECT')) {
-					add(
-						'执行结果',
-						<ExecuteResultTypeOne resData={res.data} />
-					);
-				}
-			}
-		});
+		let sqlT = sql;
+		if (sqlT.substring(-1) !== ';') {
+			sqlT = sqlT + ';';
+		}
+		let list = sqlT.split(';');
+		console.log(list);
+		// TODO 多条sql语句循环执行，筛选无效语句
+		list = list
+			.filter((item: string) => item !== '')
+			.map((item) => item + ';');
+		console.log(list);
+		// executeMysqlSql({
+		// 	database: dbName,
+		// 	sql: sqlT,
+		// 	clusterId: params.clusterId,
+		// 	namespace: params.namespace,
+		// 	middlewareName: params.name
+		// }).then((res) => {
+		// 	console.log(res);
+		// 	if (res.success) {
+		// 		if (sqlT.includes('SELECT')) {
+		// 			add(
+		// 				'执行结果',
+		// 				<ExecuteResultTypeOne resData={res.data} />
+		// 			);
+		// 		}
+		// 	}
+		// });
 	};
 	return (
 		<SplitPane {...paneProps}>
