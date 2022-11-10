@@ -26,7 +26,6 @@ const options = [
 	{ label: 'set', value: 'set' },
 	{ label: 'string', value: 'string' }
 ];
-// TODO 编辑 value单独弹窗编辑
 export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();

@@ -19,7 +19,7 @@ export default function ExecuteResultTypeOne(
 				fixed: 'left'
 			}
 		];
-		resData.columns.map((item: any, index: number) => {
+		resData.columns?.map((item: any, index: number) => {
 			list.push({
 				indexInTable: index + 1,
 				title: item,

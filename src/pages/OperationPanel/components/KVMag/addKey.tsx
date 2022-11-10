@@ -23,7 +23,6 @@ const options = [
 	{ label: 'set', value: 'set' },
 	{ label: 'string', value: 'string' }
 ];
-// TODO 编辑 value单独弹窗编辑
 export default function AddKV(props: any): JSX.Element {
 	const { onCancel, onRefresh, database } = props;
 	const params: ParamsProps = useParams();

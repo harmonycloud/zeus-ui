@@ -938,6 +938,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const redisDbClick = (dbName: string) => {
+		if (selectDatabase === dbName) return;
 		setSelectDatabase(dbName);
 		add('DB-' + dbName, <RedisDBMag dbName={dbName} />);
 	};
