@@ -473,7 +473,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					</>
 				}
 			></ProHeader>
-			{reason && status !== 'Running' && (
+			{reason && status !== 'Running' && status !== 'Creating' && (
 				<Alert
 					message={reason}
 					type="warning"
