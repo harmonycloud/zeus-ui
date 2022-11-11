@@ -198,7 +198,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				middlewareName: params.name
 			});
-			window.open(_url);
+			exportFile(_url, {}, i, '.txt');
+			// window.open(_url);
 		} else {
 			_url = getPgsqlSQL({
 				databaseName: selectDatabase,
@@ -222,7 +223,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				middlewareName: params.name
 			});
-			window.open(_url);
+			exportFile(_url, {}, i, '.xlsx');
+			// window.open(_url);
 		} else {
 			_url = getPgsqlExcel({
 				databaseName: selectDatabase,
