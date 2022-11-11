@@ -154,6 +154,13 @@ export default function InstallTraefik(
 				skipPortConflict: skipPortConflict,
 				traefikPortList: traefikPortList
 			};
+			if (traefikPortList.length === 0) {
+				notification.error({
+					message: '错误',
+					description: '服务端口范围不能为空'
+				});
+				return;
+			}
 			if (!skipPortConflict) {
 				if (ports && ports !== '[]') {
 					notification.error({

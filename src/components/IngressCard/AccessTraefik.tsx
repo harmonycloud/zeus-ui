@@ -90,6 +90,13 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				...values,
 				traefikPortList: traefikPortList
 			};
+			if (traefikPortList.length === 0) {
+				notification.error({
+					message: '错误',
+					description: '服务端口范围不能为空'
+				});
+				return;
+			}
 			if (vipChecked && address === '') {
 				setVIPNoAlive(true);
 				return;
