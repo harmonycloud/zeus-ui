@@ -144,7 +144,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				endPort: value[1],
 				startPort: value[0]
 			};
-			if (traefikPortList.length === 0) {
+			if (traefikPortList?.length === 0) {
 				setPortRange(result);
 				return;
 			}
@@ -275,7 +275,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 											});
 											return;
 										}
-										if (traefikPortList.length === 0) {
+										if (traefikPortList?.length === 0) {
 											checkTraefikPort({
 												clusterId,
 												startPort: portRange.startPort,
@@ -346,7 +346,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 						</Checkbox>
 					</FormItem>
 				</FormItem>
-				{traefikPortList.length > 0 && (
+				{traefikPortList?.length > 0 && (
 					<Row>
 						<Col span={3}></Col>
 						<Col span={21}>
@@ -377,7 +377,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 						</Col>
 					</Row>
 				)}
-				{traefikPortList.length > 0 &&
+				{traefikPortList?.length > 0 &&
 					traefikPortList.map((item, index) => {
 						return (
 							<Row key={index}>

@@ -27,7 +27,9 @@ import {
 	getNodeTaint,
 	postMiddleware,
 	getMiddlewareDetail,
-	addDisasterIns
+	addDisasterIns,
+	getKey,
+	getTolerations
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
@@ -101,17 +103,20 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	});
 	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [mirrorList, setMirrorList] = useState<MirrorItem[]>([]);
-	const changeAffinity = (value: any, key: string) => {
-		setAffinity({
-			...affinity,
-			[key]: value
-		});
-	};
+	// const changeAffinity = (value: any, key: string) => {
+	// 	setAffinity({
+	// 		...affinity,
+	// 		[key]: value
+	// 	});
+	// };
 	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
 
 	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
 		[]
 	);
+	// 主机反亲和
+	const [antiFlag, setAntiFlag] = useState<boolean>(false);
+	const [antiLabels, setAntiLabels] = useState<AffinityLabelsItem[]>([]);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -342,6 +347,37 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}
 			});
 		}
+		getKey().then((res) => {
+			if (res.success) {
+				if (res.data?.anti) {
+					setAntiFlag(true);
+					setAntiLabels([
+						{
+							label: res.data.label,
+							checked: true,
+							anti: true,
+							id: Math.random()
+						}
+					]);
+				} else {
+					setAffinityFlag(true);
+					setAffinityLabels([
+						{
+							label: res.data.label,
+							checked: true,
+							anti: false,
+							id: Math.random()
+						}
+					]);
+				}
+			}
+		});
+		getTolerations().then((res) => {
+			if (res.success) {
+				setTolerations({ flag: true, label: '' });
+				setTolerationsLabels([{ label: res.data, id: Math.random() }]);
+			}
+		});
 	}, [project, globalNamespace]);
 
 	useEffect(() => {
@@ -441,13 +477,50 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					});
 					return;
 				} else {
-					sendData.nodeAffinity = affinityLabels.map((item) => {
+					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
 							required: item.checked,
+							anti: item.anti,
 							namespace: globalNamespace.name
 						};
 					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+				}
+			}
+			if (antiFlag) {
+				if (!antiLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机反亲和。'
+					});
+					return;
+				} else {
+					const nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
 				}
 			}
 			// 主机容忍
@@ -663,7 +736,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					}
 				};
 				// 主机亲和
-				if (affinity.flag) {
+				if (affinityFlag) {
 					if (!affinityLabels.length) {
 						notification.error({
 							message: '错误',
@@ -671,17 +744,50 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						});
 						return;
 					} else {
-						sendDataTemp.nodeAffinity = affinityLabels.map(
-							(item) => {
-								return {
-									label: item.label,
-									required: item.checked,
-									namespace: globalNamespace.name
-								};
-							}
-						);
-						sendDataTemp.relationMiddleware.nodeAffinity =
-							sendDataTemp.nodeAffinity;
+						const nodeAffinity = affinityLabels.map((item) => {
+							return {
+								label: item.label,
+								required: item.checked,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						const nodeAnti = antiLabels.map((item) => {
+							return {
+								label: item.label,
+								required: item.checked,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					}
+				}
+				if (antiFlag) {
+					if (!antiLabels.length) {
+						notification.error({
+							message: '错误',
+							description: '请选择主机反亲和。'
+						});
+						return;
+					} else {
+						const nodeAffinity = affinityLabels.map((item) => {
+							return {
+								label: item.label,
+								required: item.checked,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						const nodeAnti = antiLabels.map((item) => {
+							return {
+								label: item.label,
+								required: item.checked,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
 					}
 				}
 				// 主机容忍
@@ -1494,6 +1600,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
 									disabled={!!backupFileName}
+								/>
+								<Affinity
+									flag={antiFlag}
+									flagChange={setAntiFlag}
+									values={antiLabels}
+									onChange={setAntiLabels}
+									cluster={globalCluster}
+									disabled={!!backupFileName}
+									isAnti
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">

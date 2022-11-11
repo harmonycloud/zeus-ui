@@ -28,6 +28,7 @@ export interface AffinityLabelsItem {
 	label: string;
 	id: number;
 	checked: boolean;
+	anti?: boolean;
 }
 export interface TolerationsProps {
 	flag: boolean;

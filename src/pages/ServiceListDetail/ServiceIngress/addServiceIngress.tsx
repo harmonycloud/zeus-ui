@@ -230,6 +230,8 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
+			console.log(judgePortInTraefikPorts(values.exposePort));
+
 			if (
 				exposeType === 'TCP' &&
 				!judgePortInTraefikPorts(values.exposePort)
@@ -414,34 +416,36 @@ export default function AddIngress(): JSX.Element {
 						/>
 					</Form.Item>
 					{exposeType === 'TCP' &&
-					ingressClassName?.type === 'traefik' ? (
-						<Row>
-							<Col span={3}></Col>
-							<Col span={10}>
-								<div>
-									当前负载均衡相关端口组为
-									{ingressClassName.traefikPortList
-										.map(
-											(item) =>
-												`${item.startPort}-${item.endPort}`
-										)
-										.join(',')}
-									请在端口组范围内选择端口
-								</div>
-							</Col>
-						</Row>
-					) : (
-						<Row>
-							<Col span={3}></Col>
-							<Col span={10}>
-								<div>
-									当前负载均衡相关端口组为
-									{ingressPortArray.join('-')}
-									请在端口组范围内选择端口
-								</div>
-							</Col>
-						</Row>
-					)}
+						ingressClassName?.type === 'traefik' && (
+							<Row>
+								<Col span={3}></Col>
+								<Col span={10}>
+									<div>
+										当前负载均衡相关端口组为
+										{ingressClassName.traefikPortList
+											.map(
+												(item) =>
+													`${item.startPort}-${item.endPort}`
+											)
+											.join(',')}
+										请在端口组范围内选择端口
+									</div>
+								</Col>
+							</Row>
+						)}
+					{exposeType === 'TCP' &&
+						ingressClassName?.type !== 'traefik' && (
+							<Row>
+								<Col span={3}></Col>
+								<Col span={10}>
+									<div>
+										当前负载均衡相关端口组为
+										{ingressPortArray.join('-')}
+										请在端口组范围内选择端口
+									</div>
+								</Col>
+							</Row>
+						)}
 					{exposeType === 'NodePort' && (
 						<Row>
 							<Col span={3}></Col>

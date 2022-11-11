@@ -28,7 +28,9 @@ import {
 	getNodeTaint,
 	getStorageClass,
 	getMiddlewareDetail,
-	postMiddleware
+	postMiddleware,
+	getKey,
+	getTolerations
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
@@ -96,6 +98,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		[]
 	);
 	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
+	// 主机反亲和
+	const [antiFlag, setAntiFlag] = useState<boolean>(false);
+	const [antiLabels, setAntiLabels] = useState<AffinityLabelsItem[]>([]);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -378,6 +383,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				});
 				sendData.dynamicValues = dynamicValues;
 			}
+			// 主机亲和
 			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
@@ -386,13 +392,50 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					});
 					return;
 				} else {
-					sendData.nodeAffinity = affinityLabels.map((item) => {
+					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
 							required: item.checked,
+							anti: item.anti,
 							namespace: globalNamespace.name
 						};
 					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+				}
+			}
+			if (antiFlag) {
+				if (!antiLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机反亲和。'
+					});
+					return;
+				} else {
+					const nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
 				}
 			}
 			if (tolerations.flag) {
@@ -600,6 +643,37 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			});
 		}
+		getKey().then((res) => {
+			if (res.success) {
+				if (res.data?.anti) {
+					setAntiFlag(true);
+					setAntiLabels([
+						{
+							label: res.data.label,
+							checked: true,
+							anti: true,
+							id: Math.random()
+						}
+					]);
+				} else {
+					setAffinityFlag(true);
+					setAffinityLabels([
+						{
+							label: res.data.label,
+							checked: true,
+							anti: false,
+							id: Math.random()
+						}
+					]);
+				}
+			}
+		});
+		getTolerations().then((res) => {
+			if (res.success) {
+				setTolerations({ flag: true, label: '' });
+				setTolerationsLabels([{ label: res.data, id: Math.random() }]);
+			}
+		});
 	}, [globalCluster, globalNamespace]);
 
 	// 全局分区更新
@@ -1071,6 +1145,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
 									disabled={!!middlewareName}
+								/>
+								<Affinity
+									flag={antiFlag}
+									flagChange={setAntiFlag}
+									values={antiLabels}
+									onChange={setAntiLabels}
+									cluster={globalCluster}
+									disabled={!!middlewareName}
+									isAnti
 								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
