@@ -109,6 +109,7 @@ export default function MysqlTableInfo(
 				namespace,
 				middlewareName,
 				tableName: originData.tableName,
+				newTableName: originData.tableName,
 				comment: originData.comment,
 				engine: originData.engine,
 				charset: originData.charset,

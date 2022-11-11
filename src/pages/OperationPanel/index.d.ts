@@ -595,6 +595,7 @@ export interface MysqlTableDetail {
 	rowFormat?: null;
 	rows?: number;
 	tableName?: string;
+	newTableName?: string;
 }
 export interface MysqlForeignItemDetailItem {
 	column: string;
