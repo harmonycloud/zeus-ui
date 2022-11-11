@@ -644,7 +644,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 		getKey().then((res) => {
-			if (res.success) {
+			if (res.success && globalNamespace.availableDomain) {
 				if (res.data?.anti) {
 					setAntiFlag(true);
 					setAntiLabels([
@@ -669,12 +669,50 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			}
 		});
 		getTolerations().then((res) => {
-			if (res.success) {
+			if (res.success && globalNamespace.availableDomain) {
 				setTolerations({ flag: true, label: '' });
 				setTolerationsLabels([{ label: res.data, id: Math.random() }]);
 			}
 		});
 	}, [globalCluster, globalNamespace]);
+
+	useEffect(() => {
+		if (judgeActiveActive(form.getFieldValue('namespace'))) {
+			getKey().then((res) => {
+				if (res.success) {
+					if (res.data?.anti) {
+						setAntiFlag(true);
+						setAntiLabels([
+							{
+								label: res.data.label,
+								checked: true,
+								anti: true,
+								id: Math.random()
+							}
+						]);
+					} else {
+						setAffinityFlag(true);
+						setAffinityLabels([
+							{
+								label: res.data.label,
+								checked: true,
+								anti: false,
+								id: Math.random()
+							}
+						]);
+					}
+				}
+			});
+			getTolerations().then((res) => {
+				if (res.success) {
+					setTolerations({ flag: true, label: '' });
+					setTolerationsLabels([
+						{ label: res.data, id: Math.random() }
+					]);
+				}
+			});
+		}
+	}, [form.getFieldValue('namespace')]);
 
 	// 全局分区更新
 	useEffect(() => {
