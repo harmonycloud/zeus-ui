@@ -240,7 +240,8 @@ export interface getPgsqlTableRes extends resProps {
 export interface SendDataParamsProps {
 	clusterId: string;
 	namespace: string;
-	middlewareName: string;
+	middlewareName?: string;
+	name?: string;
 }
 export interface AllSendDataParamsProps {
 	clusterId: string;

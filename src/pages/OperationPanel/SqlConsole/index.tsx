@@ -58,6 +58,7 @@ import { Key } from 'rc-table/lib/interface';
 import OpenTable from '../components/OpenTable';
 import { formItemLayout618 } from '@/utils/const';
 import RedisDBMag from '../components/RedisDBMag';
+import { exportFile } from '@/utils/export';
 
 const { confirm } = Modal;
 const { Content, Sider } = Layout;
@@ -197,6 +198,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				middlewareName: params.name
 			});
+			window.open(_url);
 		} else {
 			_url = getPgsqlSQL({
 				databaseName: selectDatabase,
@@ -204,10 +206,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				tableName: i,
 				clusterId: params.clusterId,
 				namespace: params.namespace,
-				middlewareName: params.name
+				name: params.name
 			});
+			exportFile(_url, {}, i, '.txt');
 		}
-		window.open(_url);
 	};
 	// * 导出数据表结构
 	const exportTable = (i: string, fatherNode: string) => {
@@ -220,6 +222,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				middlewareName: params.name
 			});
+			window.open(_url);
 		} else {
 			_url = getPgsqlExcel({
 				databaseName: selectDatabase,
@@ -227,10 +230,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				tableName: i,
 				clusterId: params.clusterId,
 				namespace: params.namespace,
-				middlewareName: params.name
+				name: params.name
 			});
+			exportFile(_url, {}, i, '.xlsx');
 		}
-		window.open(_url);
 	};
 	const handleMenuClick = (e: MenuInfo, i: string, fatherNode?: string) => {
 		console.log(i, fatherNode);
