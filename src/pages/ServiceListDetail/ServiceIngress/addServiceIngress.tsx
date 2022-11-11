@@ -24,6 +24,7 @@ import { getMiddlewareDetail } from '@/services/middleware';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
 import storage from '@/utils/storage';
+import { log } from 'console';
 
 const formItemLayout = {
 	labelCol: {
@@ -135,6 +136,7 @@ export default function AddIngress(): JSX.Element {
 				exposePort: +serviceIngress.serviceList[0].exposePort,
 				ingressClassName: serviceIngress.ingressClassName
 			});
+			handleIngressChange(serviceIngress.ingressClassName || '');
 			setExposeType(
 				serviceIngress.exposeType === 'Ingress'
 					? 'TCP'
@@ -144,7 +146,7 @@ export default function AddIngress(): JSX.Element {
 		return () =>
 			storage.getSession('serviceIngress') &&
 			storage.removeSession('serviceIngress');
-	}, []);
+	}, [ingresses]);
 
 	const getData = (clusterId: string, namespace: string) => {
 		const sendData = {
@@ -230,8 +232,6 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
-			console.log(judgePortInTraefikPorts(values.exposePort));
-
 			if (
 				exposeType === 'TCP' &&
 				!judgePortInTraefikPorts(values.exposePort)
