@@ -119,6 +119,7 @@ const config: configParams = {
 	version: '',
 	characterSet: '',
 	port: 0,
+	autoCreateTopicEnable: false,
 	password: ''
 };
 
@@ -550,7 +551,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				characterSet: data.charSet || '',
 				port: data.port || '',
 				password: data.password || '',
-				kafkaDTO: data.kafkaDTO
+				kafkaDTO: data.kafkaDTO,
+				autoCreateTopicEnable: data.autoCreateTopicEnable
 			});
 			const storageClassName =
 				data.type === 'elasticsearch'
@@ -626,6 +628,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				listConfigTemp = listConfigTemp.filter(
 					(item) => item.dataIndex !== 'password'
 				);
+			}
+		}
+		if (type === 'rocketmq') {
+			if (!dataIndexList.includes('autoCreateTopicEnable')) {
+				listConfigTemp.push({
+					dataIndex: 'autoCreateTopicEnable',
+					label: '自动创建Topic',
+					render: (value) => <span>{value ? '是' : '否'}</span>
+				});
 			}
 		}
 		setConfigConfig(listConfigTemp);

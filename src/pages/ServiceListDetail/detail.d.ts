@@ -198,6 +198,7 @@ export interface configParams {
 	characterSet: string;
 	port: string | number;
 	password: string;
+	autoCreateTopicEnable: boolean;
 	kafkaDTO?: any;
 }
 export interface runParams {

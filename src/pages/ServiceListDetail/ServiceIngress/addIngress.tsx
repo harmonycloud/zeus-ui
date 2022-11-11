@@ -454,7 +454,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 					enableExternal === 'false' &&
 					mode !== 'dledger' && (
 						<Alert
-							message="您好！选择集群外访问服务暴露后需要重启服务！"
+							message="您好！选择集群外访问服务暴露后需要重启服务！创建完成后将无法删除服务暴露，请谨慎操作！"
 							type="info"
 							showIcon
 							style={{ marginBottom: 8 }}
@@ -576,7 +576,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 							{name === 'rocketmq' && (
 								<>
 									<FormItem
-										label="proxy-0端口配置"
+										label="服务代理proxy-0端口配置"
 										required
 										name="exposePort0"
 										rules={[
@@ -659,7 +659,7 @@ export default function ServiceDetailAddIngress(): JSX.Element {
 										/>
 									</FormItem>
 									<FormItem
-										label="proxy-1端口配置"
+										label="服务代理proxy-1端口配置"
 										required
 										name="exposePort1"
 										rules={[
