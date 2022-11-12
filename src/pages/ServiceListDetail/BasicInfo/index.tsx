@@ -45,6 +45,7 @@ const info: InfoParams = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
+	hostAnti: '',
 	chartVersion: '',
 	description: '',
 	annotations: '',
@@ -97,6 +98,15 @@ const InfoConfig = [
 	{
 		dataIndex: 'hostAffinity',
 		label: '主机亲和',
+		render: (val: string) => (
+			<div className="text-overflow-one" title={val}>
+				{val}
+			</div>
+		)
+	},
+	{
+		dataIndex: 'hostAnti',
+		label: '主机反亲和',
 		render: (val: string) => (
 			<div className="text-overflow-one" title={val}>
 				{val}
@@ -500,6 +510,22 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						(data.nodeAffinity &&
 							data.nodeAffinity.length > 0 &&
 							data.nodeAffinity
+								.filter((item) => !item.anti)
+								.map((item: any) => item.label)
+								.join(';')) ||
+						'无'
+					}(${
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity[0].required
+							? '强制'
+							: '非强制'
+					})`,
+					hostAnti: `${
+						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
+							data.nodeAffinity
+								.filter((item) => item.anti)
 								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
@@ -527,12 +553,31 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					label: data.labels || '',
 					hostAffinity: `${
 						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
 							data.nodeAffinity
-								.map((item) => item.label)
+								.filter((item) => !item.anti)
+								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
 					}(${
-						data.nodeAffinity && data.nodeAffinity[0].required
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity[0].required
+							? '强制'
+							: '非强制'
+					})`,
+					hostAnti: `${
+						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
+							data.nodeAffinity
+								.filter((item) => item.anti)
+								.map((item: any) => item.label)
+								.join(';')) ||
+						'无'
+					}(${
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity[0].required
 							? '强制'
 							: '非强制'
 					})`,

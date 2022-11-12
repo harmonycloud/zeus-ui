@@ -66,6 +66,7 @@ function ServiceAvailable(props: serviceAvailableProps) {
 				getIngresses({
 					clusterId: cluster.id,
 					namespace: namespace.name,
+					projectId: project.projectId,
 					keyword: searchText
 				}).then((res) => {
 					if (res.success) {

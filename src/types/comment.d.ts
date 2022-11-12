@@ -31,6 +31,7 @@ export interface NodeAffinityItem {
 	label: string;
 	namespace: null | number;
 	required: boolean;
+	anti?: string;
 }
 export interface middlewareDetailProps {
 	kafkaDTO: any;
