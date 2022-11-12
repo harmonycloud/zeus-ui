@@ -518,7 +518,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -526,7 +526,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAnti = antiLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -545,7 +545,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -553,7 +553,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAnti = antiLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -785,7 +785,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						const nodeAffinity = affinityLabels.map((item) => {
 							return {
 								label: item.label,
-								required: item.checked,
+								required: item.checked || item.required,
 								anti: item.anti,
 								namespace: globalNamespace.name
 							};
@@ -793,7 +793,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						const nodeAnti = antiLabels.map((item) => {
 							return {
 								label: item.label,
-								required: item.checked,
+								required: item.checked || item.required,
 								anti: item.anti,
 								namespace: globalNamespace.name
 							};
@@ -817,7 +817,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						const nodeAffinity = affinityLabels.map((item) => {
 							return {
 								label: item.label,
-								required: item.checked,
+								required: item.checked || item.required,
 								anti: item.anti,
 								namespace: globalNamespace.name
 							};
@@ -825,7 +825,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						const nodeAnti = antiLabels.map((item) => {
 							return {
 								label: item.label,
-								required: item.checked,
+								required: item.checked || item.required,
 								anti: item.anti,
 								namespace: globalNamespace.name
 							};
@@ -899,7 +899,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
-			// console.log(sendData);
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);
 				addDisasterIns(sendData).then((res) => {

@@ -17,7 +17,7 @@ export interface CreateParams {
 export interface AffinityItem {
 	label: string;
 	namespace?: string;
-	required: boolean;
+	required?: boolean;
 }
 export interface AffinityProps {
 	flag: boolean;
@@ -29,6 +29,7 @@ export interface AffinityLabelsItem {
 	id: number;
 	checked: boolean;
 	anti?: boolean;
+	required?: boolean;
 }
 export interface TolerationsProps {
 	flag: boolean;
