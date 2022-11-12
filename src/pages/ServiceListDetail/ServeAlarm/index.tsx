@@ -198,6 +198,12 @@ function Rules(props: RuleProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
+					title={
+						record.silence === null
+							? '原生告警规则暂不支持编辑'
+							: ''
+					}
+					disabled={record.silence === null}
 					onClick={() => {
 						alarmType === 'system'
 							? history.push(
