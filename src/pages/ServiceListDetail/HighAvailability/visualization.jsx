@@ -461,27 +461,27 @@ function Visualization(props) {
 								name: 'text-shape2'
 							});
 						}
-						group.addShape('text', {
-							attrs: {
-								text: `存储类型：${
-									cfg.depth
-										? cfg.resources.isLvmStorage
-											? 'LVM'
-											: '其他'
-										: cfg.storageClassName.length >= 20
-										? cfg.storageClassName.substring(
-												0,
-												20
-										  ) + '...'
-										: cfg.storageClassName
-								}`,
-								x: 16,
-								y: 57,
-								fill: '#999',
-								cursor: 'pointer'
-							},
-							name: 'text-shape3'
-						});
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: `存储类型：${
+						// 			cfg.depth
+						// 				? cfg.resources.isLvmStorage
+						// 					? 'LVM'
+						// 					: '其他'
+						// 				: cfg.storageClassName.length >= 20
+						// 				? cfg.storageClassName.substring(
+						// 						0,
+						// 						20
+						// 				  ) + '...'
+						// 				: cfg.storageClassName
+						// 		}`,
+						// 		x: 16,
+						// 		y: 57,
+						// 		fill: '#999',
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'text-shape3'
+						// });
 						group.addShape('text', {
 							attrs: {
 								text: '...',
@@ -865,24 +865,24 @@ function Visualization(props) {
 							name: 'breath-box',
 							visible: false
 						});
-						group.addShape('text', {
-							attrs: {
-								text: `存储类型：${
-									cfg.depth
-										? cfg.resources.isLvmStorage
-											? 'LVM'
-											: '其他'
-										: cfg.storageClassName
-								}`,
-								x: 24,
-								y: 32,
-								textBaseline: 'middle',
-								fill: '#999',
-								cursor: 'pointer'
-							},
-							name: 'breath-text',
-							visible: false
-						});
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: `存储类型：${
+						// 			cfg.depth
+						// 				? cfg.resources.isLvmStorage
+						// 					? 'LVM'
+						// 					: '其他'
+						// 				: cfg.storageClassName
+						// 		}`,
+						// 		x: 24,
+						// 		y: 32,
+						// 		textBaseline: 'middle',
+						// 		fill: '#999',
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'breath-text',
+						// 	visible: false
+						// });
 						return box;
 					}
 				}
