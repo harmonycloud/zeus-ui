@@ -295,7 +295,7 @@ export default function ServiceDetailIngress(
 	const ipValue = (record: serviceAvailableItemProps) => {
 		if (record.protocol === 'HTTP') return record?.rules[0].domain;
 		if (record.exposeType === 'NodePort')
-			return `${record.exposeIP}:${record?.serviceList[0]?.exposePort}`;
+			return `${record?.serviceList[0]?.exposePort}`;
 		if (record.address)
 			return `${record.address}:${record?.serviceList[0]?.exposePort}`;
 		return record.serviceList[0]?.exposePort;
@@ -717,7 +717,7 @@ export default function ServiceDetailIngress(
 										value={
 											<span>
 												{ipValue(item)}
-												<Popover
+												{/* <Popover
 													content={
 														<div>
 															<CheckCircleFilled
@@ -744,7 +744,7 @@ export default function ServiceDetailIngress(
 															)
 														}
 													/>
-												</Popover>
+												</Popover> */}
 											</span>
 										}
 										icon={

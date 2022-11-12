@@ -1341,7 +1341,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{state && state.disasterOriginName ? (
+					{/* {state && state.disasterOriginName ? (
 						<>
 							<FormBlock title="源服务信息">
 								<div className={styles['origin-info']}>
@@ -1442,7 +1442,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								</div>
 							</FormBlock>
 						</>
-					) : null}
+					) : null} */}
 					{globalNamespace.name === '*' && !state && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
@@ -2269,7 +2269,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					{(!state || !state.disasterOriginName) &&
+					{/* {(!state || !state.disasterOriginName) &&
 					!globalNamespace.availableDomain ? (
 						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
@@ -2475,7 +2475,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								</ul>
 							</div>
 						</FormBlock>
-					) : null}
+					) : null} */}
 					{history.location.pathname.includes('backup') &&
 					backupDetail.recoveryType === 'time' ? (
 						<FormBlock title="恢复配置">

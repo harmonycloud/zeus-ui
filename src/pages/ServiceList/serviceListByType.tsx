@@ -434,15 +434,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								发布服务
 							</Button>
 						</Tooltip>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
 					)
+					// secondary: (
+					// 	<Checkbox
+					// 		checked={backupCheck}
+					// 		onChange={handleFilterBackup}
+					// 	>
+					// 		灾备服务
+					// 	</Checkbox>
+					// )
 				};
 			} else {
 				return {
@@ -522,15 +522,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
 					)
+					// secondary: (
+					// 	<Checkbox
+					// 		checked={backupCheck}
+					// 		onChange={handleFilterBackup}
+					// 	>
+					// 		灾备服务
+					// 	</Checkbox>
+					// )
 				};
 			}
 		} else {
@@ -544,15 +544,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
 					)
+					// secondary: (
+					// 	<Checkbox
+					// 		checked={backupCheck}
+					// 		onChange={handleFilterBackup}
+					// 	>
+					// 		灾备服务
+					// 	</Checkbox>
+					// )
 				};
 			} else {
 				return {
@@ -1017,12 +1017,12 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="description"
 						render={nullRender}
 					/>
-					<ProTable.Column
+					{/* <ProTable.Column
 						title="关联服务名称/中文别名"
 						dataIndex="associated"
 						width={180}
 						render={associatedRender}
-					/>
+					/> */}
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"

@@ -531,11 +531,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('alarm')}
 						</TabPane>
 					)}
-					{operateFlag && type === 'mysql' ? (
+					{/* {operateFlag && type === 'mysql' ? (
 						<TabPane tab="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</TabPane>
-					) : null}
+					) : null} */}
 					{/* {operateFlag &&
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&
