@@ -378,7 +378,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					return value
 						? value.substring(0, 1).toUpperCase() +
 								value.substring(1)
-						: '未知';
+						: '/';
 				}
 			} else {
 				switch (value) {
@@ -402,7 +402,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						return value
 							? value.substring(0, 1).toUpperCase() +
 									value.substring(1)
-							: '未知';
+							: '/';
 				}
 			}
 		}
