@@ -186,6 +186,7 @@ export interface InfoParams {
 	label: string;
 	chartVersion?: string;
 	hostAffinity: string;
+	hostAnti?: string;
 	description: string;
 	annotations: string;
 	tolerations: string;
