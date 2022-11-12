@@ -7,6 +7,12 @@ import ExecutionTable from '../ExectionTable';
 import { MysqlSqlConsoleProps, ParamsProps } from '../../index.d';
 import { executeMysqlSql } from '@/services/operatorPanel';
 import ExecuteResultTypeOne from './ExecuteResultTypeOne';
+import {
+	CheckCircleFilled,
+	CloseCircleFilled,
+	ClockCircleFilled
+} from '@ant-design/icons';
+import ExecuteResultTypeTwo from './ExecuteResultTypeTwo';
 
 export default function MysqlSqlConsole(
 	props: MysqlSqlConsoleProps
@@ -23,10 +29,32 @@ export default function MysqlSqlConsole(
 	const [activeKey, setActiveKey] = useState('1');
 	const newTabIndex = useRef(0);
 	const [sql, setSql] = useState<string>('SELECT * from');
+	const [isCopy, setIsCopy] = useState<boolean>(false);
+	const changeSql = (values: string) => {
+		setIsCopy(true);
+		setSql(values);
+	};
+	const handleChangeSql = (values: string) => {
+		setIsCopy(false);
+		setSql(values);
+	};
 	const [items, setItems] = useState<any[]>([
 		{
-			label: '执行记录',
-			children: <ExecutionTable />,
+			label: (
+				<span>
+					<ClockCircleFilled style={{ color: '#226ee7' }} />
+					执行记录
+				</span>
+			),
+			children: (
+				<ExecutionTable
+					clusterId={params.clusterId}
+					namespace={params.namespace}
+					middlewareName={params.name}
+					database={dbName}
+					changeSql={changeSql}
+				/>
+			),
 			key: '1',
 			closable: false
 		}
@@ -34,7 +62,7 @@ export default function MysqlSqlConsole(
 	const onChange = (key: string) => {
 		setActiveKey(key);
 	};
-	const add = (label: string, children: any) => {
+	const add = (label: any, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
 		setItems([
 			...items,
@@ -67,40 +95,51 @@ export default function MysqlSqlConsole(
 	// * 执行sql语句方法
 	const handleExecute = () => {
 		let sqlT = sql;
-		if (sqlT.substring(-1) !== ';') {
+		if (sqlT.charAt(sqlT.length - 1) !== ';') {
 			sqlT = sqlT + ';';
 		}
-		let list = sqlT.split(';');
-		console.log(list);
+		// let list = sqlT.split(';');
+		// console.log(list);
 		// TODO 多条sql语句循环执行，筛选无效语句
-		list = list
-			.filter((item: string) => item !== '')
-			.map((item) => item + ';');
-		console.log(list);
-		// executeMysqlSql({
-		// 	database: dbName,
-		// 	sql: sqlT,
-		// 	clusterId: params.clusterId,
-		// 	namespace: params.namespace,
-		// 	middlewareName: params.name
-		// }).then((res) => {
-		// 	console.log(res);
-		// 	if (res.success) {
-		// 		if (sqlT.includes('SELECT')) {
-		// 			add(
-		// 				'执行结果',
-		// 				<ExecuteResultTypeOne resData={res.data} />
-		// 			);
-		// 		}
-		// 	}
-		// });
+		// list = list
+		// 	.filter((item: string) => item !== '')
+		// 	.map((item) => item + ';');
+		// console.log(list);
+		executeMysqlSql({
+			database: dbName,
+			sql: sqlT,
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name
+		}).then((res) => {
+			if (res.success) {
+				if (sqlT.includes('SELECT')) {
+					add(
+						<span>
+							<CheckCircleFilled style={{ color: '#52c41a' }} />
+							执行成功
+						</span>,
+						<ExecuteResultTypeOne resData={res.data} />
+					);
+				}
+			} else {
+				add(
+					<span>
+						<CloseCircleFilled style={{ color: '#ff4d4f' }} />
+						执行失败
+					</span>,
+					<ExecuteResultTypeTwo res={res} />
+				);
+			}
+		});
 	};
 	return (
 		<SplitPane {...paneProps}>
 			<div style={{ width: '100%' }}>
 				<MysqlCodeConsole
 					sql={sql}
-					setSql={setSql}
+					isCopy={isCopy}
+					setSql={handleChangeSql}
 					dbName={dbName}
 					handleExecute={handleExecute}
 				/>
@@ -113,6 +152,7 @@ export default function MysqlSqlConsole(
 					type="editable-card"
 					onEdit={onEdit}
 					items={items}
+					size="small"
 				/>
 			</div>
 		</SplitPane>

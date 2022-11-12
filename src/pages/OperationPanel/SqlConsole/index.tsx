@@ -155,7 +155,6 @@ const paneProps: SplitPaneProps = {
 // TODO sql窗口 执行列表tab
 // TODO 树图 所有高亮
 // TODO 右侧tab添加、保存（sessionStorage）
-// TODO 执行表格中的sql语句赋值到codemirror中
 // TODO mysql table-index 树状图索引头部数量刷新
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;

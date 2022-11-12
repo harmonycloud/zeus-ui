@@ -18,7 +18,7 @@ export const getCols = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql
 // * 查看表所有索引
 export const getIndexs = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/indices`;
 // * mysql 删除数据表
-export const deleteMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
+export const deleteMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
 // * 查询用户列表
 export const getMysqlUsers = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/users`;
 // * pgsql 获取模式列表 / 创建模式
@@ -68,7 +68,7 @@ export const getPgsqlData = `${api}/clusters/{clusterId}/namespaces/{namespace}/
 // * pgsql 修改表接口
 export const updatePgTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{table}`;
 // * mysql 修改表接口
-export const updateMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
+export const updateMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
 // * pgsql 获取数据类型
 export const getPgsqlDataType = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/dataType`;
 // * pgsql 获取校验规则
@@ -96,7 +96,7 @@ export const createMysqlTable = `${api}/clusters/{clusterId}/namespaces/{namespa
 // * mysql 查询数据引擎
 export const getMysqlEngine = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/engines`;
 // * mysql 修改表信息
-export const updateMysqlTableInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tabes/{table}`;
+export const updateMysqlTableInfo = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}`;
 // * mysql 修改列信息
 export const updateMysqlCol = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/columns`;
 // * mysql 修改索引信息
@@ -138,3 +138,5 @@ export const createUser = `${api}/clusters/{clusterId}/namespaces/{namespace}/{t
 export const getUserAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users/{username}/authority`;
 // * 合并 取消授权
 export const cancelAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users/{username}/authority`;
+// * 获取执行记录
+export const getExecuteHistory = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/sql/databases/{database}/history`;

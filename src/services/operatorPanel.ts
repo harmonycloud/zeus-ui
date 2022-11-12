@@ -24,6 +24,8 @@ import {
 	GetDatabasesRes,
 	GetEncodingRes,
 	getExecuteHisParamsProps,
+	getExecuteHistoryParamsProps,
+	getExecuteHistoryRes,
 	getIndexRes,
 	getMysqlDataTypeRes,
 	getMysqlEnginesRes,
@@ -446,4 +448,9 @@ export const cancelAuth: (
 	params: cancelAuthParamsProps
 ) => Promise<resProps> = (params: cancelAuthParamsProps) => {
 	return Axios.json(URL.cancelAuth, params, {}, 'DELETE');
+};
+export const getExecuteHistory: (
+	params: getExecuteHistoryParamsProps
+) => Promise<getExecuteHistoryRes> = (params: getExecuteHistoryParamsProps) => {
+	return Axios.get(URL.getExecuteHistory, params);
 };

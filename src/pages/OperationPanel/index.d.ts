@@ -414,7 +414,7 @@ export interface PgsqlColItem {
 	columnName: string;
 	comment: string;
 	databaseName: string;
-	dateType: string;
+	dataType: string;
 	defaultValue: string;
 	encoding: string;
 	inc: boolean;
@@ -723,8 +723,48 @@ export interface MysqlCodeConsoleProps {
 	sql: string;
 	setSql: (values: string) => void;
 	handleExecute: () => void;
+	isCopy: boolean;
 }
 
 export interface ExecuteResultTypeOneProps {
 	resData: any;
+}
+export interface ExecuteResultTypeTwoProps {
+	res: any;
+}
+export interface getExecuteHistoryParamsProps extends SendDataParamsProps {
+	database: string;
+	end: string | null;
+	keyword: string;
+	start: string | null;
+	size: number;
+	pageNum: number;
+}
+
+export interface ExecuteItem {
+	clusterId: string;
+	execDate: string;
+	execTime: string;
+	id: number;
+	line: number;
+	message: string;
+	middlewareName: string;
+	namespace: string;
+	sqlStr: string;
+	status: string;
+	targetDatabase: string;
+}
+export interface getExecuteHistoryRes extends resProps {
+	data: {
+		list: ExecuteItem[];
+		total: number;
+		[propsName: string]: any;
+	};
+}
+export interface ExecutionTableProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	database: string;
+	changeSql: (values: string) => void;
 }

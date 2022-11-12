@@ -15,7 +15,7 @@ import { MysqlCodeConsoleProps } from '../../index.d';
 export default function MysqlCodeConsole(
 	props: MysqlCodeConsoleProps
 ): JSX.Element {
-	const { dbName, sql, setSql, handleExecute } = props;
+	const { dbName, sql, setSql, handleExecute, isCopy } = props;
 	console.log(dbName);
 	const codeRef = useRef<any>(null);
 	const [codeMirrorInstance, setCodeMirrorInstance] = useState<any>();
@@ -42,6 +42,11 @@ export default function MysqlCodeConsole(
 	useEffect(() => {
 		init();
 	}, []);
+	useEffect(() => {
+		if (isCopy && codeMirrorInstance) {
+			codeMirrorInstance.setValue(sql);
+		}
+	}, [sql]);
 	const init = () => {
 		codeRef.current.innerHTML = '';
 		const CodeMirrorInstance = CodeMirror(codeRef.current, options);
