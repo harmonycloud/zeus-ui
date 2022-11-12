@@ -190,12 +190,18 @@ export default function AddIngress(): JSX.Element {
 
 	// * 判断当前端口，是否在nginx，nodeport端口组中
 	const judgePortInPorts = (port: number | string) => {
-		const cp = String(port);
+		const cp = Number(port);
 		if (exposeType === 'TCP' && ingressClassName?.type !== 'traefik') {
-			return ingressPortArray.includes(cp) ? true : false;
+			return cp >= Number(ingressPortArray[0]) &&
+				cp <= Number(ingressPortArray[1])
+				? true
+				: false;
 		}
 		if (exposeType === 'NodePort') {
-			return nodePortArray.includes(cp) ? true : false;
+			return cp >= Number(nodePortArray[0]) &&
+				cp <= Number(nodePortArray[1])
+				? true
+				: false;
 		}
 	};
 
@@ -243,17 +249,17 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
-			if (
-				exposeType === 'TCP' &&
-				ingressClassName?.type === 'traefik' &&
-				!judgePortInTraefikPorts(values.exposePort)
-			) {
-				notification.error({
-					message: '失败',
-					description: '请输入规定范围以内的端口!'
-				});
-				return;
-			}
+			// if (
+			// 	exposeType === 'TCP' &&
+			// 	ingressClassName?.type === 'traefik' &&
+			// 	!judgePortInTraefikPorts(values.exposePort)
+			// ) {
+			// 	notification.error({
+			// 		message: '失败',
+			// 		description: '请输入规定范围以内的端口!'
+			// 	});
+			// 	return;
+			// }
 			if (!judgePortInPorts(values.exposePort)) {
 				notification.error({
 					message: '失败',
