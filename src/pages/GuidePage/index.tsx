@@ -37,7 +37,7 @@ const GuidePage = (props: GuideProps) => {
 		getProjects({ key: '' }).then((res) => {
 			if (res.success) {
 				if (res.data.length > 0) {
-					setCurrent('2');
+					setCurrent('1');
 				} else {
 					setCurrent('1');
 				}
@@ -52,13 +52,13 @@ const GuidePage = (props: GuideProps) => {
 		if (JSON.stringify(project) === '{}') {
 			setCurrent('1');
 		} else {
-			getClusters({ detail: true })
+			getClusters({ detail: true, projectId: project.projectId })
 				.then((res) => {
 					if (res.success) {
 						if (res.data.length > 0) {
-							setCurrent('3');
-						} else {
 							setCurrent('2');
+						} else {
+							setCurrent('1');
 						}
 					} else {
 						notification.error({
@@ -69,7 +69,10 @@ const GuidePage = (props: GuideProps) => {
 				})
 				.finally(() => {
 					if (JSON.stringify(cluster) !== '{}') {
-						getComponents({ clusterId: cluster.id }).then((res) => {
+						getComponents({
+							clusterId: cluster.id,
+							projectId: project.projectId
+						}).then((res) => {
 							if (res.success) {
 								const middlewareControllerStatus =
 									res.data.find(
@@ -96,6 +99,7 @@ const GuidePage = (props: GuideProps) => {
 	}, [props]);
 	return (
 		<ProPage>
+			{console.log(current)}
 			<ProHeader title="初始化操作引导" />
 			<ProContent>
 				<div className="guide-page-content">
@@ -232,15 +236,12 @@ const GuidePage = (props: GuideProps) => {
 								{isAdmin && (
 									<span
 										className={
-											current === '2' || current === '3'
+											current === '3'
 												? 'name-link'
 												: 'name-disabled-link'
 										}
 										onClick={() => {
-											if (
-												current === '2' ||
-												current === '3'
-											) {
+											if (current === '3') {
 												history.push(
 													`/systemManagement/resourcePoolManagement/resourcePoolDetail/${cluster.id}/${cluster.nickname}`
 												);
