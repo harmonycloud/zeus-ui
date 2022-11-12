@@ -586,17 +586,22 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
-		if (record.status === 'Deleted') {
+		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!roleFlag.operateFlag}
+						disabled={
+							!roleFlag.operateFlag ||
+							record.status === 'Deleting'
+						}
 						onClick={() => recoveryService(record)}
 					>
 						恢复服务
 					</LinkButton>
 					<LinkButton
-						disabled={!roleFlag.deleteFlag}
+						disabled={
+							!roleFlag.deleteFlag || record.status === 'Deleting'
+						}
 						onClick={() => deleteStorage(record)}
 					>
 						彻底删除
@@ -845,7 +850,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const nameRender = (value: string, record: serviceProps, index: number) => {
-		if (record.status === 'Deleted') {
+		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
 					<div
@@ -928,7 +933,8 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const podRender = (value: string, record: serviceProps, index: number) => {
-		if (record.status === 'Deleted') return '--';
+		if (record.status === 'Deleted' || record.status === 'Deleting')
+			return '--';
 		return (
 			<span
 				className={roleFlag.operateFlag ? 'name-link' : ''}
@@ -970,7 +976,10 @@ const ServiceListByType = (props: serviceListProps) => {
 						placeholder: '请输入搜索内容'
 					}}
 					rowClassName={(record) => {
-						if (record.status === 'Deleted') {
+						if (
+							record.status === 'Deleted' ||
+							record.status === 'Deleting'
+						) {
 							return 'table-row-delete';
 						}
 						return '';
