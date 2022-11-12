@@ -88,6 +88,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				clusterId,
 				type: 'traefik',
 				...values,
+				ingressClassName: values.name,
 				traefikPortList: traefikPortList
 			};
 			if (traefikPortList.length === 0) {
