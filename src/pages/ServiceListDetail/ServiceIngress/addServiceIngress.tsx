@@ -188,6 +188,17 @@ export default function AddIngress(): JSX.Element {
 		return false;
 	};
 
+	// * 判断当前端口，是否在nginx，nodeport端口组中
+	const judgePortInPorts = (port: number | string) => {
+		const cp = String(port);
+		if (exposeType === 'TCP' && ingressClassName?.type !== 'traefik') {
+			return ingressPortArray.includes(cp) ? true : false;
+		}
+		if (exposeType === 'NodePort') {
+			return nodePortArray.includes(cp) ? true : false;
+		}
+	};
+
 	const handleSubmit = () => {
 		let service: string, servicePort: number;
 		if (name === 'mysql') {
@@ -234,8 +245,16 @@ export default function AddIngress(): JSX.Element {
 		form.validateFields().then((values) => {
 			if (
 				exposeType === 'TCP' &&
+				ingressClassName?.type === 'traefik' &&
 				!judgePortInTraefikPorts(values.exposePort)
 			) {
+				notification.error({
+					message: '失败',
+					description: '请输入规定范围以内的端口!'
+				});
+				return;
+			}
+			if (!judgePortInPorts(values.exposePort)) {
 				notification.error({
 					message: '失败',
 					description: '请输入规定范围以内的端口!'
