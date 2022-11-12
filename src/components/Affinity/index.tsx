@@ -145,8 +145,13 @@ function Affinity(props: any): JSX.Element {
 								</Button>
 							</div>
 							<div className={'check'}>
+								{console.log(values[0])}
 								<Checkbox
-									checked={values[0]?.checked || checked}
+									checked={
+										values[0]?.checked ||
+										values[0]?.required ||
+										checked
+									}
 									onChange={(e) => {
 										setChecked(e.target.checked);
 										onChange(
