@@ -21,7 +21,6 @@ const { confirm } = Modal;
 interface KVMagProps {
 	dbName: string;
 }
-// TODO k-v 关键词搜索
 export default function KVMag(props: KVMagProps): JSX.Element {
 	const { dbName } = props;
 	const params: ParamsProps = useParams();
@@ -117,15 +116,10 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		setKeyword(value);
 		getData(value);
 	};
-	// TODO 添加 k-v
 	const handleAdd = () => setIsAdd(true);
-	// TODO 编辑 k-v
 	const handleEdit = () => console.log('edit');
-	// TODO 查看 k-v
 	const handleView = () => console.log('view');
-	// TODO 查看，编辑页面render （每个类型一个component）
 	const handleClick = (item: RedisKeyItemParams) => setKey(item.key);
-	// TODO 查看，编辑页面render （每个类型一个component）
 	const childrenRender = (type: string) => {
 		switch (type) {
 			case 'hash':

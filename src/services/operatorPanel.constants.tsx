@@ -52,9 +52,9 @@ export const mysqlAuthTable = `${api}/clusters/{clusterId}/namespaces/{namespace
 // * pgsql 授权
 export const pgsqlAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/users/{username}/authority`;
 // * pgsql 导出数据表结构
-export const getPgsqlExcel = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/excel`;
+export const getPgsqlExcel = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{name}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/excel/download`;
 // * pgsql 导出建表语句
-export const getPgsqlSQL = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/sql`;
+export const getPgsqlSQL = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{name}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/sql/download`;
 // * mysql 导出数据表结构
 export const getMysqlExcel = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/tables/{table}/excelFile`;
 // * mysql 导出建表语句

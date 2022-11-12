@@ -23,7 +23,6 @@ const options = [
 	{ label: 'set', value: 'set' },
 	{ label: 'string', value: 'string' }
 ];
-// TODO 编辑 value单独弹窗编辑
 export default function KVString(props: any): JSX.Element {
 	const { data, database, onRefresh, getKeys } = props;
 	const [form] = Form.useForm();
@@ -164,7 +163,10 @@ export default function KVString(props: any): JSX.Element {
 								name="expiration"
 								initialValue={data?.expiration}
 							>
-								<InputNumber min={0} />
+								<InputNumber
+									min={0}
+									style={{ width: '100%' }}
+								/>
 							</Form.Item>
 							<Button
 								type="link"

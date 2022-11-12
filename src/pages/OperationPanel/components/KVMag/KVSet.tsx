@@ -27,7 +27,6 @@ const options = [
 	{ label: 'set', value: 'set' },
 	{ label: 'string', value: 'string' }
 ];
-// TODO 编辑 value单独弹窗编辑
 export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
 	const { data, database, onRefresh, getKeys } = props;
@@ -258,7 +257,7 @@ export default function KVZSet(props: any): JSX.Element {
 						</div>
 					)}
 				</div>
-				<div className="data-item item-width mb">
+				<div className="data-item item-width">
 					<span className="label-item">超出时间:</span>
 					{editTime ? (
 						<Form form={form}>
@@ -266,7 +265,10 @@ export default function KVZSet(props: any): JSX.Element {
 								name="expiration"
 								initialValue={data?.expiration}
 							>
-								<InputNumber min={0} />
+								<InputNumber
+									min={0}
+									style={{ width: '100%' }}
+								/>
 							</Form.Item>
 							<Button
 								type="link"

@@ -240,7 +240,8 @@ export interface getPgsqlTableRes extends resProps {
 export interface SendDataParamsProps {
 	clusterId: string;
 	namespace: string;
-	middlewareName: string;
+	middlewareName?: string;
+	name?: string;
 }
 export interface AllSendDataParamsProps {
 	clusterId: string;
@@ -594,6 +595,7 @@ export interface MysqlTableDetail {
 	rowFormat?: null;
 	rows?: number;
 	tableName?: string;
+	newTableName?: string;
 }
 export interface MysqlForeignItemDetailItem {
 	column: string;

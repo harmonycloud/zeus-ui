@@ -20,7 +20,6 @@ const options = [
 	{ label: 'set', value: 'set' },
 	{ label: 'string', value: 'string' }
 ];
-// TODO 编辑 value单独弹窗编辑
 export default function AddValue(props: any): JSX.Element {
 	const { type, visible, onOk, onCancel, data } = props;
 	const [form] = Form.useForm();

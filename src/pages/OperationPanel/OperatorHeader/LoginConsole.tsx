@@ -108,7 +108,10 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					name="password"
 					rules={[{ required: true, message: '请输入密码' }]}
 				>
-					<Input.Password placeholder="请输入" />
+					<Input.Password
+						placeholder="请输入"
+						onKeyDown={(e) => e.keyCode === 13 && onOk()}
+					/>
 				</Form.Item>
 			</Form>
 		</Modal>

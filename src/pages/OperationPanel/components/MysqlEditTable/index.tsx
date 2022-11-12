@@ -93,7 +93,6 @@ export default function MysqlEditTable(
 			middlewareName: params.name,
 			database: dbName
 		};
-		console.log(sendData);
 		createMysqlTable(sendData).then((res) => {
 			if (res.success) {
 				notification.success({

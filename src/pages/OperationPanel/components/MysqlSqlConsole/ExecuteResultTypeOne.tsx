@@ -19,16 +19,16 @@ export default function ExecuteResultTypeOne(
 				fixed: 'left'
 			}
 		];
-		resData.columns.map((item: any, index: number) => {
-			list.push({
-				indexInTable: index + 1,
-				title: item,
-				key: item,
-				dataIndex: item,
-				sorter: (a: any, b: any) => a[item] - b[item],
-				width: 150
-			});
-		});
+		// resData?.columns?.forEach((item: any, index: number) => {
+		// 	list.push({
+		// 		indexInTable: index + 1,
+		// 		title: item,
+		// 		key: item,
+		// 		dataIndex: item,
+		// 		sorter: (a: any, b: any) => a[item] - b[item],
+		// 		width: 150
+		// 	});
+		// });
 		setColumns(list);
 	}, []);
 	return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import KVMag from '../KVMag';
+import MysqlCodeConsole from '../MysqlCodeConsole';
 interface RedisDBMagProps {
 	dbName: string;
 }
@@ -19,7 +20,19 @@ export default function RedisDBMag(props: RedisDBMagProps): JSX.Element {
 					key: 'kv',
 					children: <KVMag dbName={dbName} />
 				},
-				{ label: '控制台', key: 'console', children: 'aaaaa' }
+				{
+					label: '控制台',
+					key: 'console',
+					children: (
+						<MysqlCodeConsole
+							sql={'1'}
+							setSql={() => console.log(111)}
+							dbName={'1'}
+							isCopy={false}
+							handleExecute={() => console.log(111)}
+						/>
+					)
+				}
 			]}
 		/>
 	);
