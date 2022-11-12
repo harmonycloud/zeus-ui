@@ -555,11 +555,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('database')}
 						</TabPane>
 					) : null}
-					{type === 'redis' ? (
+					{/* {type === 'redis' ? (
 						<TabPane tab="数据库管理" key="redisDatabase">
 							{childrenRender('redisDatabase')}
 						</TabPane>
-					) : null}
+					) : null} */}
 				</Tabs>
 			</ProContent>
 		</ProPage>
