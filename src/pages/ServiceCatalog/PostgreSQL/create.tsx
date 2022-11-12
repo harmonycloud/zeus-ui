@@ -1348,7 +1348,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												<Password
 													style={{ width: '380px' }}
 													value={pgsqlPwd}
-													placeholder="请输入root密码，输入为空则由平台随机生成"
+													placeholder="请输入postgres密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
 													disabled={!!middlewareName}
 												/>
