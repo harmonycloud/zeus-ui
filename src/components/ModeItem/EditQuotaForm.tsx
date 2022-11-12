@@ -253,7 +253,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 														{
 															required: true,
 															message:
-																'请输入自定义内存配额，单位为Core'
+																'请输入自定义内存配额，单位为Gi'
 														}
 													]}
 													name="memory"
