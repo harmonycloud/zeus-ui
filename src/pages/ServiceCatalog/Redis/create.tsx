@@ -408,7 +408,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							namespace: globalNamespace.name
 						};
 					});
-					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					if (antiFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAffinity;
+					}
 				}
 			}
 			if (antiFlag) {
@@ -435,7 +439,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							namespace: globalNamespace.name
 						};
 					});
-					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					if (affinityFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAnti;
+					}
 				}
 			}
 			if (tolerations.flag) {

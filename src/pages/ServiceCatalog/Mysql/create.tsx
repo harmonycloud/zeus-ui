@@ -798,7 +798,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								namespace: globalNamespace.name
 							};
 						});
-						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+						if (antiFlag) {
+							sendData.nodeAffinity =
+								nodeAffinity.concat(nodeAnti);
+						} else {
+							sendData.nodeAffinity = nodeAffinity;
+						}
 					}
 				}
 				if (antiFlag) {
@@ -825,7 +830,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								namespace: globalNamespace.name
 							};
 						});
-						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+						if (affinityFlag) {
+							sendData.nodeAffinity =
+								nodeAffinity.concat(nodeAnti);
+						} else {
+							sendData.nodeAffinity = nodeAnti;
+						}
 					}
 				}
 				// 主机容忍
