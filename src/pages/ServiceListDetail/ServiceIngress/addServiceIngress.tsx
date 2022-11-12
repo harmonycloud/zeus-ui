@@ -249,23 +249,22 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
-			// if (
-			// 	exposeType === 'TCP' &&
-			// 	ingressClassName?.type === 'traefik' &&
-			// 	!judgePortInTraefikPorts(values.exposePort)
-			// ) {
-			// 	notification.error({
-			// 		message: '失败',
-			// 		description: '请输入规定范围以内的端口!'
-			// 	});
-			// 	return;
-			// }
-			if (!judgePortInPorts(values.exposePort)) {
-				notification.error({
-					message: '失败',
-					description: '请输入规定范围以内的端口!'
-				});
-				return;
+			if (exposeType === 'TCP' && ingressClassName?.type === 'traefik') {
+				if (!judgePortInTraefikPorts(values.exposePort)) {
+					notification.error({
+						message: '失败',
+						description: '请输入规定范围以内的端口!'
+					});
+					return;
+				}
+			} else {
+				if (!judgePortInPorts(values.exposePort)) {
+					notification.error({
+						message: '失败',
+						description: '请输入规定范围以内的端口!'
+					});
+					return;
+				}
 			}
 			let sendData: any = {
 				clusterId,
