@@ -146,7 +146,7 @@ function Affinity(props: any): JSX.Element {
 							</div>
 							<div className={'check'}>
 								<Checkbox
-									checked={checked}
+									checked={values[0]?.checked || checked}
 									onChange={(e) => {
 										setChecked(e.target.checked);
 										onChange(
@@ -162,7 +162,7 @@ function Affinity(props: any): JSX.Element {
 									}}
 									disabled={disabled}
 								>
-									强制亲和
+									{isAnti ? '强制反亲和' : '强制亲和'}
 								</Checkbox>
 							</div>
 						</>

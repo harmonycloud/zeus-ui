@@ -336,7 +336,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					setAntiLabels([
 						{
 							label: res.data.label,
-							checked: true,
+							checked: res.data.required,
 							anti: true,
 							id: Math.random()
 						}
@@ -346,7 +346,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					setAffinityLabels([
 						{
 							label: res.data.label,
-							checked: true,
+							checked: res.data.required,
 							anti: false,
 							id: Math.random()
 						}
@@ -371,7 +371,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						setAntiLabels([
 							{
 								label: res.data.label,
-								checked: true,
+								checked: res.data.required,
 								anti: true,
 								id: Math.random()
 							}
@@ -381,7 +381,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						setAffinityLabels([
 							{
 								label: res.data.label,
-								checked: true,
+								checked: res.data.required,
 								anti: false,
 								id: Math.random()
 							}
