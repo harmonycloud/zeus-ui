@@ -625,12 +625,24 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (!res.data) return;
 			setInstanceSpec('Customize');
 			if (res.data?.nodeAffinity?.length > 0) {
-				setAffinity({
-					flag: true,
-					label: '',
-					checked: false
-				});
-				setAffinityLabels(res.data?.nodeAffinity || []);
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => !item.anti)
+						?.length
+				) {
+					setAffinityFlag(true);
+					setAffinityLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => !item.anti
+						) || []
+					);
+				} else {
+					setAntiFlag(true);
+					setAntiLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => item.anti
+						) || []
+					);
+				}
 			}
 			if (res.data?.tolerations?.length > 0) {
 				setTolerations({
