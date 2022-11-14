@@ -434,7 +434,12 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 			localStorage.removeItem('backupTab');
 		};
 	}, []);
-
+	const toOperatorPanel = () => {
+		window.open(
+			`#/operationalPanel/sqlConsole/${project.projectId}/${globalVar.cluster.id}/${namespace}/${name}/${middlewareName}`,
+			'_blank'
+		);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -456,6 +461,9 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				}
 				extra={
 					<>
+						<Button type="link" onClick={toOperatorPanel}>
+							运维面板
+						</Button>
 						<Button
 							onClick={() => refresh(activeKey)}
 							style={{ padding: '0 9px', marginRight: '8px' }}

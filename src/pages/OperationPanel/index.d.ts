@@ -774,4 +774,5 @@ export interface ExecutionTableProps {
 	middlewareName: string;
 	database: string;
 	changeSql: (values: string) => void;
+	refreshFlag: boolean;
 }

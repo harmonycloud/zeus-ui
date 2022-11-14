@@ -940,7 +940,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
 		if (action === 'add') {
-			add('new TAb', null);
+			// add('new TAb', null);
 		} else {
 			remove(targetKey);
 		}
@@ -1075,6 +1075,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				/>
 				{params.type === 'mysql' && (
 					<Tabs
+						hideAdd
 						className="sql-console-tabs-content"
 						size="small"
 						type="editable-card"
@@ -1114,6 +1115,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							/>
 						</div>
 						<Tabs
+							hideAdd
 							className="sql-console-tabs-content"
 							style={{
 								height: 'calc(100% - 36px)',

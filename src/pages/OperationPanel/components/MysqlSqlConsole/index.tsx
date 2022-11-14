@@ -30,6 +30,7 @@ export default function MysqlSqlConsole(
 	const newTabIndex = useRef(0);
 	const [sql, setSql] = useState<string>('SELECT * from');
 	const [isCopy, setIsCopy] = useState<boolean>(false);
+	const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
 	const changeSql = (values: string) => {
 		setIsCopy(true);
 		setSql(values);
@@ -53,6 +54,7 @@ export default function MysqlSqlConsole(
 					middlewareName={params.name}
 					database={dbName}
 					changeSql={changeSql}
+					refreshFlag={refreshFlag}
 				/>
 			),
 			key: '1',
@@ -86,7 +88,6 @@ export default function MysqlSqlConsole(
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
 		if (action === 'add') {
-			// TODO ?
 			// add();
 		} else {
 			remove(targetKey);
@@ -94,43 +95,50 @@ export default function MysqlSqlConsole(
 	};
 	// * 执行sql语句方法
 	const handleExecute = () => {
+		// * 筛选无效语句
 		let sqlT = sql;
+		sqlT = sqlT.replace(/\n/g, ' ');
 		if (sqlT.charAt(sqlT.length - 1) !== ';') {
 			sqlT = sqlT + ';';
 		}
-		// let list = sqlT.split(';');
-		// console.log(list);
-		// TODO 多条sql语句循环执行，筛选无效语句
-		// list = list
-		// 	.filter((item: string) => item !== '')
-		// 	.map((item) => item + ';');
-		// console.log(list);
-		executeMysqlSql({
-			database: dbName,
-			sql: sqlT,
-			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params.name
-		}).then((res) => {
-			if (res.success) {
-				if (sqlT.includes('SELECT')) {
+		let list = sqlT.split(';');
+		list = list
+			.filter((item: string) => {
+				const itemTemp = item.trim();
+				return itemTemp !== '';
+			})
+			.map((item) => item + ';');
+		setRefreshFlag(!refreshFlag);
+		list.map((item) => {
+			executeMysqlSql({
+				database: dbName,
+				sql: item,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			}).then((res) => {
+				if (res.success) {
+					if (sqlT.includes('SELECT')) {
+						add(
+							<span>
+								<CheckCircleFilled
+									style={{ color: '#52c41a' }}
+								/>
+								执行成功
+							</span>,
+							<ExecuteResultTypeOne resData={res.data} />
+						);
+					}
+				} else {
 					add(
 						<span>
-							<CheckCircleFilled style={{ color: '#52c41a' }} />
-							执行成功
+							<CloseCircleFilled style={{ color: '#ff4d4f' }} />
+							执行失败
 						</span>,
-						<ExecuteResultTypeOne resData={res.data} />
+						<ExecuteResultTypeTwo res={res} />
 					);
 				}
-			} else {
-				add(
-					<span>
-						<CloseCircleFilled style={{ color: '#ff4d4f' }} />
-						执行失败
-					</span>,
-					<ExecuteResultTypeTwo res={res} />
-				);
-			}
+			});
 		});
 	};
 	return (

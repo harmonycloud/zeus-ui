@@ -10,25 +10,26 @@ export default function ExecuteResultTypeOne(
 	const [dataSource] = useState<any>(resData.data);
 	const [columns, setColumns] = useState<ColumnsType<any>>([]);
 	useEffect(() => {
-		const list: any[] = [
-			{
-				title: '序号',
-				dataIndex: 'indexInTable',
-				key: 'indexInTable',
-				width: 80,
-				fixed: 'left'
-			}
-		];
-		// resData?.columns?.forEach((item: any, index: number) => {
-		// 	list.push({
-		// 		indexInTable: index + 1,
-		// 		title: item,
-		// 		key: item,
-		// 		dataIndex: item,
-		// 		sorter: (a: any, b: any) => a[item] - b[item],
-		// 		width: 150
-		// 	});
-		// });
+		const indexObj = {
+			title: '序号',
+			dataIndex: 'indexInTable',
+			key: 'indexInTable',
+			width: 80,
+			fixed: 'left'
+		};
+		const list =
+			resData?.columns.map((item: any, index: number) => {
+				return {
+					indexInTable: index + 1,
+					title: item,
+					key: item,
+					dataIndex: item,
+					sorter: (a: any, b: any) => a[item] - b[item],
+					width: 150
+				};
+			}) || [];
+		list.unshift(indexObj);
+		console.log(list);
 		setColumns(list);
 	}, []);
 	return (

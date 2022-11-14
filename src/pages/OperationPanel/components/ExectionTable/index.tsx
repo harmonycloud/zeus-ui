@@ -19,7 +19,14 @@ const { RangePicker } = DatePicker;
 export default function ExecutionTable(
 	props: ExecutionTableProps
 ): JSX.Element {
-	const { clusterId, namespace, middlewareName, database, changeSql } = props;
+	const {
+		clusterId,
+		namespace,
+		middlewareName,
+		database,
+		changeSql,
+		refreshFlag
+	} = props;
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -37,7 +44,7 @@ export default function ExecutionTable(
 	const [status, setStauts] = useState<boolean | null>(null);
 	useEffect(() => {
 		getData(1, 10, '', '', '', false, false, false, false);
-	}, []);
+	}, [refreshFlag]);
 	const columns = [
 		{
 			title: 'id',
