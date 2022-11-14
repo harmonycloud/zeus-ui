@@ -110,6 +110,7 @@ export default function ExecutionTable(
 				{ value: 'false', text: '失败' }
 			],
 			width: 100,
+			filterMultiple: false,
 			render: (text: any) => {
 				if (text === 'true') return <Badge color="green" text="成功" />;
 				return <Badge color="red" text="失败" />;
@@ -138,24 +139,48 @@ export default function ExecutionTable(
 		}
 	];
 	const showTotal: PaginationProps['showTotal'] = (total) => `共 ${total} 条`;
-	const onShowSizeChange: PaginationProps['onShowSizeChange'] = (
-		current,
-		pageSize
-	) => {
-		console.log(current, pageSize);
-	};
-	const onChange: PaginationProps['onChange'] = (page) => {
-		setCurrent(page);
+	const onTableChange = (pagination: any, filters: any, sorter: any) => {
+		console.log(pagination);
+		console.log(filters);
+		console.log(sorter);
+		let execDateTemp = null;
+		let lineTemp = null;
+		let execTimeTemp = null;
+		let statusTemp = null;
+		if (JSON.stringify(sorter) !== '{}') {
+			switch (sorter.field) {
+				case 'execDate':
+					execDateTemp = sorter.order === 'ascend' ? true : false;
+					break;
+				case 'line':
+					lineTemp = sorter.order === 'ascend' ? true : false;
+					break;
+				case 'execTime':
+					execTimeTemp = sorter.order === 'ascend' ? true : false;
+					break;
+				default:
+					break;
+			}
+		}
+		if (filters.status) {
+			statusTemp = JSON.parse(filters.status[0]);
+		}
+		setCurrent(pagination.current);
+		setPageSize(pagination.pageSize);
+		setStauts(statusTemp);
+		setAscExecDateOrder(execDateTemp);
+		setAscExecTimeOrder(execTimeTemp);
+		setAscLineOrder(lineTemp);
 		getData(
-			page,
-			pageSize,
+			pagination.current,
+			pagination.pageSize,
 			keyword,
 			startTime,
 			endTime,
-			ascExecDateOrder,
-			ascExecTimeOrder,
-			ascLineOrder,
-			status
+			execDateTemp,
+			execTimeTemp,
+			lineTemp,
+			statusTemp
 		);
 	};
 	const handleSearch = (value: string) => {
@@ -169,6 +194,21 @@ export default function ExecutionTable(
 			ascExecTimeOrder,
 			ascLineOrder,
 			status
+		);
+	};
+	const handleRangeChange = (values: any, formatString: any) => {
+		setStartTime(formatString[0]);
+		setEndTime(formatString[1]);
+		getData(
+			current,
+			pageSize,
+			keyword,
+			formatString[0],
+			formatString[1],
+			false,
+			false,
+			false,
+			false
 		);
 	};
 	const getData = (
@@ -203,7 +243,9 @@ export default function ExecutionTable(
 			} else {
 				notification.error({
 					message: '失败',
-					description: res.errorMsg
+					description: `${res.errorMsg}${
+						res.errorDetail ? ':' + res.errorDetail : ''
+					}`
 				});
 			}
 		});
@@ -217,20 +259,19 @@ export default function ExecutionTable(
 					onSearch={handleSearch}
 					placeholder="支持sql语句的模糊搜索"
 				/>
-				<RangePicker />
+				<RangePicker onChange={handleRangeChange} />
 			</Space>
 			<Table
 				rowKey="id"
 				size="small"
 				dataSource={dataSource}
 				columns={columns}
+				onChange={onTableChange}
 				pagination={{
 					size: 'small',
 					current: current,
 					total: total,
 					pageSize: pageSize,
-					onShowSizeChange: onShowSizeChange,
-					onChange: onChange,
 					showTotal: showTotal,
 					showSizeChanger: true,
 					showQuickJumper: true

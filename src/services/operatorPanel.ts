@@ -453,5 +453,5 @@ export const getExecuteHistory: (
 	params: getExecuteHistoryParamsProps
 ) => Promise<getExecuteHistoryRes> = (params: getExecuteHistoryParamsProps) => {
 	console.log(params);
-	return Axios.json(URL.getExecuteHistory, params, {}, 'GET');
+	return Axios.json(URL.getExecuteHistory, params, {}, 'POST');
 };
