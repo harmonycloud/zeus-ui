@@ -226,7 +226,7 @@ function Visualization(props) {
 		if (cfg.depth === 0) {
 			if (
 				cfg?.provisioner &&
-				cfg?.provisioner !== 'localplugin.csi.alibabacloud.com'
+				cfg?.provisioner === 'localplugin.csi.alibabacloud.com'
 			) {
 				return true;
 			} else {
@@ -235,7 +235,7 @@ function Visualization(props) {
 		} else {
 			if (
 				cfg?.resources?.provisioner &&
-				cfg?.resources?.provisioner !==
+				cfg?.resources?.provisioner ===
 					'localplugin.csi.alibabacloud.com'
 			) {
 				return true;
