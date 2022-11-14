@@ -82,6 +82,14 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 	};
 	const checkGeneral = (value: any) => {
 		switch (value) {
+			case '0':
+				setModifyData({
+					...modifyData,
+					cpu: 0.2,
+					memory: 0.512,
+					specId: value
+				});
+				break;
 			case '1':
 				setModifyData({
 					...modifyData,
@@ -195,7 +203,12 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 										dataList={
 											middlewareType === 'elasticsearch'
 												? esDataList
-												: redisSentinelDataList
+												: type === 'sentinel'
+												? redisSentinelDataList
+												: redisSentinelDataList.slice(
+														1,
+														redisSentinelDataList.length
+												  )
 										}
 									/>
 								</div>

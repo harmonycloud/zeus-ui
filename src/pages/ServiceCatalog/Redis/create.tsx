@@ -203,9 +203,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			disabled: false,
 			title: '哨兵节点',
 			num: 3,
-			specId: '1',
-			cpu: 2,
-			memory: 1
+			specId: '0',
+			cpu: 0.2,
+			memory: 0.512
 		}
 	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
