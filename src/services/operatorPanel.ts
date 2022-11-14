@@ -81,7 +81,12 @@ export const authLogin: (params: {
 	password: string;
 	type: string;
 }) => {
-	return Axios.post(URL.AuthLogin, params);
+	// * 通过mwtoken来判断，当前接口是否需要在请求header中添加mwToken
+	return Axios.post(URL.AuthLogin, params, {
+		headers: {
+			mwtoken: ''
+		}
+	});
 };
 export const getDatabases: (
 	params: SendDataParamsProps
