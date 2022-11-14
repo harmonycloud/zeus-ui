@@ -373,7 +373,7 @@ function Visualization(props) {
 											  '...'
 											: '中文别名：' + cfg.aliasName,
 									x: 16,
-									y: 37,
+									y: 50,
 									textBaseline: 'middle',
 									fill: '#999',
 									fontFamily: 'PingFangSC-Medium, PingFang SC'
@@ -455,7 +455,7 @@ function Visualization(props) {
 											? cfg?.resources?.storageClassQuota
 											: '无'),
 									x: 16,
-									y: 71,
+									y: 65,
 									fill: '#999'
 								},
 								name: 'text-shape2'
