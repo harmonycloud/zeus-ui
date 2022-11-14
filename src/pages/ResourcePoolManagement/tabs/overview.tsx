@@ -139,7 +139,7 @@ const Overview = () => {
 					objectRemoveDuplicatesByKey(
 						res.data.map((item: MiddlewareResourceProps) => {
 							return {
-								label: item.namespace,
+								text: item.namespace,
 								value: item.namespace
 							};
 						}),
@@ -176,7 +176,7 @@ const Overview = () => {
 					objectRemoveDuplicatesByKey(
 						res.data.map((item: MiddlewareResourceProps) => {
 							return {
-								label: item.name,
+								text: item.name,
 								value: item.name
 							};
 						}),
