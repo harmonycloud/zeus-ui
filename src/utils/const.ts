@@ -612,6 +612,7 @@ export const backupTaskStatus = [
 	{ value: 'Success', text: '成功', color: '#52c41a' },
 	{ value: 'Failed', text: '失败', color: '#ff4d4f' },
 	{ value: 'Creating', text: '创建中', color: '#18900f' },
+	{ value: 'Deleting', text: '删除中', color: '#d7d7d7' },
 	{ value: 'Unknown', text: '未知', color: '#d7d7d7' }
 ];
 
