@@ -161,10 +161,8 @@ export default function AuthorizationForm(
 	}, [currentSchema]);
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
 			onCancel();
 			if (type === 'mysql') {
-				// TODO mysql授权
 				if (authType === 'database') {
 					mysqlAuthDatabase({
 						clusterId,
@@ -173,7 +171,8 @@ export default function AuthorizationForm(
 						database: values.database,
 						db: values.database,
 						privilegeType: Number(values.authority),
-						grantAble: values.grantAble
+						grantAble: values.grantAble,
+						username: (user as MysqlUserItem).user
 					})
 						.then((res) => {
 							if (res.success) {
@@ -200,7 +199,8 @@ export default function AuthorizationForm(
 						db: values.database,
 						privilegeType: Number(values.authority),
 						grantAble: values.grantAble,
-						table: values.table
+						table: values.table,
+						username: (user as MysqlUserItem).user
 					})
 						.then((res) => {
 							if (res.success) {

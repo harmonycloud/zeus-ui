@@ -478,6 +478,7 @@ export interface mysqlAuthDatabaseParamsProps extends SendDataParamsProps {
 	privilegeType: number;
 	grantAble: boolean;
 	table?: string;
+	username: string;
 }
 export interface pgsqlAuthParamsProps extends SendDataParamsProps {
 	username: string;
@@ -736,11 +737,15 @@ export interface ExecuteResultTypeTwoProps {
 }
 export interface getExecuteHistoryParamsProps extends SendDataParamsProps {
 	database: string;
-	end: string | null;
+	ascExecDateOrder: boolean | null;
+	ascExecTimeOrder: boolean | null;
+	ascLineOrder: boolean | null;
+	endTime: string | null;
 	keyword: string;
-	start: string | null;
-	size: number;
 	pageNum: number;
+	size: number;
+	startTime: string | null;
+	status: boolean | null;
 }
 
 export interface ExecuteItem {

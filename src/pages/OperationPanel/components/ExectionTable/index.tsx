@@ -25,10 +25,18 @@ export default function ExecutionTable(
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [dataSource, setDataSource] = useState<ExecuteItem[]>([]);
 	const [keyword, setKeyword] = useState<string>('');
-	const [start, setStart] = useState<string | null>(null);
-	const [end, setEnd] = useState<string | null>(null);
+	const [startTime, setStartTime] = useState<string | null>(null);
+	const [endTime, setEndTime] = useState<string | null>(null);
+	const [ascExecDateOrder, setAscExecDateOrder] = useState<boolean | null>(
+		null
+	);
+	const [ascExecTimeOrder, setAscExecTimeOrder] = useState<boolean | null>(
+		null
+	);
+	const [ascLineOrder, setAscLineOrder] = useState<boolean | null>(null);
+	const [status, setStauts] = useState<boolean | null>(null);
 	useEffect(() => {
-		getData(1, 10, '', null, null);
+		getData(1, 10, '', '', '', false, false, false, false);
 	}, []);
 	const columns = [
 		{
@@ -138,27 +146,56 @@ export default function ExecutionTable(
 	};
 	const onChange: PaginationProps['onChange'] = (page) => {
 		setCurrent(page);
+		getData(
+			page,
+			pageSize,
+			keyword,
+			startTime,
+			endTime,
+			ascExecDateOrder,
+			ascExecTimeOrder,
+			ascLineOrder,
+			status
+		);
 	};
 	const handleSearch = (value: string) => {
-		getData(current, pageSize, value, start, end);
+		getData(
+			current,
+			pageSize,
+			value,
+			startTime,
+			endTime,
+			ascExecDateOrder,
+			ascExecTimeOrder,
+			ascLineOrder,
+			status
+		);
 	};
 	const getData = (
 		pageNum: number,
 		size: number,
 		searchKeyword: string,
-		start: string | null,
-		end: string | null
+		startTime: string | null,
+		endTime: string | null,
+		ascExecDateOrder: boolean | null,
+		ascExecTimeOrder: boolean | null,
+		ascLineOrder: boolean | null,
+		status: boolean | null
 	) => {
 		getExecuteHistory({
 			database,
-			end: end,
+			endTime: endTime,
 			keyword: searchKeyword,
-			start: start,
+			startTime: startTime,
 			size: size,
 			pageNum: pageNum,
 			clusterId,
 			namespace,
-			middlewareName
+			middlewareName,
+			ascExecDateOrder: ascExecDateOrder,
+			ascExecTimeOrder: ascExecTimeOrder,
+			ascLineOrder: ascLineOrder,
+			status: status
 		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data.list);

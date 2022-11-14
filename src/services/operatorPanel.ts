@@ -452,5 +452,6 @@ export const cancelAuth: (
 export const getExecuteHistory: (
 	params: getExecuteHistoryParamsProps
 ) => Promise<getExecuteHistoryRes> = (params: getExecuteHistoryParamsProps) => {
-	return Axios.get(URL.getExecuteHistory, params);
+	console.log(params);
+	return Axios.json(URL.getExecuteHistory, params, {}, 'GET');
 };

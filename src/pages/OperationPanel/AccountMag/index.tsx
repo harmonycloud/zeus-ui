@@ -214,7 +214,7 @@ export default function AccountMag(): JSX.Element {
 			key: params.type === 'mysql' ? 'accountLocked' : 'usable',
 			render: (text: any, record: MysqlUserItem | PgsqlUserItem) => (
 				<Switch
-					checked={text}
+					checked={!text}
 					onChange={(checked: boolean) =>
 						handleChange(checked, record)
 					}
