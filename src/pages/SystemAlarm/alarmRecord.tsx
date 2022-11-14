@@ -154,12 +154,12 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 				}
 				render={levelRender}
 			/>
-			<ProTable.Column
+			{/* <ProTable.Column
 				title="告警内容"
 				dataIndex="content"
 				width={180}
 				render={nullRender}
-			/>
+			/> */}
 			{alarmType === 'system' ? (
 				<ProTable.Column
 					title="告警对象"
@@ -177,7 +177,6 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 			<ProTable.Column
 				title="规则描述"
 				dataIndex="expr"
-				width={160}
 				render={nullRender}
 			/>
 			<ProTable.Column
