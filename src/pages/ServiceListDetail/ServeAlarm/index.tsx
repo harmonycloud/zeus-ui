@@ -242,12 +242,12 @@ function Rules(props: RuleProps): JSX.Element {
 				>
 					新增
 				</Button>
-				<Button
+				{/* <Button
 					onClick={() => setVisible(true)}
 					style={{ marginLeft: 8 }}
 				>
 					告警设置
-				</Button>
+				</Button> */}
 			</div>
 		)
 	};
