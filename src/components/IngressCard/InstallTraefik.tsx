@@ -181,6 +181,7 @@ export default function InstallTraefik(
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
+							anti: item.anti,
 							required: item.checked
 						};
 					});
@@ -386,6 +387,7 @@ export default function InstallTraefik(
 												{
 													label: label,
 													checked,
+													anti: false,
 													id: Math.random()
 												}
 											]);
@@ -407,6 +409,7 @@ export default function InstallTraefik(
 												return {
 													label: item.label,
 													id: item.id,
+													anti: false,
 													checked: e.target.checked
 												};
 											})
@@ -655,10 +658,18 @@ export default function InstallTraefik(
 											if (res.success) {
 												const result = portRange;
 												result.ports = res.data;
-												setTraefikPortList([
-													...traefikPortList,
-													result
-												]);
+												traefikPortList.length &&
+													!traefikPortList.find(
+														(item) =>
+															item.startPort ===
+																result.startPort &&
+															item.endPort ===
+																result.endPort
+													) &&
+													setTraefikPortList([
+														...traefikPortList,
+														result
+													]);
 											}
 										});
 									}

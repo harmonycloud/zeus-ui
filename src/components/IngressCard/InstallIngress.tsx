@@ -138,6 +138,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
+							anti: item.anti,
 							required: item.checked
 						};
 					});
@@ -307,6 +308,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 												{
 													label: label,
 													checked,
+													anti: false,
 													id: Math.random()
 												}
 											]);
@@ -328,6 +330,7 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 												return {
 													label: item.label,
 													id: item.id,
+													anti: false,
 													checked: e.target.checked
 												};
 											})
