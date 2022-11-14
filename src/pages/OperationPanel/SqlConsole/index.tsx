@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import {
 	Button,
 	Input,
@@ -59,6 +59,7 @@ import OpenTable from '../components/OpenTable';
 import { formItemLayout618 } from '@/utils/const';
 import RedisDBMag from '../components/RedisDBMag';
 import { exportFile } from '@/utils/export';
+import storage from '@/utils/storage';
 
 const { confirm } = Modal;
 const { Content, Sider } = Layout;
@@ -112,14 +113,6 @@ const pgMenuItems = [
 		key: 'modeMag'
 	}
 ];
-const initialItems = [
-	{
-		label: 'Tab 1',
-		children: <MysqlSqlConsole dbName={''} />,
-		key: '1',
-		closable: false
-	}
-];
 const updateTreeData = (
 	list: DataNode[],
 	key: React.Key,
@@ -155,7 +148,7 @@ const paneProps: SplitPaneProps = {
 // TODO 对模式，数据库，列，表，索引等删除，新增，修改后，左边树图的刷新
 // TODO sql窗口 执行列表tab
 // TODO 树图 所有高亮
-// TODO 右侧tab添加、保存（sessionStorage）
+// TODO 右侧tab保存（sessionStorage）
 // TODO mysql table-index 树状图索引头部数量刷新
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
@@ -175,16 +168,24 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
-		const newPanes = [...items];
-		newPanes.push({
+		const itemTemp = {
 			label: label,
 			children: children,
 			key: newActiveKey
+		};
+		setItems((origin) => {
+			if (
+				origin.findIndex((item) => item.label === itemTemp.label) > -1
+			) {
+				setActiveKey(
+					origin.find((item) => item.label === itemTemp.label).key
+				);
+				return [...origin];
+			} else {
+				setActiveKey(newActiveKey);
+				return [...origin, itemTemp];
+			}
 		});
-		console.log(label);
-
-		setItems(newPanes);
-		setActiveKey(newActiveKey);
 	};
 	// * 导出sql语句
 	const exportSQL = (i: string, fatherNode: string) => {
@@ -198,7 +199,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				middlewareName: params.name
 			});
 			exportFile(_url, {}, i, '.txt');
-			// window.open(_url);
 		} else {
 			_url = getPgsqlSQL({
 				databaseName: selectDatabase,
@@ -223,7 +223,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				middlewareName: params.name
 			});
 			exportFile(_url, {}, i, '.xlsx');
-			// window.open(_url);
 		} else {
 			_url = getPgsqlExcel({
 				databaseName: selectDatabase,
@@ -798,6 +797,17 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 												title={item.tableName}
 												className="text-overflow"
 												style={{ width: '120px' }}
+												onDoubleClick={() => {
+													add(
+														value,
+														<OpenTable
+															dbName={value}
+															tableName={
+																item.tableName
+															}
+														/>
+													);
+												}}
 											>
 												{item.tableName}
 											</span>
@@ -997,11 +1007,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								showIcon
 								treeData={treeData}
 								loadData={mysqlOnLoadData}
-								height={
-									document.getElementsByClassName(
-										'sql-console-tree-content'
-									)[0]?.clientHeight
-								}
+								// height={
+								// 	document.getElementsByClassName(
+								// 		'sql-console-tree-content'
+								// 	)[0]?.clientHeight
+								// }
 							/>
 						</div>
 					</div>
@@ -1019,11 +1029,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								loadData={pgsqlOnLoadData}
 								expandedKeys={pgsqlExpandedKeys}
 								onSelect={pgsqlOnSelect}
-								height={
-									document.getElementsByClassName(
-										'sql-console-tree-content'
-									)[0]?.clientHeight
-								}
+								// height={
+								// 	document.getElementsByClassName(
+								// 		'sql-console-tree-content'
+								// 	)[0]?.clientHeight
+								// }
 							/>
 						</div>
 					</div>
@@ -1033,7 +1043,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						className="sql-console-sider-search"
 						style={{ paddingRight: 16 }}
 					>
-						{/* TODO 循环显示 */}
 						<div className="redis-dbs">
 							{redisListData.map((item: any) => {
 								return (
@@ -1107,11 +1116,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								showIcon
 								treeData={pgTableTreeData}
 								loadData={pgTableOnLoadData}
-								height={
-									document.getElementsByClassName(
-										'sql-console-tree-content'
-									)[0]?.clientHeight - 50
-								}
+								// height={
+								// 	document.getElementsByClassName(
+								// 		'sql-console-tree-content'
+								// 	)[0]?.clientHeight - 50
+								// }
 							/>
 						</div>
 						<Tabs

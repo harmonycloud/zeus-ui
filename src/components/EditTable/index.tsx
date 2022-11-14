@@ -93,12 +93,14 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		const index = newData.findIndex((item) => item.key === key);
 		zIndexUp(newData, index);
 		setDataSource(newData);
+		returnValues && returnValues(newData);
 	};
 	const moveDown = (key: React.Key) => {
 		const newData = [...dataSource];
 		const index = newData.findIndex((item) => item.key === key);
 		zIndexDown(newData, index, newData.length);
 		setDataSource(newData);
+		returnValues && returnValues(newData);
 	};
 	const insertion = (key: React.Key) => {
 		const tempData = {
