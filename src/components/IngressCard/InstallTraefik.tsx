@@ -142,7 +142,6 @@ export default function InstallTraefik(
 	};
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
 			if (vipChecked && address === '') {
 				setVIPNoAlive(true);
 				return;
@@ -162,12 +161,16 @@ export default function InstallTraefik(
 				return;
 			}
 			if (!skipPortConflict) {
-				if (ports && ports !== '[]') {
+				if (
+					traefikPortList?.length &&
+					traefikPortList?.some((item: any) => item.ports !== '[]')
+				) {
 					notification.error({
 						message: '错误',
 						description:
 							'当前端口组存在冲突，请重新输入或勾选强制跳过冲突端口！'
 					});
+					return;
 				}
 			}
 			if (affinity.flag) {

@@ -91,12 +91,25 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				ingressClassName: values.name,
 				traefikPortList: traefikPortList
 			};
-			if (traefikPortList?.length === 0) {
+			if (data && traefikPortList?.length === 0) {
 				notification.error({
 					message: '错误',
 					description: '服务端口范围不能为空'
 				});
 				return;
+			}
+			if (!skipPortConflict) {
+				if (
+					traefikPortList?.length &&
+					traefikPortList?.some((item: any) => item.ports !== '[]')
+				) {
+					notification.error({
+						message: '错误',
+						description:
+							'当前端口组存在冲突，请重新输入或勾选强制跳过冲突端口！'
+					});
+					return;
+				}
 			}
 			if (vipChecked && address === '') {
 				setVIPNoAlive(true);
