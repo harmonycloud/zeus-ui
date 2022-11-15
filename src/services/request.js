@@ -67,7 +67,6 @@ NProgress.configure({
 axios.interceptors.request.use(
 	(config) => {
 		NProgress.start();
-		// console.log(config);
 		if (config.method === 'get') {
 			// config.cancelToken = new cancelToken(cancel => {
 			// 	removePending(config, cancel)
@@ -77,11 +76,14 @@ axios.interceptors.request.use(
 			config.url += `${separator}noCache=${new Date().getTime()}`;
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
-		// config.headers.mwToken =
-		// 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvc3RncmVzIiwicGFzc3dvcmQiOiJoQ0R2MWNDd3RsIiwiZXhwIjoxNjY2NzY0OTg0LCJpc3MiOiJteS1wcm9qZWN0In0.qYG0VysewSL5-EcPownv_zXeGI7lhOwY4UAQqkmUwoI';
-		config.headers.mwToken = cache.getSession(MWTOKEN)
-			? cache.getSession(MWTOKEN)
-			: '';
+		if (config.headers.mwtoken === '') {
+			config.headers.mvToken = '';
+			delete config.headers.mwtoken;
+		} else {
+			config.headers.mwToken = cache.getSession(MWTOKEN)
+				? cache.getSession(MWTOKEN)
+				: '';
+		}
 		config.headers.authType = cache.getLocal(TOKEN) ? 1 : 0;
 		config.headers.projectId =
 			cache.getLocal('project') &&

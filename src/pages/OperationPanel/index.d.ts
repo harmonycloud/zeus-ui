@@ -34,7 +34,7 @@ export interface AddPgDatabaseProps {
 	clusterId: string;
 	namespace: string;
 	middlewareName: string;
-	editData: PgsqslDatabaseItem | undefined;
+	editData: PgsqlDatabaseItem | undefined;
 	onRefresh: () => void;
 }
 export interface MysqlEditTableProps {
@@ -191,7 +191,7 @@ export interface DatabaseItem {
 	character: string;
 	collate: string;
 }
-export interface PgsqslDatabaseItem {
+export interface PgsqlDatabaseItem {
 	collate: string;
 	comment: string;
 	databaseName: string;
@@ -204,7 +204,7 @@ export interface GetDatabasesRes extends resProps {
 	data: DatabaseItem[];
 }
 export interface getPgDatabaseRes extends resProps {
-	data: PgsqslDatabaseItem[];
+	data: PgsqlDatabaseItem[];
 }
 export interface MysqlTableItem {
 	tableName: string;
@@ -720,7 +720,9 @@ interface executeMysqlSqlParamsProps extends SendDataParamsProps {
 export interface MysqlSqlConsoleProps {
 	dbName: string;
 }
-
+export interface PgsqlSqlConsoleProps {
+	dbName: string;
+}
 export interface MysqlCodeConsoleProps {
 	dbName: string;
 	sql: string;
@@ -774,4 +776,32 @@ export interface ExecutionTableProps {
 	middlewareName: string;
 	database: string;
 	changeSql: (values: string) => void;
+	refreshFlag: boolean;
+}
+export interface executePgsqlSqlParamsProps extends SendDataParamsProps {
+	databaseName: string;
+	sql: string;
+}
+export interface SqlAuditParamsProps extends SendDataParamsProps {
+	current: number;
+	endTime: string | null;
+	searchWord: string;
+	size: number;
+	startTime: string | null;
+}
+// 后端这个接口定义的很恶心
+export interface SqlAuditItem {
+	clientip: string;
+	db: string;
+	ip: string;
+	lockTime: string;
+	query: string;
+	queryAction: string;
+	queryDate: string;
+	queryTime: string;
+	rowsExamined: string;
+	rowsSent: string;
+	status: string;
+	timestampMysql: string;
+	user: string;
 }

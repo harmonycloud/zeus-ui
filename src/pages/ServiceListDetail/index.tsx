@@ -434,7 +434,12 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 			localStorage.removeItem('backupTab');
 		};
 	}, []);
-
+	const toOperatorPanel = () => {
+		window.open(
+			`#/operationalPanel/sqlConsole/${project.projectId}/${globalVar.cluster.id}/${namespace}/${name}/${middlewareName}`,
+			'_blank'
+		);
+	};
 	return (
 		<ProPage>
 			<ProHeader
@@ -456,6 +461,9 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				}
 				extra={
 					<>
+						<Button type="link" onClick={toOperatorPanel}>
+							运维面板
+						</Button>
 						<Button
 							onClick={() => refresh(activeKey)}
 							style={{ padding: '0 9px', marginRight: '8px' }}
@@ -538,7 +546,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&
 						data?.mysqlDTO?.isSource === true} */}
-					{operateFlag &&
+					{/* {operateFlag &&
 					type === 'mysql' &&
 					!data?.mysqlDTO?.openDisasterRecoveryMode ? (
 						<TabPane tab="数据库管理" key="database">
@@ -557,7 +565,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<TabPane tab="数据库管理" key="redisDatabase">
 							{childrenRender('redisDatabase')}
 						</TabPane>
-					) : null}
+					) : null} */}
 				</Tabs>
 			</ProContent>
 		</ProPage>

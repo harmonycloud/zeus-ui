@@ -27,10 +27,6 @@ export default function OperationPanel(): JSX.Element {
 	}, []);
 	useEffect(() => {
 		document.title = `${params.name}控制台`;
-		return () => {
-			console.log('in');
-			storage.removeSession('mwToken', true);
-		};
 	}, []);
 	const childrenRender = () => {
 		switch (params.currentTab) {

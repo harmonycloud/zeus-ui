@@ -7,7 +7,7 @@ import { Button, Divider, notification, Space } from 'antd';
 const basicData = {
 	column: '',
 	dataType: '',
-	size: '0',
+	size: '',
 	nullable: false,
 	primary: true,
 	autoIncrement: false,
@@ -81,7 +81,7 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 			key: 'size',
 			editable: true,
 			width: 100,
-			componentType: 'number'
+			componentType: 'string'
 		},
 		{
 			title: '可空',

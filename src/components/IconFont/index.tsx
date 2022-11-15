@@ -2,9 +2,6 @@ import React from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
 import { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import Icon from '@ant-design/icons';
-import backupService from '@/assets/images/backupService.svg';
-import myProject from '@/assets/images/myProject.svg';
-import storageManage from '@/assets/images/storageManage.svg';
 
 export const IconFont = createFromIconfontCN({
 	scriptUrl: '@/src/assets/iconfont.js'

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import {
 	Button,
 	Input,
@@ -28,7 +28,7 @@ import {
 	MysqlTableItem,
 	MysqlColItem,
 	DatabaseItem,
-	PgsqslDatabaseItem,
+	PgsqlDatabaseItem,
 	SchemaItem,
 	PgsqlTableItem,
 	IndexItem
@@ -59,6 +59,8 @@ import OpenTable from '../components/OpenTable';
 import { formItemLayout618 } from '@/utils/const';
 import RedisDBMag from '../components/RedisDBMag';
 import { exportFile } from '@/utils/export';
+import storage from '@/utils/storage';
+import PgsqlSqlConsole from '../components/PgsqlSqlConsole';
 
 const { confirm } = Modal;
 const { Content, Sider } = Layout;
@@ -112,14 +114,6 @@ const pgMenuItems = [
 		key: 'modeMag'
 	}
 ];
-const initialItems = [
-	{
-		label: 'Tab 1',
-		children: <MysqlSqlConsole dbName={''} />,
-		key: '1',
-		closable: false
-	}
-];
 const updateTreeData = (
 	list: DataNode[],
 	key: React.Key,
@@ -153,9 +147,8 @@ const paneProps: SplitPaneProps = {
 };
 // * sql窗口 模版
 // TODO 对模式，数据库，列，表，索引等删除，新增，修改后，左边树图的刷新
-// TODO sql窗口 执行列表tab
 // TODO 树图 所有高亮
-// TODO 右侧tab添加、保存（sessionStorage）
+// TODO 右侧tab保存（sessionStorage）
 // TODO mysql table-index 树状图索引头部数量刷新
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
@@ -175,16 +168,24 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
-		const newPanes = [...items];
-		newPanes.push({
+		const itemTemp = {
 			label: label,
 			children: children,
 			key: newActiveKey
+		};
+		setItems((origin) => {
+			if (
+				origin.findIndex((item) => item.label === itemTemp.label) > -1
+			) {
+				setActiveKey(
+					origin.find((item) => item.label === itemTemp.label).key
+				);
+				return [...origin];
+			} else {
+				setActiveKey(newActiveKey);
+				return [...origin, itemTemp];
+			}
 		});
-		console.log(label);
-
-		setItems(newPanes);
-		setActiveKey(newActiveKey);
 	};
 	// * 导出sql语句
 	const exportSQL = (i: string, fatherNode: string) => {
@@ -198,7 +199,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				middlewareName: params.name
 			});
 			exportFile(_url, {}, i, '.txt');
-			// window.open(_url);
 		} else {
 			_url = getPgsqlSQL({
 				databaseName: selectDatabase,
@@ -223,7 +223,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				middlewareName: params.name
 			});
 			exportFile(_url, {}, i, '.xlsx');
-			// window.open(_url);
 		} else {
 			_url = getPgsqlExcel({
 				databaseName: selectDatabase,
@@ -271,7 +270,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'inquire': // * mysql sqlconsole
-				add(i, <MysqlSqlConsole dbName={i} />);
+				add(
+					i,
+					params.type === 'mysql' ? (
+						<MysqlSqlConsole dbName={i} />
+					) : (
+						<PgsqlSqlConsole dbName={i} />
+					)
+				);
 				return;
 			case 'modeMag': // * pgsql 模式管理
 				add(i, <ModeMag dbName={i} />);
@@ -527,7 +533,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									<Dropdown
 										overlay={() =>
 											pgMenu(
-												(item as PgsqslDatabaseItem)
+												(item as PgsqlDatabaseItem)
 													.databaseName
 											)
 										}
@@ -535,14 +541,27 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									>
 										<span
 											title={
-												(item as PgsqslDatabaseItem)
+												(item as PgsqlDatabaseItem)
 													.databaseName
 											}
 											className="text-overflow"
 											style={{ width: '140px' }}
+											onDoubleClick={() => {
+												add(
+													(item as PgsqlDatabaseItem)
+														.databaseName,
+													<ModeMag
+														dbName={
+															(
+																item as PgsqlDatabaseItem
+															).databaseName
+														}
+													/>
+												);
+											}}
 										>
 											{
-												(item as PgsqslDatabaseItem)
+												(item as PgsqlDatabaseItem)
 													.databaseName
 											}
 										</span>
@@ -550,7 +569,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								);
 								result.key = index + '';
 								result.value = (
-									item as PgsqslDatabaseItem
+									item as PgsqlDatabaseItem
 								).databaseName;
 								result.type = 'database';
 								result.icon = <IconFont type="icon-database" />;
@@ -619,7 +638,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								);
 								result.key = index + '';
 								result.icon = <IconFont type="icon-biaoge" />;
-								result.value = item.schemaName;
+								result.value = item.tableName;
 								return result;
 							}
 						);
@@ -798,6 +817,17 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 												title={item.tableName}
 												className="text-overflow"
 												style={{ width: '120px' }}
+												onDoubleClick={() => {
+													add(
+														value,
+														<OpenTable
+															dbName={value}
+															tableName={
+																item.tableName
+															}
+														/>
+													);
+												}}
 											>
 												{item.tableName}
 											</span>
@@ -856,7 +886,18 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										}
 										trigger={['contextMenu']}
 									>
-										<span>{item.schemaName}</span>
+										<span
+											onDoubleClick={() => {
+												add(
+													item.schemaName,
+													<PgsqlSqlConsole
+														dbName={value}
+													/>
+												);
+											}}
+										>
+											{item.schemaName}
+										</span>
 									</Dropdown>
 								);
 								result.key = `${key}-${index}`;
@@ -889,32 +930,57 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				}
 			});
 		});
-	const pgTableOnLoadData = ({ key, children }: any) =>
+	const pgTableOnLoadData = ({ key, value, children }: any) =>
 		new Promise<void>((resolve) => {
+			console.log(key, value, children);
+			console.log(selectDatabase, selectSchema);
 			if (children) {
 				resolve();
 				return;
 			}
-			setTimeout(() => {
-				setPgTableTreeData((origin) =>
-					updateTreeData(origin, key, [
-						{
-							title: '列（2）',
-							key: `${key}-0`,
-							icon: <IconFont type="icon-liebiao" />,
-							children: [
-								{
-									title: 'User',
-									key: `${key}-0-0`,
-									icon: <IconFont type="icon-liebiao" />,
-									isLeaf: true
-								}
-							]
-						}
-					])
-				);
-				resolve();
-			}, 1000);
+			getPgCols({
+				databaseName: selectDatabase,
+				schemaName: selectSchema,
+				tableName: value,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			}).then((res) => {
+				if (res.success) {
+					if (res.data.length > 0) {
+						const list = res.data.map((item, index: number) => {
+							const result: any = {};
+							result.title = <span>{item.column}</span>;
+							result.key = `${key}-0-${index}`;
+							result.icon = <IconFont type="icon-liebiao" />;
+							result.value = item.column;
+							result.isLeaf = true;
+							return result;
+						});
+						const lt = [
+							{
+								title: `列(${list.length})`,
+								key: `${key}-0`,
+								icon: <IconFont type="icon-liebiao" />,
+								children: list,
+								type: 'column'
+							}
+						];
+						setPgTableTreeData((origin) =>
+							updateTreeData(origin, key, lt)
+						);
+						resolve();
+					} else {
+						setPgTableTreeData((origin) =>
+							updateTreeData(origin, key, [])
+						);
+						resolve();
+					}
+				} else {
+					resolve();
+					return;
+				}
+			});
 		});
 	const onChange = (newActiveKey: string) => {
 		setActiveKey(newActiveKey);
@@ -940,7 +1006,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
 		if (action === 'add') {
-			add('new TAb', null);
+			// add('new TAb', null);
 		} else {
 			remove(targetKey);
 		}
@@ -997,11 +1063,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								showIcon
 								treeData={treeData}
 								loadData={mysqlOnLoadData}
-								height={
-									document.getElementsByClassName(
-										'sql-console-tree-content'
-									)[0]?.clientHeight
-								}
+								// height={
+								// 	document.getElementsByClassName(
+								// 		'sql-console-tree-content'
+								// 	)[0]?.clientHeight
+								// }
 							/>
 						</div>
 					</div>
@@ -1019,11 +1085,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								loadData={pgsqlOnLoadData}
 								expandedKeys={pgsqlExpandedKeys}
 								onSelect={pgsqlOnSelect}
-								height={
-									document.getElementsByClassName(
-										'sql-console-tree-content'
-									)[0]?.clientHeight
-								}
+								// height={
+								// 	document.getElementsByClassName(
+								// 		'sql-console-tree-content'
+								// 	)[0]?.clientHeight
+								// }
 							/>
 						</div>
 					</div>
@@ -1033,7 +1099,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						className="sql-console-sider-search"
 						style={{ paddingRight: 16 }}
 					>
-						{/* TODO 循环显示 */}
 						<div className="redis-dbs">
 							{redisListData.map((item: any) => {
 								return (
@@ -1075,6 +1140,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				/>
 				{params.type === 'mysql' && (
 					<Tabs
+						hideAdd
 						className="sql-console-tabs-content"
 						size="small"
 						type="editable-card"
@@ -1106,14 +1172,15 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								showIcon
 								treeData={pgTableTreeData}
 								loadData={pgTableOnLoadData}
-								height={
-									document.getElementsByClassName(
-										'sql-console-tree-content'
-									)[0]?.clientHeight - 50
-								}
+								// height={
+								// 	document.getElementsByClassName(
+								// 		'sql-console-tree-content'
+								// 	)[0]?.clientHeight - 50
+								// }
 							/>
 						</div>
 						<Tabs
+							hideAdd
 							className="sql-console-tabs-content"
 							style={{
 								height: 'calc(100% - 36px)',

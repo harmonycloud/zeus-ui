@@ -10,7 +10,7 @@ import { AutoCompleteOptionItem } from '@/types/comment';
 import { Button, Divider, notification, Space } from 'antd';
 const basicData = {
 	column: '',
-	dateType: '',
+	dataType: '',
 	array: false,
 	nullable: true,
 	primaryKey: false,
@@ -92,8 +92,8 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		},
 		{
 			title: '类型',
-			dataIndex: 'dateType',
-			key: 'dateType',
+			dataIndex: 'dataType',
+			key: 'dataType',
 			editable: true,
 			width: 150,
 			componentType: 'select',
