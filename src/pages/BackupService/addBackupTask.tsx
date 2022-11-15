@@ -858,12 +858,13 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			if (formData.retentionTime) {
 				sendData.dateUnit = dataSelect;
 			}
-			// if (hasTask) {
-			// 	notification.error({
-			// 		message: '失败',
-			// 		description: '该中间件下已有周期备份任务，不可多次创建'
-			// 	});
-			// }
+			if (hasTask) {
+				notification.error({
+					message: '失败',
+					description: '该服务已有周期备份任务，不可多次创建'
+				});
+				return;
+			}
 			delete sendData.cycle;
 			delete sendData.backupTime;
 			addBackupConfig(sendData).then((res) => {
