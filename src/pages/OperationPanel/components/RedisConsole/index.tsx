@@ -53,6 +53,7 @@ export default function RedisSqlConsole(
 					middlewareName={params.name}
 					database={dbName}
 					changeSql={changeSql}
+					refreshFlag={true}
 				/>
 			),
 			key: '1',
