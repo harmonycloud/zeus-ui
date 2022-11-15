@@ -163,7 +163,9 @@ export default function InstallTraefik(
 			if (!skipPortConflict) {
 				if (
 					traefikPortList?.length &&
-					traefikPortList?.some((item: any) => item.ports !== '[]')
+					traefikPortList?.some(
+						(item: any) => item.ports !== '[]' && item.ports
+					)
 				) {
 					notification.error({
 						message: '错误',
