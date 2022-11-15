@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Table, Space, Button, notification } from 'antd';
 import { useParams } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
-import {
-	MysqlUserAuthItem,
-	PgsqlUserAuthItem,
-	RoleDetailParamsProps
-} from '../index.d';
+import { MysqlUserAuthItem, ParamsProps, PgsqlUserAuthItem } from '../index.d';
 import { getUserAuth, cancelAuth } from '@/services/operatorPanel';
+import storage from '@/utils/storage';
 
 const columns = [
 	{
@@ -44,18 +41,31 @@ const mysqlColumns = [
 	},
 	{
 		title: '权限类型',
-		dataIndex: 'privilege',
-		key: 'privilege'
+		dataIndex: 'privilegeType',
+		key: 'privilegeType',
+		render: (text: any) => {
+			switch (text) {
+				case 1:
+					return '只读';
+				case 2:
+					return '管理';
+				case 3:
+					return '读写';
+				default:
+					return '-';
+			}
+		}
 	}
 ];
 export default function RoleDetail(): JSX.Element {
-	const params: RoleDetailParamsProps = useParams();
+	const params: ParamsProps = useParams();
 	const [dataSource, setDataSource] = useState<
 		PgsqlUserAuthItem[] | MysqlUserAuthItem[]
 	>([]);
 	const [selectedAuths, setSelectedAuths] = useState<
 		PgsqlUserAuthItem[] | MysqlUserAuthItem[]
 	>([]);
+	const storageUser = storage.getSession('operatorUser');
 	useEffect(() => {
 		getData();
 	}, []);
@@ -65,7 +75,10 @@ export default function RoleDetail(): JSX.Element {
 			namespace: params.namespace,
 			middlewareName: params.name,
 			type: params.type,
-			username: params.userName
+			username:
+				params.type === 'mysql'
+					? storageUser.user
+					: storageUser.userName
 		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
@@ -88,7 +101,10 @@ export default function RoleDetail(): JSX.Element {
 			namespace: params.namespace,
 			middlewareName: params.name,
 			type: params.type,
-			username: params.userName,
+			username:
+				params.type === 'mysql'
+					? storageUser.user
+					: storageUser.userName,
 			authorityList: selectedAuths
 		})
 			.then((res) => {
@@ -112,7 +128,11 @@ export default function RoleDetail(): JSX.Element {
 		<ProPage>
 			<ProHeader
 				onBack={() => window.history.back()}
-				title={`权限详情${params.userName}`}
+				title={`权限详情${
+					params.type === 'mysql'
+						? storageUser.user
+						: storageUser.userName
+				}`}
 			/>
 			<ProContent>
 				<Space className="mb-8">

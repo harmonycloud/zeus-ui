@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Space, Table, Input, Button, Switch, notification, Modal } from 'antd';
 import { useHistory, useParams } from 'react-router';
-import type { PaginationProps } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import AddAccount from './AddAccount';
 import { MysqlUserItem, ParamsProps, PgsqlUserItem } from '../index.d';
@@ -15,15 +14,13 @@ import {
 	enableMysqlUser,
 	enablePgsqlUser
 } from '@/services/operatorPanel';
+import storage from '@/utils/storage';
 const LinkButton = Actions.LinkButton;
 const { Search } = Input;
 const { confirm } = Modal;
 export default function AccountMag(): JSX.Element {
 	const history = useHistory();
 	const params: ParamsProps = useParams();
-	const [current, setCurrent] = useState<number>(1);
-	const [total, setTotal] = useState<number>();
-	const [pageSize, setPageSize] = useState<number>(10);
 	const [addOpen, setAddOpen] = useState<boolean>(false);
 	const [authOpen, setAuthOpen] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<MysqlUserItem[]>();
@@ -182,16 +179,9 @@ export default function AccountMag(): JSX.Element {
 				<span
 					className="name-link"
 					onClick={() => {
+						storage.setSession('operatorUser', record);
 						history.push(
-							`/operationalPanel/${params.currentTab}/${
-								params.projectId
-							}/${params.clusterId}/${params.namespace}/${
-								params.type
-							}/${params.name}/roleDetail/${
-								params.type === 'mysql'
-									? (record as MysqlUserItem).user
-									: (record as PgsqlUserItem).username
-							}`
+							`/operationalPanel/roleDetail/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`
 						);
 					}}
 				>
@@ -255,24 +245,9 @@ export default function AccountMag(): JSX.Element {
 		});
 	};
 	const onSearch = (value: string) => getData(value);
-	const showTotal: PaginationProps['showTotal'] = (total) => `共 ${total} 条`;
-	const onShowSizeChange: PaginationProps['onShowSizeChange'] = (
-		current,
-		pageSize
-	) => {
-		console.log(current, pageSize);
-	};
-	const onChange: PaginationProps['onChange'] = (page) => {
-		setCurrent(page);
-	};
 	const rowSelection = {
 		onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
 			setUserData(selectedRows[0]);
-			console.log(
-				`selectedRowKeys: ${selectedRowKeys}`,
-				'selectedRows: ',
-				selectedRows
-			);
 		}
 	};
 	return (
@@ -308,17 +283,6 @@ export default function AccountMag(): JSX.Element {
 						type: 'radio',
 						...rowSelection
 					}}
-					// pagination={{
-					// 	size: 'small',
-					// 	current: current,
-					// 	total: total,
-					// 	pageSize: pageSize,
-					// 	onShowSizeChange: onShowSizeChange,
-					// 	onChange: onChange,
-					// 	showTotal: showTotal,
-					// 	showSizeChanger: true,
-					// 	showQuickJumper: true
-					// }}
 				/>
 			</div>
 			{addOpen && (

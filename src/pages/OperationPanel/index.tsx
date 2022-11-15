@@ -10,6 +10,7 @@ import SqlConsole from './SqlConsole';
 import DatabaseMag from './DatabaseMag';
 import LoginConsole from './OperatorHeader/LoginConsole';
 import storage from '@/utils/storage';
+import RoleDetail from './AccountMag/RoleDetail';
 
 export default function OperationPanel(): JSX.Element {
 	const params: ParamsProps = useParams();
@@ -20,9 +21,6 @@ export default function OperationPanel(): JSX.Element {
 		if (!currentUser) {
 			// * 打开强刷后登录
 			setOpen(true);
-			// history.push(
-			// 	`/operationalPanel/sqlConsole/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}`
-			// );
 		}
 	}, []);
 	useEffect(() => {
@@ -43,6 +41,8 @@ export default function OperationPanel(): JSX.Element {
 				return <SqlAudit />;
 			case 'databaseMag':
 				return <DatabaseMag />;
+			case 'roleDetail':
+				return <RoleDetail />;
 			default:
 				break;
 		}

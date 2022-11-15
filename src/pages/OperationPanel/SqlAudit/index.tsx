@@ -34,21 +34,6 @@ const columns = [
 		key: 'db'
 	},
 	{
-		title: 'SQL类型',
-		dataIndex: 'queryAction',
-		key: 'queryAction'
-	},
-	{
-		title: '状态',
-		dataIndex: 'status',
-		key: 'status',
-		filters: [
-			{ text: '执行成功', value: 'success' },
-			{ text: '执行失败', value: 'failed' },
-			{ text: '取消执行', value: 'cancel' }
-		]
-	},
-	{
 		title: '执行语句',
 		dataIndex: 'query',
 		key: 'query'

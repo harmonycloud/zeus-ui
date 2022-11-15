@@ -146,33 +146,29 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 		}
 	}, []);
 	const showTotal: PaginationProps['showTotal'] = (total) => `共 ${total} 条`;
-	const onShowSizeChange: PaginationProps['onShowSizeChange'] = (
-		current,
-		pageSize
-	) => {
-		// TODO
-		console.log(current, pageSize);
-	};
-	const onChange: PaginationProps['onChange'] = (page) => {
-		setCurrent(page);
-	};
 	const handleTableChange = (
 		pagination: any,
 		filters: any,
 		sorter: any,
 		extra: any
 	) => {
-		console.log(sorter);
 		const list = [...orderDtoList].map((item: OrderDtoItem) => {
 			if (item.column === sorter.columnKey) {
-				item.order = sorter.order || '';
+				item.order =
+					sorter.order.substring(0, sorter.order.length - 3) || '';
 			}
 			return item;
 		});
 		setOrderDtoList(list);
-		getData(list);
+		setCurrent(pagination.current);
+		setPageSize(pagination.pageSize);
+		getData(pagination.current, pagination.pageSize, list);
 	};
-	const getData = (orderList: OrderDtoItem[]) => {
+	const getData = (
+		index: number,
+		pageSize: number,
+		orderList: OrderDtoItem[]
+	) => {
 		if (params.type === 'mysql') {
 			getMysqlData({
 				clusterId: params.clusterId,
@@ -180,7 +176,7 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 				middlewareName: params.name,
 				namespace: params.namespace,
 				table: tableName,
-				index: current,
+				index: index,
 				pageSize: pageSize,
 				orderDtoList: orderList
 			}).then((res) => {
@@ -234,8 +230,6 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 					current: current,
 					total: total,
 					pageSize: pageSize,
-					onShowSizeChange: onShowSizeChange,
-					onChange: onChange,
 					showTotal: showTotal,
 					showSizeChanger: true,
 					showQuickJumper: true

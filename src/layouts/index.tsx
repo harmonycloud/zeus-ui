@@ -403,11 +403,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				component={OperationPanel}
 				exact
 			/>
-			<Route
-				path="/operationalPanel/:currentTab/:projectId/:clusterId/:namespace/:type/:name/roleDetail/:userName"
-				component={RoleDetail}
-				exact
-			/>
 		</Router>
 	);
 	if (window.location.href.includes('operationalPanel')) {
