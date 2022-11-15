@@ -153,6 +153,19 @@ export default function InstallTraefik(
 				skipPortConflict: skipPortConflict,
 				traefikPortList: traefikPortList
 			};
+			const ports = [
+				values.httpPort,
+				values.httpsPort,
+				values.dashboardPort,
+				values.monitorPort
+			];
+			if (Array.from(new Set(ports)).length !== ports.length) {
+				notification.error({
+					message: '错误',
+					description: '端口配置有重复项'
+				});
+				return;
+			}
 			if (traefikPortList.length === 0) {
 				notification.error({
 					message: '错误',
