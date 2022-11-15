@@ -274,6 +274,7 @@ export default function ExecutionTable(
 				dataSource={dataSource}
 				columns={columns}
 				onChange={onTableChange}
+				scroll={{ x: 1140 }}
 				pagination={{
 					size: 'small',
 					current: current,

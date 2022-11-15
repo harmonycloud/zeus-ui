@@ -29,7 +29,6 @@ export default function ExecuteResultTypeOne(
 				};
 			}) || [];
 		list.unshift(indexObj);
-		console.log(list);
 		setColumns(list);
 	}, []);
 	return (

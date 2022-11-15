@@ -1,12 +1,18 @@
 import { executePgsqlSql } from '@/services/operatorPanel';
-import { ClockCircleFilled } from '@ant-design/icons';
-import { Tabs } from 'antd';
+import {
+	CheckCircleFilled,
+	ClockCircleFilled,
+	CloseCircleFilled
+} from '@ant-design/icons';
+import { notification, Tabs } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import { ParamsProps, PgsqlSqlConsoleProps } from '../../index.d';
 import ExecutionTable from '../ExectionTable';
 import MysqlCodeConsole from '../MysqlCodeConsole';
+import ExecuteResultTypeOne from '../MysqlSqlConsole/ExecuteResultTypeOne';
+import ExecuteResultTypeTwo from '../MysqlSqlConsole/ExecuteResultTypeTwo';
 
 export default function PgsqlSqlConsole(
 	props: PgsqlSqlConsoleProps
@@ -22,7 +28,7 @@ export default function PgsqlSqlConsole(
 		split: 'horizontal',
 		size: '50%',
 		pane2Style: {
-			overflow: 'auto'
+			overflowY: 'auto'
 		}
 	});
 	const changeSql = (values: string) => {
@@ -32,6 +38,14 @@ export default function PgsqlSqlConsole(
 	const handleChangeSql = (values: string) => {
 		setIsCopy(false);
 		setSql(values);
+	};
+	const add = (label: any, children: any) => {
+		const newActiveKey = `newTab${newTabIndex.current++}`;
+		setItems([
+			...items,
+			{ label: label, children: children, key: newActiveKey }
+		]);
+		setActiveKey(newActiveKey);
 	};
 	const [items, setItems] = useState<any[]>([
 		{
@@ -80,15 +94,64 @@ export default function PgsqlSqlConsole(
 		}
 	};
 	const handleExecute = () => {
-		console.log('执行');
+		console.log(sql);
 		executePgsqlSql({
 			databaseName: dbName,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
-			middlewareName: params.name
+			middlewareName: params.name,
+			sql: sql
 		}).then((res) => {
 			if (res.success) {
 				console.log(res);
+				if (res.data.status === 'success') {
+					if (sql.includes('SELECT')) {
+						const resData = {
+							data: [],
+							columns: []
+						};
+						add(
+							<span>
+								<CheckCircleFilled
+									style={{ color: '#52c41a' }}
+								/>
+								执行成功
+							</span>,
+							<ExecuteResultTypeOne resData={resData} />
+						);
+					} else {
+						const resTemp = {
+							errorMsg: res.data.message,
+							errorDetail: ''
+						};
+						add(
+							<span>
+								<CloseCircleFilled
+									style={{ color: '#ff4d4f' }}
+								/>
+								执行失败
+							</span>,
+							<ExecuteResultTypeTwo res={resTemp} />
+						);
+					}
+				} else {
+					const resTemp = {
+						errorMsg: res.data.message,
+						errorDetail: ''
+					};
+					add(
+						<span>
+							<CloseCircleFilled style={{ color: '#ff4d4f' }} />
+							执行失败
+						</span>,
+						<ExecuteResultTypeTwo res={resTemp} />
+					);
+				}
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
 		});
 	};

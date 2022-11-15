@@ -780,6 +780,7 @@ export interface ExecutionTableProps {
 }
 export interface executePgsqlSqlParamsProps extends SendDataParamsProps {
 	databaseName: string;
+	sql: string;
 }
 export interface SqlAuditParamsProps extends SendDataParamsProps {
 	current: number;
