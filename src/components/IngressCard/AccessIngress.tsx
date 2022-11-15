@@ -93,6 +93,19 @@ const AccessIngressForm = (props: AccessIngressProps) => {
 				sendData.id = data.id;
 				sendData.ingressName = values.ingressClassName;
 			}
+			const ports = [
+				values.httpPort,
+				values.httpsPort,
+				values.healthzPort,
+				values.defaultServerPort
+			];
+			if (Array.from(new Set(ports)).length !== ports.length) {
+				notification.error({
+					message: '错误',
+					description: '端口配置有重复项'
+				});
+				return;
+			}
 			if (data) {
 				onCancel();
 				updateIngress(sendData).then((res) => {

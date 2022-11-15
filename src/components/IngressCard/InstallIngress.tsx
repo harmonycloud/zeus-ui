@@ -24,6 +24,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { getNodePort, getNodeTaint } from '@/services/middleware';
 import { TolerationLabelItem } from '../FormTolerations/formTolerations';
 import { getVIPs } from '@/services/ingress';
+import { judgeObjArrayHeavyByAttr } from '@/utils/utils';
 import './index.scss';
 
 interface InstallIngressProps {
@@ -127,6 +128,19 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				type: 'nginx',
 				...values
 			};
+			const ports = [
+				values.httpPort,
+				values.httpsPort,
+				values.healthzPort,
+				values.defaultServerPort
+			];
+			if (Array.from(new Set(ports)).length !== ports.length) {
+				notification.error({
+					message: '错误',
+					description: '端口配置有重复项'
+				});
+				return;
+			}
 			if (affinity.flag) {
 				if (!affinityLabels.length) {
 					notification.error({
