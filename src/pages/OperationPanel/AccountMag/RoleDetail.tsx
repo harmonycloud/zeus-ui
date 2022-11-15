@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Table, Space, Button, notification } from 'antd';
 import { useParams } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
-import { MysqlUserAuthItem, ParamsProps, PgsqlUserAuthItem } from '../index.d';
+import {
+	getUserAuthParamsProps,
+	MysqlUserAuthItem,
+	ParamsProps,
+	PgsqlUserAuthItem
+} from '../index.d';
 import { getUserAuth, cancelAuth } from '@/services/operatorPanel';
 import storage from '@/utils/storage';
 
@@ -70,7 +75,7 @@ export default function RoleDetail(): JSX.Element {
 		getData();
 	}, []);
 	const getData = () => {
-		getUserAuth({
+		const sendData: getUserAuthParamsProps = {
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
@@ -78,8 +83,12 @@ export default function RoleDetail(): JSX.Element {
 			username:
 				params.type === 'mysql'
 					? storageUser.user
-					: storageUser.userName
-		}).then((res) => {
+					: storageUser.username
+		};
+		if (params.type === 'postgresql') {
+			sendData.oid = storageUser.id;
+		}
+		getUserAuth(sendData).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
 			} else {
@@ -104,7 +113,7 @@ export default function RoleDetail(): JSX.Element {
 			username:
 				params.type === 'mysql'
 					? storageUser.user
-					: storageUser.userName,
+					: storageUser.username,
 			authorityList: selectedAuths
 		})
 			.then((res) => {
@@ -131,7 +140,7 @@ export default function RoleDetail(): JSX.Element {
 				title={`权限详情${
 					params.type === 'mysql'
 						? storageUser.user
-						: storageUser.userName
+						: storageUser.username
 				}`}
 			/>
 			<ProContent>

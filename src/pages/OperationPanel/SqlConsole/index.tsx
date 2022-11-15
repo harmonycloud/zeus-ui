@@ -15,7 +15,7 @@ import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
-import redisImg from '@/assets/images/redis-icon.png';
+import noData from '@/assets/images/nodata.svg';
 import OperatorHeader from '../OperatorHeader';
 import { IconFont } from '@/components/IconFont';
 import { MenuInfo } from '@/types/comment';
@@ -145,6 +145,12 @@ const paneProps: SplitPaneProps = {
 		overflow: 'auto'
 	}
 };
+const InitPage = () => (
+	<div style={{ textAlign: 'center', marginTop: 50 }}>
+		<img width={200} height={200} src={noData} />
+		<p>请双击数据库打开控制台页面</p>
+	</div>
+);
 // * sql窗口 模版
 // TODO 对模式，数据库，列，表，索引等删除，新增，修改后，左边树图的刷新
 // TODO 树图 所有高亮
@@ -1138,7 +1144,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						}
 					}}
 				/>
-				{params.type === 'mysql' && (
+				{items.length === 0 && <InitPage />}
+				{items.length > 0 && params.type === 'mysql' && (
 					<Tabs
 						hideAdd
 						className="sql-console-tabs-content"
@@ -1150,7 +1157,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						items={items}
 					/>
 				)}
-				{params.type === 'redis' && (
+				{items.length > 0 && params.type === 'redis' && (
 					<Tabs
 						className="sql-console-tabs-content"
 						size="small"
@@ -1161,7 +1168,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						items={items}
 					/>
 				)}
-				{params.type === 'postgresql' && (
+				{items.length > 0 && params.type === 'postgresql' && (
 					<SplitPane {...paneProps}>
 						<div style={{ padding: '0px 0px 16px 16px' }}>
 							<Input.Search

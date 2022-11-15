@@ -450,6 +450,7 @@ export interface enableMysqlUserParamsProps extends SendDataParamsProps {
 }
 export interface getUserAuthParamsProps extends AllSendDataParamsProps {
 	username: string;
+	oid?: string;
 }
 export interface PgsqlUserAuthItem {
 	authority: string;
