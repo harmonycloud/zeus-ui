@@ -695,9 +695,9 @@ function PlatformOverview(props: any): JSX.Element {
 											onChange={paginationChange}
 											total={total}
 											simple
-											showTotal={(total) =>
-												`总数：${total}`
-											}
+											// showTotal={(total) =>
+											// 	`总数：${total}`
+											// }
 										/>
 									</div>
 								</HomeCard>
