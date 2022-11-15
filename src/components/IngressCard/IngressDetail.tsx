@@ -125,8 +125,13 @@ const traefikInfoConfig = [
 		)
 	},
 	{
-		dataIndex: 'portOrg',
-		label: '服务端口组'
+		dataIndex: 'traefikPortList',
+		label: '服务端口组',
+		render: (val: string[]) => (
+			<div className="text-overflow-one" title={val?.join(',')}>
+				{val?.join(',') || '/'}
+			</div>
+		)
 	},
 	{
 		dataIndex: 'httpPort',
@@ -188,7 +193,11 @@ export default function IngressDetail(): JSX.Element {
 						? `${res.data.startPort}-${res.data.endPort}(100个)`
 						: '/',
 					dashboardPort: res.data.dashboardPort || '/',
-					monitorPort: res.data.monitorPort || '/'
+					monitorPort: res.data.monitorPort || '/',
+					traefikPortList:
+						res.data.traefikPortList?.map(
+							(item: any) => item.startPort + '-' + item.endPort
+						) || []
 				});
 			}
 		});

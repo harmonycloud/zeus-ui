@@ -211,14 +211,13 @@ export default function InstallTraefik(
 			} else {
 				sendData.address = address;
 			}
-			onCancel();
-			console.log(sendData);
 			installIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
 						description: 'Traefik安装成功'
 					});
+					onCancel();
 					onRefresh();
 				} else {
 					notification.error({
@@ -588,6 +587,7 @@ export default function InstallTraefik(
 						</FormItem>
 					</>
 				)}
+				{console.log(portRange, traefikPortList)}
 				<FormItem label="服务端口选择" required>
 					<FormItem noStyle name="rangePort">
 						<Space>

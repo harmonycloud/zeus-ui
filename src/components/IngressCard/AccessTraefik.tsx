@@ -68,7 +68,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 			form.setFieldsValue({
 				...data
 			});
-			setTraefikPortList(data.traefikPortList);
+			setTraefikPortList(data.traefikPortList || []);
 		}
 	}, [data]);
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +91,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				ingressClassName: values.name,
 				traefikPortList: traefikPortList
 			};
-			if (traefikPortList.length === 0) {
+			if (traefikPortList?.length === 0) {
 				notification.error({
 					message: '错误',
 					description: '服务端口范围不能为空'
@@ -112,13 +112,13 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				sendData.ingressName = data.ingressClassName;
 			}
 			if (data) {
-				onCancel();
 				updateIngress(sendData).then((res) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
 							description: '负载均衡修改成功'
 						});
+						onCancel();
 						onRefresh();
 					} else {
 						notification.error({
@@ -128,13 +128,13 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 					}
 				});
 			} else {
-				onCancel();
 				accessIngress(sendData).then((res) => {
 					if (res.success) {
 						notification.success({
 							message: '成功',
 							description: '负载均衡接入成功'
 						});
+						onCancel();
 						onRefresh();
 					} else {
 						notification.error({
@@ -156,7 +156,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				setPortRange(result);
 				return;
 			}
-			traefikPortList.forEach((item) => {
+			traefikPortList?.forEach((item) => {
 				if (
 					(result.startPort >= item.startPort &&
 						result.startPort <= item.endPort) ||
@@ -261,59 +261,24 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 						</div>
 					)}
 				</FormItem>
-				<FormItem label="服务端口选择" required>
-					<FormItem noStyle name="rangePort">
-						<Space>
-							<NumberRange
-								style={{ width: '300px' }}
-								unit={''}
-								numberRange={numberRange}
-							/>
-							<Button
-								onClick={() => {
-									if (JSON.stringify(portRange) !== '{}') {
+				{console.log(portRange, traefikPortList)}
+				{data ? (
+					<FormItem label="服务端口选择" required>
+						<FormItem noStyle name="rangePort">
+							<Space>
+								<NumberRange
+									style={{ width: '300px' }}
+									unit={''}
+									numberRange={numberRange}
+								/>
+								<Button
+									onClick={() => {
 										if (
-											portRange.startPort >
-											portRange.endPort
+											JSON.stringify(portRange) !== '{}'
 										) {
-											notification.error({
-												message: '失败',
-												description:
-													'端口范围设置错误！'
-											});
-											return;
-										}
-										if (traefikPortList?.length === 0) {
-											checkTraefikPort({
-												clusterId,
-												startPort: portRange.startPort,
-												endPort: portRange.endPort
-											}).then((res) => {
-												if (res.success) {
-													const result = portRange;
-													result.ports = res.data;
-													setTraefikPortList([
-														...traefikPortList,
-														result
-													]);
-												}
-											});
-											return;
-										}
-										traefikPortList.forEach((item) => {
 											if (
-												(portRange.startPort >=
-													item.startPort &&
-													portRange.startPort <=
-														item.endPort) ||
-												(portRange.endPort >=
-													item.startPort &&
-													portRange.endPort <=
-														item.endPort) ||
-												(portRange.startPort <=
-													item.startPort &&
-													portRange.endPort >=
-														item.endPort)
+												portRange.startPort >
+												portRange.endPort
 											) {
 												notification.error({
 													message: '失败',
@@ -322,45 +287,95 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 												});
 												return;
 											}
-										});
-										checkTraefikPort({
-											clusterId,
-											startPort: portRange.startPort,
-											endPort: portRange.endPort
-										}).then((res) => {
-											if (res.success) {
-												const result = portRange;
-												result.ports = res.data;
-												setTraefikPortList([
-													...traefikPortList,
-													result
-												]);
+											if (traefikPortList?.length === 0) {
+												checkTraefikPort({
+													clusterId,
+													startPort:
+														portRange.startPort,
+													endPort: portRange.endPort
+												}).then((res) => {
+													if (res.success) {
+														const result =
+															portRange;
+														result.ports = res.data;
+														setTraefikPortList([
+															...traefikPortList,
+															result
+														]);
+													}
+												});
+												return;
 											}
-										});
-									}
-								}}
-								shape="default"
-								icon={<PlusOutlined />}
-							/>
-						</Space>
+											traefikPortList?.forEach((item) => {
+												if (
+													(portRange.startPort >=
+														item.startPort &&
+														portRange.startPort <=
+															item.endPort) ||
+													(portRange.endPort >=
+														item.startPort &&
+														portRange.endPort <=
+															item.endPort) ||
+													(portRange.startPort <=
+														item.startPort &&
+														portRange.endPort >=
+															item.endPort)
+												) {
+													notification.error({
+														message: '失败',
+														description:
+															'端口范围设置错误！'
+													});
+													return;
+												}
+											});
+											checkTraefikPort({
+												clusterId,
+												startPort: portRange.startPort,
+												endPort: portRange.endPort
+											}).then((res) => {
+												if (res.success) {
+													const result = portRange;
+													result.ports = res.data;
+													traefikPortList.length &&
+														!traefikPortList.find(
+															(item) =>
+																item.startPort ===
+																	result.startPort &&
+																item.endPort ===
+																	result.endPort
+														) &&
+														setTraefikPortList([
+															...traefikPortList,
+															result
+														]);
+												}
+											});
+										}
+									}}
+									shape="default"
+									icon={<PlusOutlined />}
+								/>
+							</Space>
+						</FormItem>
+						<FormItem noStyle name="skipPortConflict">
+							<Checkbox
+								style={{ marginLeft: 24 }}
+								checked={skipPortConflict}
+								onChange={onChange}
+							>
+								跳过冲突端口
+							</Checkbox>
+						</FormItem>
 					</FormItem>
-					<FormItem noStyle name="skipPortConflict">
-						<Checkbox
-							style={{ marginLeft: 24 }}
-							checked={skipPortConflict}
-							onChange={onChange}
-						>
-							跳过冲突端口
-						</Checkbox>
-					</FormItem>
-				</FormItem>
+				) : null}
 				{traefikPortList?.length > 0 && (
 					<Row>
 						<Col span={3}></Col>
 						<Col span={21}>
 							<div className="tag-box">
 								<Space wrap>
-									{traefikPortList.map((item: any) => (
+									{traefikPortList?.map((item: any) => (
 										<Tag
 											key={`${item.startPort}-${item.endPort}`}
 											closable
@@ -369,7 +384,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 											}}
 											onClose={() => {
 												const list =
-													traefikPortList.filter(
+													traefikPortList?.filter(
 														(i) =>
 															`${i.startPort}-${i.endPort}` !==
 															`${item.startPort}-${item.endPort}`
@@ -386,7 +401,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 					</Row>
 				)}
 				{traefikPortList?.length > 0 &&
-					traefikPortList.map((item, index) => {
+					traefikPortList?.map((item, index) => {
 						return (
 							<Row key={index}>
 								<Col span={5}></Col>
