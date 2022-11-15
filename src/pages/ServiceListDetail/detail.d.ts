@@ -4,6 +4,7 @@ import {
 	storageProps
 } from '@/types/comment';
 import { globalVarProps, paramReduxProps } from '@/types';
+import { SendDataParamsProps } from '../OperationPanel';
 export interface aclEditProps {
 	visible: boolean;
 	onCancel: (value: boolean) => void;

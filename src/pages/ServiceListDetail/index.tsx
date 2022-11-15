@@ -546,7 +546,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&
 						data?.mysqlDTO?.isSource === true} */}
-					{operateFlag &&
+					{/* {operateFlag &&
 					type === 'mysql' &&
 					!data?.mysqlDTO?.openDisasterRecoveryMode ? (
 						<TabPane tab="数据库管理" key="database">
@@ -565,7 +565,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<TabPane tab="数据库管理" key="redisDatabase">
 							{childrenRender('redisDatabase')}
 						</TabPane>
-					) : null}
+					) : null} */}
 				</Tabs>
 			</ProContent>
 		</ProPage>

@@ -5,7 +5,7 @@ import {
 	MysqlForeignItem,
 	MysqlForeignItemDetailItem,
 	MysqlForeignKeyInfoProps,
-	PgsqslDatabaseItem
+	PgsqlDatabaseItem
 } from '../../index.d';
 import { AutoCompleteOptionItem } from '@/types/comment';
 import {
@@ -74,7 +74,7 @@ export default function MysqlForeignKeyInfo(
 		}).then((res) => {
 			if (res.success) {
 				setDatabases(
-					res.data.map((item: DatabaseItem | PgsqslDatabaseItem) => {
+					res.data.map((item: DatabaseItem | PgsqlDatabaseItem) => {
 						return {
 							value: (item as DatabaseItem).db,
 							label: (item as DatabaseItem).db

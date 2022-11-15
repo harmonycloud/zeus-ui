@@ -10,15 +10,23 @@ import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/hint/show-hint.css';
 import { Button, Space } from 'antd';
 import { IconFont } from '@/components/IconFont';
-import { MysqlCodeConsoleProps } from '../../index.d';
+import {
+	MysqlCodeConsoleProps,
+	MysqlTableItem,
+	ParamsProps
+} from '../../index.d';
+import { getDbTables } from '@/services/operatorPanel';
+import { useParams } from 'react-router';
 
 export default function MysqlCodeConsole(
 	props: MysqlCodeConsoleProps
 ): JSX.Element {
 	const { dbName, sql, setSql, handleExecute, isCopy } = props;
 	console.log(dbName);
+	const params: ParamsProps = useParams();
 	const codeRef = useRef<any>(null);
 	const [codeMirrorInstance, setCodeMirrorInstance] = useState<any>();
+	const [dataSource, setDataSource] = useState<MysqlTableItem[]>([]);
 	const completeAfter = (editor: any) => {
 		const spaces = Array(editor.getOption('indentUnit')).join(';');
 		editor.replaceSelection(spaces);
@@ -53,14 +61,17 @@ export default function MysqlCodeConsole(
 		CodeMirrorInstance.on('inputRead', (editor, change) => {
 			// TODO
 			// * 根据表和列的自动填充
-			const data = {
-				test: ['t_user', 'menu', 'auth_info'],
-				t_user: [],
-				menu: [''],
-				default: ['tableinfo']
-			};
+			// console.log(dataSource);
+			// const list = dataSource.map((item) => item.tableName);
+			// const data = {
+			// 	test: ['t_user', 'menu', 'auth_info'],
+			// 	t_user: [],
+			// 	menu: [''],
+			// 	default: ['tableinfo']
+			// };
+			// console.log(list);
 			CodeMirrorInstance.setOption('hintOptions', {
-				tables: data,
+				tables: [],
 				completeSingle: false
 			});
 			CodeMirrorInstance.execCommand('autocomplete');

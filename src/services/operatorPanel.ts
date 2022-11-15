@@ -52,7 +52,7 @@ import {
 	pgsqlCreateUserParamsProps,
 	pgsqlTableDetailRes,
 	PgsqlUserAuthRes,
-	PgsqslDatabaseItem,
+	PgsqlDatabaseItem,
 	RedisCMDParamsProps,
 	RedisKesRes,
 	RedisValueRes,
@@ -62,7 +62,9 @@ import {
 	updateParamsProps,
 	updatePgsqlForeignParamsProps,
 	updatePgsqlInfoParamsProps,
-	updateRedisKeyParamsProps
+	updateRedisKeyParamsProps,
+	executePgsqlSqlParamsProps,
+	SqlAuditParamsProps
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
 
@@ -360,6 +362,9 @@ export const updateMysqlForeign: (
 export const executeMysqlSql = (params: executeMysqlSqlParamsProps) => {
 	return Axios.post(URL.executeMysqlSql, params);
 };
+export const executePgsqlSql = (params: executePgsqlSqlParamsProps) => {
+	return Axios.post(URL.executePgsqlSql, params);
+};
 // * -------------------------------------------------
 // * redis
 export const getRedisDatabases = (params: SendDataParamsProps) => {
@@ -459,4 +464,7 @@ export const getExecuteHistory: (
 ) => Promise<getExecuteHistoryRes> = (params: getExecuteHistoryParamsProps) => {
 	console.log(params);
 	return Axios.json(URL.getExecuteHistory, params, {}, 'POST');
+};
+export const sqlAudit = (params: SqlAuditParamsProps) => {
+	return Axios.json(URL.sqlAudit, params, {}, 'POST');
 };

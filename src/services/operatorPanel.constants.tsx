@@ -107,6 +107,8 @@ export const updateMysqlForeign = `${api}/clusters/{clusterId}/namespaces/{names
 export const executePgsqlSql = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/sql`;
 // * mysql 执行sql
 export const executeMysqlSql = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/query`;
+// * mysql sql 审计
+export const sqlAudit = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/auditSql`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

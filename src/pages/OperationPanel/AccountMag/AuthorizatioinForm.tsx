@@ -26,7 +26,7 @@ import {
 	MysqlUserItem,
 	PgsqlTableItem,
 	PgsqlUserItem,
-	PgsqslDatabaseItem,
+	PgsqlDatabaseItem,
 	SchemaItem
 } from '../index.d';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -86,7 +86,7 @@ export default function AuthorizationForm(
 	const [options] = useState(returnOptionsByType(type));
 	const [authType, setAuthType] = useState<string>('database');
 	const [databases, setDatabases] = useState<
-		DatabaseItem[] | PgsqslDatabaseItem[]
+		DatabaseItem[] | PgsqlDatabaseItem[]
 	>([]);
 	const [currentDatabase, setCurrentDatabase] = useState<string>();
 	const [schemas, setSchemas] = useState<SchemaItem[]>([]);
@@ -279,24 +279,24 @@ export default function AuthorizationForm(
 					>
 						<Select placeholder="请选择授权对象">
 							{databases.map(
-								(item: DatabaseItem | PgsqslDatabaseItem) => (
+								(item: DatabaseItem | PgsqlDatabaseItem) => (
 									<Option
 										value={
 											type === 'mysql'
 												? (item as DatabaseItem).db
-												: (item as PgsqslDatabaseItem)
+												: (item as PgsqlDatabaseItem)
 														.databaseName
 										}
 										key={
 											type === 'mysql'
 												? (item as DatabaseItem).db
-												: (item as PgsqslDatabaseItem)
+												: (item as PgsqlDatabaseItem)
 														.databaseName
 										}
 									>
 										{type === 'mysql'
 											? (item as DatabaseItem).db
-											: (item as PgsqslDatabaseItem)
+											: (item as PgsqlDatabaseItem)
 													.databaseName}
 									</Option>
 								)
@@ -330,7 +330,7 @@ export default function AuthorizationForm(
 											(
 												item:
 													| DatabaseItem
-													| PgsqslDatabaseItem
+													| PgsqlDatabaseItem
 											) => (
 												<Option
 													value={
@@ -408,23 +408,23 @@ export default function AuthorizationForm(
 											(
 												item:
 													| DatabaseItem
-													| PgsqslDatabaseItem
+													| PgsqlDatabaseItem
 											) => (
 												<Option
 													value={
 														(
-															item as PgsqslDatabaseItem
+															item as PgsqlDatabaseItem
 														).databaseName
 													}
 													key={
 														(
-															item as PgsqslDatabaseItem
+															item as PgsqlDatabaseItem
 														).databaseName
 													}
 												>
 													{
 														(
-															item as PgsqslDatabaseItem
+															item as PgsqlDatabaseItem
 														).databaseName
 													}
 												</Option>
@@ -486,23 +486,23 @@ export default function AuthorizationForm(
 											(
 												item:
 													| DatabaseItem
-													| PgsqslDatabaseItem
+													| PgsqlDatabaseItem
 											) => (
 												<Option
 													value={
 														(
-															item as PgsqslDatabaseItem
+															item as PgsqlDatabaseItem
 														).databaseName
 													}
 													key={
 														(
-															item as PgsqslDatabaseItem
+															item as PgsqlDatabaseItem
 														).databaseName
 													}
 												>
 													{
 														(
-															item as PgsqslDatabaseItem
+															item as PgsqlDatabaseItem
 														).databaseName
 													}
 												</Option>

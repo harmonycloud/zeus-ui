@@ -3,7 +3,7 @@ import { Button, Table, Modal, notification } from 'antd';
 import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import AddDatabase from './AddDatabase';
-import { DatabaseItem, ParamsProps, PgsqslDatabaseItem } from '../index.d';
+import { DatabaseItem, ParamsProps, PgsqlDatabaseItem } from '../index.d';
 import AddPgDatabase from './AddPgDatabase';
 import { getAllDatabase, deleteAllDatabase } from '@/services/operatorPanel';
 const LinkButton = Actions.LinkButton;
@@ -13,12 +13,12 @@ const { confirm } = Modal;
 export default function DatabaseMag(): JSX.Element {
 	const params: ParamsProps = useParams();
 	const [dataSource, setDataSource] = useState<
-		DatabaseItem[] | PgsqslDatabaseItem[]
+		DatabaseItem[] | PgsqlDatabaseItem[]
 	>([]);
 	const [open, setOpen] = useState<boolean>(false);
 	const [pgOpen, setPgOpen] = useState<boolean>(false);
 	const [mysqlEditData, setMysqlEditData] = useState<DatabaseItem>();
-	const [pgsqlEditData, setPgsqlEditData] = useState<PgsqslDatabaseItem>();
+	const [pgsqlEditData, setPgsqlEditData] = useState<PgsqlDatabaseItem>();
 	useEffect(() => {
 		getAllData();
 	}, []);
@@ -62,7 +62,7 @@ export default function DatabaseMag(): JSX.Element {
 			title: '操作',
 			key: 'action',
 			width: '25%',
-			render: (text: any, record: DatabaseItem | PgsqslDatabaseItem) => (
+			render: (text: any, record: DatabaseItem | PgsqlDatabaseItem) => (
 				<Actions>
 					<LinkButton
 						onClick={() => {
@@ -141,11 +141,11 @@ export default function DatabaseMag(): JSX.Element {
 			title: '操作',
 			dataIndex: 'action',
 			key: 'action',
-			render: (text: any, record: DatabaseItem | PgsqslDatabaseItem) => (
+			render: (text: any, record: DatabaseItem | PgsqlDatabaseItem) => (
 				<Actions>
 					<LinkButton
 						onClick={() => {
-							setPgsqlEditData(record as PgsqslDatabaseItem);
+							setPgsqlEditData(record as PgsqlDatabaseItem);
 							setPgOpen(true);
 						}}
 					>
@@ -156,7 +156,7 @@ export default function DatabaseMag(): JSX.Element {
 							confirm({
 								title: '操作确认',
 								content: `请确认是否删除${
-									(record as PgsqslDatabaseItem).databaseName
+									(record as PgsqlDatabaseItem).databaseName
 								}数据库？`,
 								onOk: () => {
 									return deleteAllDatabase({
@@ -164,7 +164,7 @@ export default function DatabaseMag(): JSX.Element {
 										namespace: params.namespace,
 										middlewareName: params.name,
 										databaseName: (
-											record as PgsqslDatabaseItem
+											record as PgsqlDatabaseItem
 										).databaseName,
 										type: 'postgresql'
 									}).then((res) => {
@@ -201,7 +201,7 @@ export default function DatabaseMag(): JSX.Element {
 			>
 				新增
 			</Button>
-			<Table<DatabaseItem | PgsqslDatabaseItem>
+			<Table<DatabaseItem | PgsqlDatabaseItem>
 				rowKey={params.type === 'mysql' ? 'db' : 'oid'}
 				dataSource={dataSource}
 				size="small"
