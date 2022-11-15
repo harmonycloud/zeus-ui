@@ -30,7 +30,8 @@ import {
 	getMiddlewares,
 	getServiceList,
 	getBackupAddress,
-	addBackupConfig
+	addBackupConfig,
+	getBackupTasks
 } from '@/services/backup';
 import moment from 'moment';
 import { weekMap, minutes } from '@/utils/const';
@@ -104,6 +105,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	const [tableData, setTableData] = useState<any>({ '': [] });
 	const [addressList, setAddressList] = useState<any>();
 	const [selectAddress, setSelectAddress] = useState<any>();
+	const [hasTask, setHasTask] = useState<boolean>(false);
 	const [incrementChecked, setIncrementChecked] = useState<boolean>(false);
 
 	const next = () => {
@@ -139,14 +141,6 @@ function AddBackupTask(props: StoreState): JSX.Element {
 
 	useEffect(() => {
 		if (params.type) {
-			setSelectText(params.name);
-			setCurrent(1);
-			setIsStep(true);
-		}
-	}, []);
-
-	useEffect(() => {
-		if (params.type) {
 			setSelectedRowKeys(params.middlewareName);
 			setSelectText(params.name);
 			setCurrent(1);
@@ -162,8 +156,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 						item.name === 'PostgreSQL'
 				);
 				serMiddleware(data);
-				setSelect(data[0].chartName);
-				setSelectText(data[0].chartName);
+				setSelect(data[0]?.chartName);
+				setSelectText(data[0]?.chartName);
 			});
 		}
 		getBackupAddress({ keyword: '' }).then((res) => {
@@ -189,6 +183,7 @@ function AddBackupTask(props: StoreState): JSX.Element {
 	useEffect(() => {
 		if (current === 1) {
 			form.setFieldsValue(formData);
+			getTasks();
 		}
 		if (current === 2) {
 			formWay.setFieldsValue(formWayData);
@@ -820,6 +815,28 @@ function AddBackupTask(props: StoreState): JSX.Element {
 		}
 	};
 
+	const getTasks = () => {
+		const sendData = {
+			keyword: '',
+			clusterId: selectedRow?.clusterId || cluster.id,
+			namespace: params.namespace || selectedRow?.namespace,
+			middlewareName: params.middlewareName || selectedRow?.name,
+			type: selectedRow?.type || params.type
+		};
+		getBackupTasks(sendData).then(async (res) => {
+			if (res.success) {
+				await setHasTask(
+					!!res.data?.find((item: any) => item.schedule)
+				);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
+
 	const handleSubmit = () => {
 		formWay.validateFields().then((values) => {
 			const minute = moment(formData.backupTime).get('minute');
@@ -830,8 +847,8 @@ function AddBackupTask(props: StoreState): JSX.Element {
 				...values,
 				...formData,
 				clusterId: selectedRow?.clusterId || cluster.id,
-				namespace: params.namespace || selectedRow.namespace,
-				middlewareName: params.middlewareName || selectedRow.name,
+				namespace: params.namespace || selectedRow?.namespace,
+				middlewareName: params.middlewareName || selectedRow?.name,
 				type: selectedRow?.type || params.type,
 				time: formData.time + 'm'
 			};
@@ -841,6 +858,12 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			if (formData.retentionTime) {
 				sendData.dateUnit = dataSelect;
 			}
+			// if (hasTask) {
+			// 	notification.error({
+			// 		message: '失败',
+			// 		description: '该中间件下已有周期备份任务，不可多次创建'
+			// 	});
+			// }
 			delete sendData.cycle;
 			delete sendData.backupTime;
 			addBackupConfig(sendData).then((res) => {
