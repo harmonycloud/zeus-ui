@@ -43,7 +43,7 @@ export default function ExecutionTable(
 	const [ascLineOrder, setAscLineOrder] = useState<boolean | null>(null);
 	const [status, setStauts] = useState<boolean | null>(null);
 	useEffect(() => {
-		getData(1, 10, '', '', '', false, false, false, false);
+		getData(1, 10, '', '', '', false, false, false);
 	}, [refreshFlag]);
 	const columns = [
 		{
@@ -124,13 +124,6 @@ export default function ExecutionTable(
 			}
 		},
 		{
-			title: '行数',
-			dataIndex: 'line',
-			key: 'line',
-			width: 80,
-			sorter: true
-		},
-		{
 			title: '耗时',
 			dataIndex: 'execTime',
 			key: 'execTime',
@@ -151,16 +144,12 @@ export default function ExecutionTable(
 		console.log(filters);
 		console.log(sorter);
 		let execDateTemp = null;
-		let lineTemp = null;
 		let execTimeTemp = null;
 		let statusTemp = null;
 		if (JSON.stringify(sorter) !== '{}') {
 			switch (sorter.field) {
 				case 'execDate':
 					execDateTemp = sorter.order === 'ascend' ? true : false;
-					break;
-				case 'line':
-					lineTemp = sorter.order === 'ascend' ? true : false;
 					break;
 				case 'execTime':
 					execTimeTemp = sorter.order === 'ascend' ? true : false;
@@ -177,7 +166,6 @@ export default function ExecutionTable(
 		setStauts(statusTemp);
 		setAscExecDateOrder(execDateTemp);
 		setAscExecTimeOrder(execTimeTemp);
-		setAscLineOrder(lineTemp);
 		getData(
 			pagination.current,
 			pagination.pageSize,
@@ -186,7 +174,6 @@ export default function ExecutionTable(
 			endTime,
 			execDateTemp,
 			execTimeTemp,
-			lineTemp,
 			statusTemp
 		);
 	};
@@ -199,7 +186,6 @@ export default function ExecutionTable(
 			endTime,
 			ascExecDateOrder,
 			ascExecTimeOrder,
-			ascLineOrder,
 			status
 		);
 	};
@@ -214,7 +200,6 @@ export default function ExecutionTable(
 			formatString[1],
 			false,
 			false,
-			false,
 			false
 		);
 	};
@@ -226,7 +211,6 @@ export default function ExecutionTable(
 		endTime: string | null,
 		ascExecDateOrder: boolean | null,
 		ascExecTimeOrder: boolean | null,
-		ascLineOrder: boolean | null,
 		status: boolean | null
 	) => {
 		getExecuteHistory({
@@ -241,7 +225,6 @@ export default function ExecutionTable(
 			middlewareName,
 			ascExecDateOrder: ascExecDateOrder,
 			ascExecTimeOrder: ascExecTimeOrder,
-			ascLineOrder: ascLineOrder,
 			status: status
 		}).then((res) => {
 			if (res.success) {

@@ -742,7 +742,6 @@ export interface getExecuteHistoryParamsProps extends SendDataParamsProps {
 	database: string;
 	ascExecDateOrder: boolean | null;
 	ascExecTimeOrder: boolean | null;
-	ascLineOrder: boolean | null;
 	endTime: string | null;
 	keyword: string;
 	pageNum: number;
