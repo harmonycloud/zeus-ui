@@ -633,24 +633,16 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (!res.data) return;
 			setInstanceSpec('Customize');
 			if (res.data?.nodeAffinity?.length > 0) {
-				if (
-					res.data?.nodeAffinity?.filter((item: any) => !item.anti)
-						?.length
-				) {
-					setAffinityFlag(true);
-					setAffinityLabels(
-						res.data?.nodeAffinity?.filter(
-							(item: any) => !item.anti
-						) || []
-					);
-				} else {
-					setAntiFlag(true);
-					setAntiLabels(
-						res.data?.nodeAffinity?.filter(
-							(item: any) => item.anti
-						) || []
-					);
-				}
+				setAffinityFlag(true);
+				setAffinityLabels(
+					res.data?.nodeAffinity?.filter((item: any) => !item.anti) ||
+						[]
+				);
+				setAntiFlag(true);
+				setAntiLabels(
+					res.data?.nodeAffinity?.filter((item: any) => item.anti) ||
+						[]
+				);
 			}
 			if (res.data?.tolerations?.length > 0) {
 				setTolerations({
