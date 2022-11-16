@@ -102,7 +102,7 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 	return (
 		<Modal
 			open={open}
-			title="新增"
+			title={editData ? '编辑' : '新增'}
 			onCancel={onCancel}
 			onOk={onOk}
 			width={500}
@@ -115,7 +115,10 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 					/>
 				</Form.Item>
 				<Form.Item required label="字符集" name="encoding">
-					<Select placeholder="请选择字符集">
+					<Select
+						disabled={editData ? true : false}
+						placeholder="请选择字符集"
+					>
 						{encoding.map((item: string) => (
 							<Option key={item} value={item}>
 								{item}
