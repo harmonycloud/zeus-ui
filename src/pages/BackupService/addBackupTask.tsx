@@ -858,7 +858,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 			if (formData.retentionTime) {
 				sendData.dateUnit = dataSelect;
 			}
-			if (hasTask) {
+			console.log(hasTask, formData);
+
+			if (hasTask && formData.way === 'time') {
 				notification.error({
 					message: '失败',
 					description: '该服务已有周期备份任务，不可多次创建'
