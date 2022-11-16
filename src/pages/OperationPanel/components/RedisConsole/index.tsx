@@ -5,8 +5,8 @@ import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisCodeConsole from '../RedisCodeConsole';
 import ExecutionTable from '../ExectionTable';
 import { MysqlSqlConsoleProps, ParamsProps } from '../../index.d';
-import { executeMysqlSql } from '@/services/operatorPanel';
-import ExecuteResultTypeOne from '../MysqlSqlConsole/ExecuteResultTypeOne';
+import { executeCMD } from '@/services/operatorPanel';
+import ExecuteResultTypeOne from './ExecuteResultTypeOne';
 import {
 	CheckCircleFilled,
 	CloseCircleFilled,
@@ -28,7 +28,7 @@ export default function RedisSqlConsole(
 	});
 	const [activeKey, setActiveKey] = useState('1');
 	const newTabIndex = useRef(0);
-	const [sql, setSql] = useState<string>('SELECT * from');
+	const [sql, setSql] = useState<string>('');
 	const [isCopy, setIsCopy] = useState<boolean>(false);
 	const changeSql = (values: string) => {
 		setIsCopy(true);
@@ -95,10 +95,10 @@ export default function RedisSqlConsole(
 	};
 	// * 执行sql语句方法
 	const handleExecute = () => {
-		let sqlT = sql;
-		if (sqlT.charAt(sqlT.length - 1) !== ';') {
-			sqlT = sqlT + ';';
-		}
+		// let sqlT = sql;
+		// if (sqlT.charAt(sqlT.length - 1) !== ';') {
+		// 	sqlT = sqlT + ';';
+		// }
 		// let list = sqlT.split(';');
 		// console.log(list);
 		// TODO 多条sql语句循环执行，筛选无效语句
@@ -106,23 +106,30 @@ export default function RedisSqlConsole(
 		// 	.filter((item: string) => item !== '')
 		// 	.map((item) => item + ';');
 		// console.log(list);
-		executeMysqlSql({
+		executeCMD({
 			database: dbName,
-			sql: sqlT,
+			cmd: sql,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name
 		}).then((res) => {
 			if (res.success) {
-				if (sqlT.includes('SELECT')) {
-					add(
-						<span>
-							<CheckCircleFilled style={{ color: '#52c41a' }} />
-							执行成功
-						</span>,
-						<ExecuteResultTypeOne resData={res.data} />
-					);
-				}
+				// if (sqlT.includes('SELECT')) {
+				// 	add(
+				// 		<span>
+				// 			<CheckCircleFilled style={{ color: '#52c41a' }} />
+				// 			执行成功
+				// 		</span>,
+				// 		<ExecuteResultTypeOne resData={[]} />
+				// 	);
+				// }
+				add(
+					<span>
+						<CheckCircleFilled style={{ color: '#52c41a' }} />
+						执行成功
+					</span>,
+					<ExecuteResultTypeOne resData={res} />
+				);
 			} else {
 				add(
 					<span>
