@@ -13,6 +13,7 @@ import type { PaginationProps, RadioChangeEvent } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { sqlAudit } from '@/services/operatorPanel';
 import { ParamsProps, SqlAuditItem } from '../index.d';
+import moment from 'moment';
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -46,13 +47,25 @@ export default function SqlAudit(): JSX.Element {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [executionTime, setExecutionTime] = useState<string>('');
 	const [dataSource, setDataSource] = useState<SqlAuditItem[]>([]);
+	const [startTime, setStartTime] = useState<string>('');
+	const [endTime, setEndTime] = useState<string>('');
+	const [keywords, setKeywords] = useState<string>('');
 	useEffect(() => {
+		getData(1, pageSize, '', '', '');
+	}, []);
+	const getData = (
+		current: number,
+		pageSize: number,
+		startTime: string,
+		endTime: string,
+		searchWord: string
+	) => {
 		sqlAudit({
-			current: 1,
-			endTime: null,
-			searchWord: '',
-			size: 10,
-			startTime: null,
+			current: current,
+			endTime: endTime,
+			searchWord: searchWord,
+			size: pageSize,
+			startTime: startTime,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name
@@ -67,22 +80,54 @@ export default function SqlAudit(): JSX.Element {
 				});
 			}
 		});
-	}, []);
-	const onSearch = (value: string) => console.log(value);
-	const onRefresh = () => console.log('refresh');
+	};
+	const onSearch = (value: string) => {
+		setKeywords(value);
+		getData(current, pageSize, startTime, endTime, value);
+	};
+	const onRefresh = () => {
+		getData(current, pageSize, startTime, endTime, keywords);
+	};
 	const showTotal: PaginationProps['showTotal'] = (total) => `共 ${total} 条`;
 	const onShowSizeChange: PaginationProps['onShowSizeChange'] = (
 		current,
 		pageSize
 	) => {
-		console.log(current, pageSize);
+		setCurrent(current);
+		setPageSize(pageSize);
+		getData(current, pageSize, startTime, endTime, keywords);
 	};
 	const onChange: PaginationProps['onChange'] = (page) => {
-		console.log(page);
 		setCurrent(page);
+		getData(page, pageSize, startTime, endTime, keywords);
 	};
 	const handleRadioChange = (e: RadioChangeEvent) => {
 		setExecutionTime(e.target.value);
+		let startTime = '';
+		let endTime = '';
+		switch (e.target.value) {
+			case '1day':
+				startTime = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				endTime = moment().format('YYYY-MM-DD');
+				break;
+			case '3day':
+				startTime = moment().subtract(3, 'days').format('YYYY-MM-DD');
+				endTime = moment().format('YYYY-MM-DD');
+				break;
+			case '7day':
+				startTime = moment().subtract(1, 'week').format('YYYY-MM-DD');
+				endTime = moment().format('YYYY-MM-DD');
+				break;
+			case '1month':
+				startTime = moment().subtract(1, 'month').format('YYYY-MM-DD');
+				endTime = moment().format('YYYY-MM-DD');
+				break;
+			default:
+				break;
+		}
+		setStartTime(startTime);
+		setEndTime(endTime);
+		getData(current, pageSize, startTime, endTime, keywords);
 	};
 	return (
 		<main className="sql-audit-main">

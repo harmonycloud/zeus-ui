@@ -829,7 +829,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 											style={{ width: '120px' }}
 											onDoubleClick={() => {
 												add(
-													value,
+													item.tableName,
 													<OpenTable
 														dbName={value}
 														tableName={
