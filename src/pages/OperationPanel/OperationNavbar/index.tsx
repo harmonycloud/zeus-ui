@@ -40,6 +40,9 @@ export default function OperationNavbar(): JSX.Element {
 		if (params.type === 'postgresql') {
 			items = items?.filter((item) => item?.key !== 'sqlAudit');
 		}
+		if (params.version === '8.0') {
+			items = items?.filter((item) => item?.key !== 'sqlAudit');
+		}
 	}, []);
 	const onClick: MenuProps['onClick'] = (e) => {
 		setCurrent(e.key);
