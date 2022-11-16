@@ -23,7 +23,7 @@ export default function RedisDBMag(props: RedisDBMagProps): JSX.Element {
 				{
 					label: '控制台',
 					key: 'console',
-					children: <RedisConsole dbName={'1'} />
+					children: <RedisConsole dbName={dbName} />
 				}
 			]}
 		/>

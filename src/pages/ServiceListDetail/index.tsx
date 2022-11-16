@@ -436,7 +436,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	}, []);
 	const toOperatorPanel = () => {
 		window.open(
-			`#/operationalPanel/sqlConsole/${project.projectId}/${globalVar.cluster.id}/${namespace}/${name}/${middlewareName}`,
+			`#/operationalPanel/sqlConsole/${project.projectId}/${globalVar.cluster.id}/${namespace}/${name}/${middlewareName}/${data?.version}`,
 			'_blank'
 		);
 	};

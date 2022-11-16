@@ -6,6 +6,7 @@ export interface ParamsProps {
 	projectId: string;
 	clusterId: string;
 	namespace: string;
+	version: string;
 }
 export interface RoleDetailParamsProps extends ParamsProps {
 	userName: string;
@@ -164,6 +165,7 @@ export interface LoginConsoleProps {
 	namespace: string;
 	middlewareName: string;
 	middlewareType: string;
+	version: string;
 	onCreate: (values: consoleUser) => void;
 }
 export interface OperatorHeaderProps {

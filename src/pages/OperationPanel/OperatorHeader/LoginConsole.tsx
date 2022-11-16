@@ -24,6 +24,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 		namespace,
 		middlewareName,
 		middlewareType,
+		version,
 		onCreate
 	} = props;
 	const [form] = Form.useForm();
@@ -100,8 +101,18 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					label="账号"
 					name="username"
 					rules={[{ required: false, message: '请输入账号' }]}
+					initialValue={
+						middlewareType === 'redis' && version === '5.0'
+							? 'default'
+							: ''
+					}
 				>
-					<Input placeholder="请输入" />
+					<Input
+						placeholder="请输入"
+						disabled={
+							middlewareType === 'redis' && version === '5.0'
+						}
+					/>
 				</Form.Item>
 				<Form.Item
 					label="密码"

@@ -87,6 +87,7 @@ export default function OperationPanel(): JSX.Element {
 					namespace={params.namespace}
 					middlewareName={params.name}
 					middlewareType={params.type}
+					version={params.version}
 				/>
 			)}
 		</div>
