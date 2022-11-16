@@ -9,7 +9,8 @@ import {
 	Menu,
 	notification,
 	Modal,
-	Form
+	Form,
+	Spin
 } from 'antd';
 import { useParams } from 'react-router';
 import { LeftOutlined, ReloadOutlined, RightOutlined } from '@ant-design/icons';
@@ -167,9 +168,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [pgTableTreeData, setPgTableTreeData] = useState<DataNode[]>([]);
 	const [activeKey, setActiveKey] = useState('');
 	const [items, setItems] = useState<any[]>([]);
-	const [pgsqlExpandedKeys, setPgsqlExpandedKeys] = useState<string[]>([]);
+	const [pgsqlExpandedKeys, setPgsqlExpandedKeys] = useState<any[]>([]);
+	const [mysqlExpandedKeys, setMysqlExpandedKeys] = useState<any[]>([]);
 	const [selectDatabase, setSelectDatabase] = useState<string>('');
 	const [selectSchema, setSelectSchema] = useState<string>('');
+	const [mysqlSpinning, setMysqlSpinning] = useState<boolean>(false);
+	const [mysqlLoadedKeys, setMysqlLoadedKeys] = useState<any[]>([]);
+	const [pgsqlLoadedKeys, setPgsqlLoadedKeys] = useState<any[]>([]);
 	const newTabIndex = useRef(0);
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
@@ -479,56 +484,66 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				type: params.type
 			};
 			if (params.type === 'mysql') {
-				getAllDatabase(sendData).then((res) => {
-					if (res.success) {
-						if (res.data.length > 0) {
-							const list = res.data.map((item, index) => {
-								const result: any = {};
-								result.title = (
-									<Dropdown
-										overlay={() =>
-											menu((item as DatabaseItem).db)
-										}
-										trigger={['contextMenu']}
-									>
-										<span
-											title={(item as DatabaseItem).db}
-											className="text-overflow"
-											style={{ width: '140px' }}
-											onDoubleClick={() =>
-												add(
-													(item as DatabaseItem).db,
-													<MysqlSqlConsole
-														dbName={
-															(
-																item as DatabaseItem
-															).db
-														}
-													/>
-												)
+				setMysqlSpinning(true);
+				getAllDatabase(sendData)
+					.then((res) => {
+						if (res.success) {
+							if (res.data.length > 0) {
+								const list = res.data.map((item, index) => {
+									const result: any = {};
+									result.title = (
+										<Dropdown
+											overlay={() =>
+												menu((item as DatabaseItem).db)
 											}
+											trigger={['contextMenu']}
 										>
-											{(item as DatabaseItem).db}
-										</span>
-									</Dropdown>
-								);
-								result.key = index + '';
-								result.value = (item as DatabaseItem).db;
-								result.type = 'database';
-								result.icon = <IconFont type="icon-database" />;
-								return result;
-							});
-							setTreeData(list);
+											<span
+												title={
+													(item as DatabaseItem).db
+												}
+												className="text-overflow"
+												style={{ width: '140px' }}
+												onDoubleClick={() =>
+													add(
+														(item as DatabaseItem)
+															.db,
+														<MysqlSqlConsole
+															dbName={
+																(
+																	item as DatabaseItem
+																).db
+															}
+														/>
+													)
+												}
+											>
+												{(item as DatabaseItem).db}
+											</span>
+										</Dropdown>
+									);
+									result.key = index + '';
+									result.value = (item as DatabaseItem).db;
+									result.type = 'database';
+									result.icon = (
+										<IconFont type="icon-database" />
+									);
+									return result;
+								});
+								setTreeData(list);
+							} else {
+								setTreeData([]);
+							}
 						} else {
-							setTreeData([]);
+							notification.error({
+								message: '失败',
+								description: res.errorMsg
+							});
 						}
-					} else {
-						notification.error({
-							message: '失败',
-							description: res.errorMsg
-						});
-					}
-				});
+					})
+					.finally(() => {
+						setMysqlSpinning(false);
+					});
 			} else if (params.type === 'postgresql') {
 				getAllDatabase(sendData).then((res) => {
 					if (res.success) {
@@ -661,8 +676,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			});
 		}
 	}, [selectDatabase, selectSchema]);
-	const mysqlOnLoadData = ({ key, value, type, children }: any) =>
-		new Promise<void>((resolve) => {
+	const mysqlOnLoadData = ({ key, value, type, children }: any) => {
+		return new Promise<void>((resolve) => {
 			console.log(key, type, value, children);
 			if (children) {
 				resolve();
@@ -671,14 +686,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			if (type === 'table') {
 				// * 当前加载的树为表格的情况
 				const array = key.split('-');
-				const sendData = {
+				getCols({
 					clusterId: params.clusterId,
 					namespace: params.namespace,
 					middlewareName: params.name,
 					database: array[0],
 					table: value
-				};
-				getCols(sendData).then((res) => {
+				}).then((res) => {
 					if (res.success) {
 						if (res.data.length > 0) {
 							const list = res.data.map(
@@ -777,14 +791,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								}
 							);
 							setTreeData((origin) => {
-								// const l = origin.map((item) => {
-								// 	item?.children?.map((i) => {
-								// 		if (i.key === key) {
-								// 			i.title = `索引(${list.length})`;
-								// 		}
-								// 	});
-								// 	return item;
-								// });
 								return updateTreeData(origin, key, list);
 							});
 							resolve();
@@ -800,74 +806,64 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					}
 				});
 			} else {
-				const sendData = {
+				getDbTables({
 					clusterId: params.clusterId,
 					namespace: params.namespace,
 					middlewareName: params.name,
 					database: value
-				};
-				getDbTables(sendData).then((res) => {
+				}).then((res) => {
 					if (res.success) {
-						if (res.data.length > 0) {
-							const list = res.data.map(
-								(item: MysqlTableItem, index) => {
-									const result: any = {};
-									result.title = (
-										<Dropdown
-											overlay={() =>
-												tableMenu(item.tableName, value)
-											}
-											trigger={['contextMenu']}
+						const list = res.data.map(
+							(item: MysqlTableItem, index) => {
+								const result: any = {};
+								result.title = (
+									<Dropdown
+										overlay={() =>
+											tableMenu(item.tableName, value)
+										}
+										trigger={['contextMenu']}
+									>
+										<span
+											title={item.tableName}
+											className="text-overflow"
+											style={{ width: '120px' }}
+											onDoubleClick={() => {
+												add(
+													value,
+													<OpenTable
+														dbName={value}
+														tableName={
+															item.tableName
+														}
+													/>
+												);
+											}}
 										>
-											<span
-												title={item.tableName}
-												className="text-overflow"
-												style={{ width: '120px' }}
-												onDoubleClick={() => {
-													add(
-														value,
-														<OpenTable
-															dbName={value}
-															tableName={
-																item.tableName
-															}
-														/>
-													);
-												}}
-											>
-												{item.tableName}
-											</span>
-										</Dropdown>
-									);
-									result.key = `${value}-${index}`;
-									result.value = item.tableName;
-									result.type = 'table';
-									result.icon = (
-										<IconFont
-											style={{ fontSize: 16 }}
-											type="icon-biaoge"
-										/>
-									);
-									return result;
-								}
-							);
-							setTreeData((origin) =>
-								updateTreeData(origin, key, list)
-							);
-							resolve();
-						} else {
-							setTreeData((origin) =>
-								updateTreeData(origin, key, [])
-							);
-							resolve();
-						}
-					} else {
+											{item.tableName}
+										</span>
+									</Dropdown>
+								);
+								result.key = `${value}-${index}`;
+								result.value = item.tableName;
+								result.type = 'table';
+								result.icon = (
+									<IconFont
+										style={{ fontSize: 16 }}
+										type="icon-biaoge"
+									/>
+								);
+								return result;
+							}
+						);
+						setTreeData((origin) =>
+							updateTreeData(origin, key, list)
+						);
 						resolve();
-						return;
 					}
 				});
 			}
 		});
+	};
 	const pgsqlOnLoadData = ({ key, value, children }: any) =>
 		new Promise<void>((resolve) => {
 			if (children) {
@@ -1030,6 +1026,179 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		setSelectDatabase(dbName);
 		add('DB-' + dbName, <RedisDBMag dbName={dbName} />);
 	};
+	const onLoad = (loadedKeys: Key[], info: any, type: string) => {
+		if (type === 'mysql') {
+			setMysqlLoadedKeys(loadedKeys);
+		} else {
+			setPgsqlLoadedKeys(loadedKeys);
+		}
+	};
+	const mysqlOnExpand = (expandedKeys: Key[], info: any) => {
+		let newMysqlLoadedKeys = mysqlLoadedKeys;
+		if (mysqlExpandedKeys.length > expandedKeys.length) {
+			newMysqlLoadedKeys = mysqlLoadedKeys.filter((i) =>
+				expandedKeys.includes(i)
+			);
+		}
+		setMysqlLoadedKeys(newMysqlLoadedKeys);
+		setMysqlExpandedKeys(expandedKeys);
+	};
+	const pgsqlOnExpand = (expandedKeys: Key[], info: any) => {
+		let newPgsqlLoadedKeys = pgsqlLoadedKeys;
+		if (pgsqlExpandedKeys.length > expandedKeys.length) {
+			newPgsqlLoadedKeys = pgsqlLoadedKeys.filter((i) =>
+				expandedKeys.includes(i)
+			);
+		}
+		setPgsqlLoadedKeys(newPgsqlLoadedKeys);
+		setPgsqlExpandedKeys(expandedKeys);
+	};
+	// * 左侧树状图的刷新
+	const getData = () => {
+		setMysqlExpandedKeys([]);
+		setPgsqlExpandedKeys([]);
+		const sendData = {
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name,
+			type: params.type
+		};
+		if (params.type === 'mysql') {
+			setMysqlSpinning(true);
+			getAllDatabase(sendData)
+				.then((res) => {
+					if (res.success) {
+						const list = res.data.map((item, index) => {
+							const result: any = {};
+							result.title = (
+								<Dropdown
+									overlay={() =>
+										menu((item as DatabaseItem).db)
+									}
+									trigger={['contextMenu']}
+								>
+									<span
+										title={(item as DatabaseItem).db}
+										className="text-overflow"
+										style={{ width: '140px' }}
+										onDoubleClick={() =>
+											add(
+												(item as DatabaseItem).db,
+												<MysqlSqlConsole
+													dbName={
+														(item as DatabaseItem)
+															.db
+													}
+												/>
+											)
+										}
+									>
+										{(item as DatabaseItem).db}
+									</span>
+								</Dropdown>
+							);
+							result.key = index + '';
+							result.value = (item as DatabaseItem).db;
+							result.type = 'database';
+							result.isLeaf = false;
+							result.icon = <IconFont type="icon-database" />;
+							return result;
+						});
+						setTreeData(list);
+					} else {
+						notification.error({
+							message: '失败',
+							description: res.errorMsg
+						});
+					}
+				})
+				.finally(() => {
+					setMysqlSpinning(false);
+				});
+		} else if (params.type === 'postgresql') {
+			getAllDatabase(sendData).then((res) => {
+				if (res.success) {
+					if (res.data.length > 0) {
+						const list = res.data.map((item, index) => {
+							const result: any = {};
+							result.title = (
+								<Dropdown
+									overlay={() =>
+										pgMenu(
+											(item as PgsqlDatabaseItem)
+												.databaseName
+										)
+									}
+									trigger={['contextMenu']}
+								>
+									<span
+										title={
+											(item as PgsqlDatabaseItem)
+												.databaseName
+										}
+										className="text-overflow"
+										style={{ width: '140px' }}
+										onDoubleClick={() => {
+											add(
+												(item as PgsqlDatabaseItem)
+													.databaseName,
+												<ModeMag
+													dbName={
+														(
+															item as PgsqlDatabaseItem
+														).databaseName
+													}
+												/>
+											);
+										}}
+									>
+										{
+											(item as PgsqlDatabaseItem)
+												.databaseName
+										}
+									</span>
+								</Dropdown>
+							);
+							result.key = index + '';
+							result.value = (
+								item as PgsqlDatabaseItem
+							).databaseName;
+							result.type = 'database';
+							result.isLeaf = false;
+							result.icon = <IconFont type="icon-database" />;
+							return result;
+						});
+						setPgTreeData(list);
+						setPgsqlExpandedKeys([list[0].key]);
+						setSelectDatabase(list[0].value);
+					} else {
+						setPgTreeData([]);
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		} else {
+			getRedisDatabases({
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name
+			}).then((res) => {
+				if (res.success) {
+					setRedisListData(res.data);
+					redisDbClick('' + res.data[0]?.db);
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
 			<Sider
@@ -1056,7 +1225,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					<div title={params.name + '控制台'}>
 						{params.name}控制台
 					</div>
-					<Button icon={<ReloadOutlined />} />
+					<Button onClick={getData} icon={<ReloadOutlined />} />
 				</div>
 				{params.type === 'mysql' && (
 					<div className="sql-console-sider-search">
@@ -1065,16 +1234,25 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							style={{ marginBottom: 8, paddingRight: 16 }}
 						/>
 						<div className="sql-console-tree-content">
-							<Tree
-								showIcon
-								treeData={treeData}
-								loadData={mysqlOnLoadData}
-								// height={
-								// 	document.getElementsByClassName(
-								// 		'sql-console-tree-content'
-								// 	)[0]?.clientHeight
-								// }
-							/>
+							<Spin spinning={mysqlSpinning}>
+								<Tree
+									showIcon
+									treeData={treeData}
+									loadData={mysqlOnLoadData}
+									onExpand={mysqlOnExpand}
+									expandedKeys={mysqlExpandedKeys}
+									loadedKeys={mysqlLoadedKeys}
+									onLoad={(loadedKeys, info) =>
+										onLoad(loadedKeys, info, 'mysql')
+									}
+									// onSelect={mysqlOnSelect}
+									// height={
+									// 	document.getElementsByClassName(
+									// 		'sql-console-tree-content'
+									// 	)[0]?.clientHeight
+									// }
+								/>
+							</Spin>
 						</div>
 					</div>
 				)}
@@ -1090,6 +1268,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								treeData={pgTreeData}
 								loadData={pgsqlOnLoadData}
 								expandedKeys={pgsqlExpandedKeys}
+								loadedKeys={pgsqlLoadedKeys}
+								onLoad={(loadedKeys, info) =>
+									onLoad(loadedKeys, info, 'pgsql')
+								}
+								onExpand={pgsqlOnExpand}
 								onSelect={pgsqlOnSelect}
 								// height={
 								// 	document.getElementsByClassName(
