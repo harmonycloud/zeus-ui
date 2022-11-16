@@ -517,7 +517,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					}(${
 						data.nodeAffinity &&
 						data.nodeAffinity.length > 0 &&
-						data.nodeAffinity[0].required
+						data.nodeAffinity.filter((item) => !item.anti)[0]
+							.required
 							? '强制'
 							: '非强制'
 					})`,
@@ -532,7 +533,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					}(${
 						data.nodeAffinity &&
 						data.nodeAffinity.length > 0 &&
-						data.nodeAffinity[0].required
+						data.nodeAffinity.filter((item) => item.anti)[0]
+							.required
 							? '强制'
 							: '非强制'
 					})`,
@@ -562,7 +564,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					}(${
 						data.nodeAffinity &&
 						data.nodeAffinity.length > 0 &&
-						data.nodeAffinity[0].required
+						data.nodeAffinity.filter((item) => !item.anti)[0]
+							.required
 							? '强制'
 							: '非强制'
 					})`,
@@ -577,7 +580,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					}(${
 						data.nodeAffinity &&
 						data.nodeAffinity.length > 0 &&
-						data.nodeAffinity[0].required
+						data.nodeAffinity.filter((item) => item.anti)[0]
+							.required
 							? '强制'
 							: '非强制'
 					})`,
