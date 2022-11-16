@@ -395,7 +395,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked || item.required,
+							required: item.checked || item.required || false,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -403,7 +403,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAnti = antiLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked || item.required,
+							required: item.checked || item.required || false,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -426,7 +426,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked || item.required,
+							required: item.checked || item.required || false,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
@@ -434,7 +434,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					const nodeAnti = antiLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked || item.required,
+							required: item.checked || item.required || false,
 							anti: item.anti,
 							namespace: globalNamespace.name
 						};
