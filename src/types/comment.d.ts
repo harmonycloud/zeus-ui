@@ -6,6 +6,7 @@ export interface StackTraceElement {
 }
 export interface resProps {
 	readonly code?: number;
+	data: any;
 	errorMsg?: string | null;
 	errorDetail?: string | null;
 	success?: boolean;

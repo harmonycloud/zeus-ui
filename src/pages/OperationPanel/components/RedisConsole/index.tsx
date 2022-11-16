@@ -7,12 +7,12 @@ import ExecutionTable from '../ExectionTable';
 import { MysqlSqlConsoleProps, ParamsProps } from '../../index.d';
 import { executeCMD } from '@/services/operatorPanel';
 import ExecuteResultTypeOne from './ExecuteResultTypeOne';
+import ExecuteResultTypeTwo from './ExecuteResultTwo';
 import {
 	CheckCircleFilled,
 	CloseCircleFilled,
 	ClockCircleFilled
 } from '@ant-design/icons';
-import ExecuteResultTypeTwo from '../MysqlSqlConsole/ExecuteResultTypeTwo';
 
 export default function RedisSqlConsole(
 	props: MysqlSqlConsoleProps
@@ -113,7 +113,7 @@ export default function RedisSqlConsole(
 			namespace: params.namespace,
 			middlewareName: params.name
 		}).then((res) => {
-			if (res.success) {
+			if (res.data.success) {
 				// if (sqlT.includes('SELECT')) {
 				// 	add(
 				// 		<span>
@@ -128,7 +128,7 @@ export default function RedisSqlConsole(
 						<CheckCircleFilled style={{ color: '#52c41a' }} />
 						执行成功
 					</span>,
-					<ExecuteResultTypeOne resData={res} />
+					<ExecuteResultTypeOne resData={res.data} />
 				);
 			} else {
 				add(

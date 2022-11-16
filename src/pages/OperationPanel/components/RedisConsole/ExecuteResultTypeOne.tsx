@@ -8,14 +8,14 @@ export default function ExecuteResultTypeTwo(
 		<div>
 			<p>执行成功</p>
 			<p>执行结果：</p>
-			{resData.data.data instanceof Array ? (
+			{resData.data instanceof Array ? (
 				<>
-					{resData.data.data.map((item: string) => {
+					{resData.data.map((item: string) => {
 						return <p key={item}>{item}</p>;
 					})}
 				</>
 			) : (
-				<p>{resData.data.data}</p>
+				<p>{resData.data}</p>
 			)}
 		</div>
 	);
