@@ -685,12 +685,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			}
 			if (type === 'table') {
 				// * 当前加载的树为表格的情况
-				const array = key.split('-');
+				const database = key.substring(0, key.length - 2);
 				getCols({
 					clusterId: params.clusterId,
 					namespace: params.namespace,
 					middlewareName: params.name,
-					database: array[0],
+					database: database,
 					table: value
 				}).then((res) => {
 					if (res.success) {
@@ -756,12 +756,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					}
 				});
 			} else if (type === 'index') {
-				const array = key.split('-');
+				const database = key.substring(0, key.length - 4);
 				getIndexs({
 					clusterId: params.clusterId,
 					namespace: params.namespace,
 					middlewareName: params.name,
-					database: array[0],
+					database: database,
 					table: value
 				}).then((res) => {
 					if (res.success) {

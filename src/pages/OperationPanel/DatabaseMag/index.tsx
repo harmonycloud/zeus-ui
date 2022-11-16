@@ -196,6 +196,8 @@ export default function DatabaseMag(): JSX.Element {
 				type="primary"
 				className="mb-8"
 				onClick={() => {
+					setMysqlEditData(undefined);
+					setPgsqlEditData(undefined);
 					params.type === 'mysql' ? setOpen(true) : setPgOpen(true);
 				}}
 			>
