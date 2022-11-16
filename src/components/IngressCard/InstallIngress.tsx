@@ -134,7 +134,10 @@ const InstallIngressForm = (props: InstallIngressProps) => {
 				values.healthzPort,
 				values.defaultServerPort
 			];
-			if (Array.from(new Set(ports)).length !== ports.length) {
+			if (
+				portConfig &&
+				Array.from(new Set(ports)).length !== ports.length
+			) {
 				notification.error({
 					message: '错误',
 					description: '端口配置有重复项'
