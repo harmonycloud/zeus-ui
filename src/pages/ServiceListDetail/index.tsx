@@ -463,8 +463,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				}
 				extra={
 					<>
-						<Button type="link" onClick={toOperatorPanel}>
-							运维面板
+						<Button type="primary" onClick={toOperatorPanel}>
+							运维面板(β)
 						</Button>
 						<Button
 							onClick={() => refresh(activeKey)}
