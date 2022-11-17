@@ -14,6 +14,7 @@ import {
 	DisasterBackupCardNone,
 	DisasterBackupCard
 } from './DisasterCard';
+import { checkLicense } from '@/services/user';
 import moment from 'moment';
 
 import {
@@ -25,6 +26,7 @@ import { status } from '@/utils/enum';
 
 import './index.scss';
 
+const { confirm } = Modal;
 const clusterInfo = {
 	title: '服务详情'
 };
@@ -90,6 +92,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 	const [originData, setOriginData] = useState<OriginProps>(originDataInit);
 	const [backupData, setBackupData] = useState<OriginProps>(backupDataInit);
 	const [runState, setRunState] = useState<runStateProps>(runStateInit);
+	const [license, setLicense] = useState<boolean>(false);
 	const history = useHistory();
 	useEffect(() => {
 		getMysqlExternal({
@@ -121,6 +124,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 				});
 			}
 		});
+		getLicenseCheck();
 	}, []);
 	useEffect(() => {
 		setRunState({
@@ -256,11 +260,30 @@ export default function Disaster(props: disasterProps): JSX.Element {
 			label: '最近一次数据同步时间'
 		}
 	];
+	const getLicenseCheck = () => {
+		checkLicense({ license: '', clusterId: backupData.cluster }).then(
+			(res) => {
+				if (res.success) {
+					setLicense(res.data);
+				}
+			}
+		);
+	};
 	const toCreateBackup: () => void = () => {
-		history.push({
-			pathname: `/serviceList/mysql/MySQL/mysqlCreate/disasterCreate/${chartName}/${chartVersion}/${namespace}`,
-			state: { disasterOriginName: middlewareName }
-		});
+		if (!license) {
+			confirm({
+				title: '可用余额不足',
+				content:
+					'当前您的可用余额已不足2CPU，如果您想继续使用谐云zeus中间件一体化管理平台，请联系我们申请授权',
+				okText: '立即前往'
+				// onOk: () => {}
+			});
+		} else {
+			history.push({
+				pathname: `/serviceList/mysql/MySQL/mysqlCreate/disasterCreate/${chartName}/${chartVersion}/${namespace}`,
+				state: { disasterOriginName: middlewareName }
+			});
+		}
 	};
 	const deleteInstance: () => void = () => {
 		Modal.confirm({

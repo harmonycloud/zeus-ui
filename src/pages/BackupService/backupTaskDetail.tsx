@@ -26,8 +26,10 @@ import { connect } from 'react-redux';
 import { notification, Modal, Button, Switch } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import EditTime from './editTime';
+import { checkLicense } from '@/services/user';
 import EditIncrTime from './editIncrTime';
 
+const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 
 const dataType = [
@@ -61,6 +63,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 	const [basicData, setBasicData] = useState<any>(info);
 	const [middlewareInfo, setMiddlewareInfo] = useState<middlewareProps>();
 	const backupDetail = storage.getLocal('backupDetail');
+	const [license, setLicense] = useState<boolean>(false);
 	const [infoConfig, setInfoConfig] = useState<any>([
 		{
 			dataIndex: 'title',
@@ -257,8 +260,17 @@ function BackupTaskDetail(props: any): JSX.Element {
 		)
 	};
 
+	const getLicenseCheck = () => {
+		checkLicense({ license: '', clusterId: cluster.id }).then((res) => {
+			if (res.success) {
+				setLicense(res.data);
+			}
+		});
+	};
+
 	useEffect(() => {
 		getBasicInfo();
+		getLicenseCheck();
 	}, []);
 
 	useEffect(() => {
@@ -525,16 +537,26 @@ function BackupTaskDetail(props: any): JSX.Element {
 						<Button
 							type="primary"
 							onClick={() => {
-								if (backupDetail.schedule) {
-									history.push(
-										`/backupService/backupRecovery/${
-											params.clusterId || cluster.id
-										}/${params.namespace}/${
-											backupDetail.backupName
-										}/${backupDetail.sourceType}`
-									);
+								if (!license) {
+									confirm({
+										title: '可用余额不足',
+										content:
+											'当前您的可用余额已不足2CPU，如果您想继续使用谐云zeus中间件一体化管理平台，请联系我们申请授权',
+										okText: '立即前往'
+										// onOk: () => {}
+									});
 								} else {
-									releaseMiddleware();
+									if (backupDetail.schedule) {
+										history.push(
+											`/backupService/backupRecovery/${
+												params.clusterId || cluster.id
+											}/${params.namespace}/${
+												backupDetail.backupName
+											}/${backupDetail.sourceType}`
+										);
+									} else {
+										releaseMiddleware();
+									}
 								}
 							}}
 						>

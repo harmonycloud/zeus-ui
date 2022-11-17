@@ -12,7 +12,8 @@ import {
 	notification,
 	InputNumber,
 	Select,
-	Modal
+	Modal,
+	Radio
 } from 'antd';
 import FormBlock from '@/components/FormBlock';
 import { setRefreshCluster } from '@/redux/globalVar/var';
@@ -80,7 +81,8 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 				password: values.password,
 				port: values.portHarbor,
 				protocol: values.protocolHarbor,
-				user: values.user
+				user: values.user,
+				type: values.type
 			};
 			getJoinCommand(sendData).then((res) => {
 				if (res.success) {
@@ -148,6 +150,7 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 					protocol: values.protocol,
 					port: values.port,
 					activeActive: values.activeActive,
+					type: values.type,
 					registry: {
 						protocol: values.protocolHarbor,
 						address: values.addressHarbor,
@@ -255,6 +258,23 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								{...formItemLayout}
 								form={form}
 							>
+								<FormItem
+									style={{ width: '50%', marginLeft: 12 }}
+									label="类型选择"
+									rules={[
+										{
+											required: true,
+											message: '请选择类型'
+										}
+									]}
+									name="type"
+									initialValue="test"
+								>
+									<Radio.Group>
+										<Radio value="test">测试集群</Radio>
+										<Radio value="produce">开发集群</Radio>
+									</Radio.Group>
+								</FormItem>
 								<FormItem
 									style={{ width: '50%', marginLeft: 12 }}
 									label="英文简称"
@@ -406,6 +426,22 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								labelAlign="left"
 								style={{ width: '50%', paddingLeft: 12 }}
 							>
+								<FormItem
+									label="类型选择"
+									rules={[
+										{
+											required: true,
+											message: '请选择类型'
+										}
+									]}
+									name="type"
+									initialValue="test"
+								>
+									<Radio.Group>
+										<Radio value="test">测试集群</Radio>
+										<Radio value="produce">开发集群</Radio>
+									</Radio.Group>
+								</FormItem>
 								<FormItem
 									label="英文简称"
 									required

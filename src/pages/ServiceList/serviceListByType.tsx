@@ -211,9 +211,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const getLicenseCheck = () => {
 		checkLicense({ license: '', clusterId: cluster.id }).then((res) => {
 			if (res.success) {
-				setLicense(false);
-			} else {
-				setLicense(true);
+				setLicense(res.data);
 			}
 		});
 	};
@@ -301,7 +299,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		setShowDataSource({ [name]: list });
 	};
 	const releaseMiddleware = () => {
-		if (license) {
+		if (!license) {
 			confirm({
 				title: '可用余额不足',
 				content:
