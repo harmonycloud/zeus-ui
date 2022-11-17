@@ -45,16 +45,7 @@ export default function Log(props: LogProps): JSX.Element {
 				onClick={menuSelect}
 				style={{ height: '100%', marginLeft: 0 }}
 				items={items}
-			>
-				{/* <ProMenu.Item key="realtime">实时日志</ProMenu.Item>
-				{!customMid && (
-					<ProMenu.Item key="standard">标准日志</ProMenu.Item>
-				)}
-				{!customMid && <ProMenu.Item key="file">日志文件</ProMenu.Item>}
-				{type === 'mysql' && (
-					<ProMenu.Item key="slow">慢日志查看</ProMenu.Item>
-				)} */}
-			</ProMenu>
+			/>
 		);
 	};
 	const childrenRender = (selectedKey: string) => {
@@ -93,7 +84,9 @@ export default function Log(props: LogProps): JSX.Element {
 					<Tabs.TabPane tab="实时日志" key="1">
 						<RealtimeLog data={props} />
 					</Tabs.TabPane>
-					{!customMid ? (
+					{!customMid &&
+					type !== 'postgresql' &&
+					type !== 'zookeeper' ? (
 						<Tabs.TabPane tab="标准日志" key="2">
 							<StandardLog
 								data={props}
@@ -102,7 +95,9 @@ export default function Log(props: LogProps): JSX.Element {
 							/>
 						</Tabs.TabPane>
 					) : null}
-					{!customMid ? (
+					{!customMid &&
+					type !== 'postgresql' &&
+					type !== 'zookeeper' ? (
 						<Tabs.TabPane tab="日志文件" key="3">
 							<LogFile
 								data={props}

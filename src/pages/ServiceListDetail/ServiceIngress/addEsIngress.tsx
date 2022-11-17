@@ -72,18 +72,16 @@ export default function AddEsIngress(): JSX.Element {
 	const [nodePortArray, setNodePortArray] = useState<string[]>([]);
 	const [form] = Form.useForm();
 	useEffect(() => {
-		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
-			(res) => {
-				if (res.success) {
-					setIngresses(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
+		getIngresses({ clusterId: clusterId }).then((res) => {
+			if (res.success) {
+				setIngresses(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
-		);
+		});
 		getIngressTCPPort().then((res) => {
 			if (res.success) {
 				setIngressPortArray(res.data.split('-'));

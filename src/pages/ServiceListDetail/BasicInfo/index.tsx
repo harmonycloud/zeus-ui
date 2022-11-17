@@ -45,6 +45,7 @@ const info: InfoParams = {
 	aliasName: '',
 	label: '',
 	hostAffinity: '',
+	hostAnti: '',
 	chartVersion: '',
 	description: '',
 	annotations: '',
@@ -104,6 +105,15 @@ const InfoConfig = [
 		)
 	},
 	{
+		dataIndex: 'hostAnti',
+		label: '主机反亲和',
+		render: (val: string) => (
+			<div className="text-overflow-one" title={val}>
+				{val}
+			</div>
+		)
+	},
+	{
 		dataIndex: 'tolerations',
 		label: '主机容忍',
 		render: (val: string) => (
@@ -119,6 +129,7 @@ const config: configParams = {
 	version: '',
 	characterSet: '',
 	port: 0,
+	autoCreateTopicEnable: false,
 	password: ''
 };
 
@@ -461,7 +472,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				} else {
 					return `${
 						data.readWriteProxy?.enabled
-							? '读写分离模式'
+							? '哨兵代理模式'
 							: '高可用模式'
 					}（${modelMap[data.mode]}）`;
 				}
@@ -469,13 +480,13 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				let text = '';
 				if (data.mode === 'cluster') {
 					if (data.readWriteProxy?.enabled) {
-						text = '代理模式';
+						text = '集群代理模式';
 					} else {
 						text = '集群模式';
 					}
 				} else {
 					if (data.readWriteProxy?.enabled) {
-						text = '读写分离模式';
+						text = '哨兵代理模式';
 					} else {
 						text = '哨兵模式';
 					}
@@ -499,13 +510,31 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						(data.nodeAffinity &&
 							data.nodeAffinity.length > 0 &&
 							data.nodeAffinity
+								.filter((item) => !item.anti)
 								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
 					}(${
 						data.nodeAffinity &&
 						data.nodeAffinity.length > 0 &&
-						data.nodeAffinity[0].required
+						data.nodeAffinity.filter((item) => !item.anti)[0]
+							?.required
+							? '强制'
+							: '非强制'
+					})`,
+					hostAnti: `${
+						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
+							data.nodeAffinity
+								.filter((item) => item.anti)
+								.map((item: any) => item.label)
+								.join(';')) ||
+						'无'
+					}(${
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity.filter((item) => item.anti)[0]
+							?.required
 							? '强制'
 							: '非强制'
 					})`,
@@ -526,12 +555,33 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					label: data.labels || '',
 					hostAffinity: `${
 						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
 							data.nodeAffinity
-								.map((item) => item.label)
+								.filter((item) => !item.anti)
+								.map((item: any) => item.label)
 								.join(';')) ||
 						'无'
 					}(${
-						data.nodeAffinity && data.nodeAffinity[0].required
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity.filter((item) => !item.anti)[0]
+							?.required
+							? '强制'
+							: '非强制'
+					})`,
+					hostAnti: `${
+						(data.nodeAffinity &&
+							data.nodeAffinity.length > 0 &&
+							data.nodeAffinity
+								.filter((item) => item.anti)
+								.map((item: any) => item.label)
+								.join(';')) ||
+						'无'
+					}(${
+						data.nodeAffinity &&
+						data.nodeAffinity.length > 0 &&
+						data.nodeAffinity.filter((item) => item.anti)[0]
+							?.required
 							? '强制'
 							: '非强制'
 					})`,
@@ -550,7 +600,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				characterSet: data.charSet || '',
 				port: data.port || '',
 				password: data.password || '',
-				kafkaDTO: data.kafkaDTO
+				kafkaDTO: data.kafkaDTO,
+				autoCreateTopicEnable: data.autoCreateTopicEnable
 			});
 			const storageClassName =
 				data.type === 'elasticsearch'
@@ -626,6 +677,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				listConfigTemp = listConfigTemp.filter(
 					(item) => item.dataIndex !== 'password'
 				);
+			}
+		}
+		if (type === 'rocketmq') {
+			if (!dataIndexList.includes('autoCreateTopicEnable')) {
+				listConfigTemp.push({
+					dataIndex: 'autoCreateTopicEnable',
+					label: '自动创建Topic',
+					render: (value) => <span>{value ? '是' : '否'}</span>
+				});
 			}
 		}
 		setConfigConfig(listConfigTemp);

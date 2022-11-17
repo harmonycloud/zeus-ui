@@ -27,7 +27,9 @@ import {
 	getNodeTaint,
 	postMiddleware,
 	getMiddlewareDetail,
-	addDisasterIns
+	addDisasterIns,
+	getKey,
+	getTolerations
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
@@ -144,17 +146,20 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	});
 	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [mirrorList, setMirrorList] = useState<MirrorItem[]>([]);
-	const changeAffinity = (value: any, key: string) => {
-		setAffinity({
-			...affinity,
-			[key]: value
-		});
-	};
+	// const changeAffinity = (value: any, key: string) => {
+	// 	setAffinity({
+	// 		...affinity,
+	// 		[key]: value
+	// 	});
+	// };
 	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
 
 	const [affinityLabels, setAffinityLabels] = useState<AffinityLabelsItem[]>(
 		[]
 	);
+	// 主机反亲和
+	const [antiFlag, setAntiFlag] = useState<boolean>(false);
+	const [antiLabels, setAntiLabels] = useState<AffinityLabelsItem[]>([]);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -234,6 +239,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [relationMirrorList, setRelationMirrorList] = useState<MirrorItem[]>(
 		[]
 	);
+	const [relationActive, setRelationActive] = useState<boolean>(false);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
 
@@ -386,7 +392,76 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}
 			});
 		}
+		getKey().then((res) => {
+			if (res.success && globalNamespace.availableDomain) {
+				if (res.data?.anti) {
+					setAntiFlag(true);
+					setAntiLabels([
+						{
+							label: res.data.label,
+							checked: res.data.required,
+							anti: true,
+							id: Math.random()
+						}
+					]);
+				} else {
+					setAffinityFlag(true);
+					setAffinityLabels([
+						{
+							label: res.data.label,
+							checked: res.data.required,
+							anti: false,
+							id: Math.random()
+						}
+					]);
+				}
+			}
+		});
+		getTolerations().then((res) => {
+			if (res.success && globalNamespace.availableDomain) {
+				setTolerations({ flag: true, label: '' });
+				setTolerationsLabels([{ label: res.data, id: Math.random() }]);
+			}
+		});
 	}, [project, globalNamespace]);
+
+	useEffect(() => {
+		if (judgeActiveActive(form.getFieldValue('namespace'))) {
+			getKey().then((res) => {
+				if (res.success) {
+					if (res.data?.anti) {
+						setAntiFlag(true);
+						setAntiLabels([
+							{
+								label: res.data.label,
+								checked: res.data.required,
+								anti: true,
+								id: Math.random()
+							}
+						]);
+					} else {
+						setAffinityFlag(true);
+						setAffinityLabels([
+							{
+								label: res.data.label,
+								checked: res.data.required,
+								anti: false,
+								id: Math.random()
+							}
+						]);
+					}
+				}
+			});
+			getTolerations().then((res) => {
+				if (res.success) {
+					setTolerations({ flag: true, label: '' });
+					setTolerationsLabels([
+						{ label: res.data, id: Math.random() }
+					]);
+				}
+			});
+		}
+	}, [form.getFieldValue('namespace')]);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -407,6 +482,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			console.log(values);
+			let storageClassTemp = '';
+			if (typeof values.storageClass === 'string') {
+				storageClassTemp = values.storageClass.split('/')[0];
+			} else {
+				storageClassTemp = values.storageClass
+					.map((item: string) => item.split('/')[0])
+					.join(',');
+			}
 			let sendData: MysqlSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -433,7 +517,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				},
 				quota: {
 					mysql: {
-						storageClassName: values.storageClass.split('/')[0],
+						storageClassName: storageClassTemp,
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -476,13 +560,51 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					});
 					return;
 				} else {
-					sendData.nodeAffinity = affinityLabels.map((item) => {
+					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required:
+								item.checked || item.required || false || false,
+							anti: item.anti,
 							namespace: globalNamespace.name
 						};
 					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+				}
+			}
+			if (antiFlag) {
+				if (!antiLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机反亲和。'
+					});
+					return;
+				} else {
+					const nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
 				}
 			}
 			// 主机容忍
@@ -564,6 +686,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 			// 灾备服务-源服务和备服务同时创建
 			if (backupFlag) {
+				let relactionStorageClassTemp = '';
+				if (typeof values.relationStorageClass === 'string') {
+					relactionStorageClassTemp =
+						values.relationStorageClass.split('/')[0];
+				} else {
+					relactionStorageClassTemp = values.relationStorageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 				sendData.mysqlDTO.relationName = values.relationName;
 				sendData.mysqlDTO.relationAliasName = values.relationAliasName;
 				sendData.mysqlDTO.relationClusterId = relationClusterId;
@@ -601,8 +732,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							?.id.toString() || '',
 					quota: {
 						mysql: {
-							storageClassName:
-								values.relationStorageClass.split('/')[0],
+							storageClassName: relactionStorageClassTemp,
 							storageClassQuota: values.relationStorageQuota
 						}
 					}
@@ -623,6 +753,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 			// 灾备服务-在已有源服务上创建备服务
 			if (state && state.disasterOriginName && originData) {
+				let disStorageClassTemp = '';
+				if (typeof values.storageClass === 'string') {
+					disStorageClassTemp = values.storageClass.split('/')[0];
+				} else {
+					disStorageClassTemp = values.storageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 				const sendDataTemp: MysqlSendDataTempParams = {
 					chartName: chartName,
 					chartVersion: originData.chartVersion,
@@ -689,8 +827,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							mysql: {
 								cpu: sendData.quota.mysql.cpu,
 								memory: sendData.quota.mysql.memory,
-								storageClassName:
-									values.storageClass?.split('/')[0],
+								storageClassName: disStorageClassTemp,
 								storageClassQuota: values.storageQuota
 							}
 						},
@@ -704,7 +841,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					}
 				};
 				// 主机亲和
-				if (affinity.flag) {
+				if (affinityFlag) {
 					if (!affinityLabels.length) {
 						notification.error({
 							message: '错误',
@@ -712,17 +849,64 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 						});
 						return;
 					} else {
-						sendDataTemp.nodeAffinity = affinityLabels.map(
-							(item) => {
-								return {
-									label: item.label,
-									required: item.checked,
-									namespace: globalNamespace.name
-								};
-							}
-						);
-						sendDataTemp.relationMiddleware.nodeAffinity =
-							sendDataTemp.nodeAffinity;
+						const nodeAffinity = affinityLabels.map((item) => {
+							return {
+								label: item.label,
+								required:
+									item.checked || item.required || false,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						const nodeAnti = antiLabels.map((item) => {
+							return {
+								label: item.label,
+								required:
+									item.checked || item.required || false,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						if (antiFlag) {
+							sendData.nodeAffinity =
+								nodeAffinity.concat(nodeAnti);
+						} else {
+							sendData.nodeAffinity = nodeAffinity;
+						}
+					}
+				}
+				if (antiFlag) {
+					if (!antiLabels.length) {
+						notification.error({
+							message: '错误',
+							description: '请选择主机反亲和。'
+						});
+						return;
+					} else {
+						const nodeAffinity = affinityLabels.map((item) => {
+							return {
+								label: item.label,
+								required:
+									item.checked || item.required || false,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						const nodeAnti = antiLabels.map((item) => {
+							return {
+								label: item.label,
+								required:
+									item.checked || item.required || false,
+								anti: item.anti,
+								namespace: globalNamespace.name
+							};
+						});
+						if (affinityFlag) {
+							sendData.nodeAffinity =
+								nodeAffinity.concat(nodeAnti);
+						} else {
+							sendData.nodeAffinity = nodeAnti;
+						}
 					}
 				}
 				// 主机容忍
@@ -758,15 +942,17 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				}
 				sendData = sendDataTemp;
 			}
-			// console.log(sendData);
-			if (backup) {
+			if (history.location.pathname.includes('backup')) {
 				const result = {
 					clusterId: globalCluster.id,
 					namespace: namespace,
 					middlewareName: values.name,
-					restoreTime: moment(values.restoreTime).format(
-						'YYYY-MM-DD HH:mm:ss'
-					),
+					restoreTime:
+						backupDetail.recoveryType === 'time'
+							? moment(values.restoreTime).format(
+									'YYYY-MM-DD HH:mm:ss'
+							  )
+							: '',
 					type: storage.getLocal('backupDetail').sourceType,
 					backupName: backupDetail.backupName
 				};
@@ -867,15 +1053,31 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			if (!res.data) return;
 			setOriginData(res.data);
 			setInstanceSpec('Customize');
-			if (res.data.nodeAffinity) {
-				setAffinity({
-					flag: true,
-					label: '',
-					checked: false
-				});
-				setAffinityLabels(res.data?.nodeAffinity || []);
+			if (res.data?.nodeAffinity?.length > 0) {
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => !item.anti)
+						.length
+				) {
+					setAffinityFlag(true);
+					setAffinityLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => !item.anti
+						) || []
+					);
+				}
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => item.anti)
+						.length
+				) {
+					setAntiFlag(true);
+					setAntiLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => item.anti
+						) || []
+					);
+				}
 			}
-			if (res.data.tolerations) {
+			if (res.data?.tolerations?.length > 0) {
 				setTolerations({
 					flag: true,
 					label: ''
@@ -899,6 +1101,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				setVersion(res.data.version);
 			}
 			res.data.readWriteProxy?.enabled && setReadWriteProxy('true');
+			let storageClassTemp: string | string[];
+			if (res.data.quota.mysql.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					res.data.quota.mysql.storageClassAliasName.split(',');
+				storageClassTemp = res.data.quota.mysql.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassTemp = `${res.data.quota.mysql.storageClassName}/${res.data.quota.mysql.storageClassAliasName}`;
+			}
 			form.setFieldsValue({
 				name: backupFileName ? res.data.name + '-backup' : '',
 				labels: res.data.labels,
@@ -911,7 +1126,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					transUnit.removeUnit(res.data.quota.mysql.memory, 'Gi')
 				),
 				mirrorImageId: res.data.mirrorImage,
-				storageClass: `${res.data.quota.mysql.storageClassName}/${res.data.quota.mysql.storageClassAliasName}`,
+				storageClass: storageClassTemp,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.mysql.storageClassQuota,
 					'Gi'
@@ -969,6 +1184,19 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				setCharSet(originData.charSet);
 			}
 			setInstanceSpec('Customize');
+			let storageClassTemp: string | string[];
+			if (originData?.quota.mysql.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					originData.quota.mysql.storageClassAliasName.split(',');
+				storageClassTemp = originData.quota.mysql.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassTemp = `${originData?.quota.mysql.storageClassName}/${originData?.quota.mysql.storageClassAliasName}`;
+			}
 			form.setFieldsValue({
 				aliasName: originData?.aliasName,
 				labels: originData?.labels,
@@ -981,7 +1209,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					originData?.quota.mysql.memory,
 					'Gi'
 				),
-				storageClass: `${originData?.quota.mysql.storageClassName}/${originData?.quota.mysql.storageClassAliasName}`,
+				storageClass: storageClassTemp,
 				storageQuota: transUnit.removeUnit(
 					originData?.quota.mysql.storageClassQuota,
 					'Gi'
@@ -1021,6 +1249,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	}, [globalNamespace]);
 
 	const handleChange = (value: any, data: any) => {
+		console.log(value, data);
 		setRelationClusterId(value[0]);
 		getMirror({
 			clusterId: value[0]
@@ -1029,12 +1258,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				setRelationMirrorList(res.data.list);
 			}
 		});
-		form.setFieldsValue({ relationStorageClass: '' });
+		// form.setFieldsValue({ relationStorageClass: null });
 		if (value[0] === globalCluster.id) {
 			setReClusterFlag(true);
 		} else {
 			setReClusterFlag(false);
 		}
+		setRelationActive(data[1].availableDomain);
 		setRelationNamespace(value[1]);
 	};
 	const onLoadData = (selectedOptions: any) => {
@@ -1049,7 +1279,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				targetOption.children = res.data.map((item: namespaceType) => {
 					return {
 						label: item.aliasName || item.name,
-						value: item.name
+						value: item.name,
+						availableDomain: item.availableDomain
 					};
 				});
 			} else {
@@ -1057,6 +1288,14 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			}
 			setDataSource([...dataSource]);
 		});
+	};
+	const judgeActiveActive = (namespaceTemp: string) => {
+		const temp = namespaceList.filter((item) => {
+			if (item.name === namespaceTemp) {
+				return item;
+			}
+		});
+		return temp[0]?.availableDomain || false;
 	};
 	// * 结果页相关
 	if (commitFlag) {
@@ -1199,7 +1438,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{state && state.disasterOriginName ? (
+					{/* {state && state.disasterOriginName ? (
 						<>
 							<FormBlock title="源服务信息">
 								<div className={styles['origin-info']}>
@@ -1300,7 +1539,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								</div>
 							</FormBlock>
 						</>
-					) : null}
+					) : null} */}
 					{globalNamespace.name === '*' && !state && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>
@@ -1496,6 +1735,15 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
 									disabled={!!backupFileName}
+								/>
+								<Affinity
+									flag={antiFlag}
+									flagChange={setAntiFlag}
+									values={antiLabels}
+									onChange={setAntiLabels}
+									cluster={globalCluster}
+									disabled={!!backupFileName}
+									isAnti
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
@@ -2245,11 +2493,22 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											? relationClusterId
 											: globalCluster.id
 									}
+									isActiveActive={
+										globalNamespace.name === '*'
+											? !namespace
+												? judgeActiveActive(
+														form.getFieldValue(
+															'namespace'
+														)
+												  )
+												: namespace
+											: globalNamespace.availableDomain
+									}
 								/>
 							</ul>
 						</div>
 					</FormBlock>
-					{(!state || !state.disasterOriginName) &&
+					{/* {(!state || !state.disasterOriginName) &&
 					!globalNamespace.availableDomain ? (
 						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
@@ -2294,7 +2553,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 									</li>
 									{backupFlag && (
 										<>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span className="ne-required">
 														灾备服务集群
@@ -2330,7 +2592,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													)}
 												</div>
 											</li>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span className="ne-required">
 														服务名称
@@ -2360,7 +2625,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 												</div>
 											</li>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span>显示名称</span>
 												</label>
@@ -2392,7 +2660,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													</FormItem>
 												</div>
 											</li>
-											<li className="display-flex">
+											<li
+												className="display-flex"
+												style={{ width: '600px' }}
+											>
 												<label className="form-name">
 													<span
 														className="ne-required"
@@ -2436,14 +2707,16 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<StorageQuota
 												clusterId={relationClusterId}
 												type="relation"
+												isActiveActive={relationActive}
 											/>
 										</>
 									)}
 								</ul>
 							</div>
 						</FormBlock>
-					) : null}
-					{backup && backupDetail.recoveryType === 'time' ? (
+					) : null} */}
+					{history.location.pathname.includes('backup') &&
+					backupDetail.recoveryType === 'time' ? (
 						<FormBlock title="恢复配置">
 							<div className={styles['basic-info']}>
 								<div>

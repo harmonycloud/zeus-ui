@@ -34,7 +34,9 @@ import {
 	getNodeTaint,
 	getStorageClass,
 	postMiddleware,
-	getMiddlewareDetail
+	getMiddlewareDetail,
+	getKey,
+	getTolerations
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
@@ -106,6 +108,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		[]
 	);
 	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
+	// 主机反亲和
+	const [antiFlag, setAntiFlag] = useState<boolean>(false);
+	const [antiLabels, setAntiLabels] = useState<AffinityLabelsItem[]>([]);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -324,7 +329,76 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				}
 			});
 		}
+		getKey().then((res) => {
+			if (res.success && globalNamespace.availableDomain) {
+				if (res.data?.anti) {
+					setAntiFlag(true);
+					setAntiLabels([
+						{
+							label: res.data.label,
+							checked: res.data.required,
+							anti: true,
+							id: Math.random()
+						}
+					]);
+				} else {
+					setAffinityFlag(true);
+					setAffinityLabels([
+						{
+							label: res.data.label,
+							checked: res.data.required,
+							anti: false,
+							id: Math.random()
+						}
+					]);
+				}
+			}
+		});
+		getTolerations().then((res) => {
+			if (res.success && globalNamespace.availableDomain) {
+				setTolerations({ flag: true, label: '' });
+				setTolerationsLabels([{ label: res.data, id: Math.random() }]);
+			}
+		});
 	}, [project, globalNamespace]);
+
+	useEffect(() => {
+		if (judgeActiveActive(form.getFieldValue('namespace'))) {
+			getKey().then((res) => {
+				if (res.success) {
+					if (res.data?.anti) {
+						setAntiFlag(true);
+						setAntiLabels([
+							{
+								label: res.data.label,
+								checked: res.data.required,
+								anti: true,
+								id: Math.random()
+							}
+						]);
+					} else {
+						setAffinityFlag(true);
+						setAffinityLabels([
+							{
+								label: res.data.label,
+								checked: res.data.required,
+								anti: false,
+								id: Math.random()
+							}
+						]);
+					}
+				}
+			});
+			getTolerations().then((res) => {
+				if (res.success) {
+					setTolerations({ flag: true, label: '' });
+					setTolerationsLabels([
+						{ label: res.data, id: Math.random() }
+					]);
+				}
+			});
+		}
+	}, [form.getFieldValue('namespace')]);
 
 	const checkGeneral = (value: any) => {
 		setSpecId(value);
@@ -332,6 +406,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			let storageClassTemp = '';
+			if (typeof values.storageClass === 'string') {
+				storageClassTemp = values.storageClass.split('/')[0];
+			} else {
+				storageClassTemp = values.storageClass
+					.map((item: string) => item.split('/')[0])
+					.join(',');
+			}
 			const sendData: PostgresqlSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -355,7 +437,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 							mode.charAt(3) === 'n'
 								? replicaCount
 								: Number(mode.charAt(3)),
-						storageClassName: values.storageClass.split('/')[0],
+						storageClassName: storageClassTemp,
 						storageClassQuota: values.storageQuota
 					}
 				},
@@ -380,6 +462,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				});
 				sendData.dynamicValues = dynamicValues;
 			}
+			// 主机亲和
 			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
@@ -388,13 +471,58 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					});
 					return;
 				} else {
-					sendData.nodeAffinity = affinityLabels.map((item) => {
+					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required || false,
+							anti: item.anti,
 							namespace: globalNamespace.name
 						};
 					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					if (antiFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAffinity;
+					}
+				}
+			}
+			if (antiFlag) {
+				if (!antiLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机反亲和。'
+					});
+					return;
+				} else {
+					const nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					if (affinityFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAnti;
+					}
 				}
 			}
 			if (tolerations.flag) {
@@ -433,9 +561,13 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						break;
 					case '4':
 						sendData.quota.postgresql.cpu = 8;
-						sendData.quota.postgresql.memory = '32Gi';
+						sendData.quota.postgresql.memory = '16Gi';
 						break;
 					case '5':
+						sendData.quota.postgresql.cpu = 8;
+						sendData.quota.postgresql.memory = '32Gi';
+						break;
+					case '6':
 						sendData.quota.postgresql.cpu = 16;
 						sendData.quota.postgresql.memory = '64Gi';
 						break;
@@ -446,6 +578,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				sendData.quota.postgresql.cpu = values.cpu;
 				sendData.quota.postgresql.memory = values.memory + 'Gi';
 			}
+			// console.log(sendData);
 			if (middlewareName) {
 				const result = {
 					clusterId: globalCluster.id,
@@ -453,9 +586,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					middlewareName: values.name,
 					type: backupDetail.sourceType,
 					backupName: backupDetail.backupName,
-					restoreTime: moment(values.restoreTime).format(
-						'YYYY-MM-DD HH:mm:ss'
-					)
+					restoreTime: backupDetail.increment
+						? moment(values.restoreTime).format(
+								'YYYY-MM-DD HH:mm:ss'
+						  )
+						: ''
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
@@ -497,15 +632,31 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		}).then((res) => {
 			if (!res.data) return;
 			setInstanceSpec('Customize');
-			if (res.data.nodeAffinity) {
-				setAffinity({
-					flag: true,
-					label: '',
-					checked: false
-				});
-				setAffinityLabels(res.data?.nodeAffinity || []);
+			if (res.data?.nodeAffinity?.length > 0) {
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => !item.anti)
+						.length
+				) {
+					setAffinityFlag(true);
+					setAffinityLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => !item.anti
+						) || []
+					);
+				}
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => item.anti)
+						.length
+				) {
+					setAntiFlag(true);
+					setAntiLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => item.anti
+						) || []
+					);
+				}
 			}
-			if (res.data.tolerations) {
+			if (res.data?.tolerations?.length > 0) {
 				setTolerations({
 					flag: true,
 					label: ''
@@ -522,19 +673,31 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			let storageClassTemp: string | string[];
+			if (res.data.quota.postgresql.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					res.data.quota.postgresql.storageClassAliasName.split(',');
+				storageClassTemp = res.data.quota.postgresql.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassTemp = `${res.data.quota.postgresql.storageClassName}/${res.data.quota.postgresql.storageClassAliasName}`;
+			}
 			form.setFieldsValue({
 				name: res.data.name + '-backup',
 				labels: res.data.labels,
 				annotations: res.data.annotations,
 				description: res.data.description,
-				mysqlPort: res.data.port,
-				mysqlPwd: res.data.password,
+				pgsqlPwd: res.data.password,
 				cpu: Number(res.data.quota.postgresql.cpu),
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
 				),
 				mirrorImageId: res.data.mirrorImage,
-				storageClass: res.data.quota.postgresql.storageClassName,
+				storageClass: storageClassTemp,
 				storageQuota: transUnit.removeUnit(
 					res.data.quota.postgresql.storageClassQuota,
 					'Gi'
@@ -615,6 +778,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			});
 		}
 	}, [globalCluster, globalNamespace]);
+	const judgeActiveActive = (namespaceTemp: string) => {
+		const temp = namespaceList.filter((item) => {
+			if (item.name === namespaceTemp) {
+				return item;
+			}
+		});
+		return temp[0]?.availableDomain || false;
+	};
 	// * 结果页相关
 	if (commitFlag) {
 		return (
@@ -935,6 +1106,15 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									cluster={globalCluster}
 									disabled={!!middlewareName}
 								/>
+								<Affinity
+									flag={antiFlag}
+									flagChange={setAntiFlag}
+									values={antiLabels}
+									onChange={setAntiLabels}
+									cluster={globalCluster}
+									disabled={!!middlewareName}
+									isAnti
+								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
@@ -1172,7 +1352,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												<Password
 													style={{ width: '380px' }}
 													value={pgsqlPwd}
-													placeholder="请输入root密码，输入为空则由平台随机生成"
+													placeholder="请输入postgres密码，输入为空则由平台随机生成"
 													onChange={pgsqlPwdChange}
 													disabled={!!middlewareName}
 												/>
@@ -1412,7 +1592,20 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<StorageQuota clusterId={globalCluster.id} />
+								<StorageQuota
+									clusterId={globalCluster.id}
+									isActiveActive={
+										globalNamespace.name === '*'
+											? !namespace
+												? judgeActiveActive(
+														form.getFieldValue(
+															'namespace'
+														)
+												  )
+												: namespace
+											: globalNamespace.availableDomain
+									}
+								/>
 							</ul>
 						</div>
 					</FormBlock>

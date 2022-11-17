@@ -28,7 +28,9 @@ import {
 	getNodeTaint,
 	getStorageClass,
 	getMiddlewareDetail,
-	postMiddleware
+	postMiddleware,
+	getKey,
+	getTolerations
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
@@ -96,6 +98,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		[]
 	);
 	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
+	// 主机反亲和
+	const [antiFlag, setAntiFlag] = useState<boolean>(false);
+	const [antiLabels, setAntiLabels] = useState<AffinityLabelsItem[]>([]);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -141,11 +146,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			value: 'sentinel'
 		},
 		{
-			label: '代理模式',
+			label: '集群代理模式',
 			value: 'agent'
 		},
 		{
-			label: '读写分离模式',
+			label: '哨兵代理模式',
 			value: 'readWriteProxy'
 		}
 	]);
@@ -198,9 +203,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			disabled: false,
 			title: '哨兵节点',
 			num: 3,
-			specId: '1',
-			cpu: 2,
-			memory: 1
+			specId: '0',
+			cpu: 0.2,
+			memory: 0.512
 		}
 	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
@@ -253,7 +258,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			}).then((res) => {
 				if (res.success) {
 					const list = res.data.filter(
-						(item: NamespaceItem) => item.availableDomain !== true
+						(item: NamespaceItem) =>
+							item.clusterId === globalCluster.id
 					);
 					setNamespaceList(list);
 				} else {
@@ -271,7 +277,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					value: 'sentinel'
 				},
 				{
-					label: '读写分离模式',
+					label: '哨兵代理模式',
 					value: 'readWriteProxy'
 				}
 			]);
@@ -290,7 +296,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					value: 'sentinel'
 				},
 				{
-					label: '读写分离模式',
+					label: '哨兵代理模式',
 					value: 'readWriteProxy'
 				}
 			]);
@@ -377,6 +383,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				});
 				sendData.dynamicValues = dynamicValues;
 			}
+			// 主机亲和
 			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
@@ -385,13 +392,58 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					});
 					return;
 				} else {
-					sendData.nodeAffinity = affinityLabels.map((item) => {
+					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required || false,
+							anti: item.anti,
 							namespace: globalNamespace.name
 						};
 					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					if (antiFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAffinity;
+					}
+				}
+			}
+			if (antiFlag) {
+				if (!antiLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机反亲和。'
+					});
+					return;
+				} else {
+					const nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					if (affinityFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAnti;
+					}
 				}
 			}
 			if (tolerations.flag) {
@@ -408,34 +460,46 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 			if (mode === 'cluster' || mode === 'agent') {
+				let storageClassNameTemp = '';
+				if (typeof values.storageClass === 'string') {
+					storageClassNameTemp = values.storageClass.split('/')[0];
+				} else {
+					storageClassNameTemp = values.storageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 				sendData.quota = {
 					redis: {
 						num: clusterMode === '3s-3m' ? 6 : 10,
-						storageClassName: values.storageClass.split('/')[0],
+						storageClassName: storageClassNameTemp,
 						storageClassQuota: values.storageQuota
 					}
 				};
 				if (instanceSpec === 'General') {
 					switch (specId) {
 						case '1':
-							sendData.quota.redis.cpu = 1;
-							sendData.quota.redis.memory = '2Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '1Gi';
 							break;
 						case '2':
 							sendData.quota.redis.cpu = 2;
-							sendData.quota.redis.memory = '8Gi';
+							sendData.quota.redis.memory = '2Gi';
 							break;
 						case '3':
-							sendData.quota.redis.cpu = 4;
-							sendData.quota.redis.memory = '16Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '4Gi';
 							break;
 						case '4':
-							sendData.quota.redis.cpu = 8;
-							sendData.quota.redis.memory = '32Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '8Gi';
 							break;
 						case '5':
-							sendData.quota.redis.cpu = 16;
-							sendData.quota.redis.memory = '64Gi';
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '16Gi';
+							break;
+						case '6':
+							sendData.quota.redis.cpu = 2;
+							sendData.quota.redis.memory = '32Gi';
 							break;
 						default:
 							break;
@@ -446,8 +510,18 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			} else {
 				if (nodeObj) {
+					console.log(nodeObj);
 					sendData.quota = { redis: {} };
 					for (const key in nodeObj) {
+						let storageClassNameTemp = '';
+						if (typeof nodeObj[key].storageClass === 'string') {
+							storageClassNameTemp =
+								nodeObj[key].storageClass?.split('/')[0];
+						} else {
+							storageClassNameTemp = nodeObj[key].storageClass
+								?.map((item: string) => item.split('/')[0])
+								.join(',');
+						}
 						if (!nodeObj[key].disabled) {
 							if (nodeObj[key].storageClass === '') {
 								modifyQuota(key);
@@ -470,8 +544,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													item.value === sentinelMode
 										  )?.num
 										: nodeObj[key].num,
-								storageClassName:
-									nodeObj[key].storageClass?.split('/')[0],
+								storageClassName: storageClassNameTemp,
 								storageClassQuota: nodeObj[key].storageQuota
 							};
 						}
@@ -578,7 +651,76 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			});
 		}
+		getKey().then((res) => {
+			if (res.success && globalNamespace.availableDomain) {
+				if (res.data?.anti) {
+					setAntiFlag(true);
+					setAntiLabels([
+						{
+							label: res.data.label,
+							checked: res.data.required,
+							anti: true,
+							id: Math.random()
+						}
+					]);
+				} else {
+					setAffinityFlag(true);
+					setAffinityLabels([
+						{
+							label: res.data.label,
+							checked: res.data.required,
+							anti: false,
+							id: Math.random()
+						}
+					]);
+				}
+			}
+		});
+		getTolerations().then((res) => {
+			if (res.success && globalNamespace.availableDomain) {
+				setTolerations({ flag: true, label: '' });
+				setTolerationsLabels([{ label: res.data, id: Math.random() }]);
+			}
+		});
 	}, [globalCluster, globalNamespace]);
+
+	useEffect(() => {
+		if (judgeActiveActive(form.getFieldValue('namespace'))) {
+			getKey().then((res) => {
+				if (res.success) {
+					if (res.data?.anti) {
+						setAntiFlag(true);
+						setAntiLabels([
+							{
+								label: res.data.label,
+								checked: res.data.required,
+								anti: true,
+								id: Math.random()
+							}
+						]);
+					} else {
+						setAffinityFlag(true);
+						setAffinityLabels([
+							{
+								label: res.data.label,
+								checked: res.data.required,
+								anti: false,
+								id: Math.random()
+							}
+						]);
+					}
+				}
+			});
+			getTolerations().then((res) => {
+				if (res.success) {
+					setTolerations({ flag: true, label: '' });
+					setTolerationsLabels([
+						{ label: res.data, id: Math.random() }
+					]);
+				}
+			});
+		}
+	}, [form.getFieldValue('namespace')]);
 
 	// 全局分区更新
 	useEffect(() => {
@@ -599,16 +741,31 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		}).then((res) => {
 			if (!res.data) return;
 			setInstanceSpec('Customize');
-			if (res.data.nodeAffinity) {
-				setAffinity({
-					flag: true,
-					label: '',
-					checked: false
-				});
-				setAffinityFlag(true);
-				setAffinityLabels(res.data?.nodeAffinity || []);
+			if (res.data?.nodeAffinity?.length > 0) {
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => !item.anti)
+						.length
+				) {
+					setAffinityFlag(true);
+					setAffinityLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => !item.anti
+						) || []
+					);
+				}
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => item.anti)
+						.length
+				) {
+					setAntiFlag(true);
+					setAntiLabels(
+						res.data?.nodeAffinity?.filter(
+							(item: any) => item.anti
+						) || []
+					);
+				}
 			}
-			if (res.data.tolerations) {
+			if (res.data?.tolerations?.length > 0) {
 				setTolerations({
 					flag: true,
 					label: ''
@@ -637,7 +794,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				annotations: res.data.annotations,
 				description: res.data.description,
 				mirrorImage: res.data.mirrorImage,
-				password: res.data.password,
+				pwd: res.data.password,
 				cpu: Number(res.data.quota.redis.cpu),
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
@@ -649,6 +806,35 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					'Gi'
 				)
 			});
+			let storageClassName: string | string[];
+			if (res.data.quota.redis.storageClassName.includes(',')) {
+				const storageClassAliasNameTemp =
+					res.data.quota.redis.storageClassAliasName.split(',');
+				storageClassName = res.data.quota.redis.storageClassName
+					.split(',')
+					.map(
+						(item: string, index: number) =>
+							`${item}/${storageClassAliasNameTemp[index]}`
+					);
+			} else {
+				storageClassName = `${res.data.quota.redis.storageClassName}/${res.data.quota.redis.storageClassAliasName}`;
+			}
+			switch (res.data.quota.redis.num) {
+				case 2:
+					setSentinelMode('1s-1m');
+					break;
+				case 4:
+					setSentinelMode('2s-2m');
+					break;
+				case 8:
+					setSentinelMode('4m-4s');
+					break;
+				case 16:
+					setSentinelMode('8s-8m');
+					break;
+				default:
+					break;
+			}
 			setNodeObj({
 				redis: {
 					disabled: false,
@@ -659,7 +845,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					memory: Number(
 						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
 					),
-					storageClass: res.data.quota.redis.storageClassName,
+					storageClass: storageClassName,
 					storageQuota: Number(
 						transUnit.removeUnit(
 							res.data.quota.redis.storageClassQuota,
@@ -670,11 +856,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				sentinel: {
 					disabled: false,
 					title: '哨兵节点',
-					num: res.data.quota.redis.num,
+					num: res.data.quota.sentinel.num,
 					specId: '1',
-					cpu: Number(res.data.quota.redis.cpu),
+					cpu: Number(res.data.quota.sentinel.cpu),
 					memory: Number(
-						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
+						transUnit.removeUnit(
+							res.data.quota.sentinel.memory,
+							'Gi'
+						)
 					)
 				}
 			});
@@ -684,6 +873,16 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 		});
+	};
+	const judgeActiveActive = (namespaceTemp: string) => {
+		console.log(namespaceTemp);
+		const temp = namespaceList.filter((item) => {
+			if (item.name === namespaceTemp) {
+				return item;
+			}
+		});
+		console.log(temp);
+		return temp[0]?.availableDomain || false;
 	};
 	// * 结果页相关
 	if (commitFlag) {
@@ -1008,6 +1207,15 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 									cluster={globalCluster}
 									disabled={!!middlewareName}
 								/>
+								<Affinity
+									flag={antiFlag}
+									flagChange={setAntiFlag}
+									values={antiLabels}
+									onChange={setAntiLabels}
+									cluster={globalCluster}
+									disabled={!!middlewareName}
+									isAnti
+								/>
 								<li className="display-flex flex-center form-li">
 									<label className="form-name">
 										<span className="mr-8">主机容忍</span>
@@ -1277,8 +1485,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										style={{ flex: '0 0 376px' }}
 									>
 										<FormItem name="pwd">
-											<Input
-												type="password"
+											<Input.Password
 												placeholder="请输入初始密码，输入空则由平台随机生成"
 												disabled={!!middlewareName}
 											/>
@@ -1466,6 +1673,23 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 																	[key]: values
 																});
 															}}
+															disabled={
+																!!middlewareName
+															}
+															isActiveActive={
+																globalNamespace.name ===
+																'*'
+																	? !namespace
+																		? judgeActiveActive(
+																				form.getFieldValue(
+																					'namespace'
+																				)
+																		  )
+																		: judgeActiveActive(
+																				namespace
+																		  )
+																	: globalNamespace.availableDomain
+															}
 														/>
 													)
 												)}

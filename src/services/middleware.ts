@@ -276,3 +276,11 @@ export const addKv = (param: any) => {
 export const deleteKv = (param: any) => {
 	return Axios.json(MIDDLEWARE.redis, param, {}, 'DELETE');
 };
+// 查询可用区key
+export const getKey = () => {
+	return Axios.get(MIDDLEWARE.getKey);
+};
+// 查询可用区tolerations
+export const getTolerations = () => {
+	return Axios.get(MIDDLEWARE.getTolerations);
+};

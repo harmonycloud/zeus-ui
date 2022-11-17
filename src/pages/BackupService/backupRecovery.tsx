@@ -111,7 +111,8 @@ function ProBackupBask(): JSX.Element {
 		selectedRow &&
 			storage.setLocal('backupDetail', {
 				...backupDetail,
-				backupName: selectedRow.backupName
+				backupName: selectedRow.backupName,
+				recoveryType: recoveryType
 			});
 	};
 

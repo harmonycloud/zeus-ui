@@ -126,11 +126,13 @@ export default function List(props: any): JSX.Element {
 			<Actions>
 				<Button
 					type="link"
+					disabled={record.phrase === 'Deleting'}
 					onClick={(e) => {
 						e.stopPropagation();
 						confirm({
 							title: '操作确认',
-							content: '备份任务删除后将无法恢复，请确认执行',
+							content:
+								'删除周期备份任务，将清除对应备份数据且无法恢复，请确认执行？',
 							onOk: () => {
 								const sendData = {
 									clusterId: clusterId
@@ -187,12 +189,14 @@ export default function List(props: any): JSX.Element {
 								message: '提示',
 								description: '当前集群下没有服务，没有备份对象'
 							});
-						} else if (!isLvm) {
-							notification.error({
-								message: '提示',
-								description: '存储不使用Lvm时，无法创建备份任务'
-							});
-						} else {
+						}
+						// else if (!isLvm) {
+						// 	notification.error({
+						// 		message: '提示',
+						// 		description: '存储不使用Lvm时，无法创建备份任务'
+						// 	});
+						// }
+						else {
 							if (params.type) {
 								history.push(
 									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`

@@ -454,15 +454,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								发布服务
 							</Button>
 						</Tooltip>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
 					)
+					// secondary: (
+					// 	<Checkbox
+					// 		checked={backupCheck}
+					// 		onChange={handleFilterBackup}
+					// 	>
+					// 		灾备服务
+					// 	</Checkbox>
+					// )
 				};
 			} else {
 				return {
@@ -542,15 +542,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
 					)
+					// secondary: (
+					// 	<Checkbox
+					// 		checked={backupCheck}
+					// 		onChange={handleFilterBackup}
+					// 	>
+					// 		灾备服务
+					// 	</Checkbox>
+					// )
 				};
 			}
 		} else {
@@ -564,15 +564,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
 					)
+					// secondary: (
+					// 	<Checkbox
+					// 		checked={backupCheck}
+					// 		onChange={handleFilterBackup}
+					// 	>
+					// 		灾备服务
+					// 	</Checkbox>
+					// )
 				};
 			} else {
 				return {
@@ -606,17 +606,22 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
-		if (record.status === 'Deleted') {
+		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!roleFlag.operateFlag}
+						disabled={
+							!roleFlag.operateFlag ||
+							record.status === 'Deleting'
+						}
 						onClick={() => recoveryService(record)}
 					>
 						恢复服务
 					</LinkButton>
 					<LinkButton
-						disabled={!roleFlag.deleteFlag}
+						disabled={
+							!roleFlag.deleteFlag || record.status === 'Deleting'
+						}
 						onClick={() => deleteStorage(record)}
 					>
 						彻底删除
@@ -700,7 +705,7 @@ const ServiceListByType = (props: serviceListProps) => {
 								);
 							}}
 						>
-							运维面板
+							运维面板(β)
 						</LinkButton>
 					)}
 				</Actions>
@@ -791,7 +796,7 @@ const ServiceListByType = (props: serviceListProps) => {
 							);
 						}}
 					>
-						运维面板
+						运维面板(β)
 					</LinkButton>
 				)}
 				<LinkButton
@@ -893,7 +898,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const nameRender = (value: string, record: serviceProps, index: number) => {
-		if (record.status === 'Deleted') {
+		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
 					<div
@@ -976,7 +981,8 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const podRender = (value: string, record: serviceProps, index: number) => {
-		if (record.status === 'Deleted') return '--';
+		if (record.status === 'Deleted' || record.status === 'Deleting')
+			return '--';
 		return (
 			<span
 				className={roleFlag.operateFlag ? 'name-link' : ''}
@@ -1018,7 +1024,10 @@ const ServiceListByType = (props: serviceListProps) => {
 						placeholder: '请输入搜索内容'
 					}}
 					rowClassName={(record) => {
-						if (record.status === 'Deleted') {
+						if (
+							record.status === 'Deleted' ||
+							record.status === 'Deleting'
+						) {
 							return 'table-row-delete';
 						}
 						return '';
@@ -1056,12 +1065,12 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="description"
 						render={nullRender}
 					/>
-					<ProTable.Column
+					{/* <ProTable.Column
 						title="关联服务名称/中文别名"
 						dataIndex="associated"
 						width={180}
 						render={associatedRender}
-					/>
+					/> */}
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"

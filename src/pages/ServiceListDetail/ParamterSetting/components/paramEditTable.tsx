@@ -223,10 +223,12 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 			record.paramType === 'select' ||
 			record.paramType === 'multiSelect'
 		) {
-			const selects = record.ranges.substring(
-				2,
-				record.ranges.length - 2
-			);
+			let selects: string;
+			if (record.ranges.includes('"')) {
+				selects = record.ranges.substring(2, record.ranges.length - 2);
+			} else {
+				selects = record.ranges.substring(1, record.ranges.length - 1);
+			}
 			const listTemp = selects.split('|');
 			selectList = listTemp;
 		}
