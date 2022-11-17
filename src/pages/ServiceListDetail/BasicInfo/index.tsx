@@ -472,7 +472,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				} else {
 					return `${
 						data.readWriteProxy?.enabled
-							? '读写分离模式'
+							? '哨兵代理模式'
 							: '高可用模式'
 					}（${modelMap[data.mode]}）`;
 				}
@@ -480,13 +480,13 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				let text = '';
 				if (data.mode === 'cluster') {
 					if (data.readWriteProxy?.enabled) {
-						text = '代理模式';
+						text = '集群代理模式';
 					} else {
 						text = '集群模式';
 					}
 				} else {
 					if (data.readWriteProxy?.enabled) {
-						text = '读写分离模式';
+						text = '哨兵代理模式';
 					} else {
 						text = '哨兵模式';
 					}

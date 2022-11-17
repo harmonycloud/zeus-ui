@@ -146,11 +146,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			value: 'sentinel'
 		},
 		{
-			label: '代理模式',
+			label: '集群代理模式',
 			value: 'agent'
 		},
 		{
-			label: '读写分离模式',
+			label: '哨兵代理模式',
 			value: 'readWriteProxy'
 		}
 	]);
@@ -277,7 +277,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					value: 'sentinel'
 				},
 				{
-					label: '读写分离模式',
+					label: '哨兵代理模式',
 					value: 'readWriteProxy'
 				}
 			]);
@@ -296,7 +296,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					value: 'sentinel'
 				},
 				{
-					label: '读写分离模式',
+					label: '哨兵代理模式',
 					value: 'readWriteProxy'
 				}
 			]);
