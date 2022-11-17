@@ -75,6 +75,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 							ref={inputRef}
 							onPressEnter={save}
 							onBlur={save}
+							disabled={record.disabled}
 						/>
 					</Form.Item>
 				);
@@ -86,6 +87,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 								handleCheckboxChange(e, dataIndex)
 							}
 							defaultChecked={record[dataIndex]}
+							disabled={record.disabled}
 						/>
 					</Form.Item>
 				);
@@ -97,6 +99,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 								handleSelectChange(value, dataIndex)
 							}
 							options={options}
+							disabled={record.disabled}
 						/>
 					</Form.Item>
 				);
@@ -109,6 +112,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 							}
 							mode="multiple"
 							options={options}
+							disabled={record.disabled}
 						/>
 					</Form.Item>
 				);
@@ -119,6 +123,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 							onChange={(value: any) =>
 								handleInputNumber(value, dataIndex)
 							}
+							disabled={record.disabled}
 						/>
 					</Form.Item>
 				);
@@ -143,28 +148,18 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 								handleCheckboxChange(e, dataIndex)
 							}
 							checked={record[dataIndex]}
+							disabled={record.disabled}
 						/>
 					</Form.Item>
 				);
 			default:
 				return (
-					<div
-						className="editable-cell-value-wrap"
-						// style={{ paddingRight: 24 }}
-					>
-						{children}
-					</div>
+					<div className="editable-cell-value-wrap">{children}</div>
 				);
 		}
 	};
 	if (editable) {
 		childNode = checked ? childNodeRender() : unCheckedChildNodeRender();
-		// <div
-		// 	className="editable-cell-value-wrap"
-		// 	style={{ paddingRight: 24 }}
-		// >
-		// 	{children}
-		// </div>
 	}
 
 	return <td {...restProps}>{childNode}</td>;

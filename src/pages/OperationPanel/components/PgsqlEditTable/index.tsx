@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Button, Divider, notification, Space, Tabs } from 'antd';
+import { Alert, Button, Divider, notification, Space, Tabs } from 'antd';
 import PgInherit from '../PgInherit';
 import PgsqlTableInfo from '../PgsqlTableInfo';
 import PgsqlColInfo from '../PgsqlColInfo';
@@ -208,6 +208,15 @@ export default function PgsqlEditTable(
 		};
 		return (
 			<div>
+				{tableName && (
+					<Alert
+						message="切换当前页面时，可能会造成未保存的数据丢失，请谨慎操作！"
+						type="info"
+						showIcon
+						closable
+						style={{ marginBottom: 16 }}
+					/>
+				)}
 				{componentRender()}
 				{!tableName && (
 					<>

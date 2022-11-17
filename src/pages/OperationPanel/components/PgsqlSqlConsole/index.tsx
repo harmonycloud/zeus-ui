@@ -94,31 +94,60 @@ export default function PgsqlSqlConsole(
 		}
 	};
 	const handleExecute = () => {
-		console.log(sql);
-		executePgsqlSql({
-			databaseName: dbName,
-			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params.name,
-			sql: sql
-		}).then((res) => {
-			if (res.success) {
-				console.log(res);
-				if (res.data.status === 'success') {
-					if (sql.includes('SELECT')) {
-						const resData = {
-							data: [],
-							columns: []
-						};
-						add(
-							<span>
-								<CheckCircleFilled
-									style={{ color: '#52c41a' }}
-								/>
-								执行成功
-							</span>,
-							<ExecuteResultTypeOne resData={resData} />
-						);
+		// * 筛选无效语句
+		let sqlT = sql;
+		sqlT = sqlT.replace(/\n/g, ' ');
+		if (sqlT.charAt(sqlT.length - 1) !== ';') {
+			sqlT = sqlT + ';';
+		}
+		let list = sqlT.split(';');
+		list = list
+			.filter((item: string) => {
+				const itemTemp = item.trim();
+				return itemTemp !== '';
+			})
+			.map((item) => item + ';');
+		setRefreshFlag(!refreshFlag);
+		list.map((item) => {
+			executePgsqlSql({
+				databaseName: dbName,
+				clusterId: params.clusterId,
+				namespace: params.namespace,
+				middlewareName: params.name,
+				sql: item
+			}).then((res) => {
+				if (res.success) {
+					console.log(res);
+					if (res.data.status === 'success') {
+						if (sql.includes('SELECT')) {
+							const resData = {
+								data: [],
+								columns: []
+							};
+							add(
+								<span>
+									<CheckCircleFilled
+										style={{ color: '#52c41a' }}
+									/>
+									执行成功
+								</span>,
+								<ExecuteResultTypeOne resData={resData} />
+							);
+						} else {
+							const resTemp = {
+								errorMsg: res.data.message,
+								errorDetail: ''
+							};
+							add(
+								<span>
+									<CloseCircleFilled
+										style={{ color: '#ff4d4f' }}
+									/>
+									执行失败
+								</span>,
+								<ExecuteResultTypeTwo res={resTemp} />
+							);
+						}
 					} else {
 						const resTemp = {
 							errorMsg: res.data.message,
@@ -135,24 +164,12 @@ export default function PgsqlSqlConsole(
 						);
 					}
 				} else {
-					const resTemp = {
-						errorMsg: res.data.message,
-						errorDetail: ''
-					};
-					add(
-						<span>
-							<CloseCircleFilled style={{ color: '#ff4d4f' }} />
-							执行失败
-						</span>,
-						<ExecuteResultTypeTwo res={resTemp} />
-					);
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
 				}
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
+			});
 		});
 	};
 	return (

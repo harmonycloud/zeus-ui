@@ -205,7 +205,12 @@ axios.interceptors.response.use(
 		}
 		notification.error({
 			message: '错误',
-			description: err?.response?.data?.errorMsg || err.message
+			description:
+				`${err?.response?.data?.errorMsg}${
+					err.response.data.errorDetail
+						? ':' + err.response.data.errorDetail
+						: ''
+				}` || err.message
 		});
 		return Promise.reject(err.response);
 	}

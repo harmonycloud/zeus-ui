@@ -33,7 +33,11 @@ export default function PgExclusiveness(
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditExclusionItem[]>(
 		originData?.tableExclusionList?.map((item) => {
-			return { ...item, key: item.name };
+			return {
+				...item,
+				key: item.name,
+				disabled: tableName ? true : false
+			};
 		}) || []
 	);
 	const [changedData, setChangeData] = useState<any>();
@@ -134,7 +138,9 @@ export default function PgExclusiveness(
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.errorMsg
+						description: `${res.errorMsg}${
+							res.errorDetail ? ':' + res.errorDetail : ''
+						}`
 					});
 				}
 			});

@@ -40,8 +40,8 @@ export default function ExecutionTable(
 	const [ascExecTimeOrder, setAscExecTimeOrder] = useState<boolean | null>(
 		null
 	);
-	const [ascLineOrder, setAscLineOrder] = useState<boolean | null>(null);
 	const [status, setStauts] = useState<boolean | null>(null);
+	console.log(refreshFlag);
 	useEffect(() => {
 		getData(1, 10, '', '', '', false, false, false);
 	}, [refreshFlag]);
@@ -140,9 +140,6 @@ export default function ExecutionTable(
 	];
 	const showTotal: PaginationProps['showTotal'] = (total) => `共 ${total} 条`;
 	const onTableChange = (pagination: any, filters: any, sorter: any) => {
-		console.log(pagination);
-		console.log(filters);
-		console.log(sorter);
 		let execDateTemp = null;
 		let execTimeTemp = null;
 		let statusTemp = null;

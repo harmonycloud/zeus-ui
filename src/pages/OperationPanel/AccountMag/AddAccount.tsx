@@ -87,6 +87,7 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 				<Form.Item
 					label="授权权限"
 					name="grantAble"
+					initialValue={true}
 					valuePropName="checked"
 				>
 					<Checkbox />
