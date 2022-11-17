@@ -42,6 +42,7 @@ function UploadMiddlewareForm(props: UploadMiddlewareFormProps) {
 			body: formData,
 			headers
 		}).then((res: any) => {
+			console.log(res);
 			if (res.success) {
 				setFileList([]);
 				notification.success({
