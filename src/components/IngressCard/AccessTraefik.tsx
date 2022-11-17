@@ -171,7 +171,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 				setPortRange(result);
 				return;
 			}
-			traefikPortList?.forEach((item) => {
+			traefikPortList.forEach((item) => {
 				if (
 					(result.startPort >= item.startPort &&
 						result.startPort <= item.endPort) ||
@@ -321,7 +321,7 @@ export default function AccessTraefik(props: AccessTraefikProps): JSX.Element {
 												});
 												return;
 											}
-											traefikPortList?.forEach((item) => {
+											traefikPortList.forEach((item) => {
 												if (
 													(portRange.startPort >=
 														item.startPort &&
