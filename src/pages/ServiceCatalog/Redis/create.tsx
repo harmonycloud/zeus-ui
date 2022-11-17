@@ -744,7 +744,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data?.nodeAffinity?.length > 0) {
 				if (
 					res.data?.nodeAffinity?.filter((item: any) => !item.anti)
-						?.length
+						.length
 				) {
 					setAffinityFlag(true);
 					setAffinityLabels(
@@ -752,7 +752,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							(item: any) => !item.anti
 						) || []
 					);
-				} else {
+				}
+				if (
+					res.data?.nodeAffinity?.filter((item: any) => item.anti)
+						.length
+				) {
 					setAntiFlag(true);
 					setAntiLabels(
 						res.data?.nodeAffinity?.filter(
