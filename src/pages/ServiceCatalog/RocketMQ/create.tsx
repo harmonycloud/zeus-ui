@@ -233,7 +233,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				rocketMQParam: {
 					acl: {
 						enable: aclCheck || false
-					}
+					},
+					autoCreateTopicEnable: values.autoCreateTopicEnable
 				},
 				mirrorImageId: mirrorList.find(
 					(item) => item.address === values['mirrorImageId']
@@ -465,7 +466,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		}).then((res) => {
 			if (!res.data) return;
 			setInstanceSpec('Customize');
-			if (res.data.nodeAffinity) {
+			if (res.data?.nodeAffinity?.length > 0) {
 				setAffinity({
 					flag: true,
 					label: '',
@@ -473,7 +474,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				});
 				setAffinityLabels(res.data?.nodeAffinity || []);
 			}
-			if (res.data.tolerations) {
+			if (res.data?.tolerations?.length) {
 				setTolerations({
 					flag: true,
 					label: ''
@@ -1112,6 +1113,29 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												)}
 												style={{
 													width: '376px'
+												}}
+											/>
+										</FormItem>
+									</div>
+								</li>
+								<li className="display-flex">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											自动创建Topic
+										</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem
+											name="autoCreateTopicEnable"
+											initialValue={false}
+										>
+											<Switch
+												size="small"
+												style={{
+													verticalAlign: 'middle'
 												}}
 											/>
 										</FormItem>

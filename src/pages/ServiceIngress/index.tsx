@@ -31,10 +31,12 @@ function ServiceIngress(props: ServiceIngressProps): JSX.Element {
 			JSON.stringify(namespace) !== '{}'
 		) {
 			if (mounted) {
+				console.log(props.globalVar);
 				setLoadingVisible(true);
 				getIngresses({
 					clusterId: cluster.id,
 					namespace: namespace.name,
+					projectId: project.projectId,
 					keyword: searchText
 				})
 					.then((res) => {

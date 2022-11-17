@@ -69,11 +69,11 @@ function Visualization(props) {
 
 	const roleRender = (value, index, record) => {
 		if (record.podName.includes('exporter')) {
-			return 'exporter';
+			return 'Exporter';
 		} else {
 			if (serverData.type === 'elasticsearch') {
 				if (record.podName.includes('kibana')) {
-					return 'kibana';
+					return 'Kibana';
 				} else if (record.podName.includes('client')) {
 					return '协调节点';
 				} else if (record.podName.includes('master')) {
@@ -82,6 +82,11 @@ function Visualization(props) {
 					return '数据节点';
 				} else if (record.podName.includes('cold')) {
 					return '冷节点';
+				} else {
+					return value
+						? value.substring(0, 1).toUpperCase() +
+								value.substring(1)
+						: '/';
 				}
 			} else {
 				switch (value) {
@@ -96,13 +101,16 @@ function Visualization(props) {
 					case 'cold':
 						return '冷节点';
 					case 'kibana':
-						return 'kibana';
+						return 'Kibana';
 					case 'nameserver':
-						return 'nameserver';
+						return 'Nameserver';
 					case 'exporter':
-						return 'exporter';
+						return 'Exporter';
 					default:
-						return '未知';
+						return value
+							? value.substring(0, 1).toUpperCase() +
+									value.substring(1)
+							: '/';
 				}
 			}
 		}
@@ -211,6 +219,33 @@ function Visualization(props) {
 			return cfg.level === 'serve' ? 95 : 203;
 		} else {
 			return cfg.level === 'serve' ? 31 : 139;
+		}
+	};
+
+	const hasMemory = (cfg) => {
+		console.log(
+			cfg?.provisioner &&
+				cfg?.provisioner === 'localplugin.csi.alibabacloud.com'
+		);
+		if (cfg.depth === 0) {
+			if (
+				cfg?.provisioner &&
+				cfg?.provisioner === 'localplugin.csi.alibabacloud.com'
+			) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			if (
+				cfg?.resources?.provisioner &&
+				cfg?.resources?.provisioner ===
+					'localplugin.csi.alibabacloud.com'
+			) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	};
 
@@ -373,7 +408,7 @@ function Visualization(props) {
 											  '...'
 											: '中文别名：' + cfg.aliasName,
 									x: 16,
-									y: 37,
+									y: 50,
 									textBaseline: 'middle',
 									fill: '#999',
 									fontFamily: 'PingFangSC-Medium, PingFang SC'
@@ -455,33 +490,33 @@ function Visualization(props) {
 											? cfg?.resources?.storageClassQuota
 											: '无'),
 									x: 16,
-									y: 71,
+									y: 65,
 									fill: '#999'
 								},
 								name: 'text-shape2'
 							});
 						}
-						group.addShape('text', {
-							attrs: {
-								text: `存储类型：${
-									cfg.depth
-										? cfg.resources.isLvmStorage
-											? 'LVM'
-											: '其他'
-										: cfg.storageClassName.length >= 20
-										? cfg.storageClassName.substring(
-												0,
-												20
-										  ) + '...'
-										: cfg.storageClassName
-								}`,
-								x: 16,
-								y: 57,
-								fill: '#999',
-								cursor: 'pointer'
-							},
-							name: 'text-shape3'
-						});
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: `存储类型：${
+						// 			cfg.depth
+						// 				? cfg.resources.isLvmStorage
+						// 					? 'LVM'
+						// 					: '其他'
+						// 				: cfg.storageClassName.length >= 20
+						// 				? cfg.storageClassName.substring(
+						// 						0,
+						// 						20
+						// 				  ) + '...'
+						// 				: cfg.storageClassName
+						// 		}`,
+						// 		x: 16,
+						// 		y: 57,
+						// 		fill: '#999',
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'text-shape3'
+						// });
 						group.addShape('text', {
 							attrs: {
 								text: '...',
@@ -533,59 +568,61 @@ function Visualization(props) {
 						const storageUsage = Math.round(
 							cfg?.monitorResourceQuota?.storage?.usage
 						);
-						group.addShape('text', {
-							attrs: {
-								text: '存储',
-								x: 24,
-								y: 97,
-								fontSize: 10,
-								textBaseline: 'middle',
-								fill: '#333'
-							},
-							name: 'storage-info'
-						});
-						group.addShape('rect', {
-							attrs: {
-								width: 150,
-								height: 10,
-								x: 50,
-								y: 92,
-								radius: 5,
-								fill: '#ddd',
-								fillOpacity: 0.7
-							},
-							name: 'storage-box'
-						});
-						group.addShape('rect', {
-							attrs: {
-								width:
-									storageUsage < 100
-										? storageUsage * 1.5
-										: 150,
-								height: 10,
-								x: 50,
-								y: 92,
-								radius: storageUsage > 0 ? 5 : 0,
-								fill:
-									storageUsage < 50
-										? '#0064C8'
-										: storageUsage < 80
-										? '#FAC800'
-										: '#C80000'
-							},
-							name: 'storage'
-						});
-						group.addShape('text', {
-							attrs: {
-								text: storageUsage + '%',
-								x: 210,
-								y: 97,
-								fontSize: 10,
-								textBaseline: 'middle',
-								fill: '#333'
-							},
-							name: 'storage-text'
-						});
+						if (hasMemory(cfg)) {
+							group.addShape('text', {
+								attrs: {
+									text: '存储',
+									x: 24,
+									y: 97,
+									fontSize: 10,
+									textBaseline: 'middle',
+									fill: '#333'
+								},
+								name: 'storage-info'
+							});
+							group.addShape('rect', {
+								attrs: {
+									width: 150,
+									height: 10,
+									x: 50,
+									y: 92,
+									radius: 5,
+									fill: '#ddd',
+									fillOpacity: 0.7
+								},
+								name: 'storage-box'
+							});
+							group.addShape('rect', {
+								attrs: {
+									width:
+										storageUsage < 100
+											? storageUsage * 1.5
+											: 150,
+									height: 10,
+									x: 50,
+									y: 92,
+									radius: storageUsage > 0 ? 5 : 0,
+									fill:
+										storageUsage < 50
+											? '#0064C8'
+											: storageUsage < 80
+											? '#FAC800'
+											: '#C80000'
+								},
+								name: 'storage'
+							});
+							group.addShape('text', {
+								attrs: {
+									text: storageUsage + '%',
+									x: 210,
+									y: 97,
+									fontSize: 10,
+									textBaseline: 'middle',
+									fill: '#333'
+								},
+								name: 'storage-text'
+							});
+						}
 						const cpuUsage = Math.round(
 							cfg?.monitorResourceQuota?.cpu?.usage
 						);
@@ -593,7 +630,7 @@ function Visualization(props) {
 							attrs: {
 								text: 'CPU',
 								x: 24,
-								y: 117,
+								y: 117 - (hasMemory(cfg) ? 0 : 10),
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
@@ -605,7 +642,7 @@ function Visualization(props) {
 								width: 150,
 								height: 10,
 								x: 50,
-								y: 112,
+								y: 112 - (hasMemory(cfg) ? 0 : 10),
 								radius: 5,
 								fill: '#ddd',
 								fillOpacity: 0.7
@@ -617,7 +654,7 @@ function Visualization(props) {
 								width: cpuUsage < 100 ? cpuUsage * 1.5 : 150,
 								height: 10,
 								x: 50,
-								y: 112,
+								y: 112 - (hasMemory(cfg) ? 0 : 10),
 								radius: cpuUsage > 0 ? 5 : 0,
 								fill:
 									cpuUsage < 50
@@ -632,7 +669,7 @@ function Visualization(props) {
 							attrs: {
 								text: cpuUsage + '%',
 								x: 210,
-								y: 117,
+								y: 117 - (hasMemory(cfg) ? 0 : 10),
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
@@ -646,7 +683,7 @@ function Visualization(props) {
 							attrs: {
 								text: '内存',
 								x: 24,
-								y: 137,
+								y: 137 - (hasMemory(cfg) ? 0 : 10),
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
@@ -658,7 +695,7 @@ function Visualization(props) {
 								width: 150,
 								height: 10,
 								x: 50,
-								y: 132,
+								y: 132 - (hasMemory(cfg) ? 0 : 10),
 								radius: 5,
 								fill: '#ddd',
 								fillOpacity: 0.7
@@ -671,7 +708,7 @@ function Visualization(props) {
 									memoryUsage < 100 ? memoryUsage * 1.5 : 150,
 								height: 10,
 								x: 50,
-								y: 132,
+								y: 132 - (hasMemory(cfg) ? 0 : 10),
 								radius: memoryUsage > 0 ? 5 : 0,
 								fill:
 									memoryUsage < 50
@@ -686,7 +723,7 @@ function Visualization(props) {
 							attrs: {
 								text: memoryUsage + '%',
 								x: 210,
-								y: 137,
+								y: 137 - (hasMemory(cfg) ? 0 : 10),
 								fontSize: 10,
 								textBaseline: 'middle',
 								fill: '#333'
@@ -865,24 +902,24 @@ function Visualization(props) {
 							name: 'breath-box',
 							visible: false
 						});
-						group.addShape('text', {
-							attrs: {
-								text: `存储类型：${
-									cfg.depth
-										? cfg.resources.isLvmStorage
-											? 'LVM'
-											: '其他'
-										: cfg.storageClassName
-								}`,
-								x: 24,
-								y: 32,
-								textBaseline: 'middle',
-								fill: '#999',
-								cursor: 'pointer'
-							},
-							name: 'breath-text',
-							visible: false
-						});
+						// group.addShape('text', {
+						// 	attrs: {
+						// 		text: `存储类型：${
+						// 			cfg.depth
+						// 				? cfg.resources.isLvmStorage
+						// 					? 'LVM'
+						// 					: '其他'
+						// 				: cfg.storageClassName
+						// 		}`,
+						// 		x: 24,
+						// 		y: 32,
+						// 		textBaseline: 'middle',
+						// 		fill: '#999',
+						// 		cursor: 'pointer'
+						// 	},
+						// 	name: 'breath-text',
+						// 	visible: false
+						// });
 						return box;
 					}
 				}
@@ -1055,6 +1092,7 @@ function Visualization(props) {
 			aliasName: topoData.aliasName,
 			monitorResourceQuota: topoData.monitorResourceQuota,
 			storageClassName: topoData.storageClassName,
+			provisioner: topoData.provisioner,
 			children: [
 				{
 					adentify: serveRender() || '未知',

@@ -10,7 +10,7 @@ import pattern from '@/utils/pattern';
 
 const FormItem = Form.Item;
 export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
-	const { clusterId, type } = props;
+	const { clusterId, type, isActiveActive } = props;
 	const [storageClassList, setStorageClassList] = useState<StorageItem[]>([]);
 	useEffect(() => {
 		if (clusterId) {
@@ -49,9 +49,10 @@ export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
 						placeholder="请选择存储类型"
 						style={{
 							marginRight: 8,
-							width: 150
+							width: isActiveActive ? 250 : 150
 						}}
 						dropdownMatchSelectWidth={false}
+						mode={isActiveActive ? 'multiple' : undefined}
 					>
 						{storageClassList.map((item: StorageItem) => {
 							return (

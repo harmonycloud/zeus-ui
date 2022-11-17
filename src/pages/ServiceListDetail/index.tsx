@@ -328,6 +328,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				return '运行正常';
 			case 'Creating':
 				return '启动中';
+			case 'Recover':
+				return '恢复中';
 			case undefined:
 				return '';
 			default:
@@ -479,7 +481,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					</>
 				}
 			></ProHeader>
-			{reason && status !== 'Running' && (
+			{reason && status !== 'Running' && status !== 'Creating' && (
 				<Alert
 					message={reason}
 					type="warning"
@@ -537,11 +539,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('alarm')}
 						</TabPane>
 					)}
-					{operateFlag && type === 'mysql' ? (
+					{/* {operateFlag && type === 'mysql' ? (
 						<TabPane tab="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</TabPane>
-					) : null}
+					) : null} */}
 					{/* {operateFlag &&
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&
@@ -561,7 +563,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('database')}
 						</TabPane>
 					) : null}
-					{type === 'redis' ? (
+					{/* {type === 'redis' ? (
 						<TabPane tab="数据库管理" key="redisDatabase">
 							{childrenRender('redisDatabase')}
 						</TabPane>

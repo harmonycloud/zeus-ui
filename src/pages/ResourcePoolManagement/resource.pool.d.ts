@@ -85,6 +85,7 @@ export interface IngressItemProps {
 	type: string | null;
 	startPort: string | null;
 	endPort: string | null;
+	traefikPortList: any[];
 }
 
 export interface MirrorParams {

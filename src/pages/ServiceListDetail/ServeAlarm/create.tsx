@@ -118,7 +118,7 @@ function CreateAlarm(): JSX.Element {
 		});
 	};
 
-	const onChange = (value: string, record: ServiceRuleItem, type: string) => {
+	const onChange = (value: any, record: ServiceRuleItem, type: string) => {
 		if (type === 'alert') {
 			const listTemp = alarms;
 			const filterItem: AlarmItem[] = listTemp.filter(
@@ -202,7 +202,7 @@ function CreateAlarm(): JSX.Element {
 				{
 					...addItem,
 					id: Math.random() * 100,
-					alert: '',
+					alert: undefined,
 					content: ''
 				}
 			]);
@@ -562,8 +562,7 @@ function CreateAlarm(): JSX.Element {
 				item.symbol &&
 				String(item.threshold) &&
 				item.severity &&
-				item.silence &&
-				item.content
+				item.silence
 		);
 		if (isRule) {
 			notification.error({
@@ -707,10 +706,10 @@ function CreateAlarm(): JSX.Element {
 				)}
 				<h2>告警规则</h2>
 				<Row className="table-header">
-					<Col span={3}>
+					<Col span={5}>
 						<span>告警指标</span>
 					</Col>
-					<Col span={4}>
+					<Col span={5}>
 						<span>告警阈值</span>
 					</Col>
 					<Col span={6}>
@@ -730,7 +729,7 @@ function CreateAlarm(): JSX.Element {
 					<Col span={3}>
 						<span>告警等级</span>
 					</Col>
-					<Col span={2}>
+					<Col span={3}>
 						<span>告警间隔</span>
 						<Popover
 							content={
@@ -746,7 +745,7 @@ function CreateAlarm(): JSX.Element {
 							/>
 						</Popover>
 					</Col>
-					<Col span={4}>
+					{/* <Col span={4}>
 						<span>告警内容描述</span>
 						<Popover
 							content={
@@ -761,7 +760,7 @@ function CreateAlarm(): JSX.Element {
 								}}
 							/>
 						</Popover>
-					</Col>
+					</Col> */}
 					<Col span={2}>
 						<span>告警操作</span>
 					</Col>
@@ -772,7 +771,7 @@ function CreateAlarm(): JSX.Element {
 							return (
 								<div key={item.id}>
 									<Row>
-										<Col span={3}>
+										<Col span={5}>
 											<span className="ne-required"></span>
 											<Select
 												placeholder="请选择"
@@ -814,7 +813,7 @@ function CreateAlarm(): JSX.Element {
 													})}
 											</Select>
 										</Col>
-										<Col span={4}>
+										<Col span={5}>
 											<Select
 												placeholder="请选择"
 												onChange={(value) =>
@@ -825,7 +824,7 @@ function CreateAlarm(): JSX.Element {
 													)
 												}
 												style={{
-													width: '60%',
+													width: '50%',
 													minWidth: 'auto'
 												}}
 												// autoWidth={true}
@@ -845,7 +844,7 @@ function CreateAlarm(): JSX.Element {
 											</Select>
 											<InputNumber
 												style={{
-													width: '80px',
+													width: '50%',
 													borderLeft: 0
 												}}
 												min="0"
@@ -922,7 +921,7 @@ function CreateAlarm(): JSX.Element {
 												})}
 											</Select>
 										</Col>
-										<Col span={2}>
+										<Col span={3}>
 											<Select
 												placeholder="请选择"
 												onChange={(value) =>
@@ -948,7 +947,7 @@ function CreateAlarm(): JSX.Element {
 												})}
 											</Select>
 										</Col>
-										<Col span={4}>
+										{/* <Col span={4}>
 											<Input
 												style={{ width: '100%' }}
 												onChange={(e) =>
@@ -961,7 +960,7 @@ function CreateAlarm(): JSX.Element {
 												value={item.content}
 												maxLength={100}
 											/>
-										</Col>
+										</Col> */}
 										<Col span={2}>
 											<Button
 												disabled={
@@ -1409,7 +1408,7 @@ function CreateAlarm(): JSX.Element {
 						</div>
 					</div>
 				)} */}
-				<div className="alarm-bottom">
+				<div className="alarm-bottom" style={{ margin: 0 }}>
 					<Button
 						onClick={onOk}
 						type="primary"

@@ -16,7 +16,8 @@ import { getNodePort } from '@/services/middleware';
 import './index.scss';
 
 function Affinity(props: any): JSX.Element {
-	const { values, onChange, flag, flagChange, cluster, disabled } = props;
+	const { values, onChange, flag, flagChange, cluster, disabled, isAnti } =
+		props;
 	const [label, setLabel] = useState<string>('');
 	const [labelList, setLabelList] = useState<AutoCompleteOptionItem[]>([]);
 	const [checked, setChecked] = useState<boolean>(false);
@@ -41,7 +42,9 @@ function Affinity(props: any): JSX.Element {
 		<>
 			<li className="display-flex form-li flex-align">
 				<label className="form-name">
-					<span style={{ marginRight: 8 }}>主机亲和</span>
+					<span style={{ marginRight: 8 }}>
+						{isAnti ? '主机反亲和' : '主机亲和'}
+					</span>
 					<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
 						<QuestionCircleOutlined />
 					</Tooltip>
@@ -84,6 +87,7 @@ function Affinity(props: any): JSX.Element {
 												{
 													label: label,
 													checked,
+													anti: isAnti ? true : false,
 													id: Math.random()
 												}
 											]);
@@ -126,6 +130,7 @@ function Affinity(props: any): JSX.Element {
 												{
 													label: label,
 													checked,
+													anti: isAnti ? true : false,
 													id: Math.random()
 												}
 											]);
@@ -141,7 +146,11 @@ function Affinity(props: any): JSX.Element {
 							</div>
 							<div className={'check'}>
 								<Checkbox
-									checked={checked}
+									checked={
+										values[0]?.checked ||
+										values[0]?.required ||
+										checked
+									}
 									onChange={(e) => {
 										setChecked(e.target.checked);
 										onChange(
@@ -149,6 +158,7 @@ function Affinity(props: any): JSX.Element {
 												return {
 													label: item.label,
 													id: item.id,
+													anti: isAnti ? true : false,
 													checked: e.target.checked
 												};
 											})
@@ -156,7 +166,7 @@ function Affinity(props: any): JSX.Element {
 									}}
 									disabled={disabled}
 								>
-									强制亲和
+									{isAnti ? '强制反亲和' : '强制亲和'}
 								</Checkbox>
 							</div>
 						</>

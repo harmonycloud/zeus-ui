@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	AutoComplete,
 	Button,
@@ -29,6 +29,7 @@ import { getNodePort, getNodeTaint } from '@/services/middleware';
 import { getVIPs, checkTraefikPort } from '@/services/ingress';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import './index.scss';
+import NumberRange from '../NumberRange';
 
 interface InstallTraefikProps {
 	visible: boolean;
@@ -79,6 +80,8 @@ export default function InstallTraefik(
 	const [startPort, setStartPort] = useState<number>();
 	const [ports, setPorts] = useState<string>();
 	const [nodeArray, setNodeArray] = useState<string[]>([]);
+	const [traefikPortList, setTraefikPortList] = useState<any[]>([]);
+	const [portRange, setPortRange] = useState<any>();
 	useEffect(() => {
 		getNodePort({ clusterId }).then((res) => {
 			if (res.success) {
@@ -141,7 +144,6 @@ export default function InstallTraefik(
 	};
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
 			if (vipChecked && address === '') {
 				setVIPNoAlive(true);
 				return;
@@ -150,15 +152,45 @@ export default function InstallTraefik(
 				clusterId,
 				...values,
 				type: 'traefik',
-				skipPortConflict: skipPortConflict
+				skipPortConflict: skipPortConflict,
+				traefikPortList: traefikPortList
 			};
+			const ports = [
+				values.httpPort,
+				values.httpsPort,
+				values.dashboardPort,
+				values.monitorPort
+			];
+			if (
+				portConfig &&
+				Array.from(new Set(ports)).length !== ports.length
+			) {
+				notification.error({
+					message: '错误',
+					description: '端口配置有重复项'
+				});
+				return;
+			}
+			if (traefikPortList.length === 0) {
+				notification.error({
+					message: '错误',
+					description: '服务端口范围不能为空'
+				});
+				return;
+			}
 			if (!skipPortConflict) {
-				if (ports && ports !== '[]') {
+				if (
+					traefikPortList?.length &&
+					traefikPortList?.some(
+						(item: any) => item.ports !== '[]' && item.ports
+					)
+				) {
 					notification.error({
 						message: '错误',
 						description:
 							'当前端口组存在冲突，请重新输入或勾选强制跳过冲突端口！'
 					});
+					return;
 				}
 			}
 			if (affinity.flag) {
@@ -172,6 +204,7 @@ export default function InstallTraefik(
 					sendData.nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
+							anti: item.anti,
 							required: item.checked
 						};
 					});
@@ -201,14 +234,13 @@ export default function InstallTraefik(
 			} else {
 				sendData.address = address;
 			}
-			onCancel();
-			console.log(sendData);
 			installIngress(sendData).then((res) => {
 				if (res.success) {
 					notification.success({
 						message: '成功',
 						description: 'Traefik安装成功'
 					});
+					onCancel();
 					onRefresh();
 				} else {
 					notification.error({
@@ -225,6 +257,35 @@ export default function InstallTraefik(
 			setVIPNoAlive(true);
 		} else {
 			setVIPNoAlive(false);
+		}
+	};
+	const numberRange = (value: string[]) => {
+		if (value[0] !== '' && value[1] !== '') {
+			let result: any = {
+				endPort: value[1],
+				startPort: value[0]
+			};
+			if (traefikPortList.length === 0) {
+				setPortRange(result);
+				return;
+			}
+			traefikPortList.forEach((item) => {
+				if (
+					(result.startPort >= item.startPort &&
+						result.startPort <= item.endPort) ||
+					(result.endPort >= item.startPort &&
+						result.endPort <= item.endPort) ||
+					(result.startPort <= item.startPort &&
+						result.endPort >= item.endPort)
+				) {
+					notification.error({
+						message: '失败',
+						description: '端口范围设置错误！'
+					});
+					result = {};
+				}
+			});
+			setPortRange(result);
 		}
 	};
 
@@ -348,6 +409,7 @@ export default function InstallTraefik(
 												{
 													label: label,
 													checked,
+													anti: false,
 													id: Math.random()
 												}
 											]);
@@ -369,6 +431,7 @@ export default function InstallTraefik(
 												return {
 													label: item.label,
 													id: item.id,
+													anti: false,
 													checked: e.target.checked
 												};
 											})
@@ -547,50 +610,101 @@ export default function InstallTraefik(
 						</FormItem>
 					</>
 				)}
-				<FormItem
-					label={
+				{console.log(portRange, traefikPortList)}
+				<FormItem label="服务端口选择" required>
+					<FormItem noStyle name="rangePort">
 						<Space>
-							<span>起始服务端口</span>
-							<Tooltip title="默认选择从起始服务端口开始的100个端口为服务端口组">
-								<QuestionCircleOutlined
-									style={{ marginRight: 8 }}
-								/>
-							</Tooltip>
+							<NumberRange
+								style={{ width: '300px' }}
+								unit={''}
+								numberRange={numberRange}
+							/>
+							<Button
+								onClick={() => {
+									if (JSON.stringify(portRange) !== '{}') {
+										if (
+											portRange.startPort >
+											portRange.endPort
+										) {
+											notification.error({
+												message: '失败',
+												description:
+													'端口范围设置错误！'
+											});
+											return;
+										}
+										if (traefikPortList.length === 0) {
+											checkTraefikPort({
+												clusterId,
+												startPort: portRange.startPort,
+												endPort: portRange.endPort
+											}).then((res) => {
+												if (res.success) {
+													const result = portRange;
+													result.ports = res.data;
+													setTraefikPortList([
+														...traefikPortList,
+														result
+													]);
+												}
+											});
+											return;
+										}
+										traefikPortList.forEach((item) => {
+											if (
+												(portRange.startPort >=
+													item.startPort &&
+													portRange.startPort <=
+														item.endPort) ||
+												(portRange.endPort >=
+													item.startPort &&
+													portRange.endPort <=
+														item.endPort) ||
+												(portRange.startPort <=
+													item.startPort &&
+													portRange.endPort >=
+														item.endPort)
+											) {
+												notification.error({
+													message: '失败',
+													description:
+														'端口范围设置错误！'
+												});
+												return;
+											}
+										});
+										checkTraefikPort({
+											clusterId,
+											startPort: portRange.startPort,
+											endPort: portRange.endPort
+										}).then((res) => {
+											if (res.success) {
+												const result = portRange;
+												result.ports = res.data;
+												traefikPortList.length &&
+													!traefikPortList.find(
+														(item) =>
+															item.startPort ===
+																result.startPort &&
+															item.endPort ===
+																result.endPort
+													) &&
+													setTraefikPortList([
+														...traefikPortList,
+														result
+													]);
+											}
+										});
+									}
+								}}
+								shape="default"
+								icon={<PlusOutlined />}
+							/>
 						</Space>
-					}
-					required
-					rules={[
-						{ required: true, message: '请输入起始服务端口' },
-						{
-							min: Number(nodeArray[0]),
-							type: 'number',
-							max: Number(nodeArray[1]),
-							message: `请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`
-						}
-					]}
-				>
-					<FormItem
-						noStyle
-						name="startPort"
-						rules={[
-							{ required: true, message: '请输入起始服务端口' },
-							{
-								min: Number(nodeArray[0]),
-								type: 'number',
-								max: Number(nodeArray[1]),
-								message: `请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`
-							}
-						]}
-					>
-						<InputNumber
-							value={startPort}
-							onChange={onInputNumberChange}
-							style={{ width: '330px', marginRight: 8 }}
-							placeholder={`请输入${nodeArray[0]}-${nodeArray[1]}范围内的端口号`}
-						/>
 					</FormItem>
 					<FormItem noStyle name="skipPortConflict">
 						<Checkbox
+							style={{ marginLeft: 24 }}
 							checked={skipPortConflict}
 							onChange={onChange}
 						>
@@ -598,31 +712,70 @@ export default function InstallTraefik(
 						</Checkbox>
 					</FormItem>
 				</FormItem>
-				{startPort && startPort >= 30000 && startPort <= 65435 && (
+				{traefikPortList.length > 0 && (
 					<Row>
-						<Col span={5}></Col>
-						<Col>
-							<div>
-								当前选择的服务端口组是
-								{form.getFieldValue('startPort')}-
-								{form.getFieldValue('startPort') + 99}
+						<Col span={3}></Col>
+						<Col span={21}>
+							<div className="tag-box">
+								<Space wrap>
+									{traefikPortList.map((item: any) => (
+										<Tag
+											key={`${item.startPort}-${item.endPort}`}
+											closable
+											style={{
+												padding: '4px 10px'
+											}}
+											onClose={() => {
+												const list =
+													traefikPortList.filter(
+														(i) =>
+															`${i.startPort}-${i.endPort}` !==
+															`${item.startPort}-${item.endPort}`
+													);
+												setTraefikPortList(list);
+											}}
+										>
+											{item.startPort}-{item.endPort}
+										</Tag>
+									))}
+								</Space>
 							</div>
-							{ports === '[]' && <div>其中没有端口被占用！</div>}
-							{ports && !skipPortConflict && ports !== '[]' && (
-								<div style={{ color: '#ff4d4f' }}>
-									其中{ports}
-									端口号被占用，请重新输入
-								</div>
-							)}
-							{ports && skipPortConflict && ports !== '[]' && (
-								<div style={{ color: '#ff4d4f' }}>
-									其中{ports}
-									端口号被占用，已跳过冲突端口
-								</div>
-							)}
 						</Col>
 					</Row>
 				)}
+				{traefikPortList.length > 0 &&
+					traefikPortList.map((item, index) => {
+						return (
+							<Row key={index}>
+								<Col span={5}></Col>
+								<Col>
+									<div>
+										当前选择的服务端口组是
+										{item.startPort}-{item.endPort}
+									</div>
+									{item.ports === '[]' && (
+										<div>其中没有端口被占用！</div>
+									)}
+									{item.ports &&
+										!skipPortConflict &&
+										item.ports !== '[]' && (
+											<div style={{ color: '#ff4d4f' }}>
+												其中{item.ports}
+												端口号被占用，请重新输入
+											</div>
+										)}
+									{item.ports &&
+										skipPortConflict &&
+										item.ports !== '[]' && (
+											<div style={{ color: '#ff4d4f' }}>
+												其中{item.ports}
+												端口号被占用，已跳过冲突端口
+											</div>
+										)}
+								</Col>
+							</Row>
+						);
+					})}
 			</Form>
 		</Modal>
 	);

@@ -114,3 +114,7 @@ export const deleteUser = `${api}/clusters/{clusterId}/middlewares/mysql/deleteU
 export const queryAuditSql = `${api}/clusters/{clusterId}/middlewares/mysql/queryAuditSql`;
 // * 增删改查kv
 export const redis = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/redis`;
+// * 获取可用区key
+export const getKey = `${api}/area/keys`;
+// * 获取可用区tolerations
+export const getTolerations = `${api}/area/tolerations`;

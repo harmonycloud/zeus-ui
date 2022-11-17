@@ -17,7 +17,7 @@ export interface CreateParams {
 export interface AffinityItem {
 	label: string;
 	namespace?: string;
-	required: boolean;
+	required?: boolean;
 }
 export interface AffinityProps {
 	flag: boolean;
@@ -28,6 +28,8 @@ export interface AffinityLabelsItem {
 	label: string;
 	id: number;
 	checked: boolean;
+	anti?: boolean;
+	required?: boolean;
 }
 export interface TolerationsProps {
 	flag: boolean;
@@ -55,7 +57,7 @@ export interface CreateValuesParams {
 	labels: string;
 	annotations: string;
 	description: string;
-	storageClass: string;
+	storageClass: string | string[];
 	storageQuota: string;
 	cpu: number;
 	memory: number;
@@ -230,7 +232,7 @@ export interface NodeObjParams {
 		specId: string;
 		cpu: number;
 		memory: number;
-		storageClass: string;
+		storageClass: string | string[];
 		storageQuota: number;
 	};
 	sentinel: {
@@ -267,6 +269,7 @@ export interface RMQSendDataParams extends CommonSendDataParams {
 		};
 		replicas?: number;
 		group?: number;
+		autoCreateTopicEnable: boolean;
 	};
 	mirrorImageId?: any;
 	ingresses?: any;

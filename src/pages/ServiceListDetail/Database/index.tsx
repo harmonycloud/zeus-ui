@@ -12,19 +12,46 @@ import SqlAudit from './sqlAudit';
 import './index.scss';
 
 export default function DataBase(props: any): JSX.Element {
-	const { middlewareName, clusterId, namespace, customMid, capabilities } =
-		props;
+	const {
+		middlewareName,
+		clusterId,
+		namespace,
+		customMid,
+		capabilities,
+		data
+	} = props;
+	console.log(props);
 	const [selectedKey, setSelectedKey] = useState<string[]>(
 		storage.getSession('paramsTab')
 			? [storage.getSession('paramsTab')]
 			: ['userManage']
 	);
+	const [items, setItems] = useState([
+		{
+			label: '用户管理',
+			key: 'userManage'
+		},
+		{
+			label: '数据库管理',
+			key: 'databaseManage'
+		},
+		{
+			label: 'SQL审计',
+			key: 'audit'
+		}
+	]);
 	const params: DetailParams = useParams();
 	const { currentTab } = params;
 	const menuSelect = (item: any) => {
 		setSelectedKey(item.keyPath);
 		storage.setSession('paramsTab', item.key);
 	};
+	useEffect(() => {
+		if (data.version === '8.0') {
+			const list = items.filter((item) => item.key !== 'audit');
+			setItems(list);
+		}
+	}, []);
 	useEffect(() => {
 		currentTab &&
 			currentTab !== 'database' &&
@@ -36,25 +63,8 @@ export default function DataBase(props: any): JSX.Element {
 			selectedKeys={selectedKey}
 			onClick={menuSelect}
 			style={{ height: '100%' }}
-			items={[
-				{
-					label: '用户管理',
-					key: 'userManage'
-				},
-				{
-					label: '数据库管理',
-					key: 'databaseManage'
-				},
-				{
-					label: 'SQL审计',
-					key: 'audit'
-				}
-			]}
-		>
-			{/* <ProMenu.Item key="userManage">用户管理</ProMenu.Item>
-			<ProMenu.Item key="databaseManage">数据库管理</ProMenu.Item>
-			<ProMenu.Item key="audit">SQL审计</ProMenu.Item> */}
-		</ProMenu>
+			items={items}
+		></ProMenu>
 	);
 	const childrenRender = (selectedKey: string) => {
 		switch (selectedKey) {

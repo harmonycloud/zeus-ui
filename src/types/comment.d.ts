@@ -32,6 +32,7 @@ export interface NodeAffinityItem {
 	label: string;
 	namespace: null | number;
 	required: boolean;
+	anti?: string;
 }
 export interface middlewareDetailProps {
 	kafkaDTO: any;
@@ -82,6 +83,7 @@ export interface middlewareDetailProps {
 	};
 	imagePath: string;
 	lastAutoSwitchTime: string | null;
+	autoCreateTopicEnable: boolean;
 }
 
 export interface basicDataProps {

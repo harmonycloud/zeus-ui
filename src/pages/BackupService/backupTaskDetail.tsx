@@ -569,7 +569,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 								Modal.confirm({
 									title: '操作确认',
 									content:
-										'备份任务删除后将无法恢复，请确认执行',
+										'删除周期备份任务，将清除对应备份数据且无法恢复，请确认执行？',
 									onOk: () => {
 										const sendData = {
 											clusterId:

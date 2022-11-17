@@ -89,6 +89,8 @@ export const statusBackupRender: (
 			return <Badge status="success" text="成功" />;
 		case 'Creating':
 			return <Badge status="processing" text="创建中" />;
+		case 'Deleting':
+			return <Badge status="default" text="删除中" />;
 		default:
 			return <Badge status="default" text="未知" />;
 	}
@@ -145,6 +147,12 @@ export const serviceListStatusRender: (
 			return (
 				<>
 					<SyncOutlined style={{ color: '#0091FF' }} /> 启动中
+				</>
+			);
+		case 'Recover':
+			return (
+				<>
+					<SyncOutlined style={{ color: '#0091FF' }} /> 恢复中
 				</>
 			);
 		case 'Running':
@@ -249,6 +257,13 @@ export const serviceListStatusRender: (
 				<>
 					<DeleteOutlined style={{ color: '#888888' }} />
 					已删除
+				</>
+			);
+		case 'Deleting':
+			return (
+				<>
+					<DeleteOutlined style={{ color: '#888888' }} />
+					数据删除中
 				</>
 			);
 		case '':
