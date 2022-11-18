@@ -42,19 +42,21 @@ function UploadMiddlewareForm(props: UploadMiddlewareFormProps) {
 			body: formData,
 			headers
 		}).then((res: any) => {
-			if (res.success) {
-				setFileList([]);
-				notification.success({
-					message: '成功',
-					description: 'chart包上传成功，3秒后刷新数据'
-				});
-				onCreate();
-			} else {
-				Modal.error({
-					title: '失败',
-					content: '上架失败，不可上传旧版本或者已有版本'
-				});
-			}
+			res.json().then((r: any) => {
+				if (r.success) {
+					setFileList([]);
+					notification.success({
+						message: '成功',
+						description: 'chart包上传成功，3秒后刷新数据'
+					});
+					onCreate();
+				} else {
+					Modal.error({
+						title: '失败',
+						content: '上架失败，不可上传旧版本或者已有版本'
+					});
+				}
+			});
 		});
 	};
 

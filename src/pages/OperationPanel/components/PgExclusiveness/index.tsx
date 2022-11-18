@@ -17,6 +17,7 @@ const accessModeOptions = [
 ];
 interface EditExclusionItem extends exclusionItem {
 	key: string;
+	disabled: boolean;
 }
 // * 排他性约束
 export default function PgExclusiveness(
@@ -65,10 +66,21 @@ export default function PgExclusiveness(
 			width: 250,
 			render: (text: any, record: EditExclusionItem) => (
 				<span
-					onClick={() => setOpen(true)}
+					onClick={() => {
+						if (record.disabled) {
+							return;
+						}
+						setOpen(true);
+					}}
 					style={{ cursor: 'pointer' }}
 				>
-					编辑
+					<span
+						className={
+							tableName ? 'disabled-name mr-8' : 'name-link mr-8'
+						}
+					>
+						编辑
+					</span>
 					{record?.contentList
 						?.map(
 							(item: ExclusionContentItem) =>
@@ -120,6 +132,7 @@ export default function PgExclusiveness(
 				);
 				tp = [...(originData.tableExclusionList || []), ...deleteList];
 			}
+			tp = tp.filter((item) => item !== null);
 			updatePgsqlExclusion({
 				databaseName: originData.databaseName as string,
 				schemaName: originData.schemaName as string,

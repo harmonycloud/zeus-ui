@@ -70,7 +70,6 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			...basicData,
 			key: Math.random() * 1000000
 		};
-		console.log(tempData);
 		setDataSource([...dataSource, tempData]);
 		setSelectedRowKeys([tempData.key]);
 		returnValues && returnValues([...dataSource, tempData]);
@@ -107,18 +106,15 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 			...basicData,
 			key: Math.random() * 1000000
 		};
-		console.log(tempData);
 		const newData = [...dataSource];
 		const index = newData.findIndex((item) => item.key === key);
 		newData.splice(index + 1, 0, tempData);
-		console.log(newData);
 		setSelectedRowKeys([tempData.key]);
 		setDataSource(newData);
 		returnValues && returnValues(newData);
 	};
 	const handleDelete = (key: React.Key) => {
 		const newData = dataSource.filter((item) => item.key !== key);
-		console.log(newData);
 		setDataSource(newData);
 		returnValues && returnValues(newData);
 	};
@@ -159,6 +155,7 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 		// } else {
 		selectedRowKeysTemp = [record.key];
 		// }
+		returnSelectValues && returnSelectValues(record);
 		setSelectedRowKeys(selectedRowKeysTemp);
 	};
 	const rowSelection = {
@@ -209,7 +206,12 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 				className="mb-8"
 				size="small"
 				components={components}
-				rowClassName={() => 'editable-row'}
+				rowClassName={(record) => {
+					if (record.disabled) {
+						return 'table-row-delete';
+					}
+					return 'editable-row';
+				}}
 				dataSource={dataSource}
 				rowSelection={{
 					type: 'radio',
