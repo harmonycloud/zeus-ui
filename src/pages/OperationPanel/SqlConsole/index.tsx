@@ -133,6 +133,7 @@ const updateTreeData = (
 				children: updateTreeData(node.children, key, children)
 			};
 		}
+
 		return node;
 	});
 const paneProps: SplitPaneProps = {
@@ -175,6 +176,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [mysqlSpinning, setMysqlSpinning] = useState<boolean>(false);
 	const [mysqlLoadedKeys, setMysqlLoadedKeys] = useState<any[]>([]);
 	const [pgsqlLoadedKeys, setPgsqlLoadedKeys] = useState<any[]>([]);
+	const [mysqlSearchValue, setMysqlSearchValue] = useState<string>('');
+	const [pgSearchValue, setPgSearchValue] = useState<string>('');
+	const [pgTableTreeValue, setPgTableTreeValue] = useState<string>('');
 	const newTabIndex = useRef(0);
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
@@ -403,7 +407,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						if (params.type === 'mysql') {
 							sendData.table = i;
 							sendData.database = fatherNode;
-							sendData.tableName =
+							sendData.newTableName =
 								form.getFieldValue('newTableName');
 							updateMysqlTable(sendData).then((res) => {
 								if (res.success) {
@@ -1199,6 +1203,235 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			});
 		}
 	};
+	const mysqlTreeValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.target;
+		setMysqlSearchValue(value);
+	};
+	const pgTreeValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.target;
+		setPgSearchValue(value);
+	};
+	const pgTableTreeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.target;
+		setPgTableTreeValue(value);
+	};
+	const newTreeData = useMemo(() => {
+		const loop = (data: any[]): any[] =>
+			data.map((item) => {
+				const result: any = {};
+				const strTitle = item.value || '';
+				const index = strTitle.indexOf(mysqlSearchValue);
+				const beforeStr = strTitle.substring(0, index);
+				const afterStr = strTitle.slice(
+					index + mysqlSearchValue.length
+				);
+				result.title = (
+					<Dropdown
+						overlay={() => menu(item.value)}
+						trigger={['contextMenu']}
+					>
+						{index > -1 ? (
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '140px' }}
+								onDoubleClick={() =>
+									add(
+										item.value,
+										<MysqlSqlConsole dbName={item.value} />
+									)
+								}
+							>
+								{beforeStr}
+								<span className="site-tree-search-value">
+									{mysqlSearchValue}
+								</span>
+								{afterStr}
+							</span>
+						) : (
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '140px' }}
+								onDoubleClick={() =>
+									add(
+										item.value,
+										<MysqlSqlConsole dbName={item.value} />
+									)
+								}
+							>
+								{strTitle}
+							</span>
+						)}
+					</Dropdown>
+				);
+				result.key = item.key;
+				result.value = item.value;
+				result.type = item.type;
+				result.icon = item.icon;
+
+				if (item.children) {
+					if (item.type === 'database') {
+						return {
+							...result,
+							children: loop(item.children)
+						};
+					} else {
+						return { ...item };
+					}
+				}
+
+				return {
+					...result
+				};
+			});
+
+		return loop(treeData);
+	}, [mysqlSearchValue, treeData]);
+	const newPgTreeData = useMemo(() => {
+		const loop = (data: any[]): any[] =>
+			data.map((item) => {
+				const result: any = {};
+				const strTitle = item.value || '';
+				const index = strTitle.indexOf(pgSearchValue);
+				const beforeStr = strTitle.substring(0, index);
+				const afterStr = strTitle.slice(index + pgSearchValue.length);
+				result.title = (
+					<Dropdown
+						overlay={() => menu(item.value)}
+						trigger={['contextMenu']}
+					>
+						{index > -1 ? (
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '140px' }}
+								onDoubleClick={() =>
+									add(
+										item.value,
+										<MysqlSqlConsole dbName={item.value} />
+									)
+								}
+							>
+								{beforeStr}
+								<span className="site-tree-search-value">
+									{pgSearchValue}
+								</span>
+								{afterStr}
+							</span>
+						) : (
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '140px' }}
+								onDoubleClick={() =>
+									add(
+										item.value,
+										<MysqlSqlConsole dbName={item.value} />
+									)
+								}
+							>
+								{strTitle}
+							</span>
+						)}
+					</Dropdown>
+				);
+				result.key = item.key;
+				result.value = item.value;
+				result.type = item.type;
+				result.icon = item.icon;
+
+				if (item.children) {
+					if (item.type === 'database') {
+						return {
+							...result,
+							children: loop(item.children)
+						};
+					} else {
+						return { ...item };
+					}
+				}
+
+				return {
+					...result
+				};
+			});
+
+		return loop(pgTreeData);
+	}, [pgSearchValue, pgTreeData]);
+	const newPgTreeTableData = useMemo(() => {
+		const loop = (data: any[]): any[] =>
+			data.map((item) => {
+				const result: any = {};
+				const strTitle = item.value || '';
+				const index = strTitle.indexOf(pgTableTreeValue);
+				const beforeStr = strTitle.substring(0, index);
+				const afterStr = strTitle.slice(
+					index + pgTableTreeValue.length
+				);
+				result.title = (
+					<Dropdown
+						overlay={() => menu(item.value)}
+						trigger={['contextMenu']}
+					>
+						{index > -1 ? (
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '140px' }}
+								onDoubleClick={() =>
+									add(
+										item.value,
+										<MysqlSqlConsole dbName={item.value} />
+									)
+								}
+							>
+								{beforeStr}
+								<span className="site-tree-search-value">
+									{pgTableTreeValue}
+								</span>
+								{afterStr}
+							</span>
+						) : (
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '140px' }}
+								onDoubleClick={() =>
+									add(
+										item.value,
+										<MysqlSqlConsole dbName={item.value} />
+									)
+								}
+							>
+								{strTitle}
+							</span>
+						)}
+					</Dropdown>
+				);
+				result.key = item.key;
+				result.value = item.value;
+				result.type = item.type;
+				result.icon = item.icon;
+
+				if (item.children) {
+					if (item.type === 'database') {
+						return {
+							...result,
+							children: loop(item.children)
+						};
+					} else {
+						return { ...item };
+					}
+				}
+
+				return {
+					...result
+				};
+			});
+
+		return loop(pgTableTreeData);
+	}, [pgTableTreeValue, pgTableTreeData]);
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
 			<Sider
@@ -1232,12 +1465,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<Input.Search
 							placeholder="请输入关键字搜索"
 							style={{ marginBottom: 8, paddingRight: 16 }}
+							value={mysqlSearchValue}
+							onChange={mysqlTreeValueChange}
 						/>
 						<div className="sql-console-tree-content">
 							<Spin spinning={mysqlSpinning}>
 								<Tree
 									showIcon
-									treeData={treeData}
+									treeData={newTreeData}
 									loadData={mysqlOnLoadData}
 									onExpand={mysqlOnExpand}
 									expandedKeys={mysqlExpandedKeys}
@@ -1261,11 +1496,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<Input.Search
 							style={{ marginBottom: 8, paddingRight: 16 }}
 							placeholder="请输入关键字搜索"
+							value={pgSearchValue}
+							onChange={pgTreeValueChange}
 						/>
 						<div className="sql-console-tree-content">
 							<Tree
 								showIcon
-								treeData={pgTreeData}
+								treeData={newPgTreeData}
 								loadData={pgsqlOnLoadData}
 								expandedKeys={pgsqlExpandedKeys}
 								loadedKeys={pgsqlLoadedKeys}
@@ -1342,6 +1579,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				)}
 				{items.length > 0 && params.type === 'redis' && (
 					<Tabs
+						hideAdd
 						className="sql-console-tabs-content"
 						size="small"
 						type="editable-card"
@@ -1357,10 +1595,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							<Input.Search
 								style={{ marginBottom: 8, paddingRight: 16 }}
 								placeholder="请输入关键字搜索"
+								value={pgTableTreeValue}
+								onChange={pgTableTreeChange}
 							/>
 							<Tree
 								showIcon
-								treeData={pgTableTreeData}
+								treeData={newPgTreeTableData}
 								loadData={pgTableOnLoadData}
 								// height={
 								// 	document.getElementsByClassName(
