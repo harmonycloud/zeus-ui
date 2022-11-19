@@ -84,7 +84,6 @@ export default function PgsqlEditTable(
 			databaseName: dbName,
 			schemaName
 		};
-		console.log(sendData);
 		createPgTable(sendData).then((res) => {
 			if (res.success) {
 				notification.success({
@@ -94,7 +93,9 @@ export default function PgsqlEditTable(
 			} else {
 				notification.error({
 					message: '失败',
-					description: res.errorMsg
+					description: `${res.errorMsg}${
+						res.errorDetail ? ':' + res.errorDetail : ''
+					}`
 				});
 			}
 		});

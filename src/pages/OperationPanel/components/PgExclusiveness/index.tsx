@@ -76,7 +76,9 @@ export default function PgExclusiveness(
 				>
 					<span
 						className={
-							tableName ? 'disabled-name mr-8' : 'name-link mr-8'
+							record.disabled
+								? 'disabled-name mr-8'
+								: 'name-link mr-8'
 						}
 					>
 						编辑

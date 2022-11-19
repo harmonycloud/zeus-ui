@@ -125,7 +125,9 @@ export default function MysqlTableInfo(
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.errorMsg
+						description: `${res.errorMsg}${
+							res.errorDetail ? ':' + res.errorDetail : ''
+						}`
 					});
 				}
 			});
