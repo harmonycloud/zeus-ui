@@ -68,7 +68,7 @@
 			&:hover {
 				color: $blue-base;
 			}
-			&.active{
+			&.active {
 				color: $blue-base;
 			}
 		}
@@ -162,4 +162,10 @@
 }
 .redis-tab-content {
 	height: 100%;
+}
+.site-tree-search-value {
+	color: #226ee7;
+}
+[data-theme='dark'] .site-tree-search-value {
+	color: #226ee7;
 }

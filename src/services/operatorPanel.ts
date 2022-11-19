@@ -269,7 +269,7 @@ export const updatePgTable = (params: any) => {
 	return Axios.json(URL.updatePgTable, params);
 };
 export const updateMysqlTable = (params: any) => {
-	return Axios.json(URL.updateMysqlTable, params);
+	return Axios.json(URL.updateMysqlTable, params, {}, 'PUT');
 };
 export const getPgsqlDataType: (
 	params: SendDataParamsProps
