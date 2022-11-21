@@ -18,6 +18,7 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 	const onChange = (value: any) => {
 		setStartTime(value[0]);
 		setEndTime(value[1]);
+		timeSelect(value);
 	};
 	const onRangeOk = (value: any[]) => {
 		setStartTime(value[0]);
