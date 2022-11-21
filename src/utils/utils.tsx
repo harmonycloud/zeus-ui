@@ -408,6 +408,13 @@ export const encrypt = (text: string, publicKey: string) => {
 	const encrypted = encrypt.encrypt(text);
 	return encrypted;
 };
+// * 私钥解密
+export const decrypt = (text: string, privateKey: string) => {
+	const decrypt = new JSEncrypt({});
+	decrypt.setPrivateKey(privateKey);
+	const decrypted = decrypt.decrypt(text);
+	return decrypted;
+};
 // * 判断某个对象数据的某些属性是否为空字符传
 export const judgeObjArrayAttrIsNull: (
 	arr: any[],
