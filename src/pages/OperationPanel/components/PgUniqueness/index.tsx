@@ -118,7 +118,9 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.errorMsg
+						description: `${res.errorMsg}${
+							res.errorDetail ? ':' + res.errorDetail : ''
+						}`
 					});
 				}
 			});

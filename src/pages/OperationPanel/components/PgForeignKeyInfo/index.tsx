@@ -38,6 +38,7 @@ const deferrablityOptions = [
 ];
 interface EditPgsqlForeignKeyItem extends pgsqlForeignKeyItem {
 	key: string;
+	disabled: boolean;
 }
 // * 外键信息
 export default function PgForeignKeyInfo(
@@ -53,11 +54,14 @@ export default function PgForeignKeyInfo(
 		middlewareName,
 		tableName
 	} = props;
-	console.log(originData);
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditPgsqlForeignKeyItem[]>(
 		originData?.tableForeignKeyList?.map((item, index) => {
-			return { ...item, key: item.name };
+			return {
+				...item,
+				key: item.name,
+				disabled: tableName ? true : false
+			};
 		}) || []
 	);
 	const [tables, setTables] = useState<AutoCompleteOptionItem[]>([]);
@@ -113,10 +117,21 @@ export default function PgForeignKeyInfo(
 			width: 200,
 			render: (text: any, record: EditPgsqlForeignKeyItem) => (
 				<span
-					onClick={() => setOpen(true)}
+					onClick={() => {
+						if (record.disabled) {
+							return;
+						}
+						setOpen(true);
+					}}
 					style={{ cursor: 'pointer' }}
 				>
-					编辑
+					<span
+						className={
+							tableName ? 'disabled-name mr-8' : 'name-link mr-8'
+						}
+					>
+						编辑
+					</span>
 					{record?.contentList
 						?.map(
 							(item) =>
@@ -204,7 +219,9 @@ export default function PgForeignKeyInfo(
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.errorMsg
+						description: `${res.errorMsg}${
+							res.errorDetail ? ':' + res.errorDetail : ''
+						}`
 					});
 				}
 			});

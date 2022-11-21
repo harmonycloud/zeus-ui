@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Divider, notification, Space, Tabs } from 'antd';
+import { Alert, Button, Divider, notification, Space, Tabs } from 'antd';
 import {
 	MysqlEditTableProps,
 	MysqlEngineItem,
@@ -102,7 +102,9 @@ export default function MysqlEditTable(
 			} else {
 				notification.error({
 					message: '失败',
-					description: res.errorMsg
+					description: `${res.errorMsg}${
+						res.errorDetail ? ':' + res.errorDetail : ''
+					}`
 				});
 			}
 		});
@@ -174,6 +176,15 @@ export default function MysqlEditTable(
 		};
 		return (
 			<div>
+				{tableName && (
+					<Alert
+						message="切换当前页面时，可能会造成未保存的数据丢失，请谨慎操作！"
+						type="info"
+						showIcon
+						closable
+						style={{ marginBottom: 16 }}
+					/>
+				)}
 				{componentRender()}
 				{!tableName && (
 					<>
