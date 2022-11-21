@@ -53,7 +53,6 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 		});
 	}, []);
 	useEffect(() => {
-		console.log(cookie);
 		if (JSON.stringify(cookie) !== '{}') {
 			const privateKey = `-----BEGIN PRIVATE KEY-----
 			MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAuL9fL0j1Y+Lrx7/g
@@ -80,11 +79,14 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 			const passwordTemp = allFields.filter(
 				(item: any) => item['name'][0] === 'password'
 			);
-			console.log(usernameTemp);
 			const pubKey =
 				'-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALi/Xy9I9WPi68e/4KQRG/nFFZTY+wNaym0TLmUFkYSXQo7rRiHLVdaaa/FVGEyGoFnzolwA5+EMwXzxvdt2Z3MCAwEAAQ==-----END PUBLIC KEY-----';
-			setCookie('username', usernameTemp[0].value);
-			setCookie('password', encrypt(passwordTemp[0].value, pubKey));
+			setCookie('username', usernameTemp[0].value, {
+				path: '/'
+			});
+			setCookie('password', encrypt(passwordTemp[0].value, pubKey), {
+				path: '/'
+			});
 		} else if (
 			changedFields[0].name[0] === 'remember' &&
 			!changedFields[0].value
