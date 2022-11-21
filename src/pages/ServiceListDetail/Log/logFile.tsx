@@ -227,6 +227,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 						description: '根据当前查询条件未查询到任何日志文件。'
 					});
 					setLogPaths([]);
+					setLogList([]);
 					setLogPath(undefined);
 				}
 			} else {
