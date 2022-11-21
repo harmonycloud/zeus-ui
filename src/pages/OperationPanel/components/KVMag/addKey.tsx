@@ -17,11 +17,11 @@ import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
 import { useParams } from 'react-router';
 
 const options = [
-	{ label: 'hash', value: 'hash' },
+	{ label: 'Hash', value: 'hash' },
 	{ label: 'Zset', value: 'zset' },
-	{ label: 'list', value: 'list' },
-	{ label: 'set', value: 'set' },
-	{ label: 'string', value: 'string' }
+	{ label: 'List', value: 'list' },
+	{ label: 'Set', value: 'set' },
+	{ label: 'String', value: 'string' }
 ];
 export default function AddKV(props: any): JSX.Element {
 	const { onCancel, onRefresh, database } = props;

@@ -34,7 +34,10 @@ export default function OperationNavbar(): JSX.Element {
 	useEffect(() => {
 		if (params.type === 'redis') {
 			items = items?.filter(
-				(item) => item?.key !== 'accountMag' && item?.key !== 'sqlAudit'
+				(item) =>
+					item?.key !== 'accountMag' &&
+					item?.key !== 'sqlAudit' &&
+					item?.key !== 'databaseMag'
 			);
 		}
 		if (params.type === 'postgresql') {
