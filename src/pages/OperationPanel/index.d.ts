@@ -176,6 +176,15 @@ export interface SqlConsoleProps {
 	currentUser: consoleUser | undefined;
 	setOpen: (value: boolean) => void;
 }
+export interface DatabaseMagProps {
+	currentUser: consoleUser | undefined;
+}
+export interface SqlAuditProps {
+	currentUser: consoleUser | undefined;
+}
+export interface AccountMagProps {
+	currentUser: consoleUser | undefined;
+}
 declare global {
 	interface Window {
 		sqlFormatter: any;

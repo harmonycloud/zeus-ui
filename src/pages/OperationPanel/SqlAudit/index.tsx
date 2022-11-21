@@ -12,7 +12,7 @@ import {
 import type { PaginationProps, RadioChangeEvent } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { sqlAudit } from '@/services/operatorPanel';
-import { ParamsProps, SqlAuditItem } from '../index.d';
+import { ParamsProps, SqlAuditItem, SqlAuditProps } from '../index.d';
 import moment from 'moment';
 
 const { Search } = Input;
@@ -40,7 +40,8 @@ const columns = [
 		key: 'query'
 	}
 ];
-export default function SqlAudit(): JSX.Element {
+export default function SqlAudit(props: SqlAuditProps): JSX.Element {
+	const { currentUser } = props;
 	const params: ParamsProps = useParams();
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();
@@ -51,8 +52,10 @@ export default function SqlAudit(): JSX.Element {
 	const [endTime, setEndTime] = useState<string>('');
 	const [keywords, setKeywords] = useState<string>('');
 	useEffect(() => {
-		getData(1, pageSize, '', '', '');
-	}, []);
+		if (currentUser) {
+			getData(1, pageSize, '', '', '');
+		}
+	}, [currentUser]);
 	const getData = (
 		current: number,
 		pageSize: number,

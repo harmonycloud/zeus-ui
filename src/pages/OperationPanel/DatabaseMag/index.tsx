@@ -3,14 +3,20 @@ import { Button, Table, Modal, notification } from 'antd';
 import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import AddDatabase from './AddDatabase';
-import { DatabaseItem, ParamsProps, PgsqlDatabaseItem } from '../index.d';
+import {
+	DatabaseItem,
+	DatabaseMagProps,
+	ParamsProps,
+	PgsqlDatabaseItem
+} from '../index.d';
 import AddPgDatabase from './AddPgDatabase';
 import { getAllDatabase, deleteAllDatabase } from '@/services/operatorPanel';
 const LinkButton = Actions.LinkButton;
 const { confirm } = Modal;
 
 // * 数据库的定义
-export default function DatabaseMag(): JSX.Element {
+export default function DatabaseMag(props: DatabaseMagProps): JSX.Element {
+	const { currentUser } = props;
 	const params: ParamsProps = useParams();
 	const [dataSource, setDataSource] = useState<
 		DatabaseItem[] | PgsqlDatabaseItem[]
@@ -20,8 +26,10 @@ export default function DatabaseMag(): JSX.Element {
 	const [mysqlEditData, setMysqlEditData] = useState<DatabaseItem>();
 	const [pgsqlEditData, setPgsqlEditData] = useState<PgsqlDatabaseItem>();
 	useEffect(() => {
-		getAllData();
-	}, []);
+		if (currentUser) {
+			getAllData();
+		}
+	}, [currentUser]);
 	const getAllData = () => {
 		getAllDatabase({
 			middlewareName: params.name,
@@ -167,19 +175,24 @@ export default function DatabaseMag(): JSX.Element {
 											record as PgsqlDatabaseItem
 										).databaseName,
 										type: 'postgresql'
-									}).then((res) => {
-										if (res.success) {
-											notification.success({
-												message: '成功',
-												description: '数据库删除成功'
-											});
-										} else {
-											notification.error({
-												message: '失败',
-												description: res.errorMsg
-											});
-										}
-									});
+									})
+										.then((res) => {
+											if (res.success) {
+												notification.success({
+													message: '成功',
+													description:
+														'数据库删除成功'
+												});
+											} else {
+												notification.error({
+													message: '失败',
+													description: res.errorMsg
+												});
+											}
+										})
+										.finally(() => {
+											getAllData();
+										});
 								}
 							});
 						}}

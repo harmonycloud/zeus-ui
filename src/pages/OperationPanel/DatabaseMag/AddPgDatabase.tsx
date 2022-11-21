@@ -50,6 +50,7 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 	}, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
+			onCancel();
 			if (editData) {
 				updatePgDatabase({
 					clusterId,
@@ -118,6 +119,12 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 					<Select
 						disabled={editData ? true : false}
 						placeholder="请选择字符集"
+						showSearch
+						filterOption={(input, option) =>
+							(option!.children as unknown as string)
+								.toLowerCase()
+								.includes(input.toLowerCase())
+						}
 					>
 						{encoding.map((item: string) => (
 							<Option key={item} value={item}>
