@@ -1065,6 +1065,16 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="description"
 						render={nullRender}
 					/>
+					<ProTable.Column
+						title="服务版本"
+						dataIndex="chartVersion"
+						width={120}
+					/>
+					<ProTable.Column
+						title="版本"
+						dataIndex="version"
+						width={80}
+					/>
 					{/* <ProTable.Column
 						title="关联服务名称/中文别名"
 						dataIndex="associated"
@@ -1088,7 +1098,7 @@ const ServiceListByType = (props: serviceListProps) => {
 							title="操作"
 							dataIndex="action"
 							render={actionRender}
-							width={300}
+							width={280}
 						/>
 					) : null}
 				</ProTable>
