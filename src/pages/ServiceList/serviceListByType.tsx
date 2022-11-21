@@ -705,7 +705,7 @@ const ServiceListByType = (props: serviceListProps) => {
 								);
 							}}
 						>
-							运维面板(β)
+							运维面板(bate)
 						</LinkButton>
 					)}
 				</Actions>
@@ -796,7 +796,7 @@ const ServiceListByType = (props: serviceListProps) => {
 							);
 						}}
 					>
-						运维面板(β)
+						运维面板(bate)
 					</LinkButton>
 				)}
 				<LinkButton
