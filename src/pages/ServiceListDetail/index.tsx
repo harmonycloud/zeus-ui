@@ -464,7 +464,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				extra={
 					<>
 						<Button type="primary" onClick={toOperatorPanel}>
-							运维面板(bate)
+							运维面板(beta)
 						</Button>
 						<Button
 							onClick={() => refresh(activeKey)}
