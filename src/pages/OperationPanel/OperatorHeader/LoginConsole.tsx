@@ -64,8 +64,14 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 			PxsGH8Blkb28/GqsRLf8LzqS5DCz17MCIQC9HcYDyPvumLBNcLAWs/KESkLXyj1H
 			CGGvRnGJXOcC1g==
 			-----END PRIVATE KEY-----`;
+			console.log(cookie);
+
 			form.setFieldsValue({
-				username: cookie.username,
+				username:
+					cookie.username ||
+					(middlewareType === 'redis' && version === '5.0')
+						? 'default'
+						: '',
 				password: decrypt(cookie.password, privateKey),
 				remember: true
 			});
