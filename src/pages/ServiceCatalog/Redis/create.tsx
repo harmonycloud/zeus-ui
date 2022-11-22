@@ -301,6 +301,26 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			]);
 			setMode('sentinel');
+		} else {
+			setModeList([
+				{
+					label: '集群模式',
+					value: 'cluster'
+				},
+				{
+					label: '哨兵模式',
+					value: 'sentinel'
+				},
+				{
+					label: '代理模式',
+					value: 'agent'
+				},
+				{
+					label: '读写分离模式',
+					value: 'readWriteProxy'
+				}
+			]);
+			setMode('cluster');
 		}
 	}, [selectNamespace]);
 
