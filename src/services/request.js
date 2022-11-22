@@ -77,7 +77,7 @@ axios.interceptors.request.use(
 		}
 		config.headers.userToken = cache.getLocal(TOKEN);
 		if (config.headers.mwtoken === '') {
-			config.headers.mvToken = '';
+			config.headers.mwToken = '';
 			delete config.headers.mwtoken;
 		} else {
 			config.headers.mwToken = cache.getSession(MWTOKEN)

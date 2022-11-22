@@ -50,6 +50,7 @@
 		"react": "^16.13.1",
 		"react-app-rewired": "^2.1.6",
 		"react-codemirror2": "^7.2.1",
+		"react-cookie": "^4.1.1",
 		"react-cool-onclickoutside": "^1.6.1",
 		"react-dom": "^16.13.1",
 		"react-intl": "^5.8.3",

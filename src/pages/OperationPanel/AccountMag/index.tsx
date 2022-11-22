@@ -3,7 +3,12 @@ import { Space, Table, Input, Button, Switch, notification, Modal } from 'antd';
 import { useHistory, useParams } from 'react-router';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import AddAccount from './AddAccount';
-import { MysqlUserItem, ParamsProps, PgsqlUserItem } from '../index.d';
+import {
+	AccountMagProps,
+	MysqlUserItem,
+	ParamsProps,
+	PgsqlUserItem
+} from '../index.d';
 import Actions from '@/components/Actions';
 import AuthorizationForm from './AuthorizatioinForm';
 import {
@@ -18,7 +23,8 @@ import storage from '@/utils/storage';
 const LinkButton = Actions.LinkButton;
 const { Search } = Input;
 const { confirm } = Modal;
-export default function AccountMag(): JSX.Element {
+export default function AccountMag(props: AccountMagProps): JSX.Element {
+	const { currentUser } = props;
 	const history = useHistory();
 	const params: ParamsProps = useParams();
 	const [addOpen, setAddOpen] = useState<boolean>(false);
@@ -27,8 +33,10 @@ export default function AccountMag(): JSX.Element {
 	const [pgsqlDataSource, setPgsqlDataSource] = useState<PgsqlUserItem[]>();
 	const [userData, setUserData] = useState<MysqlUserItem | PgsqlUserItem>();
 	useEffect(() => {
-		getData();
-	}, []);
+		if (currentUser) {
+			getData();
+		}
+	}, [currentUser]);
 	const handleDelete = (record: MysqlUserItem | PgsqlUserItem) => {
 		const username =
 			params.type === 'mysql'

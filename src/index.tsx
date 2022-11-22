@@ -8,12 +8,15 @@ import zhCN from 'antd/lib/locale/zh_CN';
 import './index.less';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import { CookiesProvider } from 'react-cookie';
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
 	<Provider store={store}>
 		<ConfigProvider locale={zhCN}>
-			<App />
+			<CookiesProvider>
+				<App />
+			</CookiesProvider>
 		</ConfigProvider>
 	</Provider>,
 	document.getElementById('root')

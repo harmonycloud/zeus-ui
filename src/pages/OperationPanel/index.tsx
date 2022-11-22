@@ -36,11 +36,11 @@ export default function OperationPanel(): JSX.Element {
 					/>
 				);
 			case 'accountMag':
-				return <AccountMag />;
+				return <AccountMag currentUser={currentUser} />;
 			case 'sqlAudit':
-				return <SqlAudit />;
+				return <SqlAudit currentUser={currentUser} />;
 			case 'databaseMag':
-				return <DatabaseMag />;
+				return <DatabaseMag currentUser={currentUser} />;
 			case 'roleDetail':
 				return <RoleDetail />;
 			default:

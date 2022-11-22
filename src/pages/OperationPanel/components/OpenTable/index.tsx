@@ -153,9 +153,10 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 		extra: any
 	) => {
 		const list = [...orderDtoList].map((item: OrderDtoItem) => {
+			console.log(sorter);
 			if (item.column === sorter.columnKey) {
 				item.order =
-					sorter.order.substring(0, sorter.order.length - 3) || '';
+					sorter.order?.substring(0, sorter.order.length - 3) || '';
 			}
 			return item;
 		});

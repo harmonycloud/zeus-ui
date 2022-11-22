@@ -153,10 +153,10 @@ export const getSecrets = (params: any) => {
 	return Axios.get(MIDDLEWARE.getSecret, params);
 };
 export const getStandardLogFiles = (params: any) => {
-	return Axios.get(MIDDLEWARE.getContainerFiles, params);
+	return Axios.json(MIDDLEWARE.getContainerFiles, params, {}, 'POST');
 };
 export const getLogDetail = (params: any) => {
-	return Axios.post(MIDDLEWARE.getLogDetails, params);
+	return Axios.json(MIDDLEWARE.getLogDetails, params, {}, 'POST');
 };
 export const download = (params: any) => {
 	const { restUrl } = Axios.restfulAPI(MIDDLEWARE.downloadLog, params);
