@@ -13,7 +13,7 @@ import { getMenu, getServiceListChildMenu } from '@/services/user';
 import { IconFont } from '@/components/IconFont';
 import { ResMenuItem } from '@/types/comment';
 import { getProjects } from '@/services/project';
-import { getClusters, getNamespaces } from '@/services/common';
+import { getClusters, getNamespaces, getDisaster } from '@/services/common';
 import { ProjectItem } from '@/pages/ProjectManage/project';
 import { getUserInformation } from '@/services/user';
 import {
@@ -90,6 +90,13 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	const [nickName, setNickName] = useState<string>('');
 	const [role, setRole] = useState<User>();
 	const personalization = storage.getLocal('personalization');
+	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				storage.setSession('disasterOpen', res.data);
+			}
+		});
+	}, []);
 	useEffect(() => {
 		if (
 			storage.getLocal('token') &&

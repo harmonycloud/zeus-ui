@@ -74,6 +74,10 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
+	// * 后端是否开启灾备
+	const [disasterOpen] = useState<boolean>(
+		storage.getSession('disasterOpen') || false
+	);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -405,6 +409,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
+		// * 当前用户没有创建和查看的权限
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
 			if (name === 'mysql') {
 				return {
@@ -421,8 +426,9 @@ const ServiceListByType = (props: serviceListProps) => {
 				return {};
 			}
 		}
+		// * 是否可以发布
 		if (cantRelease) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
@@ -434,15 +440,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								发布服务
 							</Button>
 						</Tooltip>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
 				};
 			} else {
 				return {
@@ -460,7 +466,8 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (!middlewareInfo) {
-			if (name === 'mysql') {
+			// * 当前中间件相关数据是否加载完成
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="数据加载中，请稍后...">
@@ -498,6 +505,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (namespace.availableDomain) {
+			// * 选中双活分区后，除mysql redis pgsql 以外不能发布
 			if (name !== 'mysql' && name !== 'redis' && name !== 'postgresql') {
 				return {
 					primary: (
@@ -513,28 +521,42 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			} else {
-				return {
-					primary: (
-						<Button
-							onClick={releaseMiddleware}
-							type="primary"
-							disabled={!middlewareInfo}
-						>
-							发布服务
-						</Button>
-					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
-				};
+				if (name === 'mysql' && disasterOpen) {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						),
+						secondary: (
+							<Checkbox
+								checked={backupCheck}
+								onChange={handleFilterBackup}
+							>
+								灾备服务
+							</Checkbox>
+						)
+					};
+				} else {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						)
+					};
+				}
 			}
 		} else {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Button
@@ -544,15 +566,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
 				};
 			} else {
 				return {
@@ -1017,12 +1039,14 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="description"
 						render={nullRender}
 					/>
-					{/* <ProTable.Column
-						title="关联服务名称/中文别名"
-						dataIndex="associated"
-						width={180}
-						render={associatedRender}
-					/> */}
+					{disasterOpen && (
+						<ProTable.Column
+							title="关联服务名称/中文别名"
+							dataIndex="associated"
+							width={180}
+							render={associatedRender}
+						/>
+					)}
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
