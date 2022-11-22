@@ -18,7 +18,7 @@ import RedisDataBase from './RedisDatabase/index';
 import ServiceDetailIngress from './ServiceIngress';
 
 import { getMiddlewareDetail } from '@/services/middleware';
-import { getNamespaces } from '@/services/common';
+import { getDisaster, getNamespaces } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -74,6 +74,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		currentTab || 'basicInfo'
 	);
 	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
 	useEffect(() => {
 		if (location?.state?.flag) {
 			window.location.reload();
@@ -84,6 +86,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
 		}
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
 	}, []);
 
 	useEffect(() => {
@@ -531,11 +538,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('alarm')}
 						</TabPane>
 					)}
-					{/* {operateFlag && type === 'mysql' ? (
+					{disasterOpen && operateFlag && type === 'mysql' ? (
 						<TabPane tab="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</TabPane>
-					) : null} */}
+					) : null}
 					{/* {operateFlag &&
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&

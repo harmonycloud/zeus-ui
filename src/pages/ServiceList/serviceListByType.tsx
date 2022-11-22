@@ -20,7 +20,7 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import { getComponents } from '@/services/common';
+import { getComponents, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -74,6 +74,15 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
+	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -406,7 +415,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	};
 	const operation = () => {
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					secondary: (
 						<Checkbox
@@ -422,7 +431,7 @@ const ServiceListByType = (props: serviceListProps) => {
 			}
 		}
 		if (cantRelease) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
@@ -434,15 +443,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								发布服务
 							</Button>
 						</Tooltip>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
 				};
 			} else {
 				return {
@@ -460,7 +469,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (!middlewareInfo) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="数据加载中，请稍后...">
@@ -513,28 +522,42 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			} else {
-				return {
-					primary: (
-						<Button
-							onClick={releaseMiddleware}
-							type="primary"
-							disabled={!middlewareInfo}
-						>
-							发布服务
-						</Button>
-					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
-				};
+				if (name === 'mysql' && disasterOpen) {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						),
+						secondary: (
+							<Checkbox
+								checked={backupCheck}
+								onChange={handleFilterBackup}
+							>
+								灾备服务
+							</Checkbox>
+						)
+					};
+				} else {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						)
+					};
+				}
 			}
 		} else {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Button
@@ -544,15 +567,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
 				};
 			} else {
 				return {
@@ -1017,12 +1040,14 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="description"
 						render={nullRender}
 					/>
-					{/* <ProTable.Column
-						title="关联服务名称/中文别名"
-						dataIndex="associated"
-						width={180}
-						render={associatedRender}
-					/> */}
+					{disasterOpen && (
+						<ProTable.Column
+							title="关联服务名称/中文别名"
+							dataIndex="associated"
+							width={180}
+							render={associatedRender}
+						/>
+					)}
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
