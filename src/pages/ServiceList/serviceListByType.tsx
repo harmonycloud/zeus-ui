@@ -20,7 +20,7 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import { getComponents } from '@/services/common';
+import { getComponents, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -76,10 +76,15 @@ const ServiceListByType = (props: serviceListProps) => {
 		deleteFlag: false
 	});
 	const [license, setLicense] = useState<boolean>(false);
-	// * 后端是否开启灾备
-	const [disasterOpen] = useState<boolean>(
-		storage.getSession('disasterOpen') || false
-	);
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
+	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -431,7 +436,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const operation = () => {
 		// * 当前用户没有创建和查看的权限
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					secondary: (
 						<Checkbox
@@ -1097,12 +1102,6 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="version"
 						width={80}
 					/>
-					{/* <ProTable.Column
-						title="关联服务名称/中文别名"
-						dataIndex="associated"
-						width={180}
-						render={associatedRender}
-					/> */}
 					{disasterOpen && (
 						<ProTable.Column
 							title="关联服务名称/中文别名"

@@ -31,7 +31,7 @@ import {
 	getKey,
 	getTolerations
 } from '@/services/middleware';
-import { getMirror } from '@/services/common';
+import { getDisaster, getMirror } from '@/services/common';
 import { getClusters, getNamespaces, getAspectFrom } from '@/services/common';
 import { getProjectNamespace } from '@/services/project';
 import { instanceSpecList, mysqlDataList } from '@/utils/const';
@@ -266,6 +266,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [readWriteProxy, setReadWriteProxy] = useState<string>('false');
 	// * 备份
 	const backupDetail = storage.getLocal('backupDetail');
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
@@ -319,6 +321,11 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	};
 
 	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
 		getClusters().then((res) => {
 			if (res.success) {
 				const list = res.data.map((item: clusterType) => {
@@ -1441,7 +1448,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			/>
 			<ProContent>
 				<Form form={form}>
-					{/* {state && state.disasterOriginName ? (
+					{disasterOpen && state && state.disasterOriginName ? (
 						<>
 							<FormBlock title="源服务信息">
 								<div className={styles['origin-info']}>
@@ -1542,7 +1549,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								</div>
 							</FormBlock>
 						</>
-					) : null} */}
+					) : null}
 					{globalNamespace.name === '*' && !state && !namespace && (
 						<FormBlock title="选择命名空间">
 							<div className={styles['basic-info']}>

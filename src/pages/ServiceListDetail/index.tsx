@@ -18,7 +18,7 @@ import RedisDataBase from './RedisDatabase/index';
 import ServiceDetailIngress from './ServiceIngress';
 
 import { getMiddlewareDetail } from '@/services/middleware';
-import { getComponents, getNamespaces } from '@/services/common';
+import { getComponents, getNamespaces, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -77,9 +77,8 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	const [loggingOpen, setLoggingOpen] = useState<boolean>(false);
 	const [grafanaOpen, setGrafanaOpen] = useState<boolean>(false);
 	const [alertOpen, setAlertOpen] = useState<boolean>(false);
-	const [disasterOpen] = useState<boolean>(
-		storage.getSession('disasterOpen') || false
-	);
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
 	useEffect(() => {
 		if (location?.state?.flag) {
 			window.location.reload();
@@ -128,6 +127,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					message: '失败',
 					description: res.errorMsg
 				});
+			}
+		});
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
 			}
 		});
 	}, []);
