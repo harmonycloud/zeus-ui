@@ -1216,8 +1216,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		setPgTableTreeValue(value);
 	};
 	const newTreeData = useMemo(() => {
-		const loop = (data: any[]): any[] =>
-			data.map((item) => {
+		const loop = (data: any[], database: string): any[] =>
+			data?.map((item) => {
 				const result: any = {};
 				const strTitle = item.value || '';
 				const index = strTitle.indexOf(mysqlSearchValue);
@@ -1270,11 +1270,59 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				result.type = item.type;
 				result.icon = item.icon;
 
+				if (item.type === 'table') {
+					console.log(database);
+
+					const result1: any = {};
+					result1.title = (
+						<Dropdown
+							overlay={() => tableMenu(item.value, database)}
+							trigger={['contextMenu']}
+						>
+							<span
+								title={item.value}
+								className="text-overflow"
+								style={{ width: '120px' }}
+								onDoubleClick={() => {
+									add(
+										item.value,
+										<OpenTable
+											dbName={database}
+											tableName={item.value}
+										/>
+									);
+								}}
+							>
+								{index > -1 ? (
+									<>
+										{beforeStr}
+										<span className="site-tree-search-value">
+											{mysqlSearchValue}
+										</span>
+										{afterStr}
+									</>
+								) : (
+									strTitle
+								)}
+							</span>
+						</Dropdown>
+					);
+					result1.key = item.key;
+					result1.value = item.value;
+					result1.type = item.type;
+					result1.icon = item.icon;
+
+					return {
+						...result1,
+						children: loop(item.children, '')
+					};
+				}
+
 				if (item.children) {
 					if (item.type === 'database') {
 						return {
 							...result,
-							children: loop(item.children)
+							children: loop(item.children, result.value)
 						};
 					} else {
 						return { ...item };
@@ -1286,10 +1334,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				};
 			});
 
-		return loop(treeData);
+		return loop(treeData, '');
 	}, [mysqlSearchValue, treeData]);
 	const newPgTreeData = useMemo(() => {
-		const loop = (data: any[]): any[] =>
+		const loop = (data: any[], database: string): any[] =>
 			data.map((item) => {
 				const result: any = {};
 				const strTitle = item.value || '';
@@ -1298,18 +1346,18 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				const afterStr = strTitle.slice(index + pgSearchValue.length);
 				result.title = (
 					<Dropdown
-						overlay={() => menu(item.value)}
+						overlay={() => pgMenu(item.value)}
 						trigger={['contextMenu']}
 					>
 						{index > -1 ? (
 							<span
 								title={item.value}
 								className="text-overflow"
-								style={{ width: '140px' }}
+								style={{ width: '130px' }}
 								onDoubleClick={() =>
 									add(
 										item.value,
-										<MysqlSqlConsole dbName={item.value} />
+										<ModeMag dbName={item.value} />
 									)
 								}
 							>
@@ -1323,11 +1371,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							<span
 								title={item.value}
 								className="text-overflow"
-								style={{ width: '140px' }}
+								style={{ width: '130px' }}
 								onDoubleClick={() =>
 									add(
 										item.value,
-										<MysqlSqlConsole dbName={item.value} />
+										<ModeMag dbName={item.value} />
 									)
 								}
 							>
@@ -1341,11 +1389,48 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				result.type = item.type;
 				result.icon = item.icon;
 
+				if (item.type === 'schema') {
+					const result1: any = {};
+					result1.title = (
+						<Dropdown
+							overlay={() => menu(item.value, database)}
+							trigger={['contextMenu']}
+						>
+							<span
+								onDoubleClick={() => {
+									add(
+										item.value,
+										<PgsqlSqlConsole dbName={database} />
+									);
+								}}
+							>
+								{index > -1 ? (
+									<>
+										{beforeStr}
+										<span className="site-tree-search-value">
+											{pgSearchValue}
+										</span>
+										{afterStr}
+									</>
+								) : (
+									strTitle
+								)}
+							</span>
+						</Dropdown>
+					);
+					result1.key = item.key;
+					result1.icon = item.icon;
+					result1.value = item.value;
+					result1.type = item.type;
+					result1.isLeaf = item.isLeaf;
+					return result1;
+				}
+
 				if (item.children) {
 					if (item.type === 'database') {
 						return {
 							...result,
-							children: loop(item.children)
+							children: loop(item.children, result.value)
 						};
 					} else {
 						return { ...item };
@@ -1357,7 +1442,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				};
 			});
 
-		return loop(pgTreeData);
+		return loop(pgTreeData, '');
 	}, [pgSearchValue, pgTreeData]);
 	const newPgTreeTableData = useMemo(() => {
 		const loop = (data: any[]): any[] =>
@@ -1371,21 +1456,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				result.title = (
 					<Dropdown
-						overlay={() => menu(item.value)}
+						overlay={() => tableMenu(item.value, '')}
 						trigger={['contextMenu']}
 					>
 						{index > -1 ? (
-							<span
-								title={item.value}
-								className="text-overflow"
-								style={{ width: '140px' }}
-								onDoubleClick={() =>
-									add(
-										item.value,
-										<MysqlSqlConsole dbName={item.value} />
-									)
-								}
-							>
+							<span>
 								{beforeStr}
 								<span className="site-tree-search-value">
 									{pgTableTreeValue}
@@ -1393,19 +1468,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								{afterStr}
 							</span>
 						) : (
-							<span
-								title={item.value}
-								className="text-overflow"
-								style={{ width: '140px' }}
-								onDoubleClick={() =>
-									add(
-										item.value,
-										<MysqlSqlConsole dbName={item.value} />
-									)
-								}
-							>
-								{strTitle}
-							</span>
+							<span>{strTitle}</span>
 						)}
 					</Dropdown>
 				);
@@ -1415,7 +1478,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				result.icon = item.icon;
 
 				if (item.children) {
-					if (item.type === 'database') {
+					if (item.type === 'table') {
 						return {
 							...result,
 							children: loop(item.children)
