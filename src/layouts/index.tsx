@@ -95,7 +95,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	useEffect(() => {
 		getDisaster().then((res) => {
 			if (res.success) {
-				storage.setSession('disasterOpen', res.data);
+				storage.setSession('disasterOpen', JSON.parse(res.data));
 			}
 		});
 	}, []);
