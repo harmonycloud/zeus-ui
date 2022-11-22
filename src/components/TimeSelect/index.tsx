@@ -11,8 +11,10 @@ export default function TimeSelect(props: TimeSelectProps): JSX.Element {
 	const { RangePicker } = DatePicker;
 	const { timeSelect, source = 'default', style = {} } = props;
 	const [isSelect, setIsSelect] = useState<boolean>(false);
-	const [startTime, setStartTime] = useState<any>();
-	const [endTime, setEndTime] = useState<any>();
+	const [startTime, setStartTime] = useState<any>(
+		moment().subtract(1, 'hours')
+	);
+	const [endTime, setEndTime] = useState<any>(moment());
 	const [timeQuantum, setTimeQuantum] = useState<any>();
 
 	const onChange = (value: any) => {
