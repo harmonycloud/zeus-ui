@@ -77,6 +77,9 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 	const [loggingOpen, setLoggingOpen] = useState<boolean>(false);
 	const [grafanaOpen, setGrafanaOpen] = useState<boolean>(false);
 	const [alertOpen, setAlertOpen] = useState<boolean>(false);
+	const [disasterOpen] = useState<boolean>(
+		storage.getSession('disasterOpen') || false
+	);
 	useEffect(() => {
 		if (location?.state?.flag) {
 			window.location.reload();
@@ -572,22 +575,16 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('alarm')}
 						</TabPane>
 					)}
-					{/* {operateFlag && type === 'mysql' ? (
+					{disasterOpen && operateFlag && type === 'mysql' && (
 						<TabPane tab="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</TabPane>
-					) : null} */}
+					)}
 					{/* {operateFlag &&
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&
 						data?.mysqlDTO?.isSource === true} */}
-					{/* {operateFlag &&
-					type === 'mysql' &&
-					!data?.mysqlDTO?.openDisasterRecoveryMode ? (
-						<TabPane tab="数据库管理" key="database">
-							{childrenRender('database')}
-						</TabPane>
-					) : null}
+					{/*
 					{operateFlag &&
 					type === 'mysql' &&
 					data?.mysqlDTO?.openDisasterRecoveryMode &&

@@ -242,7 +242,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [relationActive, setRelationActive] = useState<boolean>(false);
 	// * 外接的动态表单
 	const [customForm, setCustomForm] = useState<any>();
-
+	// * 后端是否开启灾备开关
+	const [disasterOpen] = useState<boolean>(
+		storage.getSession('disasterOpen') || false
+	);
 	// * 是否点击提交跳转至结果页
 	const [commitFlag, setCommitFlag] = useState<boolean>(false);
 	// * 发布成功
@@ -2508,7 +2511,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					{/* {(!state || !state.disasterOriginName) &&
+					{disasterOpen &&
+					(!state || !state.disasterOriginName) &&
 					!globalNamespace.availableDomain ? (
 						<FormBlock title="灾备服务基础信息">
 							<div className={styles['backup-info']}>
@@ -2714,7 +2718,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								</ul>
 							</div>
 						</FormBlock>
-					) : null} */}
+					) : null}
 					{history.location.pathname.includes('backup') &&
 					backupDetail.recoveryType === 'time' ? (
 						<FormBlock title="恢复配置">

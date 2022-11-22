@@ -154,3 +154,7 @@ export const getIngressTCPPort = () => {
 export const getNodePort = () => {
 	return Axios.get(COMMON.getNodePort);
 };
+// * 获取灾备相关是否显示
+export const getDisaster = () => {
+	return Axios.get(COMMON.getDisaster);
+};
