@@ -45,8 +45,8 @@ export default function AddKV(props: any): JSX.Element {
 						description: '新增成功'
 					});
 				} else {
-					notification.success({
-						message: '成功',
+					notification.error({
+						message: '失败',
 						description: res.errorMsg
 					});
 				}
