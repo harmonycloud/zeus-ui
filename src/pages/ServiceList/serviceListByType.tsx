@@ -20,7 +20,7 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import { getComponents } from '@/services/common';
+import { getComponents, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -74,10 +74,15 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
-	// * 后端是否开启灾备
-	const [disasterOpen] = useState<boolean>(
-		storage.getSession('disasterOpen') || false
-	);
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
+	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -411,7 +416,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const operation = () => {
 		// * 当前用户没有创建和查看的权限
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					secondary: (
 						<Checkbox
@@ -466,7 +471,6 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (!middlewareInfo) {
-			// * 当前中间件相关数据是否加载完成
 			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
