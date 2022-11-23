@@ -230,7 +230,6 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<BackupRecovery
 							type={type}
 							data={data}
-							storage={globalVar.cluster.storage}
 							clusterId={globalVar.cluster.id}
 							namespace={namespace}
 							customMid={customMid}

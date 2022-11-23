@@ -224,7 +224,6 @@ export interface eventsParams {
 	table: string;
 }
 export interface BackupRecoveryProps {
-	storage?: storageProps;
 	middlewareName?: string;
 	customMid: boolean;
 	capabilities: string[];
@@ -232,7 +231,6 @@ export interface BackupRecoveryProps {
 	namespace: string;
 	type: string;
 	data?: middlewareDetailProps;
-	dataSecurity?: boolean;
 }
 export interface ListProps {
 	clusterId: string;

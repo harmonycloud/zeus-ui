@@ -137,6 +137,7 @@ export const LoggingRender = () => (
 			labelAlign="left"
 			label="ES日志采集工具"
 			style={{ marginBottom: 0 }}
+			valuePropName="checked"
 			name="logCollect"
 		>
 			<Switch />

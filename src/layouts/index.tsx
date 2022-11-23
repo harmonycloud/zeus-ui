@@ -93,13 +93,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	const [role, setRole] = useState<User>();
 	const personalization = storage.getLocal('personalization');
 	useEffect(() => {
-		getDisaster().then((res) => {
-			if (res.success) {
-				storage.setSession('disasterOpen', JSON.parse(res.data));
-			}
-		});
-	}, []);
-	useEffect(() => {
 		if (
 			storage.getLocal('token') &&
 			!window.location.href.includes('terminal')

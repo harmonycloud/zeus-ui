@@ -1,6 +1,11 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, notification } from 'antd';
-import { putComponent, cutInComponent, getCluster } from '@/services/common';
+import {
+	putComponent,
+	cutInComponent,
+	getCluster,
+	getLogCollect
+} from '@/services/common';
 import {
 	PrometheusRender,
 	LoggingRender,
@@ -37,6 +42,24 @@ const AccessForm = (props: AccessFormProps) => {
 	const [form] = Form.useForm();
 	console.log(componentData);
 	useEffect(() => {
+		if (componentData.component === 'logging') {
+			getLogCollect({ clusterId: componentData.clusterId }).then(
+				(res) => {
+					if (res.success) {
+						console.log(res.data);
+						form.setFieldsValue({
+							logCollect: res.data
+						});
+					} else {
+						form.setFieldsValue({
+							logCollect: false
+						});
+					}
+				}
+			);
+		}
+	}, []);
+	useEffect(() => {
 		form.setFieldsValue({
 			protocolAlert: componentData.protocol,
 			hostAlert: componentData.host,
@@ -52,92 +75,99 @@ const AccessForm = (props: AccessFormProps) => {
 			hostPrometheus: componentData.host,
 			portPrometheus: componentData.port
 		});
+		form.setFieldsValue({
+			protocolEs: componentData.protocol,
+			hostEs: componentData.host,
+			portEs: componentData.port,
+			userEs: componentData.user,
+			passwordEs: componentData.password
+		});
 	}, []);
-	useEffect(() => {
-		// getCluster({ clusterId: clusterId, detail: true }).then((res) => {
-		// 	if (res.success) {
-		// 		const cluster = res.data;
-		// 		if (cluster.logging && cluster.logging.elasticSearch) {
-		// 			form.setFieldsValue({
-		// 				protocolEs: cluster.logging.elasticSearch.protocol,
-		// 				hostEs: cluster.logging.elasticSearch.host,
-		// 				portEs: cluster.logging.elasticSearch.port,
-		// 				userEs: cluster.logging.elasticSearch.user,
-		// 				passwordEs: cluster.logging.elasticSearch.password,
-		// 				logCollect: cluster.logging.elasticSearch.logCollect
-		// 			});
-		// 		}
-		// 		if (cluster.monitor?.alertManager) {
-		// 			form.setFieldsValue({
-		// 				protocolAlert: cluster.monitor.alertManager.protocol,
-		// 				hostAlert: cluster.monitor.alertManager.host,
-		// 				portAlert: cluster.monitor.alertManager.port
-		// 			});
-		// 		}
-		// 		if (cluster.monitor?.grafana) {
-		// 			form.setFieldsValue({
-		// 				protocolGrafana: cluster.monitor.grafana.protocol,
-		// 				hostGrafana: cluster.monitor.grafana.host,
-		// 				portGrafana: cluster.monitor.grafana.port
-		// 			});
-		// 		}
-		// 		if (cluster.monitor?.prometheus) {
-		// 			form.setFieldsValue({
-		// 				protocolPrometheus: cluster.monitor.prometheus.protocol,
-		// 				hostPrometheus: cluster.monitor.prometheus.host,
-		// 				portPrometheus: cluster.monitor.prometheus.port
-		// 			});
-		// 		}
-		// 		if (cluster?.storage?.backup?.storage) {
-		// 			form.setFieldsValue({
-		// 				accessKeyId:
-		// 					cluster?.storage?.backup?.storage.accessKeyId,
-		// 				bucketName:
-		// 					cluster?.storage?.backup?.storage.bucketName,
-		// 				minioName: cluster?.storage?.backup?.storage.name,
-		// 				secretAccessKey:
-		// 					cluster?.storage?.backup?.storage.secretAccessKey,
-		// 				endpoint: cluster?.storage?.backup?.storage.endpoint
-		// 			});
-		// 		}
-		// 		if (cluster?.storage?.support) {
-		// 			if (
-		// 				cluster?.storage?.support.find(
-		// 					(item: any) => item.type === 'lvm'
-		// 				)
-		// 			) {
-		// 				form.setFieldsValue({
-		// 					lvmName: cluster?.storage?.support.find(
-		// 						(item: any) => item.type === 'lvm'
-		// 					).name,
-		// 					lvmNamespace: cluster?.storage?.support.find(
-		// 						(item: any) => item.type === 'lvm'
-		// 					).namespace
-		// 				});
-		// 			}
-		// 			if (
-		// 				cluster?.storage?.support.find(
-		// 					(item: any) => item.type === 'local-path'
-		// 				)
-		// 			) {
-		// 				form.setFieldsValue({
-		// 					localPathName: cluster?.storage?.support.find(
-		// 						(item: any) => item.type === 'local-path'
-		// 					).name,
-		// 					localPathNamespace: cluster?.storage?.support.find(
-		// 						(item: any) => item.type === 'local-path'
-		// 					).namespace
-		// 				});
-		// 			}
-		// 		}
-		// 	} else {
-		// 		notification.error({
-		// 			message: '失败',
-		// 			description: res.errorMsg
-		// 		});
-		// 	}
-		// });
-	}, []);
+	// useEffect(() => {
+	// getCluster({ clusterId: clusterId, detail: true }).then((res) => {
+	// 	if (res.success) {
+	// 		const cluster = res.data;
+	// 		if (cluster.logging && cluster.logging.elasticSearch) {
+	// 			form.setFieldsValue({
+	// 				protocolEs: cluster.logging.elasticSearch.protocol,
+	// 				hostEs: cluster.logging.elasticSearch.host,
+	// 				portEs: cluster.logging.elasticSearch.port,
+	// 				userEs: cluster.logging.elasticSearch.user,
+	// 				passwordEs: cluster.logging.elasticSearch.password,
+	// 				logCollect: cluster.logging.elasticSearch.logCollect
+	// 			});
+	// 		}
+	// 		if (cluster.monitor?.alertManager) {
+	// 			form.setFieldsValue({
+	// 				protocolAlert: cluster.monitor.alertManager.protocol,
+	// 				hostAlert: cluster.monitor.alertManager.host,
+	// 				portAlert: cluster.monitor.alertManager.port
+	// 			});
+	// 		}
+	// 		if (cluster.monitor?.grafana) {
+	// 			form.setFieldsValue({
+	// 				protocolGrafana: cluster.monitor.grafana.protocol,
+	// 				hostGrafana: cluster.monitor.grafana.host,
+	// 				portGrafana: cluster.monitor.grafana.port
+	// 			});
+	// 		}
+	// 		if (cluster.monitor?.prometheus) {
+	// 			form.setFieldsValue({
+	// 				protocolPrometheus: cluster.monitor.prometheus.protocol,
+	// 				hostPrometheus: cluster.monitor.prometheus.host,
+	// 				portPrometheus: cluster.monitor.prometheus.port
+	// 			});
+	// 		}
+	// 		if (cluster?.storage?.backup?.storage) {
+	// 			form.setFieldsValue({
+	// 				accessKeyId:
+	// 					cluster?.storage?.backup?.storage.accessKeyId,
+	// 				bucketName:
+	// 					cluster?.storage?.backup?.storage.bucketName,
+	// 				minioName: cluster?.storage?.backup?.storage.name,
+	// 				secretAccessKey:
+	// 					cluster?.storage?.backup?.storage.secretAccessKey,
+	// 				endpoint: cluster?.storage?.backup?.storage.endpoint
+	// 			});
+	// 		}
+	// 		if (cluster?.storage?.support) {
+	// 			if (
+	// 				cluster?.storage?.support.find(
+	// 					(item: any) => item.type === 'lvm'
+	// 				)
+	// 			) {
+	// 				form.setFieldsValue({
+	// 					lvmName: cluster?.storage?.support.find(
+	// 						(item: any) => item.type === 'lvm'
+	// 					).name,
+	// 					lvmNamespace: cluster?.storage?.support.find(
+	// 						(item: any) => item.type === 'lvm'
+	// 					).namespace
+	// 				});
+	// 			}
+	// 			if (
+	// 				cluster?.storage?.support.find(
+	// 					(item: any) => item.type === 'local-path'
+	// 				)
+	// 			) {
+	// 				form.setFieldsValue({
+	// 					localPathName: cluster?.storage?.support.find(
+	// 						(item: any) => item.type === 'local-path'
+	// 					).name,
+	// 					localPathNamespace: cluster?.storage?.support.find(
+	// 						(item: any) => item.type === 'local-path'
+	// 					).namespace
+	// 				});
+	// 			}
+	// 		}
+	// 	} else {
+	// 		notification.error({
+	// 			message: '失败',
+	// 			description: res.errorMsg
+	// 		});
+	// 	}
+	// });
+	// }, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
 			const sendData: any = {
@@ -286,7 +316,7 @@ const AccessForm = (props: AccessFormProps) => {
 	return (
 		<Modal
 			title={`工具${status === 0 || status === 1 ? '接入' : '编辑'}`}
-			visible={visible}
+			open={visible}
 			onCancel={onCancel}
 			onOk={onOk}
 			width={580}

@@ -21,12 +21,10 @@ import OperationAudit from '@/pages/OperationAudit/index';
 import UserManage from '@/pages/UserManage';
 import RoleManage from '@/pages/RoleManage';
 import OperationAuditDetail from '@/pages/OperationAudit/detail';
-import ServiceAvailable from '@/pages/ServiceAvailable';
 import DataMonitor from '@/pages/DataMonitor';
 import LogDetail from '@/pages/LogDetail';
 import AlarmCenter from '@/pages/AlarmCenter';
 import DisasterCenter from '@/pages/DisasterCenter';
-import DataSecurity from '@/pages/DataSecurity';
 import MiddlewareRepository from '@/pages/MiddlewareRepository';
 import MiddlewareVersion from '@/pages/MiddlewareRepository/middlewareVersion';
 import ResourcePoolManagement from '@/pages/ResourcePoolManagement';
@@ -321,12 +319,6 @@ const Routes = withRouter((props) => {
 				<Route
 					path="/disasterBackup/disasterCenter"
 					component={DisasterCenter}
-					exact
-				/>
-				{/* 容灾备份——数据安全 */}
-				<Route
-					path="/disasterBackup/dataSecurity"
-					component={DataSecurity}
 					exact
 				/>
 				<Route

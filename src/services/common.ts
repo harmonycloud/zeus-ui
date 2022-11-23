@@ -158,3 +158,6 @@ export const getNodePort = () => {
 export const getDisaster = () => {
 	return Axios.get(COMMON.getDisaster);
 };
+export const getLogCollect = (params: { clusterId: string }) => {
+	return Axios.get(COMMON.getLogCollect, params);
+};

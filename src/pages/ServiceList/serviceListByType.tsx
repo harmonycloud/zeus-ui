@@ -191,10 +191,14 @@ const ServiceListByType = (props: serviceListProps) => {
 							if (res.data.length > 0) {
 								setDataSource(res.data[0]);
 								setShowDataSource({
-									[res.data[0].name]: res.data[0].serviceList
-								});
-								console.log({
-									[res.data[0].name]: res.data[0].serviceList
+									[res.data[0].name]:
+										res.data[0].serviceList.map(
+											(item: any) => {
+												item.description =
+													item.description || '/';
+												return item;
+											}
+										)
 								});
 							} else {
 								setDataSource(undefined);
@@ -1044,6 +1048,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					rowKey="name"
 					operation={operation()}
 					loading={loadingVisible}
+					scroll={{ x: 1170 }}
 					search={{
 						value: keyword,
 						onChange: handleChange,
@@ -1090,7 +1095,8 @@ const ServiceListByType = (props: serviceListProps) => {
 					<ProTable.Column
 						title="备注"
 						dataIndex="description"
-						render={nullRender}
+						width={150}
+						ellipsis={true}
 					/>
 					<ProTable.Column
 						title="服务版本"
@@ -1127,7 +1133,8 @@ const ServiceListByType = (props: serviceListProps) => {
 							title="操作"
 							dataIndex="action"
 							render={actionRender}
-							width={280}
+							width={230}
+							fixed="right"
 						/>
 					) : null}
 				</ProTable>
