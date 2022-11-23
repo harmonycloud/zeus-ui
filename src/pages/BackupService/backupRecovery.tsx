@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useHistory } from 'react-router';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
+import { statusBackupRender } from '@/utils/utils';
 import { getBackups } from '@/services/backup';
 import { middlewareProps } from '@/pages/ServiceList/service.list';
 import { getCanReleaseMiddleware } from '@/services/middleware';
@@ -12,6 +13,7 @@ import storage from '@/utils/storage';
 
 const columns = [
 	{ title: '备份记录', dataIndex: 'recordName' },
+	{ title: '备份状态', dataIndex: 'phrase', render: statusBackupRender },
 	{
 		title: '备份时间',
 		dataIndex: 'creationTime',
