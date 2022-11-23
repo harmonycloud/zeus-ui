@@ -1028,7 +1028,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const redisDbClick = (dbName: string) => {
 		if (selectDatabase === dbName) return;
 		setSelectDatabase(dbName);
-		add('DB-' + dbName, <RedisDBMag dbName={dbName} />);
+		add(
+			'DB-' + dbName,
+			<RedisDBMag dbName={dbName} redisDbRefresh={redisDbRefresh} />
+		);
 	};
 	const onLoad = (loadedKeys: Key[], info: any, type: string) => {
 		if (type === 'mysql') {
@@ -1495,6 +1498,22 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 
 		return loop(pgTableTreeData);
 	}, [pgTableTreeValue, pgTableTreeData]);
+	const redisDbRefresh = () => {
+		getRedisDatabases({
+			clusterId: params.clusterId,
+			namespace: params.namespace,
+			middlewareName: params.name
+		}).then((res) => {
+			if (res.success) {
+				setRedisListData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	};
 	return (
 		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
 			<Sider

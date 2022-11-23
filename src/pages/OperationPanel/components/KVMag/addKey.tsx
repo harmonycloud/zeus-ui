@@ -27,6 +27,7 @@ export default function AddKV(props: any): JSX.Element {
 	const { onCancel, onRefresh, database } = props;
 	const params: ParamsProps = useParams();
 	const [form] = Form.useForm();
+	const [type, setType] = useState<string>();
 
 	const onCreate = () => {
 		form.validateFields().then((value) => {
@@ -45,8 +46,8 @@ export default function AddKV(props: any): JSX.Element {
 						description: '新增成功'
 					});
 				} else {
-					notification.success({
-						message: '成功',
+					notification.error({
+						message: '失败',
 						description: res.errorMsg
 					});
 				}
@@ -95,7 +96,12 @@ export default function AddKV(props: any): JSX.Element {
 						}
 					]}
 				>
-					<Select options={options} placeholder="请选择数据类型" />
+					<Select
+						options={options}
+						placeholder="请选择数据类型"
+						value={type}
+						onChange={(value) => setType(value)}
+					/>
 				</Form.Item>
 				<Form.Item name="expiration" label="超过时间">
 					<InputNumber
@@ -103,6 +109,35 @@ export default function AddKV(props: any): JSX.Element {
 						style={{ width: '100%' }}
 					/>
 				</Form.Item>
+				<Form.Item
+					name={type === 'zset' ? 'member' : 'value'}
+					label="Value"
+					rules={[
+						{
+							required: true,
+							message: '请输入Value'
+						}
+					]}
+				>
+					<Input.TextArea
+						placeholder="请输入"
+						style={{ width: '100%' }}
+					/>
+				</Form.Item>
+				{type === 'zset' ? (
+					<Form.Item
+						name="score"
+						label="Score"
+						rules={[
+							{
+								required: true,
+								message: '请输入Score'
+							}
+						]}
+					>
+						<InputNumber min={0} style={{ width: '100%' }} />
+					</Form.Item>
+				) : null}
 				{/* <Form.Item name="expiration" label="value">
 					<Button>添加value</Button>
 				</Form.Item> */}

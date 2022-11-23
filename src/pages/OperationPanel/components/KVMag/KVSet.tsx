@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Button, notification } from 'antd';
+import React, { useState, useEffect } from 'react';
+import {
+	Form,
+	Input,
+	InputNumber,
+	Select,
+	Button,
+	notification,
+	Modal
+} from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
 import Actions from '@/components/Actions';
@@ -20,6 +28,7 @@ import {
 import { nullRender } from '@/utils/utils';
 
 const LinkButton = Actions.LinkButton;
+const { confirm } = Modal;
 const options = [
 	{ label: 'hash', value: 'hash' },
 	{ label: 'Zset', value: 'zset' },
@@ -29,7 +38,7 @@ const options = [
 ];
 export default function KVZSet(props: any): JSX.Element {
 	const [form] = Form.useForm();
-	const { data, database, onRefresh, getKeys } = props;
+	const { data, database, onRefresh, getKeys, currentKey } = props;
 	const params: ParamsProps = useParams();
 	const [record, setRecord] = useState<any>();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -62,7 +71,13 @@ export default function KVZSet(props: any): JSX.Element {
 	const Operation = {
 		primary: (
 			<div>
-				<Button type="primary" onClick={() => setVisible(true)}>
+				<Button
+					type="primary"
+					onClick={() => {
+						setRecord(null);
+						setVisible(true);
+					}}
+				>
 					新增
 				</Button>
 			</div>
@@ -100,6 +115,7 @@ export default function KVZSet(props: any): JSX.Element {
 			if (res.success) {
 				setEditKey(false);
 				setEditTime(false);
+				onRefresh();
 				getKeys(sendData.key ? sendData.key : data.key);
 				notification.success({
 					message: '成功',
@@ -169,29 +185,59 @@ export default function KVZSet(props: any): JSX.Element {
 	};
 
 	const onDelete = (record: any) => {
-		deleteRedisValue({
-			database,
-			clusterId: params.clusterId,
-			namespace: params.namespace,
-			middlewareName: params.name,
-			...data,
-			value: record.value
-		}).then((res) => {
-			if (res.success) {
-				getKeys();
-				onRefresh();
-				notification.success({
-					message: '成功',
-					description: '删除成功'
-				});
-			} else {
-				notification.success({
-					message: '成功',
-					description: res.errorMsg
+		confirm({
+			title: '操作确认',
+			content: '请确认是否删除该键值',
+			onOk: () => {
+				deleteRedisValue({
+					database,
+					clusterId: params.clusterId,
+					namespace: params.namespace,
+					middlewareName: params.name,
+					...data,
+					value: record.value
+				}).then((res) => {
+					if (res.success) {
+						// getKeys();
+						onRefresh();
+						notification.success({
+							message: '成功',
+							description: '删除成功'
+						});
+					} else {
+						notification.success({
+							message: '成功',
+							description: res.errorMsg
+						});
+					}
 				});
 			}
 		});
 	};
+
+	useEffect(() => {
+		if (editKey || editTime) {
+			const sendData = form.getFieldsValue();
+			Modal.confirm({
+				title: '是否保存',
+				icon: null,
+				content: (
+					<div>
+						<p>需要保存当前修改吗？</p>
+						<p>如果不进行保存，当前所有做的所有修改都将被还原</p>
+					</div>
+				),
+				okText: '保存',
+				onOk: () =>
+					editKeyHandle(
+						JSON.stringify(sendData) === '{}'
+							? { key: data.key, expiration: data.expiration }
+							: sendData
+					),
+				cancelText: '不保存'
+			});
+		}
+	}, [currentKey]);
 
 	return (
 		<>

@@ -32,17 +32,13 @@ export default function AddValue(props: any): JSX.Element {
 
 	return (
 		<Modal
-			title="新增value"
+			title={data ? '编辑value' : '新增value'}
 			open={visible}
 			onOk={onCreate}
 			onCancel={onCancel}
 		>
-			<Form
-				style={{ width: '70%' }}
-				form={form}
-				{...formItemLayout618}
-				labelAlign="left"
-			>
+			{console.log(visible)}
+			<Form form={form} {...formItemLayout618} labelAlign="left">
 				{type === 'hash' ? (
 					<Form.Item
 						name="field"
@@ -57,7 +53,7 @@ export default function AddValue(props: any): JSX.Element {
 					>
 						<Input
 							placeholder="请输入"
-							disabled={!!data}
+							disabled={data?.field}
 							style={{ width: '100%' }}
 						/>
 					</Form.Item>
@@ -78,6 +74,10 @@ export default function AddValue(props: any): JSX.Element {
 					<Input.TextArea
 						placeholder="请输入"
 						style={{ width: '100%' }}
+						disabled={
+							(!!data && type === 'set') ||
+							(data?.member && type === 'zset')
+						}
 					/>
 				</Form.Item>
 				{type === 'zset' ? (
