@@ -601,7 +601,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				port: data.port || '',
 				password: data.password || '',
 				kafkaDTO: data.kafkaDTO,
-				autoCreateTopicEnable: data.rocketMQParam.autoCreateTopicEnable
+				autoCreateTopicEnable:
+					data?.rocketMQParam?.autoCreateTopicEnable
 			});
 			const storageClassName =
 				data.type === 'elasticsearch'

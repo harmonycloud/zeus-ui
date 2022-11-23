@@ -37,6 +37,7 @@ export default function AddValue(props: any): JSX.Element {
 			onOk={onCreate}
 			onCancel={onCancel}
 		>
+			{console.log(visible)}
 			<Form form={form} {...formItemLayout618} labelAlign="left">
 				{type === 'hash' ? (
 					<Form.Item
@@ -52,7 +53,7 @@ export default function AddValue(props: any): JSX.Element {
 					>
 						<Input
 							placeholder="请输入"
-							disabled={!!data}
+							disabled={data?.field}
 							style={{ width: '100%' }}
 						/>
 					</Form.Item>
@@ -73,7 +74,10 @@ export default function AddValue(props: any): JSX.Element {
 					<Input.TextArea
 						placeholder="请输入"
 						style={{ width: '100%' }}
-						disabled={type === 'set' || type === 'zset'}
+						disabled={
+							(!!data && type === 'set') ||
+							(data?.member && type === 'zset')
+						}
 					/>
 				</Form.Item>
 				{type === 'zset' ? (

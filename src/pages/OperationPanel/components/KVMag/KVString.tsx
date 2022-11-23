@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Button, notification } from 'antd';
+import { Form, Input, InputNumber, Button, notification, Modal } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import DataFields from '@/components/DataFields';
 import { Item } from '@/components/DataFields/dataFields';
@@ -24,7 +24,7 @@ const options = [
 	{ label: 'string', value: 'string' }
 ];
 export default function KVString(props: any): JSX.Element {
-	const { data, database, onRefresh, getKeys } = props;
+	const { data, database, onRefresh, getKeys, currentKey } = props;
 	const [form] = Form.useForm();
 	const [strForm] = Form.useForm();
 	const params: ParamsProps = useParams();
@@ -90,6 +90,30 @@ export default function KVString(props: any): JSX.Element {
 	useEffect(() => {
 		strForm.setFieldValue('value', data?.stringValue);
 	}, [data]);
+
+	useEffect(() => {
+		if (editKey || editTime) {
+			const sendData = form.getFieldsValue();
+			Modal.confirm({
+				title: '是否保存',
+				icon: null,
+				content: (
+					<div>
+						<p>需要保存当前修改吗？</p>
+						<p>如果不进行保存，当前所有做的所有修改都将被还原</p>
+					</div>
+				),
+				okText: '保存',
+				onOk: () =>
+					editKeyHandle(
+						JSON.stringify(sendData) === '{}'
+							? { key: data.key, expiration: data.expiration }
+							: sendData
+					),
+				cancelText: '不保存'
+			});
+		}
+	}, [currentKey]);
 
 	return (
 		<>

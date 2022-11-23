@@ -20,9 +20,10 @@ import './index.scss';
 const { confirm } = Modal;
 interface KVMagProps {
 	dbName: string;
+	redisDbRefresh: () => void;
 }
 export default function KVMag(props: KVMagProps): JSX.Element {
-	const { dbName } = props;
+	const { dbName, redisDbRefresh } = props;
 	const params: ParamsProps = useParams();
 	const [isAdd, setIsAdd] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
@@ -63,8 +64,9 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		}).then((res) => {
 			if (res.success) {
 				setKeys(res.data);
-				key && getDetail();
-				key ? setKey(key) : setKey(res.data[0]?.key);
+				setKey(res.data[0]?.key);
+				// key && getDetail();
+				// key ? setKey(key) : setKey(res.data[0]?.key);
 			}
 		});
 	};
@@ -95,6 +97,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				}).then((res) => {
 					if (res.success) {
 						getData('');
+						redisDbRefresh();
 						notification.success({
 							message: '成功',
 							description: '键值对删除成功'
@@ -126,6 +129,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				return (
 					<KVHash
 						data={detail}
+						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
 						getKeys={(key: string) => getData('', key)}
@@ -136,6 +140,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				return (
 					<KVZset
 						data={detail}
+						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
 						getKeys={(key: string) => getData('', key)}
@@ -146,6 +151,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				return (
 					<KVList
 						data={detail}
+						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
 						getKeys={(key: string) => getData('', key)}
@@ -156,6 +162,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				return (
 					<KVSet
 						data={detail}
+						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
 						getKeys={(key: string) => getData('', key)}
@@ -165,6 +172,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				return (
 					<KVString
 						data={detail}
+						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
 						getKeys={(key: string) => getData('', key)}
@@ -225,7 +233,10 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 			) : (
 				<AddKey
 					onCancel={() => setIsAdd(false)}
-					onRefresh={() => getData('')}
+					onRefresh={() => {
+						redisDbRefresh();
+						getData('');
+					}}
 					database={dbName}
 				/>
 			)}
