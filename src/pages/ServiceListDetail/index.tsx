@@ -89,53 +89,56 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
 		}
-		getComponents({ clusterId: globalVar.cluster.id }).then((res) => {
-			if (res.success) {
-				const loggingTemp = res.data.find(
-					(item: any) => item.component === 'logging'
-				).status;
-				const grafanaTemp = res.data.find(
-					(item: any) => item.component === 'grafana'
-				).status;
-				const alertTemp = res.data.find(
-					(item: any) => item.component === 'alertmanager'
-				).status;
-				switch (loggingTemp || grafanaTemp || alertTemp) {
-					case 1:
-						setLoggingOpen(true);
-						setGrafanaOpen(true);
-						setAlertOpen(true);
-						break;
-					case 3:
-						setLoggingOpen(true);
-						setGrafanaOpen(true);
-						setAlertOpen(true);
-						break;
-					case 4:
-						setLoggingOpen(true);
-						setGrafanaOpen(true);
-						setAlertOpen(true);
-						break;
-					default:
-						setLoggingOpen(false);
-						setGrafanaOpen(false);
-						setAlertOpen(false);
-						break;
-				}
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
-		});
 		getDisaster().then((res) => {
 			if (res.success) {
 				setDisasterOpen(JSON.parse(res.data));
 			}
 		});
 	}, []);
-
+	useEffect(() => {
+		if (JSON.stringify(globalVar.cluster) !== '{}') {
+			getComponents({ clusterId: globalVar.cluster.id }).then((res) => {
+				if (res.success) {
+					const loggingTemp = res.data.find(
+						(item: any) => item.component === 'logging'
+					).status;
+					const grafanaTemp = res.data.find(
+						(item: any) => item.component === 'grafana'
+					).status;
+					const alertTemp = res.data.find(
+						(item: any) => item.component === 'alertmanager'
+					).status;
+					switch (loggingTemp || grafanaTemp || alertTemp) {
+						case 1:
+							setLoggingOpen(true);
+							setGrafanaOpen(true);
+							setAlertOpen(true);
+							break;
+						case 3:
+							setLoggingOpen(true);
+							setGrafanaOpen(true);
+							setAlertOpen(true);
+							break;
+						case 4:
+							setLoggingOpen(true);
+							setGrafanaOpen(true);
+							setAlertOpen(true);
+							break;
+						default:
+							setLoggingOpen(false);
+							setGrafanaOpen(false);
+							setAlertOpen(false);
+							break;
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [globalVar.cluster]);
 	useEffect(() => {
 		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
