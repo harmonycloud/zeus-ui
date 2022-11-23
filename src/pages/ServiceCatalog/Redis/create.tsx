@@ -292,6 +292,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values: RedisCreateValuesParams) => {
+			console.log(values);
 			const sendData: RedisSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -337,6 +338,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				let keys: string[] = [];
 				for (const i in customForm) {
 					const list = getCustomFormKeys(customForm[i]);
+					console.log(list);
 					keys = [...list, ...keys];
 				}
 				keys.forEach((item) => {

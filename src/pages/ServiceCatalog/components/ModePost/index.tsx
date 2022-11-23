@@ -264,7 +264,7 @@ export default function ModePost(props: ModePostProps): JSX.Element {
 									max={
 										exposedWay === 'Ingress' ? 65535 : 32767
 									}
-									onChange={(value) =>
+									onChange={(value: any) =>
 										onChange(value, 'exposePort', item)
 									}
 									style={{ width: '200px' }}

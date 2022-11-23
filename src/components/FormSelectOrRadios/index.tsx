@@ -143,7 +143,7 @@ export default function FormSelectOrRadios(
 				<div className={`form-content`}>
 					<div className="display-flex mb-24">
 						<FormItem
-							name="version"
+							name={props.variable}
 							initialValue={props.defaultValue}
 						>
 							<SelectBlock

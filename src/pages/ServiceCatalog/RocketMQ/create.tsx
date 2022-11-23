@@ -1165,7 +1165,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											<InputNumber
 												name="节点数量"
 												defaultValue={3}
-												onChange={(value) =>
+												onChange={(value: any) =>
 													setReplicaCount(value)
 												}
 												min={3}

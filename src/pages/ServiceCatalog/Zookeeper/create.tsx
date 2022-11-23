@@ -965,7 +965,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 										<InputNumber
 											min={3}
 											value={customCluster}
-											onChange={(value: number) =>
+											onChange={(value: any) =>
 												setCustomCluster(value)
 											}
 											max={10}

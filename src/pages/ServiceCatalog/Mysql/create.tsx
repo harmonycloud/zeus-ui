@@ -1706,7 +1706,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											<InputNumber
 												name="从节点数量字段"
 												defaultValue={2}
-												onChange={(value: number) =>
+												onChange={(value: any) =>
 													setReplicaCount(value)
 												}
 												value={replicaCount}
