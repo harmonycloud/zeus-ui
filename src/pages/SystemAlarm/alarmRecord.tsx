@@ -23,7 +23,7 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 		type,
 		customMid,
 		capabilities,
-		monitor,
+		alertOpen,
 		alarmType
 	} = props;
 	const [current, setCurrent] = useState<number>(1); // * 页码
@@ -112,7 +112,7 @@ function AlarmRecord(props: alarmRecordProps): JSX.Element {
 		setPageSize(pagination.pageSize);
 	};
 
-	if (alarmType !== 'system' && (!monitor || !monitor.alertManager)) {
+	if (alarmType !== 'system' && !alertOpen) {
 		return (
 			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);

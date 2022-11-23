@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { notification } from 'antd';
 import SecondLayout from '@/components/SecondLayout';
 import Log from '@/pages/ServiceListDetail/Log';
@@ -9,6 +9,7 @@ import { middlewareDetailProps, basicDataProps } from '@/types/comment';
 import { clusterType, StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { ProjectItem } from '../ProjectManage/project';
+import { getComponents } from '@/services/common';
 
 interface LogDetailProps {
 	project: ProjectItem;
@@ -17,6 +18,37 @@ function LogDetail(props: LogDetailProps): JSX.Element {
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
+	const [loggingOpen, setLoggingOpen] = useState<boolean>(false);
+	useEffect(() => {
+		if (basicData) {
+			getComponents({ clusterId: basicData?.clusterId }).then((res) => {
+				if (res.success) {
+					const loggingTemp = res.data.find(
+						(item: any) => item.component === 'logging'
+					).status;
+					switch (loggingTemp) {
+						case 1:
+							setLoggingOpen(true);
+							break;
+						case 3:
+							setLoggingOpen(true);
+							break;
+						case 4:
+							setLoggingOpen(true);
+							break;
+						default:
+							setLoggingOpen(false);
+							break;
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [basicData]);
 	const onChange = (
 		name: string | null,
 		type: string,
@@ -28,8 +60,7 @@ function LogDetail(props: LogDetailProps): JSX.Element {
 				name,
 				type,
 				clusterId: cluster.id,
-				namespace,
-				logging: cluster.logging
+				namespace
 			});
 			getMiddlewareDetail({
 				clusterId: cluster.id,
@@ -86,7 +117,7 @@ function LogDetail(props: LogDetailProps): JSX.Element {
 					namespace={basicData?.namespace as string}
 					customMid={data?.dynamicValues !== null}
 					capabilities={data?.capabilities || []}
-					logging={basicData?.logging}
+					logging={loggingOpen}
 					onRefresh={getData}
 				/>
 			)}

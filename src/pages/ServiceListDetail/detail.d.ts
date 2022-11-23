@@ -122,7 +122,7 @@ export interface MonitorProps {
 	namespace?: string;
 	middlewareName?: string;
 	type?: string;
-	monitor?: monitorProps;
+	grafanaOpen?: boolean;
 	customMid: boolean;
 	capabilities: string[];
 	chartVersion?: string;
@@ -386,7 +386,7 @@ export interface RuleProps {
 	type?: string;
 	customMid?: boolean;
 	capabilities?: string[];
-	monitor: monitorProps;
+	alertOpen: boolean;
 	alarmType: string;
 }
 export interface LabelItem {

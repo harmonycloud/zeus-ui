@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { ProPage, ProContent, ProHeader } from '@/components/ProPage';
-import { Tabs, Alert, Button } from 'antd';
+import { Tabs, Alert, Button, notification } from 'antd';
 
 import AlarmRecord from './alarmRecord';
 import GuidePage from '../GuidePage';
@@ -9,7 +9,7 @@ import AlarmSet from './alarmSet';
 import ServerAlarm from '@/pages/ServiceListDetail/ServeAlarm';
 
 import { connect } from 'react-redux';
-import { getClusters } from '@/services/common';
+import { getClusters, getComponents } from '@/services/common';
 import storage from '@/utils/storage';
 import { StoreState } from '@/types';
 import { systemAlarmProps } from './systemAlarm';
@@ -23,13 +23,41 @@ function SystemAlarm(props: systemAlarmProps) {
 	);
 	const history = useHistory();
 	const [utilClusters, setUtilClusters] = useState<any[]>([]);
+	const [alertOpen, setAlertOpen] = useState<boolean>(false);
 	const { cluster: globalCluster, namespace: globalNamespace } =
 		props.globalVar;
 	const onChange = (key: string | number) => {
 		setActiveKey(key);
 		storage.setLocal('systemTab', key);
 	};
-
+	useEffect(() => {
+		getComponents({ clusterId: globalCluster.id }).then((res) => {
+			if (res.success) {
+				const alertTemp = res.data.find(
+					(item: any) => item.component === 'alertmanager'
+				).status;
+				switch (alertTemp) {
+					case 1:
+						setAlertOpen(true);
+						break;
+					case 3:
+						setAlertOpen(true);
+						break;
+					case 4:
+						setAlertOpen(true);
+						break;
+					default:
+						setAlertOpen(false);
+						break;
+				}
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
+			}
+		});
+	}, []);
 	useEffect(() => {
 		getClusters().then((res) => {
 			if (!res.data) return;
@@ -110,14 +138,14 @@ function SystemAlarm(props: systemAlarmProps) {
 						<AlarmRecord
 							alarmType={'system'}
 							clusterId={globalCluster.id}
-							monitor={globalCluster.monitor}
+							alertOpen={alertOpen}
 						/>
 					</Tabs.TabPane>
 					<Tabs.TabPane tab="规则中心" key="alarm">
 						<ServerAlarm
 							alarmType={'system'}
 							clusterId={globalCluster.id}
-							monitor={globalCluster.monitor as monitorProps}
+							alertOpen={alertOpen}
 						/>
 					</Tabs.TabPane>
 					{/* <Tabs.TabPane tab="告警设置" key="alarmSet">

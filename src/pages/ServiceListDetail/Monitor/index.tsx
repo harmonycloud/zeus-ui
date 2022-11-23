@@ -14,7 +14,7 @@ const Monitor = (props: MonitorProps) => {
 		namespace,
 		middlewareName,
 		type,
-		monitor,
+		grafanaOpen,
 		customMid,
 		capabilities,
 		chartVersion
@@ -23,7 +23,7 @@ const Monitor = (props: MonitorProps) => {
 	const [menuHide, setMenuHide] = useState(false);
 	useEffect(() => {
 		if (!customMid || capabilities.includes('monitoring')) {
-			if (type && monitor?.grafana !== null) {
+			if (type && grafanaOpen) {
 				if (chartVersion && clusterId && namespace) {
 					getMiddlewareMonitorUrl({
 						clusterId,
@@ -71,46 +71,45 @@ const Monitor = (props: MonitorProps) => {
 	if (customMid && !capabilities.includes('monitoring')) {
 		return <DefaultPicture />;
 	}
+	if (!grafanaOpen) {
+		return (
+			<ComponentNull title="该功能所需要数据监控和监控面板工具支持，您可前往“集群——>平台组件进行安装" />
+		);
+	}
 
 	return (
 		<div className={styles['monitor']}>
-			{monitor?.grafana === null ? (
-				<ComponentNull title="该功能所需要数据监控和监控面板工具支持，您可前往“集群——>平台组件进行安装" />
-			) : (
-				<>
-					<div
+			<div
+				style={{
+					height: 'calc(100vh - 83px)',
+					visibility: menuHide ? 'visible' : 'hidden'
+				}}
+			>
+				{url && (
+					<iframe
+						id="iframe"
+						src={url}
+						frameBorder="no"
+						// border="0"
+						scrolling="no"
 						style={{
-							height: 'calc(100vh - 83px)',
-							visibility: menuHide ? 'visible' : 'hidden'
+							width: '100%',
+							height: '100%',
+							background: '#FFF'
 						}}
-					>
-						{url && (
-							<iframe
-								id="iframe"
-								src={url}
-								frameBorder="no"
-								// border="0"
-								scrolling="no"
-								style={{
-									width: '100%',
-									height: '100%',
-									background: '#FFF'
-								}}
-							></iframe>
-						)}
-					</div>
-					<div
-						className={styles['loading-gif']}
-						style={{
-							visibility: menuHide ? 'hidden' : 'visible'
-						}}
-					>
-						<div className={styles['loading-icon']}>
-							<img src={svg} width="60" />
-						</div>
-					</div>
-				</>
-			)}
+					></iframe>
+				)}
+			</div>
+			<div
+				className={styles['loading-gif']}
+				style={{
+					visibility: menuHide ? 'hidden' : 'visible'
+				}}
+			>
+				<div className={styles['loading-icon']}>
+					<img src={svg} width="60" />
+				</div>
+			</div>
 		</div>
 	);
 };

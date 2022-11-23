@@ -11,6 +11,6 @@ export interface alarmRecordProps {
 	type?: string | undefined;
 	customMid?: boolean | undefined;
 	capabilities?: any;
-	monitor: any;
+	alertOpen: boolean;
 	alarmType?: string | undefined;
 }

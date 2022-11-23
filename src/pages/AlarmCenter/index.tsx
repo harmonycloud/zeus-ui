@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { notification } from 'antd';
 import SecondLayout from '@/components/SecondLayout';
 import AlarmRecord from '@/pages/SystemAlarm/alarmRecord';
@@ -9,6 +9,7 @@ import { middlewareDetailProps, basicDataProps } from '@/types/comment';
 import { clusterType, StoreState } from '@/types';
 import { connect } from 'react-redux';
 import { ProjectItem } from '../ProjectManage/project';
+import { getComponents } from '@/services/common';
 
 interface AlarmCenterProps {
 	project: ProjectItem;
@@ -17,6 +18,37 @@ function AlarmCenter(props: AlarmCenterProps): JSX.Element {
 	const [data, setData] = useState<middlewareDetailProps>();
 	const [basicData, setBasicData] = useState<basicDataProps>();
 	const [isService, setIsService] = useState<boolean>(false);
+	const [alertOpen, setAlertOpen] = useState<boolean>(false);
+	useEffect(() => {
+		if (basicData) {
+			getComponents({ clusterId: basicData?.clusterId }).then((res) => {
+				if (res.success) {
+					const alertTemp = res.data.find(
+						(item: any) => item.component === 'alertmanager'
+					).status;
+					switch (alertTemp) {
+						case 1:
+							setAlertOpen(true);
+							break;
+						case 3:
+							setAlertOpen(true);
+							break;
+						case 4:
+							setAlertOpen(true);
+							break;
+						default:
+							setAlertOpen(false);
+							break;
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [basicData]);
 	const onChange = (
 		name: string | null,
 		type: string,
@@ -28,8 +60,7 @@ function AlarmCenter(props: AlarmCenterProps): JSX.Element {
 				name,
 				type,
 				clusterId: cluster.id,
-				namespace,
-				monitor: cluster.monitor
+				namespace
 			});
 			getMiddlewareDetail({
 				clusterId: cluster.id,
@@ -67,7 +98,7 @@ function AlarmCenter(props: AlarmCenterProps): JSX.Element {
 					type={basicData?.type}
 					customMid={data?.dynamicValues !== null}
 					capabilities={data?.capabilities || []}
-					monitor={basicData?.monitor}
+					alertOpen={alertOpen}
 				/>
 			)}
 			{!isService && <NoService />}
