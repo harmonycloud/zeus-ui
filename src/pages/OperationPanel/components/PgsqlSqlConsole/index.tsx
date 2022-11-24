@@ -121,8 +121,8 @@ export default function PgsqlSqlConsole(
 					if (res.data.status === 'success') {
 						if (sql.includes('SELECT')) {
 							const resData = {
-								data: [],
-								columns: []
+								data: res?.data?.data,
+								columns: Object.keys(res?.data?.data[0])
 							};
 							add(
 								<span>

@@ -35,7 +35,9 @@ export default function ExecuteResultTypeOne(
 		<div style={{ width: '100%' }}>
 			<Table<any>
 				size="small"
-				dataSource={dataSource}
+				dataSource={dataSource.map((item: any, index: number) => {
+					return { indexInTable: index + 1, ...item };
+				})}
 				columns={columns}
 				rowKey="indexInTable"
 				scroll={{
