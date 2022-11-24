@@ -30,14 +30,33 @@ export default function AddKV(props: any): JSX.Element {
 	const [type, setType] = useState<string>();
 
 	const onCreate = () => {
-		form.validateFields().then((value) => {
-			saveRedisKeys({
+		form.validateFields().then((values) => {
+			const sendData = {
 				database,
 				clusterId: params.clusterId,
 				namespace: params.namespace,
 				middlewareName: params.name,
-				...value
-			}).then((res) => {
+				...values
+			};
+			if (values.keyType === 'hash') {
+				sendData.hashValue = {
+					field: values.field,
+					value: values.value
+				};
+			}
+			if (values.keyType === 'list') {
+				sendData.listValue = {
+					index: '0',
+					value: values.value
+				};
+			}
+			if (values.keyType === 'zset') {
+				sendData.zsetValue = {
+					member: values.member,
+					score: values.score
+				};
+			}
+			saveRedisKeys(sendData).then((res) => {
 				if (res.success) {
 					onCancel();
 					onRefresh();
@@ -109,6 +128,20 @@ export default function AddKV(props: any): JSX.Element {
 						style={{ width: '100%' }}
 					/>
 				</Form.Item>
+				{type === 'hash' ? (
+					<Form.Item
+						name="field"
+						label="Field"
+						rules={[
+							{
+								required: true,
+								message: '请输入Field'
+							}
+						]}
+					>
+						<Input placeholder="请输入" style={{ width: '100%' }} />
+					</Form.Item>
+				) : null}
 				<Form.Item
 					name={type === 'zset' ? 'member' : 'value'}
 					label="Value"
