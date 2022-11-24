@@ -74,8 +74,8 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 			middlewareName: params.name
 		}).then((res) => {
 			if (res.success) {
-				setDataSource(res.data.data);
-				setTotal(res.data.count);
+				setDataSource(res.data?.data || []);
+				setTotal(res.data?.count || 0);
 			} else {
 				notification.error({
 					message: '失败',

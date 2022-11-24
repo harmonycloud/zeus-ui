@@ -41,6 +41,7 @@ export interface AddPgDatabaseProps {
 export interface MysqlEditTableProps {
 	tableName?: string;
 	dbName: string;
+	removeActiveKey: () => void;
 }
 export interface PgsqlEditTableProps {
 	isEdit?: boolean;
@@ -57,6 +58,8 @@ export interface MysqlTableInfoProps {
 	engineData: MysqlEngineItem[];
 	tableName: string | undefined;
 	databaseName: string;
+	removeActiveKey: () => void;
+	cancel: () => void;
 }
 export interface MysqlColInfoProps {
 	originData: MysqlTableDetail | undefined;
@@ -66,6 +69,8 @@ export interface MysqlColInfoProps {
 	middlewareName: string;
 	tableName: string | undefined;
 	databaseName: string;
+	removeActiveKey: () => void;
+	cancel: () => void;
 }
 
 export interface MysqlIndexInfoProps {
@@ -77,6 +82,8 @@ export interface MysqlIndexInfoProps {
 	middlewareName: string;
 	tableName: string | undefined;
 	databaseName: string;
+	removeActiveKey: () => void;
+	cancel: () => void;
 }
 export interface MysqlForeignKeyInfoProps {
 	originData: MysqlTableDetail | undefined;
@@ -86,6 +93,8 @@ export interface MysqlForeignKeyInfoProps {
 	middlewareName: string;
 	tableName: string | undefined;
 	databaseName: string;
+	removeActiveKey: () => void;
+	cancel: () => void;
 }
 export interface PgsqlTableInfoProps {
 	handleChange: (values: any) => void;
@@ -387,6 +396,7 @@ export interface getPgsqlUserResProps extends resProps {
 }
 export interface TableDetailProps {
 	dbName: string;
+	add: (label: string, children: any) => void;
 }
 export interface PgTableDetailProps {
 	dbName: string;

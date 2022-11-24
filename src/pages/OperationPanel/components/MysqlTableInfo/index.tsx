@@ -38,7 +38,9 @@ export default function MysqlTableInfo(
 		middlewareName,
 		engineData,
 		tableName,
-		databaseName
+		databaseName,
+		cancel,
+		removeActiveKey
 	} = props;
 	const [form] = Form.useForm();
 	const [charsets, setCharsets] = useState<string[]>([]);
@@ -122,6 +124,7 @@ export default function MysqlTableInfo(
 						message: '成功',
 						description: '表信息修改成功'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -204,7 +207,7 @@ export default function MysqlTableInfo(
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

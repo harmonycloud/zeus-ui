@@ -42,7 +42,9 @@ export default function DatabaseMag(props: DatabaseMagProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: res.errorMsg
+					description: `${res.errorMsg}${
+						res.errorDetail ? ':' + res.errorDetail : ''
+					}`
 				});
 			}
 		});

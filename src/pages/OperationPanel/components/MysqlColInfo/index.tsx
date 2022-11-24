@@ -24,7 +24,9 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 		namespace,
 		middlewareName,
 		tableName,
-		databaseName
+		databaseName,
+		cancel,
+		removeActiveKey
 	} = props;
 	const [dataSource, setDataSource] = useState<EditMysqlColItem[]>(
 		originData?.columns?.map((item) => {
@@ -136,6 +138,7 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 						message: '成功',
 						description: '列信息修改成功'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -166,7 +169,7 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

@@ -49,7 +49,9 @@ export default function MysqlForeignKeyInfo(
 		namespace,
 		middlewareName,
 		tableName,
-		databaseName
+		databaseName,
+		cancel,
+		removeActiveKey
 	} = props;
 	console.log(originData);
 	const [dataSource] = useState<EditMysqlForeignItem[]>(
@@ -211,6 +213,7 @@ export default function MysqlForeignKeyInfo(
 						message: '成功',
 						description: '外键修改成功!'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -240,7 +243,7 @@ export default function MysqlForeignKeyInfo(
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

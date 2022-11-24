@@ -14,7 +14,12 @@ export default function IndexTable(props: IndexTableProps): JSX.Element {
 	const { clusterId, namespace, middlewareName, dbName, record } = props;
 	const [data, setData] = useState<IndexItem[]>([]);
 	const columns = [
-		{ title: '#', dataIndex: 'uid', key: 'uid' },
+		{
+			title: '序号',
+			dataIndex: 'uid',
+			key: 'uid',
+			render: (text: any, record: any, index: number) => index + 1
+		},
 		{ title: '索引名', dataIndex: 'index', key: 'index' },
 		{ title: '索引类型', dataIndex: 'type', key: 'type' },
 		{ title: '包含列', dataIndex: 'includeCol', key: 'includeCol' },
