@@ -8,6 +8,7 @@ import {
 	createDatabase,
 	updateDatabase
 } from '@/services/operatorPanel';
+import pattern from '@/utils/pattern';
 
 const { Option } = Select;
 export default function AddDatabase(props: AddDatabaseProps): JSX.Element {
@@ -116,13 +117,35 @@ export default function AddDatabase(props: AddDatabaseProps): JSX.Element {
 			width={500}
 		>
 			<Form form={form} labelAlign="left" {...formItemLayout618}>
-				<Form.Item required label="数据库名" name="db">
+				<Form.Item
+					label="数据库名"
+					name="db"
+					rules={[
+						{
+							required: true,
+							message: '请输入数据库名称'
+						},
+						{
+							pattern: new RegExp(pattern.dbName),
+							message: '请输入1-64个字符'
+						}
+					]}
+				>
 					<Input
 						disabled={editData ? true : false}
 						placeholder="请输入数据库名称"
 					/>
 				</Form.Item>
-				<Form.Item required label="字符集" name="character">
+				<Form.Item
+					label="字符集"
+					name="character"
+					rules={[
+						{
+							required: true,
+							message: '请选择字符集'
+						}
+					]}
+				>
 					<Select
 						placeholder="请选择字符集"
 						onChange={(value: any) => setCurrentCharset(value)}
@@ -140,7 +163,16 @@ export default function AddDatabase(props: AddDatabaseProps): JSX.Element {
 						))}
 					</Select>
 				</Form.Item>
-				<Form.Item required label="校验规则" name="collate">
+				<Form.Item
+					label="校验规则"
+					name="collate"
+					rules={[
+						{
+							required: true,
+							message: '请选择字符集'
+						}
+					]}
+				>
 					<Select
 						placeholder="请选择校验规则"
 						showSearch
