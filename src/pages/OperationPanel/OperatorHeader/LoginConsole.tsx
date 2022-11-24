@@ -67,11 +67,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 			console.log(cookie);
 
 			form.setFieldsValue({
-				username:
-					cookie.username ||
-					(middlewareType === 'redis' && version === '5.0')
-						? 'default'
-						: '',
+				username: cookie.username,
 				password: decrypt(cookie.password, privateKey),
 				remember: true
 			});
@@ -178,16 +174,16 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					<Input.Password
 						placeholder="请输入"
 						onKeyDown={(e) => e.keyCode === 13 && onOk()}
-						visibilityToggle={false}
+						// visibilityToggle={false}
 					/>
 				</Form.Item>
-				<Form.Item
+				{/* <Form.Item
 					name="remember"
 					valuePropName="checked"
 					wrapperCol={{ offset: 6, span: 18 }}
 				>
 					<Checkbox>记住密码</Checkbox>
-				</Form.Item>
+				</Form.Item> */}
 			</Form>
 		</Modal>
 	);

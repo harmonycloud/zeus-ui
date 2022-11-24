@@ -153,7 +153,7 @@ export default function SlowLog(props: CommonLogProps): JSX.Element {
 			setToQueryTime(Number(value[1]));
 		}
 	};
-	if (!logging || !logging.elasticSearch) {
+	if (!logging) {
 		return (
 			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);

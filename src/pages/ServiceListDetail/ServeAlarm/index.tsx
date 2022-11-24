@@ -35,7 +35,7 @@ function Rules(props: RuleProps): JSX.Element {
 		type,
 		customMid,
 		capabilities,
-		monitor,
+		alertOpen,
 		alarmType
 	} = props;
 	const params: DetailParams = useParams();
@@ -375,68 +375,7 @@ function Rules(props: RuleProps): JSX.Element {
 		);
 	};
 
-	const onFilter = (filterParams: any) => {
-		if (filterParams.labels) {
-			const {
-				labels: { selectedKeys }
-			} = filterParams;
-			if (selectedKeys.length === 0) {
-				setDataSource(originData);
-			} else {
-				let tempData = null;
-				tempData = originData.filter((item) => {
-					return item.labels?.severity === selectedKeys[0];
-				});
-				setDataSource(tempData);
-			}
-		} else if (filterParams.silence) {
-			const {
-				silence: { selectedKeys }
-			} = filterParams;
-			if (selectedKeys.length === 0) {
-				setDataSource(originData);
-			} else {
-				let tempData = null;
-				tempData = originData.filter((item) => {
-					return item.silence === selectedKeys[0];
-				});
-				setDataSource(tempData);
-			}
-		} else if (filterParams.name) {
-			const {
-				name: { selectedKeys }
-			} = filterParams;
-			if (selectedKeys.length === 0) {
-				setDataSource(originData);
-			} else {
-				let tempData = null;
-				tempData = originData.filter((item) => {
-					// console.log(item, selectedKeys[0]);
-					return item.name === selectedKeys[0];
-				});
-				setDataSource(tempData);
-			}
-		}
-	};
-
-	const onSort = (dataIndex: string, order: string) => {
-		if (dataIndex === 'createTime') {
-			const dsTemp = dataSource.sort((a, b) => {
-				const result =
-					moment(a[dataIndex]).unix() - moment(b[dataIndex]).unix();
-				return order === 'asc'
-					? result > 0
-						? 1
-						: -1
-					: result > 0
-					? -1
-					: 1;
-			});
-			setDataSource([...dsTemp]);
-		}
-	};
-
-	if (alarmType !== 'system' && (!monitor || !monitor.alertManager)) {
+	if (alarmType !== 'system' && !alertOpen) {
 		return (
 			<ComponentsNull title="该功能所需要监控告警组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);
@@ -450,9 +389,6 @@ function Rules(props: RuleProps): JSX.Element {
 		<>
 			<ProTable
 				dataSource={dataSource}
-				// exact
-				// fixedBarExpandWidth={[24]}
-				// affixActionBar
 				showRefresh
 				showColumnSetting
 				onRefresh={onRefresh}

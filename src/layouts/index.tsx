@@ -13,7 +13,7 @@ import { getMenu, getServiceListChildMenu } from '@/services/user';
 import { IconFont } from '@/components/IconFont';
 import { ResMenuItem } from '@/types/comment';
 import { getProjects } from '@/services/project';
-import { getClusters, getNamespaces } from '@/services/common';
+import { getClusters, getNamespaces, getDisaster } from '@/services/common';
 import { ProjectItem } from '@/pages/ProjectManage/project';
 import { getUserInformation } from '@/services/user';
 import {

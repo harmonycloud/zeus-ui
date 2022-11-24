@@ -93,8 +93,8 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	>([]);
 	// * 主机容忍 - end
 	// * 日志-start
-	const [fileLog, setFileLog] = useState<boolean>(false);
-	const [standardLog, setStandardLog] = useState<boolean>(false);
+	const [fileLog, setFileLog] = useState<boolean>(true);
+	const [standardLog, setStandardLog] = useState<boolean>(true);
 	// * 日志-end
 	// * Kafka配置-start
 	const [version, setVersion] = useState<string>('2.6');

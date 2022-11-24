@@ -19,6 +19,7 @@ interface ComponentCardProps {
 	setRefreshCluster: (flag: boolean) => void;
 	createTime: string | null;
 	seconds: number;
+	data: any;
 }
 export interface SendDataProps {
 	clusterId: string;
@@ -38,7 +39,8 @@ const ComponentCard = (props: ComponentCardProps) => {
 		onRefresh,
 		setRefreshCluster,
 		createTime,
-		seconds
+		seconds,
+		data
 	} = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [accessVisible, setAccessVisible] = useState<boolean>(false);
@@ -331,6 +333,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 					clusterId={clusterId}
 					onRefresh={onRefresh}
 					setRefreshCluster={setRefreshCluster}
+					componentData={data}
 				/>
 			)}
 			{lvmVisible && (

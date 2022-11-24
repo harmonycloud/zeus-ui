@@ -154,3 +154,10 @@ export const getIngressTCPPort = () => {
 export const getNodePort = () => {
 	return Axios.get(COMMON.getNodePort);
 };
+// * 获取灾备相关是否显示
+export const getDisaster = () => {
+	return Axios.get(COMMON.getDisaster);
+};
+export const getLogCollect = (params: { clusterId: string }) => {
+	return Axios.get(COMMON.getLogCollect, params);
+};

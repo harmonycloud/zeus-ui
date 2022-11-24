@@ -122,7 +122,7 @@ export interface MonitorProps {
 	namespace?: string;
 	middlewareName?: string;
 	type?: string;
-	monitor?: monitorProps;
+	grafanaOpen?: boolean;
 	customMid: boolean;
 	capabilities: string[];
 	chartVersion?: string;
@@ -224,7 +224,6 @@ export interface eventsParams {
 	table: string;
 }
 export interface BackupRecoveryProps {
-	storage?: storageProps;
 	middlewareName?: string;
 	customMid: boolean;
 	capabilities: string[];
@@ -232,7 +231,6 @@ export interface BackupRecoveryProps {
 	namespace: string;
 	type: string;
 	data?: middlewareDetailProps;
-	dataSecurity?: boolean;
 }
 export interface ListProps {
 	clusterId: string;
@@ -386,7 +384,7 @@ export interface RuleProps {
 	type?: string;
 	customMid?: boolean;
 	capabilities?: string[];
-	monitor: monitorProps;
+	alertOpen: boolean;
 	alarmType: string;
 }
 export interface LabelItem {

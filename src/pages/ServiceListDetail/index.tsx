@@ -18,7 +18,7 @@ import RedisDataBase from './RedisDatabase/index';
 import ServiceDetailIngress from './ServiceIngress';
 
 import { getMiddlewareDetail } from '@/services/middleware';
-import { getNamespaces } from '@/services/common';
+import { getComponents, getNamespaces, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -74,6 +74,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		currentTab || 'basicInfo'
 	);
 	const [operateFlag, setOperateFlag] = useState<boolean>(false);
+	const [loggingOpen, setLoggingOpen] = useState<boolean>(false);
+	const [grafanaOpen, setGrafanaOpen] = useState<boolean>(false);
+	const [alertOpen, setAlertOpen] = useState<boolean>(false);
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
 	useEffect(() => {
 		if (location?.state?.flag) {
 			window.location.reload();
@@ -84,8 +89,56 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
 		}
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
 	}, []);
-
+	useEffect(() => {
+		if (JSON.stringify(globalVar.cluster) !== '{}') {
+			getComponents({ clusterId: globalVar.cluster.id }).then((res) => {
+				if (res.success) {
+					const loggingTemp = res.data.find(
+						(item: any) => item.component === 'logging'
+					).status;
+					const grafanaTemp = res.data.find(
+						(item: any) => item.component === 'grafana'
+					).status;
+					const alertTemp = res.data.find(
+						(item: any) => item.component === 'alertmanager'
+					).status;
+					switch (loggingTemp || grafanaTemp || alertTemp) {
+						case 1:
+							setLoggingOpen(true);
+							setGrafanaOpen(true);
+							setAlertOpen(true);
+							break;
+						case 3:
+							setLoggingOpen(true);
+							setGrafanaOpen(true);
+							setAlertOpen(true);
+							break;
+						case 4:
+							setLoggingOpen(true);
+							setGrafanaOpen(true);
+							setAlertOpen(true);
+							break;
+						default:
+							setLoggingOpen(false);
+							setGrafanaOpen(false);
+							setAlertOpen(false);
+							break;
+					}
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
+		}
+	}, [globalVar.cluster]);
 	useEffect(() => {
 		if (JSON.stringify(globalVar.cluster) !== '{}' && namespace) {
 			getData(globalVar.cluster.id, namespace);
@@ -180,7 +233,6 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 						<BackupRecovery
 							type={type}
 							data={data}
-							storage={globalVar.cluster.storage}
 							clusterId={globalVar.cluster.id}
 							namespace={namespace}
 							customMid={customMid}
@@ -218,22 +270,12 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							}
 						/>
 					);
-				// case 'externalAccess':
-				// 	return (
-				// 		<ExternalAccess
-				// 			type={type}
-				// 			middlewareName={middlewareName}
-				// 			namespace={namespace}
-				// 			customMid={customMid}
-				// 			capabilities={(data && data.capabilities) || []}
-				// 		/>
-				// 	);
 				case 'monitor':
 					return (
 						<Monitor
 							type={type}
 							middlewareName={middlewareName}
-							monitor={globalVar.cluster.monitor}
+							grafanaOpen={grafanaOpen}
 							clusterId={globalVar.cluster.id}
 							namespace={namespace}
 							customMid={customMid}
@@ -250,7 +292,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							clusterId={globalVar.cluster.id}
 							namespace={namespace}
 							customMid={customMid}
-							logging={globalVar.cluster.logging}
+							logging={loggingOpen}
 							onRefresh={refresh}
 							capabilities={(data && data.capabilities) || []}
 						/>
@@ -275,7 +317,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							type={type}
 							customMid={customMid}
 							capabilities={(data && data.capabilities) || []}
-							monitor={globalVar.cluster.monitor as monitorProps}
+							alertOpen={alertOpen}
 							alarmType={'service'}
 						/>
 					);
@@ -539,22 +581,16 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							{childrenRender('alarm')}
 						</TabPane>
 					)}
-					{/* {operateFlag && type === 'mysql' ? (
+					{disasterOpen && operateFlag && type === 'mysql' && (
 						<TabPane tab="灾备服务" key="disaster">
 							{childrenRender('disaster')}
 						</TabPane>
-					) : null} */}
+					)}
 					{/* {operateFlag &&
 						type === 'mysql' &&
 						data?.mysqlDTO?.openDisasterRecoveryMode &&
 						data?.mysqlDTO?.isSource === true} */}
-					{/* {operateFlag &&
-					type === 'mysql' &&
-					!data?.mysqlDTO?.openDisasterRecoveryMode ? (
-						<TabPane tab="数据库管理" key="database">
-							{childrenRender('database')}
-						</TabPane>
-					) : null}
+					{/*
 					{operateFlag &&
 					type === 'mysql' &&
 					data?.mysqlDTO?.openDisasterRecoveryMode &&

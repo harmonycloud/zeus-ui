@@ -105,8 +105,8 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	>([]);
 
 	// 日志
-	const [fileLog, setFileLog] = useState<boolean>(false);
-	const [standardLog, setStandardLog] = useState<boolean>(false);
+	const [fileLog, setFileLog] = useState<boolean>(true);
+	const [standardLog, setStandardLog] = useState<boolean>(true);
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 

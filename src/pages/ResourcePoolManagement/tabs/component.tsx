@@ -22,7 +22,7 @@ const Component = (props: ComponentProps) => {
 	const { id, nickname }: paramsProps = useParams();
 	const [components, setComponents] = useState<ComponentProp[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
-	const [middlewareVidible, setMiddlewareVisible] = useState<boolean>(false);
+	const [middlewareVisible, setMiddlewareVisible] = useState<boolean>(false);
 	useEffect(() => {
 		let mounted = true;
 		getComponents({ clusterId: id }).then((res) => {
@@ -114,6 +114,7 @@ const Component = (props: ComponentProps) => {
 							seconds={item.seconds}
 							clusterId={id}
 							onRefresh={getData}
+							data={item}
 						/>
 					);
 				})}
@@ -127,9 +128,9 @@ const Component = (props: ComponentProps) => {
 					onRefresh={getData}
 				/>
 			)}
-			{middlewareVidible && (
+			{middlewareVisible && (
 				<InstallForm
-					visible={middlewareVidible}
+					visible={middlewareVisible}
 					onCancel={() => setMiddlewareVisible(false)}
 					onCreate={installData}
 					title={'middleware-controller'}

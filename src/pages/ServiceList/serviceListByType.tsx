@@ -20,7 +20,7 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import { getComponents } from '@/services/common';
+import { getComponents, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -76,6 +76,15 @@ const ServiceListByType = (props: serviceListProps) => {
 		deleteFlag: false
 	});
 	const [license, setLicense] = useState<boolean>(false);
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
+	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -182,10 +191,14 @@ const ServiceListByType = (props: serviceListProps) => {
 							if (res.data.length > 0) {
 								setDataSource(res.data[0]);
 								setShowDataSource({
-									[res.data[0].name]: res.data[0].serviceList
-								});
-								console.log({
-									[res.data[0].name]: res.data[0].serviceList
+									[res.data[0].name]:
+										res.data[0].serviceList.map(
+											(item: any) => {
+												item.description =
+													item.description || '/';
+												return item;
+											}
+										)
 								});
 							} else {
 								setDataSource(undefined);
@@ -425,8 +438,9 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
+		// * 当前用户没有创建和查看的权限
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					secondary: (
 						<Checkbox
@@ -441,8 +455,9 @@ const ServiceListByType = (props: serviceListProps) => {
 				return {};
 			}
 		}
+		// * 是否可以发布
 		if (cantRelease) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
@@ -454,15 +469,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								发布服务
 							</Button>
 						</Tooltip>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
 				};
 			} else {
 				return {
@@ -480,7 +495,8 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (!middlewareInfo) {
-			if (name === 'mysql') {
+			// * 当前中间件相关数据是否加载完成
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="数据加载中，请稍后...">
@@ -518,6 +534,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (namespace.availableDomain) {
+			// * 选中双活分区后，除mysql redis pgsql 以外不能发布
 			if (name !== 'mysql' && name !== 'redis' && name !== 'postgresql') {
 				return {
 					primary: (
@@ -533,28 +550,42 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			} else {
-				return {
-					primary: (
-						<Button
-							onClick={releaseMiddleware}
-							type="primary"
-							disabled={!middlewareInfo}
-						>
-							发布服务
-						</Button>
-					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
-				};
+				if (name === 'mysql' && disasterOpen) {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						),
+						secondary: (
+							<Checkbox
+								checked={backupCheck}
+								onChange={handleFilterBackup}
+							>
+								灾备服务
+							</Checkbox>
+						)
+					};
+				} else {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						)
+					};
+				}
 			}
 		} else {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Button
@@ -564,15 +595,15 @@ const ServiceListByType = (props: serviceListProps) => {
 						>
 							发布服务
 						</Button>
+					),
+					secondary: (
+						<Checkbox
+							checked={backupCheck}
+							onChange={handleFilterBackup}
+						>
+							灾备服务
+						</Checkbox>
 					)
-					// secondary: (
-					// 	<Checkbox
-					// 		checked={backupCheck}
-					// 		onChange={handleFilterBackup}
-					// 	>
-					// 		灾备服务
-					// 	</Checkbox>
-					// )
 				};
 			} else {
 				return {
@@ -1017,6 +1048,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					rowKey="name"
 					operation={operation()}
 					loading={loadingVisible}
+					scroll={{ x: 1170 }}
 					search={{
 						value: keyword,
 						onChange: handleChange,
@@ -1063,7 +1095,8 @@ const ServiceListByType = (props: serviceListProps) => {
 					<ProTable.Column
 						title="备注"
 						dataIndex="description"
-						render={nullRender}
+						width={150}
+						ellipsis={true}
 					/>
 					<ProTable.Column
 						title="服务版本"
@@ -1075,12 +1108,14 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="version"
 						width={80}
 					/>
-					{/* <ProTable.Column
-						title="关联服务名称/中文别名"
-						dataIndex="associated"
-						width={180}
-						render={associatedRender}
-					/> */}
+					{disasterOpen && (
+						<ProTable.Column
+							title="关联服务名称/中文别名"
+							dataIndex="associated"
+							width={180}
+							render={associatedRender}
+						/>
+					)}
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
@@ -1098,7 +1133,8 @@ const ServiceListByType = (props: serviceListProps) => {
 							title="操作"
 							dataIndex="action"
 							render={actionRender}
-							width={280}
+							width={230}
+							fixed="right"
 						/>
 					) : null}
 				</ProTable>

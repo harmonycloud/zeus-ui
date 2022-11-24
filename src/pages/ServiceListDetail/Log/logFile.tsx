@@ -53,7 +53,6 @@ const options = {
 };
 export default function LogFile(props: CommonLogProps): JSX.Element {
 	const { logging, onRefresh } = props;
-	console.log(props);
 	const params: DetailParams = useParams();
 	const { chartVersion } = params;
 	const {
@@ -348,7 +347,7 @@ export default function LogFile(props: CommonLogProps): JSX.Element {
 		setSwitchVisible(false);
 	};
 
-	if (!logging || !logging.elasticSearch) {
+	if (!logging) {
 		return (
 			<ComponentsNull title="该功能所需要日志采集组件工具支持，您可前往“集群——>平台组件“进行安装" />
 		);

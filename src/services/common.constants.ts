@@ -31,3 +31,7 @@ export const getMidImage = `${api}/clusters/{clusterId}/namespaces/{namespace}/m
 export const getClusterCpuAndMemory = `${api}/clusters/{clusterId}/monitoring`;
 export const getIngressTCPPort = `${api}/port/ingressTcp`;
 export const getNodePort = `${api}/port/nodePort`;
+// * 获取灾备相关是否显示
+export const getDisaster = `${api}/system/disasterRecovery/enable`;
+// * 查询日志采集组件的安装情况
+export const getLogCollect = `${api}/clusters/{clusterId}/components/logging/logCollect`;
