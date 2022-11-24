@@ -76,7 +76,7 @@ const AccessForm = (props: AccessFormProps) => {
 			protocolEs: componentData.protocol,
 			hostEs: componentData.host,
 			portEs: componentData.port,
-			userEs: componentData.user,
+			userEs: componentData.username,
 			passwordEs: componentData.password
 		});
 		form.setFieldsValue({
