@@ -6,6 +6,7 @@ import {
 } from '@ant-design/icons';
 import { notification, Tabs } from 'antd';
 import React, { useRef, useState } from 'react';
+import { connect } from 'react-redux';
 import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import { ParamsProps, PgsqlSqlConsoleProps } from '../../index.d';
@@ -13,10 +14,9 @@ import ExecutionTable from '../ExectionTable';
 import MysqlCodeConsole from '../MysqlCodeConsole';
 import ExecuteResultTypeOne from '../MysqlSqlConsole/ExecuteResultTypeOne';
 import ExecuteResultTypeTwo from '../MysqlSqlConsole/ExecuteResultTypeTwo';
+import { setRefreshFlag } from '@/redux/execute/execute';
 
-export default function PgsqlSqlConsole(
-	props: PgsqlSqlConsoleProps
-): JSX.Element {
+function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 	const { dbName } = props;
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState('1');
@@ -41,10 +41,14 @@ export default function PgsqlSqlConsole(
 	};
 	const add = (label: any, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
-		setItems([
-			...items,
-			{ label: label, children: children, key: newActiveKey }
-		]);
+		const itemTemp = {
+			label: label,
+			children: children,
+			key: newActiveKey
+		};
+		setItems((origin) => {
+			return [...origin, itemTemp];
+		});
 		setActiveKey(newActiveKey);
 	};
 	const [items, setItems] = useState<any[]>([
@@ -107,7 +111,7 @@ export default function PgsqlSqlConsole(
 				return itemTemp !== '';
 			})
 			.map((item) => item + ';');
-		setRefreshFlag(!refreshFlag);
+		setRefreshFlag(true);
 		list.map((item) => {
 			executePgsqlSql({
 				databaseName: dbName,
@@ -117,7 +121,6 @@ export default function PgsqlSqlConsole(
 				sql: item
 			}).then((res) => {
 				if (res.success) {
-					console.log(res);
 					if (res.data.status === 'success') {
 						if (sql.includes('SELECT')) {
 							const resData = {
@@ -197,3 +200,6 @@ export default function PgsqlSqlConsole(
 		</SplitPane>
 	);
 }
+export default connect(() => ({}), {
+	setRefreshFlag
+})(PgsqlSqlConsole);

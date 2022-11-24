@@ -60,7 +60,6 @@ import OpenTable from '../components/OpenTable';
 import { formItemLayout618 } from '@/utils/const';
 import RedisDBMag from '../components/RedisDBMag';
 import { exportFile } from '@/utils/export';
-import storage from '@/utils/storage';
 import PgsqlSqlConsole from '../components/PgsqlSqlConsole';
 
 const { confirm } = Modal;

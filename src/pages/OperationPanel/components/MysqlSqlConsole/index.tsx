@@ -13,12 +13,12 @@ import {
 	ClockCircleFilled
 } from '@ant-design/icons';
 import ExecuteResultTypeTwo from './ExecuteResultTypeTwo';
+import { connect } from 'react-redux';
+import { setRefreshFlag } from '@/redux/execute/execute';
 
-export default function MysqlSqlConsole(
-	props: MysqlSqlConsoleProps
-): JSX.Element {
+function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 	const params: ParamsProps = useParams();
-	const { dbName } = props;
+	const { dbName, setRefreshFlag } = props;
 	const [paneProps] = useState<SplitPaneProps>({
 		split: 'horizontal',
 		size: '50%',
@@ -30,7 +30,7 @@ export default function MysqlSqlConsole(
 	const newTabIndex = useRef(0);
 	const [sql, setSql] = useState<string>('SELECT * from');
 	const [isCopy, setIsCopy] = useState<boolean>(false);
-	const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
+	// const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
 	const changeSql = (values: string) => {
 		setIsCopy(true);
 		setSql(values);
@@ -54,7 +54,6 @@ export default function MysqlSqlConsole(
 					middlewareName={params.name}
 					database={dbName}
 					changeSql={changeSql}
-					refreshFlag={refreshFlag}
 				/>
 			),
 			key: '1',
@@ -66,10 +65,14 @@ export default function MysqlSqlConsole(
 	};
 	const add = (label: any, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
-		setItems([
-			...items,
-			{ label: label, children: children, key: newActiveKey }
-		]);
+		const itemTemp = {
+			label: label,
+			children: children,
+			key: newActiveKey
+		};
+		setItems((origin) => {
+			return [...origin, itemTemp];
+		});
 		setActiveKey(newActiveKey);
 	};
 	const remove = (targetKey: string) => {
@@ -108,7 +111,8 @@ export default function MysqlSqlConsole(
 				return itemTemp !== '';
 			})
 			.map((item) => item + ';');
-		setRefreshFlag(!refreshFlag);
+		setRefreshFlag(true);
+		// setRefreshFlag(!refreshFlag);
 		list.map((item) => {
 			executeMysqlSql({
 				database: dbName,
@@ -166,3 +170,6 @@ export default function MysqlSqlConsole(
 		</SplitPane>
 	);
 }
+export default connect(() => ({}), {
+	setRefreshFlag
+})(MysqlSqlConsole);
