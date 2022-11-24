@@ -8,7 +8,6 @@ interface LvmInstallFormProps {
 	title: string;
 	clusterId: string;
 	onRefresh: () => void;
-	setRefreshCluster: (flag: boolean) => void;
 	onCreate: (values: SendDataProps) => void;
 }
 const formItemLayout = {
@@ -20,15 +19,7 @@ const formItemLayout = {
 	}
 };
 const LvmInstallForm = (props: LvmInstallFormProps) => {
-	const {
-		visible,
-		onCancel,
-		clusterId,
-		title,
-		onCreate,
-		setRefreshCluster,
-		onRefresh
-	} = props;
+	const { visible, onCancel, clusterId, title, onCreate, onRefresh } = props;
 	// const field = Field.useField();
 	const [form] = Form.useForm();
 	const onOk = () => {
@@ -39,7 +30,7 @@ const LvmInstallForm = (props: LvmInstallFormProps) => {
 				...values
 			};
 			onCreate(sendData);
-			setRefreshCluster(true);
+			onRefresh();
 			onCancel();
 		});
 	};

@@ -11,11 +11,9 @@ interface installFormProps {
 	clusterId: string;
 	onCancel: () => void;
 	onCreate: (values: SendDataProps) => void;
-	setRefreshCluster: (flag: boolean) => void;
 }
 const InstallForm = (props: installFormProps) => {
-	const { visible, onCancel, clusterId, title, onCreate, setRefreshCluster } =
-		props;
+	const { visible, onCancel, clusterId, title, onCreate } = props;
 	const [type, setType] = useState<string>('high');
 	const onOk = () => {
 		const sendData = {
@@ -28,7 +26,6 @@ const InstallForm = (props: installFormProps) => {
 					: 'http'
 		};
 		onCreate(sendData);
-		setRefreshCluster(true);
 		onCancel();
 	};
 	return (

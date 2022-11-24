@@ -12,6 +12,7 @@ import { DetailParams, LogProps } from '../detail';
 
 export default function Log(props: LogProps): JSX.Element {
 	const { type, data, customMid = false, logging, onRefresh } = props;
+	console.log(logging);
 	const location = useLocation();
 	const { pathname } = location;
 	const params: DetailParams = useParams();

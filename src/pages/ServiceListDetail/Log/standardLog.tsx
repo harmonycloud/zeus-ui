@@ -49,6 +49,7 @@ const { Option } = Select;
 
 export default function StandardLog(props: CommonLogProps): JSX.Element {
 	const { logging, onRefresh } = props;
+	console.log(logging);
 	const params: DetailParams = useParams();
 	const { chartVersion } = params;
 	const {

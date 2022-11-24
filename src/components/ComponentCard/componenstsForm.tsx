@@ -65,7 +65,53 @@ export const PrometheusRender = () => (
 		</Row>
 	</FormItem>
 );
-
+export const MiddlewareApiRender = () => (
+	<FormItem
+		{...formItemLayout}
+		labelAlign="left"
+		label="Middleware-API地址"
+		style={{ marginBottom: 0 }}
+	>
+		<Row>
+			<Col span={6}>
+				<FormItem name="protocolAPI">
+					<Select
+						style={{
+							width: '100%'
+						}}
+					>
+						<Select.Option value="https">https</Select.Option>
+						<Select.Option value="http">http</Select.Option>
+					</Select>
+				</FormItem>
+			</Col>
+			<Col span={12}>
+				<FormItem
+					required
+					rules={[{ required: true, message: '请输入IP地址' }]}
+					style={{
+						marginLeft: -2
+					}}
+					name="hostAPI"
+				>
+					<Input type="text" placeholder="请输入主机地址" />
+				</FormItem>
+			</Col>
+			<Col span={6}>
+				<FormItem
+					required
+					rules={[{ required: true, message: '请输入端口' }]}
+					style={{
+						marginLeft: -2
+					}}
+					name="portAPI"
+				>
+					<Input type="number" placeholder="端口" />
+				</FormItem>
+			</Col>
+		</Row>
+	</FormItem>
+);
 export const LoggingRender = () => (
 	<>
 		<FormItem

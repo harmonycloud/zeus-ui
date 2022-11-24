@@ -108,25 +108,45 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					const alertTemp = res.data.find(
 						(item: any) => item.component === 'alertmanager'
 					).status;
-					switch (loggingTemp || grafanaTemp || alertTemp) {
+					switch (loggingTemp) {
 						case 1:
 							setLoggingOpen(true);
-							setGrafanaOpen(true);
-							setAlertOpen(true);
 							break;
 						case 3:
 							setLoggingOpen(true);
-							setGrafanaOpen(true);
-							setAlertOpen(true);
 							break;
 						case 4:
 							setLoggingOpen(true);
-							setGrafanaOpen(true);
-							setAlertOpen(true);
 							break;
 						default:
 							setLoggingOpen(false);
+							break;
+					}
+					switch (grafanaTemp) {
+						case 1:
+							setGrafanaOpen(true);
+							break;
+						case 3:
+							setGrafanaOpen(true);
+							break;
+						case 4:
+							setGrafanaOpen(true);
+							break;
+						default:
 							setGrafanaOpen(false);
+							break;
+					}
+					switch (alertTemp) {
+						case 1:
+							setAlertOpen(true);
+							break;
+						case 3:
+							setAlertOpen(true);
+							break;
+						case 4:
+							setAlertOpen(true);
+							break;
+						default:
 							setAlertOpen(false);
 							break;
 					}

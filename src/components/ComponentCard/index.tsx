@@ -128,12 +128,7 @@ const ComponentCard = (props: ComponentCardProps) => {
 		});
 	};
 	const actionRender = (title: string) => {
-		if (
-			title !== 'middleware-controller' &&
-			title !== 'lvm' &&
-			title !== 'local-path' &&
-			title !== 'minio'
-		) {
+		if (title !== 'lvm' && title !== 'local-path' && title !== 'minio') {
 			return 2;
 		} else {
 			return 1;
@@ -321,7 +316,6 @@ const ComponentCard = (props: ComponentCardProps) => {
 					onCreate={installData}
 					title={title}
 					clusterId={clusterId}
-					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
 			{accessVisible && (
@@ -332,7 +326,6 @@ const ComponentCard = (props: ComponentCardProps) => {
 					title={title}
 					clusterId={clusterId}
 					onRefresh={onRefresh}
-					setRefreshCluster={setRefreshCluster}
 					componentData={data}
 				/>
 			)}
@@ -344,7 +337,6 @@ const ComponentCard = (props: ComponentCardProps) => {
 					title={title}
 					clusterId={clusterId}
 					onRefresh={onRefresh}
-					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
 		</>
