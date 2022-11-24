@@ -113,13 +113,14 @@ export default function ExecutionTable(
 			dataIndex: 'status',
 			key: 'status',
 			filters: [
-				{ value: 'true', text: '成功' },
-				{ value: 'false', text: '失败' }
+				{ value: 'success', text: '成功' },
+				{ value: 'failed', text: '失败' }
 			],
 			width: 100,
 			filterMultiple: false,
 			render: (text: any) => {
-				if (text === 'true') return <Badge color="green" text="成功" />;
+				if (text === 'success')
+					return <Badge color="green" text="成功" />;
 				return <Badge color="red" text="失败" />;
 			}
 		},
