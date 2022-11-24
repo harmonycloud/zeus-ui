@@ -79,9 +79,6 @@
 	.sql-console-tabs-content {
 		padding: 0px 24px;
 		height: calc(100% - 36px - 72px);
-		.ant-tabs-nav{
-			margin-bottom: 0;
-		}
 		.ant-tabs-content {
 			height: 100%;
 			.ant-tabs-tabpane-active {
@@ -96,7 +93,7 @@
 		width: 100%;
 		height: 34px;
 		background: #222222;
-		margin-top: 16px;
+		// margin-top: 16px;
 		border-radius: 4px 4px 0 0;
 		display: flex;
 		justify-content: space-between;

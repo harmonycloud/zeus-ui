@@ -11,7 +11,7 @@ const Actions = (props: ActionsProps) => {
 	useEffect(() => {
 		if (children) {
 			if (children instanceof Array) {
-				setList(children);
+				setList(children.filter((item) => item));
 			} else {
 				setList([children]);
 			}
