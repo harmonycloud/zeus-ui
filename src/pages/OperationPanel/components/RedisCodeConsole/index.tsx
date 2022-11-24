@@ -53,17 +53,17 @@ export default function RedisCodeConsole(
 		CodeMirrorInstance.on('inputRead', (editor, change) => {
 			// TODO
 			// * 根据表和列的自动填充
-			const data = {
-				test: ['t_user', 'menu', 'auth_info'],
-				t_user: [],
-				menu: [''],
-				default: ['tableinfo']
-			};
-			CodeMirrorInstance.setOption('hintOptions', {
-				tables: data,
-				completeSingle: false
-			});
-			CodeMirrorInstance.execCommand('autocomplete');
+			// const data = {
+			// 	test: ['t_user', 'menu', 'auth_info'],
+			// 	t_user: [],
+			// 	menu: [''],
+			// 	default: ['tableinfo']
+			// };
+			// CodeMirrorInstance.setOption('hintOptions', {
+			// 	tables: data,
+			// 	completeSingle: false
+			// });
+			// CodeMirrorInstance.execCommand('autocomplete');
 		});
 		CodeMirrorInstance.on('change', (editor, change) => {
 			setSql(editor.getValue());
