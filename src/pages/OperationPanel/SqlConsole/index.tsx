@@ -268,6 +268,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							dbName={selectDatabase}
 							schemaName={selectSchema}
 							tableName={i}
+							removeActiveKey={removeActiveKey}
 						/>
 					)
 				);
@@ -384,6 +385,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									: fatherNode || ''
 							}
 							schemaName={selectSchema ? selectSchema : i}
+							removeActiveKey={removeActiveKey}
 						/>
 					)
 				);

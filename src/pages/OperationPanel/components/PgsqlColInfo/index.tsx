@@ -32,7 +32,9 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 		middlewareName,
 		tableName,
 		databaseName,
-		schemaName
+		schemaName,
+		removeActiveKey,
+		cancel
 	} = props;
 	console.log(props);
 	const [dataSource] = useState<EditPgsqlColItem[]>(
@@ -177,6 +179,7 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 						message: '成功',
 						description: '列信息修改成功!'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -203,7 +206,7 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

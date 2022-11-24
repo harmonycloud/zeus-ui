@@ -31,7 +31,9 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 		clusterId,
 		namespace,
 		middlewareName,
-		tableName
+		tableName,
+		removeActiveKey,
+		cancel
 	} = props;
 	const [columnNames] = useState(
 		originData?.columnDtoList?.map((item: PgsqlColItem) => {
@@ -115,6 +117,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 						message: '成功',
 						description: '唯一约束修改成功!'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -141,7 +144,7 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}
