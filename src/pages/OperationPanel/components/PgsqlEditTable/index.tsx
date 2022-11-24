@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Alert, Button, Divider, notification, Space, Tabs } from 'antd';
+import { Alert, Button, Divider, notification, Space, Tabs, Modal } from 'antd';
 import PgInherit from '../PgInherit';
 import PgsqlTableInfo from '../PgsqlTableInfo';
 import PgsqlColInfo from '../PgsqlColInfo';
@@ -15,10 +15,11 @@ import {
 import PgExclusiveness from '../PgExclusiveness';
 import { getPgsqlTableDetail, createPgTable } from '@/services/operatorPanel';
 import storage from '@/utils/storage';
+const { confirm } = Modal;
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
-	const { schemaName, dbName, tableName } = props;
+	const { schemaName, dbName, tableName, removeActiveKey } = props;
 	console.log(props);
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
@@ -77,12 +78,12 @@ export default function PgsqlEditTable(
 	};
 	const save = () => {
 		const sendData = {
-			...originData,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
 			databaseName: dbName,
-			schemaName
+			schemaName,
+			...originData
 		};
 		createPgTable(sendData).then((res) => {
 			if (res.success) {
@@ -90,6 +91,7 @@ export default function PgsqlEditTable(
 					message: '成功',
 					description: '创建成功!'
 				});
+				removeActiveKey();
 			} else {
 				notification.error({
 					message: '失败',
@@ -97,6 +99,15 @@ export default function PgsqlEditTable(
 						res.errorDetail ? ':' + res.errorDetail : ''
 					}`
 				});
+			}
+		});
+	};
+	const cancel = () => {
+		confirm({
+			title: '操作提醒',
+			content: '该操作会关闭当前tab页面，造成数据丢失，请确认操作！',
+			onOk: () => {
+				removeActiveKey();
 			}
 		});
 	};
@@ -116,6 +127,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'colInfo':
@@ -131,6 +144,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'foreignKeyInfo':
@@ -146,6 +161,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'exclusiveness':
@@ -160,6 +177,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'uniqueness':
@@ -173,6 +192,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'examine':
@@ -186,6 +207,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'inherit':
@@ -201,6 +224,8 @@ export default function PgsqlEditTable(
 							namespace={params.namespace}
 							middlewareName={params.name}
 							tableName={tableName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				default:
@@ -226,7 +251,7 @@ export default function PgsqlEditTable(
 							<Button type="primary" onClick={save}>
 								保存
 							</Button>
-							<Button>取消</Button>
+							<Button onClick={cancel}>取消</Button>
 						</Space>
 					</>
 				)}

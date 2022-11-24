@@ -39,9 +39,10 @@ export default function PgsqlTableInfo(
 		tableName,
 		clusterId,
 		namespace,
-		middlewareName
+		middlewareName,
+		removeActiveKey,
+		cancel
 	} = props;
-	console.log(props);
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
 	const [schemas, setSchemas] = useState<SchemaItem[]>([]);
@@ -110,6 +111,7 @@ export default function PgsqlTableInfo(
 						message: '成功',
 						description: '基本信息修改成功!'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -186,7 +188,7 @@ export default function PgsqlTableInfo(
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

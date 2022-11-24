@@ -29,7 +29,9 @@ export default function PgExclusiveness(
 		clusterId,
 		namespace,
 		middlewareName,
-		tableName
+		tableName,
+		removeActiveKey,
+		cancel
 	} = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource] = useState<EditExclusionItem[]>(
@@ -150,6 +152,7 @@ export default function PgExclusiveness(
 						message: '成功',
 						description: '排他性约束修改成功！'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -183,7 +186,7 @@ export default function PgExclusiveness(
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

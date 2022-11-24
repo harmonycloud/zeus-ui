@@ -23,7 +23,9 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 		clusterId,
 		namespace,
 		middlewareName,
-		tableName
+		tableName,
+		removeActiveKey,
+		cancel
 	} = props;
 	const [dataSource] = useState<EditTableCheckItem[]>(
 		originData?.tableCheckList?.map((item: tableCheckItem) => {
@@ -104,6 +106,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 						message: '成功',
 						description: '检查约束修改成功!'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -128,7 +131,7 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

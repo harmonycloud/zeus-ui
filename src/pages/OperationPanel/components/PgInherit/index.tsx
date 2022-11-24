@@ -19,7 +19,9 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 		middlewareName,
 		databaseName,
 		schemaName,
-		tableName
+		tableName,
+		removeActiveKey,
+		cancel
 	} = props;
 	const [form] = Form.useForm();
 	const [schemas, setSchemas] = useState<SchemaItem[]>([]);
@@ -81,6 +83,7 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 						message: '成功',
 						description: '继承修改成功'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -138,7 +141,7 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

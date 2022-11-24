@@ -48,6 +48,7 @@ export interface PgsqlEditTableProps {
 	dbName: string;
 	schemaName: string;
 	tableName?: string;
+	removeActiveKey: () => void;
 }
 export interface MysqlTableInfoProps {
 	handleChange: (values: any) => void;
@@ -96,70 +97,50 @@ export interface MysqlForeignKeyInfoProps {
 	removeActiveKey: () => void;
 	cancel: () => void;
 }
-export interface PgsqlTableInfoProps {
+export interface PgsqlTableTabProps {
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+	tableName: string | undefined;
+	removeActiveKey: () => void;
+	cancel: () => void;
+}
+export interface PgsqlTableInfoProps extends PgsqlTableTabProps {
 	handleChange: (values: any) => void;
 	dbName: string;
 	schemaName: string;
 	data: pgsqlTableDetail | undefined;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
 }
-export interface PgsqlColInfoProps {
-	originData: pgsqlTableDetail | undefined;
-	handleChange: (values: any) => void;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
-	databaseName: string;
-	schemaName: string;
-}
-export interface PgForeignKeyInfoProps {
+export interface PgsqlColInfoProps extends PgsqlTableTabProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	databaseName: string;
 	schemaName: string;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
 }
-export interface PgExclusivenessProps {
+export interface PgForeignKeyInfoProps extends PgsqlTableTabProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	databaseName: string;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
+	schemaName: string;
 }
-export interface PgUniquenessProps {
+export interface PgExclusivenessProps extends PgsqlTableTabProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
+	databaseName: string;
 }
-export interface PgExamineProps {
+export interface PgUniquenessProps extends PgsqlTableTabProps {
 	originData: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
 }
-export interface PgInheritProps {
+export interface PgExamineProps extends PgsqlTableTabProps {
+	originData: pgsqlTableDetail | undefined;
+	handleChange: (values: any) => void;
+}
+export interface PgInheritProps extends PgsqlTableTabProps {
 	data: pgsqlTableDetail | undefined;
 	handleChange: (values: any) => void;
 	databaseName: string;
 	schemaName: string;
-	clusterId: string;
-	namespace: string;
-	middlewareName: string;
-	tableName: string | undefined;
 }
 export interface consoleUser {
 	username: string;
@@ -401,6 +382,7 @@ export interface TableDetailProps {
 export interface PgTableDetailProps {
 	dbName: string;
 	schemaName: string;
+	add: (label: string, children: any) => void;
 }
 export interface SchemaItem {
 	comment: string;

@@ -154,10 +154,6 @@ const InitPage = () => (
 	</div>
 );
 // * sql窗口 模版
-// TODO 对模式，数据库，列，表，索引等删除，新增，修改后，左边树图的刷新
-// TODO 树图 所有高亮
-// TODO 右侧tab保存（sessionStorage）
-// TODO mysql table-index 树状图索引头部数量刷新
 export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const { currentUser, setOpen } = props;
 	const params: ParamsProps = useParams();
@@ -250,7 +246,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			exportFile(_url, {}, i, '.xlsx');
 		}
 	};
-	const handleMenuClick = (e: MenuInfo, i: string, fatherNode?: string) => {
+	const handleMenuClick = (e: MenuInfo, i: string, fatherNode: string) => {
 		console.log(i, fatherNode);
 		console.log(selectDatabase, selectSchema);
 		switch (e.key) {
@@ -268,6 +264,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							dbName={selectDatabase}
 							schemaName={selectSchema}
 							tableName={i}
+							removeActiveKey={removeActiveKey}
 						/>
 					)
 				);
@@ -281,6 +278,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<PgTableDetail
 							schemaName={i}
 							dbName={fatherNode || ''}
+							add={add}
 						/>
 					)
 				);
@@ -378,12 +376,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						/>
 					) : (
 						<PgsqlEditTable
-							dbName={
-								selectDatabase
-									? selectDatabase
-									: fatherNode || ''
-							}
-							schemaName={selectSchema ? selectSchema : i}
+							dbName={fatherNode}
+							schemaName={i}
+							removeActiveKey={removeActiveKey}
 						/>
 					)
 				);
@@ -456,7 +451,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		return (
 			<Menu
 				onClick={(info: MenuInfo) =>
-					handleMenuClick(info, i, fatherNode)
+					handleMenuClick(info, i, fatherNode || '')
 				}
 				items={databaseMenuItems}
 			/>
@@ -478,7 +473,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		return (
 			<Menu
 				items={pgMenuItems}
-				onClick={(info: MenuInfo) => handleMenuClick(info, i)}
+				onClick={(info: MenuInfo) => handleMenuClick(info, i, '')}
 			/>
 		);
 	};
@@ -1664,7 +1659,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						}
 					}}
 				/>
-				{items.length === 0 && <InitPage />}
+				{items.length === 0 && params.type === 'mysql' && <InitPage />}
 				{items.length > 0 && params.type === 'mysql' && (
 					<Tabs
 						hideAdd
@@ -1689,7 +1684,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						items={items}
 					/>
 				)}
-				{items.length > 0 && params.type === 'postgresql' && (
+				{params.type === 'postgresql' && (
 					<SplitPane {...paneProps}>
 						<div style={{ padding: '0px 0px 16px 16px' }}>
 							<Input.Search
@@ -1709,20 +1704,23 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								// }
 							/>
 						</div>
-						<Tabs
-							hideAdd
-							className="sql-console-tabs-content"
-							style={{
-								height: 'calc(100% - 36px)',
-								width: '100%'
-							}}
-							size="small"
-							type="editable-card"
-							onChange={onChange}
-							activeKey={activeKey}
-							onEdit={onEdit}
-							items={items}
-						/>
+						{items.length > 0 && (
+							<Tabs
+								hideAdd
+								className="sql-console-tabs-content"
+								style={{
+									height: 'calc(100% - 36px)',
+									width: '100%'
+								}}
+								size="small"
+								type="editable-card"
+								onChange={onChange}
+								activeKey={activeKey}
+								onEdit={onEdit}
+								items={items}
+							/>
+						)}
+						{items.length === 0 && <InitPage />}
 					</SplitPane>
 				)}
 			</Content>
