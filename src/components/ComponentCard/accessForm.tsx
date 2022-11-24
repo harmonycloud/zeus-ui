@@ -13,7 +13,8 @@ import {
 	AlertRender,
 	MinioRender,
 	LvmRender,
-	LocalPathRender
+	LocalPathRender,
+	MiddlewareApiRender
 } from './componenstsForm';
 import './index.scss';
 
@@ -23,7 +24,6 @@ interface AccessFormProps {
 	title: string;
 	clusterId: string;
 	onRefresh: () => void;
-	setRefreshCluster: (flag: boolean) => void;
 	status: number;
 	componentData: any;
 }
@@ -35,18 +35,15 @@ const AccessForm = (props: AccessFormProps) => {
 		title,
 		clusterId,
 		onRefresh,
-		setRefreshCluster,
 		status,
 		componentData
 	} = props;
 	const [form] = Form.useForm();
-	console.log(componentData);
 	useEffect(() => {
 		if (componentData.component === 'logging') {
 			getLogCollect({ clusterId: componentData.clusterId }).then(
 				(res) => {
 					if (res.success) {
-						console.log(res.data);
 						form.setFieldsValue({
 							logCollect: res.data
 						});
@@ -82,92 +79,12 @@ const AccessForm = (props: AccessFormProps) => {
 			userEs: componentData.user,
 			passwordEs: componentData.password
 		});
+		form.setFieldsValue({
+			protocolAPI: componentData.protocol,
+			hostAPI: componentData.host,
+			portAPI: componentData.port
+		});
 	}, []);
-	// useEffect(() => {
-	// getCluster({ clusterId: clusterId, detail: true }).then((res) => {
-	// 	if (res.success) {
-	// 		const cluster = res.data;
-	// 		if (cluster.logging && cluster.logging.elasticSearch) {
-	// 			form.setFieldsValue({
-	// 				protocolEs: cluster.logging.elasticSearch.protocol,
-	// 				hostEs: cluster.logging.elasticSearch.host,
-	// 				portEs: cluster.logging.elasticSearch.port,
-	// 				userEs: cluster.logging.elasticSearch.user,
-	// 				passwordEs: cluster.logging.elasticSearch.password,
-	// 				logCollect: cluster.logging.elasticSearch.logCollect
-	// 			});
-	// 		}
-	// 		if (cluster.monitor?.alertManager) {
-	// 			form.setFieldsValue({
-	// 				protocolAlert: cluster.monitor.alertManager.protocol,
-	// 				hostAlert: cluster.monitor.alertManager.host,
-	// 				portAlert: cluster.monitor.alertManager.port
-	// 			});
-	// 		}
-	// 		if (cluster.monitor?.grafana) {
-	// 			form.setFieldsValue({
-	// 				protocolGrafana: cluster.monitor.grafana.protocol,
-	// 				hostGrafana: cluster.monitor.grafana.host,
-	// 				portGrafana: cluster.monitor.grafana.port
-	// 			});
-	// 		}
-	// 		if (cluster.monitor?.prometheus) {
-	// 			form.setFieldsValue({
-	// 				protocolPrometheus: cluster.monitor.prometheus.protocol,
-	// 				hostPrometheus: cluster.monitor.prometheus.host,
-	// 				portPrometheus: cluster.monitor.prometheus.port
-	// 			});
-	// 		}
-	// 		if (cluster?.storage?.backup?.storage) {
-	// 			form.setFieldsValue({
-	// 				accessKeyId:
-	// 					cluster?.storage?.backup?.storage.accessKeyId,
-	// 				bucketName:
-	// 					cluster?.storage?.backup?.storage.bucketName,
-	// 				minioName: cluster?.storage?.backup?.storage.name,
-	// 				secretAccessKey:
-	// 					cluster?.storage?.backup?.storage.secretAccessKey,
-	// 				endpoint: cluster?.storage?.backup?.storage.endpoint
-	// 			});
-	// 		}
-	// 		if (cluster?.storage?.support) {
-	// 			if (
-	// 				cluster?.storage?.support.find(
-	// 					(item: any) => item.type === 'lvm'
-	// 				)
-	// 			) {
-	// 				form.setFieldsValue({
-	// 					lvmName: cluster?.storage?.support.find(
-	// 						(item: any) => item.type === 'lvm'
-	// 					).name,
-	// 					lvmNamespace: cluster?.storage?.support.find(
-	// 						(item: any) => item.type === 'lvm'
-	// 					).namespace
-	// 				});
-	// 			}
-	// 			if (
-	// 				cluster?.storage?.support.find(
-	// 					(item: any) => item.type === 'local-path'
-	// 				)
-	// 			) {
-	// 				form.setFieldsValue({
-	// 					localPathName: cluster?.storage?.support.find(
-	// 						(item: any) => item.type === 'local-path'
-	// 					).name,
-	// 					localPathNamespace: cluster?.storage?.support.find(
-	// 						(item: any) => item.type === 'local-path'
-	// 					).namespace
-	// 				});
-	// 			}
-	// 		}
-	// 	} else {
-	// 		notification.error({
-	// 			message: '失败',
-	// 			description: res.errorMsg
-	// 		});
-	// 	}
-	// });
-	// }, []);
 	const onOk = () => {
 		form.validateFields().then((values) => {
 			const sendData: any = {
@@ -175,82 +92,24 @@ const AccessForm = (props: AccessFormProps) => {
 				componentName: title
 			};
 			if (title === 'grafana') {
-				sendData.monitor = {
-					grafana: {
-						host: values.hostGrafana,
-						port: values.portGrafana,
-						protocol: values.protocolGrafana
-					}
-				};
-			} else if (title === 'minio') {
-				sendData.storage = {
-					backup: {
-						storage: {
-							accessKeyId: values.accessKeyId,
-							secretAccessKey: values.secretAccessKey,
-							bucketName: values.bucketName,
-							endpoint: values.endpoint,
-							name: values.minioName
-						}
-					}
-				};
-			} else if (title === 'ingress') {
-				sendData.ingress = {
-					address: values.ingressAddress,
-					ingressClassName: values.ingressClassName,
-					tcp: {
-						enabled: true,
-						namespace: values.namespace,
-						configMapName: values.configMapName
-					}
-				};
+				sendData.host = values.hostGrafana;
+				sendData.port = values.portGrafana;
+				sendData.protocol = values.protocolGrafana;
 			} else if (title === 'logging') {
-				sendData.logging = {
-					elasticSearch: {
-						protocol: values.protocolEs,
-						host: values.hostEs,
-						port: values.portEs,
-						user: values.userEs,
-						password: values.passwordEs,
-						logCollect: values.logCollect
-					}
-				};
+				sendData.protocol = values.protocolEs;
+				sendData.host = values.hostEs;
+				sendData.port = values.portEs;
+				sendData.user = values.userEs;
+				sendData.password = values.passwordEs;
+				sendData.logCollect = values.logCollect;
 			} else if (title === 'alertmanager') {
-				sendData.monitor = {
-					alertManager: {
-						host: values.hostAlert,
-						port: values.portAlert,
-						protocol: values.protocolAlert
-					}
-				};
+				sendData.host = values.hostAlert;
+				sendData.port = values.portAlert;
+				sendData.protocol = values.protocolAlert;
 			} else if (title === 'prometheus') {
-				sendData.monitor = {
-					prometheus: {
-						host: values.hostPrometheus,
-						port: values.portPrometheus,
-						protocol: values.protocolPrometheus
-					}
-				};
-			} else if (title === 'lvm') {
-				sendData.storage = {
-					support: [
-						{
-							name: values.lvmName,
-							namespace: values.lvmNamespace,
-							type: 'lvm'
-						}
-					]
-				};
-			} else if (title === 'local-path') {
-				sendData.storage = {
-					support: [
-						{
-							name: values.localPathName,
-							namespace: values.localPathNamespace,
-							type: 'local-path'
-						}
-					]
-				};
+				sendData.host = values.hostPrometheus;
+				sendData.port = values.portPrometheus;
+				sendData.protocol = values.protocolPrometheus;
 			}
 			console.log(sendData);
 			if (status === 0) {
@@ -261,7 +120,6 @@ const AccessForm = (props: AccessFormProps) => {
 							description: '组件接入成功'
 						});
 						onCancel();
-						setRefreshCluster(true);
 						onRefresh();
 					} else {
 						notification.error({
@@ -280,7 +138,6 @@ const AccessForm = (props: AccessFormProps) => {
 							}成功`
 						});
 						onCancel();
-						setRefreshCluster(true);
 						onRefresh();
 					} else {
 						notification.error({
@@ -309,6 +166,8 @@ const AccessForm = (props: AccessFormProps) => {
 				return <LvmRender />;
 			case 'local-path':
 				return <LocalPathRender />;
+			case 'middleware-controller':
+				return <MiddlewareApiRender />;
 			default:
 				break;
 		}
@@ -319,7 +178,7 @@ const AccessForm = (props: AccessFormProps) => {
 			open={visible}
 			onCancel={onCancel}
 			onOk={onOk}
-			width={580}
+			width={650}
 			okText="确定"
 			cancelText="取消"
 		>

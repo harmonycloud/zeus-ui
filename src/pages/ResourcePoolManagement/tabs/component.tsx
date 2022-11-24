@@ -6,19 +6,17 @@ import { connect } from 'react-redux';
 import { getComponents, postComponent } from '@/services/common';
 import ComponentCard, { SendDataProps } from '@/components/ComponentCard';
 import BatchInstall from './batchInstall';
-import { setRefreshCluster } from '@/redux/globalVar/var';
 import { setMenuRefresh } from '@/redux/menu/menu';
 import { ComponentProp } from '../resource.pool';
 import { paramsProps } from '../detail';
 import InstallForm from '@/components/ComponentCard/installForm';
 
 interface ComponentProps {
-	setRefreshCluster: (flag: boolean) => void;
 	setMenuRefresh: (flag: boolean, clusterId: string) => void;
 }
 
 const Component = (props: ComponentProps) => {
-	const { setRefreshCluster, setMenuRefresh } = props;
+	const { setMenuRefresh } = props;
 	const { id, nickname }: paramsProps = useParams();
 	const [components, setComponents] = useState<ComponentProp[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
@@ -45,7 +43,6 @@ const Component = (props: ComponentProps) => {
 		getComponents({ clusterId: id }).then((res) => {
 			if (res.success) {
 				setComponents(res.data);
-				setRefreshCluster(true);
 				setMenuRefresh(true, id);
 			} else {
 				notification.error({
@@ -135,13 +132,11 @@ const Component = (props: ComponentProps) => {
 					onCreate={installData}
 					title={'middleware-controller'}
 					clusterId={id}
-					setRefreshCluster={setRefreshCluster}
 				/>
 			)}
 		</>
 	);
 };
 export default connect(() => ({}), {
-	setRefreshCluster,
 	setMenuRefresh
 })(Component);
