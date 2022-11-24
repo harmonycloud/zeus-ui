@@ -956,7 +956,18 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					if (res.data.length > 0) {
 						const list = res.data.map((item, index: number) => {
 							const result: any = {};
-							result.title = <span>{item.column}</span>;
+							result.title = (
+								<span
+									title={item.column}
+									className="text-overflow"
+									style={{
+										width: '80px',
+										display: 'inline-block'
+									}}
+								>
+									{item.column}
+								</span>
+							);
 							result.key = `${key}-0-${index}`;
 							result.icon = <IconFont type="icon-liebiao" />;
 							result.value = item.column;
