@@ -78,12 +78,12 @@ export default function PgsqlEditTable(
 	};
 	const save = () => {
 		const sendData = {
-			...originData,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
 			databaseName: dbName,
-			schemaName
+			schemaName,
+			...originData
 		};
 		createPgTable(sendData).then((res) => {
 			if (res.success) {

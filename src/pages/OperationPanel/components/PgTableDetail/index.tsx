@@ -6,11 +6,12 @@ import { ParamsProps, PgsqlTableItem, PgTableDetailProps } from '../../index.d';
 import { getPgTables } from '@/services/operatorPanel';
 import { useEffect } from 'react';
 import PgColTable from './colTable';
+import OpenTable from '../OpenTable';
 
 const LinkButton = Actions.LinkButton;
 
 export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
-	const { dbName, schemaName } = props;
+	const { dbName, schemaName, add } = props;
 	const params: ParamsProps = useParams();
 	const [dataSource, setDataSource] = useState<PgsqlTableItem[]>([]);
 	useEffect(() => {
@@ -54,11 +55,22 @@ export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 			dataIndex: 'action',
 			key: 'action',
 			width: 250,
-			render: () => (
+			render: (text: any, record: PgsqlTableItem, index: number) => (
 				<Actions>
-					<LinkButton>打开</LinkButton>
-					<LinkButton>导出建表语句</LinkButton>
-					<LinkButton>导出表结构</LinkButton>
+					<LinkButton
+						onClick={() => {
+							add(
+								record.tableName,
+								<OpenTable
+									dbName={record.databaseName}
+									tableName={record.tableName}
+									schemaName={record.schemaName}
+								/>
+							);
+						}}
+					>
+						打开
+					</LinkButton>
 				</Actions>
 			)
 		}
@@ -95,12 +107,12 @@ export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 			expandable={{ expandedRowRender }}
 			dataSource={dataSource}
 			columns={columns}
-			scroll={{
-				y:
-					document.getElementsByClassName(
-						'ant-tabs-content-holder'
-					)[0].clientHeight - 50
-			}}
+			// scroll={{
+			// 	y:
+			// 		document.getElementsByClassName(
+			// 			'ant-tabs-content-holder'
+			// 		)[0].clientHeight - 50
+			// }}
 		/>
 	);
 }

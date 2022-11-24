@@ -382,6 +382,7 @@ export interface TableDetailProps {
 export interface PgTableDetailProps {
 	dbName: string;
 	schemaName: string;
+	add: (label: string, children: any) => void;
 }
 export interface SchemaItem {
 	comment: string;
