@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Divider, notification, Space, Tabs } from 'antd';
+import { Alert, Button, Divider, notification, Space, Tabs, Modal } from 'antd';
 import {
 	MysqlEditTableProps,
 	MysqlEngineItem,
@@ -17,10 +17,11 @@ import {
 } from '@/services/operatorPanel';
 import { useParams } from 'react-router';
 
+const { confirm } = Modal;
 export default function MysqlEditTable(
 	props: MysqlEditTableProps
 ): JSX.Element {
-	const { tableName, dbName } = props;
+	const { tableName, dbName, removeActiveKey } = props;
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<MysqlTableDetail>();
@@ -99,6 +100,7 @@ export default function MysqlEditTable(
 					message: '成功',
 					description: '创建成功！'
 				});
+				removeActiveKey();
 			} else {
 				notification.error({
 					message: '失败',
@@ -106,6 +108,15 @@ export default function MysqlEditTable(
 						res.errorDetail ? ':' + res.errorDetail : ''
 					}`
 				});
+			}
+		});
+	};
+	const cancel = () => {
+		confirm({
+			title: '操作提醒',
+			content: '该操作会关闭当前tab页面，造成数据丢失，请确认操作！',
+			onOk: () => {
+				removeActiveKey();
 			}
 		});
 	};
@@ -125,6 +136,8 @@ export default function MysqlEditTable(
 							middlewareName={params.name}
 							engineData={engineData}
 							databaseName={dbName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'colInfo':
@@ -139,6 +152,8 @@ export default function MysqlEditTable(
 							middlewareName={params.name}
 							tableName={tableName}
 							databaseName={dbName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'indexInfo':
@@ -154,6 +169,8 @@ export default function MysqlEditTable(
 							middlewareName={params.name}
 							tableName={tableName}
 							databaseName={dbName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				case 'foreignKeyInfo':
@@ -168,6 +185,8 @@ export default function MysqlEditTable(
 							middlewareName={params.name}
 							tableName={tableName}
 							databaseName={dbName}
+							removeActiveKey={removeActiveKey}
+							cancel={cancel}
 						/>
 					);
 				default:
@@ -193,7 +212,7 @@ export default function MysqlEditTable(
 							<Button type="primary" onClick={save}>
 								保存
 							</Button>
-							<Button>取消</Button>
+							<Button onClick={cancel}>取消</Button>
 						</Space>
 					</>
 				)}

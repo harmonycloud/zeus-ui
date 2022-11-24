@@ -29,7 +29,7 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 	}, []);
 	const columns = [
 		{
-			title: '#',
+			title: '序号',
 			dataIndex: 'uid',
 			key: 'uid',
 			width: 50,
@@ -64,7 +64,7 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 	return (
 		<Table
 			size="small"
-			rowKey="uid"
+			rowKey="column"
 			columns={columns}
 			dataSource={data}
 			pagination={false}

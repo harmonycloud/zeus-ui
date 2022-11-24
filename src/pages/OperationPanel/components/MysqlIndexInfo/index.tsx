@@ -25,7 +25,9 @@ export default function MysqlIndexInfo(
 		clusterId,
 		namespace,
 		middlewareName,
-		databaseName
+		databaseName,
+		cancel,
+		removeActiveKey
 	} = props;
 	const [open, setOpen] = useState<boolean>(false);
 	const [changedData, setChangeData] = useState<any>();
@@ -137,6 +139,7 @@ export default function MysqlIndexInfo(
 						message: '成功',
 						description: '索引信息修改成功'
 					});
+					removeActiveKey();
 				} else {
 					notification.error({
 						message: '失败',
@@ -165,7 +168,7 @@ export default function MysqlIndexInfo(
 						<Button type="primary" onClick={save}>
 							保存
 						</Button>
-						<Button>取消</Button>
+						<Button onClick={cancel}>取消</Button>
 					</Space>
 				</>
 			)}

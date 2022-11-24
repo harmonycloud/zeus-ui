@@ -261,6 +261,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<MysqlEditTable
 							tableName={i}
 							dbName={fatherNode || ''}
+							removeActiveKey={removeActiveKey}
 						/>
 					) : (
 						<PgsqlEditTable
@@ -275,7 +276,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					`表详情:${i}`,
 					params.type === 'mysql' ? (
-						<TableDetail dbName={i} />
+						<TableDetail dbName={i} add={add} />
 					) : (
 						<PgTableDetail
 							schemaName={i}
@@ -371,7 +372,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				add(
 					'创建表',
 					params.type === 'mysql' ? (
-						<MysqlEditTable dbName={fatherNode ? fatherNode : i} />
+						<MysqlEditTable
+							dbName={fatherNode ? fatherNode : i}
+							removeActiveKey={removeActiveKey}
+						/>
 					) : (
 						<PgsqlEditTable
 							dbName={
@@ -1009,6 +1013,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 		setItems(newPanes);
 		setActiveKey(newActiveKey);
+	};
+	const removeActiveKey = () => {
+		remove(activeKey);
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
 		if (action === 'add') {
