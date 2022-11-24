@@ -13,7 +13,6 @@ import { encrypt, decrypt } from '@/utils/utils';
 import storage from '@/utils/storage';
 import { getRsaKey } from '@/services/user';
 const { Option } = Select;
-// TODO redis 登录对接 redis需要判断实例中的version，当version为5时，不用填账号，当version为6时，有一个默认账号，具体找后端
 // ! 运维面板所有相关存储都存在sessionStorage中
 export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 	const {
@@ -152,7 +151,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 				<Form.Item
 					label="账号"
 					name="username"
-					rules={[{ required: false, message: '请输入账号' }]}
+					rules={[{ required: true, message: '请输入账号' }]}
 					initialValue={
 						middlewareType === 'redis' && version === '5.0'
 							? 'default'
