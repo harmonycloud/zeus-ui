@@ -147,10 +147,10 @@ const paneProps: SplitPaneProps = {
 		overflow: 'auto'
 	}
 };
-const InitPage = () => (
+const InitPage = (props: { title: string }) => (
 	<div style={{ textAlign: 'center', marginTop: 50 }}>
 		<img width={200} height={200} src={noData} />
-		<p>请双击数据库打开控制台页面</p>
+		<p>{props.title}</p>
 	</div>
 );
 // * sql窗口 模版
@@ -599,10 +599,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								result.icon = <IconFont type="icon-database" />;
 								return result;
 							});
-							console.log(list);
 							setPgTreeData(list);
-							setPgsqlExpandedKeys([list[0].key]);
-							setSelectDatabase(list[0].value);
 						} else {
 							setPgTreeData([]);
 						}
@@ -657,7 +654,27 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										}
 										trigger={['contextMenu']}
 									>
-										<span>{item.tableName}</span>
+										<span
+											onDoubleClick={() => {
+												console.log('click');
+												add(
+													item.tableName,
+													<OpenTable
+														dbName={
+															item.databaseName
+														}
+														schemaName={
+															item.schemaName
+														}
+														tableName={
+															item.tableName
+														}
+													/>
+												);
+											}}
+										>
+											{item.tableName}
+										</span>
 									</Dropdown>
 								);
 								result.key = index + '';
@@ -1021,6 +1038,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		setActiveKey(newActiveKey);
 	};
 	const removeActiveKey = () => {
+		console.log(activeKey);
+		console.log(items);
 		remove(activeKey);
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
@@ -1070,6 +1089,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				expandedKeys.includes(i)
 			);
 		}
+		setSelectDatabase(info.node.value);
 		setPgsqlLoadedKeys(newPgsqlLoadedKeys);
 		setPgsqlExpandedKeys(expandedKeys);
 	};
@@ -1463,6 +1483,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const newPgTreeTableData = useMemo(() => {
 		const loop = (data: any[]): any[] =>
 			data.map((item) => {
+				console.log(item);
 				const result: any = {};
 				const strTitle = item.value || '';
 				const index = strTitle.indexOf(pgTableTreeValue);
@@ -1476,7 +1497,19 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						trigger={['contextMenu']}
 					>
 						{index > -1 ? (
-							<span>
+							<span
+								onDoubleClick={() => {
+									console.log('click');
+									add(
+										item.value,
+										<OpenTable
+											dbName={selectDatabase}
+											schemaName={selectSchema}
+											tableName={item.value}
+										/>
+									);
+								}}
+							>
 								{beforeStr}
 								<span className="site-tree-search-value">
 									{pgTableTreeValue}
@@ -1484,7 +1517,21 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								{afterStr}
 							</span>
 						) : (
-							<span>{strTitle}</span>
+							<span
+								onDoubleClick={() => {
+									console.log('click');
+									add(
+										strTitle,
+										<OpenTable
+											dbName={selectDatabase}
+											schemaName={selectSchema}
+											tableName={item.value}
+										/>
+									);
+								}}
+							>
+								{strTitle}
+							</span>
 						)}
 					</Dropdown>
 				);
@@ -1653,13 +1700,15 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					currentUser={currentUser}
 					loginOut={() => {
 						if (currentUser) {
-							setOpen(false);
+							setOpen(true);
 						} else {
 							window.close();
 						}
 					}}
 				/>
-				{items.length === 0 && params.type === 'mysql' && <InitPage />}
+				{items.length === 0 && params.type === 'mysql' && (
+					<InitPage title="请双击数据库打开控制台页面" />
+				)}
 				{items.length > 0 && params.type === 'mysql' && (
 					<Tabs
 						hideAdd
@@ -1720,7 +1769,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								items={items}
 							/>
 						)}
-						{items.length === 0 && <InitPage />}
+						{items.length === 0 && (
+							<InitPage title="请双击模式打开控制台页面" />
+						)}
 					</SplitPane>
 				)}
 			</Content>

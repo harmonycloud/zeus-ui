@@ -10,7 +10,7 @@ export default function OperatorHeader(
 	props: OperatorHeaderProps
 ): JSX.Element {
 	const params: ParamsProps = useParams();
-	const { currentUser } = props;
+	const { currentUser, loginOut } = props;
 	return (
 		<PageHeader
 			title={params.name}
@@ -45,7 +45,7 @@ export default function OperatorHeader(
 						>
 							退出{' '}
 						</span>{' '}
-						/ <span>切换账户</span>
+						/ <span onClick={loginOut}>切换账户</span>
 					</span>
 				</div>
 			}
