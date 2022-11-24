@@ -1284,7 +1284,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 									style={{ width: '800px' }}
 								>
 									<label className="form-name">
-										<span>postgres密码</span>
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											postgres密码
+										</span>
 									</label>
 									<div className="form-content">
 										<Tooltip
@@ -1348,11 +1353,18 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											<FormItem
 												name="pgsqlPwd"
 												style={{ marginBottom: 12 }}
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入postgres密码'
+													}
+												]}
 											>
 												<Password
 													style={{ width: '380px' }}
 													value={pgsqlPwd}
-													placeholder="请输入postgres密码，输入为空则由平台随机生成"
+													placeholder="请输入postgres密码"
 													onChange={pgsqlPwdChange}
 													disabled={!!middlewareName}
 												/>

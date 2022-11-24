@@ -1498,15 +1498,28 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 								</li>
 								<li className="display-flex form-li">
 									<label className="form-name">
-										<span>初始密码</span>
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											初始密码
+										</span>
 									</label>
 									<div
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem name="pwd">
+										<FormItem
+											name="pwd"
+											rules={[
+												{
+													required: true,
+													message: '请输入初始密码'
+												}
+											]}
+										>
 											<Input.Password
-												placeholder="请输入初始密码，输入空则由平台随机生成"
+												placeholder="请输入初始密码·"
 												disabled={!!middlewareName}
 											/>
 										</FormItem>

@@ -2036,7 +2036,12 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 								</li>
 								<li className="display-flex">
 									<label className="form-name">
-										<span>root密码</span>
+										<span
+											className="ne-required"
+											style={{ marginRight: 8 }}
+										>
+											root密码
+										</span>
 									</label>
 									<div className="form-content">
 										<Tooltip
@@ -2097,11 +2102,20 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												</ul>
 											}
 										>
-											<FormItem name="mysqlPwd">
+											<FormItem
+												name="mysqlPwd"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入root密码'
+													}
+												]}
+											>
 												<Password
 													style={{ width: '380px' }}
 													value={mysqlPwd}
-													placeholder="请输入root密码，输入为空则由平台随机生成"
+													placeholder="请输入root密码"
 													onChange={mysqlPwdChange}
 													disabled={!!backupFileName}
 												/>
