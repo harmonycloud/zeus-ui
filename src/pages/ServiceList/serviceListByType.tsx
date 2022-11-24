@@ -1048,7 +1048,6 @@ const ServiceListByType = (props: serviceListProps) => {
 					rowKey="name"
 					operation={operation()}
 					loading={loadingVisible}
-					scroll={{ x: 1170 }}
 					search={{
 						value: keyword,
 						onChange: handleChange,
@@ -1068,14 +1067,14 @@ const ServiceListByType = (props: serviceListProps) => {
 					<ProTable.Column
 						title="服务名称/中文别名"
 						dataIndex="name"
-						width={180}
+						width={150}
 						render={nameRender}
 						fixed="left"
 					/>
 					<ProTable.Column
 						title="状态"
 						dataIndex="status"
-						width={150}
+						width={120}
 						render={serviceListStatusRender}
 						filters={states}
 						filterMultiple={false}
@@ -1101,18 +1100,18 @@ const ServiceListByType = (props: serviceListProps) => {
 					<ProTable.Column
 						title="服务版本"
 						dataIndex="chartVersion"
-						width={120}
+						width={100}
 					/>
 					<ProTable.Column
 						title="版本"
 						dataIndex="version"
-						width={80}
+						width={50}
 					/>
 					{disasterOpen && (
 						<ProTable.Column
-							title="关联服务名称/中文别名"
+							title="容灾服务"
 							dataIndex="associated"
-							width={180}
+							width={150}
 							render={associatedRender}
 						/>
 					)}
@@ -1134,7 +1133,6 @@ const ServiceListByType = (props: serviceListProps) => {
 							dataIndex="action"
 							render={actionRender}
 							width={230}
-							fixed="right"
 						/>
 					) : null}
 				</ProTable>
