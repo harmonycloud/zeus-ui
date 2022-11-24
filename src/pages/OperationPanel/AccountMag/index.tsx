@@ -135,12 +135,14 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 					if (res.success) {
 						notification.success({
 							message: '成功',
-							description: `用户${checked ? '禁用' : '启用'}成功`
+							description: `用户${checked ? '启用' : '启用'}成功`
 						});
 					} else {
 						notification.error({
 							message: '失败',
-							description: res.errorMsg
+							description: `${res.errorMsg}${
+								res.errorDetail ? ':' + res.errorDetail : ''
+							}`
 						});
 					}
 				})
@@ -208,11 +210,11 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 		},
 		{
 			title: '启/禁用',
-			dataIndex: params.type === 'mysql' ? 'accountLocked' : 'usable',
-			key: params.type === 'mysql' ? 'accountLocked' : 'usable',
+			dataIndex: 'usable',
+			key: 'usable',
 			render: (text: any, record: MysqlUserItem | PgsqlUserItem) => (
 				<Switch
-					checked={!text}
+					checked={text}
 					onChange={(checked: boolean) =>
 						handleChange(checked, record)
 					}
@@ -249,12 +251,21 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 				} else {
 					setPgsqlDataSource(res.data as PgsqlUserItem[]);
 				}
+			} else {
+				notification.error({
+					message: '失败',
+					description: `${res.errorMsg}${
+						res.errorDetail ? ':' + res.errorDetail : ''
+					}`
+				});
 			}
 		});
 	};
 	const onSearch = (value: string) => getData(value);
 	const rowSelection = {
 		onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+			console.log(selectedRowKeys);
+			console.log(selectedRows);
 			setUserData(selectedRows[0]);
 		}
 	};

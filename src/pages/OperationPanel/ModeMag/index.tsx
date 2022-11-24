@@ -31,6 +31,13 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 			if (res.success) {
 				setDataSource(res.data);
 				setShowDataSource(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: `${res.errorMsg}${
+						res.errorDetail ? ':' + res.errorDetail : ''
+					}`
+				});
 			}
 		});
 	};
