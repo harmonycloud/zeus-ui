@@ -32,6 +32,7 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 	const [dataSource, setDataSource] = useState<MysqlUserItem[]>();
 	const [pgsqlDataSource, setPgsqlDataSource] = useState<PgsqlUserItem[]>();
 	const [userData, setUserData] = useState<MysqlUserItem | PgsqlUserItem>();
+	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>();
 	useEffect(() => {
 		if (currentUser) {
 			getData();
@@ -264,9 +265,26 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 	const onSearch = (value: string) => getData(value);
 	const rowSelection = {
 		onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-			console.log(selectedRowKeys);
-			console.log(selectedRows);
-			setUserData(selectedRows[0]);
+			if (selectedRowKeys.length > 1) {
+				if (params.type === 'mysql') {
+					const data = selectedRows.filter(
+						(item) => item.user !== (userData as MysqlUserItem).user
+					);
+					setSelectedRowKeys([data[0].user]);
+					setUserData(data[0]);
+				} else {
+					const data = selectedRows.filter(
+						(item) =>
+							item.username !==
+							(userData as PgsqlUserItem).username
+					);
+					setSelectedRowKeys([data[0].username]);
+					setUserData(data[0]);
+				}
+			} else {
+				setUserData(selectedRows[0]);
+				setSelectedRowKeys(selectedRowKeys);
+			}
 		}
 	};
 	return (
@@ -299,7 +317,8 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 						params.type === 'mysql' ? dataSource : pgsqlDataSource
 					}
 					rowSelection={{
-						type: 'radio',
+						selectedRowKeys: selectedRowKeys,
+						hideSelectAll: true,
 						...rowSelection
 					}}
 				/>
