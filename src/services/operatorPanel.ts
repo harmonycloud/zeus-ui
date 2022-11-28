@@ -95,13 +95,11 @@ export const authLogout: (params: {
 	middlewareName: string;
 	namespace: string;
 	type: string;
-	name: string;
 }) => Promise<resProps> = (params: {
 	clusterId: string;
 	middlewareName: string;
 	namespace: string;
 	type: string;
-	name: string;
 }) => {
 	return Axios.post(URL.AuthLogout, params);
 };

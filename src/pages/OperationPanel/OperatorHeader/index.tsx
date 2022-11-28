@@ -49,8 +49,7 @@ export default function OperatorHeader(
 											clusterId: params.clusterId,
 											middlewareName: params.name,
 											namespace: params.namespace,
-											type: params.type,
-											name: params.name
+											type: params.type
 										}).then((res) => {
 											if (res.success) {
 												window.close();
