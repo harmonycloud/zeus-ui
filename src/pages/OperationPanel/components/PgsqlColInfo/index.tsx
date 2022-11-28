@@ -90,6 +90,18 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			key: 'column',
 			editable: true,
 			width: 150,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-63个字符'
+				},
+				{
+					required: true,
+					message: '请输入列名'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -98,6 +110,12 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			key: 'dataType',
 			editable: true,
 			width: 150,
+			rules: [
+				{
+					required: true,
+					message: '请选择类型'
+				}
+			],
 			componentType: 'select',
 			selectOptions: dataTypes
 		},
@@ -147,6 +165,13 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			key: 'comment',
 			editable: true,
 			width: 150,
+			rules: [
+				{
+					type: 'string',
+					max: 128,
+					message: '请输入中英文字符数字及特殊字符组成的1-128个字符'
+				}
+			],
 			componentType: 'string'
 		},
 		{

@@ -129,6 +129,18 @@ export default function MysqlForeignKeyInfo(
 			key: 'foreignKey',
 			editable: true,
 			width: 150,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-64个字符'
+				},
+				{
+					required: true,
+					message: '请输入外键名'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -138,6 +150,12 @@ export default function MysqlForeignKeyInfo(
 			editable: true,
 			componentType: 'select',
 			width: 250,
+			rules: [
+				{
+					required: true,
+					message: '请选择参考库'
+				}
+			],
 			selectOptions: databases
 		},
 		{
@@ -147,6 +165,12 @@ export default function MysqlForeignKeyInfo(
 			editable: true,
 			componentType: 'select',
 			width: 250,
+			rules: [
+				{
+					required: true,
+					message: '请选择参考表'
+				}
+			],
 			selectOptions: tables
 		},
 		{
@@ -195,7 +219,6 @@ export default function MysqlForeignKeyInfo(
 		setSelectRow(values);
 	};
 	const onCreate = (values: any) => {
-		console.log(values);
 		setChangeData({ details: values });
 	};
 	const save = () => {

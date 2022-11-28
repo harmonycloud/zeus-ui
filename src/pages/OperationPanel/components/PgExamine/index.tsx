@@ -44,6 +44,18 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 			dataIndex: 'name',
 			key: 'name',
 			editable: true,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-63个字符'
+				},
+				{
+					required: true,
+					message: '请输入名称'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -51,6 +63,18 @@ export default function PgExamine(props: PgExamineProps): JSX.Element {
 			dataIndex: 'text',
 			key: 'text',
 			editable: true,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 100,
+					message: '请输入1-100个字符'
+				},
+				{
+					required: true,
+					message: '请输入检查'
+				}
+			],
 			componentType: 'string'
 		},
 		{

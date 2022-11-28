@@ -66,6 +66,18 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 			key: 'column',
 			editable: true,
 			width: 250,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-64个字符'
+				},
+				{
+					required: true,
+					message: '请输入列名'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -74,6 +86,12 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 			key: 'dataType',
 			editable: true,
 			width: 250,
+			rules: [
+				{
+					required: true,
+					message: '请输入索引名'
+				}
+			],
 			componentType: 'select',
 			selectOptions: dataTypes
 		},
@@ -83,6 +101,12 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 			key: 'size',
 			editable: true,
 			width: 100,
+			rules: [
+				{
+					type: 'number',
+					message: '请输入数字'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -114,6 +138,14 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 			dataIndex: 'comment',
 			key: 'comment',
 			editable: true,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 128,
+					message: '请输入中英文字符数字及特殊字符组成的1-128个字符'
+				}
+			],
 			componentType: 'string'
 		}
 	];

@@ -148,17 +148,45 @@ export default function MysqlTableInfo(
 				<Form.Item
 					label="表名"
 					name="tableName"
-					rules={[{ required: true, message: '请输入表名' }]}
+					rules={[
+						{ required: true, message: '请输入表名' },
+						{
+							type: 'string',
+							min: 1,
+							max: 64,
+							message: '请输入1-64个字符'
+						}
+					]}
 				>
 					<Input placeholder="请输入表名" />
 				</Form.Item>
-				<Form.Item label="备注" name="comment">
+				<Form.Item
+					label="备注"
+					name="comment"
+					rules={[
+						{
+							type: 'string',
+							min: 1,
+							max: 128,
+							message:
+								'请输入中英文字符、数字及特殊字符组成的1-128个字符'
+						}
+					]}
+				>
 					<Input placeholder="请输入备注" />
 				</Form.Item>
-				<Form.Item label="存储引擎" name="engine" required>
+				<Form.Item
+					label="存储引擎"
+					name="engine"
+					rules={[{ required: true, message: '请选择存储引擎' }]}
+				>
 					<Select options={engineOptions} />
 				</Form.Item>
-				<Form.Item label="字符集" name="charset" required>
+				<Form.Item
+					label="字符集"
+					name="charset"
+					rules={[{ required: true, message: '请选择字符集' }]}
+				>
 					<Select
 						placeholder="请选择字符集"
 						onChange={(value: any) => setCurrentCharset(value)}

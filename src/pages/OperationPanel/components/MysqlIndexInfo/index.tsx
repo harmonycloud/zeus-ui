@@ -76,6 +76,18 @@ export default function MysqlIndexInfo(
 			key: 'index',
 			editable: true,
 			width: 150,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-64个字符'
+				},
+				{
+					required: true,
+					message: '请输入索引名'
+				}
+			],
 			componentType: 'string'
 		},
 		{
