@@ -115,7 +115,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				memory: data.memory,
 				storageClass:
 					data.storageClass === '' ? undefined : data.storageClass,
-				storageQuota: data.storageQuota
+				storageQuota: data.storageQuota || 5
 			});
 		}
 	}, [data]);
