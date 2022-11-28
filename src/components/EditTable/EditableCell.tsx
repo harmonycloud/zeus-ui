@@ -20,6 +20,7 @@ interface EditableCellProps {
 	handleSave: (record: any) => void;
 	options: DefaultOptionType[];
 	rules: any;
+	handleChange?: (values: any) => boolean;
 }
 export const EditableCell: React.FC<EditableCellProps> = ({
 	title,
