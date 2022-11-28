@@ -83,6 +83,7 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 						result.key = item.column;
 						result.width = 150;
 						result.sorter = true;
+						result.ellipsis = true;
 						return result;
 					});
 					setColumns([...columns, ...list]);
@@ -111,12 +112,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					let list = [];
-					list = res.data.map((item: MysqlColItem, index: number) => {
-						const result: any = item;
-						result.indexInTable = index + 1;
-						return result;
-					});
-					setTotal(list.length);
+					list = res.data.list.map(
+						(item: MysqlColItem, index: number) => {
+							const result: any = item;
+							result.indexInTable = index + 1;
+							return result;
+						}
+					);
+					setTotal(res.data.total);
 					setDataSource(list);
 				}
 			});
@@ -134,12 +137,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					let list = [];
-					list = res.data.map((item: PgsqlColItem, index: number) => {
-						const result: any = item;
-						result.indexInTable = index + 1;
-						return result;
-					});
-					setTotal(list.length);
+					list = res.data.list.map(
+						(item: PgsqlColItem, index: number) => {
+							const result: any = item;
+							result.indexInTable = index + 1;
+							return result;
+						}
+					);
+					setTotal(res.data.total);
 					setDataSource(list);
 				}
 			});
@@ -183,12 +188,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					let list = [];
-					list = res.data.map((item: MysqlColItem, index: number) => {
-						const result: any = item;
-						result.indexInTable = index + 1;
-						return result;
-					});
-					setTotal(list.length);
+					list = res.data.list.map(
+						(item: MysqlColItem, index: number) => {
+							const result: any = item;
+							result.indexInTable = index + 1;
+							return result;
+						}
+					);
+					setTotal(res.data.total);
 					setDataSource(list);
 				}
 			});
@@ -206,12 +213,14 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 			}).then((res) => {
 				if (res.success) {
 					let list = [];
-					list = res.data.map((item: PgsqlColItem, index: number) => {
-						const result: any = item;
-						result.indexInTable = index + 1;
-						return result;
-					});
-					setTotal(list.length);
+					list = res.data.list.map(
+						(item: PgsqlColItem, index: number) => {
+							const result: any = item;
+							result.indexInTable = index + 1;
+							return result;
+						}
+					);
+					setTotal(res.data.total);
 					setDataSource(list);
 				}
 			});

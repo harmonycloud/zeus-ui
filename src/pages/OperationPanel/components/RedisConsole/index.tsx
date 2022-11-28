@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisCodeConsole from '../RedisCodeConsole';
 import ExecutionTable from '../ExectionTable';
-import { MysqlSqlConsoleProps, ParamsProps } from '../../index.d';
+import { RedisSqlConsoleProps, ParamsProps } from '../../index.d';
 import { executeCMD } from '@/services/operatorPanel';
 import ExecuteResultTypeOne from './ExecuteResultTypeOne';
 import ExecuteResultTypeTwo from './ExecuteResultTwo';
@@ -15,7 +15,7 @@ import {
 } from '@ant-design/icons';
 
 export default function RedisSqlConsole(
-	props: MysqlSqlConsoleProps
+	props: RedisSqlConsoleProps
 ): JSX.Element {
 	const params: ParamsProps = useParams();
 	const { dbName } = props;
@@ -65,10 +65,12 @@ export default function RedisSqlConsole(
 	};
 	const add = (label: any, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
-		setItems([
-			...items,
-			{ label: label, children: children, key: newActiveKey }
-		]);
+		const itemTemp = {
+			label: label,
+			children: children,
+			key: newActiveKey
+		};
+		setItems((origin) => [...origin, itemTemp]);
 		setActiveKey(newActiveKey);
 	};
 	const remove = (targetKey: string) => {

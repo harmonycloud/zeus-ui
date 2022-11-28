@@ -72,6 +72,9 @@ export interface StoreState {
 	log: any;
 	menu: menuReduxProps;
 	param: paramReduxProps;
+	execute: {
+		refreshFlag: boolean;
+	};
 }
 
 export interface RoleItem {

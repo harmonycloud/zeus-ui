@@ -723,8 +723,12 @@ interface executeMysqlSqlParamsProps extends SendDataParamsProps {
 
 export interface MysqlSqlConsoleProps {
 	dbName: string;
+	setRefreshFlag: (flag: boolean) => void;
 }
 export interface PgsqlSqlConsoleProps {
+	dbName: string;
+}
+export interface RedisSqlConsoleProps {
 	dbName: string;
 }
 export interface MysqlCodeConsoleProps {
@@ -763,7 +767,7 @@ export interface ExecuteItem {
 	middlewareName: string;
 	namespace: string;
 	sqlStr: string;
-	status: string;
+	execStatus: string;
 	targetDatabase: string;
 }
 export interface getExecuteHistoryRes extends resProps {
@@ -779,7 +783,11 @@ export interface ExecutionTableProps {
 	middlewareName: string;
 	database: string;
 	changeSql: (values: string) => void;
-	refreshFlag: boolean;
+	refreshFlag?: boolean;
+	setRefreshFlag: (flag: boolean) => void;
+	execute: {
+		refreshFlag: boolean;
+	};
 }
 export interface executePgsqlSqlParamsProps extends SendDataParamsProps {
 	databaseName: string;

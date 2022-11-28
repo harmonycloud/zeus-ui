@@ -14,18 +14,21 @@ import { IconFont } from '@/components/IconFont';
 import { getExecuteHistory } from '@/services/operatorPanel';
 import { copyValue } from '@/utils/utils';
 import { ExecuteItem, ExecutionTableProps } from '../../index.d';
+import { connect } from 'react-redux';
+import { setRefreshFlag } from '@/redux/execute/execute';
+import { StoreState } from '@/types';
 const { RangePicker } = DatePicker;
 
-export default function ExecutionTable(
-	props: ExecutionTableProps
-): JSX.Element {
+function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 	const {
 		clusterId,
 		namespace,
 		middlewareName,
 		database,
 		changeSql,
-		refreshFlag
+		refreshFlag,
+		setRefreshFlag,
+		execute
 	} = props;
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();
@@ -35,16 +38,21 @@ export default function ExecutionTable(
 	const [startTime, setStartTime] = useState<string | null>(null);
 	const [endTime, setEndTime] = useState<string | null>(null);
 	const [ascExecDateOrder, setAscExecDateOrder] = useState<boolean | null>(
-		null
+		false
 	);
 	const [ascExecTimeOrder, setAscExecTimeOrder] = useState<boolean | null>(
 		null
 	);
 	const [status, setStauts] = useState<boolean | null>(null);
-	console.log(refreshFlag);
 	useEffect(() => {
-		getData(1, 10, '', '', '', false, false, false);
-	}, [refreshFlag]);
+		getData(1, 10, '', null, null, false, null, null);
+	}, []);
+	useEffect(() => {
+		if (execute.refreshFlag) {
+			getData(1, 10, '', null, null, false, null, null);
+			setRefreshFlag(false);
+		}
+	}, [execute]);
 	const columns = [
 		{
 			title: 'id',
@@ -110,17 +118,16 @@ export default function ExecutionTable(
 		},
 		{
 			title: '状态',
-			dataIndex: 'status',
-			key: 'status',
+			dataIndex: 'execStatus',
+			key: 'execStatus',
 			filters: [
-				{ value: 'success', text: '成功' },
-				{ value: 'failed', text: '失败' }
+				{ value: 'true', text: '成功' },
+				{ value: 'false', text: '失败' }
 			],
 			width: 100,
 			filterMultiple: false,
 			render: (text: any) => {
-				if (text === 'success')
-					return <Badge color="green" text="成功" />;
+				if (text === 'true') return <Badge color="green" text="成功" />;
 				return <Badge color="red" text="失败" />;
 			}
 		},
@@ -269,3 +276,9 @@ export default function ExecutionTable(
 		</main>
 	);
 }
+const mapStateToProps = (state: StoreState) => ({
+	execute: state.execute
+});
+export default connect(mapStateToProps, {
+	setRefreshFlag
+})(ExecutionTable);

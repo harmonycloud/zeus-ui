@@ -61,7 +61,7 @@ export default function OperationPanel(): JSX.Element {
 						currentUser={currentUser}
 						loginOut={() => {
 							if (currentUser) {
-								setOpen(false);
+								setOpen(true);
 							} else {
 								window.close();
 							}
