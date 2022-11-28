@@ -344,16 +344,18 @@ export default function KVList(props: any): JSX.Element {
 					) : (
 						<div title={data.key || '/'}>
 							{data.key || '/'}
-							<EditOutlined
-								style={{
-									marginLeft: 8,
-									cursor: 'pointer',
-									fontSize: 14,
-									color: '#226ee7',
-									verticalAlign: 'middle'
-								}}
-								onClick={() => setEditKey(true)}
-							/>
+							{params.mode === 'sentinel' && (
+								<EditOutlined
+									style={{
+										marginLeft: 8,
+										cursor: 'pointer',
+										fontSize: 14,
+										color: '#226ee7',
+										verticalAlign: 'middle'
+									}}
+									onClick={() => setEditKey(true)}
+								/>
+							)}
 						</div>
 					)}
 				</div>

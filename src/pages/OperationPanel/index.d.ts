@@ -7,6 +7,7 @@ export interface ParamsProps {
 	clusterId: string;
 	namespace: string;
 	version: string;
+	mode: string;
 }
 export interface RoleDetailParamsProps extends ParamsProps {
 	userName: string;
