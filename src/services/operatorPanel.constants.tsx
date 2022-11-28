@@ -120,8 +120,10 @@ export const getRedisExecuteRecords = `${api}/clusters/{clusterId}/namespaces/{n
 export const getRedisKeys = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys`;
 // * redis 查询指定key的value / 保存k-v / 删除key
 export const getRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}`;
-// * redis 修改key信息（二次处理）
-export const editRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{oldKey}`;
+// * redis 修改key名
+export const editRedisKey = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{oldKey}/rename`;
+// * redis 修改过期时间
+export const editRedisExpiration = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{oldKey}/expiration`;
 // * redis修改/删除value
 export const deleteRedisValue = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases/{database}/keys/{key}/value`;
 // *--------------------------------------------------

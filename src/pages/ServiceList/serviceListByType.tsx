@@ -731,7 +731,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<LinkButton
 							onClick={() => {
 								window.open(
-									`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${record.namespace}/${name}/${record.name}/${record.version}`,
+									`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${record.namespace}/${name}/${record.name}/${record.version}/${record.mode}`,
 									'_blank'
 								);
 							}}
@@ -822,9 +822,11 @@ const ServiceListByType = (props: serviceListProps) => {
 					<LinkButton
 						onClick={() => {
 							window.open(
-								`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${record.namespace}/${name}/${record.name}/${record.version}`,
+								`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${record.namespace}/${name}/${record.name}/${record.version}/${record.mode}`,
 								'_blank'
 							);
+							name === 'redis' &&
+								storage.setSession('redisMode', record.mode);
 						}}
 					>
 						运维面板(beta)
