@@ -50,7 +50,7 @@ export default function OperationNavbar(): JSX.Element {
 	const onClick: MenuProps['onClick'] = (e) => {
 		setCurrent(e.key);
 		history.push(
-			`/operationalPanel/${e.key}/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}/${params.version}`
+			`/operationalPanel/${e.key}/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}/${params.version}/${params.mode}`
 		);
 	};
 	return (

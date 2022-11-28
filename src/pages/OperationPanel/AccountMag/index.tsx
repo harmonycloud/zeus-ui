@@ -192,7 +192,7 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 					onClick={() => {
 						storage.setSession('operatorUser', record);
 						history.push(
-							`/operationalPanel/roleDetail/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}/${params.version}`
+							`/operationalPanel/roleDetail/${params.projectId}/${params.clusterId}/${params.namespace}/${params.type}/${params.name}/${params.version}/${params.mode}`
 						);
 					}}
 				>
