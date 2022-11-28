@@ -386,7 +386,12 @@ export const getRedisValue: (
 export const updateRedisKeys: (
 	params: updateRedisKeyParamsProps
 ) => Promise<resProps> = (params: updateRedisKeyParamsProps) => {
-	return Axios.json(URL.editRedisValue, params, {}, 'PUT');
+	return Axios.json(URL.editRedisKey, params, {}, 'PUT');
+};
+export const updateRedisExpiration: (
+	params: updateRedisKeyParamsProps
+) => Promise<resProps> = (params: updateRedisKeyParamsProps) => {
+	return Axios.json(URL.editRedisExpiration, params, {}, 'PUT');
 };
 export const updateRedisValue: (
 	params: updateRedisKeyParamsProps

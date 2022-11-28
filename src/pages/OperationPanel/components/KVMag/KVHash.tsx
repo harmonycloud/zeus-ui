@@ -20,7 +20,8 @@ import {
 	saveRedisKeys,
 	updateRedisValue,
 	deleteRedisValue,
-	updateRedisKeys
+	updateRedisKeys,
+	updateRedisExpiration
 } from '@/services/operatorPanel';
 import { ParamsProps, RedisKeyItem as RedisKeyItemParams } from '../../index.d';
 import { useParams } from 'react-router';
@@ -96,8 +97,12 @@ export default function KVHash(props: any): JSX.Element {
 		);
 	};
 
-	const editKeyHandle = (sendData: any) => {
-		updateRedisKeys({
+	const editKeyHandle = (sendData: any, type: string) => {
+		const api = {
+			key: updateRedisKeys,
+			expiration: updateRedisExpiration
+		};
+		api[type]({
 			database,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
@@ -107,7 +112,7 @@ export default function KVHash(props: any): JSX.Element {
 			keyType: data.keyType,
 			expiration: data.expiration,
 			...sendData
-		}).then((res) => {
+		}).then((res: any) => {
 			if (res.success) {
 				setEditKey(false);
 				setEditTime(false);
@@ -223,12 +228,29 @@ export default function KVHash(props: any): JSX.Element {
 					</div>
 				),
 				okText: '保存',
-				onOk: () =>
-					editKeyHandle(
-						JSON.stringify(sendData) === '{}'
-							? { key: data.key, expiration: data.expiration }
-							: sendData
-					),
+				onOk: () => {
+					if (editKey && editTime) {
+						editKeyHandle(
+							JSON.stringify(sendData) === '{}'
+								? { key: data.key, expiration: data.expiration }
+								: sendData,
+							'key'
+						);
+						editKeyHandle(
+							JSON.stringify(sendData) === '{}'
+								? { key: data.key, expiration: data.expiration }
+								: sendData,
+							'expiration'
+						);
+					} else {
+						editKeyHandle(
+							JSON.stringify(sendData) === '{}'
+								? { key: data.key, expiration: data.expiration }
+								: sendData,
+							editKey ? 'key' : 'expiration'
+						);
+					}
+				},
 				cancelText: '不保存'
 			});
 		}
@@ -275,7 +297,7 @@ export default function KVHash(props: any): JSX.Element {
 							<Button
 								type="link"
 								onClick={() =>
-									editKeyHandle(form.getFieldsValue())
+									editKeyHandle(form.getFieldsValue(), 'key')
 								}
 							>
 								保存
@@ -319,7 +341,10 @@ export default function KVHash(props: any): JSX.Element {
 							<Button
 								type="link"
 								onClick={() =>
-									editKeyHandle(form.getFieldsValue())
+									editKeyHandle(
+										form.getFieldsValue(),
+										'expiration'
+									)
 								}
 							>
 								保存

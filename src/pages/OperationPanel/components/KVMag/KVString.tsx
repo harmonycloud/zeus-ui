@@ -12,7 +12,8 @@ import {
 	saveRedisKeys,
 	updateRedisValue,
 	deleteRedisValue,
-	updateRedisKeys
+	updateRedisKeys,
+	updateRedisExpiration
 } from '@/services/operatorPanel';
 import AddValue from './addValue';
 
@@ -32,21 +33,26 @@ export default function KVString(props: any): JSX.Element {
 	const [editKey, setEditKey] = useState<boolean>(false);
 	const [editTime, setEditTime] = useState<boolean>(false);
 
-	const editKeyHandle = (sendData: any) => {
-		updateRedisKeys({
+	const editKeyHandle = (sendData: any, type: string) => {
+		const api = {
+			key: updateRedisKeys,
+			expiration: updateRedisExpiration
+		};
+		api[type]({
 			database,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
-			key: data.key,
+			key: sendData.key,
 			oldKey: data.key,
 			keyType: data.keyType,
 			expiration: data.expiration,
 			...sendData
-		}).then((res) => {
+		}).then((res: any) => {
 			if (res.success) {
 				setEditKey(false);
 				setEditTime(false);
+				onRefresh();
 				getKeys(sendData.key ? sendData.key : data.key);
 				notification.success({
 					message: '成功',
@@ -104,12 +110,29 @@ export default function KVString(props: any): JSX.Element {
 					</div>
 				),
 				okText: '保存',
-				onOk: () =>
-					editKeyHandle(
-						JSON.stringify(sendData) === '{}'
-							? { key: data.key, expiration: data.expiration }
-							: sendData
-					),
+				onOk: () => {
+					if (editKey && editTime) {
+						editKeyHandle(
+							JSON.stringify(sendData) === '{}'
+								? { key: data.key, expiration: data.expiration }
+								: sendData,
+							'key'
+						);
+						editKeyHandle(
+							JSON.stringify(sendData) === '{}'
+								? { key: data.key, expiration: data.expiration }
+								: sendData,
+							'expiration'
+						);
+					} else {
+						editKeyHandle(
+							JSON.stringify(sendData) === '{}'
+								? { key: data.key, expiration: data.expiration }
+								: sendData,
+							editKey ? 'key' : 'expiration'
+						);
+					}
+				},
 				cancelText: '不保存'
 			});
 		}
@@ -151,7 +174,7 @@ export default function KVString(props: any): JSX.Element {
 							<Button
 								type="link"
 								onClick={() =>
-									editKeyHandle(form.getFieldsValue())
+									editKeyHandle(form.getFieldsValue(), 'key')
 								}
 							>
 								保存
@@ -195,7 +218,10 @@ export default function KVString(props: any): JSX.Element {
 							<Button
 								type="link"
 								onClick={() =>
-									editKeyHandle(form.getFieldsValue())
+									editKeyHandle(
+										form.getFieldsValue(),
+										'expiration'
+									)
 								}
 							>
 								保存
