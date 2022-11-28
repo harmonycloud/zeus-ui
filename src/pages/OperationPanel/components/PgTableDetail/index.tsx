@@ -3,13 +3,44 @@ import { notification, Table, Tabs } from 'antd';
 import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import { ParamsProps, PgsqlTableItem, PgTableDetailProps } from '../../index.d';
-import { getPgTables } from '@/services/operatorPanel';
+import { getPgsqlTableRows, getPgTables } from '@/services/operatorPanel';
 import { useEffect } from 'react';
 import PgColTable from './colTable';
 import OpenTable from '../OpenTable';
 
 const LinkButton = Actions.LinkButton;
-
+function RowsRender({
+	databaseName,
+	tableName,
+	schemaName,
+	clusterId,
+	namespace,
+	middlewareName
+}: {
+	databaseName: string;
+	tableName: string;
+	schemaName: string;
+	clusterId: string;
+	namespace: string;
+	middlewareName: string;
+}) {
+	const [count, setCount] = useState<number>();
+	useEffect(() => {
+		getPgsqlTableRows({
+			databaseName,
+			tableName,
+			schemaName,
+			clusterId,
+			namespace,
+			middlewareName
+		}).then((res) => {
+			if (res.success) {
+				setCount(res.data);
+			}
+		});
+	}, []);
+	return <span>{count}</span>;
+}
 export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 	const { dbName, schemaName, add } = props;
 	const params: ParamsProps = useParams();
@@ -48,6 +79,16 @@ export default function PgTableDetail(props: PgTableDetailProps): JSX.Element {
 			title: '行数',
 			dataIndex: 'rows',
 			key: 'rows',
+			render: (text: any, record: any) => (
+				<RowsRender
+					databaseName={dbName}
+					tableName={record.tableName}
+					schemaName={schemaName}
+					clusterId={params.clusterId}
+					namespace={params.namespace}
+					middlewareName={params.name}
+				/>
+			),
 			width: 80
 		},
 		{

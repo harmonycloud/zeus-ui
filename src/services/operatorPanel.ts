@@ -64,7 +64,9 @@ import {
 	updatePgsqlInfoParamsProps,
 	updateRedisKeyParamsProps,
 	executePgsqlSqlParamsProps,
-	SqlAuditParamsProps
+	SqlAuditParamsProps,
+	getPgsqlTableRowsParamsProps,
+	getPgsqlTableRowsRes
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
 
@@ -377,6 +379,11 @@ export const executeMysqlSql = (params: executeMysqlSqlParamsProps) => {
 };
 export const executePgsqlSql = (params: executePgsqlSqlParamsProps) => {
 	return Axios.post(URL.executePgsqlSql, params);
+};
+export const getPgsqlTableRows: (
+	params: getPgsqlTableRowsParamsProps
+) => Promise<getPgsqlTableRowsRes> = (params: getPgsqlTableRowsParamsProps) => {
+	return Axios.get(URL.getPgsqlTableRows, params);
 };
 // * -------------------------------------------------
 // * redis
