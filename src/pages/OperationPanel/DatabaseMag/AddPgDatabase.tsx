@@ -5,6 +5,7 @@ import {
 	updatePgDatabase
 } from '@/services/operatorPanel';
 import { formItemLayout618 } from '@/utils/const';
+import pattern from '@/utils/pattern';
 import { Modal, Form, Input, Select, notification } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { AddPgDatabaseProps, PgsqlUserItem } from '../index.d';
@@ -109,13 +110,30 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 			width={500}
 		>
 			<Form form={form} labelAlign="left" {...formItemLayout618}>
-				<Form.Item required label="数据库名" name="databaseName">
+				<Form.Item
+					label="数据库名"
+					name="databaseName"
+					rules={[
+						{
+							required: true,
+							message: '请输入数据库名称'
+						},
+						{
+							pattern: new RegExp(pattern.dbName),
+							message: '请输入1-64个字符'
+						}
+					]}
+				>
 					<Input
 						disabled={editData ? true : false}
 						placeholder="请输入数据库名称"
 					/>
 				</Form.Item>
-				<Form.Item required label="字符集" name="encoding">
+				<Form.Item
+					label="字符集"
+					name="encoding"
+					rules={[{ required: true, message: '请选择字符集' }]}
+				>
 					<Select
 						disabled={editData ? true : false}
 						placeholder="请选择字符集"
@@ -139,7 +157,12 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 						placeholder="请选择表空间"
 					/>
 				</Form.Item>
-				<Form.Item required label="所有者" name="owner">
+				<Form.Item
+					required
+					label="所有者"
+					name="owner"
+					rules={[{ required: true, message: '请选择所有者' }]}
+				>
 					<Select placeholder="请选择所有者">
 						{data.map((item: PgsqlUserItem) => (
 							<Option key={item.username} value={item.username}>
