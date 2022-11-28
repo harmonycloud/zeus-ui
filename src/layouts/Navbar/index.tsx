@@ -14,6 +14,7 @@ import {
 	setGlobalNamespaceList
 } from '@/redux/globalVar/var';
 import { disabledRoute, hideRoute, projectHideRoute } from '@/utils/const';
+import Storage from '@/utils/storage';
 import { StoreState } from '@/types/index';
 import { NavbarProps } from './navbar';
 import styles from './navbar.module.scss';
@@ -330,17 +331,19 @@ function Navbar(props: NavbarProps): JSX.Element {
 						</>
 					)}
 				</div>
-				<Tooltip title="授权管理">
-					<div
-						className="license-icon"
-						onClick={() => history.push('/authorManage')}
-					>
-						<IconFont
-							type="icon-shouquan"
-							style={{ fontSize: 20, color: 'rgb(29,29,29)' }}
-						/>
-					</div>
-				</Tooltip>
+				{Storage.getLocal('userName') === 'admin' && (
+					<Tooltip title="授权管理">
+						<div
+							className="license-icon"
+							onClick={() => history.push('/authorManage')}
+						>
+							<IconFont
+								type="icon-shouquan"
+								style={{ fontSize: 20, color: 'rgb(29,29,29)' }}
+							/>
+						</div>
+					</Tooltip>
+				)}
 				<User
 					className={styles['module']}
 					nickName={nickName}
