@@ -59,6 +59,18 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 			key: 'name',
 			width: 200,
 			editable: true,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-63个字符'
+				},
+				{
+					required: true,
+					message: '请输入名称'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -66,6 +78,12 @@ export default function PgUniqueness(props: PgUniquenessProps): JSX.Element {
 			dataIndex: 'columnName',
 			key: 'columnName',
 			editable: true,
+			rules: [
+				{
+					required: true,
+					message: '请选择字段'
+				}
+			],
 			componentType: 'mulSelect',
 			selectOptions: columnNames
 		},

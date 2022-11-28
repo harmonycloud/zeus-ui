@@ -136,7 +136,8 @@ export default function EditTable(props: EditTableProps): JSX.Element {
 					col.componentType === 'mulSelect'
 						? col.selectOptions
 						: [],
-				handleSave
+				handleSave,
+				rules: col.rules
 			}),
 			width: col.width
 		};

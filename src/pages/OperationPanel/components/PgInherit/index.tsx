@@ -109,7 +109,11 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 				{...formItemLayout618}
 				onValuesChange={onValuesChange}
 			>
-				<Form.Item label="模式" name="schemaName">
+				<Form.Item
+					label="模式"
+					name="schemaName"
+					rules={[{ required: true, message: '请选择模式' }]}
+				>
 					<Select
 						value={selectSchema}
 						onChange={(value: string) => setSelectSchema(value)}
@@ -124,7 +128,11 @@ export default function PgInherit(props: PgInheritProps): JSX.Element {
 						))}
 					</Select>
 				</Form.Item>
-				<Form.Item label="表名（多选）" name="tablesName">
+				<Form.Item
+					label="表名（多选）"
+					name="tablesName"
+					rules={[{ required: true, message: '请选择表名' }]}
+				>
 					<Select mode="multiple">
 						{tables?.map((item: PgsqlTableItem) => (
 							<Option value={item.tableName} key={item.tableName}>

@@ -100,6 +100,18 @@ export default function PgForeignKeyInfo(
 			key: 'name',
 			editable: true,
 			width: 150,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-63个字符'
+				},
+				{
+					required: true,
+					message: '请输入外键名'
+				}
+			],
 			componentType: 'string'
 		},
 		{
@@ -108,6 +120,12 @@ export default function PgForeignKeyInfo(
 			key: 'targetTable',
 			editable: true,
 			width: 200,
+			rules: [
+				{
+					required: true,
+					message: '请选择参考表'
+				}
+			],
 			componentType: 'select',
 			selectOptions: tables
 		},

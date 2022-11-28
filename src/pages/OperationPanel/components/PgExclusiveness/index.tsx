@@ -58,6 +58,18 @@ export default function PgExclusiveness(
 			dataIndex: 'name',
 			key: 'name',
 			width: 150,
+			rules: [
+				{
+					type: 'string',
+					min: 1,
+					max: 64,
+					message: '请输入1-63个字符'
+				},
+				{
+					required: true,
+					message: '请输入名称'
+				}
+			],
 			editable: true,
 			componentType: 'string'
 		},

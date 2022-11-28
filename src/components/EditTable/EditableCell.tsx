@@ -19,6 +19,7 @@ interface EditableCellProps {
 	disabled?: boolean;
 	handleSave: (record: any) => void;
 	options: DefaultOptionType[];
+	rules: any;
 }
 export const EditableCell: React.FC<EditableCellProps> = ({
 	title,
@@ -30,6 +31,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 	checked,
 	handleSave,
 	options,
+	rules,
 	...restProps
 }) => {
 	const inputRef = useRef<InputRef>(null);
@@ -70,7 +72,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 		switch (colType) {
 			case 'string':
 				return (
-					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+					<Form.Item
+						style={{ margin: 0 }}
+						name={dataIndex}
+						rules={rules}
+					>
 						<Input
 							ref={inputRef}
 							onPressEnter={save}
@@ -80,7 +86,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 				);
 			case 'checkbox':
 				return (
-					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+					<Form.Item
+						style={{ margin: 0 }}
+						name={dataIndex}
+						rules={rules}
+					>
 						<Checkbox
 							onChange={(e: CheckboxChangeEvent) =>
 								handleCheckboxChange(e, dataIndex)
@@ -91,7 +101,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 				);
 			case 'select':
 				return (
-					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+					<Form.Item
+						style={{ margin: 0 }}
+						name={dataIndex}
+						rules={rules}
+					>
 						<Select
 							onChange={(value: any) =>
 								handleSelectChange(value, dataIndex)
@@ -102,7 +116,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 				);
 			case 'mulSelect':
 				return (
-					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+					<Form.Item
+						style={{ margin: 0 }}
+						name={dataIndex}
+						rules={rules}
+					>
 						<Select
 							onChange={(value: any) =>
 								handleSelectChange(value, dataIndex)
@@ -114,7 +132,11 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 				);
 			case 'number':
 				return (
-					<Form.Item style={{ margin: 0 }} name={dataIndex}>
+					<Form.Item
+						style={{ margin: 0 }}
+						name={dataIndex}
+						rules={rules}
+					>
 						<InputNumber
 							onChange={(value: any) =>
 								handleInputNumber(value, dataIndex)

@@ -177,7 +177,18 @@ export default function PgsqlTableInfo(
 				<Form.Item label="填充率" name="fillFactor" initialValue={100}>
 					<InputNumber style={{ width: '100%' }} />
 				</Form.Item>
-				<Form.Item label="备注" name="description">
+				<Form.Item
+					label="备注"
+					name="description"
+					rules={[
+						{
+							type: 'string',
+							max: 128,
+							message:
+								'请输入中英文字符数字及特殊字符组成的1-128个字符'
+						}
+					]}
+				>
 					<Input.TextArea placeholder="请输入" rows={3} />
 				</Form.Item>
 			</Form>
