@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageHeader, Modal } from 'antd';
 import { useParams } from 'react-router';
 import { IconFont } from '@/components/IconFont';
 import redisImg from '@/assets/images/redis-icon.png';
 import { OperatorHeaderProps, ParamsProps } from '../index.d';
+import { authLogout } from '@/services/operatorPanel';
 
 const { confirm } = Modal;
 export default function OperatorHeader(
@@ -11,6 +12,12 @@ export default function OperatorHeader(
 ): JSX.Element {
 	const params: ParamsProps = useParams();
 	const { currentUser, loginOut } = props;
+	useEffect(() => {
+		window.onbeforeunload = (e) => {
+			console.log(e);
+			return 1;
+		};
+	}, []);
 	return (
 		<PageHeader
 			title={params.name}
@@ -38,7 +45,17 @@ export default function OperatorHeader(
 									title: '操作确认',
 									content: '是否确认退出当前运维面板？',
 									onOk: () => {
-										window.close();
+										authLogout({
+											clusterId: params.clusterId,
+											middlewareName: params.name,
+											namespace: params.namespace,
+											type: params.type,
+											name: params.name
+										}).then((res) => {
+											if (res.success) {
+												window.close();
+											}
+										});
 									}
 								});
 							}}

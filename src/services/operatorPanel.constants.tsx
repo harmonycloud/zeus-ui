@@ -1,4 +1,6 @@
 import { api } from '@/api.json';
+// * 登出控制台
+export const AuthLogout = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/logout`;
 // * 登录控制台
 export const AuthLogin = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/auth`;
 // * 查询数据库列表
