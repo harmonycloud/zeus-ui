@@ -208,7 +208,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				middlewareName: params.name
 			});
-			exportFile(_url, {}, i, '.txt');
+			exportFile(_url, {}, i, '.sql');
 		} else {
 			_url = getPgsqlSQL({
 				databaseName: selectDatabase,
@@ -218,7 +218,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				name: params.name
 			});
-			exportFile(_url, {}, i, '.txt');
+			exportFile(_url, {}, i, '.sql');
 		}
 	};
 	// * 导出数据表结构
