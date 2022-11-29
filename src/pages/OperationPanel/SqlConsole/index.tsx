@@ -1738,7 +1738,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 												? 'active'
 												: ''
 										}`}
-										onClick={() =>
+										onDoubleClick={() =>
 											redisDbClick('' + item.db)
 										}
 									>
@@ -1767,6 +1767,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						}
 					}}
 				/>
+				{items.length === 0 && params.type === 'redis' && (
+					<InitPage title="请双击DB打开DB管理页面" />
+				)}
 				{items.length === 0 && params.type === 'mysql' && (
 					<InitPage title="请双击数据库打开控制台页面" />
 				)}
