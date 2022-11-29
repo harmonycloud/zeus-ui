@@ -87,6 +87,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		[]
 	);
 	const [affinityFlag, setAffinityFlag] = useState<boolean>(false);
+	// * 主机反亲和
+	const [antiFlag, setAntiFlag] = useState<boolean>(false);
+	const [antiLabels, setAntiLabels] = useState<AffinityLabelsItem[]>([]);
 	// 主机容忍
 	const [tolerations, setTolerations] = useState<TolerationsProps>({
 		flag: false,
@@ -264,6 +267,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				});
 				sendData.dynamicValues = dynamicValues;
 			}
+			// * 主机亲和
 			if (affinityFlag) {
 				if (!affinityLabels.length) {
 					notification.error({
@@ -272,13 +276,58 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					});
 					return;
 				} else {
-					sendData.nodeAffinity = affinityLabels.map((item) => {
+					const nodeAffinity = affinityLabels.map((item) => {
 						return {
 							label: item.label,
-							required: item.checked,
+							required: item.checked || item.required || false,
+							anti: item.anti,
 							namespace: globalNamespace.name
 						};
 					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					if (antiFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAffinity;
+					}
+				}
+			}
+			if (antiFlag) {
+				if (!antiLabels.length) {
+					notification.error({
+						message: '错误',
+						description: '请选择主机反亲和。'
+					});
+					return;
+				} else {
+					const nodeAffinity = affinityLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					const nodeAnti = antiLabels.map((item) => {
+						return {
+							label: item.label,
+							required: item.checked || item.required || false,
+							anti: item.anti,
+							namespace: globalNamespace.name
+						};
+					});
+					if (affinityFlag) {
+						sendData.nodeAffinity = nodeAffinity.concat(nodeAnti);
+					} else {
+						sendData.nodeAffinity = nodeAnti;
+					}
 				}
 			}
 			if (tolerations.flag) {
@@ -843,6 +892,15 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 									onChange={setAffinityLabels}
 									cluster={globalCluster}
 									disabled={!!middlewareName}
+								/>
+								<Affinity
+									flag={antiFlag}
+									flagChange={setAntiFlag}
+									values={antiLabels}
+									onChange={setAntiLabels}
+									cluster={globalCluster}
+									disabled={!!middlewareName}
+									isAnti
 								/>
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">

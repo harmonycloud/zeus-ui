@@ -45,7 +45,13 @@ function Affinity(props: any): JSX.Element {
 					<span style={{ marginRight: 8 }}>
 						{isAnti ? '主机反亲和' : '主机亲和'}
 					</span>
-					<Tooltip title="勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败">
+					<Tooltip
+						title={
+							isAnti
+								? '勾选强制反亲和时，服务不会再部署在具备相应标签的主机上'
+								: '勾选强制亲和时，服务只会部署在具备相应标签的主机上，若主机资源不足，可能会导致启动失败'
+						}
+					>
 						<QuestionCircleOutlined />
 					</Tooltip>
 				</label>
