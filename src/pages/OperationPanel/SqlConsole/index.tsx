@@ -1419,6 +1419,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					} else {
 						return { ...item };
 					}
+				} else {
+					return { ...item };
 				}
 
 				return {
