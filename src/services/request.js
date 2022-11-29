@@ -1,3 +1,4 @@
+import React from 'react';
 import axios from 'axios';
 import { notification } from 'antd';
 import NProgress from 'nprogress';
@@ -204,13 +205,13 @@ axios.interceptors.response.use(
 			err.message = '连接服务器失败!';
 		}
 		notification.error({
-			message: '错误',
-			description:
-				`${err?.response?.data?.errorMsg}${
-					err.response.data.errorDetail
-						? ':' + err.response.data.errorDetail
-						: ''
-				}` || err.message
+			message: '失败',
+			description: (
+				<>
+					<p>{err?.response?.data?.errorMsg || err.message}</p>
+					<p>{err?.response?.data?.errorDetail}</p>
+				</>
+			)
 		});
 		return Promise.reject(err.response);
 	}

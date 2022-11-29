@@ -34,9 +34,12 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: `${res.errorMsg}${
-						res.errorDetail ? ':' + res.errorDetail : ''
-					}`
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
 				});
 			}
 		});
@@ -92,7 +95,12 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 									} else {
 										notification.error({
 											message: '失败',
-											description: res.errorMsg
+											description: (
+												<>
+													<p>{res.errorMsg}</p>
+													<p>{res.errorDetail}</p>
+												</>
+											)
 										});
 									}
 								});

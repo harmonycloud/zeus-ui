@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Tabs } from 'antd';
+import { notification, Table, Tabs } from 'antd';
 import { useParams } from 'react-router';
 import Actions from '@/components/Actions';
 import { MysqlTableItem, ParamsProps, TableDetailProps } from '../../index.d';
@@ -25,6 +25,16 @@ export default function TableDetail(props: TableDetailProps): JSX.Element {
 		getDbTables(sendData).then((res) => {
 			if (res.success) {
 				setDataSource(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
+				});
 			}
 		});
 	}, []);

@@ -105,7 +105,12 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 					} else {
 						notification.error({
 							message: '失败',
-							description: res.errorMsg
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
 						});
 					}
 				});
