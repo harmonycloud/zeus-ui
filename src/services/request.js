@@ -1,3 +1,4 @@
+import React from 'react';
 import axios from 'axios';
 import { notification } from 'antd';
 import NProgress from 'nprogress';
@@ -207,8 +208,8 @@ axios.interceptors.response.use(
 			message: '失败',
 			description: (
 				<>
-					<p>{res.errorMsg || err.message}</p>
-					<p>{res.errorDetail}</p>
+					<p>{err?.response?.data?.errorMsg || err.message}</p>
+					<p>{err?.response?.data?.errorDetail}</p>
 				</>
 			)
 		});
