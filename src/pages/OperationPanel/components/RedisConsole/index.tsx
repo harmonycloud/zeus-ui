@@ -13,12 +13,12 @@ import {
 	CloseCircleFilled,
 	ClockCircleFilled
 } from '@ant-design/icons';
+import { connect } from 'react-redux';
+import { setRefreshFlag } from '@/redux/execute/execute';
 
-export default function RedisSqlConsole(
-	props: RedisSqlConsoleProps
-): JSX.Element {
+function RedisSqlConsole(props: RedisSqlConsoleProps): JSX.Element {
 	const params: ParamsProps = useParams();
-	const { dbName } = props;
+	const { dbName, setRefreshFlag } = props;
 	const [paneProps] = useState<SplitPaneProps>({
 		split: 'horizontal',
 		size: '50%',
@@ -103,11 +103,11 @@ export default function RedisSqlConsole(
 		// }
 		// let list = sqlT.split(';');
 		// console.log(list);
-		// TODO 多条sql语句循环执行，筛选无效语句
 		// list = list
 		// 	.filter((item: string) => item !== '')
 		// 	.map((item) => item + ';');
 		// console.log(list);
+		setRefreshFlag(true);
 		executeCMD({
 			database: dbName,
 			cmd: sql,
@@ -168,3 +168,7 @@ export default function RedisSqlConsole(
 		</SplitPane>
 	);
 }
+
+export default connect(() => ({}), {
+	setRefreshFlag
+})(RedisSqlConsole);

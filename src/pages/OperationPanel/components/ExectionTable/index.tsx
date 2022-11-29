@@ -163,8 +163,8 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 					break;
 			}
 		}
-		if (filters.status) {
-			statusTemp = JSON.parse(filters.status[0]);
+		if (filters.execStatus) {
+			statusTemp = JSON.parse(filters.execStatus[0]);
 		}
 		setCurrent(pagination.current);
 		setPageSize(pagination.pageSize);
@@ -230,7 +230,7 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 			middlewareName,
 			ascExecDateOrder: ascExecDateOrder,
 			ascExecTimeOrder: ascExecTimeOrder,
-			status: status
+			execStatus: status
 		}).then((res) => {
 			if (res.success) {
 				setDataSource(res.data.list);
