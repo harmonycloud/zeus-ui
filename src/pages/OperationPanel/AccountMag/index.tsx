@@ -63,7 +63,12 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 						} else {
 							notification.error({
 								message: '失败',
-								description: res.errorMsg
+								description: (
+									<>
+										<p>{res.errorMsg}</p>
+										<p>{res.errorDetail}</p>
+									</>
+								)
 							});
 						}
 					})
@@ -93,7 +98,12 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 						} else {
 							notification.error({
 								message: '失败',
-								description: res.errorMsg
+								description: (
+									<>
+										<p>{res.errorMsg}</p>
+										<p>{res.errorDetail}</p>
+									</>
+								)
 							});
 						}
 					});
@@ -112,7 +122,12 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 						} else {
 							notification.error({
 								message: '失败',
-								description: res.errorMsg
+								description: (
+									<>
+										<p>{res.errorMsg}</p>
+										<p>{res.errorDetail}</p>
+									</>
+								)
 							});
 						}
 					});
@@ -141,9 +156,12 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 					} else {
 						notification.error({
 							message: '失败',
-							description: `${res.errorMsg}${
-								res.errorDetail ? ':' + res.errorDetail : ''
-							}`
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
 						});
 					}
 				})
@@ -167,7 +185,12 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 					} else {
 						notification.error({
 							message: '失败',
-							description: res.errorMsg
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
 						});
 					}
 				})
@@ -255,9 +278,12 @@ export default function AccountMag(props: AccountMagProps): JSX.Element {
 			} else {
 				notification.error({
 					message: '失败',
-					description: `${res.errorMsg}${
-						res.errorDetail ? ':' + res.errorDetail : ''
-					}`
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
 				});
 			}
 		});

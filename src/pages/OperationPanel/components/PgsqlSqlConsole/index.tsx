@@ -169,7 +169,12 @@ function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.errorMsg
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
 					});
 				}
 			});

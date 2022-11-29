@@ -1,4 +1,4 @@
-import { Table } from 'antd';
+import { notification, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { MysqlColItem, MysqlTableItem } from '../../index.d';
 import { getCols } from '@/services/operatorPanel';
@@ -24,6 +24,16 @@ export default function ColTable(props: ColTableProps): JSX.Element {
 		getCols(sendData).then((res) => {
 			if (res.success) {
 				setData(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
+				});
 			}
 		});
 	}, []);

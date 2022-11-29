@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { PaginationProps, Table } from 'antd';
+import { notification, PaginationProps, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import {
 	getCols,
@@ -64,6 +64,16 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 						return result;
 					});
 					setOrderDtoList(orderTemps);
+				} else {
+					notification.error({
+						message: '失败',
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
+					});
 				}
 			});
 		} else {
@@ -94,6 +104,16 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 						return result;
 					});
 					setOrderDtoList(orderTemps);
+				} else {
+					notification.error({
+						message: '失败',
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
+					});
 				}
 			});
 		}
@@ -121,6 +141,16 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 					);
 					setTotal(res.data.total);
 					setDataSource(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
+					});
 				}
 			});
 		} else {
@@ -146,6 +176,16 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 					);
 					setTotal(res.data.total);
 					setDataSource(list);
+				} else {
+					notification.error({
+						message: '失败',
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
+					});
 				}
 			});
 		}

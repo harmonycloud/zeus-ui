@@ -7,9 +7,7 @@ import {
 } from '../index.d';
 import { formItemLayout618 } from '@/utils/const';
 import { createUsers } from '@/services/operatorPanel';
-// TODO 新增和编辑表单复用
 // TODO 账号名和密码的正则校验确认
-// TODO 新增成功后的列表刷新
 export default function AddAccount(props: AddAccountProps): JSX.Element {
 	const {
 		open,
@@ -52,7 +50,12 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 					} else {
 						notification.error({
 							message: '失败',
-							description: res.errorMsg
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
 						});
 					}
 				})

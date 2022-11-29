@@ -174,9 +174,12 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: `${res.errorMsg}${
-							res.errorDetail ? ':' + res.errorDetail : ''
-						}`
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
 					});
 				}
 			});

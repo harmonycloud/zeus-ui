@@ -204,13 +204,13 @@ axios.interceptors.response.use(
 			err.message = '连接服务器失败!';
 		}
 		notification.error({
-			message: '错误',
-			description:
-				`${err?.response?.data?.errorMsg}${
-					err.response.data.errorDetail
-						? ':' + err.response.data.errorDetail
-						: ''
-				}` || err.message
+			message: '失败',
+			description: (
+				<>
+					<p>{res.errorMsg || err.message}</p>
+					<p>{res.errorDetail}</p>
+				</>
+			)
 		});
 		return Promise.reject(err.response);
 	}
