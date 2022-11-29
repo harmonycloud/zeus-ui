@@ -737,7 +737,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	}, [selectDatabase, selectSchema]);
 	const mysqlOnLoadData = ({ key, value, type, children }: any) => {
 		return new Promise<void>((resolve) => {
-			console.log(key, type, value, children);
 			if (children) {
 				resolve();
 				return;
@@ -974,7 +973,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								return result;
 							}
 						);
-						setSelectSchema(list[0].value);
 						setPgTreeData((origin) =>
 							updateTreeData(origin, key, list)
 						);
@@ -1077,8 +1075,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		setActiveKey(newActiveKey);
 	};
 	const removeActiveKey = () => {
-		console.log(activeKey);
-		console.log(items);
 		remove(activeKey);
 	};
 	const onEdit = (targetKey: any, action: 'add' | 'remove') => {
@@ -1091,9 +1087,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const pgsqlOnSelect = (selectedKeys: Key[], e: any) => {
 		if (e.node.type === 'database') {
 			setSelectDatabase(e.node.value);
-			setPgsqlExpandedKeys(selectedKeys as string[]);
 		} else {
 			setSelectSchema(e.node.value);
+		}
+	};
+	const mysqlOnSelect = (selectedKeys: Key[], e: any) => {
+		if (e.node.type === 'database') {
+			setSelectDatabase(e.node.value);
 		}
 	};
 	const redisDbClick = (dbName: string) => {
@@ -1112,11 +1112,15 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const mysqlOnExpand = (expandedKeys: Key[], info: any) => {
+		console.log(info);
 		let newMysqlLoadedKeys = mysqlLoadedKeys;
 		if (mysqlExpandedKeys.length > expandedKeys.length) {
 			newMysqlLoadedKeys = mysqlLoadedKeys.filter((i) =>
 				expandedKeys.includes(i)
 			);
+		}
+		if (info.node.type === 'database') {
+			setSelectDatabase(info.node.value);
 		}
 		setMysqlLoadedKeys(newMysqlLoadedKeys);
 		setMysqlExpandedKeys(expandedKeys);
@@ -1355,14 +1359,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						)}
 					</Dropdown>
 				);
+				result.isLeaf = false;
 				result.key = item.key;
 				result.value = item.value;
 				result.type = item.type;
 				result.icon = item.icon;
 
 				if (item.type === 'table') {
-					console.log(database);
-
 					const result1: any = {};
 					result1.title = (
 						<Dropdown
@@ -1401,13 +1404,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 					result1.value = item.value;
 					result1.type = item.type;
 					result1.icon = item.icon;
-
+					result1.isLeaf = item.isLeaf;
 					return {
 						...result1,
 						children: loop(item.children, '')
 					};
 				}
-
 				if (item.children) {
 					if (item.type === 'database') {
 						return {
@@ -1478,7 +1480,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				result.value = item.value;
 				result.type = item.type;
 				result.icon = item.icon;
-
+				result.isLeaf = false;
 				if (item.type === 'schema') {
 					const result1: any = {};
 					result1.title = (
@@ -1593,7 +1595,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				result.value = item.value;
 				result.type = item.type;
 				result.icon = item.icon;
-
+				result.isLeaf = false;
 				if (item.children) {
 					if (item.type === 'table') {
 						return {
@@ -1681,7 +1683,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									onLoad={(loadedKeys, info) =>
 										onLoad(loadedKeys, info, 'mysql')
 									}
-									// onSelect={mysqlOnSelect}
+									onSelect={mysqlOnSelect}
 									// height={
 									// 	document.getElementsByClassName(
 									// 		'sql-console-tree-content'
