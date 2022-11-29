@@ -7,7 +7,8 @@ import {
 	updatePgsqlCol
 } from '@/services/operatorPanel';
 import { AutoCompleteOptionItem } from '@/types/comment';
-import { Button, Divider, notification, Space } from 'antd';
+import { Button, Divider, notification, Space, Modal, Checkbox } from 'antd';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 const basicData = {
 	column: '',
 	dataType: '',
@@ -22,6 +23,7 @@ const basicData = {
 interface EditPgsqlColItem extends PgsqlColItem {
 	key: string;
 }
+const { confirm } = Modal;
 // * 列信息
 export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 	const {
@@ -44,6 +46,7 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 	);
 	const [collates, setCollates] = useState<AutoCompleteOptionItem[]>([]);
 	const [dataTypes, setDataTypes] = useState<AutoCompleteOptionItem[]>([]);
+	const [changedData, setChangedData] = useState<any>();
 	useEffect(() => {
 		getPgsqlCollate({
 			clusterId,
@@ -76,6 +79,51 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			}
 		});
 	}, []);
+	const handleCheckChange = (
+		e: CheckboxChangeEvent,
+		record: EditPgsqlColItem
+	) => {
+		if (tableName) {
+			if (record.array === true && e.target.checked === false) {
+				confirm({
+					title: '操作确认',
+					content:
+						'当前字段已声明为数组，继续修改可能会导致数据丢失，请谨慎操作！',
+					okText: '继续操作',
+					cancelText: '取消操作',
+					onOk: () => {
+						setChangedData({ array: false });
+						const list = originData?.columnDtoList?.map((item) => {
+							if (item.column === record.column) {
+								item.array = false;
+							}
+							return item;
+						});
+						handleChange(list);
+					},
+					onCancel: () => {
+						setChangedData({ array: true });
+						const list = originData?.columnDtoList?.map((item) => {
+							if (item.column === record.column) {
+								item.array = true;
+							}
+							return item;
+						});
+						handleChange(list);
+					}
+				});
+			} else {
+				setChangedData({ array: e.target.checked });
+				const list = originData?.columnDtoList?.map((item) => {
+					if (item.column === record.column) {
+						item.array = e.target.checked;
+					}
+					return item;
+				});
+				handleChange(list);
+			}
+		}
+	};
 	const columns = [
 		{
 			title: '序号',
@@ -125,7 +173,14 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 			key: 'array',
 			editable: true,
 			width: 50,
-			componentType: 'checkbox'
+			render: (text: any, record: EditPgsqlColItem) => {
+				return (
+					<Checkbox
+						onChange={(e) => handleCheckChange(e, record)}
+						checked={record.array}
+					/>
+				);
+			}
 		},
 		{
 			title: '可空',
@@ -222,6 +277,7 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 				originData={dataSource}
 				defaultColumns={columns}
 				basicData={basicData}
+				changedData={changedData}
 				returnValues={onChange}
 			/>
 			{tableName && (

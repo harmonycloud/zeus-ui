@@ -235,6 +235,7 @@ export interface PgsqlTableItem {
 	tableName: string;
 	tableUniqueList: null;
 	tablespace: string;
+	rows?: number;
 }
 export interface getPgsqlTableRes extends resProps {
 	data: PgsqlTableItem[];
@@ -818,4 +819,13 @@ export interface SqlAuditItem {
 	status: string;
 	timestampMysql: string;
 	user: string;
+}
+
+export interface getPgsqlTableRowsParamsProps extends SendDataParamsProps {
+	databaseName: string;
+	tableName: string;
+	schemaName: string;
+}
+export interface getPgsqlTableRowsRes extends resProps {
+	data: number;
 }

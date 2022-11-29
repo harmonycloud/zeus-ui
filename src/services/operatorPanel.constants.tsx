@@ -1,4 +1,6 @@
 import { api } from '@/api.json';
+// * 登出控制台
+export const AuthLogout = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/logout`;
 // * 登录控制台
 export const AuthLogin = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/auth`;
 // * 查询数据库列表
@@ -109,6 +111,8 @@ export const executePgsqlSql = `${api}/clusters/{clusterId}/namespaces/{namespac
 export const executeMysqlSql = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/databases/{database}/query`;
 // * mysql sql 审计
 export const sqlAudit = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/auditSql`;
+// * pgsql 获取行数
+export const getPgsqlTableRows = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}/schemas/{schemaName}/tables/{tableName}/count`;
 // * ------------------------------------------------------------------------
 // * redis 获取全部数据库
 export const getRedisDBs = `${api}/clusters/{clusterId}/namespaces/{namespace}/redis/{middlewareName}/databases`;

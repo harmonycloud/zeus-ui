@@ -3,7 +3,7 @@ import { Checkbox, Form, Input, Modal, notification, Select } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { getList } from '@/services/serviceList';
-import { authLogin } from '@/services/operatorPanel';
+import { authLogin, authLogout } from '@/services/operatorPanel';
 import { LoginConsoleProps } from '../index.d';
 import {
 	serviceListItemProps,
@@ -101,33 +101,44 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 		}
 	};
 	const onOk = () => {
-		form.validateFields().then((values) => {
-			const sendData = {
-				clusterId,
-				middlewareName: values.middlewareName,
-				type: middlewareType,
-				namespace: namespace,
-				username: values.username,
-				password:
-					encrypt(values.password, storage.getSession('rsa')) ||
-					values.password
-			};
-			authLogin(sendData).then((res) => {
-				if (res.success) {
-					notification.success({
-						message: '成功',
-						description: '登录成功'
+		authLogout({
+			clusterId,
+			middlewareName,
+			namespace,
+			type: middlewareType
+		}).then((res) => {
+			if (res.success) {
+				form.validateFields().then((values) => {
+					const sendData = {
+						clusterId,
+						middlewareName: values.middlewareName,
+						type: middlewareType,
+						namespace: namespace,
+						username: values.username,
+						password:
+							encrypt(
+								values.password,
+								storage.getSession('rsa')
+							) || values.password
+					};
+					authLogin(sendData).then((res) => {
+						if (res.success) {
+							notification.success({
+								message: '成功',
+								description: '登录成功'
+							});
+							onCreate(res.data);
+						} else {
+							notification.error({
+								message: '失败',
+								description: `${res.errorMsg}${
+									res.errorDetail ? ':' + res.errorDetail : ''
+								}`
+							});
+						}
 					});
-					onCreate(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: `${res.errorMsg}${
-							res.errorDetail ? ':' + res.errorDetail : ''
-						}`
-					});
-				}
-			});
+				});
+			}
 		});
 	};
 	return (
@@ -169,6 +180,7 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 						disabled={
 							middlewareType === 'redis' && version === '5.0'
 						}
+						onKeyDown={(e) => e.keyCode === 13 && onOk()}
 					/>
 				</Form.Item>
 				<Form.Item

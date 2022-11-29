@@ -11,6 +11,7 @@ import DatabaseMag from './DatabaseMag';
 import LoginConsole from './OperatorHeader/LoginConsole';
 import storage from '@/utils/storage';
 import RoleDetail from './AccountMag/RoleDetail';
+import { authLogout } from '@/services/operatorPanel';
 
 export default function OperationPanel(): JSX.Element {
 	const params: ParamsProps = useParams();

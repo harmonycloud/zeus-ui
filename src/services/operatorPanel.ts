@@ -64,7 +64,9 @@ import {
 	updatePgsqlInfoParamsProps,
 	updateRedisKeyParamsProps,
 	executePgsqlSqlParamsProps,
-	SqlAuditParamsProps
+	SqlAuditParamsProps,
+	getPgsqlTableRowsParamsProps,
+	getPgsqlTableRowsRes
 } from '@/pages/OperationPanel/index.d';
 import { resProps } from '@/types/comment';
 
@@ -89,6 +91,19 @@ export const authLogin: (params: {
 			mwtoken: ''
 		}
 	});
+};
+export const authLogout: (params: {
+	clusterId: string;
+	middlewareName: string;
+	namespace: string;
+	type: string;
+}) => Promise<resProps> = (params: {
+	clusterId: string;
+	middlewareName: string;
+	namespace: string;
+	type: string;
+}) => {
+	return Axios.post(URL.AuthLogout, params);
 };
 export const getDatabases: (
 	params: SendDataParamsProps
@@ -360,6 +375,11 @@ export const executeMysqlSql = (params: executeMysqlSqlParamsProps) => {
 export const executePgsqlSql = (params: executePgsqlSqlParamsProps) => {
 	return Axios.post(URL.executePgsqlSql, params);
 };
+export const getPgsqlTableRows: (
+	params: getPgsqlTableRowsParamsProps
+) => Promise<getPgsqlTableRowsRes> = (params: getPgsqlTableRowsParamsProps) => {
+	return Axios.get(URL.getPgsqlTableRows, params);
+};
 // * -------------------------------------------------
 // * redis
 export const getRedisDatabases = (params: SendDataParamsProps) => {
@@ -460,7 +480,6 @@ export const cancelAuth: (params: cancelAuthParamsProps) => Promise<resProps> =
 export const getExecuteHistory: (
 	params: getExecuteHistoryParamsProps
 ) => Promise<getExecuteHistoryRes> = (params: getExecuteHistoryParamsProps) => {
-	console.log(params);
 	return Axios.json(URL.getExecuteHistory, params, {}, 'POST');
 };
 export const sqlAudit = (params: SqlAuditParamsProps) => {
