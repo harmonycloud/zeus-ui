@@ -731,6 +731,7 @@ export interface PgsqlSqlConsoleProps {
 }
 export interface RedisSqlConsoleProps {
 	dbName: string;
+	setRefreshFlag: (flag: boolean) => void;
 }
 export interface MysqlCodeConsoleProps {
 	dbName: string;
@@ -755,7 +756,8 @@ export interface getExecuteHistoryParamsProps extends SendDataParamsProps {
 	pageNum: number;
 	size: number;
 	startTime: string | null;
-	status: boolean | null;
+	// status: boolean | null;
+	execStatus: boolean | null;
 }
 
 export interface ExecuteItem {
