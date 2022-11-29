@@ -17,7 +17,8 @@ import {
 	Result,
 	InputNumber,
 	Tag,
-	Checkbox
+	Checkbox,
+	Tooltip
 } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
@@ -1381,6 +1382,42 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										})}
 									</div>
 								) : null}
+								<li className="display-flex flex-center form-li">
+									<label className="form-name">
+										<span className="mr-8">主机网络</span>
+										<Tooltip
+											title={
+												'通过设置spec.hostNetwork参数，使用主机的网络命名空间'
+											}
+										>
+											<QuestionCircleOutlined />
+										</Tooltip>
+									</label>
+									<div
+										className={`form-content display-flex ${styles['host-affinity']}`}
+									>
+										<div className={styles['switch']}>
+											{tolerations.flag
+												? '已开启'
+												: '关闭'}
+											<Switch
+												// checked={tolerations.flag}
+												// onChange={(value) =>
+												// 	changeTolerations(
+												// 		value,
+												// 		'flag'
+												// 	)
+												// }
+												size="small"
+												style={{
+													marginLeft: 16,
+													verticalAlign: 'middle'
+												}}
+												disabled={!!middlewareName}
+											/>
+										</div>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
