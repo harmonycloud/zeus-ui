@@ -10,7 +10,7 @@ import { getSchemas, deleteSchemas } from '@/services/operatorPanel';
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
 export default function ModeMag(props: ModeMagProps): JSX.Element {
-	const { dbName } = props;
+	const { dbName, onRefresh } = props;
 	const params: ParamsProps = useParams();
 	const [open, setOpen] = useState<boolean>(false);
 	const [dataSource, setDataSource] = useState<SchemaItem[]>([]);
@@ -92,6 +92,7 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 											description: '模式删除成功！'
 										});
 										getData();
+										onRefresh();
 									} else {
 										notification.error({
 											message: '失败',
@@ -149,6 +150,7 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 					middlewareName={params.name}
 					databaseName={dbName}
 					onRefresh={getData}
+					onPgsqlTreeRefresh={onRefresh}
 					editData={editData}
 				/>
 			)}

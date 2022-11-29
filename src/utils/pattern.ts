@@ -27,7 +27,8 @@ const pattern: patternProps = {
 	backupAliasName: '^[\u4E00-\u9FA5]*$',
 	backupName: '^[\u4E00-\u9FA5A-Za-z0-9]{1,15}$',
 	storageName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,32}$',
-	modeName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,64}$'
+	modeName: '^[\u4E00-\u9FA5A-Za-z0-9_.-]{1,64}$',
+	onlyNumber: '^[0-9]*$'
 };
 
 export default pattern;
