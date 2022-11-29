@@ -21,7 +21,7 @@ const { confirm } = Modal;
 export default function MysqlEditTable(
 	props: MysqlEditTableProps
 ): JSX.Element {
-	const { tableName, dbName, removeActiveKey } = props;
+	const { tableName, dbName, removeActiveKey, onRefresh } = props;
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
 	const [originData, setOriginData] = useState<MysqlTableDetail>();
@@ -91,7 +91,6 @@ export default function MysqlEditTable(
 		}
 	};
 	const save = () => {
-		console.log('click save', originData);
 		const sendData = {
 			...originData,
 			clusterId: params.clusterId,
@@ -106,6 +105,7 @@ export default function MysqlEditTable(
 					description: '创建成功！'
 				});
 				removeActiveKey();
+				onRefresh && onRefresh();
 			} else {
 				notification.error({
 					message: '失败',
@@ -146,6 +146,7 @@ export default function MysqlEditTable(
 							databaseName={dbName}
 							removeActiveKey={removeActiveKey}
 							cancel={cancel}
+							onRefresh={onRefresh}
 						/>
 					);
 				case 'colInfo':

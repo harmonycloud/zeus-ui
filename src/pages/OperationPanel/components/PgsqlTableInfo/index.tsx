@@ -41,7 +41,8 @@ export default function PgsqlTableInfo(
 		namespace,
 		middlewareName,
 		removeActiveKey,
-		cancel
+		cancel,
+		onRefresh
 	} = props;
 	const [form] = Form.useForm();
 	const params: ParamsProps = useParams();
@@ -91,38 +92,41 @@ export default function PgsqlTableInfo(
 	};
 	const save = () => {
 		if (tableName && data) {
-			updatePgsqlInfo({
-				oid: data.oid,
-				databaseName: dbName,
-				table: tableName,
-				schema: schemaName,
-				clusterId,
-				namespace,
-				middlewareName,
-				tableName: data.tableName,
-				owner: data.owner,
-				schemaName: data.schemaName,
-				tablespace: data.tablespace,
-				fillFactor: data.fillFactor,
-				description: data.description
-			}).then((res) => {
-				if (res.success) {
-					notification.success({
-						message: '成功',
-						description: '基本信息修改成功!'
-					});
-					removeActiveKey();
-				} else {
-					notification.error({
-						message: '失败',
-						description: (
-							<>
-								<p>{res.errorMsg}</p>
-								<p>{res.errorDetail}</p>
-							</>
-						)
-					});
-				}
+			form.validateFields().then(() => {
+				updatePgsqlInfo({
+					oid: data.oid,
+					databaseName: dbName,
+					table: tableName,
+					schema: schemaName,
+					clusterId,
+					namespace,
+					middlewareName,
+					tableName: data.tableName,
+					owner: data.owner,
+					schemaName: data.schemaName,
+					tablespace: data.tablespace,
+					fillFactor: data.fillFactor,
+					description: data.description
+				}).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '基本信息修改成功!'
+						});
+						removeActiveKey();
+						onRefresh && onRefresh();
+					} else {
+						notification.error({
+							message: '失败',
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
+						});
+					}
+				});
 			});
 		}
 	};
@@ -138,7 +142,15 @@ export default function PgsqlTableInfo(
 				<Form.Item
 					label="表名"
 					name="tableName"
-					rules={[{ required: true, message: '请输入表名' }]}
+					rules={[
+						{ required: true, message: '请输入表名' },
+						{
+							type: 'string',
+							min: 1,
+							max: 63,
+							message: '请输入1-63个字符'
+						}
+					]}
 				>
 					<Input placeholder="请输入表名" />
 				</Form.Item>

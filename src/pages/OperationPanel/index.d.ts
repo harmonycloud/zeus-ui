@@ -43,6 +43,7 @@ export interface MysqlEditTableProps {
 	tableName?: string;
 	dbName: string;
 	removeActiveKey: () => void;
+	onRefresh?: () => void;
 }
 export interface PgsqlEditTableProps {
 	isEdit?: boolean;
@@ -50,6 +51,7 @@ export interface PgsqlEditTableProps {
 	schemaName: string;
 	tableName?: string;
 	removeActiveKey: () => void;
+	onRefresh?: () => void;
 }
 export interface MysqlTableInfoProps {
 	handleChange: (values: any) => void;
@@ -62,6 +64,7 @@ export interface MysqlTableInfoProps {
 	databaseName: string;
 	removeActiveKey: () => void;
 	cancel: () => void;
+	onRefresh?: () => void;
 }
 export interface MysqlColInfoProps {
 	originData: MysqlTableDetail | undefined;
@@ -111,6 +114,7 @@ export interface PgsqlTableInfoProps extends PgsqlTableTabProps {
 	dbName: string;
 	schemaName: string;
 	data: pgsqlTableDetail | undefined;
+	onRefresh?: () => void;
 }
 export interface PgsqlColInfoProps extends PgsqlTableTabProps {
 	originData: pgsqlTableDetail | undefined;
@@ -398,6 +402,7 @@ export interface GetSchemasRes extends resProps {
 }
 export interface ModeMagProps {
 	dbName: string;
+	onRefresh: () => void;
 }
 export interface CreateModeProps {
 	open: boolean;
@@ -408,6 +413,7 @@ export interface CreateModeProps {
 	databaseName: string;
 	onRefresh: () => void;
 	editData: SchemaItem | undefined;
+	onPgsqlTreeRefresh: () => void;
 }
 
 export interface GetEncodingRes extends resProps {

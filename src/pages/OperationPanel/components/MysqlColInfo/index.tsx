@@ -3,6 +3,7 @@ import EditTable from '@/components/EditTable';
 import { MysqlColInfoProps, MysqlColItem, MysqlDataType } from '../../index.d';
 import { getMysqlDataType, updateMysqlCol } from '@/services/operatorPanel';
 import { Button, Divider, notification, Space } from 'antd';
+import pattern from '@/utils/pattern';
 
 const basicData = {
 	column: '',
@@ -103,7 +104,7 @@ export default function MysqlColInfo(props: MysqlColInfoProps): JSX.Element {
 			width: 100,
 			rules: [
 				{
-					type: 'number',
+					pattern: new RegExp(pattern.onlyNumber),
 					message: '请输入数字'
 				}
 			],

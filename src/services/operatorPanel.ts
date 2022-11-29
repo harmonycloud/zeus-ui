@@ -110,18 +110,21 @@ export const getDatabases: (
 ) => Promise<GetDatabasesRes> = (params: SendDataParamsProps) => {
 	return Axios.get(URL.getDatabases, params);
 };
-export const createDatabase: (params: updateParamsProps) => Promise<resProps> =
-	(params: updateParamsProps) => {
-		return Axios.json(URL.updateDb, params, {}, 'POST');
-	};
-export const updateDatabase: (params: updateParamsProps) => Promise<resProps> =
-	(params: updateParamsProps) => {
-		return Axios.json(URL.updateDb, params, {}, 'PUT');
-	};
-export const deleteDatabase: (params: deleteParamsProps) => Promise<resProps> =
-	(params: deleteParamsProps) => {
-		return Axios.delete(URL.deleteDb, params);
-	};
+export const createDatabase: (
+	params: updateParamsProps
+) => Promise<resProps> = (params: updateParamsProps) => {
+	return Axios.json(URL.updateDb, params, {}, 'POST');
+};
+export const updateDatabase: (
+	params: updateParamsProps
+) => Promise<resProps> = (params: updateParamsProps) => {
+	return Axios.json(URL.updateDb, params, {}, 'PUT');
+};
+export const deleteDatabase: (
+	params: deleteParamsProps
+) => Promise<resProps> = (params: deleteParamsProps) => {
+	return Axios.delete(URL.deleteDb, params);
+};
 export const getCharset: (
 	params: SendDataParamsProps
 ) => Promise<charSetResProps> = (params: SendDataParamsProps) => {
@@ -137,10 +140,11 @@ export const getDbTables: (
 ) => Promise<getTablesResProps> = (params: getTablesParamsProps) => {
 	return Axios.get(URL.getDbTables, params);
 };
-export const getCols: (params: getColParamsProps) => Promise<getColsResProps> =
-	(params: getColParamsProps) => {
-		return Axios.get(URL.getCols, params);
-	};
+export const getCols: (
+	params: getColParamsProps
+) => Promise<getColsResProps> = (params: getColParamsProps) => {
+	return Axios.get(URL.getCols, params);
+};
 export const getIndexs: (params: getColParamsProps) => Promise<getIndexRes> = (
 	params: getColParamsProps
 ) => {
@@ -191,10 +195,11 @@ export const deletePgTables: (
 ) => Promise<resProps> = (params: deletePgTableParamsProps) => {
 	return Axios.delete(URL.deletePgTable, params);
 };
-export const getPgCols: (params: getPgColParamsProps) => Promise<getPgColRes> =
-	(params: getPgColParamsProps) => {
-		return Axios.get(URL.getPgCols, params);
-	};
+export const getPgCols: (
+	params: getPgColParamsProps
+) => Promise<getPgColRes> = (params: getPgColParamsProps) => {
+	return Axios.get(URL.getPgCols, params);
+};
 export const getEncoding: (
 	params: SendDataParamsProps
 ) => Promise<GetEncodingRes> = (params: SendDataParamsProps) => {
@@ -281,7 +286,7 @@ export const getPgsqlData = (params: any) => {
 	return Axios.json(URL.getPgsqlData, params, {}, 'POST');
 };
 export const updatePgTable = (params: any) => {
-	return Axios.json(URL.updatePgTable, params);
+	return Axios.json(URL.updatePgTable, params, {}, 'PUT');
 };
 export const updateMysqlTable = (params: any) => {
 	return Axios.json(URL.updateMysqlTable, params, {}, 'PUT');
@@ -455,10 +460,11 @@ export const getUsers: (
 ) => {
 	return Axios.get(URL.getUsers, params);
 };
-export const deleteUsers: (params: deleteUserParamsProps) => Promise<resProps> =
-	(params: deleteUserParamsProps) => {
-		return Axios.delete(URL.deleteUser, params);
-	};
+export const deleteUsers: (
+	params: deleteUserParamsProps
+) => Promise<resProps> = (params: deleteUserParamsProps) => {
+	return Axios.delete(URL.deleteUser, params);
+};
 export const createUsers: (
 	params: mysqlCreateUserParamsProps | pgsqlCreateUserParamsProps
 ) => Promise<resProps> = (
@@ -473,10 +479,11 @@ export const getUserAuth: (
 ) => {
 	return Axios.get(URL.getUserAuth, params);
 };
-export const cancelAuth: (params: cancelAuthParamsProps) => Promise<resProps> =
-	(params: cancelAuthParamsProps) => {
-		return Axios.json(URL.cancelAuth, params, {}, 'DELETE');
-	};
+export const cancelAuth: (
+	params: cancelAuthParamsProps
+) => Promise<resProps> = (params: cancelAuthParamsProps) => {
+	return Axios.json(URL.cancelAuth, params, {}, 'DELETE');
+};
 export const getExecuteHistory: (
 	params: getExecuteHistoryParamsProps
 ) => Promise<getExecuteHistoryRes> = (params: getExecuteHistoryParamsProps) => {

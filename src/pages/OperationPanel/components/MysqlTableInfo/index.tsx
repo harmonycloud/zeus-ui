@@ -40,7 +40,8 @@ export default function MysqlTableInfo(
 		tableName,
 		databaseName,
 		cancel,
-		removeActiveKey
+		removeActiveKey,
+		onRefresh
 	} = props;
 	const [form] = Form.useForm();
 	const [charsets, setCharsets] = useState<string[]>([]);
@@ -99,43 +100,47 @@ export default function MysqlTableInfo(
 		}
 	}, [originData]);
 	const onValuesChange = (changedFields: any, allFields: any) => {
+		console.log(allFields);
 		handleChange(allFields);
 	};
 	const save = () => {
 		console.log('save');
 		if (tableName && originData) {
-			updateMysqlTableInfo({
-				database: databaseName,
-				table: tableName,
-				clusterId,
-				namespace,
-				middlewareName,
-				tableName: originData.tableName,
-				newTableName: originData.tableName,
-				comment: originData.comment,
-				engine: originData.engine,
-				charset: originData.charset,
-				collate: originData.collate,
-				autoIncrement: originData.autoIncrement,
-				rowFormat: originData.rowFormat
-			}).then((res) => {
-				if (res.success) {
-					notification.success({
-						message: '成功',
-						description: '表信息修改成功'
-					});
-					removeActiveKey();
-				} else {
-					notification.error({
-						message: '失败',
-						description: (
-							<>
-								<p>{res.errorMsg}</p>
-								<p>{res.errorDetail}</p>
-							</>
-						)
-					});
-				}
+			form.validateFields().then(() => {
+				updateMysqlTableInfo({
+					database: databaseName,
+					table: tableName,
+					clusterId,
+					namespace,
+					middlewareName,
+					tableName: originData.tableName,
+					newTableName: originData.tableName,
+					comment: originData.comment,
+					engine: originData.engine,
+					charset: originData.charset,
+					collate: originData.collate,
+					autoIncrement: originData.autoIncrement,
+					rowFormat: originData.rowFormat
+				}).then((res) => {
+					if (res.success) {
+						notification.success({
+							message: '成功',
+							description: '表信息修改成功'
+						});
+						removeActiveKey();
+						onRefresh && onRefresh();
+					} else {
+						notification.error({
+							message: '失败',
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
+						});
+					}
+				});
 			});
 		}
 	};

@@ -19,7 +19,8 @@ export default function CreateMode(props: CreateModeProps): JSX.Element {
 		middlewareName,
 		databaseName,
 		onRefresh,
-		editData
+		editData,
+		onPgsqlTreeRefresh
 	} = props;
 	const [form] = Form.useForm();
 	const [data, setData] = useState<PgsqlUserItem[]>([]);
@@ -55,7 +56,7 @@ export default function CreateMode(props: CreateModeProps): JSX.Element {
 						if (res.success) {
 							notification.success({
 								message: '成功',
-								description: '模式创建成功!'
+								description: '模式修改成功!'
 							});
 						} else {
 							notification.error({
@@ -80,6 +81,7 @@ export default function CreateMode(props: CreateModeProps): JSX.Element {
 								message: '成功',
 								description: '模式创建成功!'
 							});
+							onPgsqlTreeRefresh();
 						} else {
 							notification.error({
 								message: '失败',

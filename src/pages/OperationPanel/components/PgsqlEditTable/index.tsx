@@ -19,7 +19,7 @@ const { confirm } = Modal;
 export default function PgsqlEditTable(
 	props: PgsqlEditTableProps
 ): JSX.Element {
-	const { schemaName, dbName, tableName, removeActiveKey } = props;
+	const { schemaName, dbName, tableName, removeActiveKey, onRefresh } = props;
 	console.log(props);
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState<string>('basicInfo');
@@ -97,12 +97,16 @@ export default function PgsqlEditTable(
 					description: '创建成功!'
 				});
 				removeActiveKey();
+				onRefresh && onRefresh();
 			} else {
 				notification.error({
 					message: '失败',
-					description: `${res.errorMsg}${
-						res.errorDetail ? ':' + res.errorDetail : ''
-					}`
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
 				});
 			}
 		});
@@ -133,6 +137,7 @@ export default function PgsqlEditTable(
 							middlewareName={params.name}
 							tableName={tableName}
 							removeActiveKey={removeActiveKey}
+							onRefresh={onRefresh}
 							cancel={cancel}
 						/>
 					);

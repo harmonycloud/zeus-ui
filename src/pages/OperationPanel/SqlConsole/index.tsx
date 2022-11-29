@@ -257,6 +257,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							tableName={i}
 							dbName={fatherNode || ''}
 							removeActiveKey={removeActiveKey}
+							onRefresh={getData}
 						/>
 					) : (
 						<PgsqlEditTable
@@ -264,6 +265,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							schemaName={selectSchema}
 							tableName={i}
 							removeActiveKey={removeActiveKey}
+							onRefresh={getPgsqlTableData}
 						/>
 					)
 				);
@@ -293,7 +295,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'modeMag': // * pgsql 模式管理
-				add(i, <ModeMag dbName={i} />);
+				add(i, <ModeMag dbName={i} onRefresh={getData} />);
 				return;
 			case 'openTable': // * 打开表
 				add(
@@ -327,6 +329,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										message: '成功',
 										description: '数据表删除成功！'
 									});
+									getData();
 								} else {
 									notification.error({
 										message: '失败',
@@ -353,6 +356,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										message: '成功',
 										description: '数据表删除成功！'
 									});
+									getPgsqlTableData();
 								} else {
 									notification.error({
 										message: '失败',
@@ -382,12 +386,14 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						<MysqlEditTable
 							dbName={fatherNode ? fatherNode : i}
 							removeActiveKey={removeActiveKey}
+							onRefresh={getData}
 						/>
 					) : (
 						<PgsqlEditTable
 							dbName={fatherNode}
 							schemaName={i}
 							removeActiveKey={removeActiveKey}
+							onRefresh={getPgsqlTableData}
 						/>
 					)
 				);
@@ -401,63 +407,81 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							{...formItemLayout618}
 							labelAlign="left"
 						>
-							<Form.Item name="newTableName" label="表名称">
+							<Form.Item
+								name="newTableName"
+								label="表名称"
+								rules={[
+									{ required: true, message: '请输入表名' },
+									{
+										type: 'string',
+										min: 1,
+										max: 63,
+										message: '请输入1-63个字符'
+									}
+								]}
+							>
 								<Input />
 							</Form.Item>
 						</Form>
 					),
 					onOk: () => {
-						const sendData: any = {
-							clusterId: params.clusterId,
-							namespace: params.namespace,
-							middlewareName: params.name
-						};
-						if (params.type === 'mysql') {
-							sendData.table = i;
-							sendData.database = fatherNode;
-							sendData.newTableName =
-								form.getFieldValue('newTableName');
-							updateMysqlTable(sendData).then((res) => {
-								if (res.success) {
-									notification.success({
-										message: '成功',
-										description: '表格重命名成功！'
-									});
-								} else {
-									notification.error({
-										message: '失败',
-										description: (
-											<>
-												<p>{res.errorMsg}</p>
-												<p>{res.errorDetail}</p>
-											</>
-										)
-									});
-								}
-							});
-						} else {
-							sendData.databaseName = selectDatabase;
-							sendData.table = i;
-							sendData.schemaName = selectSchema;
-							updatePgTable(sendData).then((res) => {
-								if (res.success) {
-									notification.success({
-										message: '成功',
-										description: '表格重命名成功！'
-									});
-								} else {
-									notification.error({
-										message: '失败',
-										description: (
-											<>
-												<p>{res.errorMsg}</p>
-												<p>{res.errorDetail}</p>
-											</>
-										)
-									});
-								}
-							});
-						}
+						form.validateFields().then(() => {
+							const sendData: any = {
+								clusterId: params.clusterId,
+								namespace: params.namespace,
+								middlewareName: params.name
+							};
+							if (params.type === 'mysql') {
+								sendData.table = i;
+								sendData.database = fatherNode;
+								sendData.newTableName =
+									form.getFieldValue('newTableName');
+								updateMysqlTable(sendData).then((res) => {
+									if (res.success) {
+										notification.success({
+											message: '成功',
+											description: '表格重命名成功！'
+										});
+										getData();
+									} else {
+										notification.error({
+											message: '失败',
+											description: (
+												<>
+													<p>{res.errorMsg}</p>
+													<p>{res.errorDetail}</p>
+												</>
+											)
+										});
+									}
+								});
+							} else {
+								sendData.databaseName = selectDatabase;
+								sendData.table = i;
+								sendData.schemaName = selectSchema;
+								sendData.tableName =
+									form.getFieldValue('newTableName');
+								updatePgTable(sendData).then((res) => {
+									if (res.success) {
+										notification.success({
+											message: '成功',
+											description: '表格重命名成功！'
+										});
+										getPgsqlTableData();
+									} else {
+										notification.error({
+											message: '失败',
+											description: (
+												<>
+													<p>{res.errorMsg}</p>
+													<p>{res.errorDetail}</p>
+												</>
+											)
+										});
+									}
+								});
+							}
+						});
 					}
 				});
 				return;
@@ -604,6 +628,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 																item as PgsqlDatabaseItem
 															).databaseName
 														}
+														onRefresh={getData}
 													/>
 												);
 											}}
@@ -1112,7 +1137,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const mysqlOnExpand = (expandedKeys: Key[], info: any) => {
-		console.log(info);
 		let newMysqlLoadedKeys = mysqlLoadedKeys;
 		if (mysqlExpandedKeys.length > expandedKeys.length) {
 			newMysqlLoadedKeys = mysqlLoadedKeys.filter((i) =>
@@ -1236,6 +1260,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 															item as PgsqlDatabaseItem
 														).databaseName
 													}
+													onRefresh={getData}
 												/>
 											);
 										}}
@@ -1296,6 +1321,67 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				}
 			});
 		}
+	};
+	// * pgsql table树状图的刷新
+	const getPgsqlTableData = () => {
+		getPgTables({
+			clusterId: params.clusterId,
+			schemaName: selectSchema,
+			databaseName: selectDatabase,
+			namespace: params.namespace,
+			middlewareName: params.name
+		}).then((res) => {
+			if (res.success) {
+				if (res.data.length > 0) {
+					const list = res.data.map(
+						(item: PgsqlTableItem, index: number) => {
+							const result: any = {};
+							result.title = (
+								<Dropdown
+									overlay={() =>
+										tableMenu(item.tableName, selectSchema)
+									}
+									trigger={['contextMenu']}
+								>
+									<span
+										onDoubleClick={() => {
+											console.log('click');
+											add(
+												item.tableName,
+												<OpenTable
+													dbName={item.databaseName}
+													schemaName={item.schemaName}
+													tableName={item.tableName}
+												/>
+											);
+										}}
+									>
+										{item.tableName}
+									</span>
+								</Dropdown>
+							);
+							result.key = index + '';
+							result.icon = <IconFont type="icon-biaoge" />;
+							result.value = item.tableName;
+							return result;
+						}
+					);
+					setPgTableTreeData(list);
+				} else {
+					setPgTableTreeData([]);
+				}
+			} else {
+				notification.error({
+					message: '失败',
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
+				});
+			}
+		});
 	};
 	const mysqlTreeValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
@@ -1451,7 +1537,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								onDoubleClick={() =>
 									add(
 										item.value,
-										<ModeMag dbName={item.value} />
+										<ModeMag
+											dbName={item.value}
+											onRefresh={getData}
+										/>
 									)
 								}
 							>
@@ -1469,7 +1558,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								onDoubleClick={() =>
 									add(
 										item.value,
-										<ModeMag dbName={item.value} />
+										<ModeMag
+											dbName={item.value}
+											onRefresh={getData}
+										/>
 									)
 								}
 							>
