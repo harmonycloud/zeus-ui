@@ -109,8 +109,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 
 	// 日志
-	const [fileLog, setFileLog] = useState<boolean>(false);
-	const [standardLog, setStandardLog] = useState<boolean>(false);
+	const [fileLog, setFileLog] = useState<boolean>(true);
+	const [standardLog, setStandardLog] = useState<boolean>(true);
 
 	// RMQ配置
 	const [version, setVersion] = useState<string>('4.8.0');

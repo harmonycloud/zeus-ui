@@ -136,8 +136,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	>([]);
 
 	// 日志
-	const [fileLog, setFileLog] = useState<boolean>(false);
-	const [standardLog, setStandardLog] = useState<boolean>(false);
+	const [fileLog, setFileLog] = useState<boolean>(true);
+	const [standardLog, setStandardLog] = useState<boolean>(true);
 
 	// MySQL配置
 	const [version, setVersion] = useState<string>('5.7');
