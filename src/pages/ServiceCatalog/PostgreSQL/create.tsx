@@ -194,6 +194,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	// * 备份
 	const backupDetail = storage.getLocal('backupDetail');
+	// * 主机网络
+	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
@@ -447,7 +449,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 							(item: MirrorItem) =>
 								item.address === values.mirrorImageId
 						)
-						?.id.toString() || ''
+						?.id.toString() || '',
+				postgresqlParam: {
+					hostNetwork
+				}
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -1275,13 +1280,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												? '已开启'
 												: '关闭'}
 											<Switch
-												// checked={tolerations.flag}
-												// onChange={(value) =>
-												// 	changeTolerations(
-												// 		value,
-												// 		'flag'
-												// 	)
-												// }
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
 												size="small"
 												style={{
 													marginLeft: 16,
