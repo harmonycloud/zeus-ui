@@ -1,7 +1,7 @@
 import EditTable from '@/components/EditTable';
 import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { MysqlColItem, MysqlTableDetail, IndexItem } from '../../index.d';
+import { MysqlColItem, MysqlTableDetail, includesCol } from '../../index.d';
 
 interface IncludeColsForm {
 	open: boolean;
@@ -24,7 +24,11 @@ export default function IncludeColsForm({
 			return { label: item.column, value: item.column };
 		}) || []
 	);
-	const [dataSource] = useState([]);
+	const [dataSource] = useState<any[]>(
+		selectRow.indexColumns.map((item: any, index: number) => {
+			return { ...item, key: index };
+		})
+	);
 	const [returnData, setReturnData] = useState([]);
 	const defaultColumns = [
 		{
