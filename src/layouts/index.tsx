@@ -406,9 +406,6 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 			/>
 		</Router>
 	);
-	if (window.location.href.includes('operationalPanel')) {
-		return operationalPanel();
-	}
 	// * 没有token时，跳转到登陆页
 	if (!storage.getLocal('token')) {
 		return redirectToLogin();
@@ -416,6 +413,9 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 	// * 当路由中包含terminal字段时，显示终端页面
 	if (window.location.href.includes('terminal')) {
 		return redirectToTerminal();
+	}
+	if (window.location.href.includes('operationalPanel')) {
+		return operationalPanel();
 	}
 	return (
 		<div className="zeus-mid-layout">
