@@ -148,6 +148,9 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 	};
 	mirrorImageId?: any;
 	readWriteProxy?: any;
+	redisParam: {
+		hostNetwork: boolean;
+	};
 }
 export interface RedisCreateValuesParams extends CreateValuesParams {
 	pwd: string;
@@ -219,6 +222,9 @@ export interface PostgresqlSendDataParams {
 	middlewareName?: string;
 	backupFileName?: string;
 	mirrorImageId?: any;
+	postgresqlParam: {
+		hostNetwork: boolean;
+	};
 }
 export interface NodeModifyParams {
 	nodeName: string;

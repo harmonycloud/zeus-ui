@@ -238,6 +238,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	// * 当导航栏的命名空间为全部时
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 	const [selectNamespace, setSelectNamespace] = useState<string>();
+	// * 主机网络
+	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -394,7 +396,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							(item: MirrorItem) =>
 								item.address === values.mirrorImageId
 						)
-						?.id.toString() || ''
+						?.id.toString() || '',
+				redisParam: {
+					hostNetwork
+				}
 			};
 			// * 动态表单相关
 			if (customForm) {
@@ -1413,13 +1418,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												? '已开启'
 												: '关闭'}
 											<Switch
-												// checked={tolerations.flag}
-												// onChange={(value) =>
-												// 	changeTolerations(
-												// 		value,
-												// 		'flag'
-												// 	)
-												// }
+												checked={hostNetwork}
+												onChange={(value) =>
+													setHostNetwork(value)
+												}
 												size="small"
 												style={{
 													marginLeft: 16,
