@@ -77,6 +77,12 @@ export default function PgsqlEditTable(
 				return item;
 			});
 			setOriginData({ ...originData, tableUniqueList: list });
+		} else if (dataIndex === 'columnDtoList') {
+			const list = values.map((item: any) => {
+				item.num = item.key;
+				return item;
+			});
+			setOriginData({ ...originData, columnDtoList: list });
 		} else {
 			setOriginData({ ...originData, ...result });
 		}
