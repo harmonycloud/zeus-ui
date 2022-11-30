@@ -134,17 +134,40 @@ function AuthorManage(): JSX.Element {
 						<div className="resource-overview-info">
 							<div className="info-item">生产环境：</div>
 							<div>
-								CPU限量总额：
-								{basicData?.produce?.total}C
+								<span
+									style={{
+										width: '100px',
+										display: 'inline-block'
+									}}
+								>
+									CPU限量总额：
+								</span>
+								{basicData?.produce?.total?.toFixed(2)}C
 							</div>
 							<div>
-								CPU已使用：
-								{basicData?.produce?.used}C
+								<span
+									style={{
+										width: '100px',
+										display: 'inline-block'
+									}}
+								>
+									CPU已使用：
+								</span>
+								{basicData?.produce?.used?.toFixed(2)}C
 							</div>
 							<div>
-								CPU剩余额度：
-								{basicData?.produce?.total -
-									basicData?.produce?.used}
+								<span
+									style={{
+										width: '100px',
+										display: 'inline-block'
+									}}
+								>
+									CPU剩余额度：
+								</span>
+								{(
+									basicData?.produce?.total -
+									basicData?.produce?.used
+								)?.toFixed(2)}
 								C
 							</div>
 						</div>
@@ -163,16 +186,40 @@ function AuthorManage(): JSX.Element {
 						<div className="resource-overview-info">
 							<div className="info-item">测试环境：</div>
 							<div>
-								CPU限量总额：
-								{basicData?.test?.total}C
+								<span
+									style={{
+										width: '100px',
+										display: 'inline-block'
+									}}
+								>
+									CPU限量总额：
+								</span>
+								{basicData?.test?.total?.toFixed(2)}C
 							</div>
 							<div>
-								CPU已使用：
-								{basicData?.test?.used}C
+								<span
+									style={{
+										width: '100px',
+										display: 'inline-block'
+									}}
+								>
+									CPU已使用：
+								</span>
+								{basicData?.test?.used?.toFixed(2)}C
 							</div>
 							<div>
-								CPU剩余额度：
-								{basicData?.test?.total - basicData?.test?.used}
+								<span
+									style={{
+										width: '100px',
+										display: 'inline-block'
+									}}
+								>
+									CPU剩余额度：
+								</span>
+								{(
+									basicData?.test?.total -
+									basicData?.test?.used
+								)?.toFixed(2)}
 								C
 							</div>
 						</div>

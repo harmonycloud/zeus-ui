@@ -933,7 +933,7 @@ const ServiceListByType = (props: serviceListProps) => {
 	const nameRender = (value: string, record: serviceProps, index: number) => {
 		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
-				<div style={{ maxWidth: '160px' }}>
+				<div style={{ maxWidth: '120px' }}>
 					<div
 						title={record.name}
 						className="displayed-name text-overflow"
@@ -951,7 +951,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		}
 		if (record.status === 'Preparing') {
 			return (
-				<div style={{ maxWidth: '160px' }}>
+				<div style={{ maxWidth: '120px' }}>
 					<div
 						className="displayed-name text-overflow"
 						title="服务创建中，无法操作"
@@ -964,7 +964,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		}
 		if (record.status === 'failed') {
 			return (
-				<div style={{ maxWidth: '160px' }}>
+				<div style={{ maxWidth: '120px' }}>
 					<div
 						className="displayed-name text-overflow"
 						title="服务创建失败，无法操作"
@@ -988,8 +988,8 @@ const ServiceListByType = (props: serviceListProps) => {
 						maxWidth:
 							record?.mysqlDTO?.openDisasterRecoveryMode &&
 							!record?.mysqlDTO?.isSource
-								? '120px'
-								: '160px'
+								? '80px'
+								: '120px'
 					}}
 				>
 					<div
