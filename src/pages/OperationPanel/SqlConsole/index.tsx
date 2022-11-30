@@ -139,7 +139,7 @@ const paneProps: SplitPaneProps = {
 	split: 'vertical',
 	minSize: 200,
 	style: {
-		height: '84%'
+		height: '88%'
 	},
 	pane2Style: {
 		width: 'calc(100% - 200px)',
@@ -175,6 +175,17 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [pgSearchValue, setPgSearchValue] = useState<string>('');
 	const [pgTableTreeValue, setPgTableTreeValue] = useState<string>('');
 	const newTabIndex = useRef(0);
+	// * 监听窗口大小
+	useEffect(() => {
+		window.addEventListener('resize', (e) => {
+			console.log(e);
+		});
+		return () => {
+			window.removeEventListener('resize', (e) => {
+				console.log(e);
+			});
+		};
+	}, []);
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
@@ -1137,6 +1148,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const mysqlOnExpand = (expandedKeys: Key[], info: any) => {
+		console.log(expandedKeys, info);
 		let newMysqlLoadedKeys = mysqlLoadedKeys;
 		if (mysqlExpandedKeys.length > expandedKeys.length) {
 			newMysqlLoadedKeys = mysqlLoadedKeys.filter((i) =>
@@ -1282,8 +1294,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							return result;
 						});
 						setPgTreeData(list);
-						setPgsqlExpandedKeys([list[0].key]);
-						setSelectDatabase(list[0].value);
 					} else {
 						setPgTreeData([]);
 					}
@@ -1730,7 +1740,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		});
 	};
 	return (
-		<Layout style={{ minHeight: 'calc(100vh - 50px)' }}>
+		<Layout style={{ height: '100%' }}>
 			<Sider
 				className="sql-console-sider"
 				collapsed={collapsed}
@@ -1893,7 +1903,13 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				)}
 				{params.type === 'postgresql' && (
 					<SplitPane {...paneProps}>
-						<div style={{ padding: '0px 0px 16px 16px' }}>
+						<div
+							style={{
+								padding: '0px 0px 16px 16px',
+								overflowY: 'auto',
+								height: '100%'
+							}}
+						>
 							<Input.Search
 								style={{ marginBottom: 8, paddingRight: 16 }}
 								placeholder="请输入关键字搜索"
