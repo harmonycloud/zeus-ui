@@ -19,7 +19,7 @@ import { setRefreshFlag } from '@/redux/execute/execute';
 function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 	const params: ParamsProps = useParams();
 	const { dbName, setRefreshFlag } = props;
-	const [paneProps] = useState<SplitPaneProps>({
+	const [paneProps, setPaneProps] = useState<SplitPaneProps>({
 		split: 'horizontal',
 		size: '50%',
 		pane2Style: {
@@ -30,7 +30,6 @@ function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 	const newTabIndex = useRef(0);
 	const [sql, setSql] = useState<string>('SELECT * from');
 	const [isCopy, setIsCopy] = useState<boolean>(false);
-	// const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
 	const changeSql = (values: string) => {
 		setIsCopy(true);
 		setSql(values);

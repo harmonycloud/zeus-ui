@@ -23,6 +23,7 @@ export default function RedisCodeConsole(
 		const spaces = Array(editor.getOption('indentUnit')).join(';');
 		editor.replaceSelection(spaces);
 	};
+	const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 	const [options] = useState({
 		indentWithTabs: true,
 		smartIndex: true,
@@ -75,7 +76,11 @@ export default function RedisCodeConsole(
 		handleExecute();
 	};
 	return (
-		<main className="code-console-main">
+		<main
+			className={`code-console-main ${
+				isFullScreen ? 'code-console-full-screen' : ''
+			}`}
+		>
 			<div className="code-console-action-content">
 				<div>
 					<Space>
@@ -111,6 +116,7 @@ export default function RedisCodeConsole(
 						fontSize: 20,
 						cursor: 'pointer'
 					}}
+					onClick={() => setIsFullScreen(!isFullScreen)}
 				/>
 			</div>
 			<div id="code-console-content">
