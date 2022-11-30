@@ -102,7 +102,8 @@ export default function MysqlIndexInfo(
 					编辑
 					{record?.indexColumns
 						?.map(
-							(item: any) => `${item.columnName}(${item.subPart})`
+							(item: any) =>
+								`${item.columnName}(${item.subPart || ''})`
 						)
 						.join(',')}
 				</span>
