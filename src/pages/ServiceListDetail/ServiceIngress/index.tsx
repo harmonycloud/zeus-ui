@@ -92,52 +92,55 @@ export default function ServiceDetailIngress(
 	};
 	const Operation = {
 		primary: (
-			<Button
-				type="primary"
-				title={judgeDisabled().title}
-				disabled={judgeDisabled().flag}
-				onClick={() => {
-					// kfk mq 的添加服务暴露页不同
-					if (
-						name === 'kafka' ||
-						name === 'rocketmq' ||
-						name === 'minio'
-					) {
-						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${brokerNum}/${
-								dataSource.length > 0
-									? `${dataSource[0].externalEnable}`
-									: 'false'
-							}`
-						);
-					} else if (name === 'elasticsearch') {
-						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-						);
-					} else if (
-						name === 'mysql' ||
-						name === 'redis' ||
-						name === 'postgresql' ||
-						name === 'zookeeper'
-					) {
-						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
-						);
-					} else {
-						history.push(
-							`/serviceList/${name}/${aliasName}/externalAccess/addExternalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
-						);
-					}
-				}}
-			>
-				新增
-			</Button>
+			<>
+				<Button
+					type="primary"
+					title={judgeDisabled().title}
+					disabled={judgeDisabled().flag}
+					onClick={() => {
+						// kfk mq 的添加服务暴露页不同
+						if (
+							name === 'kafka' ||
+							name === 'rocketmq' ||
+							name === 'minio'
+						) {
+							history.push(
+								`/serviceList/${name}/${aliasName}/externalAccess/add/kfkmq/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}/${brokerNum}/${
+									dataSource.length > 0
+										? `${dataSource[0].externalEnable}`
+										: 'false'
+								}`
+							);
+						} else if (name === 'elasticsearch') {
+							history.push(
+								`/serviceList/${name}/${aliasName}/externalAccess/add/es/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+							);
+						} else if (
+							name === 'mysql' ||
+							name === 'redis' ||
+							name === 'postgresql' ||
+							name === 'zookeeper'
+						) {
+							history.push(
+								`/serviceList/${name}/${aliasName}/externalAccess/add/msrdpgzk/${middlewareName}/${clusterId}/${chartVersion}/${namespace}/${mode}`
+							);
+						} else {
+							history.push(
+								`/serviceList/${name}/${aliasName}/externalAccess/addExternalAccess/${middlewareName}/${name}/${chartVersion}/${namespace}`
+							);
+						}
+					}}
+				>
+					新增
+				</Button>
+				<Button onClick={() => setVisible(true)}>集群内访问</Button>
+			</>
 		),
 		secondary: (
 			<Space>
-				<span className="name-link" onClick={() => setVisible(true)}>
+				{/* <span className="name-link" onClick={() => setVisible(true)}>
 					查看集群内访问
-				</span>
+				</span> */}
 				<Button
 					onClick={onRefresh}
 					style={{ padding: '0 9px', marginRight: '8px' }}
@@ -337,8 +340,20 @@ export default function ServiceDetailIngress(
 	return (
 		<>
 			<Alert
-				message={'请单击服务暴露项展开并查看已暴露的域名或IP+端口号'}
-				type="info"
+				message={
+					name === 'redis' &&
+					mode === 'cluster' &&
+					!readWriteProxy?.enabled
+						? '集群模式不支持使用服务暴露功能'
+						: '请单击服务暴露项展开并查看已暴露的域名或IP+端口号'
+				}
+				type={
+					name === 'redis' &&
+					mode === 'cluster' &&
+					!readWriteProxy?.enabled
+						? 'warning'
+						: 'info'
+				}
 				showIcon
 				closable
 				style={{ marginBottom: '16px' }}

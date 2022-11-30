@@ -156,6 +156,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		}
 	]);
 	const [clusterMode, setClusterMode] = useState<string>('3s-3m');
+	const [clusterModeNum, setClusterModeNum] = useState<number | null>(3);
 	const [sentinelMode, setSentinelMode] = useState<string>('1s-1m');
 	const clusterModeList = [
 		{
@@ -165,6 +166,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		{
 			label: '五分片',
 			value: '5s-5m'
+		},
+		{
+			label: '自定义',
+			value: 'one'
 		}
 	];
 	const sentinelModeList = [
@@ -491,7 +496,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 				sendData.quota = {
 					redis: {
-						num: clusterMode === '3s-3m' ? 6 : 10,
+						num:
+							clusterMode === 'one'
+								? clusterModeNum
+									? clusterModeNum * 2
+									: 6
+								: clusterMode === '3s-3m'
+								? 6
+								: 10,
 						storageClassName: storageClassNameTemp,
 						storageClassQuota: values.storageQuota
 					}
@@ -1670,6 +1682,37 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setSentinelMode(value)
 													}
+													disabled={!!middlewareName}
+												/>
+											</div>
+										) : null}
+										{clusterMode === 'one' ? (
+											<div
+												style={{
+													marginTop: 12
+												}}
+											>
+												<span
+													style={{
+														width: 182,
+														marginLeft: 8,
+														color: '#333',
+														fontWeight: 500,
+														display: 'inline-block'
+													}}
+												>
+													自定义分片数量
+												</span>
+												<InputNumber
+													style={{
+														width: 182
+													}}
+													value={clusterModeNum}
+													onChange={(value) =>
+														setClusterModeNum(value)
+													}
+													min={3}
+													max={10}
 													disabled={!!middlewareName}
 												/>
 											</div>
