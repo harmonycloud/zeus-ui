@@ -18,7 +18,8 @@ import {
 	InputNumber,
 	Tag,
 	Checkbox,
-	Tooltip
+	Tooltip,
+	Modal
 } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import pattern from '@/utils/pattern';
@@ -359,6 +360,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values: RedisCreateValuesParams) => {
+			Modal.info({
+				title: '提醒',
+				content: `当前初始密码为${values.pwd}，请妥善保存`
+			});
 			const sendData: RedisSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,

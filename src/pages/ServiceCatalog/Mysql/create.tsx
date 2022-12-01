@@ -20,7 +20,8 @@ import {
 	Tag,
 	Popover,
 	Radio,
-	DatePicker
+	DatePicker,
+	Modal
 } from 'antd';
 import {
 	getNodePort,
@@ -489,6 +490,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
 			console.log(values);
+			Modal.info({
+				title: '提醒',
+				content: `当前root账户密码为${values.mysqlPwd}，请妥善保存`
+			});
 			let storageClassTemp = '';
 			if (typeof values.storageClass === 'string') {
 				storageClassTemp = values.storageClass.split('/')[0];

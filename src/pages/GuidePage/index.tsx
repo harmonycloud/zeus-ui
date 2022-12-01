@@ -111,7 +111,7 @@ const GuidePage = (props: GuideProps) => {
 					});
 				}
 			});
-	}, [props]);
+	}, []);
 	return (
 		<ProPage>
 			{console.log(current)}
