@@ -67,6 +67,7 @@ import { getAspectFrom } from '@/services/common';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import StorageQuota from '@/components/StorageQuota';
+import DirectoryItem from '@/components/DirectoryItem';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -168,6 +169,43 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			value: '1m-0s'
 		}
 	]);
+	const [nodeObj, setNodeObj] = useState<any>({
+		pgdb: {
+			disabled: false,
+			title: '数据目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pgwal: {
+			disabled: false,
+			title: 'wal日志目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pglog: {
+			disabled: false,
+			title: 'PostgreSQL日志目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pgarch: {
+			disabled: false,
+			title: 'wal日志归档目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pgextension: {
+			disabled: false,
+			title: 'PostgreSQL插件目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		}
+	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
@@ -196,6 +234,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const backupDetail = storage.getLocal('backupDetail');
 	// * 主机网络
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// * 目录分盘
+	const [directory, setDirectory] = useState<boolean>(false);
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
@@ -1454,7 +1494,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</FormItem>
 									</div>
 								</li>
-								<li className="display-flex">
+								{/* <li className="display-flex">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											目录分盘
@@ -1464,16 +1504,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem>
-											<Switch
-												size="small"
-												style={{
-													verticalAlign: 'middle'
-												}}
-											/>
-										</FormItem>
+										<Switch
+											size="small"
+											style={{
+												verticalAlign: 'middle'
+											}}
+										/>
 									</div>
-								</li>
+								</li> */}
 							</ul>
 						</div>
 					</FormBlock>
@@ -1642,20 +1680,66 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<StorageQuota
-									clusterId={globalCluster.id}
-									isActiveActive={
-										globalNamespace.name === '*'
-											? !namespace
-												? judgeActiveActive(
-														form.getFieldValue(
-															'namespace'
-														)
-												  )
-												: namespace
-											: globalNamespace.availableDomain
-									}
-								/>
+								<li className="display-flex form-li flex-align">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											目录分盘
+										</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<Switch
+											checked={directory}
+											onChange={(value) =>
+												setDirectory(value)
+											}
+											size="small"
+										/>
+									</div>
+								</li>
+								{!directory ? (
+									<StorageQuota
+										clusterId={globalCluster.id}
+										isActiveActive={
+											globalNamespace.name === '*'
+												? !namespace
+													? judgeActiveActive(
+															form.getFieldValue(
+																'namespace'
+															)
+													  )
+													: namespace
+												: globalNamespace.availableDomain
+										}
+									/>
+								) : (
+									<div
+										className={`display-flex ${styles['mode-content']}`}
+										style={{ marginLeft: 120 }}
+									>
+										{Object.keys(nodeObj).map((key) => (
+											<DirectoryItem
+												middlewareType={chartName}
+												key={key}
+												type={key}
+												data={nodeObj[key]}
+												clusterId={globalCluster.id}
+												mode={mode}
+												namespace={globalNamespace.name}
+												onChange={(values) => {
+													setNodeObj({
+														...nodeObj,
+														[key]: values
+													});
+												}}
+												disabled={!!middlewareName}
+											/>
+										))}
+										{console.log(nodeObj)}
+									</div>
+								)}
 							</ul>
 						</div>
 					</FormBlock>
