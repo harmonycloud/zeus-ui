@@ -525,9 +525,11 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				}
 				extra={
 					<>
-						<Button type="primary" onClick={toOperatorPanel}>
-							运维面板(beta)
-						</Button>
+						{operateFlag && (
+							<Button type="primary" onClick={toOperatorPanel}>
+								运维面板(beta)
+							</Button>
+						)}
 						<Button
 							onClick={() => refresh(activeKey)}
 							style={{ padding: '0 9px', marginRight: '8px' }}

@@ -18,7 +18,8 @@ import {
 	InputNumber,
 	Tooltip,
 	Tag,
-	DatePicker
+	DatePicker,
+	Modal
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -453,6 +454,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
+			Modal.info({
+				title: '提醒',
+				content: `当前postgres密码为${values.pgsqlPwd}，请妥善保存`
+			});
 			let storageClassTemp = '';
 			if (!directory) {
 				if (typeof values.storageClass === 'string') {

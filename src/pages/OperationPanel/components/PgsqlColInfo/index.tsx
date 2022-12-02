@@ -244,6 +244,10 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 	};
 	const save = () => {
 		if (tableName && originData) {
+			const list = originData?.columnDtoList?.map((item: any) => {
+				item.num = item.key;
+				return item;
+			});
 			updatePgsqlCol({
 				databaseName,
 				schemaName,
@@ -252,7 +256,7 @@ export default function PgsqlColInfo(props: PgsqlColInfoProps): JSX.Element {
 				namespace,
 				middlewareName,
 				oid: originData.oid,
-				columnDtoList: originData.columnDtoList
+				columnDtoList: list
 			}).then((res) => {
 				if (res.success) {
 					notification.success({

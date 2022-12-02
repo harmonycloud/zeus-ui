@@ -172,3 +172,11 @@
 [data-theme='dark'] .site-tree-search-value {
 	color: #226ee7;
 }
+
+.code-console-full-screen {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 216%;
+	z-index: 9999;
+}
