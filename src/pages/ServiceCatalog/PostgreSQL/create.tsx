@@ -68,6 +68,7 @@ import { getAspectFrom } from '@/services/common';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import StorageQuota from '@/components/StorageQuota';
+import DirectoryItem from '@/components/DirectoryItem';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -169,6 +170,48 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			value: '1m-0s'
 		}
 	]);
+	const [nodeObj, setNodeObj] = useState<any>({
+		pgdb: {
+			title: '数据目录',
+			hostPath: '',
+			mountPath: '',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
+		},
+		pgwal: {
+			title: 'wal日志目录',
+			hostPath: '',
+			mountPath: '',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
+		},
+		pglog: {
+			title: 'PostgreSQL日志目录',
+			hostPath: '',
+			mountPath: '',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
+		},
+		pgarch: {
+			title: 'wal日志归档目录',
+			hostPath: '',
+			mountPath: '',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
+		},
+		pgextension: {
+			title: 'PostgreSQL插件目录',
+			hostPath: '',
+			mountPath: '',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
+		}
+	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [specId, setSpecId] = useState<string>('1');
 	const [maxCpu, setMaxCpu] = useState<{ max: number }>(); // 自定义cpu的最大值
@@ -197,6 +240,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const backupDetail = storage.getLocal('backupDetail');
 	// * 主机网络
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// * 目录分盘
+	const [directory, setDirectory] = useState<boolean>(false);
 	const disabledDate = (current: any) => {
 		// Can not select days before today and today
 		return (
@@ -414,12 +459,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				content: `当前postgres密码为${values.pgsqlPwd}，请妥善保存`
 			});
 			let storageClassTemp = '';
-			if (typeof values.storageClass === 'string') {
-				storageClassTemp = values.storageClass.split('/')[0];
-			} else {
-				storageClassTemp = values.storageClass
-					.map((item: string) => item.split('/')[0])
-					.join(',');
+			if (!directory) {
+				if (typeof values.storageClass === 'string') {
+					storageClassTemp = values.storageClass.split('/')[0];
+				} else {
+					storageClassTemp = values.storageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 			}
 			const sendData: PostgresqlSendDataParams = {
 				chartName: chartName,
@@ -555,6 +602,16 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			// 	sendData.middlewareName = middlewareName;
 			// 	sendData.backupFileName = backupFileName;
 			// }
+			if (directory) {
+				sendData.quota = {
+					postgresql: {
+						num:
+							mode.charAt(3) === 'n'
+								? replicaCount
+								: Number(mode.charAt(3))
+					}
+				};
+			}
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
@@ -587,6 +644,35 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			} else if (instanceSpec === 'Customize') {
 				sendData.quota.postgresql.cpu = values.cpu;
 				sendData.quota.postgresql.memory = values.memory + 'Gi';
+			}
+			if (directory) {
+				sendData.customVolumes = {};
+				for (const key in nodeObj) {
+					let storageClassNameTemp = '';
+					if (typeof nodeObj[key].storageClass === 'string') {
+						storageClassNameTemp =
+							nodeObj[key].storageClass?.split('/')[0];
+					} else {
+						storageClassNameTemp = nodeObj[key].storageClass
+							?.map((item: string) => item.split('/')[0])
+							.join(',');
+					}
+					if (!nodeObj[key].disabled) {
+						// if (nodeObj[key].storageClass === '') {
+						// 	return;
+						// }
+						// if (nodeObj[key].storageQuota === 0) {
+						// 	notification.error({
+						// 		message: '失败',
+						// 		description: `${key}节点存储配额不能为0`
+						// 	});
+						// 	return;
+						// }
+						sendData.customVolumes[key] = {
+							...nodeObj[key]
+						};
+					}
+				}
 			}
 			// console.log(sendData);
 			if (middlewareName) {
@@ -1459,7 +1545,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</FormItem>
 									</div>
 								</li>
-								<li className="display-flex">
+								{/* <li className="display-flex">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
 											目录分盘
@@ -1469,16 +1555,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem>
-											<Switch
-												size="small"
-												style={{
-													verticalAlign: 'middle'
-												}}
-											/>
-										</FormItem>
+										<Switch
+											size="small"
+											style={{
+												verticalAlign: 'middle'
+											}}
+										/>
 									</div>
-								</li>
+								</li> */}
 							</ul>
 						</div>
 					</FormBlock>
@@ -1647,20 +1731,66 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										) : null}
 									</div>
 								</li>
-								<StorageQuota
-									clusterId={globalCluster.id}
-									isActiveActive={
-										globalNamespace.name === '*'
-											? !namespace
-												? judgeActiveActive(
-														form.getFieldValue(
-															'namespace'
-														)
-												  )
-												: namespace
-											: globalNamespace.availableDomain
-									}
-								/>
+								<li className="display-flex form-li flex-align">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											挂载目录选择
+										</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<Switch
+											checked={directory}
+											onChange={(value) =>
+												setDirectory(value)
+											}
+											size="small"
+										/>
+									</div>
+								</li>
+								{!directory ? (
+									<StorageQuota
+										clusterId={globalCluster.id}
+										isActiveActive={
+											globalNamespace.name === '*'
+												? !namespace
+													? judgeActiveActive(
+															form.getFieldValue(
+																'namespace'
+															)
+													  )
+													: namespace
+												: globalNamespace.availableDomain
+										}
+									/>
+								) : (
+									<div
+										className={`display-flex ${styles['mode-content']}`}
+										style={{ marginLeft: 120 }}
+									>
+										{Object.keys(nodeObj).map((key) => (
+											<DirectoryItem
+												middlewareType={chartName}
+												key={key}
+												type={key}
+												data={nodeObj[key]}
+												clusterId={globalCluster.id}
+												mode={mode}
+												namespace={globalNamespace.name}
+												onChange={(values) => {
+													setNodeObj({
+														...nodeObj,
+														[key]: values
+													});
+												}}
+												disabled={!!middlewareName}
+											/>
+										))}
+										{console.log(nodeObj)}
+									</div>
+								)}
 							</ul>
 						</div>
 					</FormBlock>

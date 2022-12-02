@@ -146,6 +146,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 			storageClassQuota?: string;
 		};
 	};
+	customVolumes?: any;
 	mirrorImageId?: any;
 	readWriteProxy?: any;
 	redisParam: {
@@ -219,6 +220,7 @@ export interface PostgresqlSendDataParams {
 			num?: number;
 		};
 	};
+	customVolumes?: any;
 	middlewareName?: string;
 	backupFileName?: string;
 	mirrorImageId?: any;

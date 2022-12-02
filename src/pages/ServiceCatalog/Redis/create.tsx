@@ -36,6 +36,7 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
+import DirectoryItem from '@/components/DirectoryItem';
 import { instanceSpecList, redisDataList } from '@/utils/const';
 import {
 	CreateProps,
@@ -215,6 +216,24 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			memory: 0.512
 		}
 	});
+	const [pathObj, setPathObj] = useState<any>({
+		'redis-data': {
+			title: '数据目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null,
+			volumeSize: 1,
+			targetContainers: ['redis-cluster']
+		},
+		'redis-logs': {
+			title: '日志目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null,
+			volumeSize: 1,
+			targetContainers: ['redis-cluster']
+		}
+	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
 		nodeName: '',
 		flag: false
@@ -241,6 +260,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [selectNamespace, setSelectNamespace] = useState<string>();
 	// * 主机网络
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// * 目录分盘
+	const [directory, setDirectory] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -496,28 +517,71 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 			if (mode === 'cluster' || mode === 'agent') {
-				let storageClassNameTemp = '';
-				if (typeof values.storageClass === 'string') {
-					storageClassNameTemp = values.storageClass.split('/')[0];
-				} else {
-					storageClassNameTemp = values.storageClass
-						.map((item: string) => item.split('/')[0])
-						.join(',');
-				}
-				sendData.quota = {
-					redis: {
-						num:
-							clusterMode === 'one'
-								? clusterModeNum
-									? clusterModeNum * 2
-									: 6
-								: clusterMode === '3s-3m'
-								? 6
-								: 10,
-						storageClassName: storageClassNameTemp,
-						storageClassQuota: values.storageQuota
+				if (!directory) {
+					let storageClassNameTemp = '';
+					if (typeof values.storageClass === 'string') {
+						storageClassNameTemp =
+							values.storageClass.split('/')[0];
+					} else {
+						storageClassNameTemp = values.storageClass
+							.map((item: string) => item.split('/')[0])
+							.join(',');
 					}
-				};
+					sendData.quota = {
+						redis: {
+							num:
+								clusterMode === 'one'
+									? clusterModeNum
+										? clusterModeNum * 2
+										: 6
+									: clusterMode === '3s-3m'
+									? 6
+									: 10,
+							storageClassName: storageClassNameTemp,
+							storageClassQuota: values.storageQuota
+						}
+					};
+				} else {
+					sendData.customVolumes = {};
+					for (const key in pathObj) {
+						let storageClassNameTemp = '';
+						if (typeof pathObj[key].storageClass === 'string') {
+							storageClassNameTemp =
+								pathObj[key].storageClass?.split('/')[0];
+						} else {
+							storageClassNameTemp = pathObj[key].storageClass
+								?.map((item: string) => item.split('/')[0])
+								.join(',');
+						}
+						if (!pathObj[key].disabled) {
+							// if (pathObj[key].storageClass === '') {
+							// 	return;
+							// }
+							// if (pathObj[key].storageQuota === 0) {
+							// 	notification.error({
+							// 		message: '失败',
+							// 		description: `${key}节点存储配额不能为0`
+							// 	});
+							// 	return;
+							// }
+							sendData.quota = {
+								redis: {
+									num:
+										clusterMode === 'one'
+											? clusterModeNum
+												? clusterModeNum * 2
+												: 6
+											: clusterMode === '3s-3m'
+											? 6
+											: 10
+								}
+							};
+							sendData.customVolumes[key] = {
+								...pathObj[key]
+							};
+						}
+					}
+				}
 				if (instanceSpec === 'General') {
 					switch (specId) {
 						case '1':
@@ -1950,11 +2014,71 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												) : null}
 											</div>
 										</li>
-										{nodeModify.nodeName !== 'sentinel' && (
-											<StorageQuota
-												clusterId={globalCluster.id}
-											/>
-										)}
+										<li className="display-flex form-li flex-align">
+											<label className="form-name">
+												<span
+													style={{ marginRight: 8 }}
+												>
+													挂载目录选择
+												</span>
+											</label>
+											<div
+												className="form-content"
+												style={{ flex: '0 0 376px' }}
+											>
+												<Switch
+													checked={directory}
+													onChange={(value) =>
+														setDirectory(value)
+													}
+													size="small"
+												/>
+											</div>
+										</li>
+										{directory ? (
+											<div
+												className={`display-flex ${styles['mode-content']}`}
+												style={{ marginLeft: 120 }}
+											>
+												{Object.keys(pathObj).map(
+													(key) => (
+														<DirectoryItem
+															middlewareType={
+																chartName
+															}
+															key={key}
+															type={key}
+															data={pathObj[key]}
+															clusterId={
+																globalCluster.id
+															}
+															mode={mode}
+															namespace={
+																globalNamespace.name
+															}
+															onChange={(
+																values
+															) => {
+																setPathObj({
+																	...pathObj,
+																	[key]: values
+																});
+															}}
+															disabled={
+																!!middlewareName
+															}
+														/>
+													)
+												)}
+												{console.log(nodeObj)}
+											</div>
+										) : null}
+										{nodeModify.nodeName !== 'sentinel' &&
+											!directory && (
+												<StorageQuota
+													clusterId={globalCluster.id}
+												/>
+											)}
 									</>
 								)}
 							</ul>
