@@ -35,6 +35,7 @@ import {
 } from '@/services/middleware';
 import { getMirror } from '@/services/common';
 import ModeItem from '@/components/ModeItem';
+import DirectoryItem from '@/components/DirectoryItem';
 import { instanceSpecList, redisDataList } from '@/utils/const';
 import {
 	CreateProps,
@@ -215,40 +216,21 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		}
 	});
 	const [pathObj, setPathObj] = useState<any>({
-		pgdb: {
-			disabled: false,
+		'redis-data': {
 			title: '数据目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
+			storageClass: null,
+			volumeSize: 1,
+			targetContainers: ['redis-cluster']
 		},
-		pgwal: {
-			disabled: false,
-			title: 'wal日志目录',
+		'redis-logs': {
+			title: '日志目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
-		},
-		pglog: {
-			disabled: false,
-			title: 'PostgreSQL日志目录',
-			hostPath: '',
-			mountPath: '',
-			storageClass: null
-		},
-		pgarch: {
-			disabled: false,
-			title: 'wal日志归档目录',
-			hostPath: '',
-			mountPath: '',
-			storageClass: null
-		},
-		pgextension: {
-			disabled: false,
-			title: 'PostgreSQL插件目录',
-			hostPath: '',
-			mountPath: '',
-			storageClass: null
+			storageClass: null,
+			volumeSize: 1,
+			targetContainers: ['redis-cluster']
 		}
 	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
@@ -530,28 +512,71 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			}
 			if (mode === 'cluster' || mode === 'agent') {
-				let storageClassNameTemp = '';
-				if (typeof values.storageClass === 'string') {
-					storageClassNameTemp = values.storageClass.split('/')[0];
-				} else {
-					storageClassNameTemp = values.storageClass
-						.map((item: string) => item.split('/')[0])
-						.join(',');
-				}
-				sendData.quota = {
-					redis: {
-						num:
-							clusterMode === 'one'
-								? clusterModeNum
-									? clusterModeNum * 2
-									: 6
-								: clusterMode === '3s-3m'
-								? 6
-								: 10,
-						storageClassName: storageClassNameTemp,
-						storageClassQuota: values.storageQuota
+				if (!directory) {
+					let storageClassNameTemp = '';
+					if (typeof values.storageClass === 'string') {
+						storageClassNameTemp =
+							values.storageClass.split('/')[0];
+					} else {
+						storageClassNameTemp = values.storageClass
+							.map((item: string) => item.split('/')[0])
+							.join(',');
 					}
-				};
+					sendData.quota = {
+						redis: {
+							num:
+								clusterMode === 'one'
+									? clusterModeNum
+										? clusterModeNum * 2
+										: 6
+									: clusterMode === '3s-3m'
+									? 6
+									: 10,
+							storageClassName: storageClassNameTemp,
+							storageClassQuota: values.storageQuota
+						}
+					};
+				} else {
+					sendData.customVolumes = {};
+					for (const key in pathObj) {
+						let storageClassNameTemp = '';
+						if (typeof pathObj[key].storageClass === 'string') {
+							storageClassNameTemp =
+								pathObj[key].storageClass?.split('/')[0];
+						} else {
+							storageClassNameTemp = pathObj[key].storageClass
+								?.map((item: string) => item.split('/')[0])
+								.join(',');
+						}
+						if (!pathObj[key].disabled) {
+							// if (pathObj[key].storageClass === '') {
+							// 	return;
+							// }
+							// if (pathObj[key].storageQuota === 0) {
+							// 	notification.error({
+							// 		message: '失败',
+							// 		description: `${key}节点存储配额不能为0`
+							// 	});
+							// 	return;
+							// }
+							sendData.quota = {
+								redis: {
+									num:
+										clusterMode === 'one'
+											? clusterModeNum
+												? clusterModeNum * 2
+												: 6
+											: clusterMode === '3s-3m'
+											? 6
+											: 10
+								}
+							};
+							sendData.customVolumes[key] = {
+								...pathObj[key]
+							};
+						}
+					}
+				}
 				if (instanceSpec === 'General') {
 					switch (specId) {
 						case '1':
@@ -2005,11 +2030,50 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												/>
 											</div>
 										</li>
-										{nodeModify.nodeName !== 'sentinel' && (
-											<StorageQuota
-												clusterId={globalCluster.id}
-											/>
-										)}
+										{directory ? (
+											<div
+												className={`display-flex ${styles['mode-content']}`}
+												style={{ marginLeft: 120 }}
+											>
+												{Object.keys(pathObj).map(
+													(key) => (
+														<DirectoryItem
+															middlewareType={
+																chartName
+															}
+															key={key}
+															type={key}
+															data={pathObj[key]}
+															clusterId={
+																globalCluster.id
+															}
+															mode={mode}
+															namespace={
+																globalNamespace.name
+															}
+															onChange={(
+																values
+															) => {
+																setPathObj({
+																	...pathObj,
+																	[key]: values
+																});
+															}}
+															disabled={
+																!!middlewareName
+															}
+														/>
+													)
+												)}
+												{console.log(nodeObj)}
+											</div>
+										) : null}
+										{nodeModify.nodeName !== 'sentinel' &&
+											!directory && (
+												<StorageQuota
+													clusterId={globalCluster.id}
+												/>
+											)}
 									</>
 								)}
 							</ul>

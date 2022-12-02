@@ -171,47 +171,42 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	]);
 	const [nodeObj, setNodeObj] = useState<any>({
 		pgdb: {
-			disabled: false,
 			title: '数据目录',
 			hostPath: '',
 			mountPath: '',
-			volumeSize: null,
+			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pgwal: {
-			disabled: false,
 			title: 'wal日志目录',
 			hostPath: '',
 			mountPath: '',
-			volumeSize: null,
+			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pglog: {
-			disabled: false,
 			title: 'PostgreSQL日志目录',
 			hostPath: '',
 			mountPath: '',
-			volumeSize: null,
+			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pgarch: {
-			disabled: false,
 			title: 'wal日志归档目录',
 			hostPath: '',
 			mountPath: '',
-			volumeSize: null,
+			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pgextension: {
-			disabled: false,
 			title: 'PostgreSQL插件目录',
 			hostPath: '',
 			mountPath: '',
-			volumeSize: null,
+			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
 		}

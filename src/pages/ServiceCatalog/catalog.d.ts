@@ -146,6 +146,7 @@ export interface RedisSendDataParams extends CommonSendDataParams {
 			storageClassQuota?: string;
 		};
 	};
+	customVolumes?: any;
 	mirrorImageId?: any;
 	readWriteProxy?: any;
 	redisParam: {

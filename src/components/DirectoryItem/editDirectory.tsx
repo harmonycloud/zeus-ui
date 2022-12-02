@@ -127,12 +127,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 										return true;
 									}
 								});
-								console.log(res);
-
 								if (res.some((item) => !item)) {
 									return Promise.reject(
 										new Error('At least 2 passengers')
 									);
+								} else {
+									return Promise.resolve();
 								}
 							},
 							message: '输入不符合规范'
