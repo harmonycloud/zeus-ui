@@ -175,35 +175,45 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			title: '数据目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
+			volumeSize: null,
+			storageClass: null,
+			targetContainers: ['postgres']
 		},
 		pgwal: {
 			disabled: false,
 			title: 'wal日志目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
+			volumeSize: null,
+			storageClass: null,
+			targetContainers: ['postgres']
 		},
 		pglog: {
 			disabled: false,
 			title: 'PostgreSQL日志目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
+			volumeSize: null,
+			storageClass: null,
+			targetContainers: ['postgres']
 		},
 		pgarch: {
 			disabled: false,
 			title: 'wal日志归档目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
+			volumeSize: null,
+			storageClass: null,
+			targetContainers: ['postgres']
 		},
 		pgextension: {
 			disabled: false,
 			title: 'PostgreSQL插件目录',
 			hostPath: '',
 			mountPath: '',
-			storageClass: null
+			volumeSize: null,
+			storageClass: null,
+			targetContainers: ['postgres']
 		}
 	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -449,12 +459,14 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
 			let storageClassTemp = '';
-			if (typeof values.storageClass === 'string') {
-				storageClassTemp = values.storageClass.split('/')[0];
-			} else {
-				storageClassTemp = values.storageClass
-					.map((item: string) => item.split('/')[0])
-					.join(',');
+			if (!directory) {
+				if (typeof values.storageClass === 'string') {
+					storageClassTemp = values.storageClass.split('/')[0];
+				} else {
+					storageClassTemp = values.storageClass
+						.map((item: string) => item.split('/')[0])
+						.join(',');
+				}
 			}
 			const sendData: PostgresqlSendDataParams = {
 				chartName: chartName,
@@ -590,6 +602,16 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			// 	sendData.middlewareName = middlewareName;
 			// 	sendData.backupFileName = backupFileName;
 			// }
+			if (directory) {
+				sendData.quota = {
+					postgresql: {
+						num:
+							mode.charAt(3) === 'n'
+								? replicaCount
+								: Number(mode.charAt(3))
+					}
+				};
+			}
 			if (instanceSpec === 'General') {
 				switch (specId) {
 					case '1':
@@ -622,6 +644,35 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			} else if (instanceSpec === 'Customize') {
 				sendData.quota.postgresql.cpu = values.cpu;
 				sendData.quota.postgresql.memory = values.memory + 'Gi';
+			}
+			if (directory) {
+				sendData.customVolumes = {};
+				for (const key in nodeObj) {
+					let storageClassNameTemp = '';
+					if (typeof nodeObj[key].storageClass === 'string') {
+						storageClassNameTemp =
+							nodeObj[key].storageClass?.split('/')[0];
+					} else {
+						storageClassNameTemp = nodeObj[key].storageClass
+							?.map((item: string) => item.split('/')[0])
+							.join(',');
+					}
+					if (!nodeObj[key].disabled) {
+						// if (nodeObj[key].storageClass === '') {
+						// 	return;
+						// }
+						// if (nodeObj[key].storageQuota === 0) {
+						// 	notification.error({
+						// 		message: '失败',
+						// 		description: `${key}节点存储配额不能为0`
+						// 	});
+						// 	return;
+						// }
+						sendData.customVolumes[key] = {
+							...nodeObj[key]
+						};
+					}
+				}
 			}
 			// console.log(sendData);
 			if (middlewareName) {
@@ -1683,7 +1734,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 								<li className="display-flex form-li flex-align">
 									<label className="form-name">
 										<span style={{ marginRight: 8 }}>
-											目录分盘
+											挂载目录选择
 										</span>
 									</label>
 									<div

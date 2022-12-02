@@ -219,6 +219,7 @@ export interface PostgresqlSendDataParams {
 			num?: number;
 		};
 	};
+	customVolumes?: any;
 	middlewareName?: string;
 	backupFileName?: string;
 	mirrorImageId?: any;

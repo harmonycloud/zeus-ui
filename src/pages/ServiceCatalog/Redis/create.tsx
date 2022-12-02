@@ -214,6 +214,43 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			memory: 0.512
 		}
 	});
+	const [pathObj, setPathObj] = useState<any>({
+		pgdb: {
+			disabled: false,
+			title: '数据目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pgwal: {
+			disabled: false,
+			title: 'wal日志目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pglog: {
+			disabled: false,
+			title: 'PostgreSQL日志目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pgarch: {
+			disabled: false,
+			title: 'wal日志归档目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		},
+		pgextension: {
+			disabled: false,
+			title: 'PostgreSQL插件目录',
+			hostPath: '',
+			mountPath: '',
+			storageClass: null
+		}
+	});
 	const [nodeModify, setNodeModify] = useState<NodeModifyParams>({
 		nodeName: '',
 		flag: false
@@ -240,6 +277,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [selectNamespace, setSelectNamespace] = useState<string>();
 	// * 主机网络
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
+	// * 目录分盘
+	const [directory, setDirectory] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (globalNamespace.quotas) {
@@ -1943,6 +1982,27 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														</ul>
 													</div>
 												) : null}
+											</div>
+										</li>
+										<li className="display-flex form-li flex-align">
+											<label className="form-name">
+												<span
+													style={{ marginRight: 8 }}
+												>
+													挂载目录选择
+												</span>
+											</label>
+											<div
+												className="form-content"
+												style={{ flex: '0 0 376px' }}
+											>
+												<Switch
+													checked={directory}
+													onChange={(value) =>
+														setDirectory(value)
+													}
+													size="small"
+												/>
 											</div>
 										</li>
 										{nodeModify.nodeName !== 'sentinel' && (

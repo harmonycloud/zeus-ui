@@ -9,6 +9,7 @@ export interface modeItemProps {
 		disabled: boolean;
 		hostPath: string;
 		mountPath: string;
+		volumeSize: number;
 		storageClass: string | string[];
 	};
 	mode?: string;
@@ -84,6 +85,10 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						<li>
 							<span>存储：</span>
 							<span>{data.storageClass}</span>
+						</li>
+						<li>
+							<span>存储大小：</span>
+							<span>{data.volumeSize}</span>
 						</li>
 					</ul>
 				</div>

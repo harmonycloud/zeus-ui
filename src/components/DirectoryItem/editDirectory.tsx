@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input, Select, Form } from 'antd';
+import { Modal, Input, Select, Form, InputNumber } from 'antd';
 import { getLists } from '@/services/storage';
 import {
 	GetParams,
@@ -28,7 +28,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 			};
 			getLists(sendData).then((res) => {
 				if (res.success) {
-					setStorageClassList(res.data);
+					setStorageClassList(
+						res.data?.filter(
+							(item) =>
+								item.provisioner === 'rancher.io/local-path'
+						)
+					);
 				}
 			});
 		}
@@ -78,6 +83,59 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						{
 							required: true,
 							message: '请输入宿主机目录'
+						},
+						{
+							validator: (_, name) => {
+								const arr = [
+									'/bin',
+									'/boot',
+									'/dev',
+									'/etc',
+									'/home',
+									'/lib',
+									'/lib64',
+									'/media',
+									'/mnt',
+									'/proc',
+									'/root',
+									'/run',
+									'/sbin',
+									'/scripts',
+									'/srv',
+									'/sys',
+									'/tmp',
+									'/usr',
+									'/var'
+								];
+								const res = arr.map((item) => {
+									if (
+										(name.indexOf(item) === 0 &&
+											name.substring(
+												item.length,
+												name.length
+											) === '') ||
+										(name.indexOf(item) === 0 &&
+											name
+												.substring(
+													item.length,
+													name.length
+												)
+												.charAt(0) === '/')
+									) {
+										return false;
+									} else {
+										return true;
+									}
+								});
+								console.log(res);
+
+								if (res.some((item) => !item)) {
+									return Promise.reject(
+										new Error('At least 2 passengers')
+									);
+								}
+							},
+							message: '输入不符合规范'
 						}
 					]}
 					name="mountPath"
@@ -123,6 +181,27 @@ const EditDirectory = (props: EditDirectoryProps) => {
 							);
 						})}
 					</Select>
+				</FormItem>
+				<FormItem
+					label="磁盘大小"
+					labelAlign="left"
+					rules={[
+						{
+							required: true,
+							message: '请输入磁盘大小'
+						}
+					]}
+					name="volumeSize"
+					className="ant-form-name"
+					initialValue={data.volumeSize}
+				>
+					<InputNumber
+						min={0}
+						value={data.volumeSize}
+						style={{ width: '150px' }}
+						onChange={inputChange}
+						placeholder="请输入磁盘大小"
+					/>
 				</FormItem>
 			</Form>
 		</Modal>
