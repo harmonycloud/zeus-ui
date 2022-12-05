@@ -58,6 +58,7 @@ import {
 import styles from '../Kafka/kafka.module.scss';
 import ModePost from '../components/ModePost';
 import StorageQuota from '@/components/StorageQuota';
+import VersionForm from '../components/VersionForm';
 
 const FormItem = Form.Item;
 
@@ -106,13 +107,7 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 	// * 日志-end
 	// * Zookeeper配置-start
-	const [version, setVersion] = useState<string>('3.6');
-	const versionList = [
-		{
-			label: '3.6',
-			value: '3.6'
-		}
-	];
+	const [version, setVersion] = useState<string>('');
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
 		path: '',
 		zkAddress: '',
@@ -886,22 +881,12 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 						{/* <div className={styles['mysql-config']}> */}
 						<div>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+								/>
 								<li className="display-flex">
 									<label className="form-name">
 										<span

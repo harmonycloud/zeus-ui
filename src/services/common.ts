@@ -158,3 +158,10 @@ export const getNodePort = () => {
 export const getDisaster = () => {
 	return Axios.get(COMMON.getDisaster);
 };
+// *  查询指定中间件发布时可指定版本
+export const getMiddlewareVersions = (params: {
+	type: string;
+	chartVersion: string;
+}) => {
+	return Axios.get(COMMON.getMiddlewareVersions, params);
+};

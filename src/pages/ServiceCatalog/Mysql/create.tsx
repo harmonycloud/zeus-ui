@@ -70,6 +70,7 @@ import {
 } from '@ant-design/icons';
 import StorageQuota from '@/components/StorageQuota';
 import storage from '@/utils/storage';
+import VersionForm from '../components/VersionForm';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -140,17 +141,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 	const [standardLog, setStandardLog] = useState<boolean>(false);
 
 	// MySQL配置
-	const [version, setVersion] = useState<string>('5.7');
-	const versionList = [
-		{
-			label: '5.7',
-			value: '5.7'
-		},
-		{
-			label: '8.0',
-			value: '8.0'
-		}
-	];
+	const [version, setVersion] = useState<string>('');
 	const [charSet, setCharSet] = useState<string>('utf8mb4');
 	const charSetList = [
 		{
@@ -911,6 +902,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			if (state && state.disasterOriginName) {
 				setCommitFlag(true);
 				addDisasterIns(sendData).then((res) => {
@@ -1901,23 +1893,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="MySQL配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-											disabled={!!backupFileName}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+									disabled={!!backupFileName}
+								/>
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span>字符集</span>

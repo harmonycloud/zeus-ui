@@ -67,6 +67,7 @@ import { getAspectFrom } from '@/services/common';
 import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import StorageQuota from '@/components/StorageQuota';
+import VersionForm from '../components/VersionForm';
 
 const { Item: FormItem } = Form;
 const Password = Input.Password;
@@ -130,29 +131,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	>([]);
 
 	// pgsql配置
-	const [version, setVersion] = useState<string>('14');
-	const versionList = [
-		{
-			label: '14',
-			value: '14'
-		},
-		{
-			label: '13',
-			value: '13'
-		},
-		{
-			label: '12',
-			value: '12'
-		},
-		{
-			label: '11',
-			value: '11'
-		},
-		{
-			label: '9.6',
-			value: '9.6'
-		}
-	];
+	const [version, setVersion] = useState<string>('');
 	const [mode, setMode] = useState<string>('1m-1s');
 	const [modeList, setModeList] = useState([
 		{
@@ -245,7 +224,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			};
 		}
 	};
-
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -606,6 +584,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -1262,23 +1241,13 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="PostgreSQL配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-											disabled={!!middlewareName}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+									disabled={!!middlewareName}
+								/>
 								<li
 									className="display-flex form-li"
 									style={{ width: '800px' }}

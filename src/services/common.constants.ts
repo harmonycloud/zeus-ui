@@ -33,3 +33,5 @@ export const getIngressTCPPort = `${api}/port/ingressTcp`;
 export const getNodePort = `${api}/port/nodePort`;
 // * 获取灾备相关是否显示
 export const getDisaster = `${api}/system/disasterRecovery/enable`;
+// * 查询指定中间件发布时可指定版本
+export const getMiddlewareVersions = `${api}/middlewares/info/{type}/version`;
