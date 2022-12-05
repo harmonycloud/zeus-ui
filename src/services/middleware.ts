@@ -284,3 +284,8 @@ export const getKey = () => {
 export const getTolerations = () => {
 	return Axios.get(MIDDLEWARE.getTolerations);
 };
+
+// 查询可用区tolerations
+export const getMasterName = (params: any) => {
+	return Axios.get(MIDDLEWARE.getMasterName, params);
+};

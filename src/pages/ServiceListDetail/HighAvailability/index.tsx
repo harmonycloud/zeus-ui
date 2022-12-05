@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, notification, Switch, Button, Tooltip } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Modal, notification, Switch, Button, Tooltip, Select } from 'antd';
+import {
+	QuestionCircleOutlined,
+	CheckCircleFilled,
+	CloseCircleFilled
+} from '@ant-design/icons';
+import { getMasterName } from '@/services/middleware';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import Visualization from './visualization';
@@ -11,6 +16,7 @@ import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
 import YamlForm from './yamlForm';
 import DilatationForm from './dilatationForm';
+import styles from './esEdit.module.scss';
 
 import {
 	getPods,
@@ -30,6 +36,7 @@ import {
 	QuotaParams
 } from '../detail';
 import RedisSentinelNodeSpe from './redisSentinelNodeSpe';
+import { IconFont } from '@/components/IconFont';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -64,6 +71,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [yamlVisible, setYamlVisible] = useState<boolean>(false);
 	const [podData, setPodData] = useState<PodItem>();
 	const [dilatationVisible, setDilationVisible] = useState<boolean>(false);
+	const [podNum, setPodNum] = useState<number>(0);
 
 	useEffect(() => {
 		console.log(data);
@@ -112,8 +120,17 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	};
 
 	// * 重启节点
-	const reStart = (value: string, record: PodItem, index: number) => {
+	const reStart = async (value: string, record: PodItem, index: number) => {
 		if (data.status === 'Running') {
+			let res;
+			if (record.role === 'slave') {
+				res = await getMasterName({
+					clusterId,
+					namespace,
+					middlewareName: data.name,
+					slaveName: record.podName
+				});
+			}
 			const sendData = {
 				clusterId,
 				namespace,
@@ -126,40 +143,72 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				icon: null,
 				content:
 					data.type === 'redis' || data.type === 'postgres' ? (
-						<div>
-							<p>您当前选择的是</p>
+						<div className={styles['pod-restart']}>
+							<p className={styles['restart-title']}>
+								您当前选择的是
+							</p>
 
 							<p>{record.podName}</p>
 							<p>
-								<span>运行状态：</span>
+								<span className={styles['label']}>
+									运行状态：
+								</span>
 								{record.status}
 							</p>
 							<p>
-								<span>节点角色：</span>
+								<span className={styles['label']}>
+									节点角色：
+								</span>
 								{roleRender(value, record, index)}
 							</p>
 							<p>
-								<span>绑定主节点：</span>
-								{record.role === 'slave' ? 'xxx' : '-'}
+								<span className={styles['label']}>
+									绑定主节点：
+								</span>
+								{record.role === 'slave'
+									? res.data || '-'
+									: '-'}
 							</p>
-							<div>
+							<div
+								className={
+									styles[
+										record.role !== 'master'
+											? 'info-success'
+											: 'info-error'
+									]
+								}
+							>
+								{record.role !== 'master' ? (
+									<CheckCircleFilled
+										style={{
+											color: '#52c41a',
+											marginRight: 4
+										}}
+									/>
+								) : (
+									<CloseCircleFilled
+										style={{
+											color: '#ff4d4f',
+											marginRight: 4
+										}}
+									/>
+								)}
 								{record.role === 'master' &&
-									'当前选择的是主节点,直接重启可能会对服务产生影响'}
+									'当前选择的是主节点,直接重启可能会对服务产生影响。'}
 								{record.role === 'slave' &&
-									'当前选择的是从节点,可以直接重启节点且不会对服务产生影响'}
+									'当前选择的是从节点,可以直接重启节点且不会对服务产生影响。'}
 								{record.role !== 'master' &&
 									record.role !== 'slave' &&
 									`当前选择的是${roleRender(
 										value,
 										record,
 										index
-									)},可以直接重启节点且不会对服务产生影响`}
+									)},可以直接重启节点且不会对服务产生影响。`}
 							</div>
 						</div>
 					) : (
 						'根据重启的节点角色不同，重启操作可能会导致服务中断，请谨慎操作'
 					),
-
 				onOk: () => {
 					restartPods(sendData).then((res) => {
 						if (res.success) {
@@ -223,8 +272,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
-				<LinkButton onClick={() => reStart(record.role, record, index)}>
-					重启
+				<LinkButton
+					onClick={() => reStart(record.role, record, index)}
+					disabled={!!podNum}
+				>
+					重启{podNum ? `(${podNum})` : ''}
 				</LinkButton>
 				<LinkButton
 					onClick={() => {
@@ -258,14 +310,35 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 
 	const autoSwitch = () => {
 		if (data.status === 'Running') {
-			confirm({
-				title: '操作确认',
-				content:
-					'主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
-				onOk: () => {
-					switchMiddleware(null);
-				}
-			});
+			if (data.type === 'redis') {
+				confirm({
+					title: '重启确认',
+					icon: null,
+					content: (
+						<div>
+							<p>分片选择（主节点-从节点）：</p>
+							<Select
+								style={{ margin: '12px 0', width: '100%' }}
+							></Select>
+							<p style={{ color: '#ff4d4f' }}>
+								主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制
+							</p>
+						</div>
+					),
+					onOk: () => {
+						switchMiddleware(null);
+					}
+				});
+			} else {
+				confirm({
+					title: '操作确认',
+					content:
+						'主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制',
+					onOk: () => {
+						switchMiddleware(null);
+					}
+				});
+			}
 		} else {
 			notification.error({
 				message: '失败',
@@ -301,6 +374,12 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							</span>
 						)
 					});
+					let num = 5;
+					const time = setInterval(() => {
+						num === 0 && clearInterval(time);
+						setPodNum(num);
+						num--;
+					}, 1000);
 				} else {
 					notification.success({
 						message: '成功',
@@ -582,21 +661,21 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			) : (
 				<>
 					{(type === 'mysql' && data.mode === '1m-1s') ||
-					type === 'redis' ||
+					(type === 'redis' && data.mode === 'cluster') ||
 					type === 'postgresql' ? (
 						<>
 							<div className="title-content">
 								<div className="blue-line"></div>
-								<div className="detail-title">
-									主从切换{' '}
-									<span
-										className="name-link"
-										style={{ marginLeft: 60 }}
-										onClick={autoSwitch}
-									>
-										手动切换
-									</span>{' '}
-								</div>
+								<div className="detail-title">主从切换 </div>
+							</div>
+							<div>
+								<Button
+									type="primary"
+									onClick={autoSwitch}
+									style={{ margin: '12px 0 0 7px' }}
+								>
+									手动切换
+								</Button>
 							</div>
 							{type === 'mysql' && data.mode === '1m-1s' && (
 								<div
@@ -632,6 +711,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						dataSource={pods}
 						showColumnSetting
 						showRefresh
+						rowKey="podName"
 						onRefresh={() => {
 							const sendData = {
 								clusterId,
