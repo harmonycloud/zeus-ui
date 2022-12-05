@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import {
 	Space,
 	Table,
@@ -30,6 +31,7 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 		setRefreshFlag,
 		execute
 	} = props;
+	const params: any = useParams();
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -72,6 +74,8 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 			dataIndex: 'targetDatabase',
 			key: 'targetDatabase',
 			width: 130,
+			render: (val: string) =>
+				params.type === 'redis' ? 'DB-' + val : val,
 			ellipsis: true
 		},
 		{
