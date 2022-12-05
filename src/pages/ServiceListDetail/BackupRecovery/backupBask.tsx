@@ -131,8 +131,9 @@ export default function List(props: any): JSX.Element {
 						e.stopPropagation();
 						confirm({
 							title: '操作确认',
-							content:
-								'删除周期备份任务，将清除对应备份数据且无法恢复，请确认执行？',
+							content: record.schedule
+								? '删除周期备份任务，将清除此中间件所有备份数据且无法恢复，请确认执行？'
+								: '删除单次备份任务，将清除对应备份数据且无法恢复，请确认执行？',
 							onOk: () => {
 								const sendData = {
 									clusterId: clusterId
