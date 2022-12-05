@@ -203,9 +203,9 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 			keyword,
 			formatString[0],
 			formatString[1],
-			false,
-			false,
-			false
+			ascExecDateOrder,
+			ascExecTimeOrder,
+			status
 		);
 	};
 	const getData = (

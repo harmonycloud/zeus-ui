@@ -1639,7 +1639,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											]}
 										>
 											<Input.Password
-												placeholder="请输入初始密码·"
+												placeholder="请输入初始密码"
 												disabled={!!middlewareName}
 											/>
 										</FormItem>
