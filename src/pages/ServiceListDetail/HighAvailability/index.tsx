@@ -112,7 +112,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	};
 
 	// * 重启节点
-	const reStart = (record: PodItem) => {
+	const reStart = (value: string, record: PodItem, index: number) => {
 		if (data.status === 'Running') {
 			const sendData = {
 				clusterId,
@@ -122,9 +122,44 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				podName: record.podName
 			};
 			confirm({
-				title: '操作确认',
+				title: '重启确认',
+				icon: null,
 				content:
-					'根据重启的节点角色不同，重启操作可能会导致服务中断，请谨慎操作',
+					data.type === 'redis' || data.type === 'postgres' ? (
+						<div>
+							<p>您当前选择的是</p>
+
+							<p>{record.podName}</p>
+							<p>
+								<span>运行状态：</span>
+								{record.status}
+							</p>
+							<p>
+								<span>节点角色：</span>
+								{roleRender(value, record, index)}
+							</p>
+							<p>
+								<span>绑定主节点：</span>
+								{record.role === 'slave' ? 'xxx' : '-'}
+							</p>
+							<div>
+								{record.role === 'master' &&
+									'当前选择的是主节点,直接重启可能会对服务产生影响'}
+								{record.role === 'slave' &&
+									'当前选择的是从节点,可以直接重启节点且不会对服务产生影响'}
+								{record.role !== 'master' &&
+									record.role !== 'slave' &&
+									`当前选择的是${roleRender(
+										value,
+										record,
+										index
+									)},可以直接重启节点且不会对服务产生影响`}
+							</div>
+						</div>
+					) : (
+						'根据重启的节点角色不同，重启操作可能会导致服务中断，请谨慎操作'
+					),
+
 				onOk: () => {
 					restartPods(sendData).then((res) => {
 						if (res.success) {
@@ -188,7 +223,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton onClick={() => openSSL(record)}>控制台</LinkButton>
-				<LinkButton onClick={() => reStart(record)}>重启</LinkButton>
+				<LinkButton onClick={() => reStart(record.role, record, index)}>
+					重启
+				</LinkButton>
 				<LinkButton
 					onClick={() => {
 						setPodData(record);
@@ -544,7 +581,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				<DefaultPicture />
 			) : (
 				<>
-					{type === 'mysql' && data.mode === '1m-1s' ? (
+					{(type === 'mysql' && data.mode === '1m-1s') ||
+					type === 'redis' ||
+					type === 'postgresql' ? (
 						<>
 							<div className="title-content">
 								<div className="blue-line"></div>
@@ -559,22 +598,24 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									</span>{' '}
 								</div>
 							</div>
-							<div
-								className="display-flex switch-master flex-align"
-								style={{ marginTop: 12 }}
-							>
-								<span style={{ marginRight: 12 }}>
-									自动切换
-								</span>
-								<Tooltip title="开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行集群异常的处理。">
-									<QuestionCircleOutlined />
-								</Tooltip>
-								<Switch
-									style={{ marginLeft: 68 }}
-									checked={switchValue}
-									onChange={onChange}
-								/>
-							</div>
+							{type === 'mysql' && data.mode === '1m-1s' && (
+								<div
+									className="display-flex switch-master flex-align"
+									style={{ marginTop: 12 }}
+								>
+									<span style={{ marginRight: 12 }}>
+										自动切换
+									</span>
+									<Tooltip title="开启状态下，在出现主节点异常重启的时候，会自动进行被动主从切换，在某些情况下，您也可以关闭主备自动切换，而采用人为介入的方式进行集群异常的处理。">
+										<QuestionCircleOutlined />
+									</Tooltip>
+									<Switch
+										style={{ marginLeft: 68 }}
+										checked={switchValue}
+										onChange={onChange}
+									/>
+								</div>
+							)}
 							<div
 								className="display-flex switch-master flex-align"
 								style={{ marginTop: 12 }}

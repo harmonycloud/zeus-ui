@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import moment from 'moment';
 import { Button, Input, Form, Select, notification, Modal } from 'antd';
 import Actions from '@/components/Actions';
@@ -28,6 +28,7 @@ interface ParamEditTableProps {
 	handleBtnClick?: (value: boolean) => void;
 	setParamTemplateConfig: (value: ConfigItem[]) => void;
 }
+
 function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 	const {
 		param,
@@ -39,7 +40,9 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 		source = 'template',
 		setParamTemplateConfig
 	} = props;
-	const { uid, currentTab }: ParamsProps = useParams();
+	const { uid, currentTab, aliasName, name, chartVersion }: ParamsProps =
+		useParams();
+	const history = useHistory();
 	const [dataSource, setDataSource] = useState<ConfigItem[]>([]);
 	const [showDataSource, setShowDataSource] = useState<ConfigItem[]>([]);
 	const [editFlag, setEditFlag] = useState<boolean>(false);
@@ -120,10 +123,20 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 				return false;
 			});
 			confirm({
-				title: '操作确认',
+				title: '重启提示',
 				content: restartFlag
-					? '本次修改需要重启服务才能生效，可能导致业务中断，请谨慎操作'
+					? '当前修改参数中包括需要重启才能生效的参数，建议立即前往实例详情页进行手动重启'
 					: '本次修改无需重启服务，参数将在提交后的15秒左右生效，请确认提交',
+				okText:
+					(restartFlag && type === 'redis') ||
+					(restartFlag && type === 'postgresql')
+						? '立即前往'
+						: '确认',
+				cancelText:
+					(restartFlag && type === 'redis') ||
+					(restartFlag && type === 'postgresql')
+						? '暂不重启'
+						: '取消',
 				onOk: () => {
 					const sendList = list.map((item) => {
 						item.value = item.modifiedValue;
@@ -150,6 +163,14 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 									message: '修改成功',
 									description: `共修改了${sendData.data.customConfigList.length}个参数`
 								});
+								if (
+									(restartFlag && type === 'redis') ||
+									(restartFlag && type === 'postgresql')
+								) {
+									history.push(
+										`/serviceList/${name}/${aliasName}/highAvailability/${middlewareName}/${type}/${chartVersion}/${namespace}`
+									);
+								}
 							} else {
 								notification.error({
 									message: '失败',
@@ -160,6 +181,53 @@ function ParamEditTable(props: ParamEditTableProps): JSX.Element {
 						.finally(() => {
 							getData(clusterId, namespace, middlewareName, type);
 						});
+				},
+				onCancel: () => {
+					if (
+						(restartFlag && type === 'redis') ||
+						(restartFlag && type === 'postgresql')
+					) {
+						const sendList = list.map((item) => {
+							item.value = item.modifiedValue;
+							return item;
+						});
+						const sendData = {
+							url: {
+								clusterId,
+								middlewareName,
+								namespace
+							},
+							data: {
+								clusterId,
+								middlewareName,
+								namespace,
+								type,
+								customConfigList: sendList
+							}
+						};
+						updateConfig(sendData)
+							.then((res) => {
+								if (res.success) {
+									notification.success({
+										message: '修改成功',
+										description: `共修改了${sendData.data.customConfigList.length}个参数`
+									});
+								} else {
+									notification.error({
+										message: '失败',
+										description: res.errorMsg
+									});
+								}
+							})
+							.finally(() => {
+								getData(
+									clusterId,
+									namespace,
+									middlewareName,
+									type
+								);
+							});
+					}
 				}
 			});
 		}
