@@ -299,7 +299,7 @@ export default function BackupPosition(): JSX.Element {
 								>
 									<ListCardItem
 										label="备份地址"
-										value={item.endpoint}
+										value={item.endpoint + item.bucketName}
 										width={260}
 									/>
 									{/* <ListCardItem
