@@ -35,6 +35,7 @@ import {
 } from '../detail';
 
 import './basicinfo.scss';
+import PasswordDisplay from '@/components/PasswordDisplay';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -275,8 +276,6 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 	const [form] = Form.useForm();
 	const history = useHistory();
 	const params: DetailParams = useParams();
-	// * 密码显影
-	const [passwordDisplay, setPasswordDisplay] = useState<boolean>(false);
 	// * 事件
 	const [eventType, setEventType] = useState<string>('All');
 	const [kind, setKind] = useState<string>('All');
@@ -440,7 +439,6 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		});
 	};
 	const editDescription = (value: any) => {
-		console.log(value);
 		const sendData = {
 			clusterId: clusterId,
 			namespace: namespace,
@@ -910,29 +908,15 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				  ]
 				: [
 						...configConfig,
-						{
-							dataIndex: 'password',
-							label: '密码',
-							render: (val: string) => {
-								return (
-									<div className="password-content">
-										<div className="password-display">
-											{passwordDisplay ? val : '******'}
-										</div>
-										<div
-											className="name-link password-reset"
-											onClick={() => {
-												setPasswordDisplay(
-													!passwordDisplay
-												);
-											}}
-										>
-											{passwordDisplay ? '隐藏' : '查看'}
-										</div>
-									</div>
-								);
-							}
-						},
+						operateFlag
+							? {
+									dataIndex: 'password',
+									label: '密码',
+									render: (val: string) => {
+										return <PasswordDisplay value={val} />;
+									}
+							  }
+							: {},
 						operateFlag ? yamlConfig : {}
 				  ]
 			: [...configConfig, operateFlag ? yamlConfig : {}];

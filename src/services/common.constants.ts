@@ -35,3 +35,5 @@ export const getNodePort = `${api}/port/nodePort`;
 export const getDisaster = `${api}/system/disasterRecovery/enable`;
 // * 查询日志采集组件的安装情况
 export const getLogCollect = `${api}/clusters/{clusterId}/components/logging/logCollect`;
+// * 查询指定中间件发布时可指定版本
+export const getMiddlewareVersions = `${api}/middlewares/info/{type}/version`;

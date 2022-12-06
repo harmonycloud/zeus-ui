@@ -67,6 +67,7 @@ import { NamespaceItem } from '@/pages/ProjectDetail/projectDetail';
 import { getProjectNamespace } from '@/services/project';
 import StorageQuota from '@/components/StorageQuota';
 import storage from '@/utils/storage';
+import VersionForm from '../components/VersionForm';
 
 const { Item: FormItem } = Form;
 const RedisCreate: (props: CreateProps) => JSX.Element = (
@@ -127,17 +128,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [standardLog, setStandardLog] = useState<boolean>(true);
 
 	// Redis配置
-	const [version, setVersion] = useState<string>('5.0');
-	const versionList = [
-		{
-			label: '5.0',
-			value: '5.0'
-		},
-		{
-			label: '6.2',
-			value: '6.2'
-		}
-	];
+	const [version, setVersion] = useState<string>('');
 	const [mode, setMode] = useState<string>('cluster');
 	const [modeList, setModeList] = useState([
 		{
@@ -1599,23 +1590,13 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="Redis配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-											disabled={!!middlewareName}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+									disabled={!!middlewareName}
+								/>
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span

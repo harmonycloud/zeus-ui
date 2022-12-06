@@ -52,6 +52,7 @@ import {
 import storage from '@/utils/storage';
 import { applyBackup } from '@/services/backup';
 import transUnit from '@/utils/transUnit';
+import VersionForm from '../components/VersionForm';
 
 const { Item: FormItem } = Form;
 
@@ -114,17 +115,17 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 	const [namespaceList, setNamespaceList] = useState<NamespaceItem[]>([]);
 
 	// Elasticsearch配置
-	const [version, setVersion] = useState<string>('6.8');
-	const versionList = [
-		{
-			label: '6.8',
-			value: '6.8'
-		},
-		{
-			label: '7.16',
-			value: '7.16'
-		}
-	];
+	const [version, setVersion] = useState<string>('');
+	// const versionList = [
+	// 	{
+	// 		label: '6.8',
+	// 		value: '6.8'
+	// 	},
+	// 	{
+	// 		label: '7.16',
+	// 		value: '7.16'
+	// 	}
+	// ];
 	const [mode, setMode] = useState<string>('simple');
 	const modeList = [
 		{
@@ -378,6 +379,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -1212,23 +1214,13 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="Elasticsearch配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-											disabled={!!middlewareName}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+									disabled={!!middlewareName}
+								/>
 								<li className="display-flex mt-8">
 									<label className="form-name">
 										<span

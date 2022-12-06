@@ -49,6 +49,7 @@ import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import styles from './kafka.module.scss';
 import ModePost from '../components/ModePost';
 import StorageQuota from '@/components/StorageQuota';
+import VersionForm from '../components/VersionForm';
 
 const FormItem = Form.Item;
 
@@ -100,17 +101,6 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	const [standardLog, setStandardLog] = useState<boolean>(true);
 	// * 日志-end
 	// * Kafka配置-start
-	const [version, setVersion] = useState<string>('2.6');
-	const versionList = [
-		{
-			label: '2.6',
-			value: '2.6'
-		},
-		{
-			label: '3.1',
-			value: '3.1'
-		}
-	];
 	const [kfkDTO, setKfkDTO] = useState<KafkaDTO>({
 		path: '',
 		zkAddress: '',
@@ -118,6 +108,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 	});
 	// * Kafka配置-end
 	// * 规格配置 -start
+	const [version, setVersion] = useState<string>('');
 	const [mode, setMode] = useState<string>('cluster');
 	const modeList = [
 		{
@@ -419,6 +410,7 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 			// if (hostNetwork) {
 			// 	sendData.ingresses = values.ingresses;
 			// }
+			// console.log(sendData);
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -953,22 +945,12 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 					<FormBlock title="Kafka配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+								/>
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span className="ne-required">

@@ -52,6 +52,7 @@ import ModePost from '../components/ModePost';
 import StorageQuota from '@/components/StorageQuota';
 import storage from '@/utils/storage';
 import transUnit from '@/utils/transUnit';
+import VersionForm from '../components/VersionForm';
 
 const { Item: FormItem } = Form;
 
@@ -116,13 +117,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 	const [standardLog, setStandardLog] = useState<boolean>(true);
 
 	// RMQ配置
-	const [version, setVersion] = useState<string>('4.8.0');
-	const versionList = [
-		{
-			label: '4.8.0',
-			value: '4.8.0'
-		}
-	];
+	const [version, setVersion] = useState<string>('');
+	// const versionList = [
+	// 	{
+	// 		label: '4.8.0',
+	// 		value: '4.8.0'
+	// 	}
+	// ];
 	const [mode, setMode] = useState<string>('2m-noslave');
 	const modeList = [
 		{
@@ -1118,23 +1119,13 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					<FormBlock title="RocketMQ配置">
 						<div className={styles['mysql-config']}>
 							<ul className="form-layout">
-								<li className="display-flex form-li">
-									<label className="form-name">
-										<span>版本</span>
-									</label>
-									<div
-										className={`form-content display-flex`}
-									>
-										<SelectBlock
-											options={versionList}
-											currentValue={version}
-											onCallBack={(value: any) =>
-												setVersion(value)
-											}
-											disabled={!!middlewareName}
-										/>
-									</div>
-								</li>
+								<VersionForm
+									type={chartName}
+									chartVersion={chartVersion}
+									version={version}
+									setVersion={setVersion}
+									disabled={!!middlewareName}
+								/>
 								<li className="display-flex form-li">
 									<label className="form-name">
 										<span
