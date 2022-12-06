@@ -9,7 +9,7 @@ export default function PasswordDisplay(
 	const { value } = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	return (
-		<span>
+		<span style={{ display: 'flex', alignItems: 'center' }}>
 			{visible ? value : '******'}
 			{visible ? (
 				<span

@@ -175,17 +175,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const [pgSearchValue, setPgSearchValue] = useState<string>('');
 	const [pgTableTreeValue, setPgTableTreeValue] = useState<string>('');
 	const newTabIndex = useRef(0);
-	// * 监听窗口大小
-	useEffect(() => {
-		window.addEventListener('resize', (e) => {
-			console.log(e);
-		});
-		return () => {
-			window.removeEventListener('resize', (e) => {
-				console.log(e);
-			});
-		};
-	}, []);
 	// * 添加标签页通用方法
 	const add = (label: string, children: any) => {
 		const newActiveKey = `newTab${newTabIndex.current++}`;
@@ -257,8 +246,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const handleMenuClick = (e: MenuInfo, i: string, fatherNode: string) => {
-		console.log(i, fatherNode);
-		console.log(selectDatabase, selectSchema);
+		console.log(i);
+		console.log(fatherNode);
+		console.log(selectDatabase);
+		console.log(selectSchema);
 		switch (e.key) {
 			case 'editTable': // * mysql 编辑表
 				add(
@@ -401,8 +392,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						/>
 					) : (
 						<PgsqlEditTable
-							dbName={fatherNode}
-							schemaName={i}
+							dbName={selectDatabase}
+							schemaName={fatherNode ? i : selectSchema}
 							removeActiveKey={removeActiveKey}
 							onRefresh={getPgsqlTableData}
 						/>
