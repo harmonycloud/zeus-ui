@@ -285,7 +285,12 @@ export const getTolerations = () => {
 	return Axios.get(MIDDLEWARE.getTolerations);
 };
 
-// 查询可用区tolerations
+// * 获取当前从节点绑定主节点
 export const getMasterName = (params: any) => {
 	return Axios.get(MIDDLEWARE.getMasterName, params);
+};
+
+// * 获取redis主从关系列表
+export const getBurstList = (params: any) => {
+	return Axios.get(MIDDLEWARE.getBurstList, params);
 };

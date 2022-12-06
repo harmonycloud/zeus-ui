@@ -120,3 +120,5 @@ export const getKey = `${api}/area/keys`;
 export const getTolerations = `${api}/area/tolerations`;
 // * 获取当前从节点绑定主节点
 export const getMasterName = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/redis/burstMaster`;
+// * 获取redis主从关系列表
+export const getBurstList = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/redis/burstList`;

@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, notification, Switch, Button, Tooltip, Select } from 'antd';
+import {
+	Modal,
+	notification,
+	Switch,
+	Button,
+	Tooltip,
+	Select,
+	Form
+} from 'antd';
 import {
 	QuestionCircleOutlined,
 	CheckCircleFilled,
 	CloseCircleFilled
 } from '@ant-design/icons';
-import { getMasterName } from '@/services/middleware';
+import { getMasterName, getBurstList } from '@/services/middleware';
 import Actions from '@/components/Actions';
 import ProTable from '@/components/ProTable';
 import Visualization from './visualization';
@@ -37,6 +45,7 @@ import {
 } from '../detail';
 import RedisSentinelNodeSpe from './redisSentinelNodeSpe';
 import { IconFont } from '@/components/IconFont';
+import { spawn } from 'child_process';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -72,6 +81,12 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [podData, setPodData] = useState<PodItem>();
 	const [dilatationVisible, setDilationVisible] = useState<boolean>(false);
 	const [podNum, setPodNum] = useState<number>(0);
+	const [burstList, setBurstList] = useState<string[]>([]);
+	// * redis手动切换状态
+	const [switchStatus, setSwitchStatus] = useState<boolean>();
+	// * redis手动切换失败原因
+	const [switchReason, setSwitchReason] = useState<string>('');
+	const [form] = Form.useForm();
 
 	useEffect(() => {
 		console.log(data);
@@ -82,6 +97,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				middlewareName: data.name,
 				type: data.type
 			};
+			data.type === 'redis' && getBurstLists();
 			getPodList(sendData);
 			setQuotaValue(data.quota[type]);
 			setSwitchValue(data.autoSwitch);
@@ -97,6 +113,35 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				notification.error({
 					message: '失败',
 					description: res.errorMsg
+				});
+			}
+		});
+	};
+	// * 获取redis主从关系列表
+	const getBurstLists = () => {
+		getBurstList({
+			clusterId,
+			namespace,
+			middlewareName: data.name,
+			mode: data.mode
+		}).then((res) => {
+			if (res.success) {
+				if (res.data && JSON.stringify(res.data) !== '{}') {
+					const list = [];
+					for (const key in res.data) {
+						list.push(`${key}-${res.data[key]}`);
+					}
+					setBurstList(list);
+				}
+			} else {
+				notification.error({
+					message: '失败',
+					description: (
+						<>
+							<p>{res.errorMsg}</p>
+							<p>{res.errorDetail}</p>
+						</>
+					)
 				});
 			}
 		});
@@ -128,7 +173,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					clusterId,
 					namespace,
 					middlewareName: data.name,
-					slaveName: record.podName
+					slaveName: record.podName,
+					mode: data.mode
 				});
 			}
 			const sendData = {
@@ -317,16 +363,45 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					content: (
 						<div>
 							<p>分片选择（主节点-从节点）：</p>
-							<Select
-								style={{ margin: '12px 0', width: '100%' }}
-							></Select>
+							<Form>
+								<Form.Item
+									name="slaveName"
+									rules={[
+										{
+											required: true,
+											message: '请选择分片'
+										}
+									]}
+								>
+									<Select
+										style={{
+											margin: '12px 0',
+											width: '100%'
+										}}
+										placeholder="请选择分片"
+									>
+										{burstList.map((item: string) => {
+											return (
+												<Select.Option
+													key={item}
+													value={item.split('-')[1]}
+												>
+													{item}
+												</Select.Option>
+											);
+										})}
+									</Select>
+								</Form.Item>
+							</Form>
 							<p style={{ color: '#ff4d4f' }}>
 								主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制
 							</p>
 						</div>
 					),
 					onOk: () => {
-						switchMiddleware(null);
+						form.validateFields().then(() => {
+							switchMiddleware(null);
+						});
 					}
 				});
 			} else {
@@ -348,38 +423,45 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	};
 
 	const switchMiddleware = (value: boolean | null) => {
-		const sendData = {
+		const sendData: any = {
 			clusterId,
 			namespace,
 			middlewareName: data.name,
 			type: data.type,
 			isAuto: value
 		};
+		if (data.type === 'redis') {
+			sendData.slaveName = form.getFieldValue('slaveName');
+		}
 		switchMiddlewareMasterSlave(sendData).then((res) => {
 			if (res.success) {
 				if (typeof value !== 'boolean') {
-					notification.success({
-						message: '成功',
-						description: (
-							<span>
-								已完成切换：
-								<br /> {pods[0].podName}:{' '}
-								{pods[0].role === 'master'
-									? '主节点 -> 从节点'
-									: '从节点 -> 主节点'}{' '}
-								<br /> {pods[1].podName}:{' '}
-								{pods[1].role === 'master'
-									? '主节点 -> 从节点'
-									: '从节点 -> 主节点'}
-							</span>
-						)
-					});
-					let num = 5;
-					const time = setInterval(() => {
-						num === 0 && clearInterval(time);
-						setPodNum(num);
-						num--;
-					}, 1000);
+					if (data.type === 'redis') {
+						let num = 5;
+						const time = setInterval(() => {
+							num === 0 && clearInterval(time);
+							setPodNum(num);
+							num--;
+						}, 1000);
+						setSwitchStatus(true);
+					} else {
+						notification.success({
+							message: '成功',
+							description: (
+								<span>
+									已完成切换：
+									<br /> {pods[0].podName}:{' '}
+									{pods[0].role === 'master'
+										? '主节点 -> 从节点'
+										: '从节点 -> 主节点'}{' '}
+									<br /> {pods[1].podName}:{' '}
+									{pods[1].role === 'master'
+										? '主节点 -> 从节点'
+										: '从节点 -> 主节点'}
+								</span>
+							)
+						});
+					}
 				} else {
 					notification.success({
 						message: '成功',
@@ -394,6 +476,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					message: '失败',
 					description: res.errorMsg
 				});
+				setSwitchStatus(false);
+				setSwitchReason(res.errorMsg);
 			}
 		});
 	};
@@ -676,6 +760,31 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								>
 									手动切换
 								</Button>
+								{typeof switchStatus === 'boolean' ? (
+									<span>
+										{switchStatus ? (
+											<>
+												<CheckCircleFilled
+													style={{
+														color: '#52c41a',
+														margin: '0 4px 0 8px'
+													}}
+												/>
+												切换成功
+											</>
+										) : (
+											<Tooltip title={switchReason}>
+												<CloseCircleFilled
+													style={{
+														color: '#ff4d4f',
+														margin: '0 4px 0 8px'
+													}}
+												/>
+												切换失败
+											</Tooltip>
+										)}
+									</span>
+								) : null}
 							</div>
 							{type === 'mysql' && data.mode === '1m-1s' && (
 								<div
@@ -695,15 +804,19 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									/>
 								</div>
 							)}
-							<div
-								className="display-flex switch-master flex-align"
-								style={{ marginTop: 12 }}
-							>
-								<span style={{ marginRight: 32 }}>
-									上一次切换时间
-								</span>
-								<label>{data.lastAutoSwitchTime || '/'}</label>
-							</div>
+							{type !== 'postgresql' && (
+								<div
+									className="display-flex switch-master flex-align"
+									style={{ marginTop: 12 }}
+								>
+									<span style={{ marginRight: 32 }}>
+										上一次切换时间
+									</span>
+									<label>
+										{data.lastAutoSwitchTime || '/'}
+									</label>
+								</div>
+							)}
 							<div className="detail-divider" />
 						</>
 					) : null}
