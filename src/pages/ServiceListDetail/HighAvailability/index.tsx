@@ -756,7 +756,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								<Button
 									type="primary"
 									onClick={autoSwitch}
-									style={{ margin: '12px 0 0 7px' }}
+									style={{ margin: '12px 0 0 0' }}
 								>
 									手动切换
 								</Button>
@@ -786,7 +786,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									</span>
 								) : null}
 							</div>
-							{type === 'mysql' && data.mode === '1m-1s' && (
+							{(type === 'postgresql' ||
+								(type === 'mysql' &&
+									data.mode === '1m-1s')) && (
 								<div
 									className="display-flex switch-master flex-align"
 									style={{ marginTop: 12 }}
@@ -798,7 +800,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 										<QuestionCircleOutlined />
 									</Tooltip>
 									<Switch
-										style={{ marginLeft: 68 }}
+										style={{ marginLeft: 46 }}
 										checked={switchValue}
 										onChange={onChange}
 									/>
