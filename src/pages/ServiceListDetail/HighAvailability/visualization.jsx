@@ -223,10 +223,6 @@ function Visualization(props) {
 	};
 
 	const hasMemory = (cfg) => {
-		console.log(
-			cfg?.provisioner &&
-				cfg?.provisioner === 'localplugin.csi.alibabacloud.com'
-		);
 		if (cfg.depth === 0) {
 			if (
 				cfg?.provisioner &&

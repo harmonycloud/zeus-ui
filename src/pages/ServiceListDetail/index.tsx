@@ -171,7 +171,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 		if (jsonRole.userRoleList.some((i: any) => i.roleId === 1)) {
 			setOperateFlag(true);
 		}
-	}, [middlewareName]);
+	}, [middlewareName, currentTab]);
 	useEffect(() => {
 		const jsonRole: User = JSON.parse(storage.getLocal('role'));
 		if (jsonRole.userRoleList.every((i: any) => i.roleId !== 1)) {

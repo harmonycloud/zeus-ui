@@ -118,3 +118,5 @@ export const redis = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlew
 export const getKey = `${api}/area/keys`;
 // * 获取可用区tolerations
 export const getTolerations = `${api}/area/tolerations`;
+// * 获取当前从节点绑定主节点
+export const getMasterName = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/redis/burstMaster`;

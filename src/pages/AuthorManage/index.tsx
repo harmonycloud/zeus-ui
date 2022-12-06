@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProPage, ProHeader, ProContent } from '@/components/ProPage';
 import DataFields from '@/components/DataFields';
 import { IconFont } from '@/components/IconFont';
-import { Button, Input, notification } from 'antd';
+import { Button, Form, Input, notification } from 'antd';
 
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { getGaugeOption } from '@/utils/echartsOption';
@@ -47,6 +47,7 @@ const InfoConfig = [
 ];
 
 function AuthorManage(): JSX.Element {
+	const [form] = Form.useForm();
 	const [basicData, setBasicData] = useState<any>(info);
 	const [infoConfig, setInfoConfig] = useState(InfoConfig);
 	const [option1, setOption1] = useState(getGaugeOption(0, 'CPU(核)'));
@@ -80,19 +81,21 @@ function AuthorManage(): JSX.Element {
 	};
 
 	const submit = () => {
-		editLicenseInfo({ license }).then((res) => {
-			if (res.success) {
-				getData();
-				notification.success({
-					message: '成功',
-					description: '授权成功'
-				});
-			} else {
-				notification.error({
-					message: '失败',
-					description: res.errorMsg
-				});
-			}
+		form.validateFields().then(() => {
+			editLicenseInfo({ license }).then((res) => {
+				if (res.success) {
+					getData();
+					notification.success({
+						message: '成功',
+						description: '授权成功'
+					});
+				} else {
+					notification.error({
+						message: '失败',
+						description: res.errorMsg
+					});
+				}
+			});
 		});
 	};
 
@@ -226,11 +229,23 @@ function AuthorManage(): JSX.Element {
 					</div>
 				</div>
 				<h2>授权申请</h2>
-				<Input.TextArea
-					placeholder="请输入内容"
-					value={license}
-					onChange={(e) => setLicense(e.target.value)}
-				/>
+				<Form form={form}>
+					<Form.Item
+						name="license"
+						rules={[
+							{
+								required: true,
+								message: '请输入内容'
+							}
+						]}
+					>
+						<Input.TextArea
+							placeholder="请输入内容"
+							value={license}
+							onChange={(e) => setLicense(e.target.value)}
+						/>
+					</Form.Item>
+				</Form>
 				<Button
 					type="primary"
 					style={{ marginTop: 8 }}

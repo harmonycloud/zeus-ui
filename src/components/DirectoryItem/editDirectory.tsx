@@ -174,7 +174,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 							return (
 								<Select.Option
 									key={item.name}
-									value={`${item.name}/${item.aliasName}`}
+									value={`${item.name}`}
 								>
 									{item.aliasName}
 								</Select.Option>
