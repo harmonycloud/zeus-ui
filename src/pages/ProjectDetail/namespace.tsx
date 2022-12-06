@@ -15,6 +15,8 @@ import {
 	TablePaginationConfig
 } from 'antd/lib/table/interface';
 import { getIsAccessGYT } from '@/services/common';
+import { roleProps } from '../RoleManage/role';
+import storage from '@/utils/storage';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -27,6 +29,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 	const [visible, setVisible] = useState<boolean>(false);
 	const [filters, setFilters] = useState<ColumnFilterItem[]>([]);
 	const [isAccess, setIsAccess] = useState<boolean>(false);
+	const [role] = useState<roleProps>(JSON.parse(storage.getLocal('role')));
 	useEffect(() => {
 		getIsAccessGYT().then((res) => {
 			if (res.success) {
@@ -203,7 +206,7 @@ function Namespace(props: NamespaceProps): JSX.Element {
 			<Table
 				dataSource={showDataSource}
 				rowKey="name"
-				operation={Operation}
+				operation={role?.isAdmin ? Operation : undefined}
 				showRefresh
 				onRefresh={getData}
 				search={{
