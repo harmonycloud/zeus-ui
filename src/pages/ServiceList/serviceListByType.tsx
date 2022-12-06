@@ -45,7 +45,15 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
-
+// ! Creating 启动中
+// ! Recover 恢复中
+// ! Running 运行正常
+// ! Failed 运行异常
+// ! RunningError  运行异常
+// ! Preparing 创建中
+// ! failed 创建失败
+// ! Deleted 已删除
+// ! Deleting 数据删除中
 const ServiceListByType = (props: serviceListProps) => {
 	const { setCluster, setNamespace, setRefreshCluster } = props;
 	const {
@@ -625,6 +633,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		record: serviceProps,
 		index: number
 	) => {
+		// * 创建中和创建失败状态的中间件只可以进行删除操作
 		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<Actions>
@@ -637,6 +646,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
+		// * 已删除和数据删除中状态显示，数据删除中时，操作置灰
 		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<Actions>
@@ -660,6 +670,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
+		// * 权限判断 没有运维权限、有删除权限的情况下
 		if (!roleFlag.operateFlag && roleFlag.deleteFlag) {
 			return (
 				<Actions>
@@ -669,6 +680,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
+		// * 权限判断 有运维权限、没有删除权限的情况下
 		if (roleFlag.operateFlag && !roleFlag.deleteFlag) {
 			return (
 				<Actions>
@@ -693,12 +705,6 @@ const ServiceListByType = (props: serviceListProps) => {
 												'_blank'
 											);
 										} else {
-											const sn =
-												record.type === 'elasticsearch'
-													? `${record.name}-kibana`
-													: record.type === 'rocketmq'
-													? `${record.name}-console-svc`
-													: `${record.name}-manager-svc`;
 											notification.error({
 												message: '失败',
 												description: `请前往服务暴露页面暴露管理页面服务`
@@ -729,6 +735,10 @@ const ServiceListByType = (props: serviceListProps) => {
 						name === 'redis' ||
 						name === 'postgresql') && (
 						<LinkButton
+							disabled={
+								!roleFlag.operateFlag ||
+								record.status === 'Creating'
+							}
 							onClick={() => {
 								window.open(
 									`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${record.namespace}/${name}/${record.name}/${record.version}/${record.mode}`,
@@ -758,7 +768,6 @@ const ServiceListByType = (props: serviceListProps) => {
 							};
 							getPlatformAdd(sendData).then((res) => {
 								if (res.success) {
-									console.log(res);
 									if (res.data) {
 										window.open(
 											`${window.location.protocol.toLowerCase()}//${
@@ -767,12 +776,6 @@ const ServiceListByType = (props: serviceListProps) => {
 											'_blank'
 										);
 									} else {
-										const sn =
-											record.type === 'elasticsearch'
-												? `${record.name}-kibana`
-												: record.type === 'rocketmq'
-												? `${record.name}-console-svc`
-												: `${record.name}-manager-svc`;
 										notification.error({
 											message: '失败',
 											description: `请前往服务暴露页面暴露管理页面服务`
@@ -790,7 +793,7 @@ const ServiceListByType = (props: serviceListProps) => {
 						<span
 							title={
 								!roleFlag.operateFlag
-									? '当前用户无改操作的权限'
+									? '当前用户无该操作的权限'
 									: ''
 							}
 						>
@@ -809,7 +812,7 @@ const ServiceListByType = (props: serviceListProps) => {
 					<span
 						title={
 							!roleFlag.operateFlag
-								? '当前用户无改操作的权限'
+								? '当前用户无该操作的权限'
 								: ''
 						}
 					>
@@ -820,6 +823,10 @@ const ServiceListByType = (props: serviceListProps) => {
 					name === 'redis' ||
 					name === 'postgresql') && (
 					<LinkButton
+						disabled={
+							!roleFlag.operateFlag ||
+							record.status === 'Creating'
+						}
 						onClick={() => {
 							window.open(
 								`#/operationalPanel/sqlConsole/${project.projectId}/${cluster.id}/${record.namespace}/${name}/${record.name}/${record.version}/${record.mode}`,
@@ -829,7 +836,15 @@ const ServiceListByType = (props: serviceListProps) => {
 								storage.setSession('redisMode', record.mode);
 						}}
 					>
-						运维面板(beta)
+						<span
+							title={
+								!roleFlag.operateFlag
+									? '当前用户无该操作的权限'
+									: ''
+							}
+						>
+							运维面板(beta)
+						</span>
 					</LinkButton>
 				)}
 				<LinkButton
@@ -838,7 +853,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				>
 					<span
 						title={
-							!roleFlag.deleteFlag ? '当前用户无改操作的权限' : ''
+							!roleFlag.deleteFlag ? '当前用户无该操作的权限' : ''
 						}
 					>
 						删除
@@ -949,25 +964,16 @@ const ServiceListByType = (props: serviceListProps) => {
 				</div>
 			);
 		}
-		if (record.status === 'Preparing') {
+		if (record.status === 'Preparing' || record.status === 'failed') {
 			return (
 				<div style={{ maxWidth: '120px' }}>
 					<div
 						className="displayed-name text-overflow"
-						title="服务创建中，无法操作"
-					>
-						{record.name}
-					</div>
-					<div className="text-overflow">{record.aliasName}</div>
-				</div>
-			);
-		}
-		if (record.status === 'failed') {
-			return (
-				<div style={{ maxWidth: '120px' }}>
-					<div
-						className="displayed-name text-overflow"
-						title="服务创建失败，无法操作"
+						title={
+							record.status === 'Preparing'
+								? '服务创建中，无法操作'
+								: '服务创建失败，无法操作'
+						}
 					>
 						{record.name}
 					</div>

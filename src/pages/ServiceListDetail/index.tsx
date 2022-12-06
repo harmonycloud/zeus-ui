@@ -525,7 +525,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 				}
 				extra={
 					<>
-						{operateFlag && (
+						{operateFlag && status !== 'Creating' && (
 							<Button type="primary" onClick={toOperatorPanel}>
 								运维面板(beta)
 							</Button>
