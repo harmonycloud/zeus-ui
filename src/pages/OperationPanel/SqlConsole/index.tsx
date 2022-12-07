@@ -246,10 +246,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const handleMenuClick = (e: MenuInfo, i: string, fatherNode: string) => {
-		console.log(i);
-		console.log(fatherNode);
-		console.log(selectDatabase);
-		console.log(selectSchema);
 		switch (e.key) {
 			case 'editTable': // * mysql 编辑表
 				add(
@@ -395,7 +391,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							dbName={selectDatabase}
 							schemaName={fatherNode ? i : selectSchema}
 							removeActiveKey={removeActiveKey}
-							onRefresh={getPgsqlTableData}
+							onRefresh={() =>
+								getPgsqlTableData(fatherNode ? i : selectSchema)
+							}
 						/>
 					)
 				);
@@ -496,11 +494,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		return (
 			<Menu
 				onClick={(info: MenuInfo) => {
-					if (fatherNode) {
-						setSelectSchema(i);
-					} else {
-						setSelectDatabase(i);
-					}
 					handleMenuClick(info, i, fatherNode || '');
 				}}
 				items={databaseMenuItems}
@@ -524,7 +517,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			<Menu
 				items={pgMenuItems}
 				onClick={(info: MenuInfo) => {
-					setSelectDatabase(i);
 					handleMenuClick(info, i, '');
 				}}
 			/>
@@ -1123,10 +1115,12 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const pgsqlOnSelect = (selectedKeys: Key[], e: any) => {
-		if (e.node.type === 'database') {
-			setSelectDatabase(e.node.value);
-		} else {
-			setSelectSchema(e.node.value);
+		if (e.selected) {
+			if (e.node.type === 'database') {
+				setSelectDatabase(e.node.value);
+			} else {
+				setSelectSchema(e.node.value);
+			}
 		}
 	};
 	const mysqlOnSelect = (selectedKeys: Key[], e: any) => {
@@ -1338,10 +1332,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	// * pgsql table树状图的刷新
-	const getPgsqlTableData = () => {
+	const getPgsqlTableData = (schema?: string) => {
 		getPgTables({
 			clusterId: params.clusterId,
-			schemaName: selectSchema,
+			schemaName: schema ? schema : selectSchema,
 			databaseName: selectDatabase,
 			namespace: params.namespace,
 			middlewareName: params.name
@@ -1360,7 +1354,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								>
 									<span
 										onDoubleClick={() => {
-											console.log('click');
 											add(
 												`表:${item.tableName}`,
 												<OpenTable
@@ -1644,7 +1637,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const newPgTreeTableData = useMemo(() => {
 		const loop = (data: any[]): any[] =>
 			data.map((item) => {
-				console.log(item);
 				const result: any = {};
 				const strTitle = item.value || '';
 				const index = strTitle.indexOf(pgTableTreeValue);
