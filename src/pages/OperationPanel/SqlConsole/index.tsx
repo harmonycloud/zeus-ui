@@ -297,11 +297,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'modeMag': // * pgsql 模式管理
-				add(i, <ModeMag dbName={i} onRefresh={getData} />);
+				add(`数据库:${i}`, <ModeMag dbName={i} onRefresh={getData} />);
 				return;
 			case 'openTable': // * 打开表
 				add(
-					i,
+					`表:${i}`,
 					params.type === 'mysql' ? (
 						<OpenTable dbName={fatherNode || ''} tableName={i} />
 					) : (
@@ -1515,10 +1515,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				} else {
 					return { ...item };
 				}
-
-				return {
-					...result
-				};
 			});
 
 		return loop(treeData, '');
