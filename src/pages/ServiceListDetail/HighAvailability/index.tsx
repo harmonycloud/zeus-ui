@@ -159,7 +159,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				if (res.data && JSON.stringify(res.data) !== '{}') {
 					const list = [];
 					for (const key in res.data) {
-						list.push(`${key}——${res.data[key]}`);
+						list.push(`${key} -> ${res.data[key]}`);
 					}
 					setBurstList(list);
 				}
@@ -392,7 +392,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					icon: null,
 					content: (
 						<div>
-							<p>分片选择（主节点-从节点）：</p>
+							<p>分片选择（主节点 -&gt; 从节点）：</p>
 							<Form form={form}>
 								<Form.Item
 									name="slaveName"
@@ -414,7 +414,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 											return (
 												<Select.Option
 													key={item}
-													value={item.split('——')[1]}
+													value={
+														item.split(' -> ')[1]
+													}
 												>
 													{item}
 												</Select.Option>
