@@ -554,8 +554,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 												style={{ width: '140px' }}
 												onDoubleClick={() =>
 													add(
-														(item as DatabaseItem)
-															.db,
+														`数据库:${
+															(
+																item as DatabaseItem
+															).db
+														}`,
 														<MysqlSqlConsole
 															dbName={
 																(
@@ -622,8 +625,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 											style={{ width: '140px' }}
 											onDoubleClick={() => {
 												add(
-													(item as PgsqlDatabaseItem)
-														.databaseName,
+													`数据库:${
+														(
+															item as PgsqlDatabaseItem
+														).databaseName
+													}`,
 													<ModeMag
 														dbName={
 															(
@@ -717,9 +723,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 									>
 										<span
 											onDoubleClick={() => {
-												console.log('click');
 												add(
-													item.tableName,
+													`表:${item.tableName}`,
 													<OpenTable
 														dbName={
 															item.databaseName
@@ -914,7 +919,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 											style={{ width: '120px' }}
 											onDoubleClick={() => {
 												add(
-													item.tableName,
+													`表:${item.tableName}`,
 													<OpenTable
 														dbName={value}
 														tableName={
@@ -976,7 +981,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										<span
 											onDoubleClick={() => {
 												add(
-													item.schemaName,
+													`模式:${item.schemaName}`,
 													<PgsqlSqlConsole
 														dbName={value}
 													/>
@@ -1018,8 +1023,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		});
 	const pgTableOnLoadData = ({ key, value, children }: any) =>
 		new Promise<void>((resolve) => {
-			console.log(key, value, children);
-			console.log(selectDatabase, selectSchema);
 			if (children) {
 				resolve();
 				return;
@@ -1139,7 +1142,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const mysqlOnExpand = (expandedKeys: Key[], info: any) => {
-		console.log(expandedKeys, info);
 		let newMysqlLoadedKeys = mysqlLoadedKeys;
 		if (mysqlExpandedKeys.length > expandedKeys.length) {
 			newMysqlLoadedKeys = mysqlLoadedKeys.filter((i) =>
@@ -1193,7 +1195,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										style={{ width: '140px' }}
 										onDoubleClick={() =>
 											add(
-												(item as DatabaseItem).db,
+												`数据库:${
+													(item as DatabaseItem).db
+												}`,
 												<MysqlSqlConsole
 													dbName={
 														(item as DatabaseItem)
@@ -1255,8 +1259,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										style={{ width: '140px' }}
 										onDoubleClick={() => {
 											add(
-												(item as PgsqlDatabaseItem)
-													.databaseName,
+												`数据库:${
+													(item as PgsqlDatabaseItem)
+														.databaseName
+												}`,
 												<ModeMag
 													dbName={
 														(
@@ -1348,7 +1354,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 										onDoubleClick={() => {
 											console.log('click');
 											add(
-												item.tableName,
+												`表:${item.tableName}`,
 												<OpenTable
 													dbName={item.databaseName}
 													schemaName={item.schemaName}
@@ -1418,7 +1424,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								style={{ width: '140px' }}
 								onDoubleClick={() =>
 									add(
-										item.value,
+										`数据库:${item.value}`,
 										<MysqlSqlConsole dbName={item.value} />
 									)
 								}
@@ -1436,7 +1442,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								style={{ width: '140px' }}
 								onDoubleClick={() =>
 									add(
-										item.value,
+										`数据库:${item.value}`,
 										<MysqlSqlConsole dbName={item.value} />
 									)
 								}
@@ -1465,7 +1471,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								style={{ width: '120px' }}
 								onDoubleClick={() => {
 									add(
-										item.value,
+										`表:${item.value}`,
 										<OpenTable
 											dbName={database}
 											tableName={item.value}
@@ -1537,7 +1543,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								style={{ width: '130px' }}
 								onDoubleClick={() =>
 									add(
-										item.value,
+										`数据库:${item.value}`,
 										<ModeMag
 											dbName={item.value}
 											onRefresh={getData}
@@ -1558,7 +1564,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 								style={{ width: '130px' }}
 								onDoubleClick={() =>
 									add(
-										item.value,
+										`数据库:${item.value}`,
 										<ModeMag
 											dbName={item.value}
 											onRefresh={getData}
@@ -1586,7 +1592,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 							<span
 								onDoubleClick={() => {
 									add(
-										item.value,
+										`模式:${item.value}`,
 										<PgsqlSqlConsole dbName={database} />
 									);
 								}}
@@ -1650,9 +1656,8 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						{index > -1 ? (
 							<span
 								onDoubleClick={() => {
-									console.log('click');
 									add(
-										item.value,
+										`表:${item.value}`,
 										<OpenTable
 											dbName={selectDatabase}
 											schemaName={selectSchema}
@@ -1670,7 +1675,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 						) : (
 							<span
 								onDoubleClick={() => {
-									console.log('click');
 									add(
 										strTitle,
 										<OpenTable
