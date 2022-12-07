@@ -38,12 +38,12 @@ export const DisasterOriginCard: (props: disasterCardProps) => JSX.Element = (
 					<label>数据库账号 :</label>
 					<span>{originData.dbUser}</span>
 				</li>
-				<li>
+				{/* <li>
 					<label>密码 :</label>
 					<span>
 						<PasswordDisplay value={originData.dbPass} />
 					</span>
-				</li>
+				</li> */}
 				<li>
 					<label>连接地址 :</label>
 					<span>{originData.address}</span>
@@ -53,25 +53,24 @@ export const DisasterOriginCard: (props: disasterCardProps) => JSX.Element = (
 	);
 };
 
-export const DisasterBackupCardNone: (
-	props: disasterCardProps
-) => JSX.Element = (props: disasterCardProps) => {
-	const { toCreateBackup } = props;
-	return (
-		<div className="disaster-card">
-			<div className="disaster-card-title-backup">
-				<img src={backup} />
-				<span>灾备服务信息</span>
-			</div>
-			<ul className="disaster-card-none">
-				<div className="disaster-card-add" onClick={toCreateBackup}>
-					<PlusOutlined />
-					<span>添加灾备服务</span>
+export const DisasterBackupCardNone: (props: disasterCardProps) => JSX.Element =
+	(props: disasterCardProps) => {
+		const { toCreateBackup } = props;
+		return (
+			<div className="disaster-card">
+				<div className="disaster-card-title-backup">
+					<img src={backup} />
+					<span>灾备服务信息</span>
 				</div>
-			</ul>
-		</div>
-	);
-};
+				<ul className="disaster-card-none">
+					<div className="disaster-card-add" onClick={toCreateBackup}>
+						<PlusOutlined />
+						<span>添加灾备服务</span>
+					</div>
+				</ul>
+			</div>
+		);
+	};
 
 export const DisasterBackupCard: (props: disasterCardProps) => JSX.Element = (
 	props: disasterCardProps

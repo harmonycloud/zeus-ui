@@ -159,7 +159,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				if (res.data && JSON.stringify(res.data) !== '{}') {
 					const list = [];
 					for (const key in res.data) {
-						list.push(`${key}-${res.data[key]}`);
+						list.push(`${key} -> ${res.data[key]}`);
 					}
 					setBurstList(list);
 				}
@@ -392,8 +392,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					icon: null,
 					content: (
 						<div>
-							<p>分片选择（主节点-从节点）：</p>
-							<Form>
+							<p>分片选择（主节点 -&gt; 从节点）：</p>
+							<Form form={form}>
 								<Form.Item
 									name="slaveName"
 									rules={[
@@ -414,7 +414,9 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 											return (
 												<Select.Option
 													key={item}
-													value={item.split('-')[1]}
+													value={
+														item.split(' -> ')[1]
+													}
 												>
 													{item}
 												</Select.Option>
@@ -477,19 +479,39 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					} else {
 						notification.success({
 							message: '成功',
-							description: (
-								<span>
-									已完成切换：
-									<br /> {pods[0].podName}:{' '}
-									{pods[0].role === 'master'
-										? '主节点 -> 从节点'
-										: '从节点 -> 主节点'}{' '}
-									<br /> {pods[1].podName}:{' '}
-									{pods[1].role === 'master'
-										? '主节点 -> 从节点'
-										: '从节点 -> 主节点'}
-								</span>
-							)
+							description:
+								data.type === 'postgresql' ? (
+									<span>
+										已完成切换：
+										<br />{' '}
+										{
+											pods.find(
+												(item) => item.role === 'master'
+											)?.podName
+										}
+										:{'主节点 -> 从节点'}
+										<br />{' '}
+										{
+											pods.find(
+												(item) =>
+													item.role === 'sync_slave'
+											)?.podName
+										}
+										:{'从节点 -> 主节点'}
+									</span>
+								) : (
+									<span>
+										已完成切换：
+										<br /> {pods[0].podName}:{' '}
+										{pods[0].role === 'master'
+											? '主节点 -> 从节点'
+											: '从节点 -> 主节点'}{' '}
+										<br /> {pods[1].podName}:{' '}
+										{pods[1].role === 'master'
+											? '主节点 -> 从节点'
+											: '从节点 -> 主节点'}
+									</span>
+								)
 						});
 					}
 				} else {
