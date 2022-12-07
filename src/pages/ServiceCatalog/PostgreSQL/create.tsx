@@ -152,42 +152,42 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 	const [nodeObj, setNodeObj] = useState<any>({
 		pgdb: {
 			title: '数据目录',
-			hostPath: '',
-			mountPath: '',
+			hostPath: '/pgdata',
+			mountPath: '/pgdata',
 			volumeSize: 1,
-			storageClass: null,
+			storageClass: 'local-path',
 			targetContainers: ['postgres']
 		},
 		pgwal: {
 			title: 'wal日志目录',
-			hostPath: '',
-			mountPath: '',
+			hostPath: '/pwwal',
+			mountPath: '/pwwal',
 			volumeSize: 1,
-			storageClass: null,
+			storageClass: 'local-path',
 			targetContainers: ['postgres']
 		},
 		pglog: {
 			title: 'PostgreSQL日志目录',
-			hostPath: '',
-			mountPath: '',
+			hostPath: '/pglog',
+			mountPath: '/pglog',
 			volumeSize: 1,
-			storageClass: null,
+			storageClass: 'local-path',
 			targetContainers: ['postgres']
 		},
 		pgarch: {
 			title: 'wal日志归档目录',
-			hostPath: '',
-			mountPath: '',
+			hostPath: '/pgsearch',
+			mountPath: '/pgsearch',
 			volumeSize: 1,
-			storageClass: null,
+			storageClass: 'local-path',
 			targetContainers: ['postgres']
 		},
 		pgextension: {
 			title: 'PostgreSQL插件目录',
-			hostPath: '',
-			mountPath: '',
+			hostPath: '/pgextension',
+			mountPath: '/pgextension',
 			volumeSize: 1,
-			storageClass: null,
+			storageClass: 'local-path',
 			targetContainers: ['postgres']
 		}
 	});

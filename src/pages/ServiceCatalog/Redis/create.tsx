@@ -210,17 +210,17 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [pathObj, setPathObj] = useState<any>({
 		'redis-data': {
 			title: '数据目录',
-			hostPath: '',
-			mountPath: '',
-			storageClass: null,
+			hostPath: '/host/path',
+			mountPath: '/redis/data',
+			storageClass: 'local-path',
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
 		},
 		'redis-logs': {
 			title: '日志目录',
 			hostPath: '',
-			mountPath: '',
-			storageClass: null,
+			mountPath: '/redis/logs',
+			storageClass: 'local-path',
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
 		}

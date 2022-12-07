@@ -80,6 +80,8 @@ export default function AddIngress(): JSX.Element {
 		if (name === 'mysql') {
 			return data?.readWriteProxy?.enabled
 				? ingressTypeList
+				: data?.mode === '1m-0s'
+				? [ingressTypeList[1]]
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'redis') {
 			return data?.readWriteProxy?.enabled
@@ -162,6 +164,9 @@ export default function AddIngress(): JSX.Element {
 					res.data.readWriteProxy?.enabled &&
 					mode === 'sentinel' &&
 					setIngressType('proxy');
+				name === 'mysql' &&
+					res.data.mode === '1m-0s' &&
+					setIngressType('rw');
 			} else {
 				notification.error({
 					message: '失败',
