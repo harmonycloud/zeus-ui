@@ -108,13 +108,15 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				const list: any = [];
-				res.data.podInfoGroup?.listChildGroup?.forEach((el: any) => {
-					list.push(
-						...el.pods.map((item: any) => {
-							return { ...item, identify: el.role };
-						})
-					);
-				});
+				res.data.podInfoGroup &&
+					res.data.podInfoGroup.listChildGroup &&
+					res.data.podInfoGroup.listChildGroup.forEach((el: any) => {
+						list.push(
+							...el.pods.map((item: any) => {
+								return { ...item, identify: el.role };
+							})
+						);
+					});
 				setPods(list);
 				setTopoData(res.data);
 			} else {
