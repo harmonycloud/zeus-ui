@@ -477,19 +477,39 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					} else {
 						notification.success({
 							message: '成功',
-							description: (
-								<span>
-									已完成切换：
-									<br /> {pods[0].podName}:{' '}
-									{pods[0].role === 'master'
-										? '主节点 -> 从节点'
-										: '从节点 -> 主节点'}{' '}
-									<br /> {pods[1].podName}:{' '}
-									{pods[1].role === 'master'
-										? '主节点 -> 从节点'
-										: '从节点 -> 主节点'}
-								</span>
-							)
+							description:
+								data.type === 'postgresql' ? (
+									<span>
+										已完成切换：
+										<br />{' '}
+										{
+											pods.find(
+												(item) => item.role === 'master'
+											)?.podName
+										}
+										:{'主节点 -> 从节点'}
+										<br />{' '}
+										{
+											pods.find(
+												(item) =>
+													item.role === 'sync_slave'
+											)?.podName
+										}
+										:{'从节点 -> 主节点'}
+									</span>
+								) : (
+									<span>
+										已完成切换：
+										<br /> {pods[0].podName}:{' '}
+										{pods[0].role === 'master'
+											? '主节点 -> 从节点'
+											: '从节点 -> 主节点'}{' '}
+										<br /> {pods[1].podName}:{' '}
+										{pods[1].role === 'master'
+											? '主节点 -> 从节点'
+											: '从节点 -> 主节点'}
+									</span>
+								)
 						});
 					}
 				} else {
