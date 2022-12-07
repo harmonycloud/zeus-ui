@@ -387,9 +387,9 @@ export default function KVZSet(props: any): JSX.Element {
 						  })
 						: []
 				}
-				showRefresh
-				showColumnSetting
-				onRefresh={onRefresh}
+				// showRefresh
+				// showColumnSetting
+				// onRefresh={onRefresh}
 				rowKey="value"
 				operation={Operation}
 				// pagination={{

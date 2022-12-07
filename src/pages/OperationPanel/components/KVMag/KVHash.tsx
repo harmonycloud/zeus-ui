@@ -381,9 +381,9 @@ export default function KVHash(props: any): JSX.Element {
 			</div>
 			<ProTable
 				dataSource={data.hashValue || []}
-				showRefresh
-				showColumnSetting
-				onRefresh={onRefresh}
+				// showRefresh
+				// showColumnSetting
+				// onRefresh={onRefresh}
 				rowKey="field"
 				operation={Operation}
 				// pagination={{
