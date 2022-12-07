@@ -107,7 +107,15 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const getPodList = (sendData: PodSendData) => {
 		getPods(sendData).then((res) => {
 			if (res.success) {
-				setPods(res.data.pods);
+				const list: any = [];
+				res.data.podInfoGroup?.listChildGroup?.forEach((el: any) => {
+					list.push(
+						...el.pods.map((item: any) => {
+							return { ...item, identify: el.role };
+						})
+					);
+				});
+				setPods(list);
 				setTopoData(res.data);
 			} else {
 				notification.error({
@@ -839,6 +847,38 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						operation={Operation}
 						scroll={{ x: 1490 }}
 					>
+						{data.type === 'redis' && (
+							<ProTable.Column
+								title=""
+								dataIndex="identify"
+								render={(val) =>
+									val?.includes('shard')
+										? '分片'
+										: val === 'default'
+										? '/'
+										: '代理'
+								}
+								onCell={(_: any, index) => {
+									if (_?.identify?.includes('shard')) {
+										if ((index as number) % 2 === 0) {
+											return { rowSpan: 2 };
+										} else {
+											return { rowSpan: 0 };
+										}
+									} else if (_?.identify === 'default') {
+										if (index as number) {
+											return { rowSpan: 0 };
+										} else {
+											return { rowSpan: 10 };
+										}
+									} else {
+										return { rowSpan: 1 };
+									}
+								}}
+								width={100}
+								fixed="left"
+							/>
+						)}
 						<ProTable.Column
 							title="实例名称"
 							dataIndex="podName"

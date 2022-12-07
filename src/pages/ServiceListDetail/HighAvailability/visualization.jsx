@@ -68,7 +68,7 @@ function Visualization(props) {
 	const [direction, setDirection] = useState('TB');
 
 	const roleRender = (value, index, record) => {
-		if (record.podName.includes('exporter')) {
+		if (record?.podName?.includes('exporter')) {
 			return 'Exporter';
 		} else {
 			if (serverData.type === 'elasticsearch') {
@@ -106,6 +106,8 @@ function Visualization(props) {
 						return 'Nameserver';
 					case 'exporter':
 						return 'Exporter';
+					case 'default':
+						return '/';
 					default:
 						return value
 							? value.substring(0, 1).toUpperCase() +
@@ -200,7 +202,7 @@ function Visualization(props) {
 
 	const circleTextY = (direction, cfg) => {
 		if (direction === 'LR') {
-			return cfg.level === 'serve' && cfg.adentify.length >= 6 ? 87 : 88;
+			return cfg.level === 'serve' && cfg.identify.length >= 6 ? 87 : 88;
 		} else {
 			return 13;
 		}
@@ -255,7 +257,7 @@ function Visualization(props) {
 			'tree-node',
 			{
 				drawShape: function drawShape(cfg, group) {
-					if (cfg.adentify) {
+					if (cfg.identify) {
 						const circle = group.addShape('rect', {
 							attrs: {
 								stroke: '#666',
@@ -273,12 +275,12 @@ function Visualization(props) {
 							attrs: {
 								text:
 									cfg.level === 'serve'
-										? cfg.adentify
-										: roleRender(cfg.adentify, '', cfg),
+										? cfg.identify
+										: roleRender(cfg.identify, '', cfg),
 								fill: 'rgb(0, 0, 0)',
 								fontSize:
 									cfg.level === 'serve' &&
-									cfg.adentify.length >= 6
+									cfg.identify.length >= 6
 										? 6
 										: 8,
 								textAlign: 'center',
@@ -1063,23 +1065,70 @@ function Visualization(props) {
 			}
 		});
 		const pods = [];
-		topoData.pods &&
-			topoData.pods.forEach((el) => {
-				if (!el.role) el.role = roleRender('', '', el);
-				if (pods.every((els) => els.role != el.role))
-					pods.push({
-						adentify: el.role,
-						role: el.role,
-						podName: el.podName,
-						level: 'pod'
-					});
-			});
-		pods.forEach(
-			(el) =>
-				(el.children = topoData.pods.filter(
-					(els) => els.role == el.role
-				))
-		);
+		if (serverData.type !== 'redis') {
+			topoData.pods &&
+				topoData.pods.forEach((el) => {
+					if (!el.role) el.role = roleRender('', '', el);
+					if (pods.every((els) => els.role != el.role))
+						pods.push({
+							identify: el.role,
+							role: el.role,
+							podName: el.podName,
+							level: 'pod'
+						});
+				});
+			console.log(topoData, pods);
+
+			pods.forEach(
+				(el) =>
+					(el.children = topoData.pods.filter(
+						(els) => els.role == el.role
+					))
+			);
+		} else {
+			topoData?.podInfoGroup?.listChildGroup &&
+				topoData.podInfoGroup.listChildGroup.forEach((el) => {
+					if (!el.role) el.role = roleRender('', '', el);
+					if (pods.every((els) => els.role != el.role))
+						pods.push({
+							identify: el.role,
+							role: el.role,
+							podName: el.podName,
+							level: 'pod',
+							children: el.pods
+						});
+				});
+			pods &&
+				pods.forEach((res) => {
+					if (res.identify.includes('shard')) {
+						let children = [];
+						res.children &&
+							res.children.forEach((el) => {
+								if (!el.role) el.role = roleRender('', '', el);
+								if (
+									children.every((els) => els.role != el.role)
+								)
+									children.push({
+										identify: el.role,
+										role: el.role,
+										podName: el.podName,
+										level: 'pod',
+										children: res.children.filter(
+											(els) => els.role == el.role
+										)
+									});
+							});
+						res.children = children;
+					}
+				});
+			console.log(pods);
+			// pods.forEach(
+			// 	(el) =>
+			// 		(el.children = topoData.podInfoGroup.listChildGroup.filter(
+			// 			(els) => els.role == el.role
+			// 		))
+			// );
+		}
 		const res = {
 			id: 'tree',
 			name: serverData.name,
@@ -1091,7 +1140,7 @@ function Visualization(props) {
 			provisioner: topoData.provisioner,
 			children: [
 				{
-					adentify: serveRender() || '未知',
+					identify: serveRender() || '未知',
 					level: 'serve',
 					children: pods
 				}
@@ -1153,7 +1202,7 @@ function Visualization(props) {
 					nodes.some((str) => {
 						if (
 							!str.hasState('select') &&
-							!str.getModel().adentify &&
+							!str.getModel().identify &&
 							!isEdit &&
 							!str.getModel().hasConfigBackup
 						) {
@@ -1180,7 +1229,7 @@ function Visualization(props) {
 					nodes.some((str) => {
 						if (
 							!str.hasState('select') &&
-							!str.getModel().adentify &&
+							!str.getModel().identify &&
 							!isEdit &&
 							!str.getModel().hasConfigBackup
 						) {
