@@ -38,7 +38,7 @@ export const getEncoding = `${api}/clusters/{clusterId}/namespaces/{namespace}/p
 // * pgsql 新建数据库
 export const createPgDatabase = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases`;
 // * pgsql 修改数据库
-export const updatePgDatabase = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{databaseName}`;
+export const updatePgDatabase = `${api}/clusters/{clusterId}/namespaces/{namespace}/postgresql/{middlewareName}/databases/{database}`;
 // * mysql 重置密码
 export const resetMysqlPassword = `${api}/clusters/{clusterId}/namespaces/{namespace}/mysql/{middlewareName}/users/{username}/password`;
 // * pgsql 重置密码

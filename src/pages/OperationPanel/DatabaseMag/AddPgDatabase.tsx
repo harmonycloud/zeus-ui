@@ -57,6 +57,7 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 					clusterId,
 					namespace,
 					middlewareName,
+					database: editData.databaseName,
 					...values
 				})
 					.then((res) => {
@@ -134,10 +135,7 @@ export default function AddPgDatabase(props: AddPgDatabaseProps): JSX.Element {
 						}
 					]}
 				>
-					<Input
-						disabled={editData ? true : false}
-						placeholder="请输入数据库名称"
-					/>
+					<Input placeholder="请输入数据库名称" />
 				</Form.Item>
 				<Form.Item
 					label="字符集"
