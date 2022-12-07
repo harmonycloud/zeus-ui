@@ -896,10 +896,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		}
 	];
 	const configConfigTemp =
-		type === 'redis' ||
-		type === 'elasticsearch' ||
-		type === 'kafka' ||
-		type === 'postgresql'
+		type === 'elasticsearch' || type === 'kafka'
 			? type === 'kafka'
 				? [
 						...configConfig,
