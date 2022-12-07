@@ -10,7 +10,7 @@ const basicData = {
 	dataType: '',
 	size: '',
 	nullable: false,
-	primary: true,
+	primary: false,
 	autoIncrement: false,
 	comment: ''
 };

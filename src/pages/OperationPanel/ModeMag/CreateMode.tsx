@@ -127,7 +127,7 @@ export default function CreateMode(props: CreateModeProps): JSX.Element {
 					/>
 				</Form.Item>
 				<Form.Item label="所有者" name="owner">
-					<Select>
+					<Select placeholder="请选择所有者">
 						{data.map((item: PgsqlUserItem) => (
 							<Option key={item.username} value={item.username}>
 								{item.username}
@@ -136,7 +136,7 @@ export default function CreateMode(props: CreateModeProps): JSX.Element {
 					</Select>
 				</Form.Item>
 				<Form.Item label="备注" name="comment">
-					<Input.TextArea rows={3} />
+					<Input.TextArea placeholder="请填写备注" rows={3} />
 				</Form.Item>
 			</Form>
 		</Modal>
