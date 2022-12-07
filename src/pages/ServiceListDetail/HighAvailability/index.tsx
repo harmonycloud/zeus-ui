@@ -108,15 +108,35 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				const list: any = [];
-				res.data.podInfoGroup &&
-					res.data.podInfoGroup.listChildGroup &&
-					res.data.podInfoGroup.listChildGroup.forEach((el: any) => {
+				res.data.podInfoGroup?.listChildGroup?.forEach((el: any) => {
+					if (el.role.includes('shard')) {
+						list.push(
+							...el.pods.map(
+								(item: any, index: number, arr: any) => {
+									if (index === 0) {
+										return {
+											...item,
+											identify: el.role,
+											span: arr.length
+										};
+									} else {
+										return {
+											...item,
+											identify: el.role,
+											span: 0
+										};
+									}
+								}
+							)
+						);
+					} else {
 						list.push(
 							...el.pods.map((item: any) => {
-								return { ...item, identify: el.role };
+								return { ...item, identify: el.role, span: 1 };
 							})
 						);
-					});
+					}
+				});
 				setPods(list);
 				setTopoData(res.data);
 			} else {
@@ -608,11 +628,21 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						return 'Nameserver';
 					case 'exporter':
 						return 'Exporter';
+					case 'sentinel':
+						return '哨兵';
+					case 'proxy':
+						return '代理';
+					case 'default':
+						return '/';
 					default:
-						return value
-							? value.substring(0, 1).toUpperCase() +
-									value.substring(1)
-							: '/';
+						if (value.includes('shard')) {
+							return '分片';
+						} else {
+							return value
+								? value.substring(0, 1).toUpperCase() +
+										value.substring(1)
+								: '/';
+						}
 				}
 			}
 		}
@@ -853,29 +883,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							<ProTable.Column
 								title=""
 								dataIndex="identify"
-								render={(val) =>
-									val?.includes('shard')
-										? '分片'
-										: val === 'default'
-										? '/'
-										: '代理'
-								}
-								onCell={(_: any, index) => {
-									if (_?.identify?.includes('shard')) {
-										if ((index as number) % 2 === 0) {
-											return { rowSpan: 2 };
-										} else {
-											return { rowSpan: 0 };
-										}
-									} else if (_?.identify === 'default') {
-										if (index as number) {
-											return { rowSpan: 0 };
-										} else {
-											return { rowSpan: 10 };
-										}
-									} else {
-										return { rowSpan: 1 };
-									}
+								render={roleRender}
+								onCell={(_: any) => {
+									return {
+										rowSpan: _.span
+									};
 								}}
 								width={100}
 								fixed="left"

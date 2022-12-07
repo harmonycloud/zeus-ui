@@ -106,13 +106,21 @@ function Visualization(props) {
 						return 'Nameserver';
 					case 'exporter':
 						return 'Exporter';
+					case 'sentinel':
+						return '哨兵';
+					case 'proxy':
+						return '代理';
 					case 'default':
 						return '/';
 					default:
-						return value
-							? value.substring(0, 1).toUpperCase() +
-									value.substring(1)
-							: '/';
+						if (value.includes('shard')) {
+							return '分片';
+						} else {
+							return value
+								? value.substring(0, 1).toUpperCase() +
+										value.substring(1)
+								: '/';
+						}
 				}
 			}
 		}
