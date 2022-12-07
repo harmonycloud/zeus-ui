@@ -46,7 +46,13 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 	};
 	const operation = {
 		primary: (
-			<Button type="primary" onClick={() => setOpen(true)}>
+			<Button
+				type="primary"
+				onClick={() => {
+					setEditData(undefined);
+					setOpen(true);
+				}}
+			>
 				创建模式
 			</Button>
 		)

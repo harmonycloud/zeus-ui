@@ -297,11 +297,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				);
 				return;
 			case 'modeMag': // * pgsql 模式管理
-				add(i, <ModeMag dbName={i} onRefresh={getData} />);
+				add(`数据库:${i}`, <ModeMag dbName={i} onRefresh={getData} />);
 				return;
 			case 'openTable': // * 打开表
 				add(
-					i,
+					`表:${i}`,
 					params.type === 'mysql' ? (
 						<OpenTable dbName={fatherNode || ''} tableName={i} />
 					) : (
@@ -495,14 +495,19 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const menu = (i: any, fatherNode?: string) => {
 		return (
 			<Menu
-				onClick={(info: MenuInfo) =>
-					handleMenuClick(info, i, fatherNode || '')
-				}
+				onClick={(info: MenuInfo) => {
+					if (fatherNode) {
+						setSelectSchema(i);
+					} else {
+						setSelectDatabase(i);
+					}
+					handleMenuClick(info, i, fatherNode || '');
+				}}
 				items={databaseMenuItems}
 			/>
 		);
 	};
-	// * mysql table menu
+	// * table menu
 	const tableMenu = (i: any, fatherNode: string) => {
 		return (
 			<Menu
@@ -518,7 +523,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		return (
 			<Menu
 				items={pgMenuItems}
-				onClick={(info: MenuInfo) => handleMenuClick(info, i, '')}
+				onClick={(info: MenuInfo) => {
+					setSelectDatabase(i);
+					handleMenuClick(info, i, '');
+				}}
 			/>
 		);
 	};
@@ -1515,10 +1523,6 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				} else {
 					return { ...item };
 				}
-
-				return {
-					...result
-				};
 			});
 
 		return loop(treeData, '');

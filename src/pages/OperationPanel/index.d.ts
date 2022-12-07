@@ -447,6 +447,7 @@ export interface createPgDatabaseParamsProps extends SendDataParamsProps {
 	encoding: string;
 	owner: string;
 	tablespace: string;
+	database?: string;
 }
 export interface resetPasswordParamsProps extends SendDataParamsProps {
 	username: string;
