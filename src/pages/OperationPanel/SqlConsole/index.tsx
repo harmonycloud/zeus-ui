@@ -495,14 +495,19 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 	const menu = (i: any, fatherNode?: string) => {
 		return (
 			<Menu
-				onClick={(info: MenuInfo) =>
-					handleMenuClick(info, i, fatherNode || '')
-				}
+				onClick={(info: MenuInfo) => {
+					if (fatherNode) {
+						setSelectSchema(i);
+					} else {
+						setSelectDatabase(i);
+					}
+					handleMenuClick(info, i, fatherNode || '');
+				}}
 				items={databaseMenuItems}
 			/>
 		);
 	};
-	// * mysql table menu
+	// * table menu
 	const tableMenu = (i: any, fatherNode: string) => {
 		return (
 			<Menu
@@ -518,7 +523,10 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		return (
 			<Menu
 				items={pgMenuItems}
-				onClick={(info: MenuInfo) => handleMenuClick(info, i, '')}
+				onClick={(info: MenuInfo) => {
+					setSelectDatabase(i);
+					handleMenuClick(info, i, '');
+				}}
 			/>
 		);
 	};
