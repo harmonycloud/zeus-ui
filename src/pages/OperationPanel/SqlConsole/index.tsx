@@ -1883,7 +1883,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				{items.length > 0 && params.type === 'redis' && (
 					<Tabs
 						hideAdd
-						className="sql-console-tabs-content"
+						className="sql-console-tabs-content tab-mb"
 						size="small"
 						type="editable-card"
 						onChange={onChange}

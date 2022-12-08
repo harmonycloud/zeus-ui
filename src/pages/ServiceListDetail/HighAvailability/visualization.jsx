@@ -113,7 +113,7 @@ function Visualization(props) {
 					case 'default':
 						return '/';
 					default:
-						if (value.includes('shard')) {
+						if (value?.includes('shard')) {
 							return '分片';
 						} else {
 							return value

@@ -378,9 +378,9 @@ export default function KVZSet(props: any): JSX.Element {
 			</div>
 			<ProTable
 				dataSource={data.zsetValue || []}
-				showRefresh
-				showColumnSetting
-				onRefresh={onRefresh}
+				// showRefresh
+				// showColumnSetting
+				// onRefresh={onRefresh}
 				rowKey="member"
 				operation={Operation}
 				// pagination={{

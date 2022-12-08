@@ -140,6 +140,7 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 			dataIndex: 'execTime',
 			key: 'execTime',
 			width: 80,
+			render: (val: string) => val + ' ms',
 			sorter: true
 		},
 		{

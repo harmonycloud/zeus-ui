@@ -272,7 +272,7 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								>
 									<Radio.Group>
 										<Radio value="test">测试集群</Radio>
-										<Radio value="produce">开发集群</Radio>
+										<Radio value="produce">生产集群</Radio>
 									</Radio.Group>
 								</FormItem>
 								<FormItem
@@ -439,7 +439,7 @@ function AddResourcePool(props: AddResourcePoolProps): JSX.Element {
 								>
 									<Radio.Group>
 										<Radio value="test">测试集群</Radio>
-										<Radio value="produce">开发集群</Radio>
+										<Radio value="produce">生产集群</Radio>
 									</Radio.Group>
 								</FormItem>
 								<FormItem
