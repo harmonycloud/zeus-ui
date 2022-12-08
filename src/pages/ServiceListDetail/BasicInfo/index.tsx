@@ -547,7 +547,11 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					tolerations: `${
 						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`,
-					mirror: data.mirrorImage || '/'
+					mirror: data.mirrorImage || '/',
+					hostNetwork:
+						data.type === 'postgresql' || data.type === 'redis'
+							? data[data.type + 'Param'].hostNetwork
+							: ''
 				});
 			} else {
 				setBasicData({
@@ -593,7 +597,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 						(data.tolerations && data.tolerations.join(',')) || '/'
 					}`,
 					description: data.description || '无',
-					mirror: data.mirrorImage || '/'
+					mirror: data.mirrorImage || '/',
+					hostNetwork: data[data.type + 'Param'].hostNetwork
 				});
 			}
 			setConfigData({
@@ -821,6 +826,17 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				)
 			};
 			infoConfigTemp.splice(4, 0, version);
+		}
+		if (
+			(type === 'redis' || type === 'postgresql') &&
+			!dataIndexList.includes('hostNetwork')
+		) {
+			const hostNetwork = {
+				dataIndex: 'hostNetwork',
+				label: '主机网络',
+				render: (value: string) => <span>{value ? '是' : '否'}</span>
+			};
+			infoConfigTemp.splice(9, 0, hostNetwork);
 		}
 		setInfoConfig(infoConfigTemp);
 	}, [props]);

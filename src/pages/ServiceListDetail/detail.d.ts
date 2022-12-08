@@ -193,6 +193,7 @@ export interface InfoParams {
 	tolerations: string;
 	disasterInstanceName?: string;
 	mirror?: string;
+	hostNetwork?: boolean;
 }
 export interface configParams {
 	title: string;
