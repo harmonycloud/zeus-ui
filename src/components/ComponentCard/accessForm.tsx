@@ -110,6 +110,10 @@ const AccessForm = (props: AccessFormProps) => {
 				sendData.host = values.hostPrometheus;
 				sendData.port = values.portPrometheus;
 				sendData.protocol = values.protocolPrometheus;
+			} else if (title === 'middleware-controller') {
+				sendData.host = values.hostAPI;
+				sendData.port = values.portAPI;
+				sendData.protocolAPI = values.protocolAPI;
 			}
 			console.log(sendData);
 			if (status === 0) {
