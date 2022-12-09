@@ -145,6 +145,6 @@ export const createUser = `${api}/clusters/{clusterId}/namespaces/{namespace}/{t
 // * 合并 获取用户权限详情
 export const getUserAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users/{username}/authority`;
 // * 合并 取消授权
-export const cancelAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users/{username}/authority`;
+export const cancelAuth = `${api}/clusters/{clusterId}/namespaces/{namespace}/{type}/{middlewareName}/users/{username}/{authority}`;
 // * 获取执行记录
 export const getExecuteHistory = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/sql/databases/{database}/history`;
