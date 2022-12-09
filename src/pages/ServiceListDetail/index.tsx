@@ -274,6 +274,7 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 							readWriteProxy={data?.readWriteProxy}
 							imagePath={data.imagePath}
 							status={data.status}
+							data={data}
 							brokerNum={
 								name === 'kafka'
 									? data.kafkaDTO.brokerNum

@@ -19,13 +19,15 @@ import { IconFont } from '@/components/IconFont';
 import {
 	HttpPathItem,
 	InternalServiceItem,
+	HostNetworkServiceItem,
 	ServiceDetailIngressProps
 } from '../detail';
 import DefaultPicture from '@/components/DefaultPicture';
 import {
 	getIngressMid,
 	deleteIngress,
-	getInternalServices
+	getInternalServices,
+	getHostNetworkAddress
 } from '@/services/ingress';
 import otherColor from '@/assets/images/nodata.svg';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
@@ -53,15 +55,20 @@ export default function ServiceDetailIngress(
 		mode,
 		readWriteProxy,
 		brokerNum,
-		status
+		status,
+		data
 	} = props;
 	const history = useHistory();
 	const [dataSource, setDataSource] = useState<serviceAvailableItemProps[]>(
 		[]
 	);
 	const [visible, setVisible] = useState<boolean>(false);
+	const [hostVisible, setHostVisible] = useState<boolean>(false);
 	const [internalDataSource, setInternalDataSource] = useState<
 		InternalServiceItem[]
+	>([]);
+	const [hostNetworkDataSource, setHostNetworkDataSource] = useState<
+		HostNetworkServiceItem[]
 	>([]);
 	const [editVisible, setEditVisible] = useState<boolean>(false);
 	const [spinning, setSpinning] = useState<boolean>(false);
@@ -134,6 +141,12 @@ export default function ServiceDetailIngress(
 					新增
 				</Button>
 				<Button onClick={() => setVisible(true)}>集群内访问</Button>
+				{(data.type === 'postgresql' || data.type === 'redis') &&
+				data[data.type + 'Param'].hostNetwork ? (
+					<Button onClick={() => setHostVisible(true)}>
+						主机网络对外访问
+					</Button>
+				) : null}
 			</>
 		),
 		secondary: (
@@ -153,6 +166,7 @@ export default function ServiceDetailIngress(
 	useEffect(() => {
 		getIngressByMid(clusterId, namespace, name, middlewareName);
 		getInternalService();
+		getHostNetworkAddres();
 		getMiddlewareImagePath();
 	}, []);
 	const getInternalService = () => {
@@ -180,6 +194,19 @@ export default function ServiceDetailIngress(
 					);
 				});
 				setInternalDataSource(list);
+			}
+		});
+	};
+
+	const getHostNetworkAddres = () => {
+		getHostNetworkAddress({
+			clusterId,
+			namespace,
+			type: name,
+			middlewareName
+		}).then((res) => {
+			if (res.success) {
+				setHostNetworkDataSource(res.data);
 			}
 		});
 	};
@@ -328,6 +355,41 @@ export default function ServiceDetailIngress(
 							fontSize: 12
 						}}
 						onClick={() => copyValue(value)}
+					/>
+				</Popover>
+			</span>
+		);
+	};
+	const hostNetworkAddressRender = (
+		value: string,
+		record: HostNetworkServiceItem
+	) => {
+		return (
+			<span>
+				{`${value}:${record.exposePort}`}
+				<Popover
+					content={
+						<div>
+							<CheckCircleFilled
+								style={{
+									color: '#00A700',
+									marginRight: '5px'
+								}}
+							/>
+							复制成功
+						</div>
+					}
+					trigger="click"
+				>
+					<IconFont
+						className="card-ip-copy"
+						type="icon-fuzhi1"
+						style={{
+							fontSize: 12
+						}}
+						onClick={() =>
+							copyValue(`${value}:${record.exposePort}`)
+						}
 					/>
 				</Popover>
 			</span>
@@ -794,22 +856,51 @@ export default function ServiceDetailIngress(
 					</div>
 				}
 				placement="right"
-				onClose={() => setVisible(false)}
-				visible={visible}
+				onClose={() => {
+					setVisible(false);
+					setHostVisible(false);
+				}}
+				open={visible || hostVisible}
 				width={600}
 			>
-				<Table rowKey="serviceName" dataSource={internalDataSource}>
-					<Table.Column
-						width={100}
-						dataIndex="servicePurpose"
-						title="暴露服务"
-					/>
-					<Table.Column
-						dataIndex="internalAddress"
-						title="服务及端口号"
-						render={internalAddressRender}
-					/>
-				</Table>
+				{visible ? (
+					<>
+						<Table
+							rowKey="serviceName"
+							dataSource={internalDataSource}
+						>
+							<Table.Column
+								width={100}
+								dataIndex="servicePurpose"
+								title="暴露服务"
+							/>
+							<Table.Column
+								dataIndex="internalAddress"
+								title="服务及端口号"
+								render={internalAddressRender}
+							/>
+						</Table>
+					</>
+				) : (
+					<>
+						<Table
+							rowKey="serviceName"
+							dataSource={hostNetworkDataSource}
+						>
+							<Table.Column
+								width={150}
+								dataIndex="servicePurpose"
+								title="实例名称"
+								ellipsis
+							/>
+							<Table.Column
+								dataIndex="exposeIP"
+								title="主机ip及端口号"
+								render={hostNetworkAddressRender}
+							/>
+						</Table>
+					</>
+				)}
 			</Drawer>
 			{editVisible && (
 				<EditPortForm

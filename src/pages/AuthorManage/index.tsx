@@ -145,7 +145,7 @@ function AuthorManage(): JSX.Element {
 								>
 									CPU限量总额：
 								</span>
-								{basicData?.produce?.total?.toFixed(2)}C
+								{basicData?.produce?.total?.toFixed(2) || 0}C
 							</div>
 							<div>
 								<span
@@ -156,7 +156,7 @@ function AuthorManage(): JSX.Element {
 								>
 									CPU已使用：
 								</span>
-								{basicData?.produce?.used?.toFixed(2)}C
+								{basicData?.produce?.used?.toFixed(2) || 0}C
 							</div>
 							<div>
 								<span
@@ -167,10 +167,12 @@ function AuthorManage(): JSX.Element {
 								>
 									CPU剩余额度：
 								</span>
-								{(
-									basicData?.produce?.total -
-									basicData?.produce?.used
-								)?.toFixed(2)}
+								{basicData?.produce?.total
+									? (
+											basicData?.produce?.total -
+											basicData?.produce?.used
+									  )?.toFixed(2)
+									: 0}
 								C
 							</div>
 						</div>
@@ -197,7 +199,7 @@ function AuthorManage(): JSX.Element {
 								>
 									CPU限量总额：
 								</span>
-								{basicData?.test?.total?.toFixed(2)}C
+								{basicData?.test?.total?.toFixed(2) || 0}C
 							</div>
 							<div>
 								<span
@@ -208,7 +210,7 @@ function AuthorManage(): JSX.Element {
 								>
 									CPU已使用：
 								</span>
-								{basicData?.test?.used?.toFixed(2)}C
+								{basicData?.test?.used?.toFixed(2) || 0}C
 							</div>
 							<div>
 								<span
@@ -219,10 +221,12 @@ function AuthorManage(): JSX.Element {
 								>
 									CPU剩余额度：
 								</span>
-								{(
-									basicData?.test?.total -
-									basicData?.test?.used
-								)?.toFixed(2)}
+								{basicData?.test?.total
+									? (
+											basicData?.test?.total -
+											basicData?.test?.used
+									  )?.toFixed(2)
+									: 0}
 								C
 							</div>
 						</div>

@@ -108,7 +108,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				const list: any = [];
-				res.data.podInfoGroup.listChildGroup.forEach((el: any) => {
+				res.data?.podInfoGroup?.listChildGroup?.forEach((el: any) => {
 					if (el.role.includes('shard')) {
 						list.push(
 							...el.pods.map(
@@ -868,7 +868,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									/>
 								</div>
 							)}
-							{type !== 'postgresql' && (
+							{type !== 'postgresql' && type !== 'redis' && (
 								<div
 									className="display-flex switch-master flex-align"
 									style={{ marginTop: 12 }}

@@ -193,6 +193,7 @@ export interface InfoParams {
 	tolerations: string;
 	disasterInstanceName?: string;
 	mirror?: string;
+	hostNetwork?: boolean;
 }
 export interface configParams {
 	title: string;
@@ -593,6 +594,7 @@ export interface ServiceDetailIngressProps {
 	enableExternal: number | null;
 	imagePath: string;
 	status: string;
+	data: middlewareDetailProps;
 }
 
 export interface ServiceNameItem {
@@ -613,5 +615,11 @@ export interface InternalServiceItem {
 	internalAddress: string;
 	portDetailDtoList: [];
 	serviceName: string;
+	servicePurpose: string;
+}
+
+export interface HostNetworkServiceItem {
+	exposeIp: string;
+	exposePort: string;
 	servicePurpose: string;
 }
