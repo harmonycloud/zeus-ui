@@ -203,6 +203,7 @@ export interface configParams {
 	password: string;
 	autoCreateTopicEnable: boolean;
 	kafkaDTO?: any;
+	customVolumes?: any;
 }
 export interface runParams {
 	title: string;

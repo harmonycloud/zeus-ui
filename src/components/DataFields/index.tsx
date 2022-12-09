@@ -26,8 +26,11 @@ function DataFields(props: DataFieldsProps): JSX.Element {
 							label={
 								item.label || dataSource[item.dataIndex || '']
 							}
+							contentStyle={item.contentStyle}
 							key={item.dataIndex}
-							span={1}
+							span={item.span}
+							labelStyle={item.labelStyle}
+							className={item.className}
 						>
 							{item.render ? (
 								item.render(

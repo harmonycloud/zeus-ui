@@ -17,6 +17,7 @@ import DefaultPicture from '@/components/DefaultPicture';
 
 import RocketAclUserInfo from './rocketAclUserInfo';
 import RocketAclEditForm from './rocketAclEditForm';
+import DirectoryItem from '@/components/DirectoryItem';
 import EventsList from './eventsList';
 import { rocketMQAccount } from '@/components/RocketACLForm/acl';
 
@@ -333,6 +334,33 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 			</span>
 		)
 	});
+	// * 分盘信息
+	const [directoryConfig] = useState({
+		dataIndex: 'customVolumes',
+		label: '挂载目录查看',
+		className: 'none-flex',
+		labelStyle: { display: 'block', marginBottom: 16 },
+		render: (value: any) =>
+			value ? (
+				<div style={{ display: 'flex' }}>
+					{Object.keys(value).map((key) => (
+						<DirectoryItem
+							key={key}
+							type={key}
+							data={value[key]}
+							middlewareType={type}
+							clusterId={clusterId}
+							namespace={namespace}
+							disabled
+							readOnly
+							onChange={() => false}
+						/>
+					))}
+				</div>
+			) : (
+				<div></div>
+			)
+	});
 	const [configData, setConfigData] = useState(config);
 	const [configConfig, setConfigConfig] = useState([
 		titleConfig,
@@ -609,7 +637,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				password: data.password || '',
 				kafkaDTO: data.kafkaDTO,
 				autoCreateTopicEnable:
-					data?.rocketMQParam?.autoCreateTopicEnable
+					data?.rocketMQParam?.autoCreateTopicEnable,
+				customVolumes: data?.customVolumes
 			});
 			const storageClassName =
 				data.type === 'elasticsearch'
@@ -932,7 +961,14 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 							: {},
 						operateFlag ? yamlConfig : {}
 				  ]
-			: [...configConfig, operateFlag ? yamlConfig : {}];
+			: [
+					...configConfig,
+					operateFlag ? yamlConfig : {},
+					(type === 'postgresql' || type === 'redis') &&
+					data.customVolumes
+						? directoryConfig
+						: {}
+			  ];
 	const onCancel = (value: boolean) => {
 		setVisible(false);
 		if (value) {

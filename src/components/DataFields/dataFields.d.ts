@@ -2,6 +2,9 @@ export interface Item {
 	dataIndex?: string;
 	label?: string;
 	span?: number;
+	className?: string;
+	labelStyle?: CSSProperties;
+	contentStyle?: CSSProperties;
 	render?: (
 		value: any,
 		dataSource?: any

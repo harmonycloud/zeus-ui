@@ -18,6 +18,7 @@ export interface modeItemProps {
 	type: string;
 	onChange: (value: modeItemProps['data']) => void;
 	middlewareType: string;
+	readOnly?: boolean;
 	disabled?: boolean;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
@@ -29,7 +30,8 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		mode,
 		onChange,
 		middlewareType,
-		disabled
+		disabled,
+		readOnly
 	} = props;
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -59,7 +61,10 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 			<div className="mode-item-title">
 				<span>{data.title}</span>
 			</div>
-			<div className="mode-item-data" onClick={() => setVisible(true)}>
+			<div
+				className="mode-item-data"
+				onClick={() => !readOnly && setVisible(true)}
+			>
 				<ul>
 					<li>
 						<span>宿主机目录：</span>
