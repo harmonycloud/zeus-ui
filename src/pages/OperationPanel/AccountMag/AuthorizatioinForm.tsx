@@ -55,8 +55,8 @@ const mysqlOptions = [
 ];
 const pgsqlOptions = [
 	{ value: 'database', label: '数据库' },
-	{ value: 'table', label: '数据表' },
-	{ value: 'schema', label: '模式' }
+	{ value: 'schema', label: '模式' },
+	{ value: 'table', label: '数据表' }
 ];
 function returnOptionsByType(type: string) {
 	switch (type) {
@@ -144,6 +144,61 @@ export default function AuthorizationForm(
 			}
 		}
 	}, [currentDatabase]);
+	useEffect(() => {
+		const dbTemp = form.getFieldValue('database');
+		const schemaTemp = form.getFieldValue('schema');
+		if (dbTemp) {
+			setCurrentDatabase(dbTemp);
+			if (type === 'mysql') {
+				getDbTables({
+					clusterId,
+					namespace,
+					middlewareName,
+					database: dbTemp
+				}).then((res) => {
+					if (res.success) {
+						setTables(res.data);
+					}
+				});
+			} else {
+				getSchemas({
+					clusterId,
+					namespace,
+					middlewareName,
+					databaseName: dbTemp
+				}).then((res) => {
+					if (res.success) {
+						setSchemas(res.data);
+					}
+				});
+			}
+		}
+		if (dbTemp && schemaTemp) {
+			setCurrentDatabase(dbTemp);
+			setCurrentSchema(schemaTemp);
+			getPgTables({
+				clusterId,
+				namespace,
+				middlewareName,
+				databaseName: dbTemp,
+				schemaName: schemaTemp
+			}).then((res) => {
+				if (res.success) {
+					setTables(res.data);
+				} else {
+					notification.error({
+						message: '失败',
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
+					});
+				}
+			});
+		}
+	}, [authType]);
 	useEffect(() => {
 		if (currentDatabase && currentSchema) {
 			getPgTables({
