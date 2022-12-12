@@ -833,6 +833,7 @@ export interface SqlAuditItem {
 	status: string;
 	timestampMysql: string;
 	user: string;
+	id?: number;
 }
 
 export interface getPgsqlTableRowsParamsProps extends SendDataParamsProps {
