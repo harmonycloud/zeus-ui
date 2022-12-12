@@ -22,22 +22,26 @@ const columns = [
 	{
 		title: '执行时间',
 		dataIndex: 'queryDate',
-		key: 'queryDate'
+		key: 'queryDate',
+		width: 150
 	},
 	{
 		title: '操作用户',
 		dataIndex: 'user',
-		key: 'user'
+		key: 'user',
+		width: 150
 	},
 	{
 		title: '数据库',
 		dataIndex: 'db',
-		key: 'db'
+		key: 'db',
+		width: 150
 	},
 	{
 		title: '执行语句',
 		dataIndex: 'query',
-		key: 'query'
+		key: 'query',
+		ellipsis: true
 	}
 ];
 export default function SqlAudit(props: SqlAuditProps): JSX.Element {

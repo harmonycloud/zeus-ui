@@ -35,6 +35,7 @@ const columns = [
 		render: (text: string) => {
 			if (text === 'readOnly') return '访问';
 			if (text === 'readWrite') return '读写';
+			if (text === 'owner') return '拥有者';
 		}
 	}
 ];
