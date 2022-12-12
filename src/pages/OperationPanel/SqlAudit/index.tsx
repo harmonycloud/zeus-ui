@@ -13,7 +13,8 @@ import type { PaginationProps, RadioChangeEvent } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { sqlAudit } from '@/services/operatorPanel';
 import { ParamsProps, SqlAuditItem, SqlAuditProps } from '../index.d';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
+import { RangePickerProps } from 'antd/lib/date-picker';
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -52,8 +53,8 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [executionTime, setExecutionTime] = useState<string>('');
 	const [dataSource, setDataSource] = useState<SqlAuditItem[]>([]);
-	const [startTime, setStartTime] = useState<string>('');
-	const [endTime, setEndTime] = useState<string>('');
+	const [startTime, setStartTime] = useState<any>();
+	const [endTime, setEndTime] = useState<any>();
 	const [keywords, setKeywords] = useState<string>('');
 	useEffect(() => {
 		if (currentUser) {
@@ -78,7 +79,11 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 			middlewareName: params.name
 		}).then((res) => {
 			if (res.success) {
-				setDataSource(res.data?.data || []);
+				setDataSource(
+					res.data?.data.map((item: SqlAuditItem, index: number) => {
+						return { ...item, id: index };
+					}) || []
+				);
 				setTotal(res.data?.count || 0);
 			} else {
 				notification.error({
@@ -113,33 +118,52 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 		setCurrent(page);
 		getData(page, pageSize, startTime, endTime, keywords);
 	};
+	const onDateChange: RangePickerProps['onChange'] = (dates, dateStrings) => {
+		if (dates) {
+			setStartTime(dates[0]);
+			setEndTime(dates[1]);
+			getData(
+				current,
+				pageSize,
+				dates[0] as unknown as string,
+				dates[1] as unknown as string,
+				keywords
+			);
+		} else {
+			setStartTime(undefined);
+			setEndTime(undefined);
+			getData(current, pageSize, '', '', keywords);
+		}
+	};
 	const handleRadioChange = (e: RadioChangeEvent) => {
 		setExecutionTime(e.target.value);
-		let startTime = '';
-		let endTime = '';
+		let startTime: any;
+		let endTime: any;
 		switch (e.target.value) {
 			case '1day':
-				startTime = moment().subtract(1, 'days').format('YYYY-MM-DD');
-				endTime = moment().format('YYYY-MM-DD');
+				startTime = moment().subtract(1, 'days');
+				endTime = moment();
 				break;
 			case '3day':
-				startTime = moment().subtract(3, 'days').format('YYYY-MM-DD');
-				endTime = moment().format('YYYY-MM-DD');
+				startTime = moment().subtract(3, 'days');
+				endTime = moment();
 				break;
 			case '7day':
-				startTime = moment().subtract(1, 'week').format('YYYY-MM-DD');
-				endTime = moment().format('YYYY-MM-DD');
+				startTime = moment().subtract(1, 'week');
+				endTime = moment();
 				break;
 			case '1month':
-				startTime = moment().subtract(1, 'month').format('YYYY-MM-DD');
-				endTime = moment().format('YYYY-MM-DD');
+				startTime = moment().subtract(1, 'month');
+				endTime = moment();
 				break;
 			default:
 				break;
 		}
-		setStartTime(startTime);
-		setEndTime(endTime);
-		getData(current, pageSize, startTime, endTime, keywords);
+		if (e.target.value !== 'custom') {
+			setStartTime(startTime);
+			setEndTime(endTime);
+			getData(current, pageSize, startTime, endTime, keywords);
+		}
 	};
 	return (
 		<main className="sql-audit-main">
@@ -161,7 +185,9 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 						<Radio.Button value="1month">近1月</Radio.Button>
 						<Radio.Button value="custom">自定义</Radio.Button>
 					</Radio.Group>
-					{executionTime === 'custom' && <RangePicker />}
+					{executionTime === 'custom' && (
+						<RangePicker onChange={onDateChange} showTime />
+					)}
 				</Space>
 				<Button
 					type="default"
@@ -172,6 +198,7 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 			<div className="sql-audit-table-content">
 				<Table
 					size="small"
+					rowKey="id"
 					columns={columns}
 					dataSource={dataSource}
 					pagination={{
