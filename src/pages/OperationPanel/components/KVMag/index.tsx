@@ -60,7 +60,8 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 			keyword: keyword,
 			clusterId: params.clusterId,
 			namespace: params.namespace,
-			middlewareName: params.name
+			middlewareName: params.name,
+			count: 10
 		}).then((res) => {
 			if (res.success) {
 				setKeys(res.data);
