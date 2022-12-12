@@ -1995,73 +1995,60 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												) : null}
 											</div>
 										</li>
-										<li className="display-flex form-li flex-align">
-											<label className="form-name">
-												<span
-													style={{ marginRight: 8 }}
-												>
-													挂载目录选择
-												</span>
-											</label>
-											<div
-												className="form-content"
-												style={{ flex: '0 0 376px' }}
-											>
-												<Switch
-													checked={directory}
-													onChange={(value) =>
-														setDirectory(value)
-													}
-													size="small"
-												/>
-											</div>
-										</li>
-										{directory ? (
-											<div
-												className={`display-flex ${styles['mode-content']}`}
-												style={{ marginLeft: 120 }}
-											>
-												{Object.keys(pathObj).map(
-													(key) => (
-														<DirectoryItem
-															middlewareType={
-																chartName
-															}
-															key={key}
-															type={key}
-															data={pathObj[key]}
-															clusterId={
-																globalCluster.id
-															}
-															mode={mode}
-															namespace={
-																globalNamespace.name
-															}
-															onChange={(
-																values
-															) => {
-																setPathObj({
-																	...pathObj,
-																	[key]: values
-																});
-															}}
-															disabled={
-																!!middlewareName
-															}
-														/>
-													)
-												)}
-												{console.log(nodeObj)}
-											</div>
-										) : null}
-										{nodeModify.nodeName !== 'sentinel' &&
-											!directory && (
-												<StorageQuota
-													clusterId={globalCluster.id}
-												/>
-											)}
 									</>
 								)}
+								<li className="display-flex form-li flex-align">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											挂载目录选择
+										</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<Switch
+											checked={directory}
+											onChange={(value) =>
+												setDirectory(value)
+											}
+											size="small"
+										/>
+									</div>
+								</li>
+								{directory ? (
+									<div
+										className={`display-flex ${styles['mode-content']}`}
+										style={{ marginLeft: 120 }}
+									>
+										{Object.keys(pathObj).map((key) => (
+											<DirectoryItem
+												middlewareType={chartName}
+												key={key}
+												type={key}
+												data={pathObj[key]}
+												clusterId={globalCluster.id}
+												mode={mode}
+												namespace={globalNamespace.name}
+												onChange={(values) => {
+													setPathObj({
+														...pathObj,
+														[key]: values
+													});
+												}}
+												disabled={!!middlewareName}
+											/>
+										))}
+										{console.log(nodeObj)}
+									</div>
+								) : null}
+								{(mode === 'cluster' || mode === 'agent') &&
+									nodeModify.nodeName !== 'sentinel' &&
+									!directory && (
+										<StorageQuota
+											clusterId={globalCluster.id}
+										/>
+									)}
 							</ul>
 						</div>
 					</FormBlock>
