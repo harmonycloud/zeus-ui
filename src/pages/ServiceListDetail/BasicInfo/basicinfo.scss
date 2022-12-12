@@ -30,6 +30,11 @@
 	text-align: center;
 	color: #666666;
 }
+.none-flex{
+	.ant-descriptions-item-container{
+		display: block;
+	}
+}
 @media screen and (max-width: 1920px) {
 	.annotation-content {
 		overflow: hidden;
