@@ -54,6 +54,7 @@ export default function OpenTable(props: OpenTableProps): JSX.Element {
 						result.key = item.column;
 						result.width = 150;
 						result.sorter = true;
+						result.ellipsis = true;
 						return result;
 					});
 					setColumns([...columns, ...list]);
