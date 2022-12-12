@@ -3,6 +3,7 @@ import { Table, Space, Button, notification } from 'antd';
 import { useParams } from 'react-router';
 import { ProContent, ProHeader, ProPage } from '@/components/ProPage';
 import {
+	cancelAuthParamsProps,
 	getUserAuthParamsProps,
 	MysqlUserAuthItem,
 	ParamsProps,
@@ -30,7 +31,11 @@ const columns = [
 	{
 		title: '权限类型',
 		dataIndex: 'authority',
-		key: 'authority'
+		key: 'authority',
+		render: (text: string) => {
+			if (text === 'readOnly') return '访问';
+			if (text === 'readWrite') return '读写';
+		}
 	}
 ];
 const mysqlColumns = [
@@ -90,7 +95,16 @@ export default function RoleDetail(): JSX.Element {
 		}
 		getUserAuth(sendData).then((res) => {
 			if (res.success) {
-				setDataSource(res.data);
+				if (params.type === 'mysql') {
+					setDataSource(res.data as MysqlUserAuthItem[]);
+				} else {
+					setDataSource(
+						res.data.map((item, index) => {
+							item.id = index;
+							return item;
+						}) as PgsqlUserAuthItem[]
+					);
+				}
 			} else {
 				notification.error({
 					message: '失败',
@@ -105,7 +119,7 @@ export default function RoleDetail(): JSX.Element {
 		}
 	};
 	const releaseAuth = () => {
-		cancelAuth({
+		const sendData: cancelAuthParamsProps = {
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
@@ -114,8 +128,14 @@ export default function RoleDetail(): JSX.Element {
 				params.type === 'mysql'
 					? storageUser.user
 					: storageUser.username,
-			authorityList: selectedAuths
-		})
+			authority: params.type === 'mysql' ? 'privilege' : 'authority'
+		};
+		if (params.type === 'mysql') {
+			sendData.grantOptionDtos = selectedAuths as MysqlUserAuthItem[];
+		} else {
+			sendData.authorityList = selectedAuths as PgsqlUserAuthItem[];
+		}
+		cancelAuth(sendData)
 			.then((res) => {
 				if (res.success) {
 					notification.success({
@@ -125,7 +145,12 @@ export default function RoleDetail(): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.errorMsg
+						description: (
+							<>
+								<p>{res.errorMsg}</p>
+								<p>{res.errorDetail}</p>
+							</>
+						)
 					});
 				}
 			})
@@ -149,6 +174,7 @@ export default function RoleDetail(): JSX.Element {
 				</Space>
 				<Table<PgsqlUserAuthItem | MysqlUserAuthItem>
 					dataSource={dataSource}
+					rowKey="id"
 					columns={params.type === 'mysql' ? mysqlColumns : columns}
 					rowSelection={{
 						type: 'checkbox',

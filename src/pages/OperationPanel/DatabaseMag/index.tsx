@@ -244,7 +244,7 @@ export default function DatabaseMag(props: DatabaseMagProps): JSX.Element {
 				新增
 			</Button>
 			<Table<DatabaseItem | PgsqlDatabaseItem>
-				rowKey={params.type === 'mysql' ? 'db' : 'oid'}
+				rowKey={params.type === 'mysql' ? 'db' : 'databaseName'}
 				dataSource={dataSource}
 				size="small"
 				columns={params.type === 'mysql' ? columns : pgsqlColumns}

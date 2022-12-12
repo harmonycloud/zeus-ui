@@ -470,6 +470,7 @@ export interface PgsqlUserAuthItem {
 	grantAble: boolean;
 	schema: string;
 	table: string;
+	id: number;
 }
 export interface PgsqlUserAuthRes extends resProps {
 	data: PgsqlUserAuthItem[];
@@ -481,6 +482,7 @@ export interface MysqlUserAuthItem {
 	table: string;
 	username: string;
 	grantAble: boolean;
+	id: number;
 }
 export interface MysqlUserAuthRes extends resProps {
 	data: MysqlUserAuthItem[];
@@ -503,7 +505,9 @@ export interface pgsqlAuthParamsProps extends SendDataParamsProps {
 }
 export interface cancelAuthParamsProps extends AllSendDataParamsProps {
 	username: string;
-	authorityList: PgsqlUserAuthItem[] | MysqlUserAuthItem[];
+	authorityList?: PgsqlUserAuthItem[];
+	authority: string;
+	grantOptionDtos?: MysqlUserAuthItem[];
 }
 export interface getPgsqlExcelParamsProps extends SendDataParamsProps {
 	databaseName: string;
