@@ -121,7 +121,7 @@ function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 				sql: item
 			}).then((res) => {
 				if (res.success) {
-					if (res.data.status === 'success') {
+					if (res.data.status === 'true') {
 						if (sql.includes('SELECT')) {
 							const resData = {
 								data: res?.data?.data,

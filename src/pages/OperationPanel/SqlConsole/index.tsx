@@ -523,8 +523,9 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		);
 	};
 	useEffect(() => {
-		// * 获取数据库列表的数据 - mysql
 		if (currentUser) {
+			setPgTableTreeData([]);
+			setItems([]);
 			const sendData = {
 				clusterId: params.clusterId,
 				namespace: params.namespace,
