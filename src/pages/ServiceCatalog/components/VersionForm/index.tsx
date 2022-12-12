@@ -69,7 +69,7 @@ export default function VersionForm(props: VersionFormProps): JSX.Element {
 									};
 								})
 							);
-							setVersion('');
+							setVersion(versionOriginData[value][0]);
 						}}
 						disabled={disabled}
 					/>
