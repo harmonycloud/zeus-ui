@@ -6,7 +6,8 @@ import {
 	Button,
 	Tooltip,
 	Select,
-	Form
+	Form,
+	Progress
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -24,7 +25,9 @@ import CustomEditNodeSpe from './customEditNodeSpe';
 import Console from './console';
 import YamlForm from './yamlForm';
 import DilatationForm from './dilatationForm';
+import EditBrust from './editBrust';
 import styles from './esEdit.module.scss';
+import './index.scss';
 
 import {
 	getPods,
@@ -45,7 +48,6 @@ import {
 } from '../detail';
 import RedisSentinelNodeSpe from './redisSentinelNodeSpe';
 import { IconFont } from '@/components/IconFont';
-import { spawn } from 'child_process';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -82,11 +84,12 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [dilatationVisible, setDilationVisible] = useState<boolean>(false);
 	const [podNum, setPodNum] = useState<number>(0);
 	const [burstList, setBurstList] = useState<string[]>([]);
+	const [selectSlave, setSelectSlave] = useState<string>();
+	const [burstVisible, setBurstVisible] = useState<boolean>(false);
 	// * redis手动切换状态
 	const [switchStatus, setSwitchStatus] = useState<boolean>();
 	// * redis手动切换失败原因
 	const [switchReason, setSwitchReason] = useState<string>('');
-	const [form] = Form.useForm();
 
 	useEffect(() => {
 		console.log(data);
@@ -387,55 +390,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const autoSwitch = () => {
 		if (data.status === 'Running') {
 			if (data.type === 'redis') {
-				confirm({
-					title: '重启确认',
-					icon: null,
-					content: (
-						<div>
-							<p>分片选择（主节点 -&gt; 从节点）：</p>
-							<Form form={form}>
-								<Form.Item
-									name="slaveName"
-									rules={[
-										{
-											required: true,
-											message: '请选择分片'
-										}
-									]}
-								>
-									<Select
-										style={{
-											margin: '12px 0',
-											width: '100%'
-										}}
-										placeholder="请选择分片"
-									>
-										{burstList.map((item: string) => {
-											return (
-												<Select.Option
-													key={item}
-													value={
-														item.split(' -> ')[1]
-													}
-												>
-													{item}
-												</Select.Option>
-											);
-										})}
-									</Select>
-								</Form.Item>
-							</Form>
-							<p style={{ color: '#ff4d4f' }}>
-								主备服务切换过程中可能会有闪断，请确保您的应用程序具有自动重连机制
-							</p>
-						</div>
-					),
-					onOk: () => {
-						form.validateFields().then(() => {
-							switchMiddleware(null);
-						});
-					}
-				});
+				setBurstVisible(true);
 			} else {
 				confirm({
 					title: '操作确认',
@@ -463,7 +418,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			isAuto: value
 		};
 		if (data.type === 'redis') {
-			sendData.slaveName = form.getFieldValue('slaveName');
+			sendData.slaveName = selectSlave?.split(' -> ')[1];
 		}
 		switchMiddlewareMasterSlave(sendData).then((res) => {
 			if (res.success) {
@@ -476,6 +431,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 							num--;
 						}, 1000);
 						setSwitchStatus(true);
+						setBurstVisible(false);
 					} else {
 						notification.success({
 							message: '成功',
@@ -1054,6 +1010,25 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					onCancel={() => setDilationVisible(false)}
 					onCreate={onDilatationCreate}
 					quota={quotaValue}
+				/>
+			)}
+			{burstVisible && (
+				<EditBrust
+					open={burstVisible}
+					onCancel={() => setBurstVisible(false)}
+					onOk={() => {
+						if (selectSlave) {
+							switchMiddleware(null);
+						} else {
+							notification.warn({
+								message: '提示',
+								description: '请选择分片'
+							});
+						}
+					}}
+					burstList={burstList}
+					selectSlave={selectSlave}
+					onChange={(value: any) => setSelectSlave(value)}
 				/>
 			)}
 		</div>

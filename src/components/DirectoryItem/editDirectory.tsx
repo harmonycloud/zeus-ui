@@ -200,6 +200,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						value={data.volumeSize}
 						style={{ width: '150px' }}
 						onChange={inputChange}
+						addonAfter="GB"
 						placeholder="请输入磁盘大小"
 					/>
 				</FormItem>
