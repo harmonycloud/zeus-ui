@@ -214,7 +214,7 @@ function MiddlewareRepository(props: middlewareRepositoryProps): JSX.Element {
 							className="name-link"
 							onClick={() => {
 								window.open(
-									'https://zeusharmonycloud.yuque.com/docs/share/b1cd76ac-08c8-481d-9dc7-d38565505bc7?#'
+									'https://www.yuque.com/docs/share/9e9ddcb4-7f37-42e2-8a9f-3c77407168ed?#'
 								);
 							}}
 						>
