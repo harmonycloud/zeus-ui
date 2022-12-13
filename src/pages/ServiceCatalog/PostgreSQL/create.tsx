@@ -176,8 +176,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		},
 		pgarch: {
 			title: 'wal日志归档目录',
-			hostPath: '/pgsearch',
-			mountPath: '/pgsearch',
+			hostPath: '/pgarch',
+			mountPath: '/pgarch',
 			volumeSize: 1,
 			storageClass: 'local-path',
 			targetContainers: ['postgres']

@@ -3,6 +3,15 @@ import { Input } from 'antd';
 import EditDirectory from './editDirectory';
 import '../ModeItem/index.scss';
 
+const titleMap = {
+	pgdb: '数据目录',
+	pgwal: 'wal日志目录',
+	pglog: 'PostgreSQL日志目录',
+	pgarch: 'wal日志归档目录',
+	pgextension: 'PostgreSQL插件目录',
+	'redis-data': '数据目录',
+	'redis-logs': '日志目录'
+};
 export interface modeItemProps {
 	data: {
 		title: string;
@@ -10,6 +19,7 @@ export interface modeItemProps {
 		hostPath: string;
 		mountPath: string;
 		volumeSize: number;
+		name: string;
 		storageClass: string | string[];
 	};
 	mode?: string;
@@ -59,7 +69,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 	return (
 		<div className="mode-item-box">
 			<div className="mode-item-title">
-				<span>{data.title}</span>
+				<span>{data.title || titleMap[data.name]}</span>
 			</div>
 			<div
 				className="mode-item-data"
