@@ -51,14 +51,20 @@ export default function SqlAudit(props: SqlAuditProps): JSX.Element {
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();
 	const [pageSize, setPageSize] = useState<number>(10);
-	const [executionTime, setExecutionTime] = useState<string>('');
+	const [executionTime, setExecutionTime] = useState<string>('1day');
 	const [dataSource, setDataSource] = useState<SqlAuditItem[]>([]);
 	const [startTime, setStartTime] = useState<any>();
 	const [endTime, setEndTime] = useState<any>();
 	const [keywords, setKeywords] = useState<string>('');
 	useEffect(() => {
 		if (currentUser) {
-			getData(1, pageSize, '', '', '');
+			getData(
+				1,
+				pageSize,
+				moment().subtract(1, 'days') as unknown as string,
+				moment() as unknown as string,
+				''
+			);
 		}
 	}, [currentUser]);
 	const getData = (
