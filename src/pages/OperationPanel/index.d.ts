@@ -645,6 +645,9 @@ export interface getExecuteHisParamsProps extends SendDataParamsProps {
 export interface getRedisKeysParamsProps extends SendDataParamsProps {
 	database: string;
 	keyword: string;
+	count?: number;
+	cursor?: number;
+	pod?: string;
 }
 export interface RedisKeyItem {
 	expiration: string;

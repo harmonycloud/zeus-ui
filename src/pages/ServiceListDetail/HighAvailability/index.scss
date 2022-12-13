@@ -1,0 +1,46 @@
+.icons {
+	display: flex;
+	flex-direction: column;
+	font-size: 14px;
+	.back-icon {
+		transform: rotate(180deg);
+	}
+}
+.circle.ant-progress.ant-progress-circle {
+	position: absolute;
+	top: 0;
+	left: 4px;
+	.ant-progress-inner {
+		transform: rotate(30deg);
+		.ant-progress-text {
+			left: 0;
+			top: 10%;
+			color: $black-8;
+			transform: scale(0.8) rotate(-30deg);
+			&.blue {
+				color: $blue-4;
+			}
+		}
+	}
+	&.blue {
+		.ant-progress-inner {
+			.ant-progress-text {
+				color: $blue-4;
+			}
+		}
+	}
+}
+.master-card {
+	width: 170px;
+	height: 50px;
+	border-radius: 2px;
+	text-align: center;
+	position: relative;
+	color: $blue-6;
+	line-height: 50px;
+	background-color: $black-8;
+	&.blue {
+		color: $black-8;
+		background-color: $blue-6;
+	}
+}

@@ -626,7 +626,10 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 					}`,
 					description: data.description || '无',
 					mirror: data.mirrorImage || '/',
-					hostNetwork: data[data.type + 'Param'].hostNetwork
+					hostNetwork:
+						data.type === 'postgresql' || data.type === 'redis'
+							? data[data.type + 'Param'].hostNetwork
+							: ''
 				});
 			}
 			setConfigData({
@@ -657,7 +660,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				namespaceAliasName: data.namespaceAliasName,
 				storageClassName: storageClassName,
 				storageType: storageType,
-				hostNetwork: data.hostNetwork,
+				hostNetwork: data?.hostNetwork,
 				group: data.rocketMQParam?.group,
 				replicas: data.rocketMQParam?.replicas
 			});

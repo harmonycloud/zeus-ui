@@ -80,7 +80,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 					</li>
 					<li>
 						<span>存储大小：</span>
-						<span>{data.volumeSize} Gi</span>
+						<span>{data.volumeSize} GB</span>
 					</li>
 				</ul>
 			</div>
