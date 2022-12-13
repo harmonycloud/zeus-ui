@@ -81,7 +81,7 @@ export default function RedisKeyItem(props: RedisKeyItemProps): JSX.Element {
 			<Dropdown overlay={() => menu()} trigger={['contextMenu']}>
 				<div className={`text-hidden redis-key-item-label`}>
 					<IconFont type="icon-biaoshilei_yuechi" className="mr-8" />
-					<span>{data.key}</span>
+					<span>{data}</span>
 				</div>
 			</Dropdown>
 			<div className="redis-key-item-action">

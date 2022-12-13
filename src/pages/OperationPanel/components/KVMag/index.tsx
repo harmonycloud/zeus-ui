@@ -77,13 +77,13 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
-			cursor: pageOptions.cursor || 0,
-			count: pageOptions.count || 10,
-			pod: pageOptions.pod || ''
+			cursor: pageOptions?.cursor || 0,
+			count: pageOptions?.count || 10,
+			pod: pageOptions?.pod || ''
 		}).then((res: any) => {
 			if (res.success) {
 				setKeys(res.data.keys);
-				setKey(res.data[0]?.key);
+				setKey(res.data.keys[0]);
 				setCursor(res.data.cursor);
 				setPreCursor(res.data.preCursor);
 				setPod(res.data.pod);
@@ -150,7 +150,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	const handleAdd = () => setIsAdd(true);
 	const handleEdit = () => console.log('edit');
 	const handleView = () => console.log('view');
-	const handleClick = (item: RedisKeyItemParams) => setKey(item.key);
+	const handleClick = (item: string) => setKey(item);
 	const childrenRender = (type: string) => {
 		switch (type) {
 			case 'hash':
@@ -220,7 +220,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 			{!isAdd ? (
 				<SplitPane {...paneProps}>
 					{!isAdd ? (
-						<div>
+						<div style={{ height: '100%' }}>
 							<Button
 								style={{ width: '100%' }}
 								type="primary"
@@ -237,12 +237,12 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 									handleSearch(value)
 								}
 							/>
-							<div>
+							<div style={{ height: 'calc(100% - 105px)' }}>
 								{keys.map((item: any) => {
 									return (
 										<RedisKeyItem
-											key={item.key}
-											active={item.key === key}
+											key={item}
+											active={item === key}
 											data={item}
 											onDelete={handleDelete}
 											onRefresh={handleRefresh}
@@ -253,13 +253,16 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 										/>
 									);
 								})}
-								<Pagination
-									total={keys.length}
-									current={cursor}
-									pageSize={count}
-									onChange={paginationChange}
-								/>
 							</div>
+							<Pagination
+								total={keys.length}
+								current={cursor}
+								size="small"
+								pageSize={count}
+								showTotal={() => <span>共{keys.length}条</span>}
+								style={{ float: 'right' }}
+								onChange={paginationChange}
+							/>
 						</div>
 					) : null}
 					<div>{childrenRender(detail?.keyType)}</div>
