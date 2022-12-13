@@ -294,3 +294,8 @@ export const getMasterName = (params: any) => {
 export const getBurstList = (params: any) => {
 	return Axios.get(MIDDLEWARE.getBurstList, params);
 };
+
+// * 获取中间件切换信息
+export const getSwitch = (params: any) => {
+	return Axios.get(MIDDLEWARE.getSwitch, params);
+};

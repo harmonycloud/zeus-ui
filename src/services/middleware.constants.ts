@@ -122,3 +122,5 @@ export const getTolerations = `${api}/area/tolerations`;
 export const getMasterName = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/redis/burstMaster`;
 // * 获取redis主从关系列表
 export const getBurstList = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/redis/burstList`;
+// * 获取中间件切换信息
+export const getSwitch = `${api}/clusters/{clusterId}/namespaces/{namespace}/middlewares/{middlewareName}/switch`;
