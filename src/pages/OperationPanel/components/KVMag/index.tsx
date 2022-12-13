@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Modal, notification, Button, Empty } from 'antd';
+import { Input, Modal, notification, Button, Empty, Pagination } from 'antd';
 import { useParams } from 'react-router';
 import SplitPane, { SplitPaneProps } from 'react-split-pane';
 import RedisKeyItem from '../RedisKeyItem';
@@ -29,8 +29,14 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	const [keyword, setKeyword] = useState<string>('');
 	const [key, setKey] = useState<string>('');
 	const [activeKey, setActiveKey] = useState<string>('');
-	const [keys, setKeys] = useState<RedisKeyItemParams[]>([]);
+	const [keys, setKeys] = useState<any>([]);
 	const [detail, setDetail] = useState<any>();
+	const [cursor, setCursor] = useState<number>(0);
+	const [preCursor, setPreCursor] = useState<number>(0);
+	const [count, setCount] = useState<number>(10);
+	const [pod, setPod] = useState<string>('');
+	const [prePod, setPrePod] = useState<string>('');
+
 	const [paneProps] = useState<SplitPaneProps>({
 		split: 'vertical',
 		minSize: 200,
@@ -49,23 +55,39 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		}
 	});
 	useEffect(() => {
-		getData('');
+		getData();
 	}, []);
 	useEffect(() => {
 		getDetail();
 	}, [key]);
-	const getData = (keyword: string, key?: string) => {
+	const paginationChange = (page: number, pageSize: number) => {
+		setCursor(page);
+		setCount(pageSize);
+		const alertData = {
+			cursor: page > cursor ? preCursor : cursor,
+			count: pageSize,
+			pod: page > cursor ? prePod : pod
+		};
+		getData('', alertData);
+	};
+	const getData = (keyword?: string, pageOptions?: any) => {
 		getRedisKeys({
 			database: dbName,
-			keyword: keyword,
+			keyword: keyword || '',
 			clusterId: params.clusterId,
 			namespace: params.namespace,
 			middlewareName: params.name,
-			count: 10
-		}).then((res) => {
+			cursor: pageOptions.cursor || 0,
+			count: pageOptions.count || 10,
+			pod: pageOptions.pod || ''
+		}).then((res: any) => {
 			if (res.success) {
-				setKeys(res.data);
+				setKeys(res.data.keys);
 				setKey(res.data[0]?.key);
+				setCursor(res.data.cursor);
+				setPreCursor(res.data.preCursor);
+				setPod(res.data.pod);
+				setPrePod(res.data.cursor);
 				// key && getDetail();
 				// key ? setKey(key) : setKey(res.data[0]?.key);
 			}
@@ -97,7 +119,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 					middlewareName: params.name
 				}).then((res) => {
 					if (res.success) {
-						getData('');
+						getData();
 						redisDbRefresh();
 						notification.success({
 							message: '成功',
@@ -138,7 +160,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
-						getKeys={(key: string) => getData('', key)}
+						getKeys={(key: string) => getData()}
 					/>
 				);
 				break;
@@ -149,7 +171,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
-						getKeys={(key: string) => getData('', key)}
+						getKeys={(key: string) => getData()}
 					/>
 				);
 				break;
@@ -160,7 +182,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
-						getKeys={(key: string) => getData('', key)}
+						getKeys={(key: string) => getData()}
 					/>
 				);
 				break;
@@ -171,7 +193,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
-						getKeys={(key: string) => getData('', key)}
+						getKeys={(key: string) => getData()}
 					/>
 				);
 			case 'string':
@@ -181,7 +203,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 						currentKey={key}
 						database={dbName}
 						onRefresh={getDetail}
-						getKeys={(key: string) => getData('', key)}
+						getKeys={(key: string) => getData()}
 					/>
 				);
 			default:
@@ -216,7 +238,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 								}
 							/>
 							<div>
-								{keys.map((item) => {
+								{keys.map((item: any) => {
 									return (
 										<RedisKeyItem
 											key={item.key}
@@ -231,6 +253,12 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 										/>
 									);
 								})}
+								<Pagination
+									total={keys.length}
+									current={cursor}
+									pageSize={count}
+									onChange={paginationChange}
+								/>
 							</div>
 						</div>
 					) : null}
@@ -241,7 +269,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 					onCancel={() => setIsAdd(false)}
 					onRefresh={() => {
 						redisDbRefresh();
-						getData('');
+						getData();
 					}}
 					database={dbName}
 				/>

@@ -84,7 +84,7 @@ export default function EditBrust(props: any): JSX.Element {
 									strokeColor="#78b5ff"
 									style={{ marginLeft: 4 }}
 								/>
-								<div>{selectSlave?.split(' -> ')[0]}</div>
+								<div>{selectSlave?.split(' -> ')[1]}</div>
 							</div>
 						</div>
 						<div className="icons">
@@ -122,7 +122,7 @@ export default function EditBrust(props: any): JSX.Element {
 									strokeColor="#ddd"
 									style={{ marginLeft: 4 }}
 								/>
-								<div>{selectSlave?.split(' -> ')[0]}</div>
+								<div>{selectSlave?.split(' -> ')[1]}</div>
 							</div>
 						</div>
 					</div>
