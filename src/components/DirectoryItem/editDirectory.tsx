@@ -198,7 +198,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					<InputNumber
 						min={0}
 						value={data.volumeSize}
-						style={{ width: '150px' }}
+						style={{ width: '180px' }}
 						onChange={inputChange}
 						addonAfter="GB"
 						placeholder="请输入磁盘大小"

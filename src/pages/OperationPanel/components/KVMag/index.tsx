@@ -264,6 +264,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 								simple
 								size="small"
 								pageSize={count}
+								className="no-page"
 								showTotal={() => <span>共{total}条</span>}
 								style={{ float: 'right' }}
 								onChange={paginationChange}
