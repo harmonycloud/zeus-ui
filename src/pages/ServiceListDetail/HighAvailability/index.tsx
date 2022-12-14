@@ -31,6 +31,7 @@ import './index.scss';
 
 import {
 	getPods,
+	getSwitch,
 	restartPods,
 	switchMiddlewareMasterSlave,
 	updateMiddleware,
@@ -47,7 +48,6 @@ import {
 	QuotaParams
 } from '../detail';
 import RedisSentinelNodeSpe from './redisSentinelNodeSpe';
-import { IconFont } from '@/components/IconFont';
 
 const { confirm } = Modal;
 const LinkButton = Actions.LinkButton;
@@ -64,6 +64,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	} = props;
 	const [pods, setPods] = useState<PodItem[]>([]);
 	const [switchValue, setSwitchValue] = useState<boolean>(false);
+	const [lastAutoSwitchTime, setLastAutoSwitchTime] = useState<string>('');
 	const [podVisible, setPodVisible] = useState<boolean>(false);
 	const [containers, setContainers] = useState<string[]>([]);
 	const [currentContainer, setCurrentContainer] = useState<string>('');
@@ -92,7 +93,6 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [switchReason, setSwitchReason] = useState<string>('');
 
 	useEffect(() => {
-		console.log(data);
 		if (data !== undefined) {
 			const sendData: PodSendData = {
 				clusterId,
@@ -102,10 +102,23 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			};
 			data.type === 'redis' && getBurstLists();
 			getPodList(sendData);
+			getSwitchInfo();
 			setQuotaValue(data.quota[type]);
-			setSwitchValue(data.autoSwitch);
+			// setSwitchValue(data.autoSwitch);
 		}
 	}, [data]);
+	// * 获取中间件切换信息
+	const getSwitchInfo = () => {
+		getSwitch({
+			clusterId,
+			namespace,
+			middlewareName: data.name,
+			type: data.type
+		}).then((res) => {
+			setSwitchValue(res.data?.isAuto);
+			setLastAutoSwitchTime(res.data?.lastAutoSwitchTime);
+		});
+	};
 	// * 获取pod列表
 	const getPodList = (sendData: PodSendData) => {
 		getPods(sendData).then((res) => {
@@ -778,7 +791,8 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 								>
 									手动切换
 								</Button>
-								{typeof switchStatus === 'boolean' ? (
+								{typeof switchStatus === 'boolean' &&
+								type === 'redis' ? (
 									<span>
 										{switchStatus ? (
 											<>
@@ -832,9 +846,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 									<span style={{ marginRight: 32 }}>
 										上一次切换时间
 									</span>
-									<label>
-										{data.lastAutoSwitchTime || '/'}
-									</label>
+									<label>{lastAutoSwitchTime || '/'}</label>
 								</div>
 							)}
 							<div className="detail-divider" />

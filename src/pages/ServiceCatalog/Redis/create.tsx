@@ -218,7 +218,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		},
 		'redis-logs': {
 			title: '日志目录',
-			hostPath: '',
+			hostPath: '/host/path',
 			mountPath: '/redis/logs',
 			storageClass: 'local-path',
 			volumeSize: 1,

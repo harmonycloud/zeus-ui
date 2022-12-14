@@ -160,8 +160,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		},
 		pgwal: {
 			title: 'wal日志目录',
-			hostPath: '/pwwal',
-			mountPath: '/pwwal',
+			hostPath: '/pgwal',
+			mountPath: '/pgwal',
 			volumeSize: 1,
 			storageClass: 'local-path',
 			targetContainers: ['postgres']
@@ -176,8 +176,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		},
 		pgarch: {
 			title: 'wal日志归档目录',
-			hostPath: '/pgsearch',
-			mountPath: '/pgsearch',
+			hostPath: '/pgarch',
+			mountPath: '/pgarch',
 			volumeSize: 1,
 			storageClass: 'local-path',
 			targetContainers: ['postgres']

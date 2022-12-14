@@ -36,6 +36,8 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	const [count, setCount] = useState<number>(10);
 	const [pod, setPod] = useState<string>('');
 	const [prePod, setPrePod] = useState<string>('');
+	const [total, setTotal] = useState<number>(0);
+	const [current, setCurrent] = useState<number>(1);
 
 	const [paneProps] = useState<SplitPaneProps>({
 		split: 'vertical',
@@ -61,12 +63,12 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		getDetail();
 	}, [key]);
 	const paginationChange = (page: number, pageSize: number) => {
-		setCursor(page);
+		setCurrent(page);
 		setCount(pageSize);
 		const alertData = {
-			cursor: page > cursor ? preCursor : cursor,
+			cursor: page > current ? preCursor : cursor,
 			count: pageSize,
-			pod: page > cursor ? prePod : pod
+			pod: page > current ? prePod : pod
 		};
 		getData('', alertData);
 	};
@@ -88,6 +90,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				setPreCursor(res.data.preCursor);
 				setPod(res.data.pod);
 				setPrePod(res.data.cursor);
+				setTotal(res.data.sum);
 				// key && getDetail();
 				// key ? setKey(key) : setKey(res.data[0]?.key);
 			}
@@ -254,12 +257,14 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 									);
 								})}
 							</div>
+							{console.log(total)}
 							<Pagination
-								total={keys.length}
-								current={cursor}
+								total={total}
+								current={current}
+								simple
 								size="small"
 								pageSize={count}
-								showTotal={() => <span>共{keys.length}条</span>}
+								showTotal={() => <span>共{total}条</span>}
 								style={{ float: 'right' }}
 								onChange={paginationChange}
 							/>
