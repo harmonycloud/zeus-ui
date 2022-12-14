@@ -2281,7 +2281,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 															'namespace'
 														)
 												  )
-												: namespace
+												: judgeActiveActive(namespace)
 											: globalNamespace.availableDomain
 									}
 								/>
