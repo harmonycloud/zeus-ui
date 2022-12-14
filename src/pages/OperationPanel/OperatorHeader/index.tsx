@@ -15,13 +15,6 @@ export default function OperatorHeader(
 	useEffect(() => {
 		window.onbeforeunload = (e) => {
 			console.log(e);
-			// authLogout({
-			// 	clusterId: params.clusterId,
-			// 	middlewareName: params.name,
-			// 	namespace: params.namespace,
-			// 	type: params.type
-			// });
-			// e.preventDefault();
 			return 1;
 		};
 	}, []);
@@ -52,14 +45,14 @@ export default function OperatorHeader(
 									title: '操作确认',
 									content: '是否确认退出当前运维面板？',
 									onOk: () => {
-										// authLogout({
-										// 	clusterId: params.clusterId,
-										// 	middlewareName: params.name,
-										// 	namespace: params.namespace,
-										// 	type: params.type
-										// }).finally(() => {
-										window.close();
-										// });
+										authLogout({
+											clusterId: params.clusterId,
+											middlewareName: params.name,
+											namespace: params.namespace,
+											type: params.type
+										}).finally(() => {
+											window.close();
+										});
 									}
 								});
 							}}
