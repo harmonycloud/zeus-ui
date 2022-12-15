@@ -2036,10 +2036,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														[key]: values
 													});
 												}}
+												readOnly={!!middlewareName}
 												disabled={!!middlewareName}
 											/>
 										))}
-										{console.log(nodeObj)}
 									</div>
 								) : null}
 								{(mode === 'cluster' || mode === 'agent') &&
