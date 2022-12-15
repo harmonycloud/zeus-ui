@@ -652,7 +652,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			}
-			// console.log(sendData);
 			if (middlewareName) {
 				const result = {
 					clusterId: globalCluster.id,
@@ -753,7 +752,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				res.data.customVolumes &&
 				JSON.stringify(res.data.customVolumes !== '{}')
 			) {
-				setDirectory(res.data.customVolumes);
+				setNodeObj({ ...res.data.customVolumes });
+				setDirectory(true);
 			} else {
 				if (res.data.quota.postgresql.storageClassName.includes(',')) {
 					const storageClassAliasNameTemp =
