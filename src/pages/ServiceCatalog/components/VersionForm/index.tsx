@@ -29,13 +29,25 @@ export default function VersionForm(props: VersionFormProps): JSX.Element {
 				if (res.data) {
 					setVersionOriginData(res.data);
 					const list = Object.keys(res.data);
-					setFatherVersion(list[0]);
-					setVersion(res.data[list[0]][0]);
-					setVersionList(
-						res.data[list[0]].map((item: string) => {
-							return { value: item, label: item };
-						})
-					);
+					if (version) {
+						setFatherVersion(version.split('.')[0]);
+						setVersionList(
+							res.data[version.split('.')[0]].map(
+								(item: string) => {
+									return { value: item, label: item };
+								}
+							)
+						);
+						setVersion(version);
+					} else {
+						setFatherVersion(list[0]);
+						setVersion(res.data[list[0]][0]);
+						setVersionList(
+							res.data[list[0]].map((item: string) => {
+								return { value: item, label: item };
+							})
+						);
+					}
 					const lt = list.map((item: string) => {
 						return { value: item, label: item };
 					});
