@@ -212,7 +212,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: '数据目录',
 			hostPath: '/host/path',
 			mountPath: '/redis/data',
-			storageClass: '',
+			storageClass: null,
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
 		},
@@ -220,7 +220,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: '日志目录',
 			hostPath: '/host/path',
 			mountPath: '/redis/logs',
-			storageClass: '',
+			storageClass: null,
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
 		}
@@ -372,10 +372,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values: RedisCreateValuesParams) => {
-			Modal.info({
-				title: '提醒',
-				content: `当前初始密码为${values.pwd}，请妥善保存`
-			});
 			const sendData: RedisSendDataParams = {
 				chartName: chartName,
 				chartVersion: chartVersion,
@@ -535,19 +531,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				} else {
 					sendData.customVolumes = {};
 					for (const key in pathObj) {
-						let storageClassNameTemp = '';
-						if (typeof pathObj[key].storageClass === 'string') {
-							storageClassNameTemp =
-								pathObj[key].storageClass?.split('/')[0];
-						} else {
-							storageClassNameTemp = pathObj[key].storageClass
-								?.map((item: string) => item.split('/')[0])
-								.join(',');
-						}
 						if (!pathObj[key].disabled) {
-							// if (pathObj[key].storageClass === '') {
-							// 	return;
-							// }
+							if (!pathObj[key].storageClass) {
+								return;
+							}
 							// if (pathObj[key].storageQuota === 0) {
 							// 	notification.error({
 							// 		message: '失败',
@@ -608,7 +595,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				}
 			} else {
 				if (nodeObj) {
-					console.log(nodeObj);
 					sendData.quota = { redis: {} };
 					for (const key in nodeObj) {
 						let storageClassNameTemp = '';
@@ -652,6 +638,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			if (namespace) {
 				sendData.namespace = namespace;
 			}
+			Modal.info({
+				title: '提醒',
+				content: `当前初始密码为${values.pwd}，请妥善保存`
+			});
 			// 克隆服务
 			if (middlewareName) {
 				const result = {

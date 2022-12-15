@@ -132,7 +132,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					/>
 				</FormItem>
 				<FormItem
-					label="存储"
+					label="存储类型"
 					labelAlign="left"
 					rules={[
 						{
@@ -142,9 +142,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					]}
 					name="storageClass"
 					className="ant-form-name"
-					initialValue={
-						data.storageClass || storageClassList[0]?.aliasName
-					}
+					initialValue={data.storageClass}
 				>
 					<Select
 						placeholder="请选择存储类型"

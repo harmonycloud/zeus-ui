@@ -368,6 +368,7 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 		render: (value: any) =>
 			value ? (
 				<div style={{ display: 'flex' }}>
+					{console.log(value)}
 					{Object.keys(value).map((key) => (
 						<DirectoryItem
 							key={key}

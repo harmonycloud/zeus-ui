@@ -107,13 +107,25 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						<span>容器内目录：</span>
 						<span>{data.mountPath}</span>
 					</li>
-					<li>
-						<span>存储：</span>
-						<span>
-							{data.storageClass ||
-								storageClassList[0]?.aliasName}
-						</span>
-					</li>
+					{data.storageClass ? (
+						<li>
+							<span>存储类型：</span>
+							<span>
+								{
+									storageClassList.find(
+										(item) =>
+											item.name === data.storageClass
+									)?.aliasName
+								}
+							</span>
+						</li>
+					) : (
+						<li>
+							<span style={{ color: '#D93026' }}>
+								存储类型：未配置
+							</span>
+						</li>
+					)}
 					<li>
 						<span>存储大小：</span>
 						<span>{data.volumeSize} GB</span>

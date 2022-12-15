@@ -155,7 +155,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgdata',
 			mountPath: '/pgdata',
 			volumeSize: 1,
-			storageClass: '',
+			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pgwal: {
@@ -163,7 +163,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgwal',
 			mountPath: '/pgwal',
 			volumeSize: 1,
-			storageClass: '',
+			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pglog: {
@@ -171,7 +171,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pglog',
 			mountPath: '/pglog',
 			volumeSize: 1,
-			storageClass: '',
+			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pgarch: {
@@ -179,7 +179,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgarch',
 			mountPath: '/pgarch',
 			volumeSize: 1,
-			storageClass: '',
+			storageClass: null,
 			targetContainers: ['postgres']
 		},
 		pgextension: {
@@ -187,7 +187,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgextension',
 			mountPath: '/pgextension',
 			volumeSize: 1,
-			storageClass: '',
+			storageClass: null,
 			targetContainers: ['postgres']
 		}
 	});
@@ -432,10 +432,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 
 	const handleSubmit = () => {
 		form.validateFields().then((values) => {
-			Modal.info({
-				title: '提醒',
-				content: `当前postgres密码为${values.pgsqlPwd}，请妥善保存`
-			});
 			let storageClassTemp = '';
 			if (!directory) {
 				if (typeof values.storageClass === 'string') {
@@ -626,19 +622,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (directory) {
 				sendData.customVolumes = {};
 				for (const key in nodeObj) {
-					let storageClassNameTemp = '';
-					if (typeof nodeObj[key].storageClass === 'string') {
-						storageClassNameTemp =
-							nodeObj[key].storageClass?.split('/')[0];
-					} else {
-						storageClassNameTemp = nodeObj[key].storageClass
-							?.map((item: string) => item.split('/')[0])
-							.join(',');
-					}
 					if (!nodeObj[key].disabled) {
-						// if (nodeObj[key].storageClass === '') {
-						// 	return;
-						// }
+						if (!nodeObj[key].storageClass) {
+							return;
+						}
 						// if (nodeObj[key].storageQuota === 0) {
 						// 	notification.error({
 						// 		message: '失败',
@@ -652,6 +639,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			}
+			Modal.info({
+				title: '提醒',
+				content: `当前postgres密码为${values.pgsqlPwd}，请妥善保存`
+			});
 			if (middlewareName) {
 				const result = {
 					clusterId: globalCluster.id,
