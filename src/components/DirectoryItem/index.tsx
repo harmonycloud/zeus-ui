@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Input } from 'antd';
+import { getLists } from '@/services/storage';
+import {
+	GetParams,
+	StorageItem
+} from '@/pages/StorageManagement/storageManage';
 import EditDirectory from './editDirectory';
 import '../ModeItem/index.scss';
 
@@ -44,10 +48,29 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		readOnly
 	} = props;
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
-	const [isEdit, setIsEdit] = useState<boolean>(false);
+	const [storageClassList, setStorageClassList] = useState<StorageItem[]>([]);
 	const [visible, setVisible] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (clusterId) {
+			const sendData: GetParams = {
+				all: false,
+				clusterId: clusterId
+			};
+			getLists(sendData).then((res) => {
+				if (res.success) {
+					setStorageClassList(
+						res.data?.filter(
+							(item) =>
+								item.provisioner === 'rancher.io/local-path'
+						)
+					);
+				}
+			});
+		}
+	}, [clusterId]);
+
 	const onCreate = (value: any) => {
-		console.log(value);
 		onChange(value);
 		setModifyData({
 			...modifyData,
@@ -86,7 +109,10 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 					</li>
 					<li>
 						<span>存储：</span>
-						<span>{data.storageClass}</span>
+						<span>
+							{data.storageClass ||
+								storageClassList[0]?.aliasName}
+						</span>
 					</li>
 					<li>
 						<span>存储大小：</span>
@@ -108,6 +134,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 					onChange={onChange}
 					inputChange={inputChange}
 					disabled={disabled}
+					storageClassList={storageClassList}
 				/>
 			)}
 		</div>

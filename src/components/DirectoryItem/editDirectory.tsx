@@ -11,33 +11,15 @@ interface EditDirectoryProps extends modeItemProps {
 	visible: boolean;
 	onCreate: (value: any) => void;
 	onCancel: () => void;
+	storageClassList: StorageItem[];
 	inputChange: (value: any) => void;
 }
 
 const FormItem = Form.Item;
 const EditDirectory = (props: EditDirectoryProps) => {
-	const { visible, onCancel, onCreate, data, clusterId, inputChange } = props;
-	const [storageClassList, setStorageClassList] = useState<StorageItem[]>([]);
+	const { visible, onCancel, onCreate, data, storageClassList, inputChange } =
+		props;
 	const [form] = Form.useForm();
-
-	useEffect(() => {
-		if (clusterId) {
-			const sendData: GetParams = {
-				all: false,
-				clusterId: clusterId
-			};
-			getLists(sendData).then((res) => {
-				if (res.success) {
-					setStorageClassList(
-						res.data?.filter(
-							(item) =>
-								item.provisioner === 'rancher.io/local-path'
-						)
-					);
-				}
-			});
-		}
-	}, [clusterId]);
 
 	const onOk = () => {
 		form.validateFields().then((values) => {
@@ -160,7 +142,9 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					]}
 					name="storageClass"
 					className="ant-form-name"
-					initialValue={data.storageClass}
+					initialValue={
+						data.storageClass || storageClassList[0]?.aliasName
+					}
 				>
 					<Select
 						placeholder="请选择存储类型"

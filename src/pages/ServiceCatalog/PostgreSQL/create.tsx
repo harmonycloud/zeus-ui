@@ -155,7 +155,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgdata',
 			mountPath: '/pgdata',
 			volumeSize: 1,
-			storageClass: 'local-path',
+			storageClass: '',
 			targetContainers: ['postgres']
 		},
 		pgwal: {
@@ -163,7 +163,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgwal',
 			mountPath: '/pgwal',
 			volumeSize: 1,
-			storageClass: 'local-path',
+			storageClass: '',
 			targetContainers: ['postgres']
 		},
 		pglog: {
@@ -171,7 +171,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pglog',
 			mountPath: '/pglog',
 			volumeSize: 1,
-			storageClass: 'local-path',
+			storageClass: '',
 			targetContainers: ['postgres']
 		},
 		pgarch: {
@@ -179,7 +179,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgarch',
 			mountPath: '/pgarch',
 			volumeSize: 1,
-			storageClass: 'local-path',
+			storageClass: '',
 			targetContainers: ['postgres']
 		},
 		pgextension: {
@@ -187,7 +187,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			hostPath: '/pgextension',
 			mountPath: '/pgextension',
 			volumeSize: 1,
-			storageClass: 'local-path',
+			storageClass: '',
 			targetContainers: ['postgres']
 		}
 	});
@@ -1170,7 +1170,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					<FormBlock title="调度策略">
+					<FormBlock title="高级设置">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
 								<Affinity
@@ -1759,7 +1759,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												disabled={!!middlewareName}
 											/>
 										))}
-										{console.log(nodeObj)}
 									</div>
 								)}
 							</ul>

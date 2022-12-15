@@ -212,7 +212,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: '数据目录',
 			hostPath: '/host/path',
 			mountPath: '/redis/data',
-			storageClass: 'local-path',
+			storageClass: '',
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
 		},
@@ -220,7 +220,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			title: '日志目录',
 			hostPath: '/host/path',
 			mountPath: '/redis/logs',
-			storageClass: 'local-path',
+			storageClass: '',
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
 		}
@@ -1294,7 +1294,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							</ul>
 						</div>
 					</FormBlock>
-					<FormBlock title="调度策略">
+					<FormBlock title="高级设置">
 						<div className={styles['schedule-strategy']}>
 							<ul className="form-layout">
 								<Affinity
