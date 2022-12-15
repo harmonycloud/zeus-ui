@@ -145,3 +145,7 @@ export const checkLicense = (params: {
 }) => {
 	return Axios.get(USER.licenseCheck, params);
 };
+// * 检查license是否开启
+export const licenseEnable = () => {
+	return Axios.get(USER.licenseEnable);
+};

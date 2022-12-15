@@ -67,7 +67,6 @@ export default function VersionForm(props: VersionFormProps): JSX.Element {
 				<label className="form-name">
 					<span>版本</span>
 				</label>
-				{console.log(fatherVersion, version)}
 				<div className={`form-content display-flex`}>
 					<SelectBlock
 						options={versionFatherList}

@@ -19,6 +19,7 @@ import { StoreState } from '@/types/index';
 import { NavbarProps } from './navbar';
 import styles from './navbar.module.scss';
 import { getIsAccessGYT } from '@/services/common';
+import { licenseEnable } from '@/services/user';
 import './navbar.scss';
 
 const { Search } = Input;
@@ -50,6 +51,9 @@ function Navbar(props: NavbarProps): JSX.Element {
 	// * 搜索项目
 	const [proSearch, setProSearch] = useState<string>('');
 	const [isAccess, setIsAccess] = useState<boolean>(false);
+	// * 控制license授权管理
+	const [licenseVisible, setLicenseVisible] = useState(false);
+
 	const clusterChange = (id: string) => {
 		clusterHandle(id);
 	};
@@ -65,6 +69,11 @@ function Navbar(props: NavbarProps): JSX.Element {
 		getIsAccessGYT().then((res) => {
 			if (res.success) {
 				setIsAccess(res.data);
+			}
+		});
+		licenseEnable().then((res) => {
+			if (res.success) {
+				res.data && setLicenseVisible(true);
 			}
 		});
 	}, []);
@@ -331,7 +340,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 						</>
 					)}
 				</div>
-				{/* {Storage.getLocal('userName') === 'admin' && (
+				{Storage.getLocal('userName') === 'admin' && licenseVisible && (
 					<Tooltip title="授权管理">
 						<div
 							className="license-icon"
@@ -343,7 +352,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 							/>
 						</div>
 					</Tooltip>
-				)} */}
+				)}
 				<User
 					className={styles['module']}
 					nickName={nickName}

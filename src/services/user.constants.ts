@@ -46,3 +46,5 @@ export const getChildMenu = `${api}/user/menu/middlewares`;
 export const licenseInfo = `${api}/license`;
 // * 发布中间件能力检验
 export const licenseCheck = `${api}/license/check`;
+// * 检查license是否开启
+export const licenseEnable = `${api}/license/enable`;
