@@ -238,8 +238,33 @@ const namespaceConfig = {
 const storageClassNameConfig = {
 	dataIndex: 'storageClassName',
 	label: '存储名称',
-	render: (val: string, dataSource: any) =>
-		`${val}(${dataSource.storageType})`
+	render: (val: string, dataSource: any) => {
+		return (
+			<div
+				className="text-overflow-one"
+				title={
+					dataSource.storageResource &&
+					dataSource.storageResource.length
+						? dataSource.storageResource
+								.map(
+									(item: any) =>
+										`${item.storageClassAliasName}(${item.storageClassName})`
+								)
+								.join(', ')
+						: `${val}(${dataSource.storageType})`
+				}
+			>
+				{dataSource.storageResource && dataSource.storageResource.length
+					? dataSource.storageResource
+							.map(
+								(item: any) =>
+									`${item.storageClassAliasName}(${item.storageClassName})`
+							)
+							.join(', ')
+					: `${val}(${dataSource.storageType})`}
+			</div>
+		);
+	}
 };
 // const storageTypeConfig = {
 // 	dataIndex: 'storageType',
@@ -662,7 +687,8 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 				storageType: storageType,
 				hostNetwork: data?.hostNetwork,
 				group: data.rocketMQParam?.group,
-				replicas: data.rocketMQParam?.replicas
+				replicas: data.rocketMQParam?.replicas,
+				storageResource: data?.storageResource
 			});
 			setAclData({
 				title: '访问权限控制认证',

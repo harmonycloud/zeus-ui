@@ -85,6 +85,7 @@ export interface middlewareDetailProps {
 	lastAutoSwitchTime: string | null;
 	autoCreateTopicEnable: boolean;
 	customVolumes?: any;
+	storageResource?: any;
 }
 
 export interface basicDataProps {
