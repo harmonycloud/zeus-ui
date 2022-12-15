@@ -749,17 +749,34 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				setVersion(res.data.version);
 			}
 			let storageClassTemp: string | string[];
-			if (res.data.quota.postgresql.storageClassName.includes(',')) {
-				const storageClassAliasNameTemp =
-					res.data.quota.postgresql.storageClassAliasName.split(',');
-				storageClassTemp = res.data.quota.postgresql.storageClassName
-					.split(',')
-					.map(
-						(item: string, index: number) =>
-							`${item}/${storageClassAliasNameTemp[index]}`
-					);
+			if (
+				res.data.customVolumes &&
+				JSON.stringify(res.data.customVolumes !== '{}')
+			) {
+				setDirectory(res.data.customVolumes);
 			} else {
-				storageClassTemp = `${res.data.quota.postgresql.storageClassName}/${res.data.quota.postgresql.storageClassAliasName}`;
+				if (res.data.quota.postgresql.storageClassName.includes(',')) {
+					const storageClassAliasNameTemp =
+						res.data.quota.postgresql.storageClassAliasName.split(
+							','
+						);
+					storageClassTemp =
+						res.data.quota.postgresql.storageClassName
+							.split(',')
+							.map(
+								(item: string, index: number) =>
+									`${item}/${storageClassAliasNameTemp[index]}`
+							);
+				} else {
+					storageClassTemp = `${res.data.quota.postgresql.storageClassName}/${res.data.quota.postgresql.storageClassAliasName}`;
+				}
+				form.setFieldsValue({
+					storageClass: storageClassTemp,
+					storageQuota: transUnit.removeUnit(
+						res.data.quota.postgresql.storageClassQuota,
+						'Gi'
+					)
+				});
 			}
 			form.setFieldsValue({
 				name: res.data.name + '-backup',
@@ -771,12 +788,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
 				),
-				mirrorImageId: res.data.mirrorImage,
-				storageClass: storageClassTemp,
-				storageQuota: transUnit.removeUnit(
-					res.data.quota.postgresql.storageClassQuota,
-					'Gi'
-				)
+				mirrorImageId: res.data.mirrorImage
 			});
 			if (res.data.dynamicValues) {
 				for (const i in res.data.dynamicValues) {
