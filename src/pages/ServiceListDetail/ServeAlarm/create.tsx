@@ -560,7 +560,7 @@ function CreateAlarm(): JSX.Element {
 				item.alertTimes &&
 				item.alertTime &&
 				item.symbol &&
-				String(item.threshold) &&
+				item.threshold &&
 				item.severity &&
 				item.silence
 		);
