@@ -274,7 +274,7 @@ export default function Disaster(props: disasterProps): JSX.Element {
 			confirm({
 				title: '可用余额不足',
 				content:
-					'当前您的可用余额已不足2CPU，如果您想继续使用谐云zeus中间件一体化管理平台，请联系我们申请授权',
+					'当前您的可用余额已不足2CPU，如果您想继续使用zeus中间件一体化管理平台，请联系我们申请授权',
 				okText: '立即前往'
 				// onOk: () => {}
 			});
