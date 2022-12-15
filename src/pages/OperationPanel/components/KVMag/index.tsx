@@ -66,9 +66,11 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 		setCurrent(page);
 		setCount(pageSize);
 		const alertData = {
-			cursor: page > current ? preCursor : cursor,
+			cursor,
+			preCursor,
 			count: pageSize,
-			pod: page > current ? prePod : pod
+			pod,
+			prePod
 		};
 		getData('', alertData);
 	};
@@ -89,7 +91,7 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 				setCursor(res.data.cursor);
 				setPreCursor(res.data.preCursor);
 				setPod(res.data.pod);
-				setPrePod(res.data.cursor);
+				setPrePod(res.data.prePod);
 				setTotal(res.data.sum);
 				// key && getDetail();
 				// key ? setKey(key) : setKey(res.data[0]?.key);
@@ -257,17 +259,25 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 									);
 								})}
 							</div>
-							{console.log(total)}
-							<Pagination
-								total={total}
-								current={current}
-								simple
-								size="small"
-								pageSize={count}
-								showTotal={() => <span>共{total}条</span>}
-								style={{ float: 'right' }}
-								onChange={paginationChange}
-							/>
+							<div
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'space-between'
+								}}
+							>
+								<span>总数：{total}</span>
+								<Pagination
+									total={total}
+									current={current}
+									simple
+									size="small"
+									pageSize={count}
+									className="no-page"
+									style={{ float: 'right' }}
+									onChange={paginationChange}
+								/>
+							</div>
 						</div>
 					) : null}
 					<div>{childrenRender(detail?.keyType)}</div>

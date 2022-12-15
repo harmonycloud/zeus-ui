@@ -331,7 +331,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 						</>
 					)}
 				</div>
-				{Storage.getLocal('userName') === 'admin' && (
+				{/* {Storage.getLocal('userName') === 'admin' && (
 					<Tooltip title="授权管理">
 						<div
 							className="license-icon"
@@ -343,7 +343,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 							/>
 						</div>
 					</Tooltip>
-				)}
+				)} */}
 				<User
 					className={styles['module']}
 					nickName={nickName}
