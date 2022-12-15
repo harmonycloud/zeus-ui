@@ -52,7 +52,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 	const [proSearch, setProSearch] = useState<string>('');
 	const [isAccess, setIsAccess] = useState<boolean>(false);
 	// * 控制license授权管理
-	const [licenseVisible, setLicenseVisible] = useState(false);
+	const [licenseVisible, setLicenseVisible] = useState<string>('false');
 
 	const clusterChange = (id: string) => {
 		clusterHandle(id);
@@ -73,7 +73,7 @@ function Navbar(props: NavbarProps): JSX.Element {
 		});
 		licenseEnable().then((res) => {
 			if (res.success) {
-				res.data && setLicenseVisible(true);
+				setLicenseVisible(res.data);
 			}
 		});
 	}, []);
@@ -340,19 +340,23 @@ function Navbar(props: NavbarProps): JSX.Element {
 						</>
 					)}
 				</div>
-				{Storage.getLocal('userName') === 'admin' && licenseVisible && (
-					<Tooltip title="授权管理">
-						<div
-							className="license-icon"
-							onClick={() => history.push('/authorManage')}
-						>
-							<IconFont
-								type="icon-shouquan"
-								style={{ fontSize: 20, color: 'rgb(29,29,29)' }}
-							/>
-						</div>
-					</Tooltip>
-				)}
+				{Storage.getLocal('userName') === 'admin' &&
+					licenseVisible !== 'false' && (
+						<Tooltip title="授权管理">
+							<div
+								className="license-icon"
+								onClick={() => history.push('/authorManage')}
+							>
+								<IconFont
+									type="icon-shouquan"
+									style={{
+										fontSize: 20,
+										color: 'rgb(29,29,29)'
+									}}
+								/>
+							</div>
+						</Tooltip>
+					)}
 				<User
 					className={styles['module']}
 					nickName={nickName}
