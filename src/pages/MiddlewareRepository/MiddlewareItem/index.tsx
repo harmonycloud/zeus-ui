@@ -315,7 +315,7 @@ function MiddlewareItem(props: middlewareItemProps): JSX.Element {
 			>
 				{`${MiddlewareType[type || 'null']}类型`}
 				&nbsp;&nbsp;
-				<Popover content="谐云官方认证" placement="bottom">
+				<Popover content="官方认证" placement="bottom">
 					<IconFont
 						style={{
 							color: '#0070cc',
