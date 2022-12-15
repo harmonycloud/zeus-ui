@@ -350,6 +350,7 @@ export interface PodItem {
 	podName: string;
 	pvcs: string[];
 	resources: ResourceParams;
+	storageResources: ResourceParams[];
 	restartCount: number;
 	role: string;
 	status: string;

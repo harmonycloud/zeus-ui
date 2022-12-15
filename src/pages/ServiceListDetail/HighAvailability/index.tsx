@@ -644,9 +644,17 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	};
 
 	const storageRender = (value: string, record: PodItem, index: number) => {
-		return `${record.resources.storageClassQuota || '无'}(${
-			record.resources.storageClassName || '无'
-		})`;
+		// return `${record.resources.storageClassQuota || '无'}(${
+		// 	record.resources.storageClassName || '无'
+		// })`;
+		return `${
+			record.storageResources
+				?.map(
+					(item) =>
+						`${item.storageClassQuota}(${item.storageClassName})`
+				)
+				.join(', ') || '无(无)'
+		}`;
 	};
 
 	const createTimeRender = (value: string) => {
@@ -921,6 +929,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						<ProTable.Column
 							title="节点存储"
 							dataIndex="storage"
+							ellipsis
 							render={storageRender}
 							width={160}
 						/>
