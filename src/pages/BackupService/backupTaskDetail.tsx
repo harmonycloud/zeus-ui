@@ -261,7 +261,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 	};
 
 	const getLicenseCheck = () => {
-		checkLicense({ license: '', clusterId: cluster.id }).then((res) => {
+		checkLicense({
+			license: '',
+			clusterId: params.clusterId || cluster.id
+		}).then((res) => {
 			if (res.success) {
 				setLicense(res.data);
 			}
