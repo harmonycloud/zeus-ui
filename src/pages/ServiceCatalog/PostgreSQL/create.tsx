@@ -732,6 +732,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					}) || []
 				);
 			}
+			if (res.data?.postgresqlParam?.hostNetwork) {
+				setHostNetwork(res.data?.postgresqlParam?.hostNetwork);
+			}
 			if (res.data.mode) {
 				setMode(res.data.mode);
 			}
