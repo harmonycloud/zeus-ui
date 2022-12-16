@@ -22,6 +22,7 @@ export interface modeItemProps {
 	middlewareType: string;
 	isActiveActive?: boolean;
 	disabled?: boolean;
+	storageVisible?: boolean;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
 	const {
@@ -33,7 +34,8 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		onChange,
 		middlewareType,
 		isActiveActive,
-		disabled
+		disabled,
+		storageVisible
 	} = props;
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -114,20 +116,23 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 							<span>内存：</span>
 							<span>{data.memory} Gi</span>
 						</li>
-						{data.storageClass && data.storageClass !== '' && (
-							<li>
-								<span>
-									{typeof data.storageClass === 'string'
-										? data.storageClass
-										: data.storageClass.join(',')}
-									：
-								</span>
-								<span>{data.storageQuota} GB</span>
-							</li>
-						)}
+						{data.storageClass &&
+							data.storageClass !== '' &&
+							storageVisible && (
+								<li>
+									<span>
+										{typeof data.storageClass === 'string'
+											? data.storageClass
+											: data.storageClass.join(',')}
+										：
+									</span>
+									<span>{data.storageQuota} GB</span>
+								</li>
+							)}
 						{type !== 'kibana' &&
 							type !== 'sentinel' &&
-							!data.storageClass && (
+							!data.storageClass &&
+							storageVisible && (
 								<li>
 									<span style={{ color: '#D93026' }}>
 										存储配额：未配置
@@ -151,6 +156,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						inputChange={inputChange}
 						isActiveActive={isActiveActive}
 						disabled={disabled}
+						storageVisible={storageVisible}
 					/>
 				)}
 			</div>

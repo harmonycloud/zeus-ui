@@ -1722,7 +1722,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 												setDirectory(value)
 											}
 											size="small"
-											disabled={!!middlewareName}
 										/>
 									</div>
 								</li>
@@ -1763,7 +1762,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 														[key]: values
 													});
 												}}
-												readOnly={!!middlewareName}
 												disabled={!!middlewareName}
 											/>
 										))}

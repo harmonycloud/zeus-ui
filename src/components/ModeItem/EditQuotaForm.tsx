@@ -81,7 +81,8 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		inputChange,
 		middlewareType,
 		isActiveActive,
-		disabled
+		disabled,
+		storageVisible
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [proxySpecId, setProxySpecId] = useState<string>('1');
@@ -483,12 +484,14 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 							</li>
 						</>
 					)}
-					{type !== 'kibana' && type !== 'sentinel' && (
-						<StorageQuota
-							clusterId={clusterId}
-							isActiveActive={isActiveActive}
-						/>
-					)}
+					{type !== 'kibana' &&
+						type !== 'sentinel' &&
+						storageVisible && (
+							<StorageQuota
+								clusterId={clusterId}
+								isActiveActive={isActiveActive}
+							/>
+						)}
 				</ul>
 			</Form>
 		</Modal>

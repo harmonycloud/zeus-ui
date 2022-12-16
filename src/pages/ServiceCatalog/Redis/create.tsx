@@ -576,11 +576,14 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 								.join(',');
 						}
 						if (!nodeObj[key].disabled) {
-							if (nodeObj[key].storageClass === '') {
+							if (
+								nodeObj[key].storageClass === '' &&
+								!directory
+							) {
 								modifyQuota(key);
 								return;
 							}
-							if (nodeObj[key].storageQuota === 0) {
+							if (nodeObj[key].storageQuota === 0 && !directory) {
 								notification.error({
 									message: '失败',
 									description: `${key}节点存储配额不能为0`
@@ -666,8 +669,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
-			console.log(sendData);
-			return;
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
@@ -1833,6 +1834,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 															disabled={
 																!!middlewareName
 															}
+															storageVisible={
+																!directory
+															}
 															isActiveActive={
 																globalNamespace.name ===
 																'*'
@@ -2028,7 +2032,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 														[key]: values
 													});
 												}}
-												readOnly={!!middlewareName}
 												disabled={!!middlewareName}
 											/>
 										))}
