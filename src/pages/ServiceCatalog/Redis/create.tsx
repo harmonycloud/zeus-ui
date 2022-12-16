@@ -528,37 +528,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							storageClassQuota: values.storageQuota
 						}
 					};
-				} else {
-					sendData.customVolumes = {};
-					for (const key in pathObj) {
-						if (!pathObj[key].disabled) {
-							if (!pathObj[key].storageClass) {
-								return;
-							}
-							// if (pathObj[key].storageQuota === 0) {
-							// 	notification.error({
-							// 		message: '失败',
-							// 		description: `${key}节点存储配额不能为0`
-							// 	});
-							// 	return;
-							// }
-							sendData.quota = {
-								redis: {
-									num:
-										clusterMode === 'one'
-											? clusterModeNum
-												? clusterModeNum * 2
-												: 6
-											: clusterMode === '3s-3m'
-											? 6
-											: 10
-								}
-							};
-							sendData.customVolumes[key] = {
-								...pathObj[key]
-							};
-						}
-					}
 				}
 				if (instanceSpec === 'General') {
 					switch (specId) {
@@ -635,6 +604,38 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					}
 				}
 			}
+			if (directory) {
+				sendData.customVolumes = {};
+				for (const key in pathObj) {
+					if (!pathObj[key].disabled) {
+						if (!pathObj[key].storageClass) {
+							return;
+						}
+						// if (pathObj[key].storageQuota === 0) {
+						// 	notification.error({
+						// 		message: '失败',
+						// 		description: `${key}节点存储配额不能为0`
+						// 	});
+						// 	return;
+						// }
+						sendData.quota.redis = {
+							num:
+								clusterMode === 'one'
+									? clusterModeNum
+										? clusterModeNum * 2
+										: 6
+									: clusterMode === '3s-3m'
+									? 6
+									: 10,
+							cpu: sendData.quota.redis.cpu,
+							memory: sendData.quota.redis.memory
+						};
+						sendData.customVolumes[key] = {
+							...pathObj[key]
+						};
+					}
+				}
+			}
 			if (namespace) {
 				sendData.namespace = namespace;
 			}
@@ -665,7 +666,8 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					// }
 				});
 			}
-			// console.log(sendData);
+			console.log(sendData);
+			return;
 			setCommitFlag(true);
 			postMiddleware(sendData).then((res) => {
 				if (res.success) {
