@@ -121,6 +121,17 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 								storage.getSession('rsa')
 							) || values.password
 					};
+					if (!res.success) {
+						notification.error({
+							message: '失败',
+							description: (
+								<>
+									<p>{res.errorMsg}</p>
+									<p>{res.errorDetail}</p>
+								</>
+							)
+						});
+					}
 					authLogin(sendData).then((res) => {
 						if (res.success) {
 							notification.success({
