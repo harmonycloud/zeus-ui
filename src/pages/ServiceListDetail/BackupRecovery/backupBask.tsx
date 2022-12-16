@@ -183,7 +183,7 @@ export default function List(props: any): JSX.Element {
 	const Operation = {
 		primary: (
 			<Space>
-				{disabled ? (
+				{disabled && !params.type ? (
 					<Tooltip title="当前集群下没有服务，没有备份对象">
 						<Button
 							onClick={() => {
