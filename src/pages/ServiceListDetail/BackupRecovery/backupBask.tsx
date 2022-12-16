@@ -217,7 +217,6 @@ export default function List(props: any): JSX.Element {
 							}
 						}}
 						type="primary"
-						disabled
 					>
 						新增
 					</Button>
