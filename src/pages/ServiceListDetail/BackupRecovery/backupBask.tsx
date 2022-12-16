@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, notification, Select, Space } from 'antd';
+import { Button, Modal, notification, Select, Space, Tooltip } from 'antd';
 import moment from 'moment';
 import { useHistory, useParams } from 'react-router';
 import Actions from '@/components/Actions';
@@ -21,7 +21,7 @@ const { Option } = Select;
 export default function List(props: any): JSX.Element {
 	const { clusterId, namespace, data } = props;
 	const params: any = useParams();
-	const [disabled, setDisabled] = useState<boolean>(false);
+	const [disabled, setDisabled] = useState<boolean>(true);
 	const [backups, setBackups] = useState<BackupRecordItem[]>([]);
 	const [serviceList, setServiceList] = useState<any>([]);
 	const [isLvm, setIsLvm] = useState<boolean>(true);
@@ -183,7 +183,46 @@ export default function List(props: any): JSX.Element {
 	const Operation = {
 		primary: (
 			<Space>
-				<Button
+				{disabled ? (
+					<Tooltip title="当前集群下没有服务，没有备份对象">
+						<Button
+							onClick={() => {
+								if (params.type) {
+									history.push(
+										`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
+									);
+								} else {
+									history.push(
+										'/backupService/backupTask/addBackupTask'
+									);
+								}
+							}}
+							type="primary"
+							disabled
+						>
+							新增
+						</Button>
+					</Tooltip>
+				) : (
+					<Button
+						onClick={() => {
+							if (params.type) {
+								history.push(
+									`/serviceList/${params.name}/${params.aliasName}/${params.currentTab}/addBackupTask/${params.middlewareName}/${params.type}/${params.chartVersion}/${params.namespace}`
+								);
+							} else {
+								history.push(
+									'/backupService/backupTask/addBackupTask'
+								);
+							}
+						}}
+						type="primary"
+						disabled
+					>
+						新增
+					</Button>
+				)}
+				{/* <Button
 					onClick={() => {
 						if (disabled) {
 							notification.error({
@@ -210,9 +249,10 @@ export default function List(props: any): JSX.Element {
 						}
 					}}
 					type="primary"
+					disabled
 				>
 					新增
-				</Button>
+				</Button> */}
 				{!data && (
 					<Select
 						dropdownMatchSelectWidth={false}
