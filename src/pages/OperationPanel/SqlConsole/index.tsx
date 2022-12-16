@@ -776,7 +776,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 			}
 			if (type === 'table') {
 				// * 当前加载的树为表格的情况
-				const database = key.substring(0, key.length - 2);
+				const database = key.split('-')[0];
 				getCols({
 					clusterId: params.clusterId,
 					namespace: params.namespace,
