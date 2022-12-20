@@ -113,7 +113,7 @@ const AccessForm = (props: AccessFormProps) => {
 			} else if (title === 'middleware-controller') {
 				sendData.host = values.hostAPI;
 				sendData.port = values.portAPI;
-				sendData.protocolAPI = values.protocolAPI;
+				sendData.protocol = values.protocolAPI;
 			}
 			console.log(sendData);
 			if (status === 0) {
