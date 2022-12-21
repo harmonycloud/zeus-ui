@@ -41,12 +41,12 @@ export default function StorageQuota(props: StorageQuotaProps): JSX.Element {
 					rules={[
 						{
 							required: true,
-							message: '请选择存储类型'
+							message: '请选择存储'
 						}
 					]}
 				>
 					<Select
-						placeholder="请选择存储类型"
+						placeholder="请选择存储"
 						style={{
 							marginRight: 8,
 							width: isActiveActive ? 250 : 150

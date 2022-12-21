@@ -132,12 +132,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					/>
 				</FormItem>
 				<FormItem
-					label="存储类型"
+					label="存储"
 					labelAlign="left"
 					rules={[
 						{
 							required: true,
-							message: '请选择存储类型'
+							message: '请选择存储'
 						}
 					]}
 					name="storageClass"
@@ -145,7 +145,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					initialValue={data.storageClass}
 				>
 					<Select
-						placeholder="请选择存储类型"
+						placeholder="请选择存储"
 						style={{
 							marginRight: 8,
 							width: '100%'
