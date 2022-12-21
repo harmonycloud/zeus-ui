@@ -109,7 +109,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 					</li>
 					{data.storageClass ? (
 						<li>
-							<span>存储类型：</span>
+							<span>存储：</span>
 							<span>
 								{
 									storageClassList.find(
@@ -122,7 +122,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 					) : (
 						<li>
 							<span style={{ color: '#D93026' }}>
-								存储类型：未配置
+								存储：未配置
 							</span>
 						</li>
 					)}
