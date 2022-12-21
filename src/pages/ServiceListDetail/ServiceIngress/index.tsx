@@ -75,6 +75,8 @@ export default function ServiceDetailIngress(
 	const [imagePath, setImagePath] = useState<string>();
 	const onRefresh = () => {
 		getIngressByMid(clusterId, namespace, name, middlewareName);
+		getInternalService();
+		getHostNetworkAddres();
 	};
 	const judgeDisabled = () => {
 		if (
@@ -151,9 +153,6 @@ export default function ServiceDetailIngress(
 		),
 		secondary: (
 			<Space>
-				{/* <span className="name-link" onClick={() => setVisible(true)}>
-					查看集群内访问
-				</span> */}
 				<Button
 					onClick={onRefresh}
 					style={{ padding: '0 9px', marginRight: '8px' }}
