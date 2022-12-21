@@ -294,8 +294,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					value: '1m-1s'
 				},
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主多从',
+					value: '1m-ns'
 				}
 			]);
 			setMode('1m-1s');
@@ -312,8 +312,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					value: '1m-1s'
 				},
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主多从',
+					value: '1m-ns'
 				}
 			]);
 			setMode('1m-1s');
@@ -324,8 +324,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					value: '1m-1s'
 				},
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主多从',
+					value: '1m-ns'
 				},
 				{
 					label: '单实例',
