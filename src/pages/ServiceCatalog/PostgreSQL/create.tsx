@@ -176,7 +176,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		},
 		pgarch: {
 			title: 'wal日志归档目录',
-			hostPath: '/pgarch',
+			hostPath: '',
 			mountPath: '/pgarch',
 			volumeSize: 1,
 			storageClass: null,
@@ -184,7 +184,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 		},
 		pgextension: {
 			title: 'PostgreSQL插件目录',
-			hostPath: '/pgextension',
+			hostPath: '',
 			mountPath: '/pgextension',
 			volumeSize: 1,
 			storageClass: null,
