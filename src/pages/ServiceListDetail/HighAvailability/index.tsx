@@ -124,35 +124,42 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		getPods(sendData).then((res) => {
 			if (res.success) {
 				const list: any = [];
-				res.data.podInfoGroup.listChildGroup.forEach((el: any) => {
-					if (el.role.includes('shard')) {
-						list.push(
-							...el.pods.map(
-								(item: any, index: number, arr: any) => {
-									if (index === 0) {
-										return {
-											...item,
-											identify: el.role,
-											span: arr.length
-										};
-									} else {
-										return {
-											...item,
-											identify: el.role,
-											span: 0
-										};
+				res.data &&
+					res.data.podInfoGroup &&
+					res.data.podInfoGroup.listChildGroup &&
+					res.data.podInfoGroup.listChildGroup.forEach((el: any) => {
+						if (el.role.includes('shard')) {
+							list.push(
+								...el.pods.map(
+									(item: any, index: number, arr: any) => {
+										if (index === 0) {
+											return {
+												...item,
+												identify: el.role,
+												span: arr.length
+											};
+										} else {
+											return {
+												...item,
+												identify: el.role,
+												span: 0
+											};
+										}
 									}
-								}
-							)
-						);
-					} else {
-						list.push(
-							...el.pods.map((item: any) => {
-								return { ...item, identify: el.role, span: 1 };
-							})
-						);
-					}
-				});
+								)
+							);
+						} else {
+							list.push(
+								...el.pods.map((item: any) => {
+									return {
+										...item,
+										identify: el.role,
+										span: 1
+									};
+								})
+							);
+						}
+					});
 				setPods(list);
 				setTopoData(res.data);
 			} else {

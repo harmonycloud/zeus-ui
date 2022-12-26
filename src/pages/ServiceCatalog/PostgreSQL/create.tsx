@@ -19,7 +19,8 @@ import {
 	Tooltip,
 	Tag,
 	DatePicker,
-	Modal
+	Modal,
+	Checkbox
 } from 'antd';
 import {
 	QuestionCircleOutlined,
@@ -149,6 +150,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			value: '1m-0s'
 		}
 	]);
+	const [allDirectory, setAllDirectory] = useState<boolean>(false);
 	const [nodeObj, setNodeObj] = useState<any>({
 		pgdb: {
 			title: '数据目录',
@@ -170,22 +172,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			title: 'PostgreSQL日志目录',
 			hostPath: '/pglog',
 			mountPath: '/pglog',
-			volumeSize: 1,
-			storageClass: null,
-			targetContainers: ['postgres']
-		},
-		pgarch: {
-			title: 'wal日志归档目录',
-			hostPath: '/pgarch',
-			mountPath: '/pgarch',
-			volumeSize: 1,
-			storageClass: null,
-			targetContainers: ['postgres']
-		},
-		pgextension: {
-			title: 'PostgreSQL插件目录',
-			hostPath: '/pgextension',
-			mountPath: '/pgextension',
 			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
@@ -231,47 +217,76 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				)
 		);
 	};
-	const range = (start: number, end: number) => {
-		const result = [];
-		for (let i = start; i < end; i++) {
-			result.push(i);
-		}
-		return result;
-	};
-
-	const disabledDateTime = (date: any) => {
-		if (
-			moment(date).format('YYYY-MM-DD') ===
-			backupDetail?.startTime?.substring(0, 10)
-		)
-			return {
-				disabledHours: () =>
-					range(0, moment(backupDetail?.startTime).hour() + 1),
-				disabledMinutes: () =>
-					range(0, moment(backupDetail?.startTime).minute() + 1),
-				disabledSeconds: () =>
-					range(0, moment(backupDetail?.startTime).second() + 1)
+	useEffect(() => {
+		if (allDirectory) {
+			const objTemp = {
+				...nodeObj,
+				pgarch: {
+					title: 'wal日志归档目录',
+					hostPath: '',
+					mountPath: '/pgarch',
+					volumeSize: 1,
+					storageClass: null,
+					targetContainers: ['postgres']
+				},
+				pgextension: {
+					title: 'PostgreSQL插件目录',
+					hostPath: '',
+					mountPath: '/pgextension',
+					volumeSize: 1,
+					storageClass: null,
+					targetContainers: ['postgres']
+				}
 			};
-		else if (
-			moment(date).format('YYYY-MM-DD') ===
-			backupDetail?.endTime?.substring(0, 10)
-		) {
-			return {
-				disabledHours: () =>
-					range(moment(backupDetail?.endTime).hour() - 1, 60),
-				disabledMinutes: () =>
-					range(moment(backupDetail?.endTime).minute() - 1, 60),
-				disabledSeconds: () =>
-					range(moment(backupDetail?.endTime).second() - 1, 60)
-			};
+			setNodeObj({ ...objTemp });
 		} else {
-			return {
-				disabledHours: () => range(0, 0),
-				disabledMinutes: () => range(0, 0),
-				disabledSeconds: () => range(0, 0)
-			};
+			const objTemp = nodeObj;
+			delete objTemp.pgarch;
+			delete objTemp.pgextension;
+			setNodeObj({ ...objTemp });
 		}
-	};
+	}, [allDirectory]);
+	// const range = (start: number, end: number) => {
+	// 	const result = [];
+	// 	for (let i = start; i < end; i++) {
+	// 		result.push(i);
+	// 	}
+	// 	return result;
+	// };
+
+	// const disabledDateTime = (date: any) => {
+	// 	if (
+	// 		moment(date).format('YYYY-MM-DD') ===
+	// 		backupDetail?.startTime?.substring(0, 10)
+	// 	)
+	// 		return {
+	// 			disabledHours: () =>
+	// 				range(0, moment(backupDetail?.startTime).hour() + 1),
+	// 			disabledMinutes: () =>
+	// 				range(0, moment(backupDetail?.startTime).minute() + 1),
+	// 			disabledSeconds: () =>
+	// 				range(0, moment(backupDetail?.startTime).second() + 1)
+	// 		};
+	// 	else if (
+	// 		moment(date).format('YYYY-MM-DD') ===
+	// 		backupDetail?.endTime?.substring(0, 10)
+	// 	) {
+	// 		return {
+	// 			disabledHours: () =>
+	// 				range(moment(backupDetail?.endTime).hour() - 1, 60),
+	// 			disabledMinutes: () =>
+	// 				range(moment(backupDetail?.endTime).minute() - 1, 60),
+	// 			disabledSeconds: () =>
+	// 				range(moment(backupDetail?.endTime).second() - 1, 60)
+	// 		};
+	// 	} else {
+	// 		return {
+	// 			disabledHours: () => range(0, 0),
+	// 			disabledMinutes: () => range(0, 0),
+	// 			disabledSeconds: () => range(0, 0)
+	// 		};
+	// 	}
+	// };
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -294,8 +309,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					value: '1m-1s'
 				},
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主多从',
+					value: '1m-ns'
 				}
 			]);
 			setMode('1m-1s');
@@ -312,8 +327,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					value: '1m-1s'
 				},
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主多从',
+					value: '1m-ns'
 				}
 			]);
 			setMode('1m-1s');
@@ -324,8 +339,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					value: '1m-1s'
 				},
 				{
-					label: '一主三从',
-					value: '1m-3s'
+					label: '一主多从',
+					value: '1m-ns'
 				},
 				{
 					label: '单实例',
@@ -1713,7 +1728,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</span>
 									</label>
 									<div
-										className="form-content"
+										className="form-content display-flex flex-align"
 										style={{ flex: '0 0 376px' }}
 									>
 										<Switch
@@ -1723,6 +1738,19 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											}
 											size="small"
 										/>
+										{directory && (
+											<Checkbox
+												onChange={(e) =>
+													setAllDirectory(
+														e.target.checked
+													)
+												}
+												checked={allDirectory}
+												style={{ marginLeft: 8 }}
+											>
+												全选
+											</Checkbox>
+										)}
 									</div>
 								</li>
 								{!directory ? (

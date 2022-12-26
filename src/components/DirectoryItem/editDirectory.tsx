@@ -19,6 +19,7 @@ const FormItem = Form.Item;
 const EditDirectory = (props: EditDirectoryProps) => {
 	const { visible, onCancel, onCreate, data, storageClassList, inputChange } =
 		props;
+	console.log(data);
 	const [form] = Form.useForm();
 
 	const onOk = () => {
@@ -27,11 +28,23 @@ const EditDirectory = (props: EditDirectoryProps) => {
 			onCreate(value);
 		});
 	};
+	const hostPathRequire = () => {
+		switch (data.title) {
+			case 'wal日志归档目录':
+				return false;
+			case 'PostgreSQL插件目录':
+				return false;
+			case '日志目录':
+				return false;
+			default:
+				return true;
+		}
+	};
 
 	return (
 		<Modal
 			title="实例配置"
-			visible={visible}
+			open={visible}
 			onCancel={onCancel}
 			onOk={onOk}
 			width={500}
@@ -43,7 +56,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					labelAlign="left"
 					rules={[
 						{
-							required: true,
+							required: hostPathRequire(),
 							message: '请输入宿主机目录'
 						}
 					]}
