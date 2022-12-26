@@ -25,6 +25,7 @@ export interface modeItemProps {
 		volumeSize: number;
 		name: string;
 		storageClass: string | string[];
+		isNotOpen?: boolean;
 	};
 	mode?: string;
 	clusterId: string;
@@ -71,11 +72,12 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 	}, [clusterId]);
 
 	const onCreate = (value: any) => {
-		onChange(value);
-		setModifyData({
+		const valueTemp = {
 			...modifyData,
 			...value
-		});
+		};
+		onChange(valueTemp);
+		setModifyData(valueTemp);
 		setVisible(false);
 	};
 	useEffect(() => {
@@ -92,7 +94,17 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 	return (
 		<div className="mode-item-box">
 			<div className="mode-item-title">
-				<span>{data.title || titleMap[data.name]}</span>
+				<span>
+					{data.title || titleMap[data.name]}
+					<span
+						style={{
+							color: '#ff4d4f',
+							display: data.hostPath ? 'none' : 'initial'
+						}}
+					>
+						(未启用)
+					</span>
+				</span>
 			</div>
 			<div
 				className="mode-item-data"

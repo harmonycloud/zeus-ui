@@ -175,6 +175,22 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			volumeSize: 1,
 			storageClass: null,
 			targetContainers: ['postgres']
+		},
+		pgarch: {
+			title: 'wal日志归档目录',
+			hostPath: '',
+			mountPath: '/pgarch',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
+		},
+		pgextension: {
+			title: 'PostgreSQL插件目录',
+			hostPath: '',
+			mountPath: '/pgextension',
+			volumeSize: 1,
+			storageClass: null,
+			targetContainers: ['postgres']
 		}
 	});
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
@@ -217,35 +233,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				)
 		);
 	};
-	useEffect(() => {
-		if (allDirectory) {
-			const objTemp = {
-				...nodeObj,
-				pgarch: {
-					title: 'wal日志归档目录',
-					hostPath: '',
-					mountPath: '/pgarch',
-					volumeSize: 1,
-					storageClass: null,
-					targetContainers: ['postgres']
-				},
-				pgextension: {
-					title: 'PostgreSQL插件目录',
-					hostPath: '',
-					mountPath: '/pgextension',
-					volumeSize: 1,
-					storageClass: null,
-					targetContainers: ['postgres']
-				}
-			};
-			setNodeObj({ ...objTemp });
-		} else {
-			const objTemp = nodeObj;
-			delete objTemp.pgarch;
-			delete objTemp.pgextension;
-			setNodeObj({ ...objTemp });
-		}
-	}, [allDirectory]);
 	// const range = (start: number, end: number) => {
 	// 	const result = [];
 	// 	for (let i = start; i < end; i++) {
@@ -638,8 +625,10 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				sendData.customVolumes = {};
 				for (const key in nodeObj) {
 					if (!nodeObj[key].disabled) {
-						if (!nodeObj[key].storageClass) {
-							return;
+						if (nodeObj[key].hostPath) {
+							if (!nodeObj[key].storageClass) {
+								return;
+							}
 						}
 						// if (nodeObj[key].storageQuota === 0) {
 						// 	notification.error({
@@ -1728,7 +1717,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</span>
 									</label>
 									<div
-										className="form-content display-flex flex-align"
+										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
 										<Switch
@@ -1738,19 +1727,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											}
 											size="small"
 										/>
-										{directory && (
-											<Checkbox
-												onChange={(e) =>
-													setAllDirectory(
-														e.target.checked
-													)
-												}
-												checked={allDirectory}
-												style={{ marginLeft: 8 }}
-											>
-												全选
-											</Checkbox>
-										)}
 									</div>
 								</li>
 								{!directory ? (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input, Select, Form, InputNumber } from 'antd';
+import { Modal, Input, Select, Form, InputNumber, Switch } from 'antd';
 import { getLists } from '@/services/storage';
 import {
 	GetParams,
@@ -24,7 +24,10 @@ const EditDirectory = (props: EditDirectoryProps) => {
 
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			const value = { ...data, ...values };
+			const value = {
+				...data,
+				...values
+			};
 			onCreate(value);
 		});
 	};
