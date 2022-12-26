@@ -5,6 +5,10 @@ import { IconFont } from '@/components/IconFont';
 
 export default function EditBrust(props: any): JSX.Element {
 	const { open, onCancel, onOk, burstList, onChange, selectSlave } = props;
+
+	useEffect(() => {
+		onChange('');
+	}, []);
 	return (
 		<Modal
 			open={open}
@@ -13,7 +17,6 @@ export default function EditBrust(props: any): JSX.Element {
 			onCancel={onCancel}
 			onOk={onOk}
 		>
-			{console.log(selectSlave, open)}
 			<div>
 				<div
 					style={{

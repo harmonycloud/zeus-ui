@@ -452,6 +452,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 						}, 1000);
 						setSwitchStatus(true);
 						setBurstVisible(false);
+						getBurstLists();
 					} else {
 						notification.success({
 							message: '成功',
