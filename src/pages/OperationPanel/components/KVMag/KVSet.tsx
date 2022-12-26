@@ -93,6 +93,7 @@ export default function KVZSet(props: any): JSX.Element {
 						setRecord(record);
 						setVisible(true);
 					}}
+					disabled
 				>
 					编辑
 				</LinkButton>

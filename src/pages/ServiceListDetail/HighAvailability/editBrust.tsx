@@ -10,13 +10,7 @@ export default function EditBrust(props: any): JSX.Element {
 		onChange('');
 	}, []);
 	return (
-		<Modal
-			open={open}
-			title="主从切换"
-			width={450}
-			onCancel={onCancel}
-			onOk={onOk}
-		>
+		<Modal open={open} title="主从切换" onCancel={onCancel} onOk={onOk}>
 			<div>
 				<div
 					style={{
@@ -34,6 +28,7 @@ export default function EditBrust(props: any): JSX.Element {
 						placeholder="请选择分片"
 						value={selectSlave}
 						onChange={onChange}
+						dropdownMatchSelectWidth={false}
 					>
 						{burstList.map((item: string) => {
 							return (

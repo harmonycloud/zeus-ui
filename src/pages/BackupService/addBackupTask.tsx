@@ -650,6 +650,9 @@ function AddBackupTask(props: StoreState): JSX.Element {
 										message: '备份任务名称长度不能超过32'
 									}
 								]}
+								getValueFromEvent={(e) =>
+									e.target.value.replace(/(^\s*)|(\s*$)/g, '')
+								}
 							>
 								<Input
 									placeholder="XXX计划"

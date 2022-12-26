@@ -793,7 +793,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 				<>
 					{(type === 'mysql' && data.mode === '1m-1s') ||
 					(type === 'redis' && data.mode === 'cluster') ||
-					type === 'postgresql' ? (
+					(type === 'postgresql' && data.mode !== '1m-0s') ? (
 						<>
 							<div className="title-content">
 								<div className="blue-line"></div>
