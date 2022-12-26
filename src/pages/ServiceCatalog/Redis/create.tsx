@@ -207,12 +207,19 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			memory: 0.512
 		}
 	});
-	const [allDirectory, setAllDirectory] = useState<boolean>(false);
 	const [pathObj, setPathObj] = useState<any>({
 		'redis-data': {
 			title: '数据目录',
 			hostPath: '/host/path',
 			mountPath: '/redis/data',
+			storageClass: null,
+			volumeSize: 1,
+			targetContainers: ['redis-cluster']
+		},
+		'redis-logs': {
+			title: '日志目录',
+			hostPath: '',
+			mountPath: '/redis/logs',
 			storageClass: null,
 			volumeSize: 1,
 			targetContainers: ['redis-cluster']
@@ -246,26 +253,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	const [hostNetwork, setHostNetwork] = useState<boolean>(false);
 	// * 目录分盘
 	const [directory, setDirectory] = useState<boolean>(false);
-	useEffect(() => {
-		if (allDirectory) {
-			const objTemp = {
-				...pathObj,
-				'redis-logs': {
-					title: '日志目录',
-					hostPath: '',
-					mountPath: '/redis/logs',
-					storageClass: null,
-					volumeSize: 1,
-					targetContainers: ['redis-cluster']
-				}
-			};
-			setPathObj({ ...objTemp });
-		} else {
-			const objTemp = pathObj;
-			delete objTemp['redis-logs'];
-			setPathObj({ ...objTemp });
-		}
-	}, [allDirectory]);
 	useEffect(() => {
 		if (globalNamespace.quotas) {
 			const cpuMax =
@@ -623,8 +610,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				sendData.customVolumes = {};
 				for (const key in pathObj) {
 					if (!pathObj[key].disabled) {
-						if (!pathObj[key].storageClass) {
-							return;
+						if (pathObj[key].hostPath) {
+							if (!pathObj[key].storageClass) {
+								return;
+							}
 						}
 						// if (pathObj[key].storageQuota === 0) {
 						// 	notification.error({
@@ -2022,19 +2011,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											}
 											size="small"
 										/>
-										{directory && (
-											<Checkbox
-												onChange={(e) =>
-													setAllDirectory(
-														e.target.checked
-													)
-												}
-												checked={allDirectory}
-												style={{ marginLeft: 8 }}
-											>
-												全选
-											</Checkbox>
-										)}
 									</div>
 								</li>
 								{directory ? (

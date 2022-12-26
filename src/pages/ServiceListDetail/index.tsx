@@ -546,15 +546,18 @@ const InstanceDetails = (props: InstanceDetailsProps) => {
 					</>
 				}
 			></ProHeader>
-			{reason && status !== 'Running' && status !== 'Creating' && (
-				<Alert
-					message={reason}
-					type="warning"
-					showIcon
-					closable
-					style={{ margin: '0 24px' }}
-				/>
-			)}
+			{reason &&
+				reason !== 'unknow' &&
+				status !== 'Running' &&
+				status !== 'Creating' && (
+					<Alert
+						message={reason}
+						type="warning"
+						showIcon
+						closable
+						style={{ margin: '0 24px' }}
+					/>
+				)}
 			<ProContent>
 				<Tabs
 					// navStyle={{ marginBottom: '15px' }}
