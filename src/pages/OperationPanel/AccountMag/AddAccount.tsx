@@ -1,5 +1,7 @@
 import React from 'react';
-import { Modal, Form, Input, Checkbox, notification } from 'antd';
+import { useState } from 'react';
+import { Modal, Form, Input, Checkbox, notification, Tooltip } from 'antd';
+import { CloseCircleFilled, CheckCircleFilled } from '@ant-design/icons';
 import {
 	AddAccountProps,
 	mysqlCreateUserParamsProps,
@@ -7,7 +9,10 @@ import {
 } from '../index.d';
 import { formItemLayout618 } from '@/utils/const';
 import { createUsers } from '@/services/operatorPanel';
-// TODO 账号名和密码的正则校验确认
+import pattern from '@/utils/pattern';
+import styles from '@/pages/ServiceCatalog/Redis/redis.module.scss';
+
+// TODO 账号名的正则校验确认
 export default function AddAccount(props: AddAccountProps): JSX.Element {
 	const {
 		open,
@@ -19,6 +24,9 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 		onRefresh
 	} = props;
 	const [form] = Form.useForm();
+	// * 密码
+	const [password, setPassword] = useState<string>('');
+	const [checks, setChecks] = useState<boolean[]>([false, false]);
 	const onOk = () => {
 		form.validateFields().then((values) => {
 			console.log(values);
@@ -64,6 +72,25 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 				});
 		});
 	};
+	const passwordChange = (e: any) => {
+		const temp = [...checks];
+		if (e.target.value.length >= 8 && e.target.value.length <= 32) {
+			temp[0] = true;
+		} else {
+			temp[0] = false;
+		}
+		if (
+			/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{3,}$/.test(
+				e.target.value
+			)
+		) {
+			temp[1] = true;
+		} else {
+			temp[1] = false;
+		}
+		setChecks(temp);
+		setPassword(e.target.value);
+	};
 	return (
 		<Modal
 			open={open}
@@ -80,13 +107,67 @@ export default function AddAccount(props: AddAccountProps): JSX.Element {
 				>
 					<Input />
 				</Form.Item>
-				<Form.Item
-					label="密码"
-					name="password"
-					rules={[{ required: true, message: '请填写密码' }]}
+				<Tooltip
+					title={
+						<ul>
+							<li className={styles['edit-form-icon-style']}>
+								{checks[0] ? (
+									<CheckCircleFilled
+										style={{
+											color: '#68B642',
+											marginRight: 4
+										}}
+									/>
+								) : (
+									<CloseCircleFilled
+										style={{
+											color: '#Ef595C',
+											marginRight: 4
+										}}
+									/>
+								)}
+								<span>(长度需要8-32之间)</span>
+							</li>
+							<li className={styles['edit-form-icon-style']}>
+								{checks[1] ? (
+									<CheckCircleFilled
+										style={{
+											color: '#68B642',
+											marginRight: 4
+										}}
+									/>
+								) : (
+									<CloseCircleFilled
+										style={{
+											color: '#Ef595C',
+											marginRight: 4
+										}}
+									/>
+								)}
+								<span>
+									至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
+								</span>
+							</li>
+						</ul>
+					}
 				>
-					<Input.Password />
-				</Form.Item>
+					<Form.Item
+						label="密码"
+						name="password"
+						rules={[
+							{ required: true, message: '请填写密码' },
+							{
+								pattern: new RegExp(pattern.mysqlPwd),
+								message: '密码不符合要求'
+							}
+						]}
+					>
+						<Input.Password
+							value={password}
+							onChange={passwordChange}
+						/>
+					</Form.Item>
+				</Tooltip>
 				<Form.Item
 					label="授权权限"
 					name="grantAble"
