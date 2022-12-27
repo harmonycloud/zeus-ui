@@ -1837,7 +1837,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												/>
 											</div>
 										) : null}
-										{clusterMode === 'one' ? (
+										{(mode === 'cluster' ||
+											mode === 'agent') &&
+										clusterMode === 'one' ? (
 											<div
 												style={{
 													marginTop: 12
