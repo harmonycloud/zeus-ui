@@ -1345,6 +1345,7 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 															[key]: values
 														});
 													}}
+													storageVisible={true}
 												/>
 											))}
 										</div>
