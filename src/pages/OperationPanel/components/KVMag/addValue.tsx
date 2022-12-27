@@ -92,7 +92,11 @@ export default function AddValue(props: any): JSX.Element {
 						]}
 						initialValue={data?.score}
 					>
-						<InputNumber min={0} style={{ width: '100%' }} />
+						<InputNumber
+							min={0}
+							style={{ width: '100%' }}
+							placeholder="请输入"
+						/>
 					</Form.Item>
 				) : null}
 			</Form>
