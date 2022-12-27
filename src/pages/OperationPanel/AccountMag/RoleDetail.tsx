@@ -171,7 +171,12 @@ export default function RoleDetail(): JSX.Element {
 			/>
 			<ProContent>
 				<Space className="mb-8">
-					<Button onClick={releaseAuth}>释放权限</Button>
+					<Button
+						onClick={releaseAuth}
+						disabled={!selectedAuths.length}
+					>
+						释放权限
+					</Button>
 				</Space>
 				<Table<PgsqlUserAuthItem | MysqlUserAuthItem>
 					dataSource={dataSource}
