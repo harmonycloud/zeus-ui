@@ -2096,6 +2096,13 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 														required: true,
 														message:
 															'请输入root密码'
+													},
+													{
+														pattern: new RegExp(
+															pattern.mysqlPwd
+														),
+														message:
+															'密码不符合要求'
 													}
 												]}
 											>

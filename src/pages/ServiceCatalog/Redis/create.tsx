@@ -21,7 +21,12 @@ import {
 	Tooltip,
 	Modal
 } from 'antd';
-import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+	QuestionCircleOutlined,
+	PlusOutlined,
+	CloseCircleFilled,
+	CheckCircleFilled
+} from '@ant-design/icons';
 import pattern from '@/utils/pattern';
 import transUnit from '@/utils/transUnit';
 import styles from './redis.module.scss';
@@ -126,6 +131,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 	// 日志
 	const [fileLog, setFileLog] = useState<boolean>(true);
 	const [standardLog, setStandardLog] = useState<boolean>(true);
+
+	// * root密码
+	const [redisPwd, setRedisPwd] = useState<string>('');
+	const [checks, setChecks] = useState<boolean[]>([false, false]);
 
 	// Redis配置
 	const [version, setVersion] = useState<string>('');
@@ -976,6 +985,25 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 		console.log(temp);
 		return temp[0]?.availableDomain || false;
 	};
+	const redisPwdChange = (e: any) => {
+		const temp = [...checks];
+		if (e.target.value.length >= 8 && e.target.value.length <= 32) {
+			temp[0] = true;
+		} else {
+			temp[0] = false;
+		}
+		if (
+			/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{3,}$/.test(
+				e.target.value
+			)
+		) {
+			temp[1] = true;
+		} else {
+			temp[1] = false;
+		}
+		setChecks(temp);
+		setRedisPwd(e.target.value);
+	};
 	// * 结果页相关
 	if (commitFlag) {
 		return (
@@ -1604,20 +1632,89 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										className="form-content"
 										style={{ flex: '0 0 376px' }}
 									>
-										<FormItem
-											name="pwd"
-											rules={[
-												{
-													required: true,
-													message: '请输入初始密码'
-												}
-											]}
+										<Tooltip
+											title={
+												<ul>
+													<li
+														className={
+															styles[
+																'edit-form-icon-style'
+															]
+														}
+													>
+														{checks[0] ? (
+															<CheckCircleFilled
+																style={{
+																	color: '#68B642',
+																	marginRight: 4
+																}}
+															/>
+														) : (
+															<CloseCircleFilled
+																style={{
+																	color: '#Ef595C',
+																	marginRight: 4
+																}}
+															/>
+														)}
+														<span>
+															(长度需要8-32之间)
+														</span>
+													</li>
+													<li
+														className={
+															styles[
+																'edit-form-icon-style'
+															]
+														}
+													>
+														{checks[1] ? (
+															<CheckCircleFilled
+																style={{
+																	color: '#68B642',
+																	marginRight: 4
+																}}
+															/>
+														) : (
+															<CloseCircleFilled
+																style={{
+																	color: '#Ef595C',
+																	marginRight: 4
+																}}
+															/>
+														)}
+														<span>
+															至少包含以下字符中的三种：大写字母、小写字母、数字和特殊字符～!@%^*-_=+?,()&
+														</span>
+													</li>
+												</ul>
+											}
 										>
-											<Input.Password
-												placeholder="请输入初始密码"
-												disabled={!!middlewareName}
-											/>
-										</FormItem>
+											<FormItem
+												name="pwd"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入初始密码'
+													},
+													{
+														pattern: new RegExp(
+															pattern.mysqlPwd
+														),
+														message:
+															'密码不符合要求'
+													}
+												]}
+											>
+												<Input.Password
+													placeholder="请输入初始密码"
+													disabled={!!middlewareName}
+													value={redisPwd}
+													onChange={redisPwdChange}
+												/>
+											</FormItem>
+										</Tooltip>
 									</div>
 								</li>
 								<li className="display-flex">
