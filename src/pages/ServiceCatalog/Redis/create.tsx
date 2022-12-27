@@ -211,9 +211,17 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			disabled: false,
 			title: '哨兵节点',
 			num: 3,
-			specId: '0',
-			cpu: 0.2,
+			specId: 'x',
+			cpu: 0.256,
 			memory: 0.512
+		},
+		proxy: {
+			disabled: false,
+			title: 'proxy节点',
+			num: 3,
+			specId: '0',
+			cpu: 2,
+			memory: 0.256
 		}
 	});
 	const [pathObj, setPathObj] = useState<any>({
@@ -1905,53 +1913,57 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											<div
 												className={`display-flex ${styles['mode-content']}`}
 											>
-												{Object.keys(nodeObj).map(
-													(key) => (
-														<ModeItem
-															middlewareType={
-																chartName
-															}
-															key={key}
-															type={key}
-															data={nodeObj[key]}
-															clusterId={
-																globalCluster.id
-															}
-															mode={mode}
-															namespace={
-																globalNamespace.name
-															}
-															onChange={(
-																values
-															) => {
-																setNodeObj({
-																	...nodeObj,
-																	[key]: values
-																});
-															}}
-															disabled={
-																!!middlewareName
-															}
-															storageVisible={
-																!directory
-															}
-															isActiveActive={
-																globalNamespace.name ===
-																'*'
-																	? !namespace
-																		? judgeActiveActive(
-																				form.getFieldValue(
-																					'namespace'
-																				)
-																		  )
-																		: judgeActiveActive(
-																				namespace
-																		  )
-																	: globalNamespace.availableDomain
-															}
-														/>
-													)
-												)}
+												{Object.keys(
+													mode === 'readWriteProxy'
+														? nodeObj
+														: {
+																redis: nodeObj.redis,
+																sentinel:
+																	nodeObj.sentinel
+														  }
+												).map((key) => (
+													<ModeItem
+														middlewareType={
+															chartName
+														}
+														key={key}
+														type={key}
+														data={nodeObj[key]}
+														clusterId={
+															globalCluster.id
+														}
+														mode={mode}
+														namespace={
+															globalNamespace.name
+														}
+														onChange={(values) => {
+															setNodeObj({
+																...nodeObj,
+																[key]: values
+															});
+														}}
+														disabled={
+															!!middlewareName
+														}
+														storageVisible={
+															!directory
+														}
+														isActiveActive={
+															globalNamespace.name ===
+															'*'
+																? !namespace
+																	? judgeActiveActive(
+																			form.getFieldValue(
+																				'namespace'
+																			)
+																	  )
+																	: judgeActiveActive(
+																			namespace
+																	  )
+																: globalNamespace.availableDomain
+														}
+													/>
+												))}
 											</div>
 										</div>
 									</li>

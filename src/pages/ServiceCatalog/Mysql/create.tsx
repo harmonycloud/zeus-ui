@@ -78,7 +78,7 @@ export const mysqlNewList = [
 		value: '1',
 		label: (
 			<div>
-				<p>CPU: 1Core</p>
+				<p>CPU: 2Core</p>
 				<p>内存: 2Gi</p>
 			</div>
 		)
@@ -656,7 +656,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 			} else if (readWriteProxy === 'true') {
 				switch (specId) {
 					case '1':
-						sendData.quota.mysql.cpu = 1;
+						sendData.quota.mysql.cpu = 2;
 						sendData.quota.mysql.memory = '2Gi';
 						break;
 					case '2':

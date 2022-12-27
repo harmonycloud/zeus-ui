@@ -75,7 +75,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 			<div className="mode-item-box">
 				<div className="mode-item-title">
 					<span>{data.title}</span>
-					{props.type !== 'redis' ? (
+					{props.type !== 'redis' && type !== 'proxy' ? (
 						isEdit ? (
 							<Input
 								size="small"
@@ -131,6 +131,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 							)}
 						{type !== 'kibana' &&
 							type !== 'sentinel' &&
+							type !== 'proxy' &&
 							!data.storageClass &&
 							storageVisible && (
 								<li>

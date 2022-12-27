@@ -251,6 +251,14 @@ export interface NodeObjParams {
 		cpu: number;
 		memory: number;
 	};
+	proxy?: {
+		disabled: boolean;
+		title: string;
+		num: number;
+		specId: string;
+		cpu: number;
+		memory: number;
+	};
 }
 export interface RMQSendDataParams extends CommonSendDataParams {
 	clusterId: string;
