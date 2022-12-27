@@ -68,7 +68,8 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 			form.setFieldsValue({
 				username:
 					cookie.username ||
-					(middlewareType === 'redis' && version === '5.0'
+					(middlewareType === 'redis' &&
+					version.substring(0, 1) === '5'
 						? 'default'
 						: ''),
 				password: decrypt(cookie.password, privateKey),
@@ -184,7 +185,8 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					name="username"
 					rules={[{ required: true, message: '请输入账号' }]}
 					initialValue={
-						middlewareType === 'redis' && version === '5.0'
+						middlewareType === 'redis' &&
+						version.substring(0, 1) === '5'
 							? 'default'
 							: ''
 					}
@@ -192,7 +194,8 @@ export default function LoginConsole(props: LoginConsoleProps): JSX.Element {
 					<Input
 						placeholder="请输入"
 						disabled={
-							middlewareType === 'redis' && version === '5.0'
+							middlewareType === 'redis' &&
+							version.substring(0, 1) === '5'
 						}
 						onKeyDown={(e) => e.keyCode === 13 && onOk()}
 					/>
