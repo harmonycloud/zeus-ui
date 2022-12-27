@@ -2227,21 +2227,32 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 											从节点数
 										</label>
 										<div className="form-content">
-											<InputNumber
-												name="从节点数量字段"
-												defaultValue={2}
-												onChange={(
-													value: number | null
-												) =>
-													setReplicaCount(
-														value as number
-													)
-												}
-												value={replicaCount}
-												max={6}
-												min={2}
-												disabled={!!backupFileName}
-											/>
+											<Form.Item
+												name="x"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入从节点数'
+													}
+												]}
+											>
+												<InputNumber
+													name="从节点数量字段"
+													defaultValue={2}
+													onChange={(
+														value: number | null
+													) =>
+														setReplicaCount(
+															value as number
+														)
+													}
+													value={replicaCount}
+													max={6}
+													min={2}
+													disabled={!!backupFileName}
+												/>
+											</Form.Item>
 										</div>
 									</li>
 								) : null}

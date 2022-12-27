@@ -1016,16 +1016,28 @@ function ZookeeperCreate(props: CreateProps): JSX.Element {
 										从节点数
 									</label>
 									<div className="form-content">
-										<InputNumber
-											min={3}
-											value={customCluster}
-											onChange={(value: number | null) =>
-												setCustomCluster(
-													value as number
-												)
-											}
-											max={10}
-										/>
+										<Form.Item
+											name="x"
+											rules={[
+												{
+													required: true,
+													message: '请输入从节点数'
+												}
+											]}
+										>
+											<InputNumber
+												min={3}
+												value={customCluster}
+												onChange={(
+													value: number | null
+												) =>
+													setCustomCluster(
+														value as number
+													)
+												}
+												max={10}
+											/>
+										</Form.Item>
 									</div>
 								</li>
 								<li className="display-flex form-li">
