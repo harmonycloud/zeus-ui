@@ -2249,10 +2249,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 															'请输入从节点数'
 													}
 												]}
+												initialValue={2}
 											>
 												<InputNumber
 													name="从节点数量字段"
-													defaultValue={2}
 													onChange={(
 														value: number | null
 													) =>
