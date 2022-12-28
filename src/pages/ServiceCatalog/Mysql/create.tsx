@@ -2091,20 +2091,33 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										>
 											<FormItem
 												name="mysqlPwd"
-												rules={[
-													{
-														required: true,
-														message:
-															'请输入root密码'
-													},
-													{
-														pattern: new RegExp(
-															pattern.mysqlPwd
-														),
-														message:
-															'密码不符合要求'
-													}
-												]}
+												rules={
+													!backupFileName
+														? [
+																{
+																	required:
+																		true,
+																	message:
+																		'请输入root密码'
+																},
+																{
+																	pattern:
+																		new RegExp(
+																			pattern.mysqlPwd
+																		),
+																	message:
+																		'密码不符合要求'
+																}
+														  ]
+														: [
+																{
+																	required:
+																		true,
+																	message:
+																		'请输入root密码'
+																}
+														  ]
+												}
 											>
 												<Password
 													style={{ width: '380px' }}

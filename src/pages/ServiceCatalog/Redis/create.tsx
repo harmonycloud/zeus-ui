@@ -1700,20 +1700,33 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										>
 											<FormItem
 												name="pwd"
-												rules={[
-													{
-														required: true,
-														message:
-															'请输入初始密码'
-													},
-													{
-														pattern: new RegExp(
-															pattern.mysqlPwd
-														),
-														message:
-															'密码不符合要求'
-													}
-												]}
+												rules={
+													!middlewareName
+														? [
+																{
+																	required:
+																		true,
+																	message:
+																		'请输入初始密码'
+																},
+																{
+																	pattern:
+																		new RegExp(
+																			pattern.mysqlPwd
+																		),
+																	message:
+																		'密码不符合要求'
+																}
+														  ]
+														: [
+																{
+																	required:
+																		true,
+																	message:
+																		'请输入初始密码'
+																}
+														  ]
+												}
 											>
 												<Input.Password
 													placeholder="请输入初始密码"
