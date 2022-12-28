@@ -26,8 +26,8 @@ const EditDirectory = (props: EditDirectoryProps) => {
 		inputChange,
 		type
 	} = props;
-	console.log(data);
 	const [form] = Form.useForm();
+	const [checked, setChecked] = useState<boolean>(false);
 
 	const onOk = () => {
 		form.validateFields().then((values) => {
@@ -77,7 +77,10 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						className="ant-form-name"
 						initialValue={data.switch}
 					>
-						<Switch defaultChecked={data.switch} />
+						<Switch
+							checked={checked || data.switch}
+							onChange={(checked) => setChecked(checked)}
+						/>
 					</FormItem>
 				)}
 				<FormItem
@@ -100,6 +103,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 							width: '100%'
 						}}
 						dropdownMatchSelectWidth={false}
+						disabled={
+							(type === 'pgarch' ||
+								type === 'pgextension' ||
+								type === 'redis-logs') &&
+							!checked
+						}
 					>
 						{storageClassList.map((item: StorageItem) => {
 							return (
@@ -141,6 +150,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						onChange={inputChange}
 						addonAfter="GB"
 						placeholder="请输入磁盘大小"
+						disabled={
+							(type === 'pgarch' ||
+								type === 'pgextension' ||
+								type === 'redis-logs') &&
+							!checked
+						}
 					/>
 				</FormItem>
 				<FormItem
@@ -161,6 +176,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						style={{ width: '100%' }}
 						onChange={inputChange}
 						placeholder="请输入/开头的目录地址"
+						disabled={
+							(type === 'pgarch' ||
+								type === 'pgextension' ||
+								type === 'redis-logs') &&
+							!checked
+						}
 					/>
 				</FormItem>
 				<FormItem
@@ -234,6 +255,12 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						style={{ width: '100%' }}
 						onChange={inputChange}
 						placeholder="请输入/开头的目录地址"
+						disabled={
+							(type === 'pgarch' ||
+								type === 'pgextension' ||
+								type === 'redis-logs') &&
+							!checked
+						}
 					/>
 				</FormItem>
 			</Form>
