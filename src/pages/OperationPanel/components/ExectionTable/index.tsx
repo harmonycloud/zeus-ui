@@ -27,10 +27,10 @@ function ExecutionTable(props: ExecutionTableProps): JSX.Element {
 		middlewareName,
 		database,
 		changeSql,
-		refreshFlag,
 		setRefreshFlag,
 		execute
 	} = props;
+	console.log(execute);
 	const params: any = useParams();
 	const [current, setCurrent] = useState<number>(1);
 	const [total, setTotal] = useState<number>();

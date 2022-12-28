@@ -111,7 +111,6 @@ function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 			})
 			.map((item) => item + ';');
 		setRefreshFlag(true);
-		// setRefreshFlag(!refreshFlag);
 		list.map((item) => {
 			executeMysqlSql({
 				database: dbName,
@@ -130,6 +129,21 @@ function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 								执行成功
 							</span>,
 							<ExecuteResultTypeOne resData={res.data} />
+						);
+					} else {
+						const resTemp = {
+							title: '执行成功',
+							errorMsg: res.errorMsg,
+							errorDetail: res.errorDetail
+						};
+						add(
+							<span>
+								<CheckCircleFilled
+									style={{ color: '#52c41a' }}
+								/>
+								执行成功
+							</span>,
+							<ExecuteResultTypeTwo res={resTemp} />
 						);
 					}
 				} else {

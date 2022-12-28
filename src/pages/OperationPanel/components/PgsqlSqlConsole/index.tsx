@@ -138,21 +138,23 @@ function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 							);
 						} else {
 							const resTemp = {
+								title: '执行成功',
 								errorMsg: res.data.message,
 								errorDetail: ''
 							};
 							add(
 								<span>
-									<CloseCircleFilled
-										style={{ color: '#ff4d4f' }}
+									<CheckCircleFilled
+										style={{ color: '#52c41a' }}
 									/>
-									执行失败
+									执行成功
 								</span>,
 								<ExecuteResultTypeTwo res={resTemp} />
 							);
 						}
 					} else {
 						const resTemp = {
+							title: '执行失败',
 							errorMsg: res.data.message,
 							errorDetail: ''
 						};
