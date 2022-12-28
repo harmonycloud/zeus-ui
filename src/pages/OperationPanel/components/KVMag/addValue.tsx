@@ -37,7 +37,6 @@ export default function AddValue(props: any): JSX.Element {
 			onOk={onCreate}
 			onCancel={onCancel}
 		>
-			{console.log(visible)}
 			<Form form={form} {...formItemLayout618} labelAlign="left">
 				{type === 'hash' ? (
 					<Form.Item

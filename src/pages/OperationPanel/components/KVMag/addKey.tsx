@@ -46,7 +46,7 @@ export default function AddKV(props: any): JSX.Element {
 			}
 			if (values.keyType === 'list') {
 				sendData.listValue = {
-					index: '0',
+					index: '',
 					value: values.value
 				};
 			}
