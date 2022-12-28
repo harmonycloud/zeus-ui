@@ -640,9 +640,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						// 	return;
 						// }
 						if (nodeObj[key].switch !== false) {
-							sendData.customVolumes[key] = {
-								...nodeObj[key]
-							};
+							sendData.customVolumes[key] = nodeObj[key];
 						}
 					}
 				}

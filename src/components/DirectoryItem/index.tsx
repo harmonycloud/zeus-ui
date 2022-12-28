@@ -96,7 +96,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 			<div className="mode-item-title">
 				<span
 					className={
-						type === 'pgarch' || type === 'pgextension'
+						type === 'pgarch' ||
+						type === 'pgextension' ||
+						type === 'redis-logs'
 							? 'align'
 							: 'align ne-required'
 					}
@@ -134,7 +136,7 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						<span>容器内目录：</span>
 						<span>{data.mountPath}</span>
 					</li>
-					{data.storageClass ? (
+					{data.storageClass || data.switch === false ? (
 						<li>
 							<span>存储：</span>
 							<span>
