@@ -17,8 +17,15 @@ interface EditDirectoryProps extends modeItemProps {
 
 const FormItem = Form.Item;
 const EditDirectory = (props: EditDirectoryProps) => {
-	const { visible, onCancel, onCreate, data, storageClassList, inputChange } =
-		props;
+	const {
+		visible,
+		onCancel,
+		onCreate,
+		data,
+		storageClassList,
+		inputChange,
+		type
+	} = props;
 	console.log(data);
 	const [form] = Form.useForm();
 
@@ -54,15 +61,95 @@ const EditDirectory = (props: EditDirectoryProps) => {
 			centered
 		>
 			<Form form={form}>
+				{(type === 'pgarch' || type === 'pgextension') && (
+					<FormItem
+						label="是否开启"
+						labelAlign="left"
+						rules={[
+							{
+								required: true,
+								message: '请输入磁盘大小'
+							}
+						]}
+						name="switch"
+						className="ant-form-name"
+						initialValue={data.switch}
+					>
+						<Switch defaultChecked={data.switch} />
+					</FormItem>
+				)}
 				<FormItem
-					label="宿主机目录"
+					label="存储"
 					labelAlign="left"
 					rules={[
 						{
-							required: hostPathRequire(),
-							message: '请输入宿主机目录'
+							required: true,
+							message: '请选择存储'
 						}
 					]}
+					name="storageClass"
+					className="ant-form-name"
+					initialValue={data.storageClass}
+				>
+					<Select
+						placeholder="请选择存储"
+						style={{
+							marginRight: 8,
+							width: '100%'
+						}}
+						dropdownMatchSelectWidth={false}
+					>
+						{storageClassList.map((item: StorageItem) => {
+							return (
+								<Select.Option
+									key={item.name}
+									value={`${item.name}`}
+								>
+									<p>
+										{item.aliasName}
+										<span
+											className="available-domain"
+											style={{ color: '#52c41a' }}
+										>
+											local-path
+										</span>
+									</p>
+								</Select.Option>
+							);
+						})}
+					</Select>
+				</FormItem>
+				<FormItem
+					label="磁盘大小"
+					labelAlign="left"
+					rules={[
+						{
+							required: true,
+							message: '请输入磁盘大小'
+						}
+					]}
+					name="volumeSize"
+					className="ant-form-name"
+					initialValue={data.volumeSize}
+				>
+					<InputNumber
+						min={0}
+						value={data.volumeSize}
+						style={{ width: '180px' }}
+						onChange={inputChange}
+						addonAfter="GB"
+						placeholder="请输入磁盘大小"
+					/>
+				</FormItem>
+				<FormItem
+					label="宿主机目录"
+					labelAlign="left"
+					// rules={[
+					// 	{
+					// 		required: hostPathRequire(),
+					// 		message: '请输入宿主机目录'
+					// 	}
+					// ]}
 					name="hostPath"
 					className="ant-form-name"
 					initialValue={data.hostPath}
@@ -78,10 +165,10 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					label="容器内目录"
 					labelAlign="left"
 					rules={[
-						{
-							required: true,
-							message: '请输入宿主机目录'
-						},
+						// {
+						// 	required: true,
+						// 	message: '请输入宿主机目录'
+						// },
 						{
 							validator: (_, name) => {
 								const arr = [
@@ -145,61 +232,6 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						style={{ width: '100%' }}
 						onChange={inputChange}
 						placeholder="请输入/开头的目录地址"
-					/>
-				</FormItem>
-				<FormItem
-					label="存储"
-					labelAlign="left"
-					rules={[
-						{
-							required: true,
-							message: '请选择存储'
-						}
-					]}
-					name="storageClass"
-					className="ant-form-name"
-					initialValue={data.storageClass}
-				>
-					<Select
-						placeholder="请选择存储"
-						style={{
-							marginRight: 8,
-							width: '100%'
-						}}
-						dropdownMatchSelectWidth={false}
-					>
-						{storageClassList.map((item: StorageItem) => {
-							return (
-								<Select.Option
-									key={item.name}
-									value={`${item.name}`}
-								>
-									{item.aliasName}
-								</Select.Option>
-							);
-						})}
-					</Select>
-				</FormItem>
-				<FormItem
-					label="磁盘大小"
-					labelAlign="left"
-					rules={[
-						{
-							required: true,
-							message: '请输入磁盘大小'
-						}
-					]}
-					name="volumeSize"
-					className="ant-form-name"
-					initialValue={data.volumeSize}
-				>
-					<InputNumber
-						min={0}
-						value={data.volumeSize}
-						style={{ width: '180px' }}
-						onChange={inputChange}
-						addonAfter="GB"
-						placeholder="请输入磁盘大小"
 					/>
 				</FormItem>
 			</Form>

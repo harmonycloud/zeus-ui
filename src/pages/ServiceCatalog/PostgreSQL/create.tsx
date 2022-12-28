@@ -182,6 +182,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			mountPath: '/pgarch',
 			volumeSize: 1,
 			storageClass: null,
+			switch: false,
 			targetContainers: ['postgres']
 		},
 		pgextension: {
@@ -190,6 +191,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			mountPath: '/pgextension',
 			volumeSize: 1,
 			storageClass: null,
+			switch: false,
 			targetContainers: ['postgres']
 		}
 	});
@@ -637,9 +639,11 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						// 	});
 						// 	return;
 						// }
-						sendData.customVolumes[key] = {
-							...nodeObj[key]
-						};
+						if (nodeObj[key].switch !== false) {
+							sendData.customVolumes[key] = {
+								...nodeObj[key]
+							};
+						}
 					}
 				}
 			}

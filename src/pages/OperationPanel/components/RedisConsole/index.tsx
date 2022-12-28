@@ -53,7 +53,7 @@ function RedisSqlConsole(props: RedisSqlConsoleProps): JSX.Element {
 					middlewareName={params.name}
 					database={dbName}
 					changeSql={changeSql}
-					refreshFlag={true}
+					// refreshFlag={true}
 				/>
 			),
 			key: '1',

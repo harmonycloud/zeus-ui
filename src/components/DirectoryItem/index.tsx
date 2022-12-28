@@ -25,7 +25,7 @@ export interface modeItemProps {
 		volumeSize: number;
 		name: string;
 		storageClass: string | string[];
-		isNotOpen?: boolean;
+		switch?: boolean;
 	};
 	mode?: string;
 	clusterId: string;
@@ -94,16 +94,14 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 	return (
 		<div className="mode-item-box">
 			<div className="mode-item-title">
-				<span>
+				<span
+					className={
+						type === 'pgarch' || type === 'pgextension'
+							? 'align'
+							: 'align ne-required'
+					}
+				>
 					{data.title || titleMap[data.name]}
-					<span
-						style={{
-							color: '#ff4d4f',
-							display: data.hostPath ? 'none' : 'initial'
-						}}
-					>
-						(未启用)
-					</span>
 				</span>
 			</div>
 			<div
@@ -111,6 +109,22 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 				onClick={() => !readOnly && setVisible(true)}
 			>
 				<ul>
+					{console.log(type, data)}
+					<li>
+						<span
+							style={{
+								color: '#d93026',
+								display:
+									(type === 'pgarch' ||
+										type === 'pgextension') &&
+									!data.switch
+										? 'initial'
+										: 'none'
+							}}
+						>
+							未启用
+						</span>
+					</li>
 					<li>
 						<span>宿主机目录：</span>
 						<span>{data.hostPath}</span>

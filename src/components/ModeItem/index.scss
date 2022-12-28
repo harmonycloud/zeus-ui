@@ -15,6 +15,9 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		.align::before{
+			top: 17px;
+		}
 		.mode-item-number-input {
 			width: 50px;
 		}
