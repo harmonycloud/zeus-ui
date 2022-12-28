@@ -640,18 +640,27 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 						// 	});
 						// 	return;
 						// }
-						sendData.quota.redis = {
-							num:
-								clusterMode === 'one'
-									? clusterModeNum
-										? clusterModeNum * 2
-										: 6
-									: clusterMode === '3s-3m'
-									? 6
-									: 10,
-							cpu: sendData.quota.redis.cpu,
-							memory: sendData.quota.redis.memory
-						};
+						if (mode === 'cluster' || mode === 'agent') {
+							sendData.quota.redis = {
+								num:
+									clusterMode === 'one'
+										? clusterModeNum
+											? clusterModeNum * 2
+											: 6
+										: clusterMode === '3s-3m'
+										? 6
+										: 10,
+								cpu: sendData.quota.redis.cpu,
+								memory: sendData.quota.redis.memory
+							};
+						} else {
+							sendData.quota.redis = {
+								num: sendData.quota.redis.num,
+								cpu: sendData.quota.redis.cpu,
+								memory: sendData.quota.redis.memory
+							};
+						}
+
 						if (pathObj[key].switch !== false) {
 							sendData.customVolumes[key] = {
 								...pathObj[key]
