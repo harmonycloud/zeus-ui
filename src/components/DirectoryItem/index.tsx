@@ -116,8 +116,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 								color: '#d93026',
 								display:
 									(type === 'pgarch' ||
-										type === 'pgextension') &&
-									!data.switch
+										type === 'pgextension' ||
+										type === 'redis-logs') &&
+									data.switch === false
 										? 'initial'
 										: 'none'
 							}}

@@ -239,6 +239,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 			mountPath: '/redis/logs',
 			storageClass: null,
 			volumeSize: 1,
+			switch: false,
 			targetContainers: ['redis-cluster']
 		}
 	});
@@ -651,9 +652,11 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 							cpu: sendData.quota.redis.cpu,
 							memory: sendData.quota.redis.memory
 						};
-						sendData.customVolumes[key] = {
-							...pathObj[key]
-						};
+						if (pathObj[key].switch !== false) {
+							sendData.customVolumes[key] = {
+								...pathObj[key]
+							};
+						}
 					}
 				}
 			}

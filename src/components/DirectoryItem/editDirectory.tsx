@@ -61,7 +61,9 @@ const EditDirectory = (props: EditDirectoryProps) => {
 			centered
 		>
 			<Form form={form}>
-				{(type === 'pgarch' || type === 'pgextension') && (
+				{(type === 'pgarch' ||
+					type === 'pgextension' ||
+					type === 'redis-logs') && (
 					<FormItem
 						label="是否开启"
 						labelAlign="left"
