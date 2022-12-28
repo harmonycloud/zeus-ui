@@ -369,24 +369,39 @@ function BasicInfo(props: BasicInfoProps): JSX.Element {
 			value ? (
 				<div style={{ display: 'flex' }}>
 					{Object.keys({
-						pgdb: value.pgdb,
-						pgwal: value.pgwal,
-						pglog: value.pglog,
-						pgarch: value.pgarch,
-						pgextension: value.pgextension
-					}).map((key) => (
-						<DirectoryItem
-							key={key}
-							type={key}
-							data={value[key]}
-							middlewareType={type}
-							clusterId={clusterId}
-							namespace={namespace}
-							disabled
-							readOnly
-							onChange={() => false}
-						/>
-					))}
+						pgdb: value.pgdb || {},
+						pgwal: value.pgwal || {},
+						pglog: value.pglog || {},
+						pgarch: value.pgarch || {},
+						pgextension: value.pgextension || {},
+						'redis-data': value['redis-data'] || {},
+						'redis-logs': value['redis-logs'] || {}
+					}).map(
+						(key) =>
+							JSON.stringify(
+								{
+									pgdb: value.pgdb || {},
+									pgwal: value.pgwal || {},
+									pglog: value.pglog || {},
+									pgarch: value.pgarch || {},
+									pgextension: value.pgextension || {},
+									'redis-data': value['redis-data'] || {},
+									'redis-logs': value['redis-logs'] || {}
+								}[key]
+							) !== '{}' && (
+								<DirectoryItem
+									key={key}
+									type={key}
+									data={value[key]}
+									middlewareType={type}
+									clusterId={clusterId}
+									namespace={namespace}
+									disabled
+									readOnly
+									onChange={() => false}
+								/>
+							)
+					)}
 				</div>
 			) : (
 				<div></div>

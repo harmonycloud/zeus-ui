@@ -919,17 +919,60 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				)
 			});
 			let storageClassName: string | string[];
-			if (res.data.quota.redis.storageClassName.includes(',')) {
-				const storageClassAliasNameTemp =
-					res.data.quota.redis.storageClassAliasName.split(',');
-				storageClassName = res.data.quota.redis.storageClassName
-					.split(',')
-					.map(
-						(item: string, index: number) =>
-							`${item}/${storageClassAliasNameTemp[index]}`
-					);
+			if (
+				res.data.customVolumes &&
+				JSON.stringify(res.data.customVolumes !== '{}')
+			) {
+				setPathObj({ ...res.data.customVolumes });
+				setDirectory(true);
 			} else {
-				storageClassName = `${res.data.quota.redis.storageClassName}/${res.data.quota.redis.storageClassAliasName}`;
+				if (res.data.quota.redis?.storageClassName?.includes(',')) {
+					const storageClassAliasNameTemp =
+						res.data.quota.redis.storageClassAliasName.split(',');
+					storageClassName = res.data.quota.redis.storageClassName
+						.split(',')
+						.map(
+							(item: string, index: number) =>
+								`${item}/${storageClassAliasNameTemp[index]}`
+						);
+				} else {
+					storageClassName = `${res.data.quota.redis.storageClassName}/${res.data.quota.redis.storageClassAliasName}`;
+				}
+				setNodeObj({
+					redis: {
+						disabled: false,
+						title: 'Redis 节点',
+						num: res.data.quota.redis.num,
+						specId: '1',
+						cpu: Number(res.data.quota.redis.cpu),
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.redis.memory,
+								'Gi'
+							)
+						),
+						storageClass: storageClassName,
+						storageQuota: Number(
+							transUnit.removeUnit(
+								res.data.quota.redis.storageClassQuota,
+								'Gi'
+							)
+						)
+					},
+					sentinel: {
+						disabled: false,
+						title: '哨兵节点',
+						num: res.data.quota.sentinel?.num,
+						specId: '1',
+						cpu: Number(res.data.quota.sentinel?.cpu),
+						memory: Number(
+							transUnit.removeUnit(
+								res.data.quota.sentinel?.memory,
+								'Gi'
+							)
+						)
+					}
+				});
 			}
 			switch (res.data.quota.redis.num) {
 				case 2:
@@ -947,38 +990,6 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				default:
 					break;
 			}
-			setNodeObj({
-				redis: {
-					disabled: false,
-					title: 'Redis 节点',
-					num: res.data.quota.redis.num,
-					specId: '1',
-					cpu: Number(res.data.quota.redis.cpu),
-					memory: Number(
-						transUnit.removeUnit(res.data.quota.redis.memory, 'Gi')
-					),
-					storageClass: storageClassName,
-					storageQuota: Number(
-						transUnit.removeUnit(
-							res.data.quota.redis.storageClassQuota,
-							'Gi'
-						)
-					)
-				},
-				sentinel: {
-					disabled: false,
-					title: '哨兵节点',
-					num: res.data.quota.sentinel.num,
-					specId: '1',
-					cpu: Number(res.data.quota.sentinel.cpu),
-					memory: Number(
-						transUnit.removeUnit(
-							res.data.quota.sentinel.memory,
-							'Gi'
-						)
-					)
-				}
-			});
 			if (res.data.dynamicValues) {
 				for (const i in res.data.dynamicValues) {
 					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
@@ -2136,6 +2147,7 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 											onChange={(value) =>
 												setDirectory(value)
 											}
+											disabled={!!middlewareName}
 											size="small"
 										/>
 									</div>
