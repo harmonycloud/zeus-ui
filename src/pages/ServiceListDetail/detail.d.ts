@@ -624,4 +624,5 @@ export interface HostNetworkServiceItem {
 	exposeIp: string;
 	exposePort: string;
 	servicePurpose: string;
+	exposeType: string;
 }
