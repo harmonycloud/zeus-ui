@@ -747,6 +747,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			if (res.data.version) {
 				setVersion(res.data.version);
 			}
+			if (res.data.quota.postgresql.num) {
+				setReplicaCount(res.data.quota.postgresql.num);
+			}
 			let storageClassTemp: string | string[];
 			if (
 				res.data.customVolumes &&
@@ -788,7 +791,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 				memory: Number(
 					transUnit.removeUnit(res.data.quota.postgresql.memory, 'Gi')
 				),
-				mirrorImageId: res.data.mirrorImage
+				mirrorImageId: res.data.mirrorImage,
+				x: res.data.quota.postgresql.num
 			});
 			if (res.data.dynamicValues) {
 				for (const i in res.data.dynamicValues) {
