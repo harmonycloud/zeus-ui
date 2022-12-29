@@ -1358,9 +1358,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										className={`form-content display-flex ${styles['host-affinity']}`}
 									>
 										<div className={styles['switch']}>
-											{tolerations.flag
-												? '已开启'
-												: '关闭'}
+											{hostNetwork ? '已开启' : '关闭'}
 											<Switch
 												checked={hostNetwork}
 												onChange={(value) =>
