@@ -454,10 +454,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 							startTime: result.data?.startTime,
 							time: result.data?.time,
 							pause: result.data?.pause,
-							backupName:
-								result.data.pause === 'off'
-									? result.data.backupName
-									: res.data[0].backupName
+							newBackupName: result.data.backupName
 						};
 						console.log(res, result);
 

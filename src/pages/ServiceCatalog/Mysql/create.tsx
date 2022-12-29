@@ -956,7 +956,10 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							  )
 							: '',
 					type: storage.getLocal('backupDetail').sourceType,
-					backupName: backupDetail.backupName
+					backupName:
+						backupDetail.pause === 'off'
+							? backupDetail.newBackupName
+							: backupDetail.backupName
 				};
 				applyBackup(result).then((res) => {
 					// * 恢复服务时，需要调用发布接口和备份接口

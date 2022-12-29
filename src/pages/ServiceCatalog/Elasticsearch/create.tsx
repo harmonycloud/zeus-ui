@@ -363,7 +363,10 @@ const ElasticsearchCreate: (props: CreateProps) => JSX.Element = (
 					namespace: namespace,
 					middlewareName: values.name,
 					type: storage.getLocal('backupDetail').sourceType,
-					backupName: storage.getLocal('backupDetail').backupName
+					backupName:
+						storage.getLocal('backupDetail').pause === 'off'
+							? storage.getLocal('backupDetail').newBackupName
+							: storage.getLocal('backupDetail').backupName
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
