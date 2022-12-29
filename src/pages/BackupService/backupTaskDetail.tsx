@@ -298,8 +298,6 @@ function BackupTaskDetail(props: any): JSX.Element {
 	useEffect(() => {
 		const list = [...infoConfig];
 		if (params.type === 'mysql' || params.type === 'postgresql') {
-			console.log(basicData.mysqlBackup);
-
 			if (basicData.mysqlBackup) {
 				list.find((item) => item.dataIndex === 'pause') &&
 					list.splice(5, 1);
@@ -456,10 +454,13 @@ function BackupTaskDetail(props: any): JSX.Element {
 							startTime: result.data?.startTime,
 							time: result.data?.time,
 							pause: result.data?.pause,
-							backupName: result.data?.backupName
-								? result.data?.backupName
-								: res.data[0].backupName
+							backupName:
+								result.data.pause === 'off'
+									? result.data.backupName
+									: res.data[0].backupName
 						};
+						console.log(res, result);
+
 						setBasicData({
 							title: '基础信息',
 							...data
