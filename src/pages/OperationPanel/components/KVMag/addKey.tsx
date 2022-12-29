@@ -173,7 +173,11 @@ export default function AddKV(props: any): JSX.Element {
 							}
 						]}
 					>
-						<InputNumber min={0} style={{ width: '100%' }} />
+						<InputNumber
+							min={0}
+							style={{ width: '100%' }}
+							placeholder="请输入"
+						/>
 					</Form.Item>
 				) : null}
 				{/* <Form.Item name="expiration" label="value">
