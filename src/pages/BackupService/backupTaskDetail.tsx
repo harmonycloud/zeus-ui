@@ -455,7 +455,10 @@ function BackupTaskDetail(props: any): JSX.Element {
 							endTime: result.data?.endTime,
 							startTime: result.data?.startTime,
 							time: result.data?.time,
-							pause: result.data?.pause
+							pause: result.data?.pause,
+							backupName: result.data?.backupName
+								? result.data?.backupName
+								: res.data[0].backupName
 						};
 						setBasicData({
 							title: '基础信息',
