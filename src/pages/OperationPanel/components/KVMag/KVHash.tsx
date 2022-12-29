@@ -399,6 +399,7 @@ export default function KVHash(props: any): JSX.Element {
 					render={(value: string, record: any, index: number) =>
 						index + 1
 					}
+					width={180}
 				/>
 				<ProTable.Column
 					title="field"
@@ -412,6 +413,7 @@ export default function KVHash(props: any): JSX.Element {
 				/>
 				<ProTable.Column
 					title="操作"
+					width={180}
 					dataIndex="action"
 					render={actionRender}
 				/>

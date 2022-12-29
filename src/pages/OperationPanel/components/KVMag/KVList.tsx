@@ -433,6 +433,7 @@ export default function KVList(props: any): JSX.Element {
 			>
 				<ProTable.Column
 					title="序号"
+					width={180}
 					dataIndex="index"
 					render={(value: string, record: any, index: number) =>
 						index + 1
@@ -445,6 +446,7 @@ export default function KVList(props: any): JSX.Element {
 				/>
 				<ProTable.Column
 					title="操作"
+					width={180}
 					dataIndex="action"
 					render={actionRender}
 				/>
