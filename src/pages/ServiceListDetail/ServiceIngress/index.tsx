@@ -67,6 +67,9 @@ export default function ServiceDetailIngress(
 	const [internalDataSource, setInternalDataSource] = useState<
 		InternalServiceItem[]
 	>([]);
+	const [hostNetworkData, setHostNetworkData] = useState<
+		HostNetworkServiceItem[]
+	>([]);
 	const [hostNetworkDataSource, setHostNetworkDataSource] = useState<
 		HostNetworkServiceItem[]
 	>([]);
@@ -146,7 +149,7 @@ export default function ServiceDetailIngress(
 				{(data.type === 'postgresql' || data.type === 'redis') &&
 				data[data.type + 'Param'].hostNetwork ? (
 					<Button onClick={() => setHostVisible(true)}>
-						主机网络对外访问
+						主机网络访问
 					</Button>
 				) : null}
 			</>
@@ -206,6 +209,7 @@ export default function ServiceDetailIngress(
 		}).then((res) => {
 			if (res.success) {
 				setHostNetworkDataSource(res.data);
+				setHostNetworkData(res.data);
 			}
 		});
 	};
@@ -882,6 +886,53 @@ export default function ServiceDetailIngress(
 					</>
 				) : (
 					<>
+						<Button
+							type="link"
+							style={{ padding: 4 }}
+							onClick={() =>
+								setHostNetworkDataSource(hostNetworkData)
+							}
+						>
+							全部({hostNetworkData.length})
+						</Button>
+						<Button
+							type="link"
+							style={{ padding: 4 }}
+							onClick={() =>
+								setHostNetworkDataSource(
+									hostNetworkData.filter(
+										(item) => item.exposeType !== 'sentinel'
+									)
+								)
+							}
+						>
+							Redis节点(
+							{
+								hostNetworkData.filter(
+									(item) => item.exposeType !== 'sentinel'
+								).length
+							}
+							)
+						</Button>
+						<Button
+							type="link"
+							style={{ padding: 4 }}
+							onClick={() =>
+								setHostNetworkDataSource(
+									hostNetworkData.filter(
+										(item) => item.exposeType === 'sentinel'
+									)
+								)
+							}
+						>
+							哨兵节点(
+							{
+								hostNetworkData.filter(
+									(item) => item.exposeType !== 'sentinel'
+								).length
+							}
+							)
+						</Button>
 						<Table
 							rowKey="serviceName"
 							dataSource={hostNetworkDataSource}

@@ -111,7 +111,6 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 				onClick={() => !readOnly && setVisible(true)}
 			>
 				<ul>
-					{console.log(type, data)}
 					<li>
 						<span
 							style={{
