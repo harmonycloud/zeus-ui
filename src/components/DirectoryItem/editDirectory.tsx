@@ -51,6 +51,10 @@ const EditDirectory = (props: EditDirectoryProps) => {
 		}
 	};
 
+	useEffect(() => {
+		setChecked(data?.switch || false);
+	}, []);
+
 	return (
 		<Modal
 			title="实例配置"
@@ -78,7 +82,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						initialValue={data.switch}
 					>
 						<Switch
-							checked={checked || data.switch}
+							checked={checked}
 							onChange={(checked) => setChecked(checked)}
 						/>
 					</FormItem>
