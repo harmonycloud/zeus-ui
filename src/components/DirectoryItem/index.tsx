@@ -111,53 +111,59 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 				onClick={() => !readOnly && setVisible(true)}
 			>
 				<ul>
-					<li>
-						<span
-							style={{
-								color: '#d93026',
-								display:
-									(type === 'pgarch' ||
-										type === 'pgextension' ||
-										type === 'redis-logs') &&
-									data.switch === false
-										? 'initial'
-										: 'none'
-							}}
-						>
-							未启用
-						</span>
-					</li>
-					<li>
-						<span>宿主机目录：</span>
-						<span>{data.hostPath}</span>
-					</li>
-					<li>
-						<span>容器内目录：</span>
-						<span>{data.mountPath}</span>
-					</li>
-					{data.storageClass || data.switch === false ? (
+					{data.switch === false ? (
 						<li>
-							<span>存储：</span>
-							<span>
-								{
-									storageClassList.find(
-										(item) =>
-											item.name === data.storageClass
-									)?.aliasName
-								}
+							<span
+								style={{
+									color: '#d93026',
+									display:
+										(type === 'pgarch' ||
+											type === 'pgextension' ||
+											type === 'redis-logs') &&
+										data.switch === false
+											? 'initial'
+											: 'none'
+								}}
+							>
+								未启用
 							</span>
 						</li>
 					) : (
-						<li>
-							<span style={{ color: '#D93026' }}>
-								存储：未配置
-							</span>
-						</li>
+						<>
+							<li>
+								<span>宿主机目录：</span>
+								<span>{data.hostPath}</span>
+							</li>
+							<li>
+								<span>容器内目录：</span>
+								<span>{data.mountPath}</span>
+							</li>
+							{data.storageClass ? (
+								<li>
+									<span>存储：</span>
+									<span>
+										{
+											storageClassList.find(
+												(item) =>
+													item.name ===
+													data.storageClass
+											)?.aliasName
+										}
+									</span>
+								</li>
+							) : (
+								<li>
+									<span style={{ color: '#D93026' }}>
+										存储：未配置
+									</span>
+								</li>
+							)}
+							<li>
+								<span>存储大小：</span>
+								<span>{data.volumeSize} GB</span>
+							</li>
+						</>
 					)}
-					<li>
-						<span>存储大小：</span>
-						<span>{data.volumeSize} GB</span>
-					</li>
 				</ul>
 			</div>
 			{visible && (
