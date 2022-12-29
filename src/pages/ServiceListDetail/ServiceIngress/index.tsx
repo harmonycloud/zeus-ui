@@ -893,14 +893,14 @@ export default function ServiceDetailIngress(
 								setHostNetworkDataSource(hostNetworkData)
 							}
 						>
-							全部({hostNetworkData.length})
+							全部({hostNetworkData?.length})
 						</Button>
 						<Button
 							type="link"
 							style={{ padding: 4 }}
 							onClick={() =>
 								setHostNetworkDataSource(
-									hostNetworkData.filter(
+									hostNetworkData?.filter(
 										(item) => item.exposeType !== 'sentinel'
 									)
 								)
@@ -908,7 +908,7 @@ export default function ServiceDetailIngress(
 						>
 							Redis节点(
 							{
-								hostNetworkData.filter(
+								hostNetworkData?.filter(
 									(item) => item.exposeType !== 'sentinel'
 								).length
 							}
@@ -919,7 +919,7 @@ export default function ServiceDetailIngress(
 							style={{ padding: 4 }}
 							onClick={() =>
 								setHostNetworkDataSource(
-									hostNetworkData.filter(
+									hostNetworkData?.filter(
 										(item) => item.exposeType === 'sentinel'
 									)
 								)
@@ -927,7 +927,7 @@ export default function ServiceDetailIngress(
 						>
 							哨兵节点(
 							{
-								hostNetworkData.filter(
+								hostNetworkData?.filter(
 									(item) => item.exposeType !== 'sentinel'
 								).length
 							}
