@@ -124,7 +124,7 @@ export default function ModeMag(props: ModeMagProps): JSX.Element {
 		<>
 			<ProTable
 				dataSource={showDataSource}
-				rowKey="databaseName"
+				rowKey="schemaName"
 				onRefresh={getData}
 				showRefresh
 				operation={operation}

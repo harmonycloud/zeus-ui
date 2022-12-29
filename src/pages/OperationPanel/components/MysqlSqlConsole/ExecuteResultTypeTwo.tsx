@@ -6,7 +6,7 @@ export default function ExecuteResultTypeTwo(
 	const { res } = props;
 	return (
 		<div>
-			<p>执行失败</p>
+			<p>{res.title ? res.title : '执行失败'}</p>
 			<p>{res.errorMsg}</p>
 			<p>{res.errorDetail}</p>
 		</div>
