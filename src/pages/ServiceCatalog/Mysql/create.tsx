@@ -2241,6 +2241,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<Form.Item
+												noStyle
 												name="x"
 												rules={[
 													{
