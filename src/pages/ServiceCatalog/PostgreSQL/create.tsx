@@ -754,6 +754,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			}
 			if (res.data.quota.postgresql.num) {
 				setReplicaCount(res.data.quota.postgresql.num);
+				form.setFieldsValue({
+					replicaCount: res.data.quota.postgresql.num
+				});
 			}
 			let storageClassTemp: string | string[];
 			if (
@@ -1606,8 +1609,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<Form.Item
-												noStyle
-												name="x"
+												name="replicaCount"
 												rules={[
 													{
 														required: true,
@@ -1648,7 +1650,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
-											disabled={!!middlewareName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1703,9 +1704,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义CPU配额，单位为Core"
-																	disabled={
-																		!!middlewareName
-																	}
 																/>
 															</FormItem>
 														</div>
@@ -1739,9 +1737,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义内存配额，单位为Gi"
-																	disabled={
-																		!!middlewareName
-																	}
 																/>
 															</FormItem>
 														</div>

@@ -187,7 +187,11 @@ export default function KVString(props: any): JSX.Element {
 							</Button>
 						</Form>
 					) : (
-						<div title={data.key || '/'}>
+						<div
+							title={data.key || '/'}
+							className="text-overflow-one"
+							style={{ marginRight: '8px', maxHeight: '32px' }}
+						>
 							{data.key || '/'}
 							{params.mode === 'sentinel' && (
 								<EditOutlined

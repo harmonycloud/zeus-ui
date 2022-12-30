@@ -22,6 +22,7 @@ export default function RedisDBMag(props: RedisDBMagProps): JSX.Element {
 					children: (
 						<KVMag
 							dbName={dbName}
+							tab={activeKey}
 							redisDbRefresh={redisDbRefresh}
 						/>
 					)

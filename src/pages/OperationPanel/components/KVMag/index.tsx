@@ -20,10 +20,11 @@ import './index.scss';
 const { confirm } = Modal;
 interface KVMagProps {
 	dbName: string;
+	tab: string;
 	redisDbRefresh: () => void;
 }
 export default function KVMag(props: KVMagProps): JSX.Element {
-	const { dbName, redisDbRefresh } = props;
+	const { dbName, tab, redisDbRefresh } = props;
 	const params: ParamsProps = useParams();
 	const [isAdd, setIsAdd] = useState<boolean>(false);
 	const [keyword, setKeyword] = useState<string>('');
@@ -62,6 +63,9 @@ export default function KVMag(props: KVMagProps): JSX.Element {
 	useEffect(() => {
 		getDetail();
 	}, [key]);
+	useEffect(() => {
+		getData();
+	}, [tab]);
 	const paginationChange = (page: number, pageSize: number) => {
 		setCurrent(page);
 		setCount(pageSize);
