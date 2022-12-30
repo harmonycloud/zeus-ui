@@ -656,7 +656,8 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 					middlewareName: values.name,
 					type: backupDetail.sourceType,
 					backupName:
-						backupDetail.pause === 'off'
+						backupDetail.pause === 'off' &&
+						backupDetail.recoveryType === 'time'
 							? backupDetail.newBackupName
 							: backupDetail.backupName,
 					restoreTime: backupDetail.increment

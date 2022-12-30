@@ -73,7 +73,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 						labelAlign="left"
 						rules={[
 							{
-								required: true,
+								required: checked,
 								message: '请输入磁盘大小'
 							}
 						]}
@@ -92,7 +92,7 @@ const EditDirectory = (props: EditDirectoryProps) => {
 					labelAlign="left"
 					rules={[
 						{
-							required: true,
+							required: checked,
 							message: '请选择存储'
 						}
 					]}

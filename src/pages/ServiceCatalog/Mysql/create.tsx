@@ -957,7 +957,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 							: '',
 					type: storage.getLocal('backupDetail').sourceType,
 					backupName:
-						backupDetail.pause === 'off'
+						backupDetail.pause === 'off' &&
+						backupDetail.recoveryType === 'time'
 							? backupDetail.newBackupName
 							: backupDetail.backupName
 				};
