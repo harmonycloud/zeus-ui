@@ -246,6 +246,7 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 		}
 	};
 	const handleMenuClick = (e: MenuInfo, i: string, fatherNode: string) => {
+		console.log(i, fatherNode);
 		switch (e.key) {
 			case 'editTable': // * mysql 编辑表
 				add(
@@ -284,11 +285,11 @@ export default function SqlConsole(props: SqlConsoleProps): JSX.Element {
 				return;
 			case 'inquire': // * mysql sqlconsole
 				add(
-					i,
+					`模式:${i}`,
 					params.type === 'mysql' ? (
 						<MysqlSqlConsole dbName={i} />
 					) : (
-						<PgsqlSqlConsole dbName={i} />
+						<PgsqlSqlConsole dbName={fatherNode} />
 					)
 				);
 				return;
