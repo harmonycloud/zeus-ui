@@ -365,10 +365,7 @@ export default function KVZSet(props: any): JSX.Element {
 							</Button>
 						</Form>
 					) : (
-						<div
-							title={data.expiration || '--'}
-							className="text-overflow-one"
-						>
+						<div title={data.expiration || '--'}>
 							{data.expiration || '--'}
 							<EditOutlined
 								style={{
