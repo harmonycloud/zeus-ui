@@ -112,6 +112,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 								handleSelectChange(value, dataIndex)
 							}
 							options={options}
+							allowClear
 							showSearch
 							filterOption={(input, option) =>
 								((option?.label as string) ?? '').includes(
@@ -133,6 +134,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 								handleSelectChange(value, dataIndex)
 							}
 							mode="multiple"
+							allowClear
 							options={options}
 						/>
 					</Form.Item>
