@@ -315,7 +315,11 @@ export default function KVZSet(props: any): JSX.Element {
 						<div
 							title={data.key || '/'}
 							className="text-overflow-one"
-							style={{ marginRight: '8px', maxHeight: '32px' }}
+							style={{
+								marginRight: '8px',
+								maxHeight: '32px',
+								width: 'calc(100% - 80px)'
+							}}
 						>
 							{data.key || '/'}
 							{params.mode === 'sentinel' && (
