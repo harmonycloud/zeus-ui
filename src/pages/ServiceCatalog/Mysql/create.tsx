@@ -1220,7 +1220,8 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 				storageQuota: transUnit.removeUnit(
 					originData?.quota.mysql.storageClassQuota,
 					'Gi'
-				)
+				),
+				replicaCount: originData?.quota.mysql.num
 			});
 			if (customForm) {
 				let keys: string[] = [];
@@ -2245,8 +2246,7 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<Form.Item
-												noStyle
-												name="x"
+												name="replicaCount"
 												rules={[
 													{
 														required: true,

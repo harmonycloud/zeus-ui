@@ -754,6 +754,9 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 			}
 			if (res.data.quota.postgresql.num) {
 				setReplicaCount(res.data.quota.postgresql.num);
+				form.setFieldsValue({
+					replicaCount: res.data.quota.postgresql.num
+				});
 			}
 			let storageClassTemp: string | string[];
 			if (
@@ -1606,8 +1609,7 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 										</label>
 										<div className="form-content">
 											<Form.Item
-												noStyle
-												name="x"
+												name="replicaCount"
 												rules={[
 													{
 														required: true,
