@@ -53,7 +53,12 @@ export default function KVHash(props: any): JSX.Element {
 		},
 		{
 			dataIndex: 'key',
-			label: 'key'
+			label: 'key',
+			render: (val: string) => (
+				<div className="text-overflow-one" title={val}>
+					{val}
+				</div>
+			)
 		},
 		{
 			dataIndex: 'expiration',
@@ -359,7 +364,11 @@ export default function KVHash(props: any): JSX.Element {
 							</Button>
 						</Form>
 					) : (
-						<div title={data.expiration || '--'}>
+						<div
+							title={data.expiration || '--'}
+							className="text-overflow-one"
+							style={{ marginRight: '8px', maxHeight: '32px' }}
+						>
 							{data.expiration || '--'}
 							<EditOutlined
 								style={{
