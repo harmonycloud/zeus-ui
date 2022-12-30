@@ -107,7 +107,6 @@ function RedisSqlConsole(props: RedisSqlConsoleProps): JSX.Element {
 		// 	.filter((item: string) => item !== '')
 		// 	.map((item) => item + ';');
 		// console.log(list);
-		setRefreshFlag(true);
 		executeCMD({
 			database: dbName,
 			cmd: sql,
@@ -125,6 +124,7 @@ function RedisSqlConsole(props: RedisSqlConsoleProps): JSX.Element {
 				// 		<ExecuteResultTypeOne resData={[]} />
 				// 	);
 				// }
+				setRefreshFlag(true);
 				add(
 					<span>
 						<CheckCircleFilled style={{ color: '#52c41a' }} />
