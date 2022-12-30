@@ -315,7 +315,11 @@ export default function KVHash(props: any): JSX.Element {
 							</Button>
 						</Form>
 					) : (
-						<div title={data.key || '/'}>
+						<div
+							title={data.key || '/'}
+							className="text-overflow-one"
+							style={{ marginRight: '8px', maxHeight: '32px' }}
+						>
 							{data.key || '/'}
 							{params.mode === 'sentinel' && (
 								<EditOutlined
@@ -364,11 +368,7 @@ export default function KVHash(props: any): JSX.Element {
 							</Button>
 						</Form>
 					) : (
-						<div
-							title={data.expiration || '--'}
-							className="text-overflow-one"
-							style={{ marginRight: '8px', maxHeight: '32px' }}
-						>
+						<div title={data.expiration || '--'}>
 							{data.expiration || '--'}
 							<EditOutlined
 								style={{
