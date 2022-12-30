@@ -1,9 +1,4 @@
-import {
-	legacy_createStore as createStore,
-	combineReducers,
-	applyMiddleware,
-	compose
-} from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import globalVar from './globalVar/varReducer';
 import log from './log/logReducer';
