@@ -660,11 +660,12 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 						backupDetail.recoveryType === 'time'
 							? backupDetail.newBackupName
 							: backupDetail.backupName,
-					restoreTime: backupDetail.increment
-						? moment(values.restoreTime).format(
-								'YYYY-MM-DD HH:mm:ss'
-						  )
-						: ''
+					restoreTime:
+						backupDetail.recoveryType === 'time'
+							? moment(values.restoreTime).format(
+									'YYYY-MM-DD HH:mm:ss'
+							  )
+							: ''
 				};
 				applyBackup(result).then((res) => {
 					// if (res.success) {
