@@ -109,7 +109,6 @@ function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 				return itemTemp !== '';
 			})
 			.map((item) => item + ';');
-		setRefreshFlag(true);
 		list.map((item) => {
 			executePgsqlSql({
 				databaseName: dbName,
@@ -118,6 +117,7 @@ function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 				middlewareName: params.name,
 				sql: item
 			}).then((res) => {
+				setRefreshFlag(true);
 				if (res.success) {
 					if (res.data.status === 'true') {
 						if (sql.includes('SELECT')) {

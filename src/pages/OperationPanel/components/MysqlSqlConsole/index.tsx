@@ -110,7 +110,6 @@ function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 				return itemTemp !== '';
 			})
 			.map((item) => item + ';');
-		setRefreshFlag(true);
 		list.map((item) => {
 			executeMysqlSql({
 				database: dbName,
@@ -119,6 +118,7 @@ function MysqlSqlConsole(props: MysqlSqlConsoleProps): JSX.Element {
 				namespace: params.namespace,
 				middlewareName: params.name
 			}).then((res) => {
+				setRefreshFlag(true);
 				if (res.success) {
 					if (sqlT.includes('SELECT')) {
 						add(
