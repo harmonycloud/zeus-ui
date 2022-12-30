@@ -17,13 +17,12 @@ import ExecuteResultTypeTwo from '../MysqlSqlConsole/ExecuteResultTypeTwo';
 import { setRefreshFlag } from '@/redux/execute/execute';
 
 function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
-	const { dbName } = props;
+	const { dbName, setRefreshFlag } = props;
 	const params: ParamsProps = useParams();
 	const [activeKey, setActiveKey] = useState('1');
 	const newTabIndex = useRef(0);
 	const [sql, setSql] = useState<string>('SELECT * from');
 	const [isCopy, setIsCopy] = useState<boolean>(false);
-	const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
 	const [paneProps] = useState<SplitPaneProps>({
 		split: 'horizontal',
 		size: '50%',
@@ -66,7 +65,6 @@ function PgsqlSqlConsole(props: PgsqlSqlConsoleProps): JSX.Element {
 					middlewareName={params.name}
 					database={dbName}
 					changeSql={changeSql}
-					refreshFlag={refreshFlag}
 				/>
 			),
 			key: '1',

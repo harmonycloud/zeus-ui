@@ -743,6 +743,7 @@ export interface MysqlSqlConsoleProps {
 }
 export interface PgsqlSqlConsoleProps {
 	dbName: string;
+	setRefreshFlag: (flag: boolean) => void;
 }
 export interface RedisSqlConsoleProps {
 	dbName: string;
