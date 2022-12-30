@@ -1648,7 +1648,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 											onCallBack={(value: any) =>
 												setInstanceSpec(value)
 											}
-											disabled={!!middlewareName}
 										/>
 										{instanceSpec === 'General' ? (
 											<div
@@ -1703,9 +1702,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义CPU配额，单位为Core"
-																	disabled={
-																		!!middlewareName
-																	}
 																/>
 															</FormItem>
 														</div>
@@ -1739,9 +1735,6 @@ const PostgreSQLCreate: (props: CreateProps) => JSX.Element = (
 																		width: '100%'
 																	}}
 																	placeholder="请输入自定义内存配额，单位为Gi"
-																	disabled={
-																		!!middlewareName
-																	}
 																/>
 															</FormItem>
 														</div>

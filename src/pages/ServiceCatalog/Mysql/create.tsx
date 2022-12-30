@@ -2288,7 +2288,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 												onCallBack={(value: any) =>
 													setInstanceSpec(value)
 												}
-												disabled={!!backupFileName}
 											/>
 											{instanceSpec === 'General' ? (
 												<div
@@ -2346,9 +2345,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																			0.1
 																		}
 																		placeholder="请输入自定义CPU配额，单位为Core"
-																		disabled={
-																			!!backupFileName
-																		}
 																	/>
 																</FormItem>
 															</div>
@@ -2385,9 +2381,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 																			0.1
 																		}
 																		placeholder="请输入自定义内存配额，单位为Gi"
-																		disabled={
-																			!!backupFileName
-																		}
 																	/>
 																</FormItem>
 															</div>
@@ -2412,7 +2405,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setNewSpecId(value)
 													}
-													disabled={!!backupFileName}
 												/>
 												{newSpecId === '5' ? (
 													<div
@@ -2524,7 +2516,6 @@ const MysqlCreate: (props: CreateProps) => JSX.Element = (
 													onCallBack={(value: any) =>
 														setProxySpecId(value)
 													}
-													disabled={!!backupFileName}
 												/>
 											</div>
 										</li>
