@@ -568,10 +568,10 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
 				}
 			}
-			if (res.data.rocketMQParam.group) {
+			if (res.data.rocketMQParam?.group) {
 				form.setFieldsValue({
-					groupCount: res.data.rocketMQParam.group,
-					replicaCount: res.data.rocketMQParam.replicas
+					groupCount: res.data.rocketMQParam?.group,
+					replicaCount: res.data.rocketMQParam?.replicas
 				});
 			}
 		});

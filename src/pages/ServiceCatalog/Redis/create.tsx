@@ -989,13 +989,20 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				case 4:
 					setSentinelMode('2s-2m');
 					break;
+				case 6:
+					setClusterMode('3s-3m');
+					break;
 				case 8:
 					setSentinelMode('4m-4s');
+					break;
+				case 10:
+					setClusterMode('5m-5s');
 					break;
 				case 16:
 					setSentinelMode('8s-8m');
 					break;
 				default:
+					setClusterMode('one');
 					break;
 			}
 			if (res.data.dynamicValues) {
@@ -1003,10 +1010,10 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
 				}
 			}
-			if (res.data.quota.redis.num) {
-				setClusterModeNum(res.data.quota.postgresql.num);
+			if (res.data.quota?.redis?.num) {
+				setClusterModeNum(res.data.quota?.redis?.num / 2);
 				form.setFieldsValue({
-					clusterModeNum: res.data.quota.redis.clusterModeNum
+					clusterModeNum: res.data.quota?.redis?.num / 2
 				});
 			}
 		});
