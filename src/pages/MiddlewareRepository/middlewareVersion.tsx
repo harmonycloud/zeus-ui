@@ -268,7 +268,7 @@ function MiddlewareVersion(props: middlewareRepositoryProps): JSX.Element {
 							dataIndex="createTime"
 							render={(text: string) => (
 								<span>
-									{moment(text).format('YYYY-MM-DD h:mm:ss')}
+									{moment(text).format('YYYY-MM-DD HH:mm:ss')}
 								</span>
 							)}
 							width={200}
