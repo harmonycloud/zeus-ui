@@ -99,7 +99,7 @@ const AccessForm = (props: AccessFormProps) => {
 				sendData.protocol = values.protocolEs;
 				sendData.host = values.hostEs;
 				sendData.port = values.portEs;
-				sendData.user = values.userEs;
+				sendData.username = values.userEs;
 				sendData.password = values.passwordEs;
 				sendData.logCollect = values.logCollect;
 			} else if (title === 'alertmanager') {
