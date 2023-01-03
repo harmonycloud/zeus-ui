@@ -568,6 +568,12 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
 				}
 			}
+			if (res.data.rocketMQParam?.group) {
+				form.setFieldsValue({
+					groupCount: res.data.rocketMQParam?.group,
+					replicaCount: res.data.rocketMQParam?.replicas
+				});
+			}
 		});
 	};
 
@@ -1256,20 +1262,33 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											DLedger组数
 										</label>
 										<div className="form-content">
-											<InputNumber
-												name="组数"
-												value={groupCount}
-												onChange={(
-													value: number | null
-												) =>
-													setGroupCount(
-														value as number
-													)
-												}
-												// min={2}
-												// max={10}
-												disabled={!!middlewareName}
-											/>
+											<Form.Item
+												name="groupCount"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入DLedger组数'
+													}
+												]}
+												initialValue={2}
+												style={{ marginBottom: 0 }}
+											>
+												<InputNumber
+													name="组数"
+													value={groupCount}
+													onChange={(
+														value: number | null
+													) =>
+														setGroupCount(
+															value as number
+														)
+													}
+													// min={2}
+													// max={10}
+													disabled={!!middlewareName}
+												/>
+											</Form.Item>
 										</div>
 									</li>
 								)}
@@ -1279,16 +1298,31 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 											副本数
 										</label>
 										<div className="form-content">
-											<InputNumber
-												name="节点数量"
-												value={replicaCount}
-												onChange={(value) =>
-													setReplicaCount(value || 0)
-												}
-												// min={3}
-												// max={10}
-												disabled={!!middlewareName}
-											/>
+											<Form.Item
+												name="replicaCount"
+												rules={[
+													{
+														required: true,
+														message:
+															'请输入DLedger组数'
+													}
+												]}
+												initialValue={3}
+												style={{ marginBottom: 0 }}
+											>
+												<InputNumber
+													name="节点数量"
+													value={replicaCount}
+													onChange={(value) =>
+														setReplicaCount(
+															value as number
+														)
+													}
+													// min={3}
+													// max={10}
+													disabled={!!middlewareName}
+												/>
+											</Form.Item>
 										</div>
 									</li>
 								)}

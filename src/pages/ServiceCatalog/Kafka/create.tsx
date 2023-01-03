@@ -1126,16 +1126,31 @@ function KafkaCreate(props: CreateProps): JSX.Element {
 										<span>集群实例数量</span>
 									</label>
 									<div className="form-content">
-										<InputNumber
-											min={3}
-											value={customCluster}
-											onChange={(value: number | null) =>
-												setCustomCluster(
-													value as number
-												)
-											}
-											max={10}
-										/>
+										<Form.Item
+											name="clusterModeNum"
+											rules={[
+												{
+													required: true,
+													message:
+														'请输入自定义分片数量'
+												}
+											]}
+											initialValue={3}
+											style={{ marginBottom: 0 }}
+										>
+											<InputNumber
+												min={3}
+												value={customCluster}
+												onChange={(
+													value: number | null
+												) =>
+													setCustomCluster(
+														value as number
+													)
+												}
+												max={10}
+											/>
+										</Form.Item>
 									</div>
 								</li>
 								<li className="display-flex form-li">

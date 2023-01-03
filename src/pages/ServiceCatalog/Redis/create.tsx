@@ -989,19 +989,32 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 				case 4:
 					setSentinelMode('2s-2m');
 					break;
+				case 6:
+					setClusterMode('3s-3m');
+					break;
 				case 8:
 					setSentinelMode('4m-4s');
+					break;
+				case 10:
+					setClusterMode('5m-5s');
 					break;
 				case 16:
 					setSentinelMode('8s-8m');
 					break;
 				default:
+					setClusterMode('one');
 					break;
 			}
 			if (res.data.dynamicValues) {
 				for (const i in res.data.dynamicValues) {
 					form.setFieldsValue({ [i]: res.data.dynamicValues[i] });
 				}
+			}
+			if (res.data.quota?.redis?.num) {
+				setClusterModeNum(res.data.quota?.redis?.num / 2);
+				form.setFieldsValue({
+					clusterModeNum: res.data.quota?.redis?.num / 2
+				});
 			}
 		});
 	};
@@ -1875,7 +1888,9 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 										clusterMode === 'one' ? (
 											<div
 												style={{
-													marginTop: 12
+													marginTop: 12,
+													display: 'flex',
+													alignItems: 'center'
 												}}
 											>
 												<span
@@ -1889,18 +1904,35 @@ const RedisCreate: (props: CreateProps) => JSX.Element = (
 												>
 													自定义分片数量
 												</span>
-												<InputNumber
-													style={{
-														width: 182
-													}}
-													value={clusterModeNum}
-													onChange={(value) =>
-														setClusterModeNum(value)
-													}
-													min={3}
-													max={10}
-													disabled={!!middlewareName}
-												/>
+												<Form.Item
+													name="clusterModeNum"
+													rules={[
+														{
+															required: true,
+															message:
+																'请输入自定义分片数量'
+														}
+													]}
+													initialValue={3}
+													style={{ marginBottom: 0 }}
+												>
+													<InputNumber
+														style={{
+															width: 182
+														}}
+														value={clusterModeNum}
+														onChange={(value) =>
+															setClusterModeNum(
+																value
+															)
+														}
+														min={3}
+														max={10}
+														disabled={
+															!!middlewareName
+														}
+													/>
+												</Form.Item>
 											</div>
 										) : null}
 									</div>

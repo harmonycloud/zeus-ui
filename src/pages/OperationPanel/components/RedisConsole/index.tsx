@@ -114,6 +114,7 @@ function RedisSqlConsole(props: RedisSqlConsoleProps): JSX.Element {
 			namespace: params.namespace,
 			middlewareName: params.name
 		}).then((res) => {
+			setRefreshFlag(true);
 			if (res.data.success) {
 				// if (sqlT.includes('SELECT')) {
 				// 	add(
@@ -124,7 +125,6 @@ function RedisSqlConsole(props: RedisSqlConsoleProps): JSX.Element {
 				// 		<ExecuteResultTypeOne resData={[]} />
 				// 	);
 				// }
-				setRefreshFlag(true);
 				add(
 					<span>
 						<CheckCircleFilled style={{ color: '#52c41a' }} />
