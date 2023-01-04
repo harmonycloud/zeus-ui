@@ -41,6 +41,7 @@ export const getInternalServices = async (params: {
 export const checkTraefikPort = async (params: {
 	clusterId: string;
 	startPort?: number;
+	endPort?: number;
 }) => {
 	const result = Axios.get(Ingress.checkTraefikPort, params);
 	return result;

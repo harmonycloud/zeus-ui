@@ -186,6 +186,7 @@ export interface InfoParams {
 	label: string;
 	chartVersion?: string;
 	hostAffinity: string;
+	hostAnti?: string;
 	description: string;
 	annotations: string;
 	tolerations: string;
@@ -198,6 +199,7 @@ export interface configParams {
 	characterSet: string;
 	port: string | number;
 	password: string;
+	autoCreateTopicEnable: boolean;
 	kafkaDTO?: any;
 }
 export interface runParams {

@@ -299,7 +299,7 @@ export default function AddBackupPosition(): JSX.Element {
 										message: '请输入存储桶'
 									},
 									{
-										pattern: /^\/[a-zA-Z0-9]*$/,
+										pattern: /^\/[a-zA-Z0-9-]*$/,
 										message: '存储桶不符合规则'
 									}
 								]}

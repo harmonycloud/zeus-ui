@@ -45,7 +45,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		customMid
 	} = props;
 	const [pods, setPods] = useState<PodItem[]>([]);
-	const [switchValue, setSwitchValue] = useState<boolean>(true);
+	const [switchValue, setSwitchValue] = useState<boolean>(false);
 	const [podVisible, setPodVisible] = useState<boolean>(false);
 	const [containers, setContainers] = useState<string[]>([]);
 	const [currentContainer, setCurrentContainer] = useState<string>('');
@@ -66,6 +66,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 	const [dilatationVisible, setDilationVisible] = useState<boolean>(false);
 
 	useEffect(() => {
+		console.log(data);
 		if (data !== undefined) {
 			const sendData: PodSendData = {
 				clusterId,
@@ -75,6 +76,7 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 			};
 			getPodList(sendData);
 			setQuotaValue(data.quota[type]);
+			setSwitchValue(data.autoSwitch);
 		}
 	}, [data]);
 	// * 获取pod列表
@@ -245,22 +247,29 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 		};
 		switchMiddlewareMasterSlave(sendData).then((res) => {
 			if (res.success) {
-				notification.success({
-					message: '成功',
-					description: (
-						<span>
-							已完成切换：
-							<br /> {pods[0].podName}:{' '}
-							{pods[0].role === 'master'
-								? '主节点 -> 从节点'
-								: '从节点 -> 主节点'}{' '}
-							<br /> {pods[1].podName}:{' '}
-							{pods[1].role === 'master'
-								? '主节点 -> 从节点'
-								: '从节点 -> 主节点'}
-						</span>
-					)
-				});
+				if (typeof value !== 'boolean') {
+					notification.success({
+						message: '成功',
+						description: (
+							<span>
+								已完成切换：
+								<br /> {pods[0].podName}:{' '}
+								{pods[0].role === 'master'
+									? '主节点 -> 从节点'
+									: '从节点 -> 主节点'}{' '}
+								<br /> {pods[1].podName}:{' '}
+								{pods[1].role === 'master'
+									? '主节点 -> 从节点'
+									: '从节点 -> 主节点'}
+							</span>
+						)
+					});
+				} else {
+					notification.success({
+						message: '成功',
+						description: `自动切换${value ? '开启' : '关闭'}成功！`
+					});
+				}
 				setTimeout(function () {
 					onRefresh('highAvailability');
 				}, 3000);
@@ -352,11 +361,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 
 	const roleRender = (value: string, record: PodItem, index: number) => {
 		if (record.podName.includes('exporter')) {
-			return 'exporter';
+			return 'Exporter';
 		} else {
 			if (data.type === 'elasticsearch') {
 				if (record.podName.includes('kibana')) {
-					return 'kibana';
+					return 'Kibana';
 				} else if (record.podName.includes('client')) {
 					return '协调节点';
 				} else if (record.podName.includes('master')) {
@@ -365,6 +374,11 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					return '数据节点';
 				} else if (record.podName.includes('cold')) {
 					return '冷节点';
+				} else {
+					return value
+						? value.substring(0, 1).toUpperCase() +
+								value.substring(1)
+						: '/';
 				}
 			} else {
 				switch (value) {
@@ -379,13 +393,16 @@ export default function HighAvailability(props: HighProps): JSX.Element {
 					case 'cold':
 						return '冷节点';
 					case 'kibana':
-						return 'kibana';
+						return 'Kibana';
 					case 'nameserver':
-						return 'nameserver';
+						return 'Nameserver';
 					case 'exporter':
-						return 'exporter';
+						return 'Exporter';
 					default:
-						return '未知';
+						return value
+							? value.substring(0, 1).toUpperCase() +
+									value.substring(1)
+							: '/';
 				}
 			}
 		}

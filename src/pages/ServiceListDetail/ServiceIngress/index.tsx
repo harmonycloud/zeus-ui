@@ -9,7 +9,8 @@ import {
 	Popover,
 	Space,
 	Spin,
-	Table
+	Table,
+	Alert
 } from 'antd';
 import { ListCard, ListCardItem, ListPanel } from '@/components/ListCard';
 import ArrowLine from '@/components/ArrowLine';
@@ -294,7 +295,7 @@ export default function ServiceDetailIngress(
 	const ipValue = (record: serviceAvailableItemProps) => {
 		if (record.protocol === 'HTTP') return record?.rules[0].domain;
 		if (record.exposeType === 'NodePort')
-			return `${record.exposeIP}:${record?.serviceList[0]?.exposePort}`;
+			return `${record?.serviceList[0]?.exposePort}`;
 		if (record.address)
 			return `${record.address}:${record?.serviceList[0]?.exposePort}`;
 		return record.serviceList[0]?.exposePort;
@@ -335,6 +336,13 @@ export default function ServiceDetailIngress(
 	}
 	return (
 		<>
+			<Alert
+				message={'请单击服务暴露项展开并查看已暴露的域名或IP+端口号'}
+				type="info"
+				showIcon
+				closable
+				style={{ marginBottom: '16px' }}
+			/>
 			<Spin spinning={spinning}>
 				<ProList operation={Operation}>
 					{dataSource.map((item: serviceAvailableItemProps) => {
@@ -709,7 +717,7 @@ export default function ServiceDetailIngress(
 										value={
 											<span>
 												{ipValue(item)}
-												<Popover
+												{/* <Popover
 													content={
 														<div>
 															<CheckCircleFilled
@@ -736,7 +744,7 @@ export default function ServiceDetailIngress(
 															)
 														}
 													/>
-												</Popover>
+												</Popover> */}
 											</span>
 										}
 										icon={

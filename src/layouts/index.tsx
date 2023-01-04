@@ -13,7 +13,7 @@ import { getMenu, getServiceListChildMenu } from '@/services/user';
 import { IconFont } from '@/components/IconFont';
 import { ResMenuItem } from '@/types/comment';
 import { getProjects } from '@/services/project';
-import { getClusters, getNamespaces } from '@/services/common';
+import { getClusters, getNamespaces, getDisaster } from '@/services/common';
 import { ProjectItem } from '@/pages/ProjectManage/project';
 import { getUserInformation } from '@/services/user';
 import {
@@ -322,6 +322,7 @@ function MyLayout(props: MyLayoutProps): JSX.Element {
 				});
 				setItems(itemsT);
 				if (child.length > 0) {
+					// * 菜单跳转问题，当处于引导页时，切换有中间件的集群，自动跳转到服务列表第一项
 					if (window.location.hash === '#/serviceList') {
 						window.location.href =
 							window.location.origin + '/#/' + res.data[0].url;

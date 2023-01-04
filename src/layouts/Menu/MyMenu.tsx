@@ -43,6 +43,8 @@ function MyMenu(props: MyMenuProps): JSX.Element {
 	const onMenuItemClick = (info: MenuInfo) => {
 		if (info.key.includes('serviceList/')) {
 			storage.setSession('menuPath', `${info.key}`);
+		} else {
+			storage.removeSession('menuPath');
 		}
 		history.push(`/${info.key}`);
 	};

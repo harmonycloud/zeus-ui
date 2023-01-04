@@ -24,6 +24,7 @@ import { getMiddlewareDetail } from '@/services/middleware';
 import { IngressItemProps } from '@/pages/ResourcePoolManagement/resource.pool';
 import { serviceAvailableItemProps } from '@/pages/ServiceAvailable/service.available';
 import storage from '@/utils/storage';
+import { log } from 'console';
 
 const formItemLayout = {
 	labelCol: {
@@ -50,9 +51,12 @@ export default function AddIngress(): JSX.Element {
 	const [ingressClassName, setIngressClassName] = useState<{
 		value: string;
 		type: string;
-		startPort: number;
-		endPort: number;
-	}>();
+		traefikPortList: any[];
+	}>({
+		value: '',
+		type: '',
+		traefikPortList: []
+	});
 	const [ingressPortArray, setIngressPortArray] = useState<string[]>([]);
 	const [nodePortArray, setNodePortArray] = useState<string[]>([]);
 	const ingressTypeList = [
@@ -76,6 +80,8 @@ export default function AddIngress(): JSX.Element {
 		if (name === 'mysql') {
 			return data?.readWriteProxy?.enabled
 				? ingressTypeList
+				: data?.mode === '1m-0s'
+				? [ingressTypeList[1]]
 				: [ingressTypeList[0], ingressTypeList[1]];
 		} else if (name === 'redis') {
 			return data?.readWriteProxy?.enabled
@@ -96,18 +102,16 @@ export default function AddIngress(): JSX.Element {
 		}
 	};
 	useEffect(() => {
-		getIngresses({ clusterId: clusterId, filterUnavailable: true }).then(
-			(res) => {
-				if (res.success) {
-					setIngresses(res.data);
-				} else {
-					notification.error({
-						message: '失败',
-						description: res.errorMsg
-					});
-				}
+		getIngresses({ clusterId: clusterId }).then((res) => {
+			if (res.success) {
+				setIngresses(res.data);
+			} else {
+				notification.error({
+					message: '失败',
+					description: res.errorMsg
+				});
 			}
-		);
+		});
 		getData(clusterId, namespace);
 		getIngressTCPPort().then((res) => {
 			if (res.success) {
@@ -134,6 +138,7 @@ export default function AddIngress(): JSX.Element {
 				exposePort: +serviceIngress.serviceList[0].exposePort,
 				ingressClassName: serviceIngress.ingressClassName
 			});
+			handleIngressChange(serviceIngress.ingressClassName || '');
 			setExposeType(
 				serviceIngress.exposeType === 'Ingress'
 					? 'TCP'
@@ -143,7 +148,7 @@ export default function AddIngress(): JSX.Element {
 		return () =>
 			storage.getSession('serviceIngress') &&
 			storage.removeSession('serviceIngress');
-	}, []);
+	}, [ingresses]);
 
 	const getData = (clusterId: string, namespace: string) => {
 		const sendData = {
@@ -159,6 +164,9 @@ export default function AddIngress(): JSX.Element {
 					res.data.readWriteProxy?.enabled &&
 					mode === 'sentinel' &&
 					setIngressType('proxy');
+				name === 'mysql' &&
+					res.data.mode === '1m-0s' &&
+					setIngressType('rw');
 			} else {
 				notification.error({
 					message: '失败',
@@ -166,6 +174,40 @@ export default function AddIngress(): JSX.Element {
 				});
 			}
 		});
+	};
+	// * 判断当前端口，是否在treafik端口组中
+	const judgePortInTraefikPorts: (port: number | string) => boolean = (
+		port: number | string
+	) => {
+		const cp = Number(port);
+		for (
+			let index = 0;
+			index < ingressClassName?.traefikPortList.length;
+			index++
+		) {
+			const ele = ingressClassName?.traefikPortList[index];
+			if (cp >= ele.startPort && cp <= ele.endPort) {
+				return true;
+			}
+		}
+		return false;
+	};
+
+	// * 判断当前端口，是否在nginx，nodeport端口组中
+	const judgePortInPorts = (port: number | string) => {
+		const cp = Number(port);
+		if (exposeType === 'TCP' && ingressClassName?.type !== 'traefik') {
+			return cp >= Number(ingressPortArray[0]) &&
+				cp <= Number(ingressPortArray[1])
+				? true
+				: false;
+		}
+		if (exposeType === 'NodePort') {
+			return cp >= Number(nodePortArray[0]) &&
+				cp <= Number(nodePortArray[1])
+				? true
+				: false;
+		}
 	};
 
 	const handleSubmit = () => {
@@ -180,7 +222,7 @@ export default function AddIngress(): JSX.Element {
 				service = `${middlewareName}`;
 			}
 		} else if (name === 'redis') {
-			if (data.readWriteProxy.enabled) {
+			if (data?.readWriteProxy?.enabled) {
 				if (mode === 'sentinel') {
 					servicePort = ingressType === 'proxy' ? 7617 : 6379;
 					service =
@@ -212,6 +254,23 @@ export default function AddIngress(): JSX.Element {
 		}
 
 		form.validateFields().then((values) => {
+			if (exposeType === 'TCP' && ingressClassName?.type === 'traefik') {
+				if (!judgePortInTraefikPorts(values.exposePort)) {
+					notification.error({
+						message: '失败',
+						description: '请输入规定范围以内的端口!'
+					});
+					return;
+				}
+			} else {
+				if (!judgePortInPorts(values.exposePort)) {
+					notification.error({
+						message: '失败',
+						description: '请输入规定范围以内的端口!'
+					});
+					return;
+				}
+			}
 			let sendData: any = {
 				clusterId,
 				namespace,
@@ -274,8 +333,7 @@ export default function AddIngress(): JSX.Element {
 		setIngressClassName({
 			value: value,
 			type: cur?.type as string,
-			startPort: Number(cur?.startPort || 0),
-			endPort: Number(cur?.endPort || 0)
+			traefikPortList: cur?.traefikPortList || []
 		});
 	};
 	return (
@@ -378,51 +436,11 @@ export default function AddIngress(): JSX.Element {
 							{
 								required: true,
 								message: '请输入对外端口'
-							},
-							{
-								type: 'number',
-								min:
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.startPort
-											: Number(ingressPortArray[0])
-										: Number(nodePortArray[0]),
-								max:
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.endPort
-											: Number(ingressPortArray[1])
-										: Number(nodePortArray[1]),
-								message: `请输入${
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.startPort
-											: Number(ingressPortArray[0])
-										: Number(nodePortArray[0])
-								}-${
-									exposeType === 'TCP'
-										? ingressClassName?.type === 'traefik'
-											? ingressClassName.endPort
-											: Number(ingressPortArray[1])
-										: Number(nodePortArray[1])
-								}以内的端口`
 							}
 						]}
 					>
 						<InputNumber
-							placeholder={`请输入${
-								exposeType === 'TCP'
-									? ingressClassName?.type === 'traefik'
-										? ingressClassName.startPort
-										: Number(ingressPortArray[0])
-									: Number(nodePortArray[0])
-							}-${
-								exposeType === 'TCP'
-									? ingressClassName?.type === 'traefik'
-										? ingressClassName.endPort
-										: Number(ingressPortArray[1])
-									: Number(nodePortArray[1])
-							}以内的端口`}
+							placeholder={`请输入规定范围以内的端口`}
 							style={{ width: 250 }}
 						/>
 					</Form.Item>
@@ -433,13 +451,42 @@ export default function AddIngress(): JSX.Element {
 								<Col span={10}>
 									<div>
 										当前负载均衡相关端口组为
-										{ingressClassName?.startPort}-
-										{ingressClassName?.endPort}
-										,请在端口组范围内选择端口
+										{ingressClassName.traefikPortList
+											.map(
+												(item) =>
+													`${item.startPort}-${item.endPort}`
+											)
+											.join(',')}
+										请在端口组范围内选择端口
 									</div>
 								</Col>
 							</Row>
 						)}
+					{exposeType === 'TCP' &&
+						ingressClassName?.type !== 'traefik' && (
+							<Row>
+								<Col span={3}></Col>
+								<Col span={10}>
+									<div>
+										当前负载均衡相关端口组为
+										{ingressPortArray.join('-')}
+										请在端口组范围内选择端口
+									</div>
+								</Col>
+							</Row>
+						)}
+					{exposeType === 'NodePort' && (
+						<Row>
+							<Col span={3}></Col>
+							<Col span={10}>
+								<div>
+									当前端口组为
+									{nodePortArray.join('-')}
+									,请在端口组范围内选择端口
+								</div>
+							</Col>
+						</Row>
+					)}
 					<Divider style={{ marginTop: 40 }} />
 					<Button
 						type="primary"

@@ -198,6 +198,12 @@ function Rules(props: RuleProps): JSX.Element {
 		return (
 			<Actions>
 				<LinkButton
+					title={
+						record.silence === null
+							? '原生告警规则暂不支持编辑'
+							: ''
+					}
+					disabled={record.silence === null}
 					onClick={() => {
 						alarmType === 'system'
 							? history.push(
@@ -236,12 +242,12 @@ function Rules(props: RuleProps): JSX.Element {
 				>
 					新增
 				</Button>
-				<Button
+				{/* <Button
 					onClick={() => setVisible(true)}
 					style={{ marginLeft: 8 }}
 				>
 					告警设置
-				</Button>
+				</Button> */}
 			</div>
 		)
 	};
@@ -490,7 +496,7 @@ function Rules(props: RuleProps): JSX.Element {
 						value === record.labels?.severity
 					}
 					render={levelRender}
-					width={100}
+					width={120}
 				/>
 				<ProTable.Column
 					title="告警间隔"
@@ -501,14 +507,14 @@ function Rules(props: RuleProps): JSX.Element {
 						value === record.silence
 					}
 					render={nullRender}
-					width={100}
+					width={120}
 				/>
-				<ProTable.Column
+				{/* <ProTable.Column
 					title="告警内容"
 					dataIndex="content"
-					width={110}
+					width={120}
 					render={nullRender}
-				/>
+				/> */}
 				<ProTable.Column
 					title="创建时间"
 					dataIndex="createTime"
@@ -529,7 +535,7 @@ function Rules(props: RuleProps): JSX.Element {
 					title="操作"
 					dataIndex="option"
 					render={actionRender}
-					width={100}
+					width={120}
 				/>
 			</ProTable>
 			{visible ? (

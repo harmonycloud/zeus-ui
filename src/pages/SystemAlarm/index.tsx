@@ -120,9 +120,9 @@ function SystemAlarm(props: systemAlarmProps) {
 							monitor={globalCluster.monitor as monitorProps}
 						/>
 					</Tabs.TabPane>
-					<Tabs.TabPane tab="告警设置" key="alarmSet">
+					{/* <Tabs.TabPane tab="告警设置" key="alarmSet">
 						<AlarmSet activeKey={activeKey} />
-					</Tabs.TabPane>
+					</Tabs.TabPane> */}
 				</Tabs>
 			</ProContent>
 		</ProPage>

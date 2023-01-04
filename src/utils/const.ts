@@ -436,32 +436,32 @@ export const mysqlDataList = [
 // * redis 哨兵版本
 export const redisSentinelDataList = [
 	{
-		id: '1',
-		cpu: '2 Core',
-		memory: '0.256 Gi'
+		id: '0',
+		cpu: '0.2 Core',
+		memory: '0.512 Gi'
 	},
 	{
-		id: '2',
+		id: '1',
 		cpu: '2 Core',
 		memory: '1 Gi'
 	},
 	{
-		id: '3',
+		id: '2',
 		cpu: '2 Core',
 		memory: '2 Gi'
 	},
 	{
-		id: '4',
+		id: '3',
 		cpu: '2 Core',
 		memory: '8 Gi'
 	},
 	{
-		id: '5',
+		id: '4',
 		cpu: '2 Core',
 		memory: '16 Gi'
 	},
 	{
-		id: '6',
+		id: '5',
 		cpu: '2 Core',
 		memory: '32 Gi'
 	}
@@ -617,6 +617,7 @@ export const backupTaskStatus = [
 	{ value: 'Success', text: '成功', color: '#52c41a' },
 	{ value: 'Failed', text: '失败', color: '#ff4d4f' },
 	{ value: 'Creating', text: '创建中', color: '#18900f' },
+	{ value: 'Deleting', text: '删除中', color: '#d7d7d7' },
 	{ value: 'Unknown', text: '未知', color: '#d7d7d7' }
 ];
 

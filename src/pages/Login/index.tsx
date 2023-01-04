@@ -239,12 +239,10 @@ export default function Login() {
 					/>
 					<div>
 						<div style={{ lineHeight: '24px' }}>
-							您的密码已使用
-							{rePassword}
-							天，还有{180 - rePassword}
-							天即将过期，到期改密可能无法正常登录，是否现在改密？
+							您的密码已使用{rePassword}
+							天，为保障您的账户资产安全，请定期更改密码，是否现在修改密码？
 						</div>
-						<div
+						{/* <div
 							style={{
 								fontSize: '12px',
 								color: '#666',
@@ -252,7 +250,7 @@ export default function Login() {
 							}}
 						>
 							为保障您的账户资产安全，请定期改密！
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</Modal>

@@ -35,7 +35,9 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 		namespace,
 		type,
 		inputChange,
-		middlewareType
+		middlewareType,
+		isActiveActive,
+		disabled
 	} = props;
 	const [instanceSpec, setInstanceSpec] = useState<string>('General');
 	const [storageClassList, setStorageClassList] = useState<
@@ -57,22 +59,42 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				});
 			}
 		});
+		if (disabled) {
+			setInstanceSpec('Customize');
+		}
 	}, []);
+	useEffect(() => {
+		if (data) {
+			form.setFieldsValue({
+				cpu: data.cpu,
+				memory: data.memory,
+				storageClass:
+					data.storageClass === '' ? undefined : data.storageClass,
+				storageQuota: data.storageQuota
+			});
+		}
+	}, [data]);
 	const onOk = () => {
 		form.validateFields().then((values) => {
-			console.log(values);
 			const value = { ...modifyData, ...values };
 			onCreate(value);
 		});
 	};
 	const checkGeneral = (value: any) => {
-		console.log(value);
 		switch (value) {
+			case '0':
+				setModifyData({
+					...modifyData,
+					cpu: 0.2,
+					memory: 0.512,
+					specId: value
+				});
+				break;
 			case '1':
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: middlewareType === 'elasticsearch' ? 4 : 0.256,
+					memory: middlewareType === 'elasticsearch' ? 4 : 1,
 					specId: value
 				});
 				break;
@@ -80,7 +102,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: 2,
-					memory: middlewareType === 'elasticsearch' ? 8 : 1,
+					memory: middlewareType === 'elasticsearch' ? 8 : 2,
 					specId: value
 				});
 				break;
@@ -88,7 +110,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
-					memory: middlewareType === 'elasticsearch' ? 8 : 2,
+					memory: 8,
 					specId: value
 				});
 				break;
@@ -96,7 +118,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 4 : 2,
-					memory: middlewareType === 'elasticsearch' ? 16 : 8,
+					memory: 16,
 					specId: value
 				});
 				break;
@@ -104,14 +126,6 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 				setModifyData({
 					...modifyData,
 					cpu: middlewareType === 'elasticsearch' ? 8 : 2,
-					memory: middlewareType === 'elasticsearch' ? 32 : 16,
-					specId: value
-				});
-				break;
-			case '6':
-				setModifyData({
-					...modifyData,
-					cpu: 2,
 					memory: 32,
 					specId: value
 				});
@@ -172,6 +186,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 								onCallBack={(value: any) => {
 									setInstanceSpec(value);
 								}}
+								disabled={disabled}
 							/>
 							{instanceSpec === 'General' ? (
 								<div
@@ -188,7 +203,12 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 										dataList={
 											middlewareType === 'elasticsearch'
 												? esDataList
-												: redisSentinelDataList
+												: type === 'sentinel'
+												? redisSentinelDataList
+												: redisSentinelDataList.slice(
+														1,
+														redisSentinelDataList.length
+												  )
 										}
 									/>
 								</div>
@@ -223,6 +243,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 														style={{
 															width: '100%'
 														}}
+														disabled={disabled}
 														placeholder="请输入自定义CPU配额，单位为Core"
 													/>
 												</FormItem>
@@ -245,7 +266,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 														{
 															required: true,
 															message:
-																'请输入自定义内存配额，单位为Core'
+																'请输入自定义内存配额，单位为Gi'
 														}
 													]}
 													name="memory"
@@ -255,6 +276,7 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 														style={{
 															width: '100%'
 														}}
+														disabled={disabled}
 														placeholder="请输入自定义内存配额，单位为Gi"
 													/>
 												</FormItem>
@@ -266,7 +288,10 @@ const EditQuotaForm = (props: EditQuotaFormProps) => {
 						</div>
 					</li>
 					{type !== 'kibana' && type !== 'sentinel' && (
-						<StorageQuota clusterId={clusterId} />
+						<StorageQuota
+							clusterId={clusterId}
+							isActiveActive={isActiveActive}
+						/>
 					)}
 				</ul>
 			</Form>

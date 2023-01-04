@@ -233,7 +233,8 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				rocketMQParam: {
 					acl: {
 						enable: aclCheck || false
-					}
+					},
+					autoCreateTopicEnable: values.autoCreateTopicEnable
 				},
 				mirrorImageId: mirrorList.find(
 					(item) => item.address === values['mirrorImageId']
@@ -465,7 +466,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 		}).then((res) => {
 			if (!res.data) return;
 			setInstanceSpec('Customize');
-			if (res.data.nodeAffinity) {
+			if (res.data?.nodeAffinity?.length > 0) {
 				setAffinity({
 					flag: true,
 					label: '',
@@ -473,7 +474,7 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 				});
 				setAffinityLabels(res.data?.nodeAffinity || []);
 			}
-			if (res.data.tolerations) {
+			if (res.data?.tolerations?.length) {
 				setTolerations({
 					flag: true,
 					label: ''
@@ -1117,6 +1118,29 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 										</FormItem>
 									</div>
 								</li>
+								<li className="display-flex">
+									<label className="form-name">
+										<span style={{ marginRight: 8 }}>
+											自动创建Topic
+										</span>
+									</label>
+									<div
+										className="form-content"
+										style={{ flex: '0 0 376px' }}
+									>
+										<FormItem
+											name="autoCreateTopicEnable"
+											initialValue={false}
+										>
+											<Switch
+												size="small"
+												style={{
+													verticalAlign: 'middle'
+												}}
+											/>
+										</FormItem>
+									</div>
+								</li>
 							</ul>
 						</div>
 					</FormBlock>
@@ -1184,7 +1208,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												name="组数"
 												value={groupCount}
 												onChange={(value) =>
-													setGroupCount(value)
+													setGroupCount(
+														value as number
+													)
 												}
 												// min={2}
 												// max={10}
@@ -1203,7 +1229,9 @@ const RocketMQCreate: (props: CreateProps) => JSX.Element = (
 												name="节点数量"
 												value={replicaCount}
 												onChange={(value) =>
-													setReplicaCount(value)
+													setReplicaCount(
+														value as number
+													)
 												}
 												// min={3}
 												// max={10}

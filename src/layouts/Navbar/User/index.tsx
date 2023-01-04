@@ -10,7 +10,7 @@ import { postLogout } from '@/services/user';
 import EditPasswordForm from './EditPasswordForm';
 import { userProps } from './user';
 import { getLDAP } from '@/services/user';
-
+import { getIsAccessGYT } from '@/services/common';
 import Storage from '@/utils/storage';
 import { StoreState } from '@/types';
 import logoutSvg from '@/assets/images/navbar/logout.svg';
@@ -21,10 +21,9 @@ function User(props: userProps): JSX.Element {
 	const { nickName, className, role } = props;
 	const [visible, setVisible] = useState<boolean>(false);
 	const [isLDAP, setIsLDAP] = useState<boolean>(false);
-
+	const [isAccess, setIsAccess] = useState<boolean>(false);
 	// const [checked, setChecked] = useState<boolean>(false);
 	const history = useHistory();
-
 	const logout = () => {
 		postLogout().then((res) => {
 			if (res.success) {
@@ -48,6 +47,11 @@ function User(props: userProps): JSX.Element {
 	useEffect(() => {
 		getLDAP().then((res: any) => {
 			res.success && setIsLDAP(res.data.isOn);
+		});
+		getIsAccessGYT().then((res) => {
+			if (res.success) {
+				setIsAccess(res.data);
+			}
 		});
 	}, []);
 	const title = (
@@ -76,7 +80,8 @@ function User(props: userProps): JSX.Element {
 						<span>平台管理</span>
 					</li>
 				)}
-				{Storage.getLocal('userName') !== 'admin' && isLDAP ? null : (
+				{Storage.getLocal('userName') !== 'admin' &&
+				(isLDAP || isAccess) ? null : (
 					<li
 						className={styles['nav-user-container-item']}
 						onClick={editPassword}

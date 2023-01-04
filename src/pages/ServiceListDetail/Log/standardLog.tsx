@@ -173,6 +173,7 @@ export default function StandardLog(props: CommonLogProps): JSX.Element {
 						description: '根据当前查询条件未查询到任何日志文件。'
 					});
 					setLogFiles([]);
+					setLogList([]);
 					setCurrentLogFile(undefined);
 				}
 			} else {

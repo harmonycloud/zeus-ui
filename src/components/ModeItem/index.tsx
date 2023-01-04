@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
 import { Input } from 'antd';
 import EditQuotaForm from './EditQuotaForm';
 import './index.scss';
@@ -11,7 +10,7 @@ export interface modeItemProps {
 		memory: number;
 		num: number;
 		specId: string;
-		storageClass: string;
+		storageClass: string | string[];
 		storageQuota: number;
 		title: string;
 	};
@@ -20,15 +19,25 @@ export interface modeItemProps {
 	type: string;
 	onChange: (value: modeItemProps['data']) => void;
 	middlewareType: string;
+	isActiveActive?: boolean;
+	disabled?: boolean;
 }
 const ModeItem = (props: modeItemProps): JSX.Element => {
-	const { data, clusterId, namespace, type, onChange, middlewareType } =
-		props;
-	const params: any = useParams();
+	const {
+		data,
+		clusterId,
+		namespace,
+		type,
+		onChange,
+		middlewareType,
+		isActiveActive,
+		disabled
+	} = props;
 	const [modifyData, setModifyData] = useState<modeItemProps['data']>(data);
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [visible, setVisible] = useState<boolean>(false);
 	const onCreate = (value: any) => {
+		console.log(value);
 		onChange(value);
 		setModifyData({
 			...modifyData,
@@ -36,6 +45,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 		});
 		setVisible(false);
 	};
+	useEffect(() => {
+		setModifyData(data);
+	}, [data]);
 	useEffect(() => {
 		onChange(modifyData);
 	}, [modifyData]);
@@ -103,8 +115,9 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						{data.storageClass && data.storageClass !== '' && (
 							<li>
 								<span>
-									{data.storageClass ||
-										data.storageClass.split('/')[1]}
+									{typeof data.storageClass === 'string'
+										? data.storageClass
+										: data.storageClass.join(',')}
 									：
 								</span>
 								<span>{data.storageQuota} GB</span>
@@ -133,6 +146,8 @@ const ModeItem = (props: modeItemProps): JSX.Element => {
 						type={type}
 						onChange={onChange}
 						inputChange={inputChange}
+						isActiveActive={isActiveActive}
+						disabled={disabled}
 					/>
 				)}
 			</div>

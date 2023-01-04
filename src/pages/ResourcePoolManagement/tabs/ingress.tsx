@@ -64,6 +64,8 @@ const Ingress = (props: IngressProps) => {
 					createTime={null}
 				/>
 				{ingresses.map((item, index) => {
+					console.log(item);
+
 					return (
 						<IngressCard
 							key={index}

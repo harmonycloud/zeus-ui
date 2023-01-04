@@ -46,7 +46,7 @@ function UserManage(props: any): JSX.Element {
 				} else {
 					notification.error({
 						message: '失败',
-						description: res.erroeMsg
+						description: res.errorMsg
 					});
 				}
 			}

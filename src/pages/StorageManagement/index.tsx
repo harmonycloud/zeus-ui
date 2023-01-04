@@ -161,7 +161,11 @@ export default function StorageManagement(): JSX.Element {
 							<ListCard
 								key={`${item.name}-${item.clusterId}`}
 								title={item.aliasName}
-								subTitle={item.volumeType}
+								subTitle={
+									item.volumeType === 'unknown'
+										? item.provisioner
+										: item.volumeType
+								}
 								icon={
 									<img
 										src={storageIcon}

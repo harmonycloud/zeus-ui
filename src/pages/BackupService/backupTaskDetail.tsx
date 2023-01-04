@@ -526,6 +526,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 							type="primary"
 							onClick={() => {
 								if (backupDetail.schedule) {
+									// * 周期备份
 									history.push(
 										`/backupService/backupRecovery/${
 											params.clusterId || cluster.id
@@ -534,6 +535,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 										}/${backupDetail.sourceType}`
 									);
 								} else {
+									// * 立即备份
 									releaseMiddleware();
 								}
 							}}
@@ -547,7 +549,7 @@ function BackupTaskDetail(props: any): JSX.Element {
 								Modal.confirm({
 									title: '操作确认',
 									content:
-										'备份任务删除后将无法恢复，请确认执行',
+										'删除周期备份任务，将清除对应备份数据且无法恢复，请确认执行？',
 									onOk: () => {
 										const sendData = {
 											clusterId:

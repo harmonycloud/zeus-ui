@@ -25,7 +25,10 @@ export default function TableRadio(props: any): JSX.Element {
 		onChange: (selectedRowKeys: any, selectedRows: any) => {
 			setSelectedRow(selectedRows[0]);
 			setSelectedRowKeys(selectedRowKeys);
-		}
+		},
+		getCheckboxProps: (record: any) => ({
+			disabled: record.phrase === 'Failed'
+		})
 	};
 	return (
 		<div>

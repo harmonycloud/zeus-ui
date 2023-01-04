@@ -20,7 +20,7 @@ import {
 	deleteMiddleware,
 	getCanReleaseMiddleware
 } from '@/services/middleware';
-import { getComponents } from '@/services/common';
+import { getComponents, getDisaster } from '@/services/common';
 import {
 	setCluster,
 	setNamespace,
@@ -74,6 +74,15 @@ const ServiceListByType = (props: serviceListProps) => {
 		operateFlag: false,
 		deleteFlag: false
 	});
+	// * 灾备是否开启判断
+	const [disasterOpen, setDisasterOpen] = useState<boolean>(false);
+	useEffect(() => {
+		getDisaster().then((res) => {
+			if (res.success) {
+				setDisasterOpen(JSON.parse(res.data));
+			}
+		});
+	}, []);
 	useEffect(() => {
 		let getFlag = false;
 		let createFlag = false;
@@ -405,8 +414,9 @@ const ServiceListByType = (props: serviceListProps) => {
 		});
 	};
 	const operation = () => {
+		// * 当前用户没有创建和查看的权限
 		if (!roleFlag.createFlag || !roleFlag.getFlag) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					secondary: (
 						<Checkbox
@@ -421,8 +431,9 @@ const ServiceListByType = (props: serviceListProps) => {
 				return {};
 			}
 		}
+		// * 是否可以发布
 		if (cantRelease) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="请前往平台组件界面安装中间件管理组件！">
@@ -460,7 +471,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (!middlewareInfo) {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Tooltip title="数据加载中，请稍后...">
@@ -498,6 +509,7 @@ const ServiceListByType = (props: serviceListProps) => {
 				};
 			}
 		} else if (namespace.availableDomain) {
+			// * 选中双活分区后，除mysql redis pgsql 以外不能发布
 			if (name !== 'mysql' && name !== 'redis' && name !== 'postgresql') {
 				return {
 					primary: (
@@ -513,28 +525,42 @@ const ServiceListByType = (props: serviceListProps) => {
 					)
 				};
 			} else {
-				return {
-					primary: (
-						<Button
-							onClick={releaseMiddleware}
-							type="primary"
-							disabled={!middlewareInfo}
-						>
-							发布服务
-						</Button>
-					),
-					secondary: (
-						<Checkbox
-							checked={backupCheck}
-							onChange={handleFilterBackup}
-						>
-							灾备服务
-						</Checkbox>
-					)
-				};
+				if (name === 'mysql' && disasterOpen) {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						),
+						secondary: (
+							<Checkbox
+								checked={backupCheck}
+								onChange={handleFilterBackup}
+							>
+								灾备服务
+							</Checkbox>
+						)
+					};
+				} else {
+					return {
+						primary: (
+							<Button
+								onClick={releaseMiddleware}
+								type="primary"
+								disabled={!middlewareInfo}
+							>
+								发布服务
+							</Button>
+						)
+					};
+				}
 			}
 		} else {
-			if (name === 'mysql') {
+			if (name === 'mysql' && disasterOpen) {
 				return {
 					primary: (
 						<Button
@@ -586,17 +612,22 @@ const ServiceListByType = (props: serviceListProps) => {
 				</Actions>
 			);
 		}
-		if (record.status === 'Deleted') {
+		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<Actions>
 					<LinkButton
-						disabled={!roleFlag.operateFlag}
+						disabled={
+							!roleFlag.operateFlag ||
+							record.status === 'Deleting'
+						}
 						onClick={() => recoveryService(record)}
 					>
 						恢复服务
 					</LinkButton>
 					<LinkButton
-						disabled={!roleFlag.deleteFlag}
+						disabled={
+							!roleFlag.deleteFlag || record.status === 'Deleting'
+						}
 						onClick={() => deleteStorage(record)}
 					>
 						彻底删除
@@ -845,7 +876,7 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const nameRender = (value: string, record: serviceProps, index: number) => {
-		if (record.status === 'Deleted') {
+		if (record.status === 'Deleted' || record.status === 'Deleting') {
 			return (
 				<div style={{ maxWidth: '160px' }}>
 					<div
@@ -928,7 +959,8 @@ const ServiceListByType = (props: serviceListProps) => {
 		);
 	};
 	const podRender = (value: string, record: serviceProps, index: number) => {
-		if (record.status === 'Deleted') return '--';
+		if (record.status === 'Deleted' || record.status === 'Deleting')
+			return '--';
 		return (
 			<span
 				className={roleFlag.operateFlag ? 'name-link' : ''}
@@ -970,7 +1002,10 @@ const ServiceListByType = (props: serviceListProps) => {
 						placeholder: '请输入搜索内容'
 					}}
 					rowClassName={(record) => {
-						if (record.status === 'Deleted') {
+						if (
+							record.status === 'Deleted' ||
+							record.status === 'Deleting'
+						) {
 							return 'table-row-delete';
 						}
 						return '';
@@ -1008,12 +1043,14 @@ const ServiceListByType = (props: serviceListProps) => {
 						dataIndex="description"
 						render={nullRender}
 					/>
-					<ProTable.Column
-						title="关联服务名称/中文别名"
-						dataIndex="associated"
-						width={180}
-						render={associatedRender}
-					/>
+					{disasterOpen && (
+						<ProTable.Column
+							title="关联服务名称/中文别名"
+							dataIndex="associated"
+							width={180}
+							render={associatedRender}
+						/>
+					)}
 					<ProTable.Column
 						title="创建时间"
 						dataIndex="createTime"
