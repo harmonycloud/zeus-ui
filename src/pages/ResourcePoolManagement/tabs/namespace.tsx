@@ -162,7 +162,11 @@ const Namespace = (props: NamespaceProps) => {
 			<Switch
 				checked={value}
 				title={isAccess ? '平台已接入观云台，请联系观云台管理员' : ''}
-				disabled={record.phase !== 'Active' || isAccess}
+				disabled={
+					record.phase !== 'Active' ||
+					isAccess ||
+					record.name === 'middleware-operator'
+				}
 				onChange={(value: boolean) => handleChange(value, record)}
 			/>
 		);
@@ -196,7 +200,7 @@ const Namespace = (props: NamespaceProps) => {
 		return (
 			<Actions>
 				<LinkButton
-					disabled={isAccess}
+					disabled={isAccess || record.name === 'middleware-operator'}
 					title={
 						isAccess ? '平台已接入观云台，请联系观云台管理员' : ''
 					}
